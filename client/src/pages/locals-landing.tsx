@@ -66,7 +66,7 @@ export default function LocalsLanding() {
             trackEvent('signup_cta_click', 'locals_landing', 'floating_join_now');
             setLocation('/launching-soon');
           }}
-          className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
+          className="bg-blue-500 hover:bg-blue-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
         >
           JOIN NOW
         </Button>
@@ -141,7 +141,7 @@ export default function LocalsLanding() {
               <Button
                 onClick={() => setLocation('/launching-soon')}
                 size="lg"
-                className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
+                className="bg-blue-500 hover:bg-blue-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               >
                 JOIN NOW
               </Button>
@@ -336,7 +336,7 @@ export default function LocalsLanding() {
             <Button
               onClick={() => setLocation('/launching-soon')}
               size="lg"
-              className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
+              className="bg-blue-500 hover:bg-blue-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               style={{
                 boxShadow: '0 12px 40px rgba(0,0,0,0.2)',
                 animation: 'gentle-pulse 2.5s ease-in-out infinite',
@@ -363,7 +363,7 @@ BECOME A NEARBY LOCAL NOW
             <Button
               onClick={() => setLocation('/launching-soon')}
               size="lg"
-              className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
+              className="bg-blue-500 hover:bg-blue-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               style={{
                 boxShadow: '0 15px 50px rgba(0,0,0,0.3)',
               }}

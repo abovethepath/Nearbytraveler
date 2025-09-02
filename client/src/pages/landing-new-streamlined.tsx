@@ -126,7 +126,7 @@ export default function LandingStreamlined() {
             trackEvent('signup_cta_click', 'landing_page', 'floating_join_now');
             setLocation('/launching-soon');
           }}
-          className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
+          className="bg-blue-500 hover:bg-blue-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
         >
           Join Now
         </Button>
@@ -212,7 +212,7 @@ export default function LandingStreamlined() {
                     setLocation('/launching-soon');
                   }}
                   size="lg"
-                  className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
+                  className="bg-blue-500 hover:bg-blue-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
                 >
                   Join Now
                 </Button>
@@ -296,7 +296,7 @@ export default function LandingStreamlined() {
                   trackEvent('signup_cta_click', 'landing_page', 'social_proof_join');
                   setLocation('/launching-soon');
                 }}
-                className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-8 py-3 rounded-lg shadow-sm transition-all duration-200"
+                className="bg-blue-500 hover:bg-blue-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-8 py-3 rounded-lg shadow-sm transition-all duration-200"
               >
                 Start Connecting Now
               </Button>
@@ -500,7 +500,7 @@ export default function LandingStreamlined() {
                   trackEvent('signup_cta_click', 'landing_page', 'transformation_join_now');
                   setLocation('/launching-soon');
                 }}
-                className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
+                className="bg-blue-500 hover:bg-blue-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               >
                 Join Now
               </button>
@@ -687,7 +687,7 @@ export default function LandingStreamlined() {
               <Button 
                 onClick={() => setLocation('/launching-soon')}
                 size="lg"
-                className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
+                className="bg-blue-500 hover:bg-blue-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               >
                 Join Now
               </Button>
@@ -794,7 +794,7 @@ export default function LandingStreamlined() {
                 trackEvent('signup_cta_click', 'landing_page', 'find_your_people');
                 setLocation('/launching-soon');
               }}
-              className="rounded-xl bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 shadow transition-all duration-200"
+              className="rounded-xl bg-blue-500 hover:bg-blue-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 shadow transition-all duration-200"
             >
               Find Your People
             </button>
@@ -808,7 +808,7 @@ export default function LandingStreamlined() {
             <p className="text-lg sm:text-xl mb-6 sm:mb-8 px-4 leading-relaxed">Join travelers, locals, and businesses already building real connections worldwide.</p>
             <Button 
               onClick={() => setLocation('/launching-soon')}
-              className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
+              className="bg-blue-500 hover:bg-blue-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
             >
               Join Now
             </Button>
