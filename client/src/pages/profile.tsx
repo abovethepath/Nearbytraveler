@@ -3503,6 +3503,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         {/* Show NEARBY LOCAL and current travel status if traveling */}
                         {(() => {
                           const currentDestination = getCurrentTravelDestination(travelPlans || []);
+                          console.log('🚀 PROFILE DEBUG:', { travelPlans, currentDestination, today: new Date().toISOString() });
                           if (currentDestination) {
                             return (
                               <div className="space-y-2">
