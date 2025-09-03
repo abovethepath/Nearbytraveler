@@ -1247,7 +1247,7 @@ export function PhotoAlbumWidget({ userId, isOwnProfile = false }: TravelMemoryW
 
       {/* Edit Album Modal */}
       <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl bg-white dark:bg-white">
           <DialogHeader>
             <DialogTitle>Edit Album</DialogTitle>
             <DialogDescription>
