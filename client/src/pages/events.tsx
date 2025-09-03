@@ -492,15 +492,34 @@ export default function Events() {
             <div className="grid gap-6 md:grid-cols-5 items-center">
               {/* Left text side - wider */}
               <div className="md:col-span-3">
-                <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white">
+                <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight text-zinc-900 dark:text-white leading-tight">
                   <h1>
                     Events & Experiences
                   </h1>
                 </div>
-                <div className="mt-3 sm:mt-4 max-w-xl text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300">
-                  <p>
-                    Discover amazing events, create memorable experiences, and connect with fellow adventurers
+                <div className="mt-4 sm:mt-6 max-w-2xl text-base md:text-lg lg:text-xl text-zinc-600 dark:text-zinc-300 leading-relaxed">
+                  <p className="mb-4">
+                    From intimate coffee meetups to grand festivals, discover events that match your interests and travel style.
                   </p>
+                  <p className="text-sm md:text-base text-zinc-500 dark:text-zinc-400">
+                    Create your own events, join community gatherings, or explore premium experiences curated by locals who know their city best.
+                  </p>
+                </div>
+                
+                {/* Event Features List */}
+                <div className="mt-6 space-y-3">
+                  <div className="flex items-center gap-3 text-sm md:text-base text-zinc-700 dark:text-zinc-300">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span>Community events by locals and travelers</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm md:text-base text-zinc-700 dark:text-zinc-300">
+                    <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                    <span>Premium concerts, shows, and experiences</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm md:text-base text-zinc-700 dark:text-zinc-300">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span>Instant meetups and spontaneous adventures</span>
+                  </div>
                 </div>
               </div>
             
