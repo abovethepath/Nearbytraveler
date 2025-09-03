@@ -3594,7 +3594,7 @@ Questions? Just reply to this message. Welcome aboard!
         maxAge,
         interests,
         activities,
-        events,
+        events: eventsFilter,
         location,
         userType,
         travelerTypes,
@@ -3615,7 +3615,7 @@ Questions? Just reply to this message. Welcome aboard!
 
       if (process.env.NODE_ENV === 'development') {
         console.log('🔍 ADVANCED SEARCH: Performing search with filters:', {
-          search, gender, sexualPreference, minAge, maxAge, interests, activities, events, location, userType, travelerTypes, militaryStatus, currentUserId
+          search, gender, sexualPreference, minAge, maxAge, interests, activities, events: eventsFilter, location, userType, travelerTypes, militaryStatus, currentUserId
         });
         console.log('🔍 SEARCH QUERY TYPE:', typeof search, 'value:', search);
       }
@@ -3772,7 +3772,7 @@ Questions? Just reply to this message. Welcome aboard!
         }
       } else {
         // If no search term provided, require at least one other filter
-        if (!location && !userType && !gender && !interests && !activities && !events) {
+        if (!location && !userType && !gender && !interests && !activities && !eventsFilter) {
           return res.json({
             users: [],
             total: 0,
@@ -3853,6 +3853,18 @@ Questions? Just reply to this message. Welcome aboard!
           whereConditions.push(or(
             ...activityList.map(activity => 
               ilike(users.activities, `%${activity}%`)
+            )
+          ));
+        }
+      }
+
+      // Events filter
+      if (eventsFilter && typeof eventsFilter === 'string') {
+        const eventsList = eventsFilter.split(',').map(e => e.trim()).filter(Boolean);
+        if (eventsList.length > 0) {
+          whereConditions.push(or(
+            ...eventsList.map(event => 
+              ilike(users.events, `%${event}%`)
             )
           ));
         }
