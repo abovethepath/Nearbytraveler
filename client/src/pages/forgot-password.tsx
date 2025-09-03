@@ -19,6 +19,7 @@ type ForgotPasswordForm = z.infer<typeof forgotPasswordSchema>;
 
 export default function ForgotPassword() {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [resetData, setResetData] = useState<any>(null);
   const { toast } = useToast();
 
   const form = useForm<ForgotPasswordForm>({
@@ -41,6 +42,7 @@ export default function ForgotPassword() {
     },
     onSuccess: (data) => {
       setIsSubmitted(true);
+      setResetData(data);
       toast({
         title: "Reset Link Sent",
         description: data.message,
@@ -73,6 +75,24 @@ export default function ForgotPassword() {
             <p className="text-sm text-gray-600 text-center">
               Didn't receive an email? Check your spam folder or try again.
             </p>
+            
+            {/* Development Mode: Show reset link directly */}
+            {resetData?.resetLink && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-sm font-medium text-blue-900 mb-2">
+                  🔧 Development Mode
+                </p>
+                <p className="text-xs text-blue-700 mb-3">
+                  For testing, you can use this direct reset link:
+                </p>
+                <Link href={resetData.resetLink.replace('http://localhost:5000', '')}>
+                  <Button variant="outline" size="sm" className="w-full text-xs">
+                    Use Reset Link Now
+                  </Button>
+                </Link>
+              </div>
+            )}
+            
             <div className="flex flex-col space-y-2">
               <Button
                 variant="outline"
