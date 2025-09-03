@@ -3647,85 +3647,6 @@ Questions? Just reply to this message. Welcome aboard!
         
         // For each search term, create conditions that must ALL match (AND logic)
         for (const searchTerm of searchTerms) {
-          // Create a subquery to find users with matching travel plan info for this term
-          const travelPlanSubquery = db
-            .selectDistinct({ userId: travelPlans.userId })
-            .from(travelPlans)
-            .where(
-              or(
-                ilike(travelPlans.notes, `%${searchTerm}%`),
-                ilike(travelPlans.accommodation, `%${searchTerm}%`),
-                ilike(travelPlans.transportation, `%${searchTerm}%`),
-                ilike(travelPlans.autoTags, `%${searchTerm}%`),
-                // Location keyword search in travel destinations
-                ilike(travelPlans.destination, `%${searchTerm}%`),
-                ilike(travelPlans.destinationCity, `%${searchTerm}%`),
-                ilike(travelPlans.destinationState, `%${searchTerm}%`),
-                ilike(travelPlans.destinationCountry, `%${searchTerm}%`)
-              )
-            );
-
-          // Create a subquery to find users who created events matching this term
-          const eventCreatorSubquery = db
-            .selectDistinct({ userId: events.organizerId })
-            .from(events)
-            .where(
-              or(
-                ilike(events.title, `%${searchTerm}%`),
-                ilike(events.description, `%${searchTerm}%`),
-                ilike(events.venueName, `%${searchTerm}%`),
-                ilike(events.street, `%${searchTerm}%`),
-                ilike(events.city, `%${searchTerm}%`),
-                ilike(events.state, `%${searchTerm}%`),
-                ilike(events.country, `%${searchTerm}%`),
-                ilike(events.location, `%${searchTerm}%`),
-                ilike(events.eventType, `%${searchTerm}%`),
-                ilike(events.audience, `%${searchTerm}%`)
-              )
-            );
-
-          // Create a subquery to find users who are attending events matching this term
-          const eventAttendeeSubquery = db
-            .selectDistinct({ userId: eventParticipants.userId })
-            .from(eventParticipants)
-            .leftJoin(events, eq(eventParticipants.eventId, events.id))
-            .where(
-              or(
-                ilike(events.title, `%${searchTerm}%`),
-                ilike(events.description, `%${searchTerm}%`),
-                ilike(events.venueName, `%${searchTerm}%`),
-                ilike(events.city, `%${searchTerm}%`),
-                ilike(events.eventType, `%${searchTerm}%`)
-              )
-            );
-
-          // Create a subquery to find users who created quick meetups matching this term
-          const quickMeetupCreatorSubquery = db
-            .selectDistinct({ userId: quickMeetups.userId })
-            .from(quickMeetups)
-            .where(
-              or(
-                ilike(quickMeetups.title, `%${searchTerm}%`),
-                ilike(quickMeetups.description, `%${searchTerm}%`),
-                ilike(quickMeetups.location, `%${searchTerm}%`),
-                ilike(quickMeetups.city, `%${searchTerm}%`),
-                ilike(quickMeetups.activityType, `%${searchTerm}%`)
-              )
-            );
-
-          // Create a subquery to find users who joined quick meetups matching this term
-          const quickMeetupParticipantSubquery = db
-            .selectDistinct({ userId: quickMeetupParticipants.userId })
-            .from(quickMeetupParticipants)
-            .leftJoin(quickMeetups, eq(quickMeetupParticipants.quickMeetupId, quickMeetups.id))
-            .where(
-              or(
-                ilike(quickMeetups.title, `%${searchTerm}%`),
-                ilike(quickMeetups.description, `%${searchTerm}%`),
-                ilike(quickMeetups.location, `%${searchTerm}%`),
-                ilike(quickMeetups.activityType, `%${searchTerm}%`)
-              )
-            );
           
           // Each search term must match somewhere in the user's profile (AND logic)
           whereConditions.push(
@@ -3733,36 +3654,21 @@ Questions? Just reply to this message. Welcome aboard!
               ilike(users.name, `%${searchTerm}%`),
               ilike(users.username, `%${searchTerm}%`),
               ilike(users.bio, `%${searchTerm}%`),
-              ilike(users.interests, `%${searchTerm}%`),
-              ilike(users.activities, `%${searchTerm}%`),
-              ilike(users.sexualPreference, `%${searchTerm}%`),
+              // Array fields search using array_to_string for partial matches
+              sql`array_to_string(${users.interests}, ',') ILIKE ${`%${searchTerm}%`}`,
+              sql`array_to_string(${users.activities}, ',') ILIKE ${`%${searchTerm}%`}`,
               ilike(users.gender, `%${searchTerm}%`),
-              ilike(users.militaryStatus, `%${searchTerm}%`),
-              ilike(users.occupation, `%${searchTerm}%`),
-              ilike(users.languages, `%${searchTerm}%`),
-              ilike(users.travelIntent, `%${searchTerm}%`),
-              ilike(users.travelerType, `%${searchTerm}%`),
-              ilike(users.diversityCategories, `%${searchTerm}%`),
               // Business profile fields
               ilike(users.businessName, `%${searchTerm}%`),
               ilike(users.businessType, `%${searchTerm}%`),
               ilike(users.businessDescription, `%${searchTerm}%`),
-              ilike(users.websiteUrl, `%${searchTerm}%`),
-              ilike(users.phoneNumber, `%${searchTerm}%`),
-              ilike(users.streetAddress, `%${searchTerm}%`),
               // Location-based keyword search
               ilike(users.location, `%${searchTerm}%`),
               ilike(users.hometownCity, `%${searchTerm}%`),
               ilike(users.hometownState, `%${searchTerm}%`),
               ilike(users.hometownCountry, `%${searchTerm}%`),
-              ilike(users.currentCity, `%${searchTerm}%`),
-              ilike(users.zipCode, `%${searchTerm}%`),
-              // Include users from travel plans, events, and meetups
-              inArray(users.id, travelPlanSubquery),
-              inArray(users.id, eventCreatorSubquery),
-              inArray(users.id, eventAttendeeSubquery),
-              inArray(users.id, quickMeetupCreatorSubquery),
-              inArray(users.id, quickMeetupParticipantSubquery)
+              // Search user's events field (array)
+              sql`array_to_string(${users.events}, ',') ILIKE ${`%${searchTerm}%`}`
             )
           );
         }
@@ -3852,7 +3758,7 @@ Questions? Just reply to this message. Welcome aboard!
         if (activityList.length > 0) {
           whereConditions.push(or(
             ...activityList.map(activity => 
-              ilike(users.activities, `%${activity}%`)
+              sql`array_to_string(${users.activities}, ',') ILIKE ${`%${activity}%`}`
             )
           ));
         }
@@ -3864,7 +3770,7 @@ Questions? Just reply to this message. Welcome aboard!
         if (eventsList.length > 0) {
           whereConditions.push(or(
             ...eventsList.map(event => 
-              ilike(users.events, `%${event}%`)
+              sql`array_to_string(${users.events}, ',') ILIKE ${`%${event}%`}`
             )
           ));
         }
@@ -3890,7 +3796,7 @@ Questions? Just reply to this message. Welcome aboard!
           
           whereConditions.push(or(
             ...interestsList.map(interest => 
-              ilike(users.interests, `%${interest}%`)
+              sql`array_to_string(${users.interests}, ',') ILIKE ${`%${interest}%`}`
             )
           ));
         }
@@ -3916,10 +3822,8 @@ Questions? Just reply to this message. Welcome aboard!
           hometownState: users.hometownState,
           hometownCountry: users.hometownCountry,
           profileImage: users.profileImage,
-          age: users.age,
-          gender: users.gender,
           interests: users.interests,
-          activities: users.activities
+          events: users.events
         })
         .from(users)
         .where(whereConditions.length > 0 ? and(...whereConditions) : eq(sql`1`, 0)) // Return no results if no conditions
