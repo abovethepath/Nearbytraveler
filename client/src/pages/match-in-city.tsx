@@ -845,12 +845,13 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
               
               {/* Right image side - smaller */}
               <div className="md:col-span-2 flex flex-col items-center">
-                {/* Icon representation instead of image */}
-                <div className="relative w-48 h-48 bg-gradient-to-br from-blue-400/20 to-purple-500/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
-                  <div className="text-center">
-                    <MapPin className="w-16 h-16 text-gray-900 dark:text-gray-500 dark:text-gray-400 mx-auto mb-3" />
-                    <div className="text-gray-900 dark:text-gray-500 dark:text-gray-400 text-sm font-medium">Connect in any city</div>
-                  </div>
+                {/* City matching illustration */}
+                <div className="relative w-64 h-48 rounded-2xl overflow-hidden shadow-lg">
+                  <img 
+                    src="@assets/image_1756935226547.png" 
+                    alt="City activity matching illustration showing a person using their phone to connect with local activities and other people in the city"
+                    className="w-full h-full object-contain bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20"
+                  />
                 </div>
               </div>
             </div>
