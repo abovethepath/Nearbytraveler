@@ -1784,7 +1784,6 @@ export default function Home() {
             <div className="text-center mb-4 relative z-10">
               <p className="text-lg md:text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-200 italic leading-tight">
                 <span className="sm:hidden">Travel doesn't change you — people do.</span>
-                <span className="hidden sm:inline">Travel doesn't change you — the people you meet do.</span>
               </p>
             </div>
             
