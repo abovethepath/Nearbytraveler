@@ -270,50 +270,36 @@ export default function DiscoverPage() {
                         </div>
                       </div>
                       
-                      {/* Dynamic Cityscape with Los Angeles */}
-                      <div className="relative w-full h-full bg-gradient-to-br from-orange-400 via-red-500 to-purple-600 overflow-hidden">
-                        {/* Sky gradient */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-blue-400/30"></div>
+                      {/* Real Los Angeles Griffith Observatory Photo */}
+                      <div className="relative w-full h-full overflow-hidden">
+                        <img 
+                          src="/Los_Angeles_1753819372180.jpg"
+                          alt="Los Angeles skyline from Griffith Observatory"
+                          className="w-full h-full object-cover"
+                          loading="eager"
+                        />
                         
-                        {/* Floating event icons with subtle animation */}
-                        <div className="absolute top-6 left-6 text-3xl animate-float" style={{animation: 'float 6s ease-in-out infinite'}}>🎶</div>
-                        <div className="absolute top-12 right-8 text-3xl animate-float" style={{animation: 'float 6s ease-in-out infinite', animationDelay: '1s'}}>🌮</div>
-                        <div className="absolute bottom-20 left-8 text-3xl animate-float" style={{animation: 'float 6s ease-in-out infinite', animationDelay: '2s'}}>🔥</div>
-                        <div className="absolute bottom-16 right-6 text-3xl animate-float" style={{animation: 'float 6s ease-in-out infinite', animationDelay: '3s'}}>🥾</div>
+                        {/* Enhanced gradient overlay for better contrast */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
                         
-                        {/* Floating profile avatars - bubbles */}
-                        <div className="absolute top-1/4 left-1/4 w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg animate-float" style={{animation: 'float 8s ease-in-out infinite', animationDelay: '0.5s'}}>A</div>
-                        <div className="absolute top-1/3 right-1/4 w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg animate-float" style={{animation: 'float 8s ease-in-out infinite', animationDelay: '1.5s'}}>M</div>
-                        <div className="absolute bottom-1/4 left-1/3 w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg animate-float" style={{animation: 'float 8s ease-in-out infinite', animationDelay: '2.5s'}}>J</div>
-                        <div className="absolute bottom-1/3 right-1/3 w-10 h-10 bg-pink-500 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg animate-float" style={{animation: 'float 8s ease-in-out infinite', animationDelay: '3.5s'}}>S</div>
+                        {/* Floating event icons with enhanced backdrop effects */}
+                        <div className="absolute top-6 left-6 text-3xl animate-float drop-shadow-lg" style={{animation: 'float 6s ease-in-out infinite', filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>🎶</div>
+                        <div className="absolute top-12 right-8 text-3xl animate-float drop-shadow-lg" style={{animation: 'float 6s ease-in-out infinite', animationDelay: '1s', filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>🌮</div>
+                        <div className="absolute bottom-20 left-8 text-3xl animate-float drop-shadow-lg" style={{animation: 'float 6s ease-in-out infinite', animationDelay: '2s', filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>🔥</div>
+                        <div className="absolute bottom-16 right-6 text-3xl animate-float drop-shadow-lg" style={{animation: 'float 6s ease-in-out infinite', animationDelay: '3s', filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>🥾</div>
                         
-                        {/* Los Angeles Skyline Silhouette */}
-                        <div className="absolute bottom-0 left-0 right-0 h-24 bg-black/80 overflow-hidden">
-                          <div className="flex items-end justify-center h-full space-x-1 opacity-90">
-                            {/* Downtown LA skyline representation */}
-                            <div className="w-4 h-20 bg-gray-700 rounded-t-sm"></div>
-                            <div className="w-3 h-16 bg-gray-600 rounded-t-sm"></div>
-                            <div className="w-5 h-22 bg-gray-800 rounded-t-sm"></div>
-                            <div className="w-3 h-14 bg-gray-600 rounded-t-sm"></div>
-                            <div className="w-4 h-24 bg-gray-700 rounded-t-sm"></div>
-                            <div className="w-6 h-20 bg-gray-800 rounded-t-sm"></div>
-                            <div className="w-3 h-18 bg-gray-600 rounded-t-sm"></div>
-                            <div className="w-5 h-16 bg-gray-700 rounded-t-sm"></div>
-                            <div className="w-4 h-22 bg-gray-800 rounded-t-sm"></div>
-                            <div className="w-3 h-12 bg-gray-600 rounded-t-sm"></div>
-                            <div className="w-4 h-18 bg-gray-700 rounded-t-sm"></div>
-                            <div className="w-2 h-10 bg-gray-600 rounded-t-sm"></div>
-                          </div>
-                        </div>
+                        {/* Floating profile avatars - enhanced with backdrop blur */}
+                        <div className="absolute top-1/4 left-1/4 w-10 h-10 bg-blue-500/90 backdrop-blur-sm rounded-full flex items-center justify-center text-white text-sm font-bold shadow-xl border border-white/20 animate-float" style={{animation: 'float 8s ease-in-out infinite', animationDelay: '0.5s'}}>A</div>
+                        <div className="absolute top-1/3 right-1/4 w-10 h-10 bg-green-500/90 backdrop-blur-sm rounded-full flex items-center justify-center text-white text-sm font-bold shadow-xl border border-white/20 animate-float" style={{animation: 'float 8s ease-in-out infinite', animationDelay: '1.5s'}}>M</div>
+                        <div className="absolute bottom-1/4 left-1/3 w-10 h-10 bg-purple-500/90 backdrop-blur-sm rounded-full flex items-center justify-center text-white text-sm font-bold shadow-xl border border-white/20 animate-float" style={{animation: 'float 8s ease-in-out infinite', animationDelay: '2.5s'}}>J</div>
+                        <div className="absolute bottom-1/3 right-1/3 w-10 h-10 bg-pink-500/90 backdrop-blur-sm rounded-full flex items-center justify-center text-white text-sm font-bold shadow-xl border border-white/20 animate-float" style={{animation: 'float 8s ease-in-out infinite', animationDelay: '3.5s'}}>S</div>
+                        
                         
                         {/* Subtle city name overlay */}
-                        <div className="absolute bottom-4 left-4 text-white/90 font-bold text-sm bg-black/30 px-2 py-1 rounded">
+                        <div className="absolute bottom-4 left-4 text-white/90 font-bold text-sm bg-black/40 backdrop-blur-sm px-3 py-2 rounded-lg border border-white/20">
                           Los Angeles
                         </div>
                       </div>
-                      
-                      {/* Image overlay for better contrast */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>
                     </div>
                   </div>
                 </div>
