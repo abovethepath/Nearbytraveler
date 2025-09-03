@@ -409,6 +409,12 @@ export default function MatchInCity() {
         }
       } else {
         // Add activity
+        console.log('🚀 Making POST request with:', {
+          activityId: activity.id,
+          cityName: selectedCity,
+          userId: userId.toString()
+        });
+        
         const response = await fetch('/api/user-city-interests', {
           method: 'POST',
           headers: {
@@ -420,6 +426,8 @@ export default function MatchInCity() {
             cityName: selectedCity
           })
         });
+        
+        console.log('📡 Response status:', response.status);
         
         if (response.ok || response.status === 409) {
           // Handle both successful creation (200) and already exists (409) cases
