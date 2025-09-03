@@ -46,3 +46,24 @@ export const USER_TYPE_OPTIONS = [
   "Local", 
   "Business"
 ];
+
+// Traveler type options
+export const TRAVELER_TYPE_OPTIONS = [
+  "Budget Traveler",
+  "Luxury Traveler", 
+  "Business Traveler",
+  "Solo Traveler",
+  "Group Traveler",
+  "Adventure Traveler",
+  "Cultural Traveler",
+  "Digital Nomad"
+];
+
+// Military status options
+export const MILITARY_STATUS_OPTIONS = [
+  "Active Duty",
+  "Veteran",
+  "Civilian",
+  "Military Family",
+  "Prefer not to say"
+];

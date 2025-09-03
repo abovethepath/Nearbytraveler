@@ -126,7 +126,7 @@ export default function ConnectPage() {
   const [hasAdvancedSearched, setHasAdvancedSearched] = useState(false);
 
   // User data queries with proper refetch configuration
-  const { data: userTravelPlans = [], isLoading: isLoadingTravelPlans, refetch: refetchTravelPlans } = useQuery({
+  const { data: userTravelPlans = [], isLoading: isLoadingTravelPlans, refetch: refetchTravelPlans } = useQuery<TravelPlan[]>({
     queryKey: [`/api/travel-plans/${user?.id}`],
     enabled: !!user?.id && typeof user.id === 'number' && !isNaN(user.id),
     staleTime: 0, // Always consider data stale for fresh fetches
@@ -720,7 +720,7 @@ export default function ConnectPage() {
 
                 {searchResults.length > 0 && (
                   <ResponsiveUserGrid 
-                    users={searchResults}
+                    users={searchResults as any}
                     title={`Found ${searchResults.length} ${searchResults.length === 1 ? 'person' : 'people'} in ${searchLocation}`}
                   />
                 )}
@@ -743,7 +743,7 @@ export default function ConnectPage() {
                 {/* Search Results */}
                 {searchResults.length > 0 && (
                   <ResponsiveUserGrid 
-                    users={searchResults}
+                    users={searchResults as any}
                     title={`Found ${searchResults.length} ${searchResults.length === 1 ? 'person' : 'people'} in ${searchLocation}`}
                   />
                 )}

@@ -19,7 +19,9 @@ import { format } from "date-fns";
 import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { authStorage } from "@/lib/auth";
-import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS, USER_TYPE_OPTIONS, TRAVELER_TYPE_OPTIONS, MILITARY_STATUS_OPTIONS } from "../../../shared/base-options";
+import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages } from "../../../shared/base-options";
+import { GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS, USER_TYPE_OPTIONS, TRAVELER_TYPE_OPTIONS, MILITARY_STATUS_OPTIONS } from "@/lib/formConstants";
+import { BASE_TRAVELER_TYPES } from "../../../shared/base-options";
 
 interface User {
   id: number;
@@ -138,7 +140,7 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
   }
 
   // Fetch travel plans if user exists - always call hooks
-  const { data: travelPlans = [] } = useQuery({
+  const { data: travelPlans = [] } = useQuery<TravelPlan[]>({
     queryKey: [`/api/travel-plans/${user?.id}`],
     enabled: !!user?.id && typeof user.id === 'number' && !isNaN(user.id) && isOpen,
   });
