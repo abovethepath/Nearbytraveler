@@ -6162,12 +6162,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             </div>
                           )}
                           
-                          {/* Show connection note for others viewing */}
-                          {!isOwnProfile && connection.connectionNote && (
-                            <div className="mt-2 text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded px-2 py-1">
-                              📍 {connection.connectionNote}
-                            </div>
-                          )}
+                          {/* Connection notes are private - not shown to others */}
                         </div>
 
                         {/* Show the button on ≥sm only; on mobile the whole tile is tappable */}
