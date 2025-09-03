@@ -635,7 +635,178 @@ export class DatabaseStorage implements IStorage {
       hometown: newUser.hometown
     });
     
+    // 🏠 AUTOMATIC CHATROOM ASSIGNMENT: Add new user to appropriate chatrooms
+    try {
+      await this.assignUserToChatrooms(newUser);
+      console.log("✅ CHATROOM ASSIGNMENT: User automatically assigned to chatrooms");
+    } catch (error) {
+      console.error("❌ CHATROOM ASSIGNMENT ERROR:", error);
+      // Don't fail user creation if chatroom assignment fails
+    }
+    
     return newUser;
+  }
+
+  // 🏠 AUTOMATIC CHATROOM ASSIGNMENT SYSTEM
+  async assignUserToChatrooms(user: User): Promise<void> {
+    console.log("🏠 CHATROOM ASSIGNMENT: Starting assignment for user", user.id, user.username);
+    
+    // Import metro area constants
+    const { METRO_AREAS } = await import('@shared/constants');
+    const LA_METRO_AREAS = METRO_AREAS['Los Angeles']?.cities || [];
+    
+    // 1. GLOBAL CHATROOM: Add to "Welcome to Nearby Traveler" 
+    await this.ensureAndJoinChatroom(user, {
+      name: "Welcome to Nearby Traveler",
+      city: "Global",
+      country: "Global",
+      description: "Welcome all new travelers and locals to the Nearby Traveler community!"
+    });
+    
+    // 2. HOMETOWN CHATROOMS: Based on user's hometown
+    let hometownCity = user.hometownCity;
+    let hometownState = user.hometownState;
+    let hometownCountry = user.hometownCountry;
+    
+    // Handle LA Metro consolidation for hometowns
+    if (hometownCountry === 'United States' && hometownCity && LA_METRO_AREAS.includes(hometownCity)) {
+      hometownCity = 'Los Angeles Metro';
+      hometownState = 'California';
+    }
+    
+    if (hometownCity) {
+      // Hometown "Let's meet up in [city]" chatroom
+      await this.ensureAndJoinChatroom(user, {
+        name: `Let's meet up in ${hometownCity}`,
+        city: hometownCity || 'Unknown',
+        state: hometownState,
+        country: hometownCountry || 'United States',
+        description: `Meet fellow travelers and locals in ${hometownCity}!`
+      });
+      
+      // Hometown "Welcome newcomers in [city]" chatroom
+      await this.ensureAndJoinChatroom(user, {
+        name: `Welcome newcomers in ${hometownCity}`,
+        city: hometownCity || 'Unknown',
+        state: hometownState,
+        country: hometownCountry || 'United States',
+        description: `Welcome new travelers and residents to ${hometownCity}!`
+      });
+    }
+    
+    // 3. TRAVEL DESTINATION CHATROOMS: If currently traveling
+    if (user.isCurrentlyTraveling && user.destinationCity) {
+      let destinationCity = user.destinationCity;
+      let destinationState = user.destinationState;
+      let destinationCountry = user.destinationCountry;
+      
+      // Handle LA Metro consolidation for destinations
+      if (destinationCountry === 'United States' && destinationCity && LA_METRO_AREAS.includes(destinationCity)) {
+        destinationCity = 'Los Angeles Metro';
+        destinationState = 'California';
+      }
+      
+      // Destination "Let's meet up in [city]" chatroom
+      await this.ensureAndJoinChatroom(user, {
+        name: `Let's meet up in ${destinationCity}`,
+        city: destinationCity || 'Unknown',
+        state: destinationState,
+        country: destinationCountry || 'United States',
+        description: `Meet fellow travelers and locals in ${destinationCity}!`
+      });
+      
+      // Destination "Welcome newcomers in [city]" chatroom
+      await this.ensureAndJoinChatroom(user, {
+        name: `Welcome newcomers in ${destinationCity}`,
+        city: destinationCity || 'Unknown',
+        state: destinationState,
+        country: destinationCountry || 'United States',
+        description: `Welcome new travelers and residents to ${destinationCity}!`
+      });
+    }
+    
+    console.log("✅ CHATROOM ASSIGNMENT: Completed for user", user.username);
+  }
+  
+  // Helper function to create chatroom if it doesn't exist and add user as member
+  async ensureAndJoinChatroom(user: User, chatroomData: {
+    name: string;
+    city: string;
+    state?: string;
+    country: string;
+    description: string;
+  }): Promise<void> {
+    try {
+      // Check if chatroom already exists
+      const existingChatroom = await db
+        .select()
+        .from(citychatrooms)
+        .where(
+          and(
+            eq(citychatrooms.name, chatroomData.name),
+            eq(citychatrooms.city, chatroomData.city)
+          )
+        )
+        .limit(1);
+      
+      let chatroom;
+      
+      if (existingChatroom.length > 0) {
+        chatroom = existingChatroom[0];
+        console.log("🔄 CHATROOM: Using existing chatroom", chatroom.name);
+      } else {
+        // Create new chatroom
+        const [newChatroom] = await db
+          .insert(citychatrooms)
+          .values({
+            name: chatroomData.name,
+            city: chatroomData.city,
+            state: chatroomData.state,
+            country: chatroomData.country,
+            description: chatroomData.description,
+            createdById: 1, // System user creates these chatrooms
+            isActive: true,
+            isPublic: true,
+            maxMembers: 500
+          })
+          .returning();
+        
+        chatroom = newChatroom;
+        console.log("✨ CHATROOM: Created new chatroom", chatroom.name);
+      }
+      
+      // Check if user is already a member
+      const existingMembership = await db
+        .select()
+        .from(chatroomMembers)
+        .where(
+          and(
+            eq(chatroomMembers.chatroomId, chatroom.id),
+            eq(chatroomMembers.userId, user.id)
+          )
+        )
+        .limit(1);
+      
+      if (existingMembership.length === 0) {
+        // Add user to chatroom
+        await db
+          .insert(chatroomMembers)
+          .values({
+            chatroomId: chatroom.id,
+            userId: user.id,
+            role: 'member',
+            isActive: true
+          });
+        
+        console.log("👥 MEMBERSHIP: Added", user.username, "to chatroom", chatroom.name);
+      } else {
+        console.log("👥 MEMBERSHIP: User", user.username, "already in chatroom", chatroom.name);
+      }
+      
+    } catch (error) {
+      console.error("❌ CHATROOM ASSIGNMENT ERROR for", chatroomData.name, ":", error);
+      throw error;
+    }
   }
 
   async upsertUser(userData: any): Promise<User> {
