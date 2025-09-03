@@ -1886,7 +1886,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
             </DialogContent>
           </Dialog>
         )}
-
       </div>
     </div>
   );
