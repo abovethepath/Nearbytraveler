@@ -1635,6 +1635,187 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
+  // POST /api/cities/ensure - Create/initialize city infrastructure when users travel
+  app.post("/api/cities/ensure", async (req, res) => {
+    try {
+      const { city, state, country } = req.body;
+      
+      if (!city) {
+        return res.status(400).json({ message: "City name is required" });
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`🏙️ ENSURING CITY: ${city}`);
+      
+      // Check if city page already exists
+      const existingCity = await db.select().from(cityPages)
+        .where(and(
+          eq(cityPages.cityName, city),
+          eq(cityPages.state, state || ''),
+          eq(cityPages.country, country || '')
+        )).limit(1);
+      
+      if (existingCity.length === 0) {
+        // Create city page
+        await db.insert(cityPages).values({
+          cityName: city,
+          state: state || '',
+          country: country || '',
+          description: `Discover ${city} and connect with locals and travelers`,
+          heroImage: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        });
+        
+        if (process.env.NODE_ENV === 'development') console.log(`🏙️ CREATED CITY PAGE: ${city}`);
+      }
+      
+      // Ensure city has basic activities (using existing function)
+      try {
+        const { ensureCityHasActivities } = await import('./services/auto-city-setup');
+        await ensureCityHasActivities(city, state, country);
+        if (process.env.NODE_ENV === 'development') console.log(`🏃 ENSURED ACTIVITIES: ${city}`);
+      } catch (error) {
+        console.log(`⚠️ ACTIVITIES SETUP WARNING: ${error}`);
+      }
+      
+      // Create default chatroom if it doesn't exist
+      const existingChatroom = await db.select().from(citychatrooms)
+        .where(and(
+          eq(citychatrooms.city, city),
+          eq(citychatrooms.state, state || ''),
+          eq(citychatrooms.country, country || '')
+        )).limit(1);
+      
+      if (existingChatroom.length === 0) {
+        await db.insert(citychatrooms).values({
+          city: city,
+          state: state || '',
+          country: country || '',
+          name: `${city} General Chat`,
+          description: `Connect with locals and travelers in ${city}`,
+          isPrivate: false,
+          createdAt: new Date()
+        });
+        
+        if (process.env.NODE_ENV === 'development') console.log(`💬 CREATED CHATROOM: ${city}`);
+      }
+      
+      res.json({ 
+        message: "City infrastructure ensured", 
+        city, 
+        state, 
+        country,
+        created: existingCity.length === 0
+      });
+      
+    } catch (error) {
+      console.error('Error ensuring city infrastructure:', error);
+      res.status(500).json({ message: 'Failed to ensure city infrastructure' });
+    }
+  });
+
+  // GET /api/cities/:city/overview - Get city overview data
+  app.get("/api/cities/:city/overview", async (req, res) => {
+    try {
+      const city = decodeURIComponent(req.params.city);
+      const { state, country } = req.query;
+      
+      if (process.env.NODE_ENV === 'development') console.log(`🏙️ CITY OVERVIEW: ${city}`);
+      
+      // Get city page info
+      const cityPage = await db.select().from(cityPages)
+        .where(and(
+          eq(cityPages.cityName, city),
+          eq(cityPages.state, (state as string) || ''),
+          eq(cityPages.country, (country as string) || '')
+        )).limit(1);
+      
+      // Get city stats (reuse existing logic from city-stats endpoint)
+      const [coords, stats] = await Promise.all([
+        Promise.resolve(getCityCoordinates(city)),
+        (async () => {
+          const usersInCity = await storage.getUsersInCity(city, state as string, country as string);
+          const eventsInCity = await storage.getEventsInCity([city]);
+          const businessesInCity = await storage.getBusinessesInCity([city]);
+          
+          return {
+            totalUsers: usersInCity.length,
+            totalEvents: eventsInCity.length,
+            totalBusinesses: businessesInCity.length,
+            locals: usersInCity.filter(u => u.userType === 'local').length,
+            travelers: usersInCity.filter(u => u.userType === 'traveler').length
+          };
+        })()
+      ]);
+      
+      res.json({
+        cityPage: cityPage[0] || null,
+        coordinates: coords,
+        stats,
+        city,
+        state,
+        country
+      });
+      
+    } catch (error) {
+      console.error('Error getting city overview:', error);
+      res.status(500).json({ message: 'Failed to get city overview' });
+    }
+  });
+
+  // GET /api/cities/:city/matches - Get compatibility matches for a city
+  app.get("/api/cities/:city/matches", async (req, res) => {
+    try {
+      const city = decodeURIComponent(req.params.city);
+      const { userId, limit = 20 } = req.query;
+      
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+      
+      if (process.env.NODE_ENV === 'development') console.log(`🔍 CITY MATCHES: ${city} for user ${userId}`);
+      
+      // Get all users in the city
+      const usersInCity = await storage.getUsersInCity(city);
+      const currentUser = await storage.getUser(parseInt(userId as string));
+      
+      if (!currentUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Use existing matching service to get compatibility scores
+      const matchingService = new TravelMatchingService();
+      const matches = [];
+      
+      for (const user of usersInCity) {
+        if (user.id === currentUser.id) continue; // Skip self
+        
+        const compatibility = await matchingService.getCompatibilityData(
+          currentUser,
+          user,
+          usersInCity // Pass all users for context
+        );
+        
+        matches.push({
+          user,
+          compatibility
+        });
+      }
+      
+      // Sort by compatibility score
+      matches.sort((a, b) => (b.compatibility.score || 0) - (a.compatibility.score || 0));
+      
+      // Limit results
+      const limitedMatches = matches.slice(0, parseInt(limit as string));
+      
+      res.json(limitedMatches);
+      
+    } catch (error) {
+      console.error('Error getting city matches:', error);
+      res.status(500).json({ message: 'Failed to get city matches' });
+    }
+  });
+
   // City users endpoint - get all users for a specific city page WITH PROPER LA METRO CONSOLIDATION
   app.get("/api/city/:city/users", async (req, res) => {
     try {
@@ -4769,17 +4950,69 @@ Questions? Just reply to this message. Welcome aboard!
       if (process.env.NODE_ENV === 'development') console.log('=== TRAVEL PLAN CREATED ===');
       if (process.env.NODE_ENV === 'development') console.log('New travel plan:', newTravelPlan);
       
-      // Automatically set up city infrastructure for travel destination
+      // Automatically set up city infrastructure for travel destination using new ensure endpoint
       if (travelPlanData.destinationCity && travelPlanData.destinationCountry) {
         try {
           console.log(`🏙️ AUTO-SETUP: Setting up city infrastructure for travel destination: ${travelPlanData.destinationCity}`);
-          await storage.ensureCityExists(
-            travelPlanData.destinationCity,
-            travelPlanData.destinationState || '',
-            travelPlanData.destinationCountry
-          );
           
-          // Also create city match page for destination
+          // Use our new city ensure logic
+          const city = travelPlanData.destinationCity;
+          const state = travelPlanData.destinationState || '';
+          const country = travelPlanData.destinationCountry;
+          
+          // Check if city page already exists
+          const existingCity = await db.select().from(cityPages)
+            .where(and(
+              eq(cityPages.cityName, city),
+              eq(cityPages.state, state),
+              eq(cityPages.country, country)
+            )).limit(1);
+          
+          if (existingCity.length === 0) {
+            // Create city page
+            await db.insert(cityPages).values({
+              cityName: city,
+              state: state,
+              country: country,
+              description: `Discover ${city} and connect with locals and travelers`,
+              heroImage: null,
+              createdAt: new Date(),
+              updatedAt: new Date()
+            });
+            console.log(`🏙️ CREATED CITY PAGE: ${city}`);
+          }
+          
+          // Ensure city has basic activities
+          try {
+            const { ensureCityHasActivities } = await import('./services/auto-city-setup');
+            await ensureCityHasActivities(city, state, country);
+            console.log(`🏃 ENSURED ACTIVITIES: ${city}`);
+          } catch (error) {
+            console.log(`⚠️ ACTIVITIES SETUP WARNING: ${error}`);
+          }
+          
+          // Create default chatroom if it doesn't exist
+          const existingChatroom = await db.select().from(citychatrooms)
+            .where(and(
+              eq(citychatrooms.city, city),
+              eq(citychatrooms.state, state),
+              eq(citychatrooms.country, country)
+            )).limit(1);
+          
+          if (existingChatroom.length === 0) {
+            await db.insert(citychatrooms).values({
+              city: city,
+              state: state,
+              country: country,
+              name: `${city} General Chat`,
+              description: `Connect with locals and travelers in ${city}`,
+              isPrivate: false,
+              createdAt: new Date()
+            });
+            console.log(`💬 CREATED CHATROOM: ${city}`);
+          }
+          
+          console.log(`✅ CITY INFRASTRUCTURE COMPLETE: ${city}`);
           await storage.ensureCityPageExists(
             travelPlanData.destinationCity,
             travelPlanData.destinationState || null,

@@ -35,9 +35,13 @@ const consolidateToMetroArea = (city: string, state?: string): string => {
   return city; // No consolidation
 };
 
-export default function MatchInCity() {
+interface MatchInCityProps {
+  cityName?: string;
+}
+
+export default function MatchInCity({ cityName }: MatchInCityProps) {
   const [location, setLocation] = useLocation();
-  const [selectedCity, setSelectedCity] = useState<string>('');
+  const [selectedCity, setSelectedCity] = useState<string>(cityName || '');
   const [newActivityName, setNewActivityName] = useState('');
   const [newActivityDescription, setNewActivityDescription] = useState('');
   const [editActivityName, setEditActivityName] = useState('');

@@ -867,6 +867,8 @@ function Router() {
     if (location.startsWith('/city/')) {
       const pathParts = location.split('/');
       const cityName = pathParts[2] ? decodeURIComponent(pathParts[2]) : '';
+      const subPath = pathParts[3]; // e.g., "match", "chatrooms"
+      
       if (!cityName || cityName.trim() === '') {
         return <NotFound />;
       }
@@ -889,12 +891,20 @@ function Router() {
       );
       
       if (isLAMetroCity) {
+        const newPath = subPath ? `/city/Los Angeles Metro/${subPath}` : '/city/Los Angeles Metro';
         console.log(`🌍 METRO CONSOLIDATION: ${cityName} → Los Angeles Metro (preventing separate suburb pages)`);
-        setLocation('/city/Los Angeles Metro');
+        setLocation(newPath);
         return null;
       }
       
-      return <CityPage cityName={cityName} />;
+      // Handle city sub-pages
+      if (subPath === 'match') {
+        return <MatchInCity cityName={cityName} />;
+      } else if (subPath === 'chatrooms') {
+        return <CityChatrooms />;
+      } else {
+        return <CityPage cityName={cityName} />;
+      }
     }
 
     if (location.startsWith('/itinerary/')) {
@@ -973,7 +983,9 @@ function Router() {
       case '/cities':
         return <Discover />;
       case '/match-in-city':
-        return <MatchInCity />;
+        // Redirect to home - this route is deprecated in favor of /city/:city/match
+        setLocation('/');
+        return null;
       case '/share-qr':
         return <ShareQR />;
 
@@ -1071,8 +1083,17 @@ function Router() {
         if (location.startsWith('/city/')) {
           const pathParts = location.split('/');
           const cityName = pathParts[2] ? decodeURIComponent(pathParts[2]) : '';
+          const subPath = pathParts[3]; // e.g., "match", "chatrooms"
+          
           if (cityName && cityName.trim() !== '') {
-            return <CityPage cityName={cityName} />;
+            // Handle city sub-pages
+            if (subPath === 'match') {
+              return <MatchInCity cityName={cityName} />;
+            } else if (subPath === 'chatrooms') {
+              return <CityChatrooms />;
+            } else {
+              return <CityPage cityName={cityName} />;
+            }
           }
         }
 
