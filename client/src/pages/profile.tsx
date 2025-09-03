@@ -267,7 +267,7 @@ interface ExtendedUser extends User {
   specialOffers?: string;
   targetCustomers?: string;
   certifications?: string;
-  customInterests?: string;
+  customInterests: string;
   customActivities?: string;
   customEvents?: string;
 }
@@ -8348,71 +8348,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </div>
             )}
 
-              {/* Location Section - Moved to bottom as requested */}
-              <div className="space-y-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-600">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
-                  {user?.userType === 'business' ? 'Business Location' : 'Hometown Location ** ONLY CHANGE IF YOU MOVE **'}
-                </h3>
-                
-                {/* Business users get street address and ZIP code fields first */}
-                {user?.userType === 'business' && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={profileForm.control}
-                      name="streetAddress"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Street Address</FormLabel>
-                          <FormControl>
-                            <Input 
-                              {...field} 
-                              placeholder="123 Main Street"
-                              className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={profileForm.control}
-                      name="zipCode"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>ZIP Code</FormLabel>
-                          <FormControl>
-                            <Input 
-                              {...field} 
-                              placeholder="12345"
-                              className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                )}
-                
-                {/* Standard location dropdowns for all users */}
-                <SmartLocationInput
-                  city={profileForm.watch('hometownCity') || ''}
-                  state={profileForm.watch('hometownState') || ''}
-                  country={profileForm.watch('hometownCountry') || ''}
-                  onLocationChange={(location) => {
-                    profileForm.setValue('hometownCountry', location.country);
-                    profileForm.setValue('hometownState', location.state);
-                    profileForm.setValue('hometownCity', location.city);
-                  }}
-                  required={false}
-                  placeholder={{
-                    country: user?.userType === 'business' ? "Select your business country" : "Select your hometown country",
-                    state: user?.userType === 'business' ? "Select your business state/region" : "Select your hometown state/region", 
-                    city: user?.userType === 'business' ? "Select your business city" : "Select your hometown city"
-                  }}
-                />
-              </div>
 
               {/* Secret Local Things - Moved to end for better bio flow */}
               {user?.userType !== 'business' && (
@@ -9067,6 +9002,71 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Location Change Section - At bottom of profile page for moving */}
+      {isOwnProfile && (
+        <div className="max-w-4xl mx-auto px-4 pb-8">
+          <Card className="bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-700">
+            <CardContent className="p-6">
+              <div className="flex items-start gap-4">
+                <div className="bg-yellow-100 dark:bg-yellow-800/30 rounded-lg p-3">
+                  <MapPin className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    Moving to a New City?
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                    Only change your hometown if you're permanently relocating. This affects your local community connections.
+                  </p>
+                  
+                  <div className="space-y-4">
+                    <div className="text-sm">
+                      <span className="font-medium text-gray-700 dark:text-gray-200">Current Location: </span>
+                      <span className="text-gray-600 dark:text-gray-300">
+                        {user?.hometownCity}, {user?.hometownState}, {user?.hometownCountry}
+                      </span>
+                    </div>
+                    
+                    <SmartLocationInput
+                      value={{
+                        country: user?.hometownCountry || '',
+                        state: user?.hometownState || '',
+                        city: user?.hometownCity || ''
+                      }}
+                      onChange={(location) => {
+                        // Update the user location directly via API
+                        const updateData = {
+                          hometownCountry: location.country,
+                          hometownState: location.state,
+                          hometownCity: location.city,
+                          location: [location.city, location.state, location.country].filter(Boolean).join(', ')
+                        };
+                        
+                        // Use the existing edit profile mutation
+                        editProfile.mutate(updateData, {
+                          onSuccess: () => {
+                            toast({
+                              title: "Location updated successfully",
+                              description: "Your hometown has been changed. You'll now see local content for your new city.",
+                            });
+                          }
+                        });
+                      }}
+                      placeholder={{
+                        country: 'Select new country',
+                        state: 'Select new state/territory', 
+                        city: 'Select new city'
+                      }}
+                      containerClassName="space-y-2"
+                    />
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
       </div>
     </>
   );
