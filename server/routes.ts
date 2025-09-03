@@ -4767,7 +4767,15 @@ Questions? Just reply to this message. Welcome aboard!
             travelPlanData.destinationState || '',
             travelPlanData.destinationCountry
           );
-          console.log(`✅ AUTO-SETUP: City infrastructure ready for ${travelPlanData.destinationCity}`);
+          
+          // Also create city match page for destination
+          await storage.ensureCityPageExists(
+            travelPlanData.destinationCity,
+            travelPlanData.destinationState || null,
+            travelPlanData.destinationCountry,
+            travelPlanData.userId
+          );
+          console.log(`✅ AUTO-SETUP: City page and infrastructure ready for ${travelPlanData.destinationCity}`);
         } catch (error) {
           console.error('❌ AUTO-SETUP: Failed to set up city infrastructure:', error);
         }
