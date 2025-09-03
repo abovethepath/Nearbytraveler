@@ -462,6 +462,15 @@ export class DatabaseStorage implements IStorage {
     }
   ];
 
+  // Helper method to format dates for API responses to prevent timezone shifts
+  private formatDateForAPI(date: Date): string {
+    // Convert to local date string and add midnight UTC time to prevent shifts
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}T00:00:00.000Z`;
+  }
+
   // LA METRO CONSOLIDATION ENABLED: Consolidate LA cities to "Los Angeles Metro" as required
   private consolidateToMetropolitanArea(city: string, state?: string | null, country?: string | null): string {
     if (!city) return city;
@@ -1983,7 +1992,13 @@ export class DatabaseStorage implements IStorage {
         .where(eq(travelPlans.userId, userId))
         .orderBy(desc(travelPlans.startDate));
 
-      return plans;
+      // Fix timezone issue - format dates to prevent timezone shifts
+      return plans.map(plan => ({
+        ...plan,
+        startDate: plan.startDate ? this.formatDateForAPI(plan.startDate) : null,
+        endDate: plan.endDate ? this.formatDateForAPI(plan.endDate) : null,
+        createdAt: plan.createdAt ? plan.createdAt.toISOString() : null
+      }));
     } catch (error) {
       console.error('Error fetching travel plans with itineraries:', error);
       return [];
