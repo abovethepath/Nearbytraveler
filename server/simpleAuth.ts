@@ -79,17 +79,7 @@ export function setupSimpleAuth(app: Express) {
     });
   });
 
-  // Check authentication status
-  app.get("/api/auth/user", (req, res) => {
-    const user = (req as any).session.user;
-    if (user) {
-      console.log("✅ Auth check: User is logged in:", user.username);
-      res.json(user);
-    } else {
-      console.log("❌ Auth check: No user session found");
-      res.status(401).json({ message: "Not authenticated" });
-    }
-  });
+  // Auth check is handled in main routes.ts file
 
   console.log("🔐 Simple authentication routes set up successfully");
 }
