@@ -5475,28 +5475,30 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             }, 100);
                           }}
                         >
-                          <div className="flex items-start justify-between mb-2 sm:flex-row flex-col gap-2 sm:gap-0">
+                          <div className="flex items-start justify-between mb-3 sm:flex-row flex-col gap-3 sm:gap-0">
                             <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
+                              <div className="flex items-center flex-wrap gap-3 mb-2">
                                 <h4 className="font-medium text-sm">{plan.destination}</h4>
-                                {plan.status === 'active' && (
-                                  <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
-                                    ✈️ Currently Traveling
-                                  </div>
-                                )}
-                                {plan.status === 'planned' && (
-                                  <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-orange-500 text-white border-0 appearance-none select-none gap-1">
-                                    📅 Upcoming
-                                  </div>
-                                )}
+                                <div className="flex items-center gap-2">
+                                  {plan.status === 'active' && (
+                                    <div className="inline-flex items-center justify-center h-7 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+                                      ✈️ Currently Traveling
+                                    </div>
+                                  )}
+                                  {plan.status === 'planned' && (
+                                    <div className="inline-flex items-center justify-center h-7 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-orange-500 text-white border-0 appearance-none select-none gap-1">
+                                      📅 Upcoming
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                               <p className="text-black dark:text-white text-xs mb-1 font-medium">
                                 {plan.startDate ? formatDateForDisplay(plan.startDate, user?.hometownCity || 'UTC') : 'Start date TBD'} - {plan.endDate ? formatDateForDisplay(plan.endDate, user?.hometownCity || 'UTC') : 'End date TBD'}
                               </p>
                             </div>
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-2">
                               {isOwnProfile && (
-                                <div className="flex gap-1 sm:flex-row flex-col sm:items-center">
+                                <div className="flex gap-2 sm:flex-row flex-col sm:items-center">
                                   <Button
                                     size="sm"
                                     variant="outline"
@@ -5504,7 +5506,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       e.stopPropagation();
                                       setLocation(`/plan-trip?edit=${plan.id}`);
                                     }}
-                                    className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600 h-6 w-6 p-0 sm:w-6 w-full sm:mb-0 mb-1"
+                                    className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600 h-7 w-7 p-0 sm:w-7 w-full sm:mb-0 mb-1"
                                   >
                                     <Edit className="w-3 h-3" />
                                     <span className="ml-1 text-xs sm:hidden">Edit</span>
@@ -5515,9 +5517,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       e.stopPropagation();
                                       setLocation(`/itinerary/${plan.id}`);
                                     }}
-                                    className="bg-gradient-to-r from-blue-600 to-orange-600 text-white hover:opacity-90 h-6 text-xs px-2 sm:mb-0 mb-1 whitespace-nowrap"
+                                    className="bg-gradient-to-r from-blue-600 to-orange-600 text-white hover:opacity-90 h-7 text-xs px-3 sm:mb-0 mb-1 whitespace-nowrap flex items-center gap-1"
                                   >
-                                    <Calendar className="w-3 h-3 mr-1" />
+                                    <Calendar className="w-3 h-3" />
                                     Itinerary
                                   </Button>
                                   <Button
@@ -5527,7 +5529,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       e.stopPropagation();
                                       handleDeleteTravelPlan(plan);
                                     }}
-                                    className="text-red-600 hover:text-red-700 hover:bg-red-50 h-6 w-6 p-0 sm:w-6 w-full"
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50 h-7 w-7 p-0 sm:w-7 w-full"
                                   >
                                     <Trash2 className="w-3 h-3" />
                                     <span className="ml-1 text-xs sm:hidden">Delete</span>
