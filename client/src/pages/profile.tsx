@@ -3988,10 +3988,32 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {user?.userType !== 'business' && (
             <Card>
               <CardHeader className="pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
-                <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
-                  <Heart className="w-5 h-5 text-red-500" />
-                  Local Interests, Activities & Events
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                    <Heart className="w-5 h-5 text-red-500" />
+                    Local Interests, Activities & Events
+                  </CardTitle>
+                  {isOwnProfile && !(editingInterests && editingActivities && editingEvents) && (
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setEditingInterests(true);
+                        setEditingActivities(true);
+                        setEditingEvents(true);
+                        // Initialize edit form data
+                        setEditFormData({
+                          interests: user?.interests || [],
+                          activities: user?.activities || [],
+                          events: user?.events || []
+                        });
+                      }}
+                      className="bg-green-600 hover:bg-green-700 text-white border-0 shadow-sm"
+                    >
+                      <Edit className="w-3 h-3 mr-1" />
+                      Edit All Preferences
+                    </Button>
+                  )}
+                </div>
               </CardHeader>
               <CardContent className="space-y-6 px-4 sm:px-6 pb-4 sm:pb-6 break-words overflow-hidden">
 
@@ -4382,29 +4404,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
 
 
-                {/* Edit All Preferences Button */}
-                {isOwnProfile && !(editingInterests && editingActivities && editingEvents) && (
-                  <div className="mb-4">
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        setEditingInterests(true);
-                        setEditingActivities(true);
-                        setEditingEvents(true);
-                        // Initialize edit form data
-                        setEditFormData({
-                          interests: user?.interests || [],
-                          activities: user?.activities || [],
-                          events: user?.events || []
-                        });
-                      }}
-                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0"
-                    >
-                      <Edit className="w-3 h-3 mr-1" />
-                      Edit All Preferences
-                    </Button>
-                  </div>
-                )}
 
                 {/* Interests */}
                 <div className="mb-6">
