@@ -140,7 +140,8 @@ export default function Register({ onSuccess, onBack }: RegisterProps) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="local">Local</SelectItem>
-                    <SelectItem value="business">Business</SelectItem>
+                    {/* Hidden for beta launch */}
+                    {/* <SelectItem value="business">Business</SelectItem> */}
                   </SelectContent>
                 </Select>
               </div>

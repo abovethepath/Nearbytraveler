@@ -349,7 +349,8 @@ export default function UnifiedSignup() {
                           </div>
                         </div>
                       </SelectItem>
-                      <SelectItem value="business">
+                      {/* Hidden for beta launch */}
+                      {/* <SelectItem value="business">
                         <div className="flex items-center space-x-2">
                           <Building2 className="w-4 h-4" />
                           <div>
@@ -357,7 +358,7 @@ export default function UnifiedSignup() {
                             <div className="text-xs text-gray-500">I offer travel-related services or experiences</div>
                           </div>
                         </div>
-                      </SelectItem>
+                      </SelectItem> */}
                     </SelectContent>
                   </Select>
                 </div>

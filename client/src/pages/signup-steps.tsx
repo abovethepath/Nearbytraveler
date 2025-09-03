@@ -423,7 +423,7 @@ export default function SignupSteps() {
                   {[
                     { type: "local", icon: User, title: "Nearby Local", desc: "I live here and want to meet travelers" },
                     { type: "traveler", icon: Plane, title: "Traveling Now", desc: "I'm currently traveling and want to meet locals" },
-                    { type: "business", icon: Building, title: "Nearby Business", desc: "I offer travel services" }
+                    // { type: "business", icon: Building, title: "Nearby Business", desc: "I offer travel services" } // Hidden for beta launch
                   ].map(({ type, icon: Icon, title, desc }) => (
                     <div
                       key={type}

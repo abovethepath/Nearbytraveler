@@ -157,7 +157,8 @@ export default function JoinNowWidget() {
                 <SelectContent>
                   <SelectItem value="local">Nearby Local (Not Traveling Now)</SelectItem>
                   <SelectItem value="currently_traveling">Currently Traveling</SelectItem>
-                  <SelectItem value="business">Nearby Business</SelectItem>
+                  {/* Hidden for beta launch */}
+                  {/* <SelectItem value="business">Nearby Business</SelectItem> */}
                 </SelectContent>
               </Select>
             </div>
