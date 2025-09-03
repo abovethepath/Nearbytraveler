@@ -3667,7 +3667,7 @@ Questions? Just reply to this message. Welcome aboard!
 
           // Create a subquery to find users who created events matching this term
           const eventCreatorSubquery = db
-            .selectDistinct({ userId: events.createdBy })
+            .selectDistinct({ userId: events.organizerId })
             .from(events)
             .where(
               or(

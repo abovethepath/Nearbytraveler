@@ -28,10 +28,10 @@ export function setupSimpleAuth(app: Express) {
     
     // Create user session directly for development
     const userInfo = {
-      id: "2", // Use existing nearbytraveler user ID from database
-      username: "nearbytraveler", 
-      email: "nearbytraveler@thenearbytraveler.com",
-      profileImageUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=nearbytraveler"
+      id: "2", // Use existing nearbytrav user ID from database
+      username: "nearbytrav", 
+      email: "nearbytrav@thenearbytraveler.com",
+      profileImageUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=nearbytrav"
     };
 
     // Store user session
@@ -55,10 +55,10 @@ export function setupSimpleAuth(app: Express) {
     
     // Create user session directly for development
     const userInfo = {
-      id: "2", // Use existing nearbytraveler user ID from database
-      username: "nearbytraveler", 
-      email: "nearbytraveler@thenearbytraveler.com",
-      profileImageUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=nearbytraveler"
+      id: "2", // Use existing nearbytrav user ID from database
+      username: "nearbytrav", 
+      email: "nearbytrav@thenearbytraveler.com",
+      profileImageUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=nearbytrav"
     };
 
     // Store user session
