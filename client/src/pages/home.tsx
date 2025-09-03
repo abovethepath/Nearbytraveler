@@ -1796,7 +1796,7 @@ export default function Home() {
               {/* Main image */}
               <div className="relative w-full max-w-sm sm:max-w-md h-[240px] sm:h-[280px] md:h-[320px] lg:h-[380px] rounded-2xl overflow-hidden shadow-2xl border border-gray-200/50 dark:border-gray-700/50 transform group-hover:scale-[1.02] transition-all duration-500">
                 <img
-                  src={heroImagePath}
+                  src={staticHeroImage}
                   alt="Travelers connecting at coffee shop"
                   className="w-full h-full object-cover"
                 />
