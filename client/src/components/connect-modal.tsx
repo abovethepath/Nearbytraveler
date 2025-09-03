@@ -374,9 +374,9 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
   const handleFilterToggle = (type: keyof SearchFilters, value: string) => {
     setSearchFilters(prev => ({
       ...prev,
-      [type]: prev[type].includes(value) 
-        ? prev[type].filter(item => item !== value)
-        : [...prev[type], value]
+      [type]: (prev[type] as string[]).includes(value) 
+        ? (prev[type] as string[]).filter((item: string) => item !== value)
+        : [...(prev[type] as string[]), value]
     }));
   };
 
@@ -386,13 +386,14 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
   };
 
   const addCustomItem = (type: keyof SearchFilters) => {
-    const value = customInputs[type].trim();
-    if (value && !searchFilters[type].includes(value)) {
+    const customKey = type as keyof typeof customInputs;
+    const value = customInputs[customKey]?.trim() || '';
+    if (value && !(searchFilters[type] as string[]).includes(value)) {
       setSearchFilters(prev => ({
         ...prev,
-        [type]: [...prev[type], value]
+        [type]: [...(prev[type] as string[]), value]
       }));
-      setCustomInputs(prev => ({ ...prev, [type]: "" }));
+      setCustomInputs(prev => ({ ...prev, [customKey]: "" }));
     }
   };
 
