@@ -68,6 +68,20 @@ export default function MatchInCity() {
   
   const user = getUserData() || authUser;
   
+  // Navigation function to go to profile "Things I Want to Do" section
+  const navigateToThingsIWantToDo = () => {
+    // Navigate to profile page
+    setLocation('/profile');
+    // Wait a bit for the page to load, then scroll to the section
+    setTimeout(() => {
+      const section = document.querySelector('[data-section="things-i-want-to-do"]') ||
+                     document.querySelector('h2:has-text("Things I Want to Do")') ||
+                     document.querySelector('[data-testid="things-i-want-to-do-section"]');
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 500);
+  };
 
   const [allCities, setAllCities] = useState<any[]>([]);
   const [filteredCities, setFilteredCities] = useState<any[]>([]);
@@ -1042,7 +1056,7 @@ export default function MatchInCity() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button
-                          onClick={() => toggleActivity(activity)}
+                          onClick={() => navigateToThingsIWantToDo()}
                           className="px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-sm hover:shadow-md border border-blue-400/20"
                           style={{ color: '#ffffff !important' }}
                         >
@@ -1090,21 +1104,7 @@ export default function MatchInCity() {
 
             {/* Add new activity */}
             <button
-              onClick={() => {
-                // Scroll to the text input section
-                const addActivitySection = document.querySelector('[data-add-activity-section]');
-                if (addActivitySection) {
-                  addActivitySection.scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'center' 
-                  });
-                  // Focus the input field after scrolling
-                  setTimeout(() => {
-                    const input = addActivitySection.querySelector('input');
-                    if (input) input.focus();
-                  }, 500);
-                }
-              }}
+              onClick={() => navigateToThingsIWantToDo()}
               className="px-3 py-1.5 rounded-full text-sm font-medium bg-gray-600 hover:bg-gray-500 text-white border-2 border-dashed border-gray-400"
             >
               + Add Activity
@@ -1188,7 +1188,7 @@ export default function MatchInCity() {
                         <TooltipTrigger asChild>
                           <div className="flex items-center gap-2">
                             <button
-                              onClick={() => handleEventClick(event)}
+                              onClick={() => navigateToThingsIWantToDo()}
                               className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1 cursor-pointer hover:shadow-md ${
                                 isActive 
                                   ? 'bg-gradient-to-r from-green-500 to-green-600 shadow-lg border border-green-400/20' 
@@ -1204,10 +1204,7 @@ export default function MatchInCity() {
                               <Info className="w-3 h-3 ml-1 opacity-60" />
                             </button>
                             <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleEvent(event);
-                              }}
+                              onClick={() => navigateToThingsIWantToDo()}
                               className={`w-6 h-6 rounded-full text-xs font-bold transition-all duration-200 ${
                                 isActive 
                                   ? 'bg-green-600 text-white' 
@@ -1354,7 +1351,11 @@ export default function MatchInCity() {
               ) : (
                 <div className="space-y-3">
                   {(matchingUsers || []).slice(0, 5).map((user: any, index: number) => (
-                    <div key={user.id || index} className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
+                    <div 
+                      key={user.id || index} 
+                      className="flex items-center gap-3 p-3 bg-white/5 rounded-lg cursor-pointer hover:bg-white/10 transition-colors"
+                      onClick={() => navigateToThingsIWantToDo()}
+                    >
                       <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
                         {user.username?.[0]?.toUpperCase() || '?'}
                       </div>
@@ -1391,13 +1392,21 @@ export default function MatchInCity() {
                         
                         if (isConnected || isNearbyTraveler) {
                           return (
-                            <Button size="sm" className="bg-green-500 hover:bg-green-600 text-white" disabled>
+                            <Button 
+                              size="sm" 
+                              className="bg-green-500 hover:bg-green-600 text-white" 
+                              onClick={() => navigateToThingsIWantToDo()}
+                            >
                               Connected
                             </Button>
                           );
                         }
                         return (
-                          <Button size="sm" className="bg-blue-500 hover:bg-blue-600 text-white">
+                          <Button 
+                            size="sm" 
+                            className="bg-blue-500 hover:bg-blue-600 text-white"
+                            onClick={() => navigateToThingsIWantToDo()}
+                          >
                             Connect
                           </Button>
                         );

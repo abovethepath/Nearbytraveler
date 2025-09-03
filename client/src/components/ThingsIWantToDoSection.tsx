@@ -286,7 +286,11 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
 
   return (
     <div className={`bg-slate-100 dark:bg-gray-800 rounded-lg ${isMobile ? 'p-4' : 'p-6'}`}>
-      <h2 className={`font-semibold text-gray-900 dark:text-white mb-4 ${isMobile ? 'text-base' : 'text-lg'}`}>
+      <h2 
+        className={`font-semibold text-gray-900 dark:text-white mb-4 ${isMobile ? 'text-base' : 'text-lg'}`}
+        data-testid="things-i-want-to-do-section"
+        data-section="things-i-want-to-do"
+      >
         ⭐ Things I Want to Do in...
       </h2>
 
