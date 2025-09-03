@@ -478,9 +478,9 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                 {advancedSearchResults.map((user) => (
                   <Card key={user.id} className="hover:shadow-md transition-shadow">
                     <CardContent className="p-4">
-                      <div className="flex items-start gap-4">
+                      <div className="flex flex-col sm:flex-row items-start gap-4">
                         <div 
-                          className="w-12 h-12 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center cursor-pointer"
+                          className="w-12 h-12 sm:w-12 sm:h-12 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center cursor-pointer shrink-0"
                           onClick={() => window.open(`/profile/${user.id}`, '_blank')}
                         >
                           {user.profileImage ? (
@@ -534,12 +534,12 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                             )}
                           </div>
                         </div>
-                        <div className="flex flex-col gap-2">
+                        <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto">
                           <Button
                             size="sm"
                             onClick={() => sendConnectionMutation.mutate(user.id)}
                             disabled={sendConnectionMutation.isPending}
-                            className="bg-blue-600 hover:bg-blue-700 text-white"
+                            className="bg-blue-600 hover:bg-blue-700 text-white flex-1 sm:flex-none"
                           >
                             <UserPlus className="w-4 h-4 mr-1" />
                             Connect
@@ -548,7 +548,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                             size="sm"
                             variant="outline"
                             onClick={() => window.open(`/messages?userId=${user.id}`, '_blank')}
-                            className="border-gray-300 dark:border-gray-600"
+                            className="border-gray-300 dark:border-gray-600 flex-1 sm:flex-none"
                           >
                             Message
                           </Button>
