@@ -72,21 +72,21 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     console.log('🎯 ThingsIWantToDoSection events data:', { 
       userId, 
       rawJoinedEvents: joinedEvents, 
-      joinedEventsCount: joinedEvents?.length,
+      joinedEventsCount: Array.isArray(joinedEvents) ? joinedEvents.length : 0,
       rawEventInterests: eventInterestsData,
-      eventInterestsCount: eventInterestsData?.length,
-      firstJoinedEventSample: joinedEvents?.[0] ? {
-        id: joinedEvents[0].id,
-        title: joinedEvents[0].title,
-        eventTitle: joinedEvents[0].eventTitle,
-        cityName: joinedEvents[0].cityName,
-        location: joinedEvents[0].location,
+      eventInterestsCount: Array.isArray(eventInterestsData) ? eventInterestsData.length : 0,
+      firstJoinedEventSample: Array.isArray(joinedEvents) && joinedEvents[0] ? {
+        id: joinedEvents[0]?.id,
+        title: joinedEvents[0]?.title,
+        eventTitle: joinedEvents[0]?.eventTitle,
+        cityName: joinedEvents[0]?.cityName,
+        location: joinedEvents[0]?.location,
         allKeys: Object.keys(joinedEvents[0])
       } : null,
-      firstEventInterestSample: eventInterestsData?.[0] ? {
-        id: eventInterestsData[0].id,
-        eventTitle: eventInterestsData[0].eventtitle || eventInterestsData[0].eventTitle,
-        cityName: eventInterestsData[0].cityname || eventInterestsData[0].cityName,
+      firstEventInterestSample: Array.isArray(eventInterestsData) && eventInterestsData[0] ? {
+        id: eventInterestsData[0]?.id,
+        eventTitle: eventInterestsData[0]?.eventtitle || eventInterestsData[0]?.eventTitle,
+        cityName: eventInterestsData[0]?.cityname || eventInterestsData[0]?.cityName,
         allKeys: Object.keys(eventInterestsData[0])
       } : null
     });
@@ -233,7 +233,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
       
       if (!cityName && event.location) {
         // Try to extract city from location string like "Hollywood Bowl, Los Angeles" or "3200 The Strand, Manhattan Beach, California"
-        const locationParts = event.location.split(',').map(part => part.trim()).filter(part => part && part !== 'undefined');
+        const locationParts = event.location.split(',').map((part: string) => part.trim()).filter((part: string) => part && part !== 'undefined');
         
         if (locationParts.length >= 3) {
           // Format: "Address, City, State" - take the middle part (city)
@@ -243,7 +243,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
           cityName = locationParts[1];
         } else if (locationParts.length === 1) {
           // Single location string - try to extract from words
-          const words = locationParts[0].split(' ').filter(word => word && word !== 'undefined');
+          const words = locationParts[0].split(' ').filter((word: string) => word && word !== 'undefined');
           // Look for city names in the string
           cityName = words[words.length - 1] || 'Other';
         } else {
@@ -352,7 +352,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                       <div className={`inline-flex items-center justify-center h-6 min-w-[4rem] rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5 ${
                         isMobile ? 'min-h-[44px] flex items-center' : ''
                       }`}>
-                        📅 {event.eventTitle || event.title}
+                        📅 {event.eventTitle || (event as any).title}
                       </div>
                       {isOwnProfile && (
                         <button
