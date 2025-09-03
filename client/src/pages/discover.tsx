@@ -282,17 +282,6 @@ export default function DiscoverPage() {
                         {/* Enhanced gradient overlay for better contrast */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
                         
-                        {/* Floating event icons with enhanced backdrop effects */}
-                        <div className="absolute top-6 left-6 text-3xl animate-float drop-shadow-lg" style={{animation: 'float 6s ease-in-out infinite', filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>🎶</div>
-                        <div className="absolute top-12 right-8 text-3xl animate-float drop-shadow-lg" style={{animation: 'float 6s ease-in-out infinite', animationDelay: '1s', filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>🌮</div>
-                        <div className="absolute bottom-20 left-8 text-3xl animate-float drop-shadow-lg" style={{animation: 'float 6s ease-in-out infinite', animationDelay: '2s', filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>🔥</div>
-                        <div className="absolute bottom-16 right-6 text-3xl animate-float drop-shadow-lg" style={{animation: 'float 6s ease-in-out infinite', animationDelay: '3s', filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.5))'}}>🥾</div>
-                        
-                        {/* Floating profile avatars - enhanced with backdrop blur */}
-                        <div className="absolute top-1/4 left-1/4 w-10 h-10 bg-blue-500/90 backdrop-blur-sm rounded-full flex items-center justify-center text-white text-sm font-bold shadow-xl border border-white/20 animate-float" style={{animation: 'float 8s ease-in-out infinite', animationDelay: '0.5s'}}>A</div>
-                        <div className="absolute top-1/3 right-1/4 w-10 h-10 bg-green-500/90 backdrop-blur-sm rounded-full flex items-center justify-center text-white text-sm font-bold shadow-xl border border-white/20 animate-float" style={{animation: 'float 8s ease-in-out infinite', animationDelay: '1.5s'}}>M</div>
-                        <div className="absolute bottom-1/4 left-1/3 w-10 h-10 bg-purple-500/90 backdrop-blur-sm rounded-full flex items-center justify-center text-white text-sm font-bold shadow-xl border border-white/20 animate-float" style={{animation: 'float 8s ease-in-out infinite', animationDelay: '2.5s'}}>J</div>
-                        <div className="absolute bottom-1/3 right-1/3 w-10 h-10 bg-pink-500/90 backdrop-blur-sm rounded-full flex items-center justify-center text-white text-sm font-bold shadow-xl border border-white/20 animate-float" style={{animation: 'float 8s ease-in-out infinite', animationDelay: '3.5s'}}>S</div>
                         
                         
                         {/* Subtle city name overlay */}
