@@ -5576,7 +5576,12 @@ Questions? Just reply to this message. Welcome aboard!
           if (event.organizerId && event.organizerId > 0) {
             const organizerUser = await storage.getUser(event.organizerId);
             if (organizerUser) {
-              organizer = organizerUser.username; // Use username instead of business name
+              // Check if this is an API-generated event by specific organizer usernames
+              if (organizerUser.username === 'nearbytravlr' || organizerUser.username === 'api_events' || organizerUser.username === 'ai_events') {
+                organizer = "Outside of the Website";
+              } else {
+                organizer = organizerUser.username; // Use username for real member-created events
+              }
             }
           }
           
@@ -5815,7 +5820,12 @@ Questions? Just reply to this message. Welcome aboard!
       if (event.organizerId && event.organizerId > 0) {
         const organizerUser = await storage.getUser(event.organizerId);
         if (organizerUser) {
-          organizer = organizerUser.username; // Use username instead of business name
+          // Check if this is an API-generated event by specific organizer usernames
+          if (organizerUser.username === 'nearbytravlr' || organizerUser.username === 'api_events' || organizerUser.username === 'ai_events') {
+            organizer = "Outside of the Website";
+          } else {
+            organizer = organizerUser.username; // Use username for real member-created events
+          }
         }
       }
       

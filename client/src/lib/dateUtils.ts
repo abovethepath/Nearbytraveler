@@ -195,15 +195,9 @@ export function parseInputDate(dateString: string): Date {
 /**
  * Check if a user is currently traveling based on their travel plans
  * CRITICAL: Users only become NEARBY TRAVELERS when trip dates are active
- * Returns destination object with consistent field naming, null if not traveling
+ * Returns destination string for display, null if not traveling
  */
-export function getCurrentTravelDestination(travelPlans: any[]): {
-  destinationCity: string;
-  destinationState?: string;
-  destinationCountry: string;
-  startDate: string;
-  endDate: string;
-} | null {
+export function getCurrentTravelDestination(travelPlans: any[]): string | null {
   if (!travelPlans || !Array.isArray(travelPlans) || travelPlans.length === 0) return null;
   
   const today = new Date();
@@ -244,13 +238,7 @@ export function getCurrentTravelDestination(travelPlans: any[]): {
         const destinationParts = plan.destination.split(', ');
         const [destinationCity, destinationState = null, destinationCountry] = destinationParts;
         
-        return {
-          destinationCity: destinationCity,
-          destinationState: destinationState,
-          destinationCountry: destinationCountry || destinationParts[destinationParts.length - 1],
-          startDate: plan.startDate,
-          endDate: plan.endDate
-        };
+        return plan.destination; // Return the full destination string for display
       }
     }
   }
