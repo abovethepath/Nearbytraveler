@@ -1566,8 +1566,8 @@ export default function Home() {
 <section className="bg-white dark:bg-gray-900 py-8 sm:py-12 lg:py-16">
   <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
     
-    {/* Title above photo - black text */}
-    <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-black dark:text-white leading-tight mb-8">
+    {/* Title above photo - black text - Mobile optimized */}
+    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-black dark:text-white leading-tight mb-6 sm:mb-8 px-2">
       {effectiveUser?.userType === "business" ? (
         <>
           Connect Your Business with Travelers & Locals
@@ -1579,9 +1579,9 @@ export default function Home() {
       )}
     </h1>
     
-    {/* Photo in the middle */}
-    <div className="mb-8 flex justify-center">
-      <div className="relative w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl">
+    {/* Photo in the middle - Mobile optimized */}
+    <div className="mb-6 sm:mb-8 flex justify-center px-4 sm:px-0">
+      <div className="relative w-full max-w-sm sm:max-w-lg lg:max-w-2xl rounded-xl sm:rounded-2xl overflow-hidden shadow-xl sm:shadow-2xl">
         <img 
           src="/travelers coffee_1750995178947.png"
           alt="Travelers connecting at coffee shop"
@@ -1591,8 +1591,8 @@ export default function Home() {
       </div>
     </div>
     
-    {/* Smaller descriptive text below photo */}
-    <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-3xl mx-auto">
+    {/* Smaller descriptive text below photo - Mobile optimized */}
+    <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl sm:max-w-3xl mx-auto px-4 sm:px-0">
       {effectiveUser?.userType === "business"
         ? "Reach customers through interest-based matching, business notifications, and location-targeted discovery."
         : "Discover amazing experiences & make meaningful connections based on demographics, activities, interests, and events."}
