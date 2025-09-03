@@ -187,7 +187,20 @@ const EventsGrid = ({
           const attendeeCount = Math.max(event.attendeeCount || 0, 1);
           
           return (
-            <Card key={event.id} className="bg-slate-800 border-slate-700 hover:bg-slate-750 transition-colors overflow-hidden">
+            <Card 
+              key={event.id} 
+              className="bg-slate-800 border-slate-700 hover:bg-slate-750 transition-colors overflow-hidden cursor-pointer hover:shadow-lg"
+              onClick={() => {
+                // Check if it's an external event (has eventUrl)
+                if (event.eventUrl && event.eventUrl.startsWith('http')) {
+                  // Open external event directly
+                  window.open(event.eventUrl, '_blank');
+                } else {
+                  // Navigate to internal event details
+                  setNavigationLocation(`/events/${event.id}`);
+                }
+              }}
+            >
               {/* Large Event Photo - Like Business Cards */}
               <div className="relative h-40 bg-slate-700 overflow-hidden">
                 {event.imageUrl ? (
@@ -260,7 +273,8 @@ const EventsGrid = ({
                 {/* Action Button - Like business "View Business" */}
                 <Button 
                   className="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-2"
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     // Check if it's an external event (has eventUrl)
                     if (event.eventUrl && event.eventUrl.startsWith('http')) {
                       // Open external event directly

@@ -148,7 +148,10 @@ export default function LocationSortedEvents({
   };
 
   const EventCard = ({ event }: { event: Event }) => (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+    <Card 
+      className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" 
+      onClick={() => onEventClick?.(event)}
+    >
       {/* Photo on top */}
       {event.eventImage && (
         <div className="w-full h-32 overflow-hidden">
