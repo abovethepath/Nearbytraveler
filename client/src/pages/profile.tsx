@@ -7975,28 +7975,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     )}
                   />
 
-                  <FormField
-                    control={profileForm.control}
-                    name="secretActivities"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>If I could list a few Secret Local things in my hometown I would say they are...</FormLabel>
-                        <FormControl>
-                          <Textarea 
-                            {...field} 
-                            placeholder="Fill this out for others to see secret activities, hidden gems, local spots, or insider tips that only locals know about. Example: There's a hidden waterfall behind the old mill that locals love, or try the secret menu at Joe's Diner..."
-                            className="min-h-[80px] resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
-                            maxLength={500}
-                          />
-                        </FormControl>
-                        <div className="text-xs text-gray-500 text-right">
-                          {field.value?.length || 0}/500 characters
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
                   {/* Family Travel Section */}
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
@@ -8475,6 +8453,36 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   }}
                 />
               </div>
+
+              {/* Secret Local Things - Moved to end for better bio flow */}
+              {user?.userType !== 'business' && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
+                    Local Insider Knowledge
+                  </h3>
+                  <FormField
+                    control={profileForm.control}
+                    name="secretActivities"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>If I could list a few Secret Local things in my hometown I would say they are...</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            {...field} 
+                            placeholder="Fill this out for others to see secret activities, hidden gems, local spots, or insider tips that only locals know about. Example: There's a hidden waterfall behind the old mill that locals love, or try the secret menu at Joe's Diner..."
+                            className="min-h-[80px] resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+                            maxLength={500}
+                          />
+                        </FormControl>
+                        <div className="text-xs text-gray-500 text-right">
+                          {field.value?.length || 0}/500 characters
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              )}
 
               <div className="flex gap-2 pt-4">
                 <Button 
