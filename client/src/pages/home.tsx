@@ -112,25 +112,18 @@ export default function Home() {
 
     // Calculate current travel status with proper destination logic
     // Prioritize API data over travel plans for travel status
-    const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
-    const isCurrentlyTraveling = userData.isCurrentlyTraveling ?? !!currentTravelPlan;
+    const currentTravelDestination = getCurrentTravelDestination(travelPlans || []);
+    const isCurrentlyTraveling = userData.isCurrentlyTraveling ?? !!currentTravelDestination;
     
     // Use the active travel plan destination first, fallback to API data
-    const travelDestination = currentTravelPlan ? 
-      `${currentTravelPlan.destinationCity}${currentTravelPlan.destinationState ? `, ${currentTravelPlan.destinationState}` : ''}, ${currentTravelPlan.destinationCountry}` :
-      userData.travelDestination || null;
+    const travelDestination = currentTravelDestination || userData.travelDestination || null;
 
     // Return enriched user data with travel context
     const enrichedUser = {
       ...userData,
       isCurrentlyTraveling,
       travelDestination,
-      ...(currentTravelPlan && {
-        currentTravelPlan,
-        travelStartDate: currentTravelPlan.startDate,
-        travelEndDate: currentTravelPlan.endDate,
-        travelPlanId: currentTravelPlan.id
-      })
+      // Travel destination is already set above
     };
 
     return enrichedUser;
@@ -140,22 +133,20 @@ export default function Home() {
   const enrichedEffectiveUser = useMemo(() => {
     if (!effectiveUser) return null;
     
-    const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
-    const actualCurrentLocation = currentTravelPlan ? 
-      `${currentTravelPlan.destinationCity}${currentTravelPlan.destinationState ? `, ${currentTravelPlan.destinationState}` : ''}, ${currentTravelPlan.destinationCountry}` :
-      effectiveUser.location;
+    const currentTravelDestination = getCurrentTravelDestination(travelPlans || []);
+    const actualCurrentLocation = currentTravelDestination || effectiveUser.location;
     
     console.log('🔍 FIXED enrichedEffectiveUser:', {
       id: effectiveUser.id,
       originalLocation: effectiveUser.location,
-      travelDestination: currentTravelPlan?.destination,
+      travelDestination: currentTravelDestination,
       actualCurrentLocation
     });
     
     return {
       ...effectiveUser,
-      isCurrentlyTraveling: !!currentTravelPlan,
-      travelDestination: currentTravelPlan?.destination,
+      isCurrentlyTraveling: !!currentTravelDestination,
+      travelDestination: currentTravelDestination,
       actualCurrentLocation // Add this new field
     };
   }, [effectiveUser, travelPlans]);
