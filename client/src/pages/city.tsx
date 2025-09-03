@@ -248,22 +248,22 @@ export default function CityPage({ cityName }: CityPageProps) {
         </button>
       </div>
       
-      {/* Compact City Header */}
+      {/* Compact City Header - Mobile Responsive */}
       <div className="mx-4 mt-2 mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+          <div className="flex-1 min-w-0">
             {isLAArea && (
               <Badge className="bg-orange-500 text-white text-xs mb-2">
                 🌟 Beta Launch City
               </Badge>
             )}
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white leading-tight">
               {decodedCityName}
             </h1>
           </div>
-          <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-            <MapPin className="w-5 h-5" />
-            <span className="text-sm">{parsedCityName}</span>
+          <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 flex-shrink-0">
+            <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="text-xs sm:text-sm truncate">{parsedCityName}</span>
           </div>
         </div>
       </div>

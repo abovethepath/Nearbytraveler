@@ -799,12 +799,12 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
         <div className="container mx-auto px-4 py-4">
           {/* Header - Mobile vs Desktop Layout */}
           <div className="mb-6 md:mb-8">
-            {/* Mobile: Centered layout */}
-            <div className="block md:hidden text-center">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            {/* Mobile: Responsive centered layout */}
+            <div className="block md:hidden text-center px-4">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-3 leading-tight">
                 🎯 City-Specific Matching
               </h1>
-              <p className="text-lg text-gray-600 dark:text-gray-300">
+              <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
                 Find People Who Want to Do What You Want to Do
               </p>
             </div>
@@ -1051,18 +1051,18 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
             <ArrowLeft className="w-5 h-5 mr-2" />
             Back to Cities
           </Button>
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white leading-tight">
                 {selectedCity}
               </h1>
-              <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 mt-1">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">
                 Add activities and events. Others click to match!
               </p>
             </div>
-            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-              <MapPin className="w-5 h-5" />
-              <span className="text-sm">Matching</span>
+            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 flex-shrink-0">
+              <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="text-xs sm:text-sm">Matching</span>
             </div>
           </div>
         </div>
