@@ -248,157 +248,22 @@ export default function CityPage({ cityName }: CityPageProps) {
         </button>
       </div>
       
-      {/* Hero Section - Mobile vs Desktop Layout */}
-      <div className={`relative mb-6 rounded-xl overflow-hidden mx-4 mt-2 bg-gradient-to-r from-blue-600 to-purple-700 ${
-        isLAArea ? 'from-orange-500 to-red-600' : ''
-      }`}>
-        {/* Mobile: Centered layout */}
-        <div className="block md:hidden h-[200px] relative flex flex-col justify-center items-center text-center px-4">
-          {isLAArea && (
-            <div className="mb-2 sm:mb-4">
-              <Badge className="bg-white/20 text-white text-xs sm:text-sm px-3 py-1 rounded-full">
+      {/* Compact City Header */}
+      <div className="mx-4 mt-2 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            {isLAArea && (
+              <Badge className="bg-orange-500 text-white text-xs mb-2">
                 🌟 Beta Launch City
               </Badge>
-            </div>
-          )}
-          <h1 className={`${
-            isLAArea 
-              ? 'text-4xl sm:text-5xl font-bold text-white'
-              : 'text-3xl sm:text-4xl font-bold text-white'
-          } mb-3 sm:mb-4 leading-tight`}>
-            {decodedCityName}
-          </h1>
-        </div>
-
-        {/* Desktop: Enhanced engaging layout */}
-        <div className="hidden md:block relative py-12 overflow-hidden">
-          {/* Enhanced background effects */}
-          <div className="absolute inset-0 opacity-10 pointer-events-none">
-            <div className="absolute top-16 left-8 w-32 h-32 bg-white rounded-full blur-3xl"></div>
-            <div className="absolute bottom-16 right-8 w-40 h-40 bg-white rounded-full blur-3xl"></div>
+            )}
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+              {decodedCityName}
+            </h1>
           </div>
-          
-          <div className="max-w-7xl mx-auto px-8 grid gap-8 md:gap-12 md:grid-cols-5 items-center relative z-10">
-            {/* Left text side - wider and enhanced */}
-            <div className="md:col-span-3">
-              {/* Enhanced badge for LA areas */}
-              {isLAArea && (
-                <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full px-6 py-3 mb-8">
-                  <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
-                  <span className="text-white font-medium">🌟 Beta Launch City - Experience the Future</span>
-                </div>
-              )}
-
-              <div className="space-y-6">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-tight">
-                  <span className="bg-gradient-to-r from-white via-blue-200 to-white bg-clip-text text-transparent drop-shadow-lg">
-                    {decodedCityName}
-                  </span>
-                </h1>
-                
-                <div className="max-w-2xl space-y-4">
-                  <p className="text-lg lg:text-xl text-white/90 leading-relaxed font-medium">
-                    Your gateway to authentic connections — <em className="text-blue-200 font-semibold">where every encounter counts.</em>
-                  </p>
-                  <p className="text-base text-white/70 leading-relaxed">
-                    Connect with travelers, locals, and businesses in {parsedCityName}. From hidden local gems to popular attractions, discover authentic experiences with like-minded people.
-                  </p>
-                </div>
-              </div>
-              
-              {/* Enhanced Features with attractive icons */}
-              <div className="mt-8 space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg border border-white/30">
-                    <Users className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-white">Local Community</h3>
-                    <p className="text-sm text-white/70">Connect with verified travelers and long-time locals</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg border border-white/30">
-                    <Calendar className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-white">Live Events & Activities</h3>
-                    <p className="text-sm text-white/70">Discover what's happening right now in the city</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg border border-white/30">
-                    <Building2 className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-white">Business Partners</h3>
-                    <p className="text-sm text-white/70">Find exclusive deals and partnership opportunities</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          
-            {/* Right image side - enhanced city visualization */}
-            <div className="md:col-span-2 flex justify-center items-center relative">
-              {/* Decorative background effects */}
-              <div className="absolute inset-0 opacity-40 pointer-events-none">
-                <div className="absolute top-4 -left-8 w-24 h-24 bg-white/20 rounded-full blur-2xl"></div>
-                <div className="absolute bottom-4 -right-8 w-32 h-32 bg-white/20 rounded-full blur-2xl"></div>
-              </div>
-              
-              {/* Enhanced city visualization */}
-              <div className="relative group">
-                {/* City visualization container */}
-                <div className="relative">
-                  {/* Background glow */}
-                  <div className="absolute -inset-4 bg-gradient-to-r from-white/20 via-blue-200/20 to-white/20 rounded-3xl blur-xl"></div>
-                  
-                  {/* Main city interface mockup */}
-                  <div className="relative bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl border border-white/30 p-8 w-80 h-80 flex flex-col justify-center items-center transform group-hover:scale-[1.02] transition-all duration-500">
-                    {/* Dynamic city icon */}
-                    <div className="relative mb-6">
-                      <MapPin className="w-20 h-20 text-white/80 mx-auto transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-500" />
-                      <div className="absolute -inset-2 bg-white/20 rounded-full blur-md"></div>
-                    </div>
-                    
-                    {/* City stats */}
-                    <h3 className="text-xl font-bold text-white mb-4">Explore {parsedCityName}</h3>
-                    
-                    <div className="space-y-2 w-full text-center">
-                      <div className="flex justify-center items-center gap-2 text-sm text-white/80">
-                        <Users className="w-4 h-4" />
-                        <span>Active Community</span>
-                      </div>
-                      <div className="flex justify-center items-center gap-2 text-sm text-white/80">
-                        <Calendar className="w-4 h-4" />
-                        <span>Live Events</span>
-                      </div>
-                      <div className="flex justify-center items-center gap-2 text-sm text-white/80">
-                        <Building2 className="w-4 h-4" />
-                        <span>Local Businesses</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Floating activity indicators */}
-                  <div className="absolute -top-3 -right-3 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl px-3 py-2 shadow-xl border border-white/50 dark:border-gray-600 transform rotate-3 group-hover:rotate-6 transition-transform duration-300">
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-blue-600 dark:text-blue-400">Live</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Now</div>
-                    </div>
-                  </div>
-                  
-                  <div className="absolute -bottom-3 -left-3 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl px-3 py-2 shadow-xl border border-white/50 dark:border-gray-600 transform -rotate-3 group-hover:-rotate-6 transition-transform duration-300">
-                    <div className="text-center">
-                      <div className="text-lg font-bold text-orange-600 dark:text-orange-400">∞</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Stories</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+            <MapPin className="w-5 h-5" />
+            <span className="text-sm">{parsedCityName}</span>
           </div>
         </div>
       </div>
