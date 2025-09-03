@@ -11668,8 +11668,9 @@ Questions? Just reply to this message. Welcome aboard!
       
       // Apply LA Metro consolidation to fix "City" vs "Los Angeles Metro" display issue
       const consolidatedInterests = interests.map(interest => {
-        const { getMetroArea } = require('@shared/constants');
-        const metroArea = getMetroArea(interest.cityName);
+        // Simple metro area consolidation without external dependency
+        const isLAMetroCity = ['Playa del Rey', 'Santa Monica', 'Venice', 'Culver City', 'Beverly Hills', 'West Hollywood', 'Malibu'].includes(interest.cityName);
+        const metroArea = isLAMetroCity ? 'Los Angeles Metro' : null;
         
         return {
           ...interest,
@@ -11862,26 +11863,82 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // CITY MATCHING SYSTEM - Get users who have matched activities in a specific city
+  // CITY MATCHING SYSTEM - Get users and events that match your interests in a specific city
   app.get('/api/matching-users/:city', async (req, res) => {
     try {
       const { city } = req.params;
+      const userId = req.headers['x-user-id'];
       
       if (!city) {
         return res.status(400).json({ error: 'City parameter is required' });
       }
 
       if (process.env.NODE_ENV === 'development') {
-        console.log(`🎯 CITY MATCH: Fetching users with activities in ${city}`);
+        console.log(`🎯 CITY MATCH: Finding connections for user ${userId} in ${city}`);
       }
 
-      // Get users who have matched activities in this city
-      const matchingUsers = await db
+      // Get the current user's interests and activities in this city
+      const userInterests = userId ? await db
+        .select()
+        .from(userCityInterests)
+        .where(and(
+          eq(userCityInterests.userId, parseInt(userId as string)),
+          ilike(userCityInterests.cityName, `%${city}%`),
+          eq(userCityInterests.isActive, true)
+        )) : [];
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🎯 CITY MATCH: User has ${userInterests.length} interests in ${city}`);
+      }
+
+      // Smart category mapping for interest-to-event connections
+      const createCategoryMatcher = (interest: string) => {
+        const name = interest.toLowerCase();
+        if (name.includes('food') || name.includes('restaurant') || name.includes('dining') || name.includes('hot dog')) {
+          return ['food', 'dining', 'tour', 'local'];
+        }
+        if (name.includes('museum') || name.includes('art') || name.includes('gallery') || name.includes('concert') || name.includes('disney')) {
+          return ['cultural', 'community', 'tour', 'local', 'meetup'];
+        }
+        if (name.includes('garden') || name.includes('park') || name.includes('nature')) {
+          return ['nature', 'outdoor', 'community', 'local'];
+        }
+        if (name.includes('casino') || name.includes('poker') || name.includes('game')) {
+          return ['entertainment', 'social', 'gaming', 'community'];
+        }
+        if (name.includes('meet') || name.includes('social')) {
+          return ['community', 'meetup', 'social'];
+        }
+        return ['community', 'local', 'meetup'];
+      };
+
+      // Get relevant events in this city
+      const relevantEvents = await db
+        .select({
+          id: events.id,
+          title: events.title,
+          description: events.description,
+          city: events.city,
+          date: events.date,
+          category: events.category,
+          tags: events.tags,
+          matchReason: sql<string>`'event_match'`
+        })
+        .from(events)
+        .where(and(
+          ilike(events.city, `%${city}%`),
+          eq(events.isActive, true),
+          eq(events.isPublic, true),
+          gte(events.date, new Date())
+        ))
+        .limit(10);
+
+      // Get other users with similar interests (based on shared profile interests, not just city activities)
+      const allUsers = await db
         .select({
           id: users.id,
           username: users.username,
           name: users.name,
-          email: users.email,
           userType: users.userType,
           bio: users.bio,
           location: users.location,
@@ -11889,26 +11946,53 @@ Questions? Just reply to this message. Welcome aboard!
           hometownState: users.hometownState,
           hometownCountry: users.hometownCountry,
           profileImage: users.profileImage,
-          activityName: userCityInterests.activityName,
-          cityName: userCityInterests.cityName,
-          createdAt: userCityInterests.createdAt
+          interests: users.interests
         })
         .from(users)
-        .innerJoin(userCityInterests, eq(users.id, userCityInterests.userId))
         .where(and(
-          ilike(userCityInterests.cityName, `%${city}%`),
-          eq(userCityInterests.isActive, true)
-        ))
-        .orderBy(desc(userCityInterests.createdAt));
+          ne(users.id, userId ? parseInt(userId as string) : -1),
+          eq(users.isActive, true)
+        ));
+
+      // Find users with compatible interests or in the target city
+      const compatibleUsers = allUsers.filter(user => {
+        // Include users from the target city
+        const isInTargetCity = user.location?.toLowerCase().includes(city.toLowerCase()) ||
+                              user.hometownCity?.toLowerCase().includes(city.toLowerCase());
+        
+        // Include users with shared interests
+        const hasSharedInterests = user.interests && userInterests.length > 0 &&
+          user.interests.some(interest => 
+            userInterests.some(userInt => 
+              interest.toLowerCase().includes('food') && userInt.activityName.toLowerCase().includes('food') ||
+              interest.toLowerCase().includes('music') && userInt.activityName.toLowerCase().includes('concert') ||
+              interest.toLowerCase().includes('museum') && userInt.activityName.toLowerCase().includes('museum') ||
+              interest.toLowerCase().includes('social') && userInt.activityName.toLowerCase().includes('meet')
+            )
+          );
+
+        return isInTargetCity || hasSharedInterests;
+      });
+
+      const response = {
+        users: compatibleUsers.slice(0, 5),
+        events: relevantEvents,
+        userInterestCount: userInterests.length,
+        matchingSummary: {
+          usersFound: compatibleUsers.length,
+          eventsFound: relevantEvents.length,
+          searchCity: city
+        }
+      };
 
       if (process.env.NODE_ENV === 'development') {
-        console.log(`🎯 CITY MATCH: Found ${matchingUsers.length} users with activities in ${city}`);
+        console.log(`🎯 CITY MATCH: Found ${compatibleUsers.length} compatible users and ${relevantEvents.length} events in ${city}`);
       }
       
-      res.json(matchingUsers);
+      res.json(response);
     } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error('Error fetching matching users:', error);
-      res.status(500).json({ error: 'Failed to fetch matching users' });
+      if (process.env.NODE_ENV === 'development') console.error('Error fetching city matches:', error);
+      res.status(500).json({ error: 'Failed to fetch city matches' });
     }
   });
 
