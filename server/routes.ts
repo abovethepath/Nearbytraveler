@@ -4381,9 +4381,16 @@ Questions? Just reply to this message. Welcome aboard!
       // Enrich each user with their travel plans for frontend travel detection
       const enrichedUsers = await Promise.all(allUsers.map(async (user) => {
         const userTravelPlans = await db.select().from(travelPlans).where(eq(travelPlans.userId, user.id));
+        
+        // Format travel plans to match frontend expectations
+        const formattedTravelPlans = userTravelPlans.map(plan => ({
+          ...plan,
+          destination: `${plan.destinationCity}${plan.destinationState ? `, ${plan.destinationState}` : ''}, ${plan.destinationCountry}`
+        }));
+        
         return {
           ...user,
-          travelPlans: userTravelPlans
+          travelPlans: formattedTravelPlans
         };
       }));
       
