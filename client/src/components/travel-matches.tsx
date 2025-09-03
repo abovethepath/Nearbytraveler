@@ -329,7 +329,7 @@ export default function TravelMatches({
           ) : destinationMatches && destinationMatches.length > 0 ? (
             <div>
               <p className="text-sm text-gray-600 mb-4">
-                Found {destinationMatches.length} People Nearby
+                Found {destinationMatches.length} {destinationMatches.length === 1 ? 'Person' : 'People'} Nearby
               </p>
               {destinationMatches.map((match: MatchScore) => (
                 <MatchCard key={match.userId} match={match} />
