@@ -3081,13 +3081,13 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
               
               if (process.env.NODE_ENV === 'development') console.log(`✅ Generated ${savedActivityCount} AI activities for ${targetCity}`);
               
-              // Generate AI events for the target city
-              const { aiEventGenerator } = await import('./aiEventGenerator.js');
-              await aiEventGenerator.ensureEventsForLocation(
-                targetCity,
-                userData.hometownState || '',
-                userData.hometownCountry
-              );
+              // DISABLED: Do not generate fake events
+              // const { aiEventGenerator } = await import('./aiEventGenerator.js');
+              // await aiEventGenerator.ensureEventsForLocation(
+              //   targetCity,
+              //   userData.hometownState || '',
+              //   userData.hometownCountry
+              // );
               
               if (process.env.NODE_ENV === 'development') console.log(`✅ Generated AI events for ${targetCity}`);
             } else {
@@ -3262,9 +3262,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
                 
                 if (process.env.NODE_ENV === 'development') console.log(`✅ Generated ${savedActivityCount} AI activities for travel destination: ${targetTravelCity}`);
                 
-                // Generate AI events for travel destination
-                const { aiEventGenerator } = await import('./aiEventGenerator.js');
-                await aiEventGenerator.ensureEventsForLocation(targetTravelCity, travelState || '', travelCountry);
+                // DISABLED: Do not generate fake events
+                // const { aiEventGenerator } = await import('./aiEventGenerator.js');
+                // await aiEventGenerator.ensureEventsForLocation(targetTravelCity, travelState || '', travelCountry);
                 
                 if (process.env.NODE_ENV === 'development') console.log(`✅ Generated AI events for travel destination: ${targetTravelCity}`);
               } else {
@@ -5609,8 +5609,10 @@ Questions? Just reply to this message. Welcome aboard!
             // Generate AI events for this city in the background (don't wait for completion)
             setImmediate(async () => {
               try {
-                const { createAIEventsInDatabase } = await import('./openaiEventGenerator');
-                await createAIEventsInDatabase(cityName, state || 'CA', country || 'USA');
+                // DISABLED: Do not generate fake events
+                // const { createAIEventsInDatabase } = await import('./openaiEventGenerator');
+                // await createAIEventsInDatabase(cityName, state || 'CA', country || 'USA');
+                console.log(`⚠️ AI EVENT GENERATION DISABLED for safety - no fake events created for ${cityName}`);
               } catch (aiError) {
                 console.error(`🚫 AI EVENT GENERATION FAILED for ${cityName}:`, aiError);
               }
@@ -5812,10 +5814,12 @@ Questions? Just reply to this message. Welcome aboard!
       const cityName = req.params.city;
       const { state = 'TX', country = 'USA' } = req.body;
       
-      console.log(`🤖 MANUAL AI GENERATION: Creating events for ${cityName}, ${state}, ${country}`);
+      console.log(`⚠️ AI EVENT GENERATION DISABLED - refusing to create fake events for ${cityName}`);
       
-      const { createAIEventsInDatabase } = await import('./openaiEventGenerator');
-      const aiEvents = await createAIEventsInDatabase(cityName, state, country);
+      // DISABLED: Do not generate fake events
+      // const { createAIEventsInDatabase } = await import('./openaiEventGenerator');
+      // const aiEvents = await createAIEventsInDatabase(cityName, state, country);
+      const aiEvents = [];
       
       return res.json({ 
         success: true, 
