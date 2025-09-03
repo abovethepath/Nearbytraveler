@@ -796,14 +796,64 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800">
         <div className="container mx-auto px-4 py-4">
-          {/* Header */}
-          <div className="text-center mb-6">
-            <h1 className="text-4xl font-bold text-white mb-4">
-              🎯 City-Specific Matching
-            </h1>
-            <p className="text-xl text-white/80 max-w-3xl mx-auto">
-              Find People Who Want to Do What You Want to Do
-            </p>
+          {/* Header - Mobile vs Desktop Layout */}
+          <div className="mb-6 md:mb-8">
+            {/* Mobile: Centered layout */}
+            <div className="block md:hidden text-center">
+              <h1 className="text-3xl font-bold text-white mb-4">
+                🎯 City-Specific Matching
+              </h1>
+              <p className="text-lg text-white/80">
+                Find People Who Want to Do What You Want to Do
+              </p>
+            </div>
+
+            {/* Desktop: Landing page style layout (text left, image right) */}
+            <div className="hidden md:grid md:grid-cols-5 items-center gap-8">
+              {/* Left text side - wider */}
+              <div className="md:col-span-3">
+                <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight text-white leading-tight">
+                  <h1>
+                    City-Specific Matching
+                  </h1>
+                </div>
+                <div className="mt-4 sm:mt-6 max-w-2xl text-base md:text-lg lg:text-xl text-white/80 leading-relaxed">
+                  <p className="mb-4">
+                    Connect with people who share your exact interests in specific cities around the world.
+                  </p>
+                  <p className="text-sm md:text-base text-white/60">
+                    Add activities you want to do, then instantly see who else wants to do the same things in that city. Perfect for travelers and locals alike.
+                  </p>
+                </div>
+                
+                {/* Matching Features List */}
+                <div className="mt-6 space-y-3">
+                  <div className="flex items-center gap-3 text-sm md:text-base text-white/80">
+                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                    <span>Real-time activity and event matching</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm md:text-base text-white/80">
+                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                    <span>Connect with locals and fellow travelers</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm md:text-base text-white/80">
+                    <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
+                    <span>Discover unique experiences in any city</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Right image side - smaller */}
+              <div className="md:col-span-2 flex flex-col items-center">
+                {/* Icon representation instead of image */}
+                <div className="relative w-48 h-48 bg-gradient-to-br from-blue-400/20 to-purple-500/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                  <div className="text-center">
+                    <MapPin className="w-16 h-16 text-white/60 mx-auto mb-3" />
+                    <div className="text-white/50 text-sm font-medium">Connect in any city</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Show loading state */}

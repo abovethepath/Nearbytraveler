@@ -248,11 +248,12 @@ export default function CityPage({ cityName }: CityPageProps) {
         </button>
       </div>
       
-      {/* Simplified Hero Section - No Photos */}
+      {/* Hero Section - Mobile vs Desktop Layout */}
       <div className={`relative mb-6 rounded-xl overflow-hidden mx-4 mt-2 bg-gradient-to-r from-blue-600 to-purple-700 ${
         isLAArea ? 'from-orange-500 to-red-600' : ''
       }`}>
-        <div className="h-[200px] relative flex flex-col justify-center items-center text-center px-4">
+        {/* Mobile: Centered layout */}
+        <div className="block md:hidden h-[200px] relative flex flex-col justify-center items-center text-center px-4">
           {isLAArea && (
             <div className="mb-2 sm:mb-4">
               <Badge className="bg-white/20 text-white text-xs sm:text-sm px-3 py-1 rounded-full">
@@ -267,6 +268,60 @@ export default function CityPage({ cityName }: CityPageProps) {
           } mb-3 sm:mb-4 leading-tight`}>
             {decodedCityName}
           </h1>
+        </div>
+
+        {/* Desktop: Landing page style layout (text left, image right) */}
+        <div className="hidden md:grid md:grid-cols-5 items-center gap-8 px-8 py-12">
+          {/* Left text side - wider */}
+          <div className="md:col-span-3">
+            {isLAArea && (
+              <div className="mb-4">
+                <Badge className="bg-white/20 text-white text-sm px-4 py-2 rounded-full">
+                  🌟 Beta Launch City
+                </Badge>
+              </div>
+            )}
+            <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight text-white leading-tight">
+              <h1>
+                {decodedCityName}
+              </h1>
+            </div>
+            <div className="mt-4 sm:mt-6 max-w-2xl text-base md:text-lg lg:text-xl text-white/80 leading-relaxed">
+              <p className="mb-4">
+                Connect with travelers, locals, and businesses in {parsedCityName}. Discover authentic experiences and build meaningful connections.
+              </p>
+              <p className="text-sm md:text-base text-white/60">
+                From hidden local gems to popular attractions, explore everything this city has to offer while meeting like-minded people along the way.
+              </p>
+            </div>
+            
+            {/* City Features List */}
+            <div className="mt-6 space-y-3">
+              <div className="flex items-center gap-3 text-sm md:text-base text-white/80">
+                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                <span>Connect with locals and fellow travelers</span>
+              </div>
+              <div className="flex items-center gap-3 text-sm md:text-base text-white/80">
+                <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                <span>Discover events and activities</span>
+              </div>
+              <div className="flex items-center gap-3 text-sm md:text-base text-white/80">
+                <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                <span>Find business partnerships and deals</span>
+              </div>
+            </div>
+          </div>
+          
+          {/* Right image side - smaller */}
+          <div className="md:col-span-2 flex flex-col items-center">
+            {/* City representation instead of image */}
+            <div className="relative w-48 h-48 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+              <div className="text-center">
+                <MapPin className="w-16 h-16 text-white/60 mx-auto mb-3" />
+                <div className="text-white/50 text-sm font-medium">Explore {parsedCityName}</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

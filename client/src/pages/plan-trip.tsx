@@ -643,14 +643,9 @@ export default function PlanTrip() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-blue-50 to-orange-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-gray-900 overflow-hidden break-words">
-      {/* Hero Section - Mobile Responsive */}
-      <div 
-        className="relative h-48 sm:h-56 md:h-64 overflow-hidden bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(147, 51, 234, 0.3) 50%, rgba(249, 115, 22, 0.3) 100%), url('/trip%20planning_1750857535371.webp')`
-        }}
-      >
-        {/* Close Button - Mobile Responsive */}
+      {/* Hero Section - Mobile vs Desktop Layout */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-blue-600/30 via-purple-600/30 to-orange-600/30">
+        {/* Close Button - Always positioned at top right */}
         <button
           onClick={() => {
             // Clear any editing state
@@ -663,15 +658,77 @@ export default function PlanTrip() {
         >
           <X className="w-4 h-4 sm:w-6 sm:h-6" />
         </button>
-        <div className="relative z-10 h-full flex items-center justify-center px-2 sm:px-4">
-          <div className="text-center text-white overflow-hidden break-words">
-            <Compass className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-2 sm:mb-4" />
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2 break-words drop-shadow-lg">
-              {isEditMode ? "Edit Your Trip" : "Plan Your Next Adventure"}
-            </h1>
-            <p className="text-sm sm:text-lg md:text-xl opacity-90 break-words drop-shadow-md">
-              {isEditMode ? "Update your travel plan details" : "Connect with locals, fellow travelers, and businesses at your destination"}
-            </p>
+
+        {/* Mobile: Centered layout */}
+        <div 
+          className="block md:hidden relative h-48 sm:h-56 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(147, 51, 234, 0.3) 50%, rgba(249, 115, 22, 0.3) 100%), url('/trip%20planning_1750857535371.webp')`
+          }}
+        >
+          <div className="relative z-10 h-full flex items-center justify-center px-2 sm:px-4">
+            <div className="text-center text-white overflow-hidden break-words">
+              <Compass className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-2 sm:mb-4" />
+              <h1 className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 break-words drop-shadow-lg">
+                {isEditMode ? "Edit Your Trip" : "Plan Your Next Adventure"}
+              </h1>
+              <p className="text-sm sm:text-lg opacity-90 break-words drop-shadow-md">
+                {isEditMode ? "Update your travel plan details" : "Connect with locals, fellow travelers, and businesses"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop: Landing page style layout (text left, image right) */}
+        <div className="hidden md:grid md:grid-cols-5 items-center gap-8 px-8 py-16 bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-blue-900/20">
+          {/* Left text side - wider */}
+          <div className="md:col-span-3">
+            <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight text-gray-900 dark:text-white leading-tight">
+              <h1>
+                {isEditMode ? "Edit Your Trip" : "Plan Your Next Adventure"}
+              </h1>
+            </div>
+            <div className="mt-4 sm:mt-6 max-w-2xl text-base md:text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
+              <p className="mb-4">
+                {isEditMode 
+                  ? "Update your travel plan details and fine-tune your adventure preferences to get better matches and recommendations."
+                  : "Create detailed travel plans that connect you with locals, fellow travelers, and businesses at your destination."
+                }
+              </p>
+              <p className="text-sm md:text-base text-gray-500 dark:text-gray-400">
+                {isEditMode
+                  ? "Make changes to your itinerary, interests, and travel style to enhance your travel experience."
+                  : "Share your interests, travel style, and planned activities to discover the perfect connections and experiences."
+                }
+              </p>
+            </div>
+            
+            {/* Trip Planning Features List */}
+            <div className="mt-6 space-y-3">
+              <div className="flex items-center gap-3 text-sm md:text-base text-gray-700 dark:text-gray-300">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <span>Match with locals and travelers</span>
+              </div>
+              <div className="flex items-center gap-3 text-sm md:text-base text-gray-700 dark:text-gray-300">
+                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                <span>Discover personalized experiences</span>
+              </div>
+              <div className="flex items-center gap-3 text-sm md:text-base text-gray-700 dark:text-gray-300">
+                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                <span>Connect with local businesses</span>
+              </div>
+            </div>
+          </div>
+          
+          {/* Right image side - smaller */}
+          <div className="md:col-span-2 flex flex-col items-center">
+            {/* Trip planning representation instead of image */}
+            <div className="relative w-48 h-48 bg-gradient-to-br from-blue-100 to-orange-100 dark:from-blue-900/20 to-orange-900/20 rounded-2xl flex items-center justify-center border border-gray-200 dark:border-gray-700">
+              <div className="text-center">
+                <Compass className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-3" />
+                <div className="text-gray-500 dark:text-gray-400 text-sm font-medium">Plan your journey</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
