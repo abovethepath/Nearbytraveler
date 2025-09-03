@@ -183,7 +183,7 @@ export function SmartLocationInput({
           <SelectTrigger className="text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600">
             <SelectValue placeholder={typeof placeholder === 'object' ? placeholder?.country : "Select country"} />
           </SelectTrigger>
-          <SelectContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-lg z-[9999] max-h-96 overflow-y-auto" position="popper" side="bottom" align="start">
+          <SelectContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-lg z-[100] max-h-96 overflow-y-auto" position="popper" side="bottom" align="start">
             {COUNTRIES.map((countryOption) => (
               <SelectItem 
                 key={countryOption} 
@@ -207,7 +207,7 @@ export function SmartLocationInput({
             <SelectTrigger className="text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600">
               <SelectValue placeholder={typeof placeholder === 'object' ? placeholder?.city : "Select city"} />
             </SelectTrigger>
-            <SelectContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-lg z-[9999] max-h-96 overflow-y-auto" position="popper" side="bottom" align="start">
+            <SelectContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-lg z-[100] max-h-96 overflow-y-auto" position="popper" side="bottom" align="start">
               {citiesForCountry.map((cityOption) => (
                 <SelectItem 
                   key={cityOption} 
@@ -241,7 +241,7 @@ export function SmartLocationInput({
                   : "Select region/province"
               } />
             </SelectTrigger>
-            <SelectContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-lg z-[9999] max-h-96 overflow-y-auto" position="popper" side="bottom" align="start">
+            <SelectContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-lg z-[100] max-h-96 overflow-y-auto" position="popper" side="bottom" align="start">
               {/* Add state/region options based on country */}
               {country === "United States" && [
                 "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
