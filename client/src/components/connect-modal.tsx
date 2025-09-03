@@ -456,9 +456,9 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-[999999] flex items-start sm:items-center justify-center bg-black/60 backdrop-blur-sm pt-4 sm:pt-0" onClick={onClose}>
       <div 
-        className="bg-gradient-to-br from-white via-blue-50 to-orange-50 dark:from-gray-800 dark:via-blue-900/20 dark:to-orange-900/20 rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto m-2 sm:m-4 border border-blue-200/20 dark:border-blue-600/20"
+        className="bg-gradient-to-br from-white via-blue-50 to-orange-50 dark:from-gray-800 dark:via-blue-900/20 dark:to-orange-900/20 rounded-xl sm:rounded-2xl shadow-2xl max-w-6xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto mx-2 sm:mx-4 my-2 sm:my-4 border border-blue-200/20 dark:border-blue-600/20"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-4 sm:p-6 lg:p-8">
@@ -472,47 +472,51 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
             <X className="w-5 h-5" />
           </Button>
 
-          {/* Hero section with side-by-side layout */}
-          <div className="grid md:grid-cols-5 gap-6 mb-8 items-center">
-            {/* Left side - Text content (3/5 width on desktop) */}
-            <div className="md:col-span-3 space-y-4">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="bg-gradient-to-r from-blue-600 to-orange-500 p-3 rounded-xl">
-                  <Users className="w-6 h-6 text-white" />
+          {/* Hero section with mobile-first responsive layout */}
+          <div className="mb-6">
+            {/* Mobile-first stacked layout, side-by-side on larger screens */}
+            <div className="flex flex-col lg:grid lg:grid-cols-5 lg:gap-6 lg:items-center">
+              
+              {/* Mobile: Full width text section */}
+              <div className="lg:col-span-3 space-y-3 mb-4 lg:mb-0">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="bg-gradient-to-r from-blue-600 to-orange-500 p-2 sm:p-3 rounded-xl flex-shrink-0">
+                    <Users className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                  </div>
+                  <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent leading-tight">
+                    Connect with Travelers & Locals
+                  </h2>
                 </div>
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent leading-tight">
-                  Connect with Travelers & Locals
-                </h2>
+                
+                <p className="text-gray-700 dark:text-gray-300 text-sm sm:text-base lg:text-lg leading-relaxed pr-0 lg:pr-4">
+                  Discover amazing experiences & make meaningful connections based on demographics, activities, interests, and events.
+                </p>
+                
+                <div className="flex flex-wrap gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                  <span className="bg-blue-100 dark:bg-blue-900 px-2 sm:px-3 py-1 rounded-full">✈️ Travel Companions</span>
+                  <span className="bg-orange-100 dark:bg-orange-900 px-2 sm:px-3 py-1 rounded-full">🏠 Local Friends</span>
+                  <span className="bg-green-100 dark:bg-green-900 px-2 sm:px-3 py-1 rounded-full">🎯 Interest Matching</span>
+                </div>
               </div>
-              
-              <p className="text-gray-700 dark:text-gray-300 text-lg sm:text-xl leading-relaxed">
-                Discover amazing experiences & make meaningful connections based on demographics, activities, interests, and events.
-              </p>
-              
-              <div className="flex flex-wrap gap-2 text-sm text-gray-600 dark:text-gray-400">
-                <span className="bg-blue-100 dark:bg-blue-900 px-3 py-1 rounded-full">✈️ Travel Companions</span>
-                <span className="bg-orange-100 dark:bg-orange-900 px-3 py-1 rounded-full">🏠 Local Friends</span>
-                <span className="bg-green-100 dark:bg-green-900 px-3 py-1 rounded-full">🎯 Interest Matching</span>
-              </div>
-            </div>
 
-            {/* Right side - Image (2/5 width on desktop) */}
-            <div className="md:col-span-2 flex justify-center md:justify-end">
-              <div className="relative w-64 h-48 sm:w-80 sm:h-60 rounded-2xl overflow-hidden shadow-2xl border-4 border-white/20">
-                <img 
-                  src="/travelers coffee_1750995178947.png"
-                  alt="Travelers connecting at coffee shop"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+              {/* Image section - smaller on mobile, larger on desktop */}
+              <div className="lg:col-span-2 flex justify-center lg:justify-end">
+                <div className="relative w-48 h-32 sm:w-56 sm:h-36 lg:w-72 lg:h-48 rounded-xl lg:rounded-2xl overflow-hidden shadow-xl border-2 lg:border-4 border-white/20 flex-shrink-0">
+                  <img 
+                    src="/travelers coffee_1750995178947.png"
+                    alt="Travelers connecting at coffee shop"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Quick Select Locations */}
             <div>
-              <h3 className="text-base sm:text-lg font-semibold mb-3 text-gray-900 dark:text-white">Quick Search</h3>
+              <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-900 dark:text-white">Quick Search</h3>
               <div className="flex flex-wrap gap-2 sm:gap-3">
                 {/* WHO IS HERE NOW BUCKET */}
                 <Button
