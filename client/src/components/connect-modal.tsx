@@ -472,43 +472,16 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
             <X className="w-5 h-5" />
           </Button>
 
-          {/* Hero section with mobile-first responsive layout */}
-          <div className="mb-6">
-            {/* Mobile-first stacked layout, side-by-side on larger screens */}
-            <div className="flex flex-col lg:grid lg:grid-cols-5 lg:gap-6 lg:items-center">
-              
-              {/* Mobile: Full width text section */}
-              <div className="lg:col-span-3 space-y-3 mb-4 lg:mb-0">
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="bg-gradient-to-r from-blue-600 to-orange-500 p-2 sm:p-3 rounded-xl flex-shrink-0">
-                    <Users className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                  </div>
-                  <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent leading-tight">
-                    Connect with Travelers & Locals
-                  </h2>
-                </div>
-                
-                <p className="text-gray-700 dark:text-gray-300 text-sm sm:text-base lg:text-lg leading-relaxed pr-0 lg:pr-4">
-                  Discover amazing experiences & make meaningful connections based on demographics, activities, interests, and events.
-                </p>
-                
-                <div className="flex flex-wrap gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                  <span className="bg-blue-100 dark:bg-blue-900 px-2 sm:px-3 py-1 rounded-full">✈️ Travel Companions</span>
-                  <span className="bg-orange-100 dark:bg-orange-900 px-2 sm:px-3 py-1 rounded-full">🏠 Local Friends</span>
-                  <span className="bg-green-100 dark:bg-green-900 px-2 sm:px-3 py-1 rounded-full">🎯 Interest Matching</span>
-                </div>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="bg-gradient-to-r from-blue-600 to-orange-500 p-3 rounded-xl">
+                <Users className="w-6 h-6 text-white" />
               </div>
-
-              {/* Image section - smaller on mobile, larger on desktop */}
-              <div className="lg:col-span-2 flex justify-center lg:justify-end">
-                <div className="relative w-48 h-32 sm:w-56 sm:h-36 lg:w-72 lg:h-48 rounded-xl lg:rounded-2xl overflow-hidden shadow-xl border-2 lg:border-4 border-white/20 flex-shrink-0">
-                  <img 
-                    src="/travelers coffee_1750995178947.png"
-                    alt="Travelers connecting at coffee shop"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                </div>
+              <div className="flex-1 min-w-0">
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent leading-tight">Connect with Travelers & Locals</h2>
+                <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base lg:text-lg mt-1 leading-relaxed">
+                  Find and connect with amazing people in your area
+                </p>
               </div>
             </div>
           </div>
