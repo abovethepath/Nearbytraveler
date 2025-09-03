@@ -1051,7 +1051,7 @@ export default function MatchInCity() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button
-                          onClick={() => toggleActivity(activity.id)}
+                          onClick={() => toggleActivity(activity)}
                           className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1 shadow-sm hover:shadow-md border ${
                             isActive 
                               ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 border-green-400/20 text-white' 
