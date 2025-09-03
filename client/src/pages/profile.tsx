@@ -3420,29 +3420,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </div>
       )}
     
-      {/* PROFILE HEADER - Mobile Responsive */}
-      <section
-        className={`relative -mt-px isolate w-full bg-gradient-to-r ${gradientOptions[selectedGradient]} px-3 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12`}
-      >
-        {/* floating color button */}
-        {isOwnProfile && (
-          <button
-            type="button"
-            onClick={() => setSelectedGradient((prev) => (prev + 1) % gradientOptions.length)}
-            aria-label="Change header colors"
-            className="absolute right-3 top-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/85 text-gray-700 shadow-md hover:bg-white"
-          >
-            🎨
-          </button>
-        )}
+      {/* PROFILE HEADER - Clean Airbnb Style */}
+      <section className="relative -mt-px isolate w-full bg-white dark:bg-gray-900 px-3 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12 border-b border-gray-100 dark:border-gray-800">
 
         <div className="max-w-7xl mx-auto">
           {/* allow wrapping so CTAs drop below on small screens */}
           <div className="flex flex-row flex-wrap items-start gap-4 sm:gap-6">
 
-            {/* Avatar + camera (bigger, no scrollbars) */}
+            {/* Avatar + camera - Clean Modern Style */}
             <div className="relative flex-shrink-0">
-              <div className="rounded-full bg-white ring-4 ring-white shadow-lg overflow-hidden">
+              <div className="rounded-full bg-gray-50 dark:bg-gray-800 ring-2 ring-gray-100 dark:ring-gray-700 shadow-sm overflow-hidden">
                 <div className="w-36 h-36 sm:w-40 sm:h-40 md:w-56 md:h-56 rounded-full overflow-hidden no-scrollbar">
                   <SimpleAvatar
                     user={user}
@@ -3459,7 +3446,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     aria-label="Change avatar"
                     className="absolute -bottom-2 -right-2 translate-x-1/4 translate-y-1/4
                                h-10 w-10 sm:h-11 sm:w-11 rounded-full p-0
-                               bg-blue-600 hover:bg-blue-700 text-white shadow-lg ring-4 ring-white z-10"
+                               bg-black hover:bg-gray-800 text-white shadow-md ring-2 ring-white dark:ring-gray-900 z-10"
                     onClick={() => document.getElementById('avatar-upload-input')?.click()}
                     disabled={uploadingPhoto}
                   >
@@ -3479,19 +3466,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {/* Profile text */}
             <div className="flex-1 min-w-0">
               {user?.userType === 'business' ? (
-                <div className="space-y-2 text-black w-full mt-2">
-                  <h1 className="text-2xl sm:text-4xl font-bold text-black">
+                <div className="space-y-2 w-full mt-2">
+                  <h1 className="text-2xl sm:text-4xl font-bold text-black dark:text-white">
                     {user.businessName || user.name || `@${user.username}`}
                   </h1>
                   <div className="flex items-center gap-2 text-sm sm:text-base">
-                    <span className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium bg-blue-500 text-white">
+                    <span className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium bg-black dark:bg-white dark:text-black text-white">
                       Nearby Business
                     </span>
-                    {user.businessType && <span className="text-black/80">• {user.businessType}</span>}
+                    {user.businessType && <span className="text-gray-600 dark:text-gray-300">• {user.businessType}</span>}
                   </div>
                 </div>
               ) : (
-                <div className="space-y-2 text-black w-full mt-2">
+                <div className="space-y-2 w-full mt-2">
                   {(() => {
                     const hometown = user.hometownCity ? 
                       `${user.hometownCity}${user.hometownState ? `, ${user.hometownState}` : ''}${user.hometownCountry ? `, ${user.hometownCountry}` : ''}` :
@@ -3499,15 +3486,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     
                     return (
                       <>
-                        <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold text-black break-all">@{user.username}</h1>
+                        <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold text-black dark:text-white break-all">@{user.username}</h1>
                         
                         {/* FORCE SHOW BOTH when user has travel plans */}
                         {(() => {
                           // Wait for ALL data to load before checking travel status (same as event discovery)
                           if (!effectiveUserId || isLoadingTravelPlans || userLoading || !user) {
                             return (
-                              <div className="flex items-center gap-2 text-lg font-medium text-black">
-                                <MapPin className="w-5 h-5 text-blue-600" />
+                              <div className="flex items-center gap-2 text-lg font-medium text-gray-600 dark:text-gray-300">
+                                <MapPin className="w-5 h-5 text-gray-400" />
                                 <span>Loading status...</span>
                               </div>
                             );
@@ -3519,20 +3506,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           if (currentDestination) {
                             return (
                               <div className="space-y-2">
-                                <div className="flex items-center gap-2 text-lg font-medium text-black">
-                                  <MapPin className="w-5 h-5 text-blue-600" />
+                                <div className="flex items-center gap-2 text-lg font-medium text-gray-700 dark:text-gray-300">
+                                  <MapPin className="w-5 h-5 text-gray-500" />
                                   <span>NEARBY LOCAL {hometown}</span>
                                 </div>
-                                <div className="flex items-center gap-2 text-lg font-medium text-black">
-                                  <Plane className="w-5 h-5 text-orange-600" />
+                                <div className="flex items-center gap-2 text-lg font-medium text-gray-700 dark:text-gray-300">
+                                  <Plane className="w-5 h-5 text-gray-500" />
                                   <span>NEARBY TRAVELER {currentDestination}</span>
                                 </div>
                               </div>
                             );
                           } else {
                             return (
-                              <div className="flex items-center gap-2 text-lg font-medium text-black">
-                                <MapPin className="w-5 h-5 text-blue-600" />
+                              <div className="flex items-center gap-2 text-lg font-medium text-gray-700 dark:text-gray-300">
+                                <MapPin className="w-5 h-5 text-gray-500" />
                                 <span>NEARBY LOCAL {hometown}</span>
                               </div>
                             );
@@ -3544,8 +3531,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
                   {/* Stats */}
                   <div className="flex items-center flex-wrap gap-4 text-sm font-medium w-full mt-3">
-                    <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full">🌍 {countriesVisited?.length || 0} countries</span>
-                    <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full">⭐ {references?.length || 0} references</span>
+                    <span className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-3 py-1 rounded-full text-sm font-medium">🌍 {countriesVisited?.length || 0} countries</span>
+                    <span className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-3 py-1 rounded-full text-sm font-medium">⭐ {references?.length || 0} references</span>
                   </div>
                 </div>
               )}
@@ -3554,7 +3541,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {/* CTAs — wrap on mobile */}
             {!isOwnProfile ? (
               <div className="flex items-center justify-between gap-3 flex-wrap min-w-0">
-                <Button className="bg-orange-500 hover:bg-orange-600 text-white border-0 w-full sm:w-auto" onClick={handleMessage}>
+                <Button className="bg-black hover:bg-gray-800 text-white border-0 w-full sm:w-auto shadow-sm" onClick={handleMessage}>
                   Message
                 </Button>
                 <Button
@@ -3574,8 +3561,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       const chatCity = user.hometownCity || user.location?.split(',')[0] || 'General';
                       setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
                     }}
-                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700
-                               text-white border-0 shadow-lg rounded-full
+                    className="bg-black hover:bg-gray-800 text-white border-0 shadow-sm rounded-lg
                                inline-flex items-center justify-center gap-2
                                w-full sm:w-auto max-w-full sm:max-w-none
                                px-4 py-3 overflow-hidden break-words"
@@ -3586,8 +3572,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 )}
                 <Button
                   onClick={() => setLocation('/share-qr')}
-                  className="bg-gradient-to-r from-orange-600 to-blue-600 hover:from-orange-700 hover:to-blue-700
-                             text-white border-0 shadow-lg rounded-full
+                  className="bg-gray-100 hover:bg-gray-200 text-black dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 shadow-sm rounded-lg
                              inline-flex items-center justify-center gap-2
                              w-full sm:w-auto max-w-full sm:max-w-none
                              px-4 py-3 overflow-hidden break-words"
