@@ -11580,7 +11580,10 @@ Questions? Just reply to this message. Welcome aboard!
       const { activityId, cityName } = req.body;
       const userId = req.headers['x-user-id'];
       
+      console.log('🔍 POST Debug - Body:', req.body, 'Headers:', { 'x-user-id': userId });
+      
       if (!activityId || !cityName || !userId) {
+        console.log('❌ Missing fields:', { activityId: !!activityId, cityName: !!cityName, userId: !!userId });
         return res.status(400).json({ error: 'Missing required fields: activityId, cityName, userId' });
       }
       

@@ -371,6 +371,7 @@ export default function MatchInCity() {
 
   const toggleActivity = async (activity: any) => {
     const currentUser = getUserData();
+    console.log('🔍 Toggle Activity Debug:', { currentUser, activity, selectedCity });
     if (!currentUser?.id) {
       toast({ title: 'Error', description: 'Please refresh the page', variant: 'destructive' });
       return;
