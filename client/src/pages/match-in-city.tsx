@@ -797,107 +797,73 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-900">
         <div className="container mx-auto px-4 py-4">
-          {/* Revamped Hero Section */}
-          <div className="relative mb-12 overflow-hidden">
-            {/* Background gradients and patterns */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white via-blue-50 to-orange-50 dark:from-gray-900 dark:via-blue-950/50 dark:to-orange-950/50" />
-            <div className="absolute top-0 left-1/4 w-72 h-72 bg-blue-400/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-400/10 rounded-full blur-3xl" />
-            
-            <div className="relative py-16 lg:py-24">
-              {/* Centered layout for all screens */}
-              <div className="text-center space-y-12">
-                
-                {/* Status badge */}
-                <div className="inline-flex items-center gap-3 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border border-gray-200/50 dark:border-gray-600/50 rounded-full px-6 py-3 shadow-lg">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Live Connections</span>
-                  </div>
-                  <div className="w-px h-4 bg-gray-300 dark:bg-gray-600" />
-                  <span className="text-sm text-gray-500 dark:text-gray-400">Worldwide</span>
-                </div>
+          {/* Header - Mobile vs Desktop Layout */}
+          <div className="mb-6 md:mb-8">
+            {/* Mobile: Centered layout */}
+            <div className="block md:hidden text-center">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                🎯 City-Specific Matching
+              </h1>
+              <p className="text-lg text-gray-600 dark:text-gray-300">
+                Find People Who Want to Do What You Want to Do
+              </p>
+            </div>
 
-                {/* Dynamic headline */}
-                <div className="space-y-6">
-                  <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight">
-                    <span className="block text-gray-900 dark:text-white mb-3">Find Your</span>
-                    <span className="block">
-                      <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent">
-                        Perfect Match
-                      </span>
-                    </span>
-                    <span className="block text-gray-900 dark:text-white text-3xl sm:text-4xl lg:text-5xl font-normal mt-4">
-                      in Any City
-                    </span>
+            {/* Desktop: Landing page style layout (text left, image right) */}
+            <div className="hidden md:grid md:grid-cols-5 items-center gap-8">
+              {/* Left text side - wider */}
+              <div className="md:col-span-3">
+                <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight text-gray-900 dark:text-white leading-tight">
+                  <h1>
+                    City-Specific Matching
                   </h1>
-                  
-                  <p className="text-xl sm:text-2xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-4xl mx-auto font-light">
-                    Connect instantly with travelers and locals who share your exact interests
+                </div>
+                <div className="mt-4 sm:mt-6 max-w-2xl text-base md:text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
+                  <p className="mb-4">
+                    Connect with people who share your exact interests in specific cities around the world.
+                  </p>
+                  <p className="text-sm md:text-base text-gray-900 dark:text-gray-500 dark:text-gray-400">
+                    Add activities you want to do, then instantly see who else wants to do the same things in that city. Perfect for travelers and locals alike.
                   </p>
                 </div>
-
-                {/* Visual centerpiece */}
-                <div className="flex justify-center">
-                  <div className="relative group">
-                    {/* Floating elements around the image */}
-                    <div className="absolute -top-8 -left-8 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg z-10 transform group-hover:scale-105 transition-transform">
-                      ⚡ Real-time
-                    </div>
-                    <div className="absolute -bottom-6 -right-8 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg z-10 transform group-hover:scale-105 transition-transform">
-                      🌍 Global
-                    </div>
-                    
-                    {/* Main illustration */}
-                    <div className="relative w-96 h-80 rounded-3xl overflow-hidden shadow-2xl bg-gradient-to-br from-white to-gray-100 dark:from-gray-800 dark:to-gray-900 border border-gray-200/50 dark:border-gray-700/50 transform group-hover:shadow-3xl transition-all duration-500">
-                      <img 
-                        src={cityMatchingIllustration}
-                        alt="City activity matching illustration showing a person using their phone to connect with local activities and other people in the city"
-                        className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
-                        loading="eager"
-                        onLoad={(e) => {
-                          e.currentTarget.style.opacity = '1';
-                        }}
-                        style={{ opacity: '0' }}
-                      />
-                      {/* Enhanced loading indicator */}
-                      <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30">
-                        <div className="text-center">
-                          <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
-                            <MapPin className="w-12 h-12 text-white animate-pulse" />
-                          </div>
-                          <div className="text-gray-700 dark:text-gray-300 text-lg font-semibold">Connecting your tribe...</div>
-                          <div className="text-gray-500 dark:text-gray-400 text-sm mt-2">Finding perfect matches worldwide</div>
-                        </div>
-                      </div>
-                    </div>
+                
+                {/* Matching Features List */}
+                <div className="mt-6 space-y-3">
+                  <div className="flex items-center gap-3 text-sm md:text-base text-gray-600 dark:text-gray-300">
+                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                    <span>Real-time activity and event matching</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm md:text-base text-gray-600 dark:text-gray-300">
+                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                    <span>Connect with locals and fellow travelers</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm md:text-base text-gray-600 dark:text-gray-300">
+                    <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
+                    <span>Discover unique experiences in any city</span>
                   </div>
                 </div>
-
-                {/* Modernized feature highlights */}
-                <div className="grid sm:grid-cols-3 gap-6 max-w-6xl mx-auto">
-                  <div className="group bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm p-8 rounded-2xl border border-gray-200/50 dark:border-gray-700/50 hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-xl transition-all duration-300">
-                    <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transform transition-transform shadow-lg">
-                      <Target className="w-7 h-7 text-white" />
+              </div>
+              
+              {/* Right image side - smaller */}
+              <div className="md:col-span-2 flex flex-col items-center">
+                {/* City matching illustration */}
+                <div className="relative w-80 h-64 rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 flex items-center justify-center">
+                  <img 
+                    src={cityMatchingIllustration}
+                    alt="City activity matching illustration showing a person using their phone to connect with local activities and other people in the city"
+                    className="w-full h-full object-cover transition-opacity duration-500"
+                    loading="eager"
+                    onLoad={(e) => {
+                      e.currentTarget.style.opacity = '1';
+                    }}
+                    style={{ opacity: '0' }}
+                  />
+                  {/* Loading indicator */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center">
+                      <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-3 animate-pulse" />
+                      <div className="text-gray-500 text-sm font-medium">Loading illustration...</div>
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Smart Matching</h3>
-                    <p className="text-gray-600 dark:text-gray-300">AI-powered connections based on your exact interests and activities</p>
-                  </div>
-                  
-                  <div className="group bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm p-8 rounded-2xl border border-gray-200/50 dark:border-gray-700/50 hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-xl transition-all duration-300">
-                    <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transform transition-transform shadow-lg">
-                      <Users className="w-7 h-7 text-white" />
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Verified Community</h3>
-                    <p className="text-gray-600 dark:text-gray-300">Connect safely with verified locals and fellow travelers</p>
-                  </div>
-                  
-                  <div className="group bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm p-8 rounded-2xl border border-gray-200/50 dark:border-gray-700/50 hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-xl transition-all duration-300">
-                    <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transform transition-transform shadow-lg">
-                      <Zap className="w-7 h-7 text-white" />
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Instant Meetups</h3>
-                    <p className="text-gray-600 dark:text-gray-300">Real-time notifications for spontaneous city adventures</p>
                   </div>
                 </div>
               </div>
@@ -912,189 +878,136 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
             </div>
           ) : (
             <>
-              {/* Enhanced City Search */}
-              <div className="mb-12">
-                <div className="text-center mb-8">
-                  <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-                    Choose Your <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Destination</span>
-                  </h2>
-                  <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
-                    Select a city to discover activities, events, and connect with your perfect travel companions
-                  </p>
-                </div>
-                
-                <div className="max-w-lg mx-auto mb-8">
-                  <div className="relative group">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 w-5 h-5 transition-colors" />
+              {/* City Search */}
+              <div className="mb-6">
+                <div className="max-w-md mx-auto">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-900 dark:text-gray-500 dark:text-gray-400 w-4 h-4" />
                     <Input
-                      placeholder="Search popular cities..."
+                      placeholder="Search cities..."
                       value={citySearchTerm}
                       onChange={(e) => setCitySearchTerm(e.target.value)}
-                      className="pl-12 pr-4 py-4 text-lg bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-gray-200 dark:border-gray-600 rounded-2xl text-gray-900 dark:text-white placeholder-gray-400 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-500/20 transition-all shadow-lg"
+                      className="pl-9 py-2 text-sm bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 dark:focus:border-blue-400"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Enhanced Cities Grid */}
-              {filteredCities.length > 0 && (
-                <div className="mb-12">
-                  <div className="text-center mb-10">
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Popular Destinations</h3>
-                    <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full mx-auto" />
-                  </div>
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-                    {filteredCities.map((city, index) => (
-                      <Card
-                        key={`city-${city.city}-${city.state}-${index}`}
-                        className="group cursor-pointer overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200/50 dark:border-gray-600/50 hover:shadow-2xl hover:scale-105 transition-all duration-500 hover:border-blue-300 dark:hover:border-blue-600"
-                        onClick={() => {
-                          setSelectedCity(city.city);
-                          window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }}
-                        data-testid={`card-city-${city.city.toLowerCase().replace(/\s+/g, '-')}`}
-                      >
-                        <div className="relative h-48 overflow-hidden">
-                          <div className={`absolute inset-0 bg-gradient-to-br ${city.gradient}`} />
-                          <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
-                          
-                          {/* City icon */}
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                              <MapPin className="w-10 h-10 text-white" />
-                            </div>
-                          </div>
-                          
-                          {/* Floating badge */}
-                          <div className="absolute top-4 right-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-medium text-gray-700 dark:text-gray-300">
-                            Explore
-                          </div>
-                        </div>
-                        
-                        <CardContent className="p-6">
-                          <div className="space-y-3">
-                            <div>
-                              <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                                {city.city}
-                              </h3>
-                              <p className="text-sm text-gray-500 dark:text-gray-400">
-                                {city.state && `${city.state}, `}{city.country}
-                              </p>
-                            </div>
-                            
-                            <Button 
-                              className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedCity(city.city);
-                              }}
-                              data-testid={`button-select-${city.city.toLowerCase().replace(/\s+/g, '-')}`}
-                            >
-                              <MapPin className="w-4 h-4 mr-2" />
-                              Connect in {city.city}
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
-              )}
 
-              {/* Enhanced Custom City Search */}
-              <div className="mb-12">
-                <div className="max-w-2xl mx-auto">
-                  <Card className="bg-gradient-to-br from-white/90 to-gray-50/90 dark:from-gray-800/90 dark:to-gray-900/90 backdrop-blur-md border border-gray-200/50 dark:border-gray-600/50 shadow-2xl">
-                    <CardContent className="p-8">
-                      <div className="text-center mb-6">
-                        <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl">
-                          <Search className="w-8 h-8 text-white" />
-                        </div>
-                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                          Search <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Any City</span>
-                        </h3>
-                        <p className="text-gray-600 dark:text-gray-400">
-                          Don't see your destination? Search for any city worldwide and we'll create it instantly
-                        </p>
+              {/* Cities Grid - Bigger cards */}
+              {filteredCities.length > 0 && (
+            <div className="mb-8">
+              <div className="text-center mb-8">
+                <h3 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Cities</h3>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                {filteredCities.map((city, index) => (
+                  <Card
+                    key={`other-${city.city}-${city.state}-${index}`}
+                    className="group cursor-pointer transform hover:scale-105 transition-all duration-300 overflow-hidden relative bg-white/10 backdrop-blur-sm border-white/20 hover:border-white/40"
+                    onClick={() => {
+                      setSelectedCity(city.city);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                  >
+                    <div className="relative h-32 overflow-hidden">
+                      <div className={`w-full h-full bg-gradient-to-br ${city.gradient} flex items-center justify-center`}>
+                        <MapPin className="w-12 h-12 text-gray-900 dark:text-gray-500 dark:text-gray-400" />
                       </div>
-                      
-                      <div className="space-y-4">
-                        <div className="relative group">
-                          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <Search className="w-6 h-6 text-gray-400 group-focus-within:text-purple-500 transition-colors" />
-                          </div>
-                          <Input
-                            placeholder="Type any city name (e.g., Tokyo, Paris, Sydney)..."
-                            value={citySearchTerm}
-                            onChange={(e) => setCitySearchTerm(e.target.value)}
-                            className="pl-14 pr-4 py-4 text-lg bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm border-2 border-gray-300 dark:border-gray-500 rounded-2xl text-gray-900 dark:text-white placeholder-gray-400 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-4 focus:ring-purple-500/20 transition-all shadow-lg"
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter' && citySearchTerm.trim() && !searchingCity) {
-                                handleCustomCitySearch(citySearchTerm.trim());
-                              }
-                            }}
-                            data-testid="input-custom-city-search"
-                          />
-                        </div>
-                        
-                        <Button 
-                          onClick={() => {
-                            if (citySearchTerm.trim() && !searchingCity) {
-                              handleCustomCitySearch(citySearchTerm.trim());
-                            }
-                          }}
-                          disabled={!citySearchTerm.trim() || searchingCity}
-                          className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:from-gray-300 disabled:to-gray-400 text-white font-semibold py-4 rounded-2xl flex items-center justify-center gap-3 text-lg transition-all duration-300 shadow-lg hover:shadow-xl disabled:shadow-none transform hover:scale-105 disabled:scale-100"
-                          data-testid="button-search-custom-city"
-                        >
-                          {searchingCity ? (
-                            <>
-                              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                              Searching for {citySearchTerm}...
-                            </>
-                          ) : (
-                            <>
-                              <Zap className="w-5 h-5" />
-                              Explore {citySearchTerm || 'This City'}
-                            </>
-                          )}
-                        </Button>
+                      <div className="absolute inset-0 bg-black/20" />
+                    </div>
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <MapPin className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+                        <h3 className="font-semibold text-lg text-gray-900 dark:text-white truncate">{city.city}</h3>
                       </div>
-                      
-                      {/* Enhanced Status Messages */}
-                      {searchingCity && (
-                        <div className="mt-6 p-6 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-300/30 dark:border-blue-600/30 rounded-2xl backdrop-blur-sm">
-                          <div className="flex items-center gap-3 text-blue-700 dark:text-blue-300 mb-2">
-                            <div className="w-6 h-6 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
-                            <p className="font-semibold">Creating your city connection...</p>
-                          </div>
-                          <p className="text-sm text-blue-600 dark:text-blue-400">
-                            Our AI is setting up activities, events, and connections for {selectedCity}
-                          </p>
-                        </div>
-                      )}
-                      
-                      {searchError && (
-                        <div className="mt-6 p-6 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-300/30 dark:border-amber-600/30 rounded-2xl backdrop-blur-sm">
-                          <div className="flex items-start gap-3">
-                            <div className="w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                              <MapPin className="w-3 h-3 text-white" />
-                            </div>
-                            <div>
-                              <p className="font-semibold text-amber-700 dark:text-amber-300 mb-1">Limited Results Found</p>
-                              <p className="text-sm text-amber-600 dark:text-amber-400 mb-2">{searchError}</p>
-                              <p className="text-xs text-amber-600 dark:text-amber-500">
-                                You can still explore the city and add your own activities to help build the community!
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      )}
+                      <p className="text-sm text-gray-900 dark:text-gray-500 dark:text-gray-400 mb-3 truncate">
+                        {city.state && `${city.state}, `}{city.country}
+                      </p>
+                      <Button 
+                        className="w-full text-sm bg-blue-500 hover:bg-blue-600 text-gray-900 dark:text-white py-2"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedCity(city.city);
+                        }}
+                      >
+                        Explore
+                      </Button>
                     </CardContent>
                   </Card>
+                ))}
                 </div>
               </div>
+              )}
+
+              {/* Search for Other Cities Tab */}
+              <div className="mb-8">
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+              <CardContent className="p-6">
+                <div className="text-center mb-4">
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">🔍 Search Any City</h3>
+                  <p className="text-gray-900 dark:text-gray-600 dark:text-gray-300">Don't see your city? Search for any city worldwide</p>
+                </div>
+                <div className="max-w-md mx-auto">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-900 dark:text-gray-500 dark:text-gray-400 w-5 h-5" />
+                    <Input
+                      placeholder="Type any city name (e.g., Tokyo, Paris, Sydney)..."
+                      value={citySearchTerm}
+                      onChange={(e) => setCitySearchTerm(e.target.value)}
+                      className="pl-10 py-3 text-lg bg-white/20 border-white/30 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-white/60"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && citySearchTerm.trim() && !searchingCity) {
+                          handleCustomCitySearch(citySearchTerm.trim());
+                        }
+                      }}
+                    />
+                  </div>
+                  <div className="mt-3 text-center">
+                    <Button 
+                      onClick={() => {
+                        if (citySearchTerm.trim() && !searchingCity) {
+                          handleCustomCitySearch(citySearchTerm.trim());
+                        }
+                      }}
+                      disabled={!citySearchTerm.trim() || searchingCity}
+                      className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-gray-900 dark:text-white font-semibold px-6 py-2 flex items-center gap-2"
+                    >
+                      {searchingCity ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          Searching...
+                        </>
+                      ) : (
+                        'Search This City'
+                      )}
+                    </Button>
+                  </div>
+                  
+                  {/* Search Status Messages */}
+                  {searchingCity && (
+                    <div className="mt-4 p-4 bg-blue-500/20 border border-blue-400/30 rounded-lg">
+                      <div className="flex items-center gap-2 text-blue-200">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-200"></div>
+                        <p className="text-sm font-medium">Searching for city data...</p>
+                      </div>
+                      <p className="text-xs text-blue-300 mt-1">AI is generating activities and events for {selectedCity}. This may take a few moments.</p>
+                    </div>
+                  )}
+                  
+                  {searchError && (
+                    <div className="mt-4 p-4 bg-yellow-500/20 border border-yellow-400/30 rounded-lg">
+                      <div className="text-yellow-200">
+                        <p className="text-sm font-medium">Limited Results Found</p>
+                        <p className="text-xs text-yellow-300 mt-1">{searchError}</p>
+                        <p className="text-xs text-yellow-300 mt-2">AI isn't always perfect at finding city data. You can still explore the city and add your own activities!</p>
+                      </div>
+                    </div>
+                  )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
             </>
           )}
 
@@ -1103,207 +1016,105 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
     );
   }
 
-  // When city is selected, show the city match interface
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800">
       <div className="container mx-auto px-4 py-8">
-        {/* Enhanced Header Section */}
-        <div className="relative mb-8 md:mb-12">
-          {/* Background elements */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/20 rounded-3xl" />
-          
-          <div className="relative p-6 md:p-8">
-            <Button
-              variant="ghost"
-              onClick={() => {
-                setSelectedCity('');
-              }}
-              className="text-white hover:bg-white/20 mb-6 transition-all duration-300 backdrop-blur-sm border border-white/10 rounded-2xl"
-              data-testid="button-back-to-cities"
-            >
-              <ArrowLeft className="w-5 h-5 mr-2" />
-              <span className="font-medium">Back to Cities</span>
-            </Button>
-            
-            <div className="flex items-center gap-4 md:gap-6">
-              <div className="relative">
-                <div className="w-16 h-16 md:w-20 md:h-20 rounded-3xl bg-gradient-to-br from-blue-500 via-purple-600 to-orange-500 flex items-center justify-center shadow-2xl">
-                  <MapPin className="w-8 h-8 md:w-10 md:h-10 text-white" />
-                </div>
-                <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
-                  <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                </div>
-              </div>
-              
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <h1 className="text-2xl md:text-4xl lg:text-5xl font-black text-white">
-                    {selectedCity}
-                  </h1>
-                  <div className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
-                    <span className="text-white/90 text-sm font-medium">Live</span>
-                  </div>
-                </div>
-                <p className="text-white/80 text-lg md:text-xl font-light">
-                  Connect with your perfect activity partners
-                </p>
-                <p className="text-white/60 text-sm md:text-base mt-2">
-                  Add activities below and instantly see who else wants to join you
-                </p>
-              </div>
+        {/* Header with Back Button - MOBILE RESPONSIVE */}
+        <div className="mb-6 md:mb-8">
+          <Button
+            variant="ghost"
+            onClick={() => {
+              // Navigate back to city match selection page
+              setSelectedCity('');
+            }}
+            className="text-gray-900 dark:text-white hover:bg-white/10 mb-4"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            Back to Cities
+          </Button>
+          <div className="flex items-start gap-3 md:gap-4">
+            <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center flex-shrink-0`}>
+              <MapPin className="w-5 h-5 md:w-6 md:h-6 text-gray-900 dark:text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xl md:text-3xl font-bold text-gray-900 dark:text-white leading-tight">{selectedCity}</h1>
+              <p className="text-sm md:text-base text-gray-900 dark:text-gray-600 dark:text-gray-300 mt-1">Add activities and events. Others click to match!</p>
             </div>
           </div>
         </div>
 
         {/* Removed problematic photo gallery */}
 
-        {/* Enhanced Quick Start Guide */}
-        <Card className="mb-8 bg-gradient-to-r from-white/10 via-blue-500/10 to-purple-500/10 backdrop-blur-md border border-white/20">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center flex-shrink-0">
-                <Target className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className="text-white font-bold text-lg mb-1">How It Works</h3>
-                <p className="text-white/80 text-sm md:text-base">
-                  Click activities below to add them to your profile, then instantly see who else wants to do the same things in {selectedCity}!
-                </p>
-              </div>
+        {/* HOW MATCHING WORKS - MOBILE RESPONSIVE */}
+        <Card className="mb-3 bg-white/5 backdrop-blur-sm border-white/10">
+          <CardContent className="p-3">
+            <div className="text-gray-600 dark:text-gray-300 text-xs md:text-sm">
+              <strong className="text-blue-400">Quick Start:</strong> Click blue activities below to add them to your profile, then see who else wants to do the same things in {selectedCity}!
             </div>
           </CardContent>
         </Card>
 
-        {/* Modernized Activities Header */}
-        <div className="mb-8">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
-            <div>
-              <h2 className="text-2xl md:text-3xl font-black text-white mb-2">
-                <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                  {selectedCity} Activities
-                </span>
-              </h2>
-              <p className="text-white/60 text-sm md:text-base">
-                {cityActivities.length} activities • Add yours or join existing ones
-              </p>
-            </div>
-            
+
+
+
+        {/* Global Activities Section - MOBILE RESPONSIVE */}
+        <div className="mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+            <h2 className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">🌍 All {selectedCity} Activities ({cityActivities.length})</h2>
             <Button
               onClick={() => enhanceCityWithMoreActivities()}
-              className="bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:from-purple-600 hover:via-pink-600 hover:to-red-600 text-white font-semibold px-6 py-3 rounded-2xl shadow-xl text-sm md:text-base transition-all duration-300 transform hover:scale-105"
+              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-gray-900 dark:text-white font-semibold px-3 py-2 md:px-4 rounded-lg shadow-lg text-sm md:text-base w-full sm:w-auto"
               disabled={isLoading}
-              data-testid="button-get-more-activities"
             >
-              {isLoading ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Generating...
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <Zap className="w-4 h-4" />
-                  Get AI Activities
-                </div>
-              )}
+              🤖 Get More AI Activities
             </Button>
           </div>
         </div>
 
-        {/* Enhanced Activities Management Section */}
-        <Card className="mb-8 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-md border border-white/20">
-          <CardContent className="p-6 md:p-8">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-blue-500 rounded-xl flex items-center justify-center">
-                <Plus className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h3 className="text-white font-bold text-lg">Community Activities</h3>
-                <p className="text-white/70 text-sm">Everyone can contribute and connect</p>
-              </div>
-            </div>
-            
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 md:p-6 mb-6">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-6 h-6 bg-blue-500 rounded-lg flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">!</span>
-                </div>
-                <span className="text-white/90 text-sm font-medium">How to use activities:</span>
-              </div>
-              <div className="text-white/70 text-sm space-y-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-blue-400 rounded-full" />
-                  <span>Click blue activities to add them to your profile</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-400 rounded-full" />
-                  <span>Green activities are already in your profile</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-orange-400 rounded-full" />
-                  <span>Edit or delete activities to change them for everyone</span>
-                </div>
-              </div>
-            </div>
+        {/* Global Activities Section - MOBILE RESPONSIVE */}
+        <div className="bg-gray-800/60 rounded-lg p-3 md:p-4 mb-6">
+          <h3 className="text-blue-400 font-semibold text-base md:text-lg mb-2 md:mb-3">
+            Everyone can add/edit activities for {selectedCity}
+          </h3>
+          <div className="text-gray-300 text-xs md:text-sm mb-3">
+            🔵 Click blue activities to add them to your personal list below<br className="sm:hidden" />
+            <span className="hidden sm:inline"> • </span>✏️ Edit/delete to change for EVERYONE
+          </div>
 
-            {/* Enhanced Add Activity Form */}
-            <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-6" data-add-activity-section>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
-                  <Plus className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-white font-bold text-lg">Add New Activity</h3>
-                  <p className="text-white/70 text-sm">Create something for the community</p>
-                </div>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="relative group">
+          {/* Add Activity Section - MOBILE RESPONSIVE */}
+          <div className="mb-4" data-add-activity-section>
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-3">
+              <h3 className="text-gray-900 dark:text-white text-sm font-medium mb-2">+ Add Activity</h3>
+              <div className="space-y-2">
+                <Input
+                  placeholder="Add activity or event"
+                  value={newActivityName}
+                  onChange={(e) => setNewActivityName(e.target.value)}
+                  className="w-full bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-sm h-9 md:h-8"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && newActivityName.trim()) {
+                      addActivity();
+                    }
+                  }}
+                />
+                <div className="flex flex-col sm:flex-row gap-2">
                   <Input
-                    placeholder="What activity would you like to do? (e.g., Coffee & Chat, Museum Visit, Food Tour)"
-                    value={newActivityName}
-                    onChange={(e) => setNewActivityName(e.target.value)}
-                    className="w-full bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white placeholder-white/50 rounded-xl py-3 px-4 text-base focus:border-green-400 focus:ring-4 focus:ring-green-400/20 transition-all"
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter' && newActivityName.trim()) {
-                        addActivity();
-                      }
-                    }}
-                    data-testid="input-new-activity-name"
-                  />
-                </div>
-                
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Input
-                    placeholder="Optional description to help others understand"
+                    placeholder="Optional description"
                     value={newActivityDescription}
                     onChange={(e) => setNewActivityDescription(e.target.value)}
-                    className="flex-1 bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white placeholder-white/50 rounded-xl py-3 px-4 text-base focus:border-blue-400 focus:ring-4 focus:ring-blue-400/20 transition-all"
-                    data-testid="input-new-activity-description"
+                    className="flex-1 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-sm h-9 md:h-8"
                   />
                   <Button
                     onClick={addActivity}
                     disabled={!newActivityName.trim() || isLoading}
-                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 disabled:from-gray-500 disabled:to-gray-600 text-white font-semibold px-8 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 disabled:scale-100 shadow-lg hover:shadow-xl text-base sm:w-auto"
-                    data-testid="button-add-activity"
+                    className="bg-green-600 hover:bg-green-700 text-gray-900 dark:text-white px-4 h-9 md:h-8 text-sm w-full sm:w-auto"
                   >
-                    {isLoading ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        Adding...
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <Plus className="w-4 h-4" />
-                        Add Activity
-                      </div>
-                    )}
+                    Add
                   </Button>
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
 
 
 
@@ -1886,7 +1697,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
             </DialogContent>
           </Dialog>
         )}
-        
+
       </div>
     </div>
   );

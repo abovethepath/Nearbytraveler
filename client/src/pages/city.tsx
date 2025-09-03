@@ -248,129 +248,93 @@ export default function CityPage({ cityName }: CityPageProps) {
         </button>
       </div>
       
-      {/* Modern Hero Section */}
-      <div className={`relative mb-8 mx-4 mt-2 overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-black to-slate-800 ${
-        isLAArea ? 'from-orange-600 via-red-700 to-purple-800' : ''
+      {/* Hero Section - Mobile vs Desktop Layout */}
+      <div className={`relative mb-6 rounded-xl overflow-hidden mx-4 mt-2 bg-gradient-to-r from-blue-600 to-purple-700 ${
+        isLAArea ? 'from-orange-500 to-red-600' : ''
       }`}>
-        
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 25% 25%, white 2px, transparent 2px), radial-gradient(circle at 75% 75%, white 2px, transparent 2px)`,
-            backgroundSize: '50px 50px'
-          }}></div>
+        {/* Mobile: Centered layout */}
+        <div className="block md:hidden h-[200px] relative flex flex-col justify-center items-center text-center px-4">
+          {isLAArea && (
+            <div className="mb-2 sm:mb-4">
+              <Badge className="bg-white/20 text-white text-xs sm:text-sm px-3 py-1 rounded-full">
+                🌟 Beta Launch City
+              </Badge>
+            </div>
+          )}
+          <h1 className={`${
+            isLAArea 
+              ? 'text-4xl sm:text-5xl font-bold text-white'
+              : 'text-3xl sm:text-4xl font-bold text-white'
+          } mb-3 sm:mb-4 leading-tight`}>
+            {decodedCityName}
+          </h1>
         </div>
 
-        {/* Mobile Layout */}
-        <div className="block md:hidden relative py-12 px-6">
-          <div className="text-center space-y-6">
-            {isLAArea && (
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-400/20 to-orange-500/20 backdrop-blur-md border border-yellow-400/30 rounded-full px-4 py-2">
-                <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
-                <span className="text-yellow-200 text-sm font-medium">🌟 Beta Launch</span>
-              </div>
-            )}
-            
-            <div>
-              <h1 className="text-4xl md:text-5xl font-black text-white mb-4 leading-tight">
-                <span className="bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
-                  {decodedCityName}
-                </span>
-              </h1>
-              <p className="text-white/70 text-lg leading-relaxed max-w-md mx-auto">
-                Discover authentic connections and experiences
-              </p>
-            </div>
-
-            {/* Quick Stats */}
-            <div className="flex justify-center gap-6 pt-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-white">{users.length}</div>
-                <div className="text-white/60 text-sm">People</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-white">{events.length}</div>
-                <div className="text-white/60 text-sm">Events</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Desktop Layout */}
-        <div className="hidden md:block relative py-16 px-8">
-          {/* Floating Elements */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-20 left-12 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-20 right-16 w-40 h-40 bg-purple-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-            <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-white/10 rounded-full blur-2xl animate-pulse delay-500"></div>
+        {/* Desktop: Enhanced engaging layout */}
+        <div className="hidden md:block relative py-12 overflow-hidden">
+          {/* Enhanced background effects */}
+          <div className="absolute inset-0 opacity-10 pointer-events-none">
+            <div className="absolute top-16 left-8 w-32 h-32 bg-white rounded-full blur-3xl"></div>
+            <div className="absolute bottom-16 right-8 w-40 h-40 bg-white rounded-full blur-3xl"></div>
           </div>
           
-          <div className="max-w-7xl mx-auto grid md:grid-cols-2 lg:grid-cols-5 gap-12 items-center relative z-10">
-            {/* Content Section */}
-            <div className="lg:col-span-3 space-y-8">
+          <div className="max-w-7xl mx-auto px-8 grid gap-8 md:gap-12 md:grid-cols-5 items-center relative z-10">
+            {/* Left text side - wider and enhanced */}
+            <div className="md:col-span-3">
+              {/* Enhanced badge for LA areas */}
               {isLAArea && (
-                <div className="inline-flex items-center gap-3 bg-gradient-to-r from-yellow-400/20 to-orange-500/20 backdrop-blur-md border border-yellow-400/30 rounded-full px-6 py-3">
-                  <div className="w-4 h-4 bg-yellow-400 rounded-full animate-pulse"></div>
-                  <span className="text-yellow-200 font-medium">🌟 Beta Launch City - Experience the Future</span>
+                <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full px-6 py-3 mb-8">
+                  <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+                  <span className="text-white font-medium">🌟 Beta Launch City - Experience the Future</span>
                 </div>
               )}
 
               <div className="space-y-6">
-                <h1 className="text-5xl lg:text-7xl font-black tracking-tight leading-none">
-                  <span className="bg-gradient-to-r from-white via-blue-200 to-white bg-clip-text text-transparent">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-tight">
+                  <span className="bg-gradient-to-r from-white via-blue-200 to-white bg-clip-text text-transparent drop-shadow-lg">
                     {decodedCityName}
                   </span>
                 </h1>
                 
-                <div className="space-y-4 max-w-2xl">
-                  <p className="text-xl text-white/90 leading-relaxed font-medium">
-                    Your gateway to authentic connections — <span className="text-blue-300 font-bold">where every encounter counts.</span>
+                <div className="max-w-2xl space-y-4">
+                  <p className="text-lg lg:text-xl text-white/90 leading-relaxed font-medium">
+                    Your gateway to authentic connections — <em className="text-blue-200 font-semibold">where every encounter counts.</em>
                   </p>
-                  <p className="text-white/70 leading-relaxed">
+                  <p className="text-base text-white/70 leading-relaxed">
                     Connect with travelers, locals, and businesses in {parsedCityName}. From hidden local gems to popular attractions, discover authentic experiences with like-minded people.
                   </p>
                 </div>
               </div>
               
-              {/* Feature Highlights */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="flex items-center gap-4 p-4 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+              {/* Enhanced Features with attractive icons */}
+              <div className="mt-8 space-y-4">
+                <div className="flex items-center gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg border border-white/30">
                     <Users className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-white">Local Community</h3>
-                    <p className="text-sm text-white/70">Verified travelers & locals</p>
+                    <h3 className="font-semibold text-white">Local Community</h3>
+                    <p className="text-sm text-white/70">Connect with verified travelers and long-time locals</p>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-4 p-4 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
-                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
+                <div className="flex items-center gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg border border-white/30">
                     <Calendar className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-white">Live Events</h3>
-                    <p className="text-sm text-white/70">Discover what's happening now</p>
+                    <h3 className="font-semibold text-white">Live Events & Activities</h3>
+                    <p className="text-sm text-white/70">Discover what's happening right now in the city</p>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-4 p-4 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
-                  <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center shadow-lg">
+                <div className="flex items-center gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg border border-white/30">
                     <Building2 className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-white">Local Business</h3>
-                    <p className="text-sm text-white/70">Exclusive deals & partnerships</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-4 p-4 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
-                  <div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-                    <Star className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-white">Premium Experiences</h3>
-                    <p className="text-sm text-white/70">Curated local adventures</p>
+                    <h3 className="font-semibold text-white">Business Partners</h3>
+                    <p className="text-sm text-white/70">Find exclusive deals and partnership opportunities</p>
                   </div>
                 </div>
               </div>
