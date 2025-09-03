@@ -4059,11 +4059,44 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     {/* When editing all preferences, show the unified content */}
                     {editingInterests && editingActivities && editingEvents && (
                       <div className="space-y-6 mt-6">
-                        {/* Interests Section */}
+                        {/* Top Choices Section - FIRST */}
+                        <div>
+                          <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+                            <Star className="w-5 h-5 text-yellow-500" />
+                            Top Choices for Most Travelers
+                          </h4>
+                          
+                          <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
+                            {MOST_POPULAR_INTERESTS.slice(0, 12).map((item) => {
+                              const isSelected = editFormData.interests.includes(item);
+                              
+                              return (
+                                <button
+                                  key={item}
+                                  type="button"
+                                  onClick={() => {
+                                    toggleArrayValue(editFormData.interests, item, (newInterests) => 
+                                      setEditFormData({ ...editFormData, interests: newInterests })
+                                    );
+                                  }}
+                                  className={`inline-flex items-center justify-center h-7 sm:h-8 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                    isSelected
+                                      ? 'bg-green-600 text-white font-bold transform scale-105 shadow-lg'
+                                      : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600 shadow-sm'
+                                  }`}
+                                >
+                                  {item}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {/* Interests Section - SECOND */}
                         <div>
                           <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
                             <Heart className="w-5 h-5 text-blue-500" />
-                            Interests
+                            Additional Interests
                           </h4>
                           
                           <div className="flex flex-wrap gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border overflow-hidden break-words">
@@ -4335,23 +4368,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
                 </div>
 
-                {/* Edit All Preferences Button - Now comes after Top Choices */}
-                {isOwnProfile && (
-                  <div className="mb-4">
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        setEditingInterests(true);
-                        setEditingActivities(true);
-                        setEditingEvents(true);
-                      }}
-                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0"
-                    >
-                      <Edit className="w-3 h-3 mr-1" />
-                      Edit All Preferences
-                    </Button>
-                  </div>
-                )}
 
                 {/* Interests */}
                 <div className="mb-6">
