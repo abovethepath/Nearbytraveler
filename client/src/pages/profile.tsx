@@ -3493,7 +3493,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <div className="space-y-2 text-black w-full mt-2">
                   {(() => {
                     const hometown = user.hometownCity ? 
-                      `${user.hometownCity}${user.hometownState ? `, ${user.hometownState}` : ''}` :
+                      `${user.hometownCity}${user.hometownState ? `, ${user.hometownState}` : ''}${user.hometownCountry ? `, ${user.hometownCountry}` : ''}` :
                       'Unknown';
                     
                     return (
