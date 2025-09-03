@@ -205,6 +205,16 @@ export default function Messages() {
       )
     : [];
 
+  // Mark messages as read mutation
+  const markAsReadMutation = useMutation({
+    mutationFn: async (senderId: number) => {
+      return apiRequest(`/api/messages/${user?.id}/mark-read`, 'POST', { senderId });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/messages/${user?.id}/unread-count`] });
+    },
+  });
+
   // Send message
   const sendMessageMutation = useMutation({
     mutationFn: async (messageData: { receiverId: number; content: string; isInstantMessage?: boolean }) => {
@@ -235,6 +245,9 @@ export default function Messages() {
   const handleSendMessage = () => {
     if (!newMessage.trim() || !selectedConversation) return;
     
+    // Mark any unread messages from target user as read (since user is responding)
+    markAsReadMutation.mutate(selectedConversation);
+    
     // Always use regular API call to avoid message duplication issues
     console.log('📤 Sending message via API');
     sendMessageMutation.mutate({
@@ -242,6 +255,20 @@ export default function Messages() {
       content: newMessage.trim(),
     });
   };
+
+  // Mark messages as read when conversation is selected
+  useEffect(() => {
+    if (selectedConversation && user?.id && conversationMessages.length > 0) {
+      // Check if there are unread messages from the selected user
+      const unreadFromSelected = conversationMessages.some((msg: any) => 
+        msg.senderId === selectedConversation && !msg.isRead
+      );
+      
+      if (unreadFromSelected) {
+        markAsReadMutation.mutate(selectedConversation);
+      }
+    }
+  }, [selectedConversation, user?.id, conversationMessages.length]);
 
   // Handle typing indicators
   const handleTyping = (value: string) => {

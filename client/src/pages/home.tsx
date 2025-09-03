@@ -1075,31 +1075,42 @@ export default function Home() {
   const meetups = allMeetups;
 
   // Query users - prioritize specific location filter, otherwise show ALL users
-  const { data: rawUsers = [], isLoading: usersLoading } = useQuery<User[]>({
+  const { data: rawUsers = [], isLoading: usersLoading, error: usersError } = useQuery<User[]>({
     queryKey: ["/api/users/discover-people", { location: filters.location }],
     queryFn: async () => {
       const searchLocation = filters.location;
 
-      // If there's a specific location filter, use that
-      if (searchLocation && searchLocation.trim() !== '') {
-        console.log('Fetching users for specific location filter:', searchLocation);
-        const response = await fetch(`/api/users/search-by-location?location=${encodeURIComponent(searchLocation)}`, {
-          headers: {
-            ...(currentUserId && { 'x-user-id': currentUserId.toString() })
+      try {
+        // If there's a specific location filter, use that
+        if (searchLocation && searchLocation.trim() !== '') {
+          console.log('Fetching users for specific location filter:', searchLocation);
+          const response = await fetch(`/api/users/search-by-location?location=${encodeURIComponent(searchLocation)}`, {
+            headers: {
+              ...(currentUserId && { 'x-user-id': currentUserId.toString() })
+            }
+          });
+          if (!response.ok) {
+            console.error('Location search API failed:', response.status, response.statusText);
+            throw new Error('Failed to fetch users by location');
           }
-        });
-        if (!response.ok) throw new Error('Failed to fetch users by location');
-        const data = await response.json();
-        console.log('Location search API response:', data.length, 'users for', searchLocation);
-        return data;
-      } else {
-        // Show ALL users for general discovery (not limited to specific cities)
-        console.log('Fetching ALL users for discovery');
-        const response = await fetch('/api/users');
-        if (!response.ok) throw new Error('Failed to fetch all users');
-        const data = await response.json();
-        console.log('ALL users API response:', data.length, 'total users for discovery');
-        return data;
+          const data = await response.json();
+          console.log('Location search API response:', data.length, 'users for', searchLocation);
+          return data;
+        } else {
+          // Show ALL users for general discovery (not limited to specific cities)
+          console.log('Fetching ALL users for discovery');
+          const response = await fetch('/api/users');
+          if (!response.ok) {
+            console.error('Users API failed:', response.status, response.statusText);
+            throw new Error('Failed to fetch all users');
+          }
+          const data = await response.json();
+          console.log('ALL users API response:', data.length, 'total users for discovery');
+          return data;
+        }
+      } catch (error) {
+        console.error('Users query error:', error);
+        throw error;
       }
     },
     enabled: true, // Always enabled

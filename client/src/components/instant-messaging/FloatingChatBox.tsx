@@ -53,6 +53,16 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
     refetchInterval: 3000, // Refresh every 3 seconds for new messages
   });
 
+  // Mark messages as read mutation
+  const markAsReadMutation = useMutation({
+    mutationFn: async (senderId: number) => {
+      return apiRequest(`/api/messages/${user?.id}/mark-read`, 'POST', { senderId });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/messages/${user?.id}/unread-count`] });
+    },
+  });
+
   // Filter messages for this specific conversation
   const conversationMessages = React.useMemo(() => {
     const dbMessages = (messages as any[]).filter((msg: any) => 
@@ -64,6 +74,20 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
     const allMessages = [...dbMessages, ...instantMessages];
     return allMessages.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
   }, [messages, instantMessages, user?.id, targetUser.id]);
+
+  // Mark messages from target user as read when chat opens
+  useEffect(() => {
+    if (user?.id && targetUser.id && conversationMessages.length > 0) {
+      // Check if there are unread messages from target user
+      const unreadFromTarget = conversationMessages.some((msg: any) => 
+        msg.senderId === targetUser.id && !msg.isRead
+      );
+      
+      if (unreadFromTarget) {
+        markAsReadMutation.mutate(targetUser.id);
+      }
+    }
+  }, [user?.id, targetUser.id, conversationMessages.length]);
 
   // Send message mutation
   const sendMessageMutation = useMutation({
@@ -122,6 +146,9 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
     
     // Clear the input immediately
     setNewMessage('');
+
+    // Mark any unread messages from target user as read (since user is responding)
+    markAsReadMutation.mutate(targetUser.id);
 
     // Send via WebSocket for instant delivery
     websocketService.sendInstantMessage(targetUser.id, messageContent);

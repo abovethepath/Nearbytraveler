@@ -5162,6 +5162,39 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Mark messages as read between two users
+  app.post("/api/messages/:userId/mark-read", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const { senderId } = req.body;
+      
+      if (!senderId) {
+        return res.status(400).json({ message: "senderId is required" });
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`📧 MARK-READ: Marking messages as read between users ${senderId} and ${userId}`);
+      
+      // Mark all messages from senderId to userId as read
+      const result = await db
+        .update(messages)
+        .set({ isRead: true })
+        .where(
+          and(
+            eq(messages.senderId, parseInt(senderId)),
+            eq(messages.receiverId, userId),
+            eq(messages.isRead, false)
+          )
+        );
+      
+      if (process.env.NODE_ENV === 'development') console.log(`📧 MARK-READ: Updated ${result.rowCount} messages to read`);
+      
+      return res.json({ success: true, markedCount: result.rowCount });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error marking messages as read:", error);
+      return res.status(500).json({ message: "Failed to mark messages as read" });
+    }
+  });
+
   // CRITICAL: Send message for IM system (handles offline message delivery)
   app.post("/api/messages", async (req, res) => {
     try {
