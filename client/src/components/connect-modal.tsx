@@ -456,21 +456,21 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[999999] flex items-center justify-center bg-black backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
       <div 
-        className="bg-gradient-to-br from-white via-blue-50 to-orange-50 dark:from-gray-800 dark:via-blue-900/20 dark:to-orange-900/20 rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto m-4 border border-blue-200/20 dark:border-blue-600/20"
+        className="bg-gradient-to-br from-white via-blue-50 to-orange-50 dark:from-gray-800 dark:via-blue-900/20 dark:to-orange-900/20 rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto m-2 sm:m-4 border border-blue-200/20 dark:border-blue-600/20"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-8">
+        <div className="p-4 sm:p-6 lg:p-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <div className="bg-gradient-to-r from-blue-600 to-orange-500 p-3 rounded-xl">
                 <Users className="w-6 h-6 text-white" />
               </div>
               <div className="flex-1 min-w-0">
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent leading-tight">Connect with Travelers & Locals</h2>
-                <p className="text-gray-600 dark:text-gray-300 text-base mt-1">
-                  Find and connect with amazing people in your area
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent leading-tight">Connect with Travelers & Locals</h2>
+                <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base lg:text-lg mt-1 leading-relaxed">
+                  Discover amazing experiences & make meaningful connections based on demographics, activities, interests, and events.
                 </p>
               </div>
             </div>
@@ -482,8 +482,8 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
           <div className="space-y-6">
             {/* Quick Select Locations */}
             <div>
-              <h3 className="text-sm font-medium mb-2 text-gray-900 dark:text-white">Quick Search</h3>
-              <div className="flex flex-wrap gap-2">
+              <h3 className="text-base sm:text-lg font-semibold mb-3 text-gray-900 dark:text-white">Quick Search</h3>
+              <div className="flex flex-wrap gap-2 sm:gap-3">
                 {/* WHO IS HERE NOW BUCKET */}
                 <Button
                   variant="outline"
@@ -499,11 +499,11 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                       }, 100);
                     }
                   }}
-                  className="flex items-center gap-1"
+                  className="flex items-center gap-1 text-xs sm:text-sm px-2 sm:px-3 py-1.5 sm:py-2"
                   disabled={!getUserBucketLocation('who_is_here_now')}
                 >
-                  <MapPin className="w-3 h-3" />
-                  People in {getUserBucketLocation('who_is_here_now') ? getUserBucketLocation('who_is_here_now') : 'this city'}
+                  <MapPin className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="truncate">People in {getUserBucketLocation('who_is_here_now') ? getUserBucketLocation('who_is_here_now').split(',')[0] : 'this city'}</span>
                 </Button>
                 
                 {/* PERMANENT LOCALS BUCKET */}
@@ -520,11 +520,11 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                       }, 100);
                     }
                   }}
-                  className="flex items-center gap-1"
+                  className="flex items-center gap-1 text-xs sm:text-sm px-2 sm:px-3 py-1.5 sm:py-2"
                   disabled={!getUserBucketLocation('permanent_locals_from_my_area')}
                 >
-                  <Home className="w-3 h-3" />
-                  Nearby Locals and Nearby Travelers from {getUserBucketLocation('permanent_locals_from_my_area') ? getUserBucketLocation('permanent_locals_from_my_area') : 'my area'}
+                  <Home className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="truncate">Locals from {getUserBucketLocation('permanent_locals_from_my_area') ? getUserBucketLocation('permanent_locals_from_my_area').split(',')[0] : 'my area'}</span>
                 </Button>
                 
                 {/* Travel Plans */}
@@ -563,11 +563,11 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                         variant="outline"
                         size="sm"
                         onClick={() => handleTravelPlanSelect(plan)}
-                        className="flex items-center gap-1"
+                        className="flex items-center gap-1 text-xs sm:text-sm px-2 sm:px-3 py-1.5 sm:py-2"
                       >
-                        <Plane className="w-3 h-3" />
-                        {plan.destination}
-                        <span className="ml-1 text-gray-500 dark:text-gray-400">
+                        <Plane className="w-3 h-3 sm:w-4 sm:h-4" />
+                        <span className="truncate">{plan.destination}</span>
+                        <span className="ml-1 text-gray-500 dark:text-gray-400 text-xs hidden sm:inline">
                           {plan.startDate && plan.endDate ? (
                             `${formatDateForDisplay(plan.startDate, "SHORT")} - ${formatDateForDisplay(plan.endDate, "SHORT")}`
                           ) : plan.startDate ? (
