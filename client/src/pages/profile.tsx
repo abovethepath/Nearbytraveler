@@ -3502,11 +3502,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         
                         {/* FORCE SHOW BOTH when user has travel plans */}
                         {(() => {
-                          const hasActiveTravelPlan = travelPlans && travelPlans.length > 0 && 
-                            travelPlans.some(plan => plan.status === 'active');
+                          // Use the corrected travel detection function that checks dates properly
+                          const currentDestination = getCurrentTravelDestination(travelPlans || []);
                           
-                          if (hasActiveTravelPlan) {
-                            const activePlan = travelPlans.find(plan => plan.status === 'active');
+                          if (currentDestination) {
                             return (
                               <div className="space-y-2">
                                 <div className="flex items-center gap-2 text-lg font-medium text-black">
@@ -3515,7 +3514,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 </div>
                                 <div className="flex items-center gap-2 text-lg font-medium text-black">
                                   <Plane className="w-5 h-5 text-orange-600" />
-                                  <span>NEARBY TRAVELER ({activePlan?.destination || 'Current Destination'})</span>
+                                  <span>NEARBY TRAVELER ({currentDestination})</span>
                                 </div>
                               </div>
                             );

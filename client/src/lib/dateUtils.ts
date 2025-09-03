@@ -210,25 +210,15 @@ export function getCurrentTravelDestination(travelPlans: any[]): string | null {
   // Check travel plans array for active trips - ONLY active trips make someone a NEARBY TRAVELER
   for (const plan of travelPlans) {
     if (plan.startDate && plan.endDate && plan.destination) {
-      // Use timezone-safe date parsing for travel plan dates
+      // Use simple date parsing that works with the fixed API dates
       const parseDate = (dateString: string | Date): Date => {
         if (!dateString) return new Date();
         
-        let inputString: string;
-        if (dateString instanceof Date) {
-          inputString = dateString.toISOString();
-        } else {
-          inputString = dateString;
-        }
-        
-        const parts = inputString.split('T')[0].split('-');
-        if (parts.length === 3) {
-          const year = parseInt(parts[0]);
-          const month = parseInt(parts[1]) - 1;
-          const day = parseInt(parts[2]);
-          return new Date(year, month, day);
-        }
-        return new Date(dateString);
+        // The API now sends dates like "2025-09-02T00:00:00.000Z" - parse these correctly
+        const date = new Date(dateString);
+        // Create a new date in local timezone at midnight
+        const localDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        return localDate;
       };
       
       const startDate = parseDate(plan.startDate);

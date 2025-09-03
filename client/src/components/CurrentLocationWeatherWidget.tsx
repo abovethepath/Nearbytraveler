@@ -79,23 +79,27 @@ export default function CurrentLocationWeatherWidget() {
     // Check if user is currently traveling using travel plans (same logic as CurrentCityWidget)
     const currentDestination = getCurrentTravelDestination(Array.isArray(travelPlans) ? travelPlans : []);
     if (currentDestination && effectiveUser.hometownCity) {
-      const travelDestination = currentDestination.destinationCity?.toLowerCase() || '';
+      // currentDestination is a string like "Montpellier, France", parse it
+      const destinationParts = currentDestination.split(', ');
+      const destinationCity = destinationParts[0] || '';
+      const destinationCountry = destinationParts[destinationParts.length - 1] || '';
+      
+      const travelDestination = destinationCity.toLowerCase();
       const hometown = effectiveUser.hometownCity?.toLowerCase() || '';
       
       // Only show as traveler if destination is different from hometown
       if (!travelDestination.includes(hometown) && !hometown.includes(travelDestination)) {
         // User is traveling - show weather for travel destination
-        let city = currentDestination.destinationCity || "";
-        const country = currentDestination.destinationCountry || "";
+        let city = destinationCity;
         
         // Fix: Weather API doesn't recognize "Los Angeles Metro" - use "Los Angeles" instead
         if (city === 'Los Angeles Metro') {
           city = 'Los Angeles';
         }
         
-        console.log('Weather Widget - Using travel destination:', { city, country });
+        console.log('Weather Widget - Using travel destination:', { city, country: destinationCountry });
         setCurrentCity(city);
-        setCurrentCountry(country);
+        setCurrentCountry(destinationCountry);
         return;
       }
     }
@@ -158,7 +162,10 @@ export default function CurrentLocationWeatherWidget() {
     // Check if user is currently traveling using travel plans (same logic as CurrentCityWidget)
     const currentDestination = getCurrentTravelDestination(Array.isArray(travelPlans) ? travelPlans : []);
     if (currentDestination && effectiveUser.hometownCity) {
-      const travelDestination = currentDestination.destinationCity?.toLowerCase() || '';
+      // currentDestination is a string like "Montpellier, France", parse it
+      const destinationParts = currentDestination.split(', ');
+      const destinationCity = destinationParts[0] || '';
+      const travelDestination = destinationCity.toLowerCase();
       const hometown = effectiveUser.hometownCity?.toLowerCase() || '';
       
       // Only show as traveler if destination is different from hometown
@@ -177,7 +184,10 @@ export default function CurrentLocationWeatherWidget() {
     // Check if user is currently traveling using travel plans (same logic as CurrentCityWidget)
     const currentDestination = getCurrentTravelDestination(Array.isArray(travelPlans) ? travelPlans : []);
     if (currentDestination && effectiveUser.hometownCity) {
-      const travelDestination = currentDestination.destinationCity?.toLowerCase() || '';
+      // currentDestination is a string like "Montpellier, France", parse it
+      const destinationParts = currentDestination.split(', ');
+      const destinationCity = destinationParts[0] || '';
+      const travelDestination = destinationCity.toLowerCase();
       const hometown = effectiveUser.hometownCity?.toLowerCase() || '';
       
       // Only show as traveler if destination is different from hometown
