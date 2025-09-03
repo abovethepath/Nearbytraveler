@@ -1789,6 +1789,39 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   });
 
   // NOTE: This route moved below to avoid conflict with /api/users/search
+  
+  // General user search endpoint for tagging functionality
+  app.get("/api/users/search", async (req, res) => {
+    try {
+      const query = req.query.q as string;
+      if (!query || query.trim().length === 0) {
+        return res.json([]);
+      }
+      
+      const searchResults = await db
+        .select({
+          id: users.id,
+          username: users.username,
+          firstName: users.firstName,
+          lastName: users.lastName,
+          profileImage: users.profileImage,
+        })
+        .from(users)
+        .where(
+          or(
+            ilike(users.username, `%${query}%`),
+            ilike(users.firstName, `%${query}%`),
+            ilike(users.lastName, `%${query}%`)
+          )
+        )
+        .limit(20);
+        
+      res.json(searchResults);
+    } catch (error: any) {
+      console.error("Error searching users:", error);
+      res.status(500).json({ message: "Failed to search users", error });
+    }
+  });
 
   // Initialize sample data route (for restoring lost data)
   app.post("/api/admin/init-data", async (req, res) => {
@@ -10398,6 +10431,65 @@ Questions? Just reply to this message. Welcome aboard!
         message: "Failed to delete photo",
         error: error instanceof Error ? error.message : "Unknown error"
       });
+    }
+  });
+
+  // PHOTO TAGGING: Get tags for a photo
+  app.get("/api/photos/:id/tags", async (req, res) => {
+    try {
+      const photoId = parseInt(req.params.id);
+      
+      if (isNaN(photoId)) {
+        return res.status(400).json({ message: "Invalid photo ID" });
+      }
+
+      const tags = await storage.getPhotoTags(photoId);
+      res.json(tags);
+    } catch (error: any) {
+      console.error("Error fetching photo tags:", error);
+      res.status(500).json({ message: "Failed to fetch photo tags" });
+    }
+  });
+
+  // PHOTO TAGGING: Tag a user in a photo
+  app.post("/api/photos/:id/tags", isAuthenticated, async (req: any, res) => {
+    try {
+      const photoId = parseInt(req.params.id);
+      const { taggedUserId } = req.body;
+      const taggedByUserId = req.user.claims.sub;
+
+      if (isNaN(photoId) || !taggedUserId) {
+        return res.status(400).json({ message: "Invalid photo ID or tagged user ID" });
+      }
+
+      const tag = await storage.createPhotoTag(photoId, taggedUserId, taggedByUserId);
+      res.json({ message: "User tagged successfully", tag });
+    } catch (error: any) {
+      console.error("Error creating photo tag:", error);
+      res.status(500).json({ message: "Failed to tag user" });
+    }
+  });
+
+  // PHOTO TAGGING: Remove tag from photo
+  app.delete("/api/photos/:id/tags/:userId", isAuthenticated, async (req: any, res) => {
+    try {
+      const photoId = parseInt(req.params.id);
+      const taggedUserId = parseInt(req.params.userId);
+
+      if (isNaN(photoId) || isNaN(taggedUserId)) {
+        return res.status(400).json({ message: "Invalid photo ID or user ID" });
+      }
+
+      const result = await storage.deletePhotoTag(photoId, taggedUserId);
+      
+      if (result) {
+        res.json({ message: "Tag removed successfully" });
+      } else {
+        res.status(404).json({ message: "Tag not found" });
+      }
+    } catch (error: any) {
+      console.error("Error removing photo tag:", error);
+      res.status(500).json({ message: "Failed to remove tag" });
     }
   });
 

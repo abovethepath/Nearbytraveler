@@ -5,7 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import { 
   Camera, 
   Search, 
@@ -20,7 +22,9 @@ import {
   Trash2,
   Heart,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  UserPlus,
+  X
 } from "lucide-react";
 
 interface Photo {
@@ -39,6 +43,19 @@ interface Photo {
   createdAt: Date;
   likes?: number;
   isLiked?: boolean;
+  tags?: Array<{
+    id: number;
+    taggedUserId: number;
+    taggedByUserId: number;
+    createdAt: Date;
+    taggedUser: {
+      id: number;
+      username: string;
+      firstName?: string;
+      lastName?: string;
+      profileImage?: string;
+    };
+  }>;
 }
 
 interface SmartPhotoGalleryProps {
@@ -53,6 +70,9 @@ export default function SmartPhotoGallery({ userId }: SmartPhotoGalleryProps) {
   const [sortBy, setSortBy] = useState<"date" | "confidence">("date");
   const [currentPage, setCurrentPage] = useState(0);
   const [photosPerPage] = useState(12); // Show 12 photos at a time
+  const [showTagDialog, setShowTagDialog] = useState(false);
+  const [selectedPhotoForTagging, setSelectedPhotoForTagging] = useState<number | null>(null);
+  const [searchUsers, setSearchUsers] = useState("");
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -100,6 +120,18 @@ export default function SmartPhotoGallery({ userId }: SmartPhotoGalleryProps) {
   // Fetch available tags
   const { data: availableTags = [] } = useQuery<string[]>({
     queryKey: [`/api/users/${userId}/photos/tags`],
+  });
+
+  // Fetch users for tagging
+  const { data: searchUsersResults = [] } = useQuery({
+    queryKey: ['/api/users/search', searchUsers],
+    queryFn: async () => {
+      if (!searchUsers.trim()) return [];
+      const response = await fetch(`/api/users/search?q=${encodeURIComponent(searchUsers)}`);
+      if (!response.ok) return [];
+      return response.json();
+    },
+    enabled: !!searchUsers.trim(),
   });
 
   // Re-analyze photo mutation
@@ -194,6 +226,58 @@ export default function SmartPhotoGallery({ userId }: SmartPhotoGalleryProps) {
       toast({
         title: "Delete failed",
         description: error.message || "Failed to delete photo. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Tag user in photo mutation
+  const tagUserMutation = useMutation({
+    mutationFn: async ({ photoId, taggedUserId }: { photoId: number; taggedUserId: number }) => {
+      return await apiRequest(`/api/photos/${photoId}/tags`, {
+        method: 'POST',
+        body: { taggedUserId },
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/photos`] });
+      setShowTagDialog(false);
+      setSelectedPhotoForTagging(null);
+      setSearchUsers("");
+      toast({
+        title: "User tagged",
+        description: "User has been tagged in the photo successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Tag failed",
+        description: error.message || "Failed to tag user. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Remove tag mutation
+  const removeTagMutation = useMutation({
+    mutationFn: async ({ photoId, taggedUserId }: { photoId: number; taggedUserId: number }) => {
+      const response = await fetch(`/api/photos/${photoId}/tags/${taggedUserId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to remove tag');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/photos`] });
+      toast({
+        title: "Tag removed",
+        description: "User tag has been removed from the photo.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Remove tag failed",
+        description: error.message || "Failed to remove tag. Please try again.",
         variant: "destructive",
       });
     }
@@ -327,7 +411,42 @@ export default function SmartPhotoGallery({ userId }: SmartPhotoGalleryProps) {
           </div>
         )}
         
-        <div className="flex justify-end items-center">
+        {/* Tagged users */}
+        {photo.tags && photo.tags.length > 0 && (
+          <div className="mb-3">
+            <div className="text-xs text-gray-500 mb-1">Tagged:</div>
+            <div className="flex flex-wrap gap-1">
+              {photo.tags.map((tag) => (
+                <div key={tag.id} className="flex items-center bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full">
+                  <span>@{tag.taggedUser.username}</span>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => removeTagMutation.mutate({ photoId: photo.id, taggedUserId: tag.taggedUserId })}
+                    className="ml-1 h-4 w-4 p-0 text-blue-500 hover:text-red-500"
+                  >
+                    <X className="w-2 h-2" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        <div className="flex justify-between items-center">
+          <Button 
+            size="sm" 
+            variant="ghost"
+            onClick={() => {
+              setSelectedPhotoForTagging(photo.id);
+              setShowTagDialog(true);
+            }}
+            className="text-blue-500 hover:text-blue-700 hover:bg-blue-50"
+            data-testid={`button-tag-photo-${photo.id}`}
+          >
+            <UserPlus className="w-3 h-3" />
+          </Button>
+          
           <Button 
             size="sm" 
             variant="ghost"
@@ -339,6 +458,7 @@ export default function SmartPhotoGallery({ userId }: SmartPhotoGalleryProps) {
             }}
             disabled={deletePhotoMutation.isPending}
             className="text-red-500 hover:text-red-700 hover:bg-red-50"
+            data-testid={`button-delete-photo-${photo.id}`}
           >
             {deletePhotoMutation.isPending ? (
               <div className="w-3 h-3 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
@@ -605,6 +725,85 @@ export default function SmartPhotoGallery({ userId }: SmartPhotoGalleryProps) {
           </CardContent>
         </Card>
       )}
+
+      {/* Tag User Dialog */}
+      <Dialog open={showTagDialog} onOpenChange={setShowTagDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Tag Someone in This Photo</DialogTitle>
+            <DialogDescription>
+              Search for users to tag in this photo. They will be notified when tagged.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <Input
+              placeholder="Search for users to tag..."
+              value={searchUsers}
+              onChange={(e) => setSearchUsers(e.target.value)}
+              data-testid="input-search-users"
+            />
+            
+            {searchUsers.trim() && searchUsersResults.length > 0 && (
+              <div className="max-h-60 overflow-y-auto space-y-2">
+                {searchUsersResults.map((user: any) => (
+                  <div 
+                    key={user.id} 
+                    className="flex items-center justify-between p-2 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                    onClick={() => {
+                      if (selectedPhotoForTagging) {
+                        tagUserMutation.mutate({ 
+                          photoId: selectedPhotoForTagging, 
+                          taggedUserId: user.id 
+                        });
+                      }
+                    }}
+                    data-testid={`user-tag-option-${user.id}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      {user.profileImage ? (
+                        <img 
+                          src={user.profileImage} 
+                          alt={user.username}
+                          className="w-8 h-8 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm">
+                          {user.username?.[0]?.toUpperCase() || '?'}
+                        </div>
+                      )}
+                      <div>
+                        <div className="font-medium">@{user.username}</div>
+                        {(user.firstName || user.lastName) && (
+                          <div className="text-sm text-gray-500">
+                            {user.firstName} {user.lastName}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <Button size="sm" variant="outline">
+                      Tag
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {searchUsers.trim() && searchUsersResults.length === 0 && (
+              <div className="text-center text-gray-500 py-4">
+                No users found matching "{searchUsers}"
+              </div>
+            )}
+            
+            {!searchUsers.trim() && (
+              <div className="text-center text-gray-500 py-4">
+                Start typing to search for users to tag
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { db, pool } from "./db";
-import { users, connections, messages, events, eventParticipants, travelPlans, tripItineraries, itineraryItems, sharedItineraries, notifications, blockedUsers, travelMemories, travelMemoryLikes, travelMemoryComments, userPhotos, userReferences, referrals, proximityNotifications, customLocationActivities, cityActivities, userCustomActivities, userCityInterests, cityLandmarks, landmarkRatings, secretLocalExperiences, secretLocalExperienceLikes, secretExperienceLikes, cityPages, citychatrooms, chatroomMembers, chatroomMessages, chatroomAccessRequests, chatroomInvitations, meetupChatrooms, meetupChatroomMessages, businessOffers, businessOfferRedemptions, businessReferrals, businessLocations, businessInterestNotifications, businessCustomerPhotos, cityPhotos, travelBlogPosts, travelBlogLikes, travelBlogComments, instagramPosts, quickMeetups, quickMeetupParticipants, quickMeetupTemplates, quickDeals, userNotificationSettings, businessSubscriptions, photoAlbums, externalEventInterests, vouches, vouchCredits, waitlistLeads, type User, type InsertUser, type Connection, type InsertConnection, type Message, type InsertMessage, type Event, type InsertEvent, type EventParticipant, type EventParticipantWithUser, type TravelPlan, type InsertTravelPlan, type TripItinerary, type InsertTripItinerary, type ItineraryItem, type InsertItineraryItem, type SharedItinerary, type InsertSharedItinerary, type Notification, type InsertNotification, type UserReference, type Referral, type InsertReferral, type ProximityNotification, type InsertProximityNotification, type CityLandmark, type InsertCityLandmark, type LandmarkRating, type InsertLandmarkRating, type SecretLocalExperience, type InsertSecretLocalExperience, type ChatroomInvitation, type InsertChatroomInvitation, type BusinessOffer, type InsertBusinessOffer, type BusinessOfferRedemption, type InsertBusinessOfferRedemption, type BusinessLocation, type InsertBusinessLocation, type BusinessInterestNotification, type InsertBusinessInterestNotification, type WaitlistLead, type InsertWaitlistLead, type BusinessCustomerPhoto, type InsertBusinessCustomerPhoto, type CityPhoto, type InsertCityPhoto, type TravelBlogPost, type InsertTravelBlogPost, type TravelBlogLike, type InsertTravelBlogLike, type TravelBlogComment, type InsertTravelBlogComment, type InstagramPost, type InsertInstagramPost, type QuickMeetupTemplate, type InsertQuickMeetupTemplate, type UserNotificationSettings, type InsertUserNotificationSettings, type BusinessSubscription, type InsertBusinessSubscription, type PhotoAlbum, type InsertPhotoAlbum, type ExternalEventInterest, type InsertExternalEventInterest, type Vouch, type VouchCredits, type VouchWithUsers } from "@shared/schema";
+import { users, connections, messages, events, eventParticipants, travelPlans, tripItineraries, itineraryItems, sharedItineraries, notifications, blockedUsers, travelMemories, travelMemoryLikes, travelMemoryComments, userPhotos, photoTags, userReferences, referrals, proximityNotifications, customLocationActivities, cityActivities, userCustomActivities, userCityInterests, cityLandmarks, landmarkRatings, secretLocalExperiences, secretLocalExperienceLikes, secretExperienceLikes, cityPages, citychatrooms, chatroomMembers, chatroomMessages, chatroomAccessRequests, chatroomInvitations, meetupChatrooms, meetupChatroomMessages, businessOffers, businessOfferRedemptions, businessReferrals, businessLocations, businessInterestNotifications, businessCustomerPhotos, cityPhotos, travelBlogPosts, travelBlogLikes, travelBlogComments, instagramPosts, quickMeetups, quickMeetupParticipants, quickMeetupTemplates, quickDeals, userNotificationSettings, businessSubscriptions, photoAlbums, externalEventInterests, vouches, vouchCredits, waitlistLeads, type User, type InsertUser, type Connection, type InsertConnection, type Message, type InsertMessage, type Event, type InsertEvent, type EventParticipant, type EventParticipantWithUser, type TravelPlan, type InsertTravelPlan, type TripItinerary, type InsertTripItinerary, type ItineraryItem, type InsertItineraryItem, type SharedItinerary, type InsertSharedItinerary, type Notification, type InsertNotification, type PhotoTag, type InsertPhotoTag, type UserReference, type Referral, type InsertReferral, type ProximityNotification, type InsertProximityNotification, type CityLandmark, type InsertCityLandmark, type LandmarkRating, type InsertLandmarkRating, type SecretLocalExperience, type InsertSecretLocalExperience, type ChatroomInvitation, type InsertChatroomInvitation, type BusinessOffer, type InsertBusinessOffer, type BusinessOfferRedemption, type InsertBusinessOfferRedemption, type BusinessLocation, type InsertBusinessLocation, type BusinessInterestNotification, type InsertBusinessInterestNotification, type WaitlistLead, type InsertWaitlistLead, type BusinessCustomerPhoto, type InsertBusinessCustomerPhoto, type CityPhoto, type InsertCityPhoto, type TravelBlogPost, type InsertTravelBlogPost, type TravelBlogLike, type InsertTravelBlogLike, type TravelBlogComment, type InsertTravelBlogComment, type InstagramPost, type InsertInstagramPost, type QuickMeetupTemplate, type InsertQuickMeetupTemplate, type UserNotificationSettings, type InsertUserNotificationSettings, type BusinessSubscription, type InsertBusinessSubscription, type PhotoAlbum, type InsertPhotoAlbum, type ExternalEventInterest, type InsertExternalEventInterest, type Vouch, type VouchCredits, type VouchWithUsers } from "@shared/schema";
 import { eq, and, or, ilike, gte, desc, avg, count, sql, isNotNull, ne, lte, lt, gt, asc, like, inArray, getTableColumns, isNull } from "drizzle-orm";
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -118,6 +118,11 @@ export interface IStorage {
   getPhotosByCategory(): Promise<any>;
   getPhotosByTag(): Promise<any>;
   getUserPhotoTags(): Promise<any>;
+  
+  // Photo tag methods
+  createPhotoTag(photoId: number, taggedUserId: number, taggedByUserId: number): Promise<any>;
+  getPhotoTags(photoId: number): Promise<any[]>;
+  deletePhotoTag(photoId: number, taggedUserId: number): Promise<boolean>;
   getPhotosAwaitingAnalysis(): Promise<any>;
   createMoodEntry(): Promise<any>;
   getUserMoodEntries(): Promise<any>;
@@ -2983,17 +2988,26 @@ export class DatabaseStorage implements IStorage {
 
       console.log(`DatabaseStorage.getUserPhotos - Found ${photos.length} photos for user ${userId}`);
       
-      // Return photos with imageUrl (which might be base64 data or actual URL)
-      return photos.map(photo => ({
-        id: photo.id,
-        userId: photo.userId,
-        imageUrl: photo.imageUrl,
-        caption: photo.caption,
-        isPrivate: photo.isPrivate,
-        isProfilePhoto: photo.isProfilePhoto,
-        uploadedAt: photo.uploadedAt,
-        createdAt: photo.uploadedAt
-      }));
+      // Get tags for each photo
+      const photosWithTags = await Promise.all(
+        photos.map(async (photo) => {
+          const tags = await this.getPhotoTags(photo.id);
+          
+          return {
+            id: photo.id,
+            userId: photo.userId,
+            imageUrl: photo.imageUrl,
+            caption: photo.caption,
+            isPrivate: photo.isPrivate,
+            isProfilePhoto: photo.isProfilePhoto,
+            uploadedAt: photo.uploadedAt,
+            createdAt: photo.uploadedAt,
+            tags
+          };
+        })
+      );
+      
+      return photosWithTags;
     } catch (error) {
       console.error('DatabaseStorage.getUserPhotos - Error getting user photos:', error);
       return [];
@@ -3261,6 +3275,83 @@ export class DatabaseStorage implements IStorage {
       return true;
     } catch (error) {
       console.error('DatabaseStorage.deletePhoto - Error:', error);
+      return false;
+    }
+  }
+
+  // Photo tag methods
+  async createPhotoTag(photoId: number, taggedUserId: number, taggedByUserId: number): Promise<any> {
+    try {
+      console.log('DatabaseStorage.createPhotoTag - Creating tag:', { photoId, taggedUserId, taggedByUserId });
+      
+      const [tag] = await db
+        .insert(photoTags)
+        .values({
+          photoId,
+          taggedUserId,
+          taggedByUserId,
+        })
+        .returning();
+      
+      console.log('DatabaseStorage.createPhotoTag - Tag created successfully');
+      return tag;
+    } catch (error) {
+      console.error('DatabaseStorage.createPhotoTag - Error:', error);
+      throw error;
+    }
+  }
+
+  async getPhotoTags(photoId: number): Promise<any[]> {
+    try {
+      console.log('DatabaseStorage.getPhotoTags - Getting tags for photo:', photoId);
+      
+      const tags = await db
+        .select({
+          id: photoTags.id,
+          taggedUserId: photoTags.taggedUserId,
+          taggedByUserId: photoTags.taggedByUserId,
+          createdAt: photoTags.createdAt,
+          taggedUser: {
+            id: users.id,
+            username: users.username,
+            firstName: users.firstName,
+            lastName: users.lastName,
+            profileImage: users.profileImage,
+          }
+        })
+        .from(photoTags)
+        .innerJoin(users, eq(photoTags.taggedUserId, users.id))
+        .where(eq(photoTags.photoId, photoId));
+      
+      console.log('DatabaseStorage.getPhotoTags - Found tags:', tags.length);
+      return tags;
+    } catch (error) {
+      console.error('DatabaseStorage.getPhotoTags - Error:', error);
+      return [];
+    }
+  }
+
+  async deletePhotoTag(photoId: number, taggedUserId: number): Promise<boolean> {
+    try {
+      console.log('DatabaseStorage.deletePhotoTag - Deleting tag:', { photoId, taggedUserId });
+      
+      const result = await db
+        .delete(photoTags)
+        .where(and(
+          eq(photoTags.photoId, photoId),
+          eq(photoTags.taggedUserId, taggedUserId)
+        ))
+        .returning();
+      
+      if (result.length === 0) {
+        console.log('DatabaseStorage.deletePhotoTag - Tag not found');
+        return false;
+      }
+      
+      console.log('DatabaseStorage.deletePhotoTag - Tag deleted successfully');
+      return true;
+    } catch (error) {
+      console.error('DatabaseStorage.deletePhotoTag - Error:', error);
       return false;
     }
   }

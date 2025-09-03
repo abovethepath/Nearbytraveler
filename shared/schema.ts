@@ -514,6 +514,17 @@ export const userPhotos = pgTable("user_photos", {
   uploadedAt: timestamp("uploaded_at").defaultNow(),
 });
 
+// Photo tags - for tagging other users in photos
+export const photoTags = pgTable("photo_tags", {
+  id: serial("id").primaryKey(),
+  photoId: integer("photo_id").notNull().references(() => userPhotos.id, { onDelete: "cascade" }),
+  taggedUserId: integer("tagged_user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  taggedByUserId: integer("tagged_by_user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  unique().on(table.photoId, table.taggedUserId), // Prevent duplicate tags
+]);
+
 
 
 export const notifications = pgTable("notifications", {
@@ -879,6 +890,13 @@ export type TravelPlan = typeof travelPlans.$inferSelect;
 export type InsertTravelPlan = z.infer<typeof insertTravelPlanSchema>;
 export type UserPhoto = typeof userPhotos.$inferSelect;
 export type InsertUserPhoto = z.infer<typeof insertUserPhotoSchema>;
+export type PhotoTag = typeof photoTags.$inferSelect;
+export type InsertPhotoTag = typeof photoTags.$inferInsert;
+
+export const insertPhotoTagSchema = createInsertSchema(photoTags).omit({
+  id: true,
+  createdAt: true,
+});
 export type TravelMemory = typeof travelMemories.$inferSelect;
 export type InsertTravelMemory = z.infer<typeof insertTravelMemorySchema>;
 export type Notification = typeof notifications.$inferSelect;
