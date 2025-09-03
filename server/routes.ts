@@ -11244,8 +11244,19 @@ Questions? Just reply to this message. Welcome aboard!
       const userId = (req.session as any)?.user?.id || 1; // Default to nearbytraveler
 
       const allChatrooms = await db.select().from(citychatrooms);
+      
+      console.log("🔥 MY-ROOMS: FILTERING FROM", allChatrooms.length, "TO LEGITIMATE ONLY");
+      
+      // FILTER: Only show legitimate chatrooms (Los Angeles Metro and Marseille)
+      const legitimateChatrooms = allChatrooms.filter(chatroom => 
+        chatroom.city === 'Los Angeles Metro' || 
+        chatroom.city === 'Marseille'
+      );
+      
+      console.log("🔥 MY-ROOMS: FILTERED TO", legitimateChatrooms.length, "LEGITIMATE CHATROOMS");
+      
       // Return user's joined rooms (can be enhanced with membership tracking)
-      const joinedRooms = allChatrooms.slice(0, 5).map(room => ({
+      const joinedRooms = legitimateChatrooms.slice(0, 5).map(room => ({
         ...room,
         isMember: true,
         type: room.tags?.includes('meetup') ? 'meetup' : 'general'
@@ -11262,7 +11273,14 @@ Questions? Just reply to this message. Welcome aboard!
   app.get("/api/chatrooms/public", async (req, res) => {
     try {
       const allChatrooms = await db.select().from(citychatrooms);
-      const publicRooms = allChatrooms
+      
+      // FILTER: Only show legitimate chatrooms (Los Angeles Metro and Marseille)
+      const legitimateChatrooms = allChatrooms.filter(chatroom => 
+        chatroom.city === 'Los Angeles Metro' || 
+        chatroom.city === 'Marseille'
+      );
+      
+      const publicRooms = legitimateChatrooms
         .filter(room => room.isPublic)
         .map(room => ({
           ...room,
@@ -11314,7 +11332,15 @@ Questions? Just reply to this message. Welcome aboard!
 
       const allChatrooms = await db.select().from(citychatrooms);
       
-      // Get member counts for all chatrooms  
+      // FILTER: Only show legitimate chatrooms (Los Angeles Metro and Marseille)
+      const legitimateChatrooms = allChatrooms.filter(chatroom => 
+        chatroom.city === 'Los Angeles Metro' || 
+        chatroom.city === 'Marseille'
+      );
+      
+      console.log(`🚨 CITIES ENDPOINT: Filtered from ${allChatrooms.length} to ${legitimateChatrooms.length} legitimate chatrooms`);
+      
+      // Get member counts for legitimate chatrooms only  
       const memberCountQuery = await db
         .select({
           chatroomId: chatroomMembers.chatroomId,
@@ -11343,7 +11369,7 @@ Questions? Just reply to this message. Welcome aboard!
 
       const membershipSet = new Set(userMemberships.map(m => m.chatroomId));
 
-      const cityRooms = allChatrooms
+      const cityRooms = legitimateChatrooms
         .filter(room => room.city && room.city !== '')
         .map(room => ({
           ...room,
