@@ -3514,7 +3514,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           
                           // Use the corrected travel detection function that checks dates properly
                           const currentDestination = getCurrentTravelDestination(travelPlans || []);
-                          console.log('🚨 UI RENDER DEBUG - Travel plans:', travelPlans?.length || 0, 'Current destination:', currentDestination);
                           
                           if (currentDestination) {
                             return (
