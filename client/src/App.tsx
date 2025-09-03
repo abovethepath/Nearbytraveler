@@ -367,16 +367,25 @@ function Router() {
           authStorage.clearUser();
           console.log('✅ Cleared authStorage');
 
-          // Clear specific auth keys
+          // Clear ALL possible auth keys - expanded list
           localStorage.removeItem('auth_token');
           localStorage.removeItem('travelconnect_user');
           localStorage.removeItem('user');
           localStorage.removeItem('authToken');
           localStorage.removeItem('currentUser');
           localStorage.removeItem('user_logged_out');
-          console.log('✅ Cleared localStorage keys');
+          localStorage.removeItem('authUser');
+          localStorage.removeItem('userData');
+          localStorage.removeItem('userSession');
+          // Clear any welcome flags
+          Object.keys(localStorage).forEach(key => {
+            if (key.startsWith('welcomed_')) {
+              localStorage.removeItem(key);
+            }
+          });
+          console.log('✅ Cleared all localStorage keys');
 
-          // Clear session storage
+          // Clear session storage completely
           sessionStorage.clear();
           console.log('✅ Cleared sessionStorage');
 
@@ -388,15 +397,17 @@ function Router() {
           setUser(null);
           console.log('✅ Set user to null');
 
-          console.log('🔄 Redirecting to landing page');
+          console.log('🔄 Forcing complete refresh to clear all cached data');
 
-          // Force immediate redirect to landing page
+          // Force complete page refresh to clear all cached authentication
           window.location.href = '/';
+          window.location.reload();
 
         } catch (error) {
           console.error('❌ Error during logout:', error);
-          // Fallback - force redirect anyway
+          // Fallback - force complete refresh anyway
           window.location.href = '/';
+          window.location.reload();
         }
       },
       login: (userData: User, token?: string) => {
