@@ -327,68 +327,25 @@ export default function SmartPhotoGallery({ userId }: SmartPhotoGalleryProps) {
           </div>
         )}
         
-        <div className="flex justify-between items-center">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => analyzePhotoMutation.mutate(photo.id)}
-            disabled={analyzePhotoMutation.isPending}
+        <div className="flex justify-end items-center">
+          <Button 
+            size="sm" 
+            variant="ghost"
+            onClick={() => {
+              if (window.confirm("Are you sure you want to delete this photo? This action cannot be undone.")) {
+                console.log('📸 SmartPhotoGallery: User confirmed deletion for photo', photo.id);
+                deletePhotoMutation.mutate(photo.id);
+              }
+            }}
+            disabled={deletePhotoMutation.isPending}
+            className="text-red-500 hover:text-red-700 hover:bg-red-50"
           >
-            <Sparkles className="w-3 h-3 mr-1" />
-            Re-analyze
+            {deletePhotoMutation.isPending ? (
+              <div className="w-3 h-3 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <Trash2 className="w-3 h-3" />
+            )}
           </Button>
-          
-          <div className="flex gap-1">
-            <Button 
-              size="sm" 
-              variant="ghost"
-              onClick={() => likePhotoMutation.mutate(photo.id)}
-              disabled={likePhotoMutation.isPending}
-              className={`flex items-center gap-1 ${photo.isLiked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'}`}
-            >
-              <Heart className={`w-3 h-3 ${photo.isLiked ? 'fill-current' : ''}`} />
-              <span className="text-xs">{photo.likes || 0}</span>
-            </Button>
-            <Button size="sm" variant="ghost">
-              <Eye className="w-3 h-3" />
-            </Button>
-            <Button 
-              size="sm" 
-              variant="ghost"
-              onClick={() => {
-                // TODO: Implement add to album functionality
-                toast({
-                  title: "Coming soon",
-                  description: "Add to album feature will be available soon!",
-                  variant: "default"
-                });
-              }}
-              className="text-blue-500 hover:text-blue-700"
-            >
-              <Camera className="w-3 h-3" />
-            </Button>
-            <Button size="sm" variant="ghost">
-              <Download className="w-3 h-3" />
-            </Button>
-            <Button 
-              size="sm" 
-              variant="ghost"
-              onClick={() => {
-                if (window.confirm("Are you sure you want to delete this photo? This action cannot be undone.")) {
-                  console.log('📸 SmartPhotoGallery: User confirmed deletion for photo', photo.id);
-                  deletePhotoMutation.mutate(photo.id);
-                }
-              }}
-              disabled={deletePhotoMutation.isPending}
-              className="text-red-500 hover:text-red-700 hover:bg-red-50"
-            >
-              {deletePhotoMutation.isPending ? (
-                <div className="w-3 h-3 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <Trash2 className="w-3 h-3" />
-              )}
-            </Button>
-          </div>
         </div>
       </CardContent>
     </Card>
