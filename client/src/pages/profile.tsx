@@ -3524,7 +3524,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 </div>
                                 <div className="flex items-center gap-2 text-lg font-medium text-black">
                                   <Plane className="w-5 h-5 text-orange-600" />
-                                  <span>NEARBY TRAVELER ({currentDestination})</span>
+                                  <span>NEARBY TRAVELER {currentDestination}</span>
                                 </div>
                               </div>
                             );
