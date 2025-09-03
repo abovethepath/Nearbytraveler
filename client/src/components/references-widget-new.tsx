@@ -53,7 +53,7 @@ function ReferencesWidgetNew({ userId }: ReferencesWidgetProps) {
   };
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 references-widget" data-component="references">
+    <div className="bg-white dark:bg-gray-800/50 rounded-lg p-3 references-widget" data-component="references">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <MessageSquare className="w-5 h-5 text-gray-600 dark:text-gray-400" />
