@@ -1056,9 +1056,12 @@ export default function MatchInCity() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button
-                          onClick={() => navigateToThingsIWantToDo()}
-                          className="px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-sm hover:shadow-md border border-blue-400/20"
-                          style={{ color: '#ffffff !important' }}
+                          onClick={() => toggleActivity(activity.id)}
+                          className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1 shadow-sm hover:shadow-md border ${
+                            isActive 
+                              ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 border-green-400/20 text-white' 
+                              : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 border-blue-400/20 text-white'
+                          }`}
                         >
                           {activity.activityName}
                           {activity.description && (
@@ -1104,7 +1107,21 @@ export default function MatchInCity() {
 
             {/* Add new activity */}
             <button
-              onClick={() => navigateToThingsIWantToDo()}
+              onClick={() => {
+                // Scroll to the text input section
+                const addActivitySection = document.querySelector('[data-add-activity-section]');
+                if (addActivitySection) {
+                  addActivitySection.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                  });
+                  // Focus the input field after scrolling
+                  setTimeout(() => {
+                    const input = addActivitySection.querySelector('input');
+                    if (input) input.focus();
+                  }, 500);
+                }
+              }}
               className="px-3 py-1.5 rounded-full text-sm font-medium bg-gray-600 hover:bg-gray-500 text-white border-2 border-dashed border-gray-400"
             >
               + Add Activity
@@ -1188,7 +1205,7 @@ export default function MatchInCity() {
                         <TooltipTrigger asChild>
                           <div className="flex items-center gap-2">
                             <button
-                              onClick={() => navigateToThingsIWantToDo()}
+                              onClick={() => toggleEventInterest(event)}
                               className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1 cursor-pointer hover:shadow-md ${
                                 isActive 
                                   ? 'bg-gradient-to-r from-green-500 to-green-600 shadow-lg border border-green-400/20' 
@@ -1204,7 +1221,7 @@ export default function MatchInCity() {
                               <Info className="w-3 h-3 ml-1 opacity-60" />
                             </button>
                             <button
-                              onClick={() => navigateToThingsIWantToDo()}
+                              onClick={() => toggleEventInterest(event)}
                               className={`w-6 h-6 rounded-full text-xs font-bold transition-all duration-200 ${
                                 isActive 
                                   ? 'bg-green-600 text-white' 
@@ -1353,8 +1370,7 @@ export default function MatchInCity() {
                   {(matchingUsers || []).slice(0, 5).map((user: any, index: number) => (
                     <div 
                       key={user.id || index} 
-                      className="flex items-center gap-3 p-3 bg-white/5 rounded-lg cursor-pointer hover:bg-white/10 transition-colors"
-                      onClick={() => navigateToThingsIWantToDo()}
+                      className="flex items-center gap-3 p-3 bg-white/5 rounded-lg"
                     >
                       <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
                         {user.username?.[0]?.toUpperCase() || '?'}
@@ -1395,7 +1411,7 @@ export default function MatchInCity() {
                             <Button 
                               size="sm" 
                               className="bg-green-500 hover:bg-green-600 text-white" 
-                              onClick={() => navigateToThingsIWantToDo()}
+                              onClick={() => {/* Already connected - no action needed */}}
                             >
                               Connected
                             </Button>
@@ -1405,7 +1421,7 @@ export default function MatchInCity() {
                           <Button 
                             size="sm" 
                             className="bg-blue-500 hover:bg-blue-600 text-white"
-                            onClick={() => navigateToThingsIWantToDo()}
+                            onClick={() => {/* Connect functionality here */}}
                           >
                             Connect
                           </Button>
