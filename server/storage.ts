@@ -591,6 +591,12 @@ export class DatabaseStorage implements IStorage {
       }
     }
     
+    // DEFAULT COUNTRY: Automatically add hometown country to countries visited
+    if (insertUser.hometownCountry && (!insertUser.countriesVisited || insertUser.countriesVisited.length === 0)) {
+      cleanUserData.countriesVisited = [insertUser.hometownCountry];
+      console.log("🏠 DEFAULT COUNTRY: Added hometown country to countries visited:", insertUser.hometownCountry);
+    }
+    
     // Ensure dateOfBirth is properly handled if provided
     if (insertUser.dateOfBirth) {
       if (insertUser.dateOfBirth instanceof Date) {
