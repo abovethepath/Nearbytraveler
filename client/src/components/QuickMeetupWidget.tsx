@@ -279,46 +279,73 @@ export function QuickMeetupWidget({ city, profileUserId }: { city?: string; prof
 
   return (
     <div className="space-y-4 overflow-x-hidden">
-      {/* PRIMARY CTA BUTTON - TOP PLACEMENT */}
-      <Card className="border-orange-200 dark:border-orange-800 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 hover:shadow-lg transition-all duration-200 w-full max-h-[90vh] overflow-hidden">
-        <CardContent className="p-4 bg-transparent">
+      {/* ENERGETIC PRIMARY CTA - LETS MEET NOW! */}
+      <Card className="border-2 border-orange-400 dark:border-orange-600 bg-gradient-to-br from-orange-100 via-red-50 to-pink-100 dark:from-orange-900/40 dark:via-red-900/30 dark:to-pink-900/40 hover:shadow-xl hover:shadow-orange-200 dark:hover:shadow-orange-900/30 transition-all duration-300 w-full max-h-[90vh] overflow-hidden animate-pulse-slow">
+        <CardContent className="p-6 bg-transparent">
           {!showCreateForm ? (
-            <div className="text-center space-y-3">
-              <div className="flex items-center justify-center gap-2">
-                <Zap className="h-5 w-5 text-orange-500" />
-                <h3 className="font-semibold text-lg text-gray-900 dark:text-white">Ready to Meet</h3>
+            <div className="text-center space-y-4">
+              <div className="relative">
+                {/* Animated background effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-red-500 rounded-full blur-xl opacity-20 animate-pulse"></div>
+                <div className="relative flex items-center justify-center gap-3">
+                  <Zap className="h-8 w-8 text-orange-600 dark:text-orange-400 animate-bounce" />
+                  <h3 className="font-black text-2xl bg-gradient-to-r from-orange-600 via-red-600 to-pink-600 bg-clip-text text-transparent">
+                    LET'S MEET NOW!
+                  </h3>
+                  <Zap className="h-8 w-8 text-orange-600 dark:text-orange-400 animate-bounce" style={{ animationDelay: '0.2s' }} />
+                </div>
               </div>
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                  Create Quick Meetup
+              
+              <div className="space-y-2">
+                <p className="text-lg font-bold text-orange-800 dark:text-orange-200">
+                  🚀 Available This Second?
                 </p>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  Create instant meetups and connect with nearby travelers
+                <p className="text-sm font-medium text-red-700 dark:text-red-300">
+                  Create instant meetup • Expires today • 1-4 hours max
+                </p>
+                <p className="text-xs text-gray-700 dark:text-gray-300 font-medium">
+                  ⚡ Lightning-fast connections with nearby people!
                 </p>
               </div>
-              <Button
-                onClick={() => {
-                  console.log('🔥 CLICKED: I\'m Available Now button');
-                  setShowCreateForm(true);
-                  console.log('🔥 FORM STATE CHANGED TO TRUE');
-                }}
-                className="w-full text-base py-3 h-12 bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-0 font-semibold rounded-lg shadow-lg"
-              >
-                🎯 I'm Available Now
-              </Button>
+              
+              <div className="relative">
+                <Button
+                  onClick={() => {
+                    console.log('🔥 CLICKED: LETS MEET NOW! button');
+                    setShowCreateForm(true);
+                    console.log('🔥 FORM STATE CHANGED TO TRUE');
+                  }}
+                  className="w-full text-xl font-black py-6 h-16 bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-orange-600 hover:via-red-600 hover:to-pink-600 text-white border-0 rounded-xl shadow-2xl hover:shadow-orange-300 dark:hover:shadow-orange-900/50 transform hover:scale-105 transition-all duration-300 relative overflow-hidden"
+                >
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    🎯 LETS MEET NOW!
+                    <Clock className="h-6 w-6 animate-spin" />
+                  </span>
+                  {/* Animated shine effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] animate-shine"></div>
+                </Button>
+                
+                {/* Quick action buttons */}
+                <div className="mt-3 flex gap-2 justify-center">
+                  <Badge className="bg-orange-500 text-white px-3 py-1 text-xs font-bold animate-pulse">1HR</Badge>
+                  <Badge className="bg-red-500 text-white px-3 py-1 text-xs font-bold animate-pulse" style={{ animationDelay: '0.5s' }}>2HRS</Badge>
+                  <Badge className="bg-pink-500 text-white px-3 py-1 text-xs font-bold animate-pulse" style={{ animationDelay: '1s' }}>3HRS</Badge>
+                  <Badge className="bg-purple-500 text-white px-3 py-1 text-xs font-bold animate-pulse" style={{ animationDelay: '1.5s' }}>4HRS</Badge>
+                </div>
+              </div>
             </div>
           ) : (
             <div className="space-y-3 max-h-[80vh] overflow-y-auto no-scrollbar flex flex-col">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Zap className="h-4 w-4 text-orange-500" />
-                  <h4 className="font-medium text-sm text-gray-900 dark:text-white">I'm Available for:</h4>
+                  <Zap className="h-6 w-6 text-orange-500 animate-bounce" />
+                  <h4 className="font-bold text-lg bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">🚀 LET'S DO THIS!</h4>
                 </div>
                 <Button
                   onClick={() => setShowCreateForm(false)}
                   size="sm"
                   variant="ghost"
-                  className="text-xs px-2 py-1 h-6"
+                  className="text-sm px-3 py-2 h-8 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-full"
                 >
                   ✕
                 </Button>
@@ -334,14 +361,14 @@ export function QuickMeetupWidget({ city, profileUserId }: { city?: string; prof
                     <SelectValue placeholder="Available for how long?" />
                   </SelectTrigger>
                   <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
-                    <SelectItem value="1hour">⏰ Available for 1 hour</SelectItem>
-                    <SelectItem value="2hours">⏰ Available for 2 hours</SelectItem>
-                    <SelectItem value="3hours">⏰ Available for 3 hours</SelectItem>
-                    <SelectItem value="4hours">⏰ Available for 4 hours</SelectItem>
+                    <SelectItem value="1hour">🚀 RIGHT NOW! (1 hour)</SelectItem>
+                    <SelectItem value="2hours">🔥 NEXT 2 HOURS!</SelectItem>
+                    <SelectItem value="3hours">⚡ NEXT 3 HOURS!</SelectItem>
+                    <SelectItem value="4hours">💥 NEXT 4 HOURS!</SelectItem>
                     <SelectItem value="6hours">⏰ Available for 6 hours</SelectItem>
                     <SelectItem value="8hours">⏰ Available for 8 hours</SelectItem>
                     <SelectItem value="12hours">⏰ Available for 12 hours</SelectItem>
-                    <SelectItem value="24hours">⏰ Available for 24 hours</SelectItem>
+                    <SelectItem value="24hours">⏰ Available all day</SelectItem>
                   </SelectContent>
                 </Select>
 
@@ -441,9 +468,14 @@ export function QuickMeetupWidget({ city, profileUserId }: { city?: string; prof
               <Button
                 onClick={handleCreateMeetup}
                 disabled={createMutation.isPending}
-                className="w-full text-xs py-2 h-8 bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-0"
+                className="w-full text-lg font-black py-4 h-14 bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-orange-600 hover:via-red-600 hover:to-pink-600 text-white border-0 rounded-xl shadow-2xl hover:scale-105 transition-all duration-300 relative overflow-hidden"
               >
-                {createMutation.isPending ? 'Posting...' : 'Post My Availability'}
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  {createMutation.isPending ? '🚀 POSTING...' : '🎯 LETS MEET NOW!'}
+                  {!createMutation.isPending && <Clock className="h-5 w-5 animate-spin" />}
+                </span>
+                {/* Animated shine effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] animate-shine"></div>
               </Button>
             </div>
           )}
