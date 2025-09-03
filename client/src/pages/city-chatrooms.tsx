@@ -51,7 +51,13 @@ export default function CityChatroomsPage() {
   const { data: chatrooms = [], isLoading, refetch } = useQuery<CityChatroom[]>({
     queryKey: ['/api/chatrooms/my-locations'],
     refetchInterval: 10000, // Refresh every 10 seconds
-    refetchOnWindowFocus: true
+    refetchOnWindowFocus: true,
+    onSuccess: (data) => {
+      console.log('🔍 DEBUG: Chatrooms received from API:', data);
+      console.log('🔍 DEBUG: Number of chatrooms:', data.length);
+      const welcomeRooms = data.filter(room => room.name.includes('Welcome'));
+      console.log('🔍 DEBUG: Welcome rooms found:', welcomeRooms);
+    }
   });
 
   // Join chatroom mutation
