@@ -815,16 +815,26 @@ export default function Home() {
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="relative max-w-7xl mx-auto px-4 py-8 sm:py-12 lg:py-16">
             <div className="text-center">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight">
-                {effectiveUser?.userType === "business" 
-                  ? `Business Dashboard - ${effectiveUser?.hometownCity || effectiveUser?.location || "Your City"}`
-                  : effectiveUser?.userType === "local"
-                    ? `NEARBY LOCAL ${effectiveUser?.hometownCity || effectiveUser?.location || "HOME"}`
-                    : enrichedEffectiveUser?.travelDestination 
-                      ? `NEARBY TRAVELER ${enrichedEffectiveUser.travelDestination}`
-                      : `NEARBY TRAVELER ${effectiveUser?.hometownCity || effectiveUser?.location || "HOME"}`
-                }
-              </h1>
+              <div className="text-center">
+                {effectiveUser?.userType === "business" ? (
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight">
+                    Business Dashboard - {effectiveUser?.hometownCity || effectiveUser?.location || "Your City"}
+                  </h1>
+                ) : enrichedEffectiveUser?.travelDestination ? (
+                  <div className="space-y-2">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
+                      NEARBY LOCAL {effectiveUser?.hometownCity || effectiveUser?.location || "HOME"}
+                    </h1>
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
+                      NEARBY TRAVELER {enrichedEffectiveUser.travelDestination}
+                    </h1>
+                  </div>
+                ) : (
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight">
+                    NEARBY LOCAL {effectiveUser?.hometownCity || effectiveUser?.location || "HOME"}
+                  </h1>
+                )}
+              </div>
               <p className="text-lg sm:text-xl md:text-2xl mb-8 text-blue-100">
                 {effectiveUser?.userType === "business"
                   ? "Reach customers through interest-based matching, business notifications, and location-targeted discovery."
