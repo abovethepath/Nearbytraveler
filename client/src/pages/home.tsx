@@ -1562,73 +1562,66 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
 
-{/* HERO SECTION — Landing Page Style */}
-<section className="bg-gradient-to-br from-white via-blue-50 to-orange-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-orange-900/20 py-8 sm:py-12 lg:py-16">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    {/* Mobile-first stacked layout, side-by-side on larger screens */}
-    <div className="flex flex-col lg:grid lg:grid-cols-5 lg:gap-12 lg:items-center">
-      
-      {/* Left side - Text content (3/5 width on desktop) */}
-      <div className="lg:col-span-3 space-y-4 mb-8 lg:mb-0">
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 dark:text-white leading-tight">
-          {effectiveUser?.userType === "business" ? (
-            <>
-              Connect Your <span className="text-orange-500">Business</span>{" "}
-              with <span className="text-blue-600">Travelers</span> &{" "}
-              <span className="text-blue-600">Locals</span>
-            </>
-          ) : (
-            <>
-              Connect with <span className="text-orange-500">Travelers</span>{" "}
-              & <span className="text-blue-600">Locals</span> Worldwide
-            </>
-          )}
-        </h1>
-        
-        <p className="text-lg sm:text-xl lg:text-2xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-2xl">
-          {effectiveUser?.userType === "business"
-            ? "Reach customers through interest-based matching, business notifications, and location-targeted discovery."
-            : "Discover amazing experiences & make meaningful connections based on demographics, activities, interests, and events."}
-        </p>
-        
-        {effectiveUser?.userType === "business" && (
-          <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            <Button
-              size="lg"
-              className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-8 py-3 text-lg shadow-lg"
-              onClick={() => setLocation("/business-dashboard")}
-            >
-              <Store className="w-5 h-5 mr-2" />
-              Manage Business
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-3 text-lg"
-              onClick={() => {
-                setConnectModalMode("current");
-                setShowConnectModal(true);
-              }}
-            >
-              <Users className="w-5 h-5 mr-2" />
-              Find Customers
-            </Button>
-          </div>
-        )}
-      </div>
-
-      {/* Right side - Image (2/5 width on desktop) */}
-      <div className="lg:col-span-2 flex justify-center lg:justify-end">
-        <div className="relative w-full max-w-md lg:max-w-lg rounded-2xl overflow-hidden shadow-2xl border-4 border-white/20">
-          <img 
-            src="/travelers coffee_1750995178947.png"
-            alt="Travelers connecting at coffee shop"
-            className="w-full h-auto object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-        </div>
+{/* HERO SECTION — Vertical Landing Page Style */}
+<section className="bg-white dark:bg-gray-900 py-8 sm:py-12 lg:py-16">
+  <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    
+    {/* Title above photo - black text */}
+    <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-black dark:text-white leading-tight mb-8">
+      {effectiveUser?.userType === "business" ? (
+        <>
+          Connect Your Business with Travelers & Locals
+        </>
+      ) : (
+        <>
+          Connect with Travelers & Locals Worldwide
+        </>
+      )}
+    </h1>
+    
+    {/* Photo in the middle */}
+    <div className="mb-8 flex justify-center">
+      <div className="relative w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl">
+        <img 
+          src="/travelers coffee_1750995178947.png"
+          alt="Travelers connecting at coffee shop"
+          className="w-full h-auto object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
       </div>
     </div>
+    
+    {/* Smaller descriptive text below photo */}
+    <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-3xl mx-auto">
+      {effectiveUser?.userType === "business"
+        ? "Reach customers through interest-based matching, business notifications, and location-targeted discovery."
+        : "Discover amazing experiences & make meaningful connections based on demographics, activities, interests, and events."}
+    </p>
+    
+    {effectiveUser?.userType === "business" && (
+      <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
+        <Button
+          size="lg"
+          className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-8 py-3 text-lg shadow-lg"
+          onClick={() => setLocation("/business-dashboard")}
+        >
+          <Store className="w-5 h-5 mr-2" />
+          Manage Business
+        </Button>
+        <Button
+          size="lg"
+          variant="outline"
+          className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-3 text-lg"
+          onClick={() => {
+            setConnectModalMode("current");
+            setShowConnectModal(true);
+          }}
+        >
+          <Users className="w-5 h-5 mr-2" />
+          Find Customers
+        </Button>
+      </div>
+    )}
   </div>
 </section>
 
