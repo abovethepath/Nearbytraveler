@@ -983,9 +983,7 @@ function Router() {
       case '/cities':
         return <Discover />;
       case '/match-in-city':
-        // Redirect to home - this route is deprecated in favor of /city/:city/match
-        setLocation('/');
-        return null;
+        return <MatchInCity />;
       case '/share-qr':
         return <ShareQR />;
 
