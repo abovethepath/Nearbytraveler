@@ -878,50 +878,86 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
             </div>
           ) : (
             <>
-              {/* Cities Grid - Bigger cards */}
+              {/* Popular Destinations */}
               {filteredCities.length > 0 && (
-            <div className="mb-8">
-              <div className="text-center mb-8">
-                <h3 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Cities</h3>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                {filteredCities.map((city, index) => (
-                  <Card
-                    key={`other-${city.city}-${city.state}-${index}`}
-                    className="group cursor-pointer transform hover:scale-105 transition-all duration-300 overflow-hidden relative bg-white/10 backdrop-blur-sm border-white/20 hover:border-white/40"
-                    onClick={() => {
-                      setSelectedCity(city.city);
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }}
-                  >
-                    <div className="relative h-32 overflow-hidden">
-                      <div className={`w-full h-full bg-gradient-to-br ${city.gradient} flex items-center justify-center`}>
-                        <MapPin className="w-12 h-12 text-gray-900 dark:text-gray-500 dark:text-gray-400" />
-                      </div>
-                      <div className="absolute inset-0 bg-black/20" />
-                    </div>
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <MapPin className="w-4 h-4 text-gray-600 dark:text-gray-300" />
-                        <h3 className="font-semibold text-lg text-gray-900 dark:text-white truncate">{city.city}</h3>
-                      </div>
-                      <p className="text-sm text-gray-900 dark:text-gray-500 dark:text-gray-400 mb-3 truncate">
-                        {city.state && `${city.state}, `}{city.country}
-                      </p>
-                      <Button 
-                        className="w-full text-sm bg-blue-500 hover:bg-blue-600 text-gray-900 dark:text-white py-2"
-                        onClick={(e) => {
-                          e.stopPropagation();
+                <div className="mb-12">
+                  <div className="text-center mb-10">
+                    <h3 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3">
+                      Popular Destinations
+                    </h3>
+                    <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                      Discover amazing cities where travelers and locals connect every day
+                    </p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {filteredCities.map((city, index) => (
+                      <Card
+                        key={`destination-${city.city}-${city.state}-${index}`}
+                        className="group cursor-pointer overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 bg-white dark:bg-gray-800"
+                        onClick={() => {
                           setSelectedCity(city.city);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
                         }}
+                        data-testid={`city-card-${city.city.toLowerCase().replace(/\s+/g, '-')}`}
                       >
-                        Explore
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
+                        {/* City Image/Gradient Header */}
+                        <div className="relative h-40 overflow-hidden">
+                          <div className={`w-full h-full bg-gradient-to-br ${city.gradient} relative`}>
+                            {/* Gradient overlay for better contrast */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                            
+                            {/* City icon */}
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <div className="bg-white/20 backdrop-blur-sm rounded-full p-4">
+                                <MapPin className="w-8 h-8 text-white drop-shadow-lg" />
+                              </div>
+                            </div>
+                            
+                            {/* City name overlay */}
+                            <div className="absolute bottom-3 left-4 right-4">
+                              <h3 className="font-bold text-xl text-white drop-shadow-lg truncate">
+                                {city.city}
+                              </h3>
+                              <p className="text-white/90 text-sm drop-shadow truncate">
+                                {city.state && `${city.state}, `}{city.country}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Card Content */}
+                        <CardContent className="p-5">
+                          <div className="space-y-3">
+                            {/* Stats or info could go here */}
+                            <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                              <span className="flex items-center gap-1">
+                                <Users className="w-4 h-4" />
+                                Active community
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <Heart className="w-4 h-4" />
+                                Popular
+                              </span>
+                            </div>
+                            
+                            {/* Explore button */}
+                            <Button 
+                              className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors duration-200 font-medium"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedCity(city.city);
+                              }}
+                              data-testid={`explore-button-${city.city.toLowerCase().replace(/\s+/g, '-')}`}
+                            >
+                              Explore {city.city}
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
                 </div>
-              </div>
               )}
 
               {/* Search for Other Cities Tab */}
