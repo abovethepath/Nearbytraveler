@@ -846,11 +846,27 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
               {/* Right image side - smaller */}
               <div className="md:col-span-2 flex flex-col items-center">
                 {/* City matching illustration */}
-                <div className="relative w-64 h-48 rounded-2xl overflow-hidden shadow-lg">
+                <div className="relative w-64 h-48 rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20">
                   <img 
                     src="@assets/image_1756935226547.png" 
                     alt="City activity matching illustration showing a person using their phone to connect with local activities and other people in the city"
-                    className="w-full h-full object-contain bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20"
+                    className="w-full h-full object-contain transition-opacity duration-300"
+                    loading="eager"
+                    onLoad={(e) => {
+                      e.currentTarget.style.opacity = '1';
+                    }}
+                    onError={(e) => {
+                      // Fallback to icon if image fails to load
+                      e.currentTarget.style.display = 'none';
+                      const parent = e.currentTarget.parentElement;
+                      if (parent && !parent.querySelector('.fallback-icon')) {
+                        const fallback = document.createElement('div');
+                        fallback.className = 'fallback-icon absolute inset-0 flex items-center justify-center';
+                        fallback.innerHTML = '<div class="text-center"><div class="w-16 h-16 text-gray-400 mx-auto mb-3"><svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="text-gray-400 text-sm font-medium">Connect in any city</div></div>';
+                        parent.appendChild(fallback);
+                      }
+                    }}
+                    style={{ opacity: '0' }}
                   />
                 </div>
               </div>
