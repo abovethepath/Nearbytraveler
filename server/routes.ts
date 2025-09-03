@@ -1557,13 +1557,17 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
   // Initialize chatrooms asynchronously (non-blocking)
   if (process.env.NODE_ENV === 'development') console.log("Starting routes registration...");
-  storage.ensureMeetLocalsChatrooms()
-    .then(() => {
-      if (process.env.NODE_ENV === 'development') console.log("Chatrooms initialization completed");
-    })
-    .catch(err => {
-      if (process.env.NODE_ENV === 'development') console.error("Chatrooms initialization failed:", err);
-    });
+  
+  // DISABLED: Global chatroom initialization to prevent phantom chatroom creation
+  // storage.ensureMeetLocalsChatrooms()
+  //   .then(() => {
+  //     if (process.env.NODE_ENV === 'development') console.log("Chatrooms initialization completed");
+  //   })
+  //   .catch(err => {
+  //     if (process.env.NODE_ENV === 'development') console.error("Chatrooms initialization failed:", err);
+  //   });
+  
+  if (process.env.NODE_ENV === 'development') console.log("Chatrooms initialization DISABLED to prevent phantom rooms");
 
   // CRITICAL: Get users by location and type endpoint with LA Metro consolidation - must come before parameterized routes
   app.get("/api/users-by-location/:city/:userType", async (req, res) => {
