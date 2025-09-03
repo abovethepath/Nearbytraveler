@@ -809,20 +809,20 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
               </p>
             </div>
 
-            {/* Desktop: Landing page style layout (text left, image right) */}
+            {/* Desktop: Compact layout consistent with other pages */}
             <div className="hidden md:grid md:grid-cols-5 items-center gap-8">
               {/* Left text side - wider */}
               <div className="md:col-span-3">
-                <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight text-gray-900 dark:text-white leading-tight">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-white leading-tight">
                   <h1>
                     City-Specific Matching
                   </h1>
                 </div>
-                <div className="mt-4 sm:mt-6 max-w-2xl text-base md:text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
+                <div className="mt-4 sm:mt-6 max-w-2xl text-base md:text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
                   <p className="mb-4">
                     Connect with people who share your exact interests in specific cities around the world.
                   </p>
-                  <p className="text-sm md:text-base text-gray-900 dark:text-gray-500 dark:text-gray-400">
+                  <p className="text-sm md:text-base text-gray-500 dark:text-gray-400">
                     Add activities you want to do, then instantly see who else wants to do the same things in that city. Perfect for travelers and locals alike.
                   </p>
                 </div>
@@ -844,13 +844,13 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                 </div>
               </div>
               
-              {/* Right image side - smaller */}
+              {/* Right image side - compact and consistent */}
               <div className="md:col-span-2 flex flex-col items-center">
-                {/* City matching illustration */}
-                <div className="relative w-80 h-64 rounded-2xl overflow-hidden shadow-lg bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 flex items-center justify-center">
+                {/* Compact matching illustration */}
+                <div className="relative w-full max-w-xs h-[220px] rounded-xl overflow-hidden shadow-xl bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 flex items-center justify-center">
                   <img 
                     src={cityMatchingIllustration}
-                    alt="City activity matching illustration showing a person using their phone to connect with local activities and other people in the city"
+                    alt="City activity matching illustration"
                     className="w-full h-full object-cover transition-opacity duration-500"
                     loading="eager"
                     onLoad={(e) => {
@@ -861,8 +861,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                   {/* Loading indicator */}
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center">
-                      <MapPin className="w-16 h-16 text-gray-400 mx-auto mb-3 animate-pulse" />
-                      <div className="text-gray-500 text-sm font-medium">Loading illustration...</div>
+                      <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-3 animate-pulse" />
+                      <div className="text-gray-500 text-sm font-medium">Loading...</div>
                     </div>
                   </div>
                 </div>
@@ -1037,28 +1037,32 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4 py-8">
-        {/* Header with Back Button - MOBILE RESPONSIVE */}
-        <div className="mb-6 md:mb-8">
+        {/* Compact Header - consistent with other pages */}
+        <div className="mb-6">
           <Button
             variant="ghost"
             onClick={() => {
-              // Navigate back to city match selection page
               setSelectedCity('');
             }}
-            className="text-gray-900 dark:text-white hover:bg-white/10 mb-4"
+            className="text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 mb-4"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
             Back to Cities
           </Button>
-          <div className="flex items-start gap-3 md:gap-4">
-            <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center flex-shrink-0`}>
-              <MapPin className="w-5 h-5 md:w-6 md:h-6 text-gray-900 dark:text-white" />
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                {selectedCity}
+              </h1>
+              <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 mt-1">
+                Add activities and events. Others click to match!
+              </p>
             </div>
-            <div className="flex-1 min-w-0">
-              <h1 className="text-xl md:text-3xl font-bold text-gray-900 dark:text-white leading-tight">{selectedCity}</h1>
-              <p className="text-sm md:text-base text-gray-900 dark:text-gray-600 dark:text-gray-300 mt-1">Add activities and events. Others click to match!</p>
+            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+              <MapPin className="w-5 h-5" />
+              <span className="text-sm">Matching</span>
             </div>
           </div>
         </div>
