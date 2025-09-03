@@ -91,7 +91,6 @@ const AUSTRALIAN_STATES = [
 import WorldMap from "@/components/world-map";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
 import { QuickDealsWidget } from "@/components/QuickDealsWidget";
-import TravelItinerary from "@/components/travel-itinerary";
 import { ThingsIWantToDoSection } from "@/components/ThingsIWantToDoSection";
 
 
