@@ -656,6 +656,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Simple edit form data (copying signup pattern)
   const [editFormData, setEditFormData] = useState({
     interests: [] as string[],
+    privateInterests: [] as string[],
     activities: [] as string[],
     events: [] as string[]
   });
@@ -1352,6 +1353,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       // Initialize editFormData with current user preferences
       setEditFormData({
         interests: user.interests || [],
+        privateInterests: user.privateInterests || [],
         activities: user.activities || [],
         events: user.events || []
       });
@@ -4002,6 +4004,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         // Initialize edit form data
                         setEditFormData({
                           interests: user?.interests || [],
+                          privateInterests: user?.privateInterests || [],
                           activities: user?.activities || [],
                           events: user?.events || []
                         });
@@ -4079,6 +4082,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             // Reset form data
                             setEditFormData({
                               interests: user?.interests || [],
+                              privateInterests: user?.privateInterests || [],
                               activities: user?.activities || [],
                               events: user?.events || []
                             });
@@ -4192,6 +4196,65 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             >
                               <Plus className="w-3 h-3" />
                             </Button>
+                          </div>
+                        </div>
+
+                        {/* Private Interests Section */}
+                        <div className="border-t pt-6">
+                          <div className="flex items-center gap-2 mb-4">
+                            <Eye className="w-5 h-5 text-purple-500" />
+                            <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
+                              Private Matching Interests
+                            </h4>
+                            <div className="ml-2 px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full font-medium dark:bg-purple-900 dark:text-purple-200">
+                              PRIVATE
+                            </div>
+                          </div>
+                          
+                          <div className="text-sm text-purple-600 bg-purple-50 border border-purple-400 rounded-md p-3 mb-4 dark:bg-purple-900/20 dark:border-purple-600 dark:text-purple-300">
+                            <div className="flex items-start gap-2">
+                              <Shield className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                              <div>
+                                <strong>For matching only - never displayed publicly.</strong> Select sensitive interests like LGBTQ+ events, alternative lifestyles, or personal preferences. These help you find compatible people while keeping your privacy.
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex flex-wrap gap-2 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
+                            {[
+                              "LGBTQ+ Events", "Gay Bars & Clubs", "Lesbian Events", "Pride Festivals", "Queer Community", 
+                              "Polyamory", "Open Relationships", "Swinging", "Kink & BDSM", "Alternative Lifestyles",
+                              "Cannabis Culture", "Psychedelic Experiences", "Adult Entertainment", "Strip Clubs", "Adult Parties",
+                              "Sex-Positive Events", "Tantric Workshops", "Fetish Events", "Adult Dating", "Hook-up Culture",
+                              "Divorce Support", "Single Parent Events", "Mental Health Support", "Addiction Recovery", "Therapy Groups"
+                            ].map((interest) => {
+                              const isSelected = editFormData.privateInterests?.includes(interest);
+                              
+                              return (
+                                <button
+                                  key={interest}
+                                  type="button"
+                                  onClick={() => {
+                                    const currentPrivate = editFormData.privateInterests || [];
+                                    const newPrivateInterests = isSelected
+                                      ? currentPrivate.filter(i => i !== interest)
+                                      : [...currentPrivate, interest];
+                                    
+                                    setEditFormData({ 
+                                      ...editFormData, 
+                                      privateInterests: newPrivateInterests 
+                                    });
+                                  }}
+                                  className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                    isSelected
+                                      ? 'bg-purple-600 text-white font-bold transform scale-105'
+                                      : 'bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-800 dark:text-purple-200 dark:hover:bg-purple-700'
+                                  }`}
+                                >
+                                  {interest}
+                                </button>
+                              );
+                            })}
                           </div>
                         </div>
 
@@ -4373,6 +4436,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               setTempEvents(user?.events || []);
                               setEditFormData({
                                 interests: user?.interests || [],
+                                privateInterests: user?.privateInterests || [],
                                 activities: user?.activities || [],
                                 events: user?.events || []
                               });
@@ -5095,6 +5159,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             setEditingEvents(false);
                             setEditFormData({
                               interests: user?.interests || [],
+                              privateInterests: user?.privateInterests || [],
                               activities: user?.activities || [],
                               events: user?.events || []
                             });
@@ -5204,6 +5269,64 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               </div>
                             </div>
                           )}
+                        </div>
+                      </div>
+
+                      {/* Business Private Interests Section */}
+                      <div className="border-t pt-6">
+                        <div className="flex items-center gap-2 mb-4">
+                          <Eye className="w-5 h-5 text-purple-500" />
+                          <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
+                            Private Business Matching
+                          </h4>
+                          <div className="ml-2 px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full font-medium dark:bg-purple-900 dark:text-purple-200">
+                            PRIVATE
+                          </div>
+                        </div>
+                        
+                        <div className="text-sm text-purple-600 bg-purple-50 border border-purple-400 rounded-md p-3 mb-4 dark:bg-purple-900/20 dark:border-purple-600 dark:text-purple-300">
+                          <div className="flex items-start gap-2">
+                            <Shield className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                            <div>
+                              <strong>For matching only - never shown publicly.</strong> Select sensitive business interests that help you connect with compatible customers and partners while keeping your privacy.
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="flex flex-wrap gap-2 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
+                          {[
+                            "LGBTQ+ Friendly Business", "Pride Month Events", "Diversity & Inclusion", "Women-Owned Business", 
+                            "Minority-Owned Business", "Cannabis Tourism", "Adult Entertainment Venue", "18+ Events Only", 
+                            "Alternative Lifestyle Friendly", "Sex-Positive Space", "Kink Community Welcome", "Polyamory Friendly",
+                            "Mental Health Support", "Addiction Recovery Support", "Therapy & Wellness", "Support Groups"
+                          ].map((interest) => {
+                            const isSelected = editFormData.privateInterests?.includes(interest);
+                            
+                            return (
+                              <button
+                                key={interest}
+                                type="button"
+                                onClick={() => {
+                                  const currentPrivate = editFormData.privateInterests || [];
+                                  const newPrivateInterests = isSelected
+                                    ? currentPrivate.filter(i => i !== interest)
+                                    : [...currentPrivate, interest];
+                                  
+                                  setEditFormData({ 
+                                    ...editFormData, 
+                                    privateInterests: newPrivateInterests 
+                                  });
+                                }}
+                                className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                  isSelected
+                                    ? 'bg-purple-600 text-white font-bold transform scale-105'
+                                    : 'bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-800 dark:text-purple-200 dark:hover:bg-purple-700'
+                                }`}
+                              >
+                                {interest}
+                              </button>
+                            );
+                          })}
                         </div>
                       </div>
 

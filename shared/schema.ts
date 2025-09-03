@@ -25,6 +25,7 @@ export const users = pgTable("users", {
   isMetroUser: boolean("is_metro_user").default(false), // Whether they confirmed metro area recognition
   profileImage: text("profile_image"),
   interests: text("interests").array(),
+  privateInterests: text("private_interests").array(), // Private interests used only for matching, never displayed publicly
   customInterests: text("custom_interests"), // User's custom interests as comma-separated string
   dateOfBirth: timestamp("date_of_birth"),
   age: integer("age"), // Computed from dateOfBirth

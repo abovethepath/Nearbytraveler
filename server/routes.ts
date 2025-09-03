@@ -3949,6 +3949,11 @@ Questions? Just reply to this message. Welcome aboard!
         userWithoutPassword.customEvents = userWithoutPassword.customEvents;
       }
       
+      // MAP PRIVATE INTERESTS: Handle private interests for frontend
+      if (userWithoutPassword.privateInterests !== undefined) {
+        userWithoutPassword.privateInterests = userWithoutPassword.privateInterests;
+      }
+      
       // Note: Travel intent fields are already in camelCase from database
       
       return res.json(userWithoutPassword);
@@ -4070,6 +4075,12 @@ Questions? Just reply to this message. Welcome aboard!
       if (updates.customEvents !== undefined) {
         updates.custom_events = updates.customEvents;
         delete updates.customEvents;
+      }
+      
+      // MAP PRIVATE INTERESTS: Handle private interests for matching
+      if (updates.privateInterests !== undefined) {
+        updates.private_interests = updates.privateInterests;
+        delete updates.privateInterests;
       }
 
       if (process.env.NODE_ENV === 'development') console.log(`🏢 BUSINESS PROFILE: Mapped fields for user ${userId}:`, Object.keys(updates));

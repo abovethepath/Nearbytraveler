@@ -213,11 +213,18 @@ export class TravelMatchingService {
   }
 
   /**
-   * Calculate interest-based compatibility
+   * Calculate interest-based compatibility (includes private interests)
    */
   private calculateInterestCompatibility(user1: User, user2: User) {
-    const user1Interests = this.parseInterests(user1.interests);
-    const user2Interests = this.parseInterests(user2.interests);
+    // Combine regular and private interests for comprehensive matching
+    const user1Interests = [
+      ...this.parseInterests(user1.interests),
+      ...this.parseInterests(user1.privateInterests)
+    ];
+    const user2Interests = [
+      ...this.parseInterests(user2.interests),
+      ...this.parseInterests(user2.privateInterests)
+    ];
     
     // Top Choices for Most Travelers - these get bonus points for matching
     const topChoicesInterests = [
