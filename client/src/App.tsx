@@ -1142,8 +1142,8 @@ function Router() {
         <>
           {console.log('🔍 APP ROUTING: User IS authenticated, showing authenticated app for location:', location)}
           <div className="min-h-screen w-full max-w-full flex flex-col bg-background text-foreground overflow-x-hidden">
-            {/* Navigation - show appropriate nav based on auth and screen size */}
-            {user ? (
+            {/* Navigation - ALWAYS show for authenticated users regardless of user state timing */}
+            {(user || localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || authValue.isAuthenticated) ? (
               <>
                 {/* Desktop Navigation */}
                 <div className="hidden md:block">
