@@ -5614,7 +5614,17 @@ Questions? Just reply to this message. Welcome aboard!
       // Get all active chatrooms
       const allChatrooms = await db.select().from(citychatrooms).where(eq(citychatrooms.isActive, true));
       
-      if (process.env.NODE_ENV === 'development') console.log(`🏠 MY-LOCATIONS: Found ${allChatrooms.length} active chatrooms`);
+      // FILTER: Only show legitimate chatrooms (Los Angeles Metro and Marseille)
+      const legitimateChatrooms = allChatrooms.filter(chatroom => 
+        chatroom.city === 'Los Angeles Metro' || 
+        chatroom.city === 'Marseille'
+      );
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🏠 MY-LOCATIONS: Found ${allChatrooms.length} total chatrooms, filtered to ${legitimateChatrooms.length} legitimate ones`);
+        console.log(`🔍 LEGITIMATE: Only showing chatrooms for Los Angeles Metro and Marseille`);
+        console.log(`🔍 FILTERED OUT: ${allChatrooms.length - legitimateChatrooms.length} phantom chatrooms removed`);
+      }
       
       // Get member counts using raw query for reliability - FIXED COUNT
       const memberCountResults = await db.execute(sql`
@@ -5643,7 +5653,7 @@ Questions? Just reply to this message. Welcome aboard!
       });
       
       // Add member count and membership status to each chatroom
-      const chatroomsWithCounts = allChatrooms.map(chatroom => ({
+      const chatroomsWithCounts = legitimateChatrooms.map(chatroom => ({
         ...chatroom,
         memberCount: memberCountMap.get(chatroom.id) || 0,
         userIsMember: userMembershipSet.has(chatroom.id)
