@@ -7672,7 +7672,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <Button 
                   type="submit" 
                   disabled={editTravelPlan.isPending}
-                  className="flex-1"
+                  className="flex-1 border-2 border-green-500 bg-green-600 hover:bg-green-700 text-white font-semibold shadow-md"
                 >
                   {editTravelPlan.isPending ? "Saving..." : "Save Changes"}
                 </Button>
@@ -8391,7 +8391,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <Button 
                   type="submit" 
                   disabled={editProfile.isPending}
-                  className="flex-1"
+                  className="flex-1 border-2 border-green-500 bg-green-600 hover:bg-green-700 text-white font-semibold shadow-md"
                   onClick={() => {
                     console.log('🔥 SAVE BUTTON CLICKED');
                     console.log('🔥 Form errors:', profileForm.formState.errors);
