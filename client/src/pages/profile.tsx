@@ -3698,17 +3698,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   );
                 })()}
 
-                {/* Secret Activities (non-business) */}
-                {user?.userType !== 'business' && user?.secretActivities && (
-                  <div className="p-3 bg-gradient-to-br from-orange-50 to-blue-50 border-l-4 border-orange-200 rounded-r-lg">
-                    <h5 className="font-medium text-black mb-2">
-                      Secret things I would do if my closest friends came to town
-                    </h5>
-                    <p className="text-black text-sm italic whitespace-pre-wrap break-words">
-                      {user?.secretActivities}
-                    </p>
-                  </div>
-                )}
 
                 {/* What you have in common (for other profiles) - Mobile and Desktop */}
                 {!isOwnProfile && currentUser && user?.id && (
@@ -4368,6 +4357,29 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
                 </div>
 
+                {/* Edit All Preferences Button */}
+                {isOwnProfile && !(editingInterests && editingActivities && editingEvents) && (
+                  <div className="mb-4">
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setEditingInterests(true);
+                        setEditingActivities(true);
+                        setEditingEvents(true);
+                        // Initialize edit form data
+                        setEditFormData({
+                          interests: user?.interests || [],
+                          activities: user?.activities || [],
+                          events: user?.events || []
+                        });
+                      }}
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0"
+                    >
+                      <Edit className="w-3 h-3 mr-1" />
+                      Edit All Preferences
+                    </Button>
+                  </div>
+                )}
 
                 {/* Interests */}
                 <div className="mb-6">
