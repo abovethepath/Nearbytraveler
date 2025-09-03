@@ -79,8 +79,8 @@ export default function CurrentLocationWeatherWidget() {
     // Check if user is currently traveling using travel plans (same logic as CurrentCityWidget)
     const currentDestination = getCurrentTravelDestination(Array.isArray(travelPlans) ? travelPlans : []);
     if (currentDestination && effectiveUser.hometownCity) {
-      const travelDestination = currentDestination.destinationCity.toLowerCase();
-      const hometown = effectiveUser.hometownCity.toLowerCase();
+      const travelDestination = currentDestination.destinationCity?.toLowerCase() || '';
+      const hometown = effectiveUser.hometownCity?.toLowerCase() || '';
       
       // Only show as traveler if destination is different from hometown
       if (!travelDestination.includes(hometown) && !hometown.includes(travelDestination)) {
@@ -135,6 +135,7 @@ export default function CurrentLocationWeatherWidget() {
   });
 
   const getWeatherIcon = (condition: string) => {
+    if (!condition) return <Cloud className="w-8 h-8 text-gray-500" />;
     const lowerCondition = condition.toLowerCase();
     
     if (lowerCondition.includes('rain') || lowerCondition.includes('drizzle')) {
@@ -157,8 +158,8 @@ export default function CurrentLocationWeatherWidget() {
     // Check if user is currently traveling using travel plans (same logic as CurrentCityWidget)
     const currentDestination = getCurrentTravelDestination(Array.isArray(travelPlans) ? travelPlans : []);
     if (currentDestination && effectiveUser.hometownCity) {
-      const travelDestination = currentDestination.destinationCity.toLowerCase();
-      const hometown = effectiveUser.hometownCity.toLowerCase();
+      const travelDestination = currentDestination.destinationCity?.toLowerCase() || '';
+      const hometown = effectiveUser.hometownCity?.toLowerCase() || '';
       
       // Only show as traveler if destination is different from hometown
       if (!travelDestination.includes(hometown) && !hometown.includes(travelDestination)) {
@@ -176,8 +177,8 @@ export default function CurrentLocationWeatherWidget() {
     // Check if user is currently traveling using travel plans (same logic as CurrentCityWidget)
     const currentDestination = getCurrentTravelDestination(Array.isArray(travelPlans) ? travelPlans : []);
     if (currentDestination && effectiveUser.hometownCity) {
-      const travelDestination = currentDestination.destinationCity.toLowerCase();
-      const hometown = effectiveUser.hometownCity.toLowerCase();
+      const travelDestination = currentDestination.destinationCity?.toLowerCase() || '';
+      const hometown = effectiveUser.hometownCity?.toLowerCase() || '';
       
       // Only show as traveler if destination is different from hometown
       if (!travelDestination.includes(hometown) && !hometown.includes(travelDestination)) {
