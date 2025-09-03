@@ -794,16 +794,16 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
   if (!selectedCity) {
     console.log('🎯 RENDERING: Showing city selection interface');
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800">
+      <div className="min-h-screen bg-white dark:bg-gray-900">
         <div className="container mx-auto px-4 py-4">
           {/* Header - Mobile vs Desktop Layout */}
           <div className="mb-6 md:mb-8">
             {/* Mobile: Centered layout */}
             <div className="block md:hidden text-center">
-              <h1 className="text-3xl font-bold text-white mb-4">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
                 🎯 City-Specific Matching
               </h1>
-              <p className="text-lg text-white/80">
+              <p className="text-lg text-gray-600 dark:text-gray-300">
                 Find People Who Want to Do What You Want to Do
               </p>
             </div>
@@ -812,31 +812,31 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
             <div className="hidden md:grid md:grid-cols-5 items-center gap-8">
               {/* Left text side - wider */}
               <div className="md:col-span-3">
-                <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight text-white leading-tight">
+                <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight text-gray-900 dark:text-white leading-tight">
                   <h1>
                     City-Specific Matching
                   </h1>
                 </div>
-                <div className="mt-4 sm:mt-6 max-w-2xl text-base md:text-lg lg:text-xl text-white/80 leading-relaxed">
+                <div className="mt-4 sm:mt-6 max-w-2xl text-base md:text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
                   <p className="mb-4">
                     Connect with people who share your exact interests in specific cities around the world.
                   </p>
-                  <p className="text-sm md:text-base text-white/60">
+                  <p className="text-sm md:text-base text-gray-900 dark:text-gray-500 dark:text-gray-400">
                     Add activities you want to do, then instantly see who else wants to do the same things in that city. Perfect for travelers and locals alike.
                   </p>
                 </div>
                 
                 {/* Matching Features List */}
                 <div className="mt-6 space-y-3">
-                  <div className="flex items-center gap-3 text-sm md:text-base text-white/80">
+                  <div className="flex items-center gap-3 text-sm md:text-base text-gray-600 dark:text-gray-300">
                     <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
                     <span>Real-time activity and event matching</span>
                   </div>
-                  <div className="flex items-center gap-3 text-sm md:text-base text-white/80">
+                  <div className="flex items-center gap-3 text-sm md:text-base text-gray-600 dark:text-gray-300">
                     <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
                     <span>Connect with locals and fellow travelers</span>
                   </div>
-                  <div className="flex items-center gap-3 text-sm md:text-base text-white/80">
+                  <div className="flex items-center gap-3 text-sm md:text-base text-gray-600 dark:text-gray-300">
                     <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
                     <span>Discover unique experiences in any city</span>
                   </div>
@@ -848,8 +848,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                 {/* Icon representation instead of image */}
                 <div className="relative w-48 h-48 bg-gradient-to-br from-blue-400/20 to-purple-500/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
                   <div className="text-center">
-                    <MapPin className="w-16 h-16 text-white/60 mx-auto mb-3" />
-                    <div className="text-white/50 text-sm font-medium">Connect in any city</div>
+                    <MapPin className="w-16 h-16 text-gray-900 dark:text-gray-500 dark:text-gray-400 mx-auto mb-3" />
+                    <div className="text-gray-900 dark:text-gray-500 dark:text-gray-400 text-sm font-medium">Connect in any city</div>
                   </div>
                 </div>
               </div>
@@ -860,7 +860,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
           {citiesLoading ? (
             <div className="text-center py-16">
               <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
-              <p className="text-white/70 mt-4 text-lg">Loading cities...</p>
+              <p className="text-gray-900 dark:text-gray-600 dark:text-gray-300 mt-4 text-lg">Loading cities...</p>
             </div>
           ) : (
             <>
@@ -868,12 +868,12 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
               <div className="mb-6">
                 <div className="max-w-md mx-auto">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-4 h-4" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-900 dark:text-gray-500 dark:text-gray-400 w-4 h-4" />
                     <Input
                       placeholder="Search cities..."
                       value={citySearchTerm}
                       onChange={(e) => setCitySearchTerm(e.target.value)}
-                      className="pl-9 py-2 text-sm bg-white/10 border-white/20 text-white placeholder-white/50 focus:border-white/40"
+                      className="pl-9 py-2 text-sm bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 dark:focus:border-blue-400"
                     />
                   </div>
                 </div>
@@ -884,7 +884,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
               {filteredCities.length > 0 && (
             <div className="mb-8">
               <div className="text-center mb-8">
-                <h3 className="text-4xl font-bold text-white mb-4">Cities</h3>
+                <h3 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Cities</h3>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                 {filteredCities.map((city, index) => (
@@ -898,20 +898,20 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                   >
                     <div className="relative h-32 overflow-hidden">
                       <div className={`w-full h-full bg-gradient-to-br ${city.gradient} flex items-center justify-center`}>
-                        <MapPin className="w-12 h-12 text-white/60" />
+                        <MapPin className="w-12 h-12 text-gray-900 dark:text-gray-500 dark:text-gray-400" />
                       </div>
                       <div className="absolute inset-0 bg-black/20" />
                     </div>
                     <CardContent className="p-4">
                       <div className="flex items-center gap-2 mb-2">
-                        <MapPin className="w-4 h-4 text-white/80" />
-                        <h3 className="font-semibold text-lg text-white truncate">{city.city}</h3>
+                        <MapPin className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+                        <h3 className="font-semibold text-lg text-gray-900 dark:text-white truncate">{city.city}</h3>
                       </div>
-                      <p className="text-sm text-white/60 mb-3 truncate">
+                      <p className="text-sm text-gray-900 dark:text-gray-500 dark:text-gray-400 mb-3 truncate">
                         {city.state && `${city.state}, `}{city.country}
                       </p>
                       <Button 
-                        className="w-full text-sm bg-blue-500 hover:bg-blue-600 text-white py-2"
+                        className="w-full text-sm bg-blue-500 hover:bg-blue-600 text-gray-900 dark:text-white py-2"
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedCity(city.city);
@@ -931,17 +931,17 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
             <Card className="bg-white/10 backdrop-blur-sm border-white/20">
               <CardContent className="p-6">
                 <div className="text-center mb-4">
-                  <h3 className="text-2xl font-bold text-white mb-2">🔍 Search Any City</h3>
-                  <p className="text-white/70">Don't see your city? Search for any city worldwide</p>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">🔍 Search Any City</h3>
+                  <p className="text-gray-900 dark:text-gray-600 dark:text-gray-300">Don't see your city? Search for any city worldwide</p>
                 </div>
                 <div className="max-w-md mx-auto">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-5 h-5" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-900 dark:text-gray-500 dark:text-gray-400 w-5 h-5" />
                     <Input
                       placeholder="Type any city name (e.g., Tokyo, Paris, Sydney)..."
                       value={citySearchTerm}
                       onChange={(e) => setCitySearchTerm(e.target.value)}
-                      className="pl-10 py-3 text-lg bg-white/20 border-white/30 text-white placeholder-white/50 focus:border-white/60"
+                      className="pl-10 py-3 text-lg bg-white/20 border-white/30 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-white/60"
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && citySearchTerm.trim() && !searchingCity) {
                           handleCustomCitySearch(citySearchTerm.trim());
@@ -957,7 +957,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                         }
                       }}
                       disabled={!citySearchTerm.trim() || searchingCity}
-                      className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold px-6 py-2 flex items-center gap-2"
+                      className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-gray-900 dark:text-white font-semibold px-6 py-2 flex items-center gap-2"
                     >
                       {searchingCity ? (
                         <>
@@ -1013,18 +1013,18 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
               // Navigate back to city match selection page
               setSelectedCity('');
             }}
-            className="text-white hover:bg-white/10 mb-4"
+            className="text-gray-900 dark:text-white hover:bg-white/10 mb-4"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
             Back to Cities
           </Button>
           <div className="flex items-start gap-3 md:gap-4">
             <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center flex-shrink-0`}>
-              <MapPin className="w-5 h-5 md:w-6 md:h-6 text-white" />
+              <MapPin className="w-5 h-5 md:w-6 md:h-6 text-gray-900 dark:text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-xl md:text-3xl font-bold text-white leading-tight">{selectedCity}</h1>
-              <p className="text-sm md:text-base text-white/70 mt-1">Add activities and events. Others click to match!</p>
+              <h1 className="text-xl md:text-3xl font-bold text-gray-900 dark:text-white leading-tight">{selectedCity}</h1>
+              <p className="text-sm md:text-base text-gray-900 dark:text-gray-600 dark:text-gray-300 mt-1">Add activities and events. Others click to match!</p>
             </div>
           </div>
         </div>
@@ -1034,7 +1034,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
         {/* HOW MATCHING WORKS - MOBILE RESPONSIVE */}
         <Card className="mb-3 bg-white/5 backdrop-blur-sm border-white/10">
           <CardContent className="p-3">
-            <div className="text-white/80 text-xs md:text-sm">
+            <div className="text-gray-600 dark:text-gray-300 text-xs md:text-sm">
               <strong className="text-blue-400">Quick Start:</strong> Click blue activities below to add them to your profile, then see who else wants to do the same things in {selectedCity}!
             </div>
           </CardContent>
@@ -1046,10 +1046,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
         {/* Global Activities Section - MOBILE RESPONSIVE */}
         <div className="mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-            <h2 className="text-lg md:text-2xl font-bold text-white">🌍 All {selectedCity} Activities ({cityActivities.length})</h2>
+            <h2 className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">🌍 All {selectedCity} Activities ({cityActivities.length})</h2>
             <Button
               onClick={() => enhanceCityWithMoreActivities()}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold px-3 py-2 md:px-4 rounded-lg shadow-lg text-sm md:text-base w-full sm:w-auto"
+              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-gray-900 dark:text-white font-semibold px-3 py-2 md:px-4 rounded-lg shadow-lg text-sm md:text-base w-full sm:w-auto"
               disabled={isLoading}
             >
               🤖 Get More AI Activities
@@ -1070,13 +1070,13 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
           {/* Add Activity Section - MOBILE RESPONSIVE */}
           <div className="mb-4" data-add-activity-section>
             <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-3">
-              <h3 className="text-white text-sm font-medium mb-2">+ Add Activity</h3>
+              <h3 className="text-gray-900 dark:text-white text-sm font-medium mb-2">+ Add Activity</h3>
               <div className="space-y-2">
                 <Input
                   placeholder="Add activity or event"
                   value={newActivityName}
                   onChange={(e) => setNewActivityName(e.target.value)}
-                  className="w-full bg-white/10 border-white/20 text-white placeholder-white/40 text-sm h-9 md:h-8"
+                  className="w-full bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-sm h-9 md:h-8"
                   onKeyPress={(e) => {
                     if (e.key === 'Enter' && newActivityName.trim()) {
                       addActivity();
@@ -1088,12 +1088,12 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                     placeholder="Optional description"
                     value={newActivityDescription}
                     onChange={(e) => setNewActivityDescription(e.target.value)}
-                    className="flex-1 bg-white/10 border-white/20 text-white placeholder-white/40 text-sm h-9 md:h-8"
+                    className="flex-1 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-sm h-9 md:h-8"
                   />
                   <Button
                     onClick={addActivity}
                     disabled={!newActivityName.trim() || isLoading}
-                    className="bg-green-600 hover:bg-green-700 text-white px-4 h-9 md:h-8 text-sm w-full sm:w-auto"
+                    className="bg-green-600 hover:bg-green-700 text-gray-900 dark:text-white px-4 h-9 md:h-8 text-sm w-full sm:w-auto"
                   >
                     Add
                   </Button>
@@ -1120,8 +1120,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                       }}
                       className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1 shadow-sm hover:shadow-md border ${
                         isActive 
-                          ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 border-green-400/20 text-white' 
-                          : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 border-blue-400/20 text-white'
+                          ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 border-green-400/20 text-gray-900 dark:text-white' 
+                          : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 border-blue-400/20 text-gray-900 dark:text-white'
                       }`}
                     >
                       {activity.activityName}
@@ -1134,7 +1134,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                         <TooltipTrigger asChild>
                           <Info className="w-3 h-3 ml-1 opacity-60 absolute top-1 right-1" />
                         </TooltipTrigger>
-                        <TooltipContent className="max-w-xs bg-gray-900 text-white border-gray-700 shadow-xl">
+                        <TooltipContent className="max-w-xs bg-gray-900 text-gray-900 dark:text-white border-gray-700 shadow-xl">
                           <p className="text-sm">{activity.description}</p>
                         </TooltipContent>
                       </Tooltip>
@@ -1149,7 +1149,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                           setEditActivityName(activity.activityName);
                           setEditActivityDescription(activity.description || '');
                         }}
-                        className="w-5 h-5 bg-blue-600 hover:bg-blue-700 rounded-full text-white text-xs flex items-center justify-center"
+                        className="w-5 h-5 bg-blue-600 hover:bg-blue-700 rounded-full text-gray-900 dark:text-white text-xs flex items-center justify-center"
                         title="Edit"
                       >
                         ✏️
@@ -1159,7 +1159,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                           e.stopPropagation();
                           deleteActivity(activity.id);
                         }}
-                        className="w-5 h-5 bg-red-600 hover:bg-red-700 rounded-full text-white text-xs flex items-center justify-center"
+                        className="w-5 h-5 bg-red-600 hover:bg-red-700 rounded-full text-gray-900 dark:text-white text-xs flex items-center justify-center"
                         title="Delete"
                       >
                         🗑️
@@ -1186,7 +1186,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                   }, 500);
                 }
               }}
-              className="px-3 py-1.5 rounded-full text-sm font-medium bg-gray-600 hover:bg-gray-500 text-white border-2 border-dashed border-gray-400"
+              className="px-3 py-1.5 rounded-full text-sm font-medium bg-gray-600 hover:bg-gray-500 text-gray-900 dark:text-white border-2 border-dashed border-gray-400"
             >
               + Add Activity
             </button>
@@ -1198,25 +1198,25 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
           {/* Edit Activity Form */}
           {editingActivity && (
             <div className="mt-4 pt-4 border-t border-gray-600">
-              <h4 className="text-white font-medium mb-2">Edit Activity</h4>
+              <h4 className="text-gray-900 dark:text-white font-medium mb-2">Edit Activity</h4>
               <div className="space-y-2">
                 <Input
                   placeholder="Activity name..."
                   value={editActivityName}
                   onChange={(e) => setEditActivityName(e.target.value)}
-                  className="bg-white/10 border-white/20 text-white placeholder-white/60"
+                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                   autoFocus
                 />
                 <Textarea
                   placeholder="Description required - details about this activity..."
                   value={editActivityDescription}
                   onChange={(e) => setEditActivityDescription(e.target.value)}
-                  className="bg-white/10 border-white/20 text-white placeholder-white/60 resize-none h-20"
+                  className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none h-20"
                 />
                 <div className="flex gap-2">
                   <Button 
                     onClick={updateActivity}
-                    className="bg-blue-500 hover:bg-blue-600 text-white"
+                    className="bg-blue-500 hover:bg-blue-600 text-gray-900 dark:text-white"
                     disabled={!editActivityName.trim() || !editActivityDescription.trim()}
                   >
                     Update Activity
@@ -1241,7 +1241,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
 
 
         {cityActivities.length === 0 && (
-          <div className="text-center py-8 text-white/60">
+          <div className="text-center py-8 text-gray-900 dark:text-gray-500 dark:text-gray-400">
             <h3 className="text-lg font-semibold mb-2">No activities yet in {selectedCity}</h3>
             <p className="text-sm">Be the first to add activities!</p>
           </div>
@@ -1250,7 +1250,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
         {/* Events Section  */}
         <div className="mt-8">
           <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-white mb-2">🎉 Events in {selectedCity} ({cityEvents.length})</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">🎉 Events in {selectedCity} ({cityEvents.length})</h2>
           </div>
 
           <div className="bg-gray-800/60 rounded-lg p-4 mb-6">
@@ -1288,8 +1288,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                               onClick={() => toggleEvent(event.id)}
                               className={`w-6 h-6 rounded-full text-xs font-bold transition-all duration-200 ${
                                 isActive 
-                                  ? 'bg-green-600 text-white' 
-                                  : 'bg-gray-500 hover:bg-gray-600 text-white'
+                                  ? 'bg-green-600 text-gray-900 dark:text-white' 
+                                  : 'bg-gray-500 hover:bg-gray-600 text-gray-900 dark:text-white'
                               }`}
                               title={isActive ? "Remove Interest" : "Add Interest"}
                             >
@@ -1297,7 +1297,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                             </button>
                           </div>
                         </TooltipTrigger>
-                        <TooltipContent className="max-w-xs bg-gray-900 text-white border-gray-700 shadow-xl">
+                        <TooltipContent className="max-w-xs bg-gray-900 text-gray-900 dark:text-white border-gray-700 shadow-xl">
                           <p className="text-sm font-medium">Click event name to view details and join</p>
                           <p className="text-xs text-gray-400 mt-1">Click + to add interest without joining</p>
                         </TooltipContent>
@@ -1309,7 +1309,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
             </TooltipProvider>
 
             {cityEvents.length === 0 && (
-              <div className="text-center py-8 text-white/60">
+              <div className="text-center py-8 text-gray-900 dark:text-gray-500 dark:text-gray-400">
                 <h3 className="text-lg font-semibold mb-2">No events yet in {selectedCity}</h3>
                 <p className="text-sm">Events created by users will appear here!</p>
               </div>
@@ -1320,17 +1320,17 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
         {/* My Personal Selections Section */}
         <Card className="mb-6 bg-white/10 backdrop-blur-sm border-white/20">
           <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
+            <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2">
               <Heart className="w-5 h-5" />
               My Selected Activities in {selectedCity}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-white/80 text-sm mb-3">
+            <div className="text-gray-600 dark:text-gray-300 text-sm mb-3">
               Activities you've selected that appear on your profile:
             </div>
             {userActivities.length === 0 && userEvents.length === 0 ? (
-              <p className="text-white/60 text-sm italic">Click blue activities above to add them to your list!</p>
+              <p className="text-gray-900 dark:text-gray-500 dark:text-gray-400 text-sm italic">Click blue activities above to add them to your list!</p>
             ) : (
               <div className="flex flex-wrap gap-2">
                 {/* User Activities */}
@@ -1341,12 +1341,12 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                   return (
                     <div
                       key={`activity-${userActivity.id}`}
-                      className="relative group px-3 py-1 rounded-lg text-sm font-medium bg-purple-600 hover:bg-purple-700 text-white border border-purple-400/30 shadow-sm"
+                      className="relative group px-3 py-1 rounded-lg text-sm font-medium bg-purple-600 hover:bg-purple-700 text-gray-900 dark:text-white border border-purple-400/30 shadow-sm"
                     >
                       <span>{globalActivity.activityName}</span>
                       <button
                         onClick={() => toggleActivity(globalActivity)}
-                        className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors"
+                        className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 hover:bg-red-600 text-gray-900 dark:text-white rounded-full flex items-center justify-center transition-colors"
                         title="Remove activity"
                       >
                         <X className="w-3 h-3" />
@@ -1365,7 +1365,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                     return (
                       <div
                         key={`event-${userEvent.id}`}
-                        className="relative group px-3 py-1 rounded-lg text-sm font-medium bg-purple-600 hover:bg-purple-700 text-white border border-purple-400/30 shadow-sm"
+                        className="relative group px-3 py-1 rounded-lg text-sm font-medium bg-purple-600 hover:bg-purple-700 text-gray-900 dark:text-white border border-purple-400/30 shadow-sm"
                       >
                         <span>📅 {userEvent.eventtitle || userEvent.eventTitle || (userEvent.eventId ? `Event ${userEvent.eventId}` : "Saved Event")}</span>
                         <button
@@ -1384,7 +1384,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                               toast({ title: "Error", description: "Failed to remove event", variant: "destructive" });
                             }
                           }}
-                          className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors"
+                          className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 hover:bg-red-600 text-gray-900 dark:text-white rounded-full flex items-center justify-center transition-colors"
                           title="Remove event"
                         >
                           <X className="w-3 h-3" />
@@ -1396,12 +1396,12 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                   return (
                     <div
                       key={`event-${userEvent.id}`}
-                      className="relative group px-3 py-1 rounded-lg text-sm font-medium bg-purple-600 hover:bg-purple-700 text-white border border-purple-400/30 shadow-sm"
+                      className="relative group px-3 py-1 rounded-lg text-sm font-medium bg-purple-600 hover:bg-purple-700 text-gray-900 dark:text-white border border-purple-400/30 shadow-sm"
                     >
                       <span>📅 {globalEvent.title}</span>
                       <button
                         onClick={() => toggleEvent(globalEvent)}
-                        className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors"
+                        className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 hover:bg-red-600 text-gray-900 dark:text-white rounded-full flex items-center justify-center transition-colors"
                         title="Remove event"
                       >
                         <X className="w-3 h-3" />
@@ -1418,14 +1418,14 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
         <div className="mt-8">
           <Card className="bg-white/10 backdrop-blur-sm border-white/20">
             <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
+              <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2">
                 <Users className="w-5 h-5" />
                 People Interested ({(matchingUsers || []).length})
               </CardTitle>
             </CardHeader>
             <CardContent>
               {(matchingUsers || []).length === 0 ? (
-                <div className="text-center py-6 text-white/60">
+                <div className="text-center py-6 text-gray-900 dark:text-gray-500 dark:text-gray-400">
                   <Users className="w-12 h-12 mx-auto opacity-30 mb-3" />
                   <p className="text-sm">Add activities and events to find people with similar interests!</p>
                 </div>
@@ -1436,18 +1436,18 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                       key={user.id || index} 
                       className="flex items-center gap-3 p-3 bg-white/5 rounded-lg"
                     >
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
+                      <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-gray-900 dark:text-white font-semibold">
                         {user.username?.[0]?.toUpperCase() || '?'}
                       </div>
                       <div className="flex-1">
-                        <div className="text-white font-medium">{user.username || 'Anonymous'}</div>
+                        <div className="text-gray-900 dark:text-white font-medium">{user.username || 'Anonymous'}</div>
                         {user.sharedActivityNames && Array.isArray(user.sharedActivityNames) && user.sharedActivityNames.length > 0 && (
-                          <div className="text-white/50 text-xs mt-1">
+                          <div className="text-gray-900 dark:text-gray-500 dark:text-gray-400 text-xs mt-1">
                             Both interested in: {(user.sharedActivityNames || []).slice(0, 2).join(', ')}
                             {(user.sharedActivityNames || []).length > 2 && ` +${(user.sharedActivityNames || []).length - 2} more`}
                           </div>
                         )}
-                        <div className="text-white/60 text-xs">
+                        <div className="text-gray-900 dark:text-gray-500 dark:text-gray-400 text-xs">
                           {user.commonActivities || 1} shared interest{(user.commonActivities || 1) === 1 ? '' : 's'}
                           {user.matchStrength && (
                             <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-medium ${
@@ -1474,7 +1474,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                           return (
                             <Button 
                               size="sm" 
-                              className="bg-green-500 hover:bg-green-600 text-white" 
+                              className="bg-green-500 hover:bg-green-600 text-gray-900 dark:text-white" 
                               onClick={() => {/* Already connected - no action needed */}}
                             >
                               Connected
@@ -1484,7 +1484,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                         return (
                           <Button 
                             size="sm" 
-                            className="bg-blue-500 hover:bg-blue-600 text-white"
+                            className="bg-blue-500 hover:bg-blue-600 text-gray-900 dark:text-white"
                             onClick={() => {/* Connect functionality here */}}
                           >
                             Connect
@@ -1510,7 +1510,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
               </DialogHeader>
               <div className="space-y-6">
                 <div className="flex gap-2">
-                  <Badge className="bg-blue-500 text-white" variant="secondary">
+                  <Badge className="bg-blue-500 text-gray-900 dark:text-white" variant="secondary">
                     {selectedEvent.category || 'Event'}
                   </Badge>
                   <Badge variant="outline">
@@ -1535,7 +1535,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                   <div className="flex items-start gap-3">
                     <div className="w-5 h-5 text-gray-500 mt-1">📅</div>
                     <div>
-                      <p className="font-medium text-black dark:text-white">Date & Time</p>
+                      <p className="font-medium text-black dark:text-gray-900 dark:text-white">Date & Time</p>
                       <p className="text-sm text-gray-700 dark:text-gray-200 font-medium">
                         {selectedEvent.date ? new Date(selectedEvent.date).toLocaleDateString('en-US', {
                           weekday: 'long',
@@ -1571,7 +1571,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                   <div className="flex items-start gap-3">
                     <MapPin className="w-5 h-5 text-gray-500 mt-1" />
                     <div>
-                      <p className="font-medium text-black dark:text-white">Location & Address</p>
+                      <p className="font-medium text-black dark:text-gray-900 dark:text-white">Location & Address</p>
                       {selectedEvent.streetAddress ? (
                         <div className="text-sm text-gray-700 dark:text-gray-200">
                           <p className="font-medium">{selectedEvent.streetAddress}</p>
@@ -1598,7 +1598,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                     <div className="flex items-start gap-3">
                       <Users className="w-5 h-5 text-gray-500 mt-1" />
                       <div>
-                        <p className="font-medium text-black dark:text-white">Organizer</p>
+                        <p className="font-medium text-black dark:text-gray-900 dark:text-white">Organizer</p>
                         <p className="text-sm text-gray-700 dark:text-gray-200">{selectedEvent.organizer}</p>
                         {selectedEvent.organizerContact && (
                           <p className="text-xs text-gray-600 dark:text-gray-300">{selectedEvent.organizerContact}</p>
@@ -1611,7 +1611,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                     <div className="flex items-start gap-3">
                       <Info className="w-5 h-5 text-gray-500 mt-1" />
                       <div>
-                        <p className="font-medium text-black dark:text-white">Requirements</p>
+                        <p className="font-medium text-black dark:text-gray-900 dark:text-white">Requirements</p>
                         <p className="text-sm text-gray-700 dark:text-gray-200">{selectedEvent.requirements}</p>
                       </div>
                     </div>
@@ -1623,7 +1623,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                   <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                     <h4 className="font-semibold mb-2 text-blue-800 dark:text-blue-200">Organized by</h4>
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
+                      <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-gray-900 dark:text-white font-semibold">
                         {selectedEvent.organizerName[0]?.toUpperCase() || '?'}
                       </div>
                       <div>
@@ -1642,7 +1642,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                       const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(venueQuery + ' tickets event')}`;
                       window.open(searchUrl, '_blank');
                     }}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-gray-900 dark:text-white"
                     size="lg"
                   >
                     <Info className="w-4 h-4 mr-2" />
