@@ -679,54 +679,160 @@ export default function PlanTrip() {
           </div>
         </div>
 
-        {/* Desktop: Landing page style layout (text left, image right) */}
-        <div className="hidden md:grid md:grid-cols-5 items-center gap-8 px-8 py-16 bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-blue-900/20">
-          {/* Left text side - wider */}
-          <div className="md:col-span-3">
-            <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight text-gray-900 dark:text-white leading-tight">
-              <h1>
-                {isEditMode ? "Edit Your Trip" : "Plan Your Next Adventure"}
-              </h1>
-            </div>
-            <div className="mt-4 sm:mt-6 max-w-2xl text-base md:text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
-              <p className="mb-4">
-                {isEditMode 
-                  ? "Update your travel plan details and fine-tune your adventure preferences to get better matches and recommendations."
-                  : "Create detailed travel plans that connect you with locals, fellow travelers, and businesses at your destination."
-                }
-              </p>
-              <p className="text-sm md:text-base text-gray-500 dark:text-gray-400">
-                {isEditMode
-                  ? "Make changes to your itinerary, interests, and travel style to enhance your travel experience."
-                  : "Share your interests, travel style, and planned activities to discover the perfect connections and experiences."
-                }
-              </p>
-            </div>
-            
-            {/* Trip Planning Features List */}
-            <div className="mt-6 space-y-3">
-              <div className="flex items-center gap-3 text-sm md:text-base text-gray-700 dark:text-gray-300">
-                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <span>Match with locals and travelers</span>
-              </div>
-              <div className="flex items-center gap-3 text-sm md:text-base text-gray-700 dark:text-gray-300">
-                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                <span>Discover personalized experiences</span>
-              </div>
-              <div className="flex items-center gap-3 text-sm md:text-base text-gray-700 dark:text-gray-300">
-                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                <span>Connect with local businesses</span>
-              </div>
-            </div>
+        {/* Desktop: Enhanced engaging layout */}
+        <div className="hidden md:block relative py-12 overflow-hidden">
+          {/* Background decorative elements */}
+          <div className="absolute inset-0 opacity-5 pointer-events-none">
+            <div className="absolute top-16 left-8 w-28 h-28 bg-blue-500 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-16 right-8 w-36 h-36 bg-orange-500 rounded-full blur-3xl"></div>
           </div>
           
-          {/* Right image side - smaller */}
-          <div className="md:col-span-2 flex flex-col items-center">
-            {/* Trip planning representation instead of image */}
-            <div className="relative w-48 h-48 bg-gradient-to-br from-blue-100 to-orange-100 dark:from-blue-900/20 to-orange-900/20 rounded-2xl flex items-center justify-center border border-gray-200 dark:border-gray-700">
-              <div className="text-center">
-                <Compass className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-3" />
-                <div className="text-gray-500 dark:text-gray-400 text-sm font-medium">Plan your journey</div>
+          <div className="max-w-7xl mx-auto px-8 grid gap-8 md:gap-12 md:grid-cols-5 items-center relative z-10">
+            {/* Left text side - wider and enhanced */}
+            <div className="md:col-span-3">
+              {/* Premium badge */}
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100/80 to-orange-100/80 dark:from-blue-900/20 dark:to-orange-900/20 border border-blue-200 dark:border-blue-700/50 rounded-full px-4 py-2 mb-6">
+                <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Plan • Connect • Explore</span>
+              </div>
+
+              <div className="space-y-6">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight leading-tight">
+                  {isEditMode ? (
+                    <>
+                      <span className="bg-gradient-to-r from-gray-900 via-purple-700 to-gray-900 dark:from-white dark:via-purple-200 dark:to-white bg-clip-text text-transparent">
+                        Edit Your
+                      </span>
+                      <br />
+                      <span className="bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-600 bg-clip-text text-transparent">
+                        Adventure
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="bg-gradient-to-r from-gray-900 via-blue-700 to-gray-900 dark:from-white dark:via-blue-200 dark:to-white bg-clip-text text-transparent">
+                        Plan Your Next
+                      </span>
+                      <br />
+                      <span className="bg-gradient-to-r from-orange-600 via-red-600 to-orange-600 bg-clip-text text-transparent">
+                        Adventure
+                      </span>
+                    </>
+                  )}
+                </h1>
+                
+                <div className="max-w-2xl space-y-4">
+                  <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
+                    {isEditMode 
+                      ? "Perfect your journey — <em className=\"text-blue-600 dark:text-blue-400 font-semibold\">every detail matters.</em>"
+                      : "Adventures begin with a plan — <em className=\"text-orange-600 dark:text-orange-400 font-semibold\">connections make them unforgettable.</em>"
+                    }
+                  </p>
+                  <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed">
+                    {isEditMode
+                      ? "Fine-tune your travel plan, update your interests, and enhance your adventure preferences to get even better matches and recommendations."
+                      : "Create detailed travel plans that connect you with locals, fellow travelers, and authentic experiences. Share your style, interests, and planned activities to discover perfect connections."
+                    }
+                  </p>
+                </div>
+              </div>
+              
+              {/* Enhanced Features with attractive icons */}
+              <div className="mt-8 space-y-4">
+                <div className="flex items-center gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <Users className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Smart Connections</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Match with locals and travelers based on your travel plan</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
+                    <Sparkles className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Personalized Experiences</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">AI-curated recommendations based on your preferences</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg">
+                    <Building2 className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Local Business Access</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Connect with authentic local businesses and services</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          
+            {/* Right image side - more prominent and engaging */}
+            <div className="md:col-span-2 flex justify-center items-center relative">
+              {/* Decorative background blur effects */}
+              <div className="absolute inset-0 opacity-30 pointer-events-none">
+                <div className="absolute top-4 -left-8 w-24 h-24 bg-blue-400/20 rounded-full blur-2xl"></div>
+                <div className="absolute bottom-4 -right-8 w-32 h-32 bg-orange-400/20 rounded-full blur-2xl"></div>
+              </div>
+              
+              {/* Enhanced trip planning visualization */}
+              <div className="relative group">
+                {/* Inspiring trip planning display */}
+                <div className="relative">
+                  {/* Background glow */}
+                  <div className="absolute -inset-4 bg-gradient-to-r from-blue-200/40 via-purple-200/40 to-orange-200/40 dark:from-blue-900/30 dark:via-purple-900/30 dark:to-orange-900/30 rounded-3xl blur-xl"></div>
+                  
+                  {/* Main planning interface mockup */}
+                  <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 p-8 transform group-hover:scale-[1.02] transition-all duration-500">
+                    {/* Planning header */}
+                    <div className="text-center mb-6">
+                      <Compass className="w-16 h-16 text-blue-600 dark:text-blue-400 mx-auto mb-4 transform group-hover:rotate-12 transition-transform duration-500" />
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                        {isEditMode ? "Perfect Your Journey" : "Start Planning"}
+                      </h3>
+                      <div className="flex justify-center gap-2 mb-4">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                      </div>
+                    </div>
+                    
+                    {/* Planning elements preview */}
+                    <div className="space-y-3 text-left">
+                      <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
+                        <MapPin className="w-4 h-4 text-blue-500" />
+                        <span>Choose destination</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
+                        <Calendar className="w-4 h-4 text-purple-500" />
+                        <span>Set travel dates</span>
+                      </div>
+                      <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
+                        <Heart className="w-4 h-4 text-orange-500" />
+                        <span>Share your interests</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Floating stats badges */}
+                  <div className="absolute -top-3 -right-3 bg-white dark:bg-gray-800 rounded-xl px-3 py-2 shadow-xl border border-gray-200 dark:border-gray-600 transform rotate-3 group-hover:rotate-6 transition-transform duration-300">
+                    <div className="text-center">
+                      <div className="text-xl font-bold text-blue-600 dark:text-blue-400">AI</div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400">Smart</div>
+                    </div>
+                  </div>
+                  
+                  <div className="absolute -bottom-3 -left-3 bg-white dark:bg-gray-800 rounded-xl px-3 py-2 shadow-xl border border-gray-200 dark:border-gray-600 transform -rotate-3 group-hover:-rotate-6 transition-transform duration-300">
+                    <div className="text-center">
+                      <div className="text-xl font-bold text-orange-600 dark:text-orange-400">∞</div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400">Matches</div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

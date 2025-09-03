@@ -1622,76 +1622,212 @@ export default function Home() {
       )}
     </div>
   ) : (
-    // Desktop: Airbnb-style layout (text left, photo right)
-    <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 py-2 sm:py-4 md:py-6 grid gap-3 sm:gap-4 md:gap-6 md:grid-cols-5 items-center">
-      {/* Left text side - wider */}
-      <div className="md:col-span-3">
-        <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white">
-          <h1>
+    // Desktop: Enhanced engaging layout
+    <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 py-8 sm:py-12 md:py-16 relative overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 opacity-5 pointer-events-none">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-blue-500 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-10 w-40 h-40 bg-orange-500 rounded-full blur-3xl"></div>
+      </div>
+      
+      <div className="grid gap-8 md:gap-12 md:grid-cols-5 items-center relative z-10">
+        {/* Left text side - wider and enhanced */}
+        <div className="md:col-span-3">
+          {/* Premium badge */}
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100/80 to-orange-100/80 dark:from-blue-900/20 dark:to-orange-900/20 border border-blue-200 dark:border-blue-700/50 rounded-full px-4 py-2 mb-6">
+            <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Connect • Discover • Experience</span>
+          </div>
+
+          <div className="space-y-6">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight leading-tight">
+              {effectiveUser?.userType === "business" ? (
+                <>
+                  <span className="bg-gradient-to-r from-gray-900 via-blue-800 to-gray-900 dark:from-white dark:via-blue-200 dark:to-white bg-clip-text text-transparent">
+                    Connect Your Business
+                  </span>
+                  <br />
+                  <span className="bg-gradient-to-r from-orange-600 via-red-600 to-orange-600 bg-clip-text text-transparent">
+                    with Travelers & Locals
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="bg-gradient-to-r from-gray-900 via-blue-800 to-gray-900 dark:from-white dark:via-blue-200 dark:to-white bg-clip-text text-transparent">
+                    Connect with Travelers
+                  </span>
+                  <br />
+                  <span className="bg-gradient-to-r from-orange-600 via-red-600 to-orange-600 bg-clip-text text-transparent">
+                    & Locals Worldwide
+                  </span>
+                </>
+              )}
+            </h1>
+            
+            <div className="max-w-2xl space-y-4">
+              <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
+                Travel doesn't change you — <em className="text-orange-600 dark:text-orange-400 font-semibold">the people you meet do.</em>
+              </p>
+              <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed">
+                {effectiveUser?.userType === "business"
+                  ? "Reach customers through smart matching, targeted notifications, and location-based discovery. Build lasting relationships with travelers and locals who value authentic experiences."
+                  : "Discover authentic experiences and build meaningful connections based on shared interests, activities, and travel plans. Connect with verified locals and fellow travelers worldwide."}
+              </p>
+            </div>
+          </div>
+          
+          {/* Enhanced Features with attractive icons */}
+          <div className="mt-8 space-y-4">
             {effectiveUser?.userType === "business" ? (
               <>
-                Connect Your Business with Travelers & Locals
+                <div className="flex items-center gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <Store className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Smart Customer Matching</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">AI-powered connections with travelers and locals who love your offerings</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg">
+                    <MapPin className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Location-Targeted Discovery</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Reach the right customers at the right time in your area</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
+                    <MessageCircle className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Business Notifications</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Real-time alerts for new customers and partnership opportunities</p>
+                  </div>
+                </div>
+                
+                {/* Business action buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                  <Button
+                    size="lg"
+                    className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-8 py-3 text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
+                    onClick={() => setLocation("/business-dashboard")}
+                  >
+                    <Store className="w-5 h-5 mr-2" />
+                    Manage Business
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-3 text-lg transform hover:scale-105 transition-all duration-200"
+                    onClick={() => {
+                      setConnectModalMode("current");
+                      setShowConnectModal(true);
+                    }}
+                  >
+                    <Users className="w-5 h-5 mr-2" />
+                    Find Customers
+                  </Button>
+                </div>
               </>
             ) : (
               <>
-                Connect with Travelers & Locals Worldwide
+                <div className="flex items-center gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <Users className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Smart Matching</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">AI-powered connections based on shared interests and compatibility</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg">
+                    <MapPin className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Local Experiences</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Discover hidden gems and authentic local experiences in any city</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-center gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
+                    <MessageCircle className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Real-time Connect</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Instant messaging and live notifications for spontaneous meetups</p>
+                  </div>
+                </div>
               </>
             )}
-          </h1>
-        </div>
-        <div className="mt-3 sm:mt-4 max-w-xl text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300">
-          <p>
-            {effectiveUser?.userType === "business"
-              ? "Reach customers through interest-based matching, business notifications, and location-targeted discovery."
-              : "Discover amazing experiences & make meaningful connections based on demographics, activities, interests, and events."}
-          </p>
-        </div>
-        
-        {effectiveUser?.userType === "business" && (
-          <div className="flex flex-col sm:flex-row gap-4 mt-6">
-            <Button
-              size="lg"
-              className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-8 py-3 text-lg shadow-lg"
-              onClick={() => setLocation("/business-dashboard")}
-            >
-              <Store className="w-5 h-5 mr-2" />
-              Manage Business
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-3 text-lg"
-              onClick={() => {
-                setConnectModalMode("current");
-                setShowConnectModal(true);
-              }}
-            >
-              <Users className="w-5 h-5 mr-2" />
-              Find Customers
-            </Button>
           </div>
-        )}
-      </div>
-    
-      {/* Right image side */}
-      <div className="md:col-span-2 flex flex-col items-center order-first md:order-last">
-        {/* Static quote above image */}
-        <div className="mb-2 text-center w-full">
-          <p className="text-sm md:text-lg lg:text-xl font-bold text-zinc-800 dark:text-zinc-200 italic px-2">
-            <span className="sm:hidden">Travel doesn't change you — people do.</span>
-            <span className="hidden sm:inline">Travel doesn't change you — the people you meet do.</span>
-          </p>
         </div>
-        <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[200px] sm:h-[250px] md:h-[350px] rounded-2xl">
-          <img
-            src="/travelers coffee_1750995178947.png"
-            alt="Travelers connecting at coffee shop"
-            className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl shadow-lg"
-          />
+      
+        {/* Right image side - more prominent and engaging */}
+        <div className="md:col-span-2 flex justify-center items-center relative order-first md:order-last">
+          {/* Decorative background blur effects */}
+          <div className="absolute inset-0 opacity-30 pointer-events-none">
+            <div className="absolute top-4 -left-8 w-24 h-24 bg-blue-400/20 rounded-full blur-2xl"></div>
+            <div className="absolute bottom-4 -right-8 w-32 h-32 bg-orange-400/20 rounded-full blur-2xl"></div>
+          </div>
+          
+          {/* Main image container with enhanced styling */}
+          <div className="relative group">
+            {/* Quote above image */}
+            <div className="text-center mb-4 relative z-10">
+              <p className="text-lg md:text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-200 italic leading-tight">
+                <span className="sm:hidden">Travel doesn't change you — people do.</span>
+                <span className="hidden sm:inline">Travel doesn't change you — the people you meet do.</span>
+              </p>
+            </div>
+            
+            {/* Enhanced image container */}
+            <div className="relative">
+              {/* Subtle background glow */}
+              <div className="absolute -inset-3 bg-gradient-to-r from-blue-200/30 via-purple-200/30 to-orange-200/30 dark:from-blue-900/20 dark:via-purple-900/20 dark:to-orange-900/20 rounded-3xl blur-lg"></div>
+              
+              {/* Main image */}
+              <div className="relative w-full max-w-sm sm:max-w-md h-[240px] sm:h-[280px] md:h-[320px] lg:h-[380px] rounded-2xl overflow-hidden shadow-2xl border border-gray-200/50 dark:border-gray-700/50 transform group-hover:scale-[1.02] transition-all duration-500">
+                <img
+                  src={heroImagePath}
+                  alt="Travelers connecting at coffee shop"
+                  className="w-full h-full object-cover"
+                />
+                
+                {/* Enhanced overlay with better contrast */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10">
+                  <div className="absolute bottom-0 left-0 right-0 p-4 text-center">
+                    <p className="text-white/90 font-medium italic text-base drop-shadow-lg leading-relaxed">
+                      "Where Local Experiences Meet Worldwide Connections"
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Floating stats badges */}
+              <div className="absolute -top-3 -right-3 bg-white dark:bg-gray-800 rounded-xl px-3 py-2 shadow-xl border border-gray-200 dark:border-gray-600 transform rotate-3 group-hover:rotate-6 transition-transform duration-300">
+                <div className="text-center">
+                  <div className="text-xl font-bold text-blue-600 dark:text-blue-400">5+</div>
+                  <div className="text-xs text-gray-600 dark:text-gray-400">Active Cities</div>
+                </div>
+              </div>
+              
+              <div className="absolute -bottom-3 -left-3 bg-white dark:bg-gray-800 rounded-xl px-3 py-2 shadow-xl border border-gray-200 dark:border-gray-600 transform -rotate-3 group-hover:-rotate-6 transition-transform duration-300">
+                <div className="text-center">
+                  <div className="text-xl font-bold text-orange-600 dark:text-orange-400">∞</div>
+                  <div className="text-xs text-gray-600 dark:text-gray-400">Connections</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <p className="mt-2 text-xs md:text-sm italic text-orange-600 text-center">
-          Where Local Experiences Meet Worldwide Connections
-        </p>
       </div>
     </div>
   )}
