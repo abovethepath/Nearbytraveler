@@ -71,7 +71,7 @@ export function QuickMeetupWidget({ city, profileUserId }: { city?: string; prof
     state: actualUser?.hometownState || '',
     country: actualUser?.hometownCountry || 'United States',
     zipcode: '',
-    responseTime: '1hour'
+    responseTime: '24hours'
   });
 
   const queryClient = useQueryClient();
@@ -128,15 +128,8 @@ export function QuickMeetupWidget({ city, profileUserId }: { city?: string; prof
       const now = new Date();
       let expireHours = 1; // default 1 hour
       switch (meetupData.responseTime) {
-        case '1hour': expireHours = 1; break;
-        case '2hours': expireHours = 2; break;
-        case '3hours': expireHours = 3; break;
-        case '4hours': expireHours = 4; break;
-        case '6hours': expireHours = 6; break;
-        case '8hours': expireHours = 8; break;
-        case '12hours': expireHours = 12; break;
         case '24hours': expireHours = 24; break;
-        default: expireHours = 1;
+        default: expireHours = 24;
       }
       const expiresAt = new Date(now.getTime() + (expireHours * 60 * 60 * 1000));
 
@@ -189,7 +182,7 @@ export function QuickMeetupWidget({ city, profileUserId }: { city?: string; prof
         state: actualUser?.hometownState || '',
         country: actualUser?.hometownCountry || 'United States',
         zipcode: '',
-        responseTime: '1hour'
+        responseTime: '24hours'
       });
       toast({
         title: "Quick Meetup Posted!",
@@ -301,7 +294,7 @@ export function QuickMeetupWidget({ city, profileUserId }: { city?: string; prof
                   🚀 Available This Second?
                 </p>
                 <p className="text-sm font-medium text-red-700 dark:text-red-300">
-                  Create instant meetup • Expires today • 1-4 hours max
+                  Create instant meetup • Expires today
                 </p>
                 <p className="text-xs text-gray-700 dark:text-gray-300 font-medium">
                   ⚡ Lightning-fast connections with nearby people!
@@ -327,10 +320,7 @@ export function QuickMeetupWidget({ city, profileUserId }: { city?: string; prof
                 
                 {/* Quick action buttons */}
                 <div className="mt-3 flex gap-2 justify-center">
-                  <Badge className="bg-orange-500 text-white px-3 py-1 text-xs font-bold animate-pulse">1HR</Badge>
-                  <Badge className="bg-red-500 text-white px-3 py-1 text-xs font-bold animate-pulse" style={{ animationDelay: '0.5s' }}>2HRS</Badge>
-                  <Badge className="bg-pink-500 text-white px-3 py-1 text-xs font-bold animate-pulse" style={{ animationDelay: '1s' }}>3HRS</Badge>
-                  <Badge className="bg-purple-500 text-white px-3 py-1 text-xs font-bold animate-pulse" style={{ animationDelay: '1.5s' }}>4HRS</Badge>
+                  <Badge className="bg-orange-500 text-white px-3 py-1 text-xs font-bold animate-pulse">TODAY</Badge>
                 </div>
               </div>
             </div>
@@ -361,14 +351,7 @@ export function QuickMeetupWidget({ city, profileUserId }: { city?: string; prof
                     <SelectValue placeholder="Available for how long?" />
                   </SelectTrigger>
                   <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
-                    <SelectItem value="1hour">🚀 RIGHT NOW! (1 hour)</SelectItem>
-                    <SelectItem value="2hours">🔥 NEXT 2 HOURS!</SelectItem>
-                    <SelectItem value="3hours">⚡ NEXT 3 HOURS!</SelectItem>
-                    <SelectItem value="4hours">💥 NEXT 4 HOURS!</SelectItem>
-                    <SelectItem value="6hours">⏰ Available for 6 hours</SelectItem>
-                    <SelectItem value="8hours">⏰ Available for 8 hours</SelectItem>
-                    <SelectItem value="12hours">⏰ Available for 12 hours</SelectItem>
-                    <SelectItem value="24hours">⏰ Available all day</SelectItem>
+                    <SelectItem value="24hours">⏰ Expires today</SelectItem>
                   </SelectContent>
                 </Select>
 

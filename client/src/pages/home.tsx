@@ -3096,6 +3096,10 @@ export default function Home() {
               <MessagesWidget userId={currentUserId} />
             </div>
 
+            {/* Quick Meetup Widget - Always Show */}
+            <div>
+              <QuickMeetupWidget city={getCurrentUserLocation()} />
+            </div>
 
             {/* City Map Widget - Desktop Only - Interactive map showing users, events, and businesses */}
             {isDesktop && (
