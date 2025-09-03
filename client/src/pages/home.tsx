@@ -1807,7 +1807,7 @@ export default function Home() {
                   alt="Travelers connecting at coffee shop"
                   className="w-full h-full object-cover transition-opacity duration-500 relative z-10"
                   loading="eager"
-                  fetchPriority="high"
+                  fetchpriority="high"
                   decoding="async"
                   onLoad={(e) => {
                     e.currentTarget.style.opacity = '1';
