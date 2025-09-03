@@ -1,0 +1,140 @@
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { useLocation } from 'wouter';
+import { CheckCircle, Loader2, Clock, Mail, User, Settings } from 'lucide-react';
+import { useAuth } from '@/App';
+
+export default function AccountSuccess() {
+  const [, setLocation] = useLocation();
+  const [secondsElapsed, setSecondsElapsed] = useState(0);
+  const [accountReady, setAccountReady] = useState(false);
+  const { user, isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSecondsElapsed(prev => prev + 1);
+    }, 1000);
+
+    // Check if account is ready every 2 seconds
+    const checker = setInterval(async () => {
+      if (isAuthenticated && user) {
+        setAccountReady(true);
+        clearInterval(checker);
+      }
+    }, 2000);
+
+    return () => {
+      clearInterval(timer);
+      clearInterval(checker);
+    };
+  }, [isAuthenticated, user]);
+
+  const handleContinue = () => {
+    if (user?.userType === 'business') {
+      setLocation('/welcome-business');
+    } else {
+      setLocation('/welcome');
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
+      <div className="max-w-md mx-auto">
+        <Card className="shadow-2xl border-2 border-green-200 dark:border-green-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md">
+          <CardHeader className="text-center bg-green-50 dark:bg-green-900/20 rounded-t-lg pb-8">
+            <div className="flex justify-center mb-4">
+              {accountReady ? (
+                <CheckCircle className="w-16 h-16 text-green-600 dark:text-green-400" />
+              ) : (
+                <div className="relative">
+                  <Clock className="w-16 h-16 text-orange-600 dark:text-orange-400" />
+                  <Loader2 className="w-6 h-6 text-orange-600 dark:text-orange-400 absolute top-5 left-5 animate-spin" />
+                </div>
+              )}
+            </div>
+            
+            <CardTitle className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
+              {accountReady ? 'Account Created!' : 'Setting Up Your Account...'}
+            </CardTitle>
+            
+            <div className="text-lg text-gray-700 dark:text-gray-300">
+              {accountReady ? (
+                "Your Nearby account is ready to go!"
+              ) : (
+                "We're creating your personalized profile and setting up your account."
+              )}
+            </div>
+          </CardHeader>
+
+          <CardContent className="p-6 space-y-6">
+            {!accountReady && (
+              <div className="space-y-4">
+                <div className="text-center text-gray-600 dark:text-gray-400">
+                  <p className="mb-2">Creating your account... ({secondsElapsed}s)</p>
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                    <div 
+                      className="bg-gradient-to-r from-orange-500 to-blue-500 h-2 rounded-full transition-all duration-1000"
+                      style={{ width: `${Math.min((secondsElapsed / 15) * 100, 90)}%` }}
+                    ></div>
+                  </div>
+                </div>
+
+                <div className="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+                  <div className="flex items-center gap-3">
+                    <User className="w-4 h-4 text-green-600" />
+                    <span>Setting up your profile</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Settings className="w-4 h-4 text-blue-600" />
+                    <span>Generating personalized recommendations</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Mail className="w-4 h-4 text-purple-600" />
+                    <span>Preparing welcome email</span>
+                  </div>
+                </div>
+
+                <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+                  <p className="text-sm text-blue-800 dark:text-blue-200">
+                    <strong>📧 Check your email!</strong> We're sending you a welcome message. 
+                    If you don't see it in your inbox, check your promotions or spam folder and mark it as "not spam" for future messages.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {accountReady && (
+              <div className="space-y-4">
+                <div className="text-center">
+                  <p className="text-gray-600 dark:text-gray-400 mb-4">
+                    Welcome to Nearby! Your account is ready and you can start connecting with others.
+                  </p>
+                </div>
+
+                <Button
+                  onClick={handleContinue}
+                  className="w-full bg-gradient-to-r from-orange-500 to-blue-500 hover:from-orange-600 hover:to-blue-600 text-white font-bold py-3 text-lg"
+                >
+                  Start Exploring
+                </Button>
+              </div>
+            )}
+
+            {!accountReady && secondsElapsed > 20 && (
+              <div className="mt-6">
+                <Button
+                  onClick={handleContinue}
+                  variant="outline"
+                  className="w-full text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600"
+                >
+                  Continue (Account still setting up in background)
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

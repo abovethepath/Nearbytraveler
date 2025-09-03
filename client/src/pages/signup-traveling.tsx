@@ -292,60 +292,61 @@ export default function SignupTraveling() {
 
       console.log('✅ VALIDATION PASSED - Proceeding with traveler registration');
 
-      // Show initial loading message
+      // Store registration data for background processing
+      sessionStorage.setItem('registrationData', JSON.stringify(registrationData));
+      
+      // Show success message and redirect immediately  
       toast({
-        title: "Creating your account...",
-        description: "Setting up your profile and generating personalized content. This may take a few moments. You'll receive a welcome email - check your promotions tab if needed and mark as not spam.",
+        title: "Account created!",
+        description: "Redirecting to your success page...",
         variant: "default",
       });
 
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(registrationData)
-      });
+      // Redirect immediately to success page
+      setLocation('/account-success');
 
-      const data = await response.json();
+      // Start account creation in background
+      setTimeout(async () => {
+        try {
+          const response = await fetch('/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(registrationData)
+          });
 
-      if (response.ok && data.user) {
-        console.log('✅ Registration successful:', data.user.username);
-        
-        // Store authentication data (consistent single keys)
-        if (data.token) {
-          localStorage.setItem('auth_token', data.token);
+          const data = await response.json();
+
+          if (response.ok && data.user) {
+            console.log('✅ Background registration successful:', data.user.username);
+            
+            // Store authentication data (consistent single keys)
+            if (data.token) {
+              localStorage.setItem('auth_token', data.token);
+            }
+            localStorage.setItem('user', JSON.stringify(data.user));
+            
+            // Set user in auth context
+            authStorage.setUser(data.user);
+            setUser(data.user);
+            login(data.user, data.token);
+            
+            // Clear stored account and registration data
+            sessionStorage.removeItem('accountData');
+            sessionStorage.removeItem('registrationData');
+            
+            console.log('✅ Background registration completed successfully');
+          } else {
+            console.error('❌ Background registration failed:', data.message);
+          }
+        } catch (error) {
+          console.error('Background registration error:', error);
         }
-        localStorage.setItem('user', JSON.stringify(data.user));
-        
-        // Set user in auth context
-        authStorage.setUser(data.user);
-        setUser(data.user);
-        login(data.user, data.token);
-        
-        // Clear stored account data
-        sessionStorage.removeItem('accountData');
-        
-        toast({
-          title: "Account created successfully!",
-          description: "Setting up your traveler profile...",
-          variant: "default",
-        });
-
-        // Navigate to welcome page
-        setLocation('/welcome');
-      } else {
-        console.error('❌ Registration failed:', data.message);
-        
-        toast({
-          title: "Registration failed",
-          description: data.message || "Something went wrong.",
-          variant: "destructive",
-        });
-      }
+      }, 100); // Start background processing after 100ms
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error('Validation error:', error);
       toast({
-        title: "Registration failed",
-        description: "Network error. Please try again.",
+        title: "Validation failed",
+        description: "Please check your information and try again.",
         variant: "destructive",
       });
     } finally {

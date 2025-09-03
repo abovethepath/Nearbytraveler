@@ -290,7 +290,31 @@ export default function SignupBusinessSimple() {
 
   const onSubmit = (data: BusinessSignupData) => {
     setIsLoading(true);
-    signupMutation.mutate(data);
+    
+    // Store data for background processing
+    const registrationData = {
+      ...data,
+      userType: "business",
+      businessName: accountData?.businessName || "",
+    };
+    sessionStorage.setItem('registrationData', JSON.stringify(registrationData));
+    
+    // Show success and redirect immediately
+    toast({
+      title: "Business account created!",
+      description: "Redirecting to your success page...",
+      variant: "default",
+    });
+
+    // Redirect immediately
+    setLocation('/account-success');
+    
+    // Start background registration
+    setTimeout(() => {
+      signupMutation.mutate(data);
+    }, 100);
+    
+    setIsLoading(false);
   };
 
   const businessTypes = BUSINESS_TYPES;

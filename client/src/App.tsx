@@ -108,6 +108,7 @@ import AdminSettings from "@/pages/admin-settings";
 import SMSTest from "@/pages/sms-test";
 import Welcome from "@/pages/welcome";
 import WelcomeBusiness from "@/pages/welcome-business";
+import AccountSuccess from "@/pages/account-success";
 import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
 import Cookies from "@/pages/cookies";
@@ -194,7 +195,7 @@ function Router() {
   useAnalytics();
 
   const landingPageRoutes = [
-    '/', '/landing', '/landing-new', '/auth', '/join', '/signup', '/signup/local', '/signup/traveler', '/signup/business', '/signup/account', '/signup/traveling',
+    '/', '/landing', '/landing-new', '/auth', '/join', '/signup', '/signup/local', '/signup/traveler', '/signup/business', '/signup/account', '/signup/traveling', '/account-success',
     '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', '/networking-landing', '/couchsurfing', '/cs', '/b', '/privacy', '/terms', '/cookies', '/about', '/getting-started',
     '/forgot-password', '/reset-password', '/welcome', '/welcome-business', '/quick-login', '/preview-landing', '/preview-first-landing',
     '/travel-quiz', '/TravelIntentQuiz', '/business-card', '/qr-code'
@@ -758,6 +759,10 @@ function Router() {
       if (location === '/signup/business') {
         console.log('✅ SIGNUP BUSINESS - Unauthenticated access allowed');
         return <SignupBusinessSimple />;
+      }
+      if (location === '/account-success') {
+        console.log('✅ ACCOUNT SUCCESS - Showing account creation progress');
+        return <AccountSuccess />;
       }
       if (location === '/join') {
         console.log('✅ JOIN PAGE - Unauthenticated access allowed');
