@@ -3699,13 +3699,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 })()}
 
 
-                {/* What you have in common (for other profiles) - Mobile and Desktop */}
-                {!isOwnProfile && currentUser && user?.id && (
-                  <div>
-                    <WhatYouHaveInCommon currentUserId={currentUser.id} otherUserId={user.id} />
-                  </div>
-                )}
-
                 {/* Basic Info — grid so lines never run together */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
                   <div className="flex items-start">
@@ -3882,6 +3875,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 )}
               </CardContent>
             </Card>
+
+            {/* What You Have in Common - Consolidated Section */}
+            {!isOwnProfile && currentUser && user?.id && (
+              <WhatYouHaveInCommon currentUserId={currentUser.id} otherUserId={user.id} />
+            )}
 
             {/* Secret Activities Section - Below About Section */}
             {user?.userType !== 'business' && user?.secretActivities && (
