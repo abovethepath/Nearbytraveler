@@ -289,6 +289,11 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
               placeholder="Search people..."
               value={advancedFilters.search}
               onChange={(e) => setAdvancedFilters(prev => ({ ...prev, search: e.target.value }))}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleAdvancedSearch();
+                }
+              }}
               className="mt-1"
             />
           </div>

@@ -1741,6 +1741,21 @@ export default function Home() {
                     placeholder="Search by name, bio, interests, activities..."
                     value={filters.search}
                     onChange={(e) => setFilters({...filters, search: e.target.value})}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleCloseFilters();
+                        // Scroll to discover people section only if staying on home page
+                        const urlParams = new URLSearchParams(window.location.search);
+                        if (!urlParams.get('return')) {
+                          setTimeout(() => {
+                            const discoverSection = document.querySelector('[data-testid="discover-people-section"]');
+                            if (discoverSection) {
+                              discoverSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                          }, 100);
+                        }
+                      }
+                    }}
                     className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
