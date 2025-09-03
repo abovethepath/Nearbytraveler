@@ -4,7 +4,7 @@ import { eq, and } from 'drizzle-orm';
 import { generateCityActivities } from './ai-city-activities.js';
 import { GENERIC_CITY_ACTIVITIES } from './generic-city-activities.js';
 
-export async function ensureCityHasActivities(cityName: string, userId: number = 1): Promise<void> {
+export async function ensureCityHasActivities(cityName: string, state?: string, country?: string, userId: number = 1): Promise<void> {
   try {
     console.log(`🏙️ AUTO-SETUP: Checking if ${cityName} has activities...`);
     
@@ -34,8 +34,8 @@ export async function ensureCityHasActivities(cityName: string, userId: number =
           activityName: activity.name,
           description: activity.description,
           category: activity.category,
-          state: '',
-          country: 'United States',
+          state: state || '',
+          country: country || 'United States',
           createdByUserId: userId,
           isActive: true
         }).returning();
@@ -56,7 +56,7 @@ export async function ensureCityHasActivities(cityName: string, userId: number =
   }
 }
 
-export async function enhanceExistingCityWithMoreActivities(cityName: string, userId: number = 1): Promise<number> {
+export async function enhanceExistingCityWithMoreActivities(cityName: string, state?: string, country?: string, userId: number = 1): Promise<number> {
   try {
     console.log(`🚀 ENHANCE: Adding more AI activities to ${cityName}...`);
     
@@ -83,8 +83,8 @@ export async function enhanceExistingCityWithMoreActivities(cityName: string, us
             activityName: activity.name,
             description: activity.description,
             category: activity.category,
-            state: '',
-            country: 'United States',
+            state: state || '',
+            country: country || 'United States',
             createdByUserId: userId,
             isActive: true
           });

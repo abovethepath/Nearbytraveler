@@ -24,6 +24,7 @@ import { TravelMatchingService } from "./services/matching";
 import { businessProximityEngine } from "./businessProximityNotificationEngine";
 import { smsService } from "./services/smsService";
 import QRCode from "qrcode";
+import { detectMetroArea, getMetroAreaName } from '../shared/metro-areas';
 
 import { 
   secretLocalExperienceLikes, 
@@ -1671,7 +1672,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       
       // Ensure city has basic activities (using existing function)
       try {
-        const { ensureCityHasActivities } = await import('./services/auto-city-setup');
+        const { ensureCityHasActivities } = await import('./auto-city-setup');
         await ensureCityHasActivities(city, state, country);
         if (process.env.NODE_ENV === 'development') console.log(`🏃 ENSURED ACTIVITIES: ${city}`);
       } catch (error) {
@@ -1732,7 +1733,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       
       // Get city stats (reuse existing logic from city-stats endpoint)
       const [coords, stats] = await Promise.all([
-        Promise.resolve(getCityCoordinates(city)),
+        Promise.resolve({ lat: 34.0522, lng: -118.2437 }), // Default LA coords for now
         (async () => {
           const usersInCity = await storage.getUsersInCity(city, state as string, country as string);
           const eventsInCity = await storage.getEventsInCity([city]);
@@ -4297,6 +4298,74 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(404).json({ message: "User not found" });
       }
 
+      // AUTO-SETUP: Create city infrastructure when user updates hometown/location
+      if ((updates.hometown_city || updates.city) && updates.country) {
+        try {
+          const cityName = updates.hometown_city || updates.city;
+          const stateName = updates.hometown_state || updates.state || '';
+          const countryName = updates.country;
+          
+          console.log(`🏠 AUTO-SETUP: Setting up city infrastructure for user's location: ${cityName}`);
+          
+          // Check if city page already exists
+          const existingCity = await db.select().from(cityPages)
+            .where(and(
+              eq(cityPages.cityName, cityName),
+              eq(cityPages.state, stateName),
+              eq(cityPages.country, countryName)
+            )).limit(1);
+          
+          if (existingCity.length === 0) {
+            // Create city page
+            await db.insert(cityPages).values({
+              cityName: cityName,
+              state: stateName,
+              country: countryName,
+              description: `Discover ${cityName} and connect with locals and travelers`,
+              heroImage: null,
+              createdAt: new Date(),
+              updatedAt: new Date()
+            });
+            console.log(`🏠 CREATED CITY PAGE: ${cityName}`);
+          }
+          
+          // Ensure city has basic activities
+          try {
+            const { ensureCityHasActivities } = await import('./auto-city-setup');
+            await ensureCityHasActivities(cityName, stateName, countryName);
+            console.log(`🏃 ENSURED ACTIVITIES: ${cityName}`);
+          } catch (error) {
+            console.log(`⚠️ ACTIVITIES SETUP WARNING: ${error}`);
+          }
+          
+          // Create default chatroom if it doesn't exist
+          const existingChatroom = await db.select().from(citychatrooms)
+            .where(and(
+              eq(citychatrooms.city, cityName),
+              eq(citychatrooms.state, stateName),
+              eq(citychatrooms.country, countryName)
+            )).limit(1);
+          
+          if (existingChatroom.length === 0) {
+            await db.insert(citychatrooms).values({
+              city: cityName,
+              state: stateName,
+              country: countryName,
+              name: `${cityName} General Chat`,
+              description: `Connect with locals and travelers in ${cityName}`,
+              isPrivate: false,
+              createdAt: new Date()
+            });
+            console.log(`💬 CREATED CHATROOM: ${cityName}`);
+          }
+          
+          console.log(`✅ HOMETOWN CITY INFRASTRUCTURE COMPLETE: ${cityName}`);
+        } catch (error) {
+          console.error('❌ AUTO-SETUP: Failed to set up city infrastructure for hometown:', error);
+          // Don't fail the user update if city setup fails
+        }
+      }
+
       // Award aura for first profile completion
       if (isFirstProfileCompletion) {
         await awardAuraPoints(userId, 1, 'completing profile');
@@ -4984,7 +5053,7 @@ Questions? Just reply to this message. Welcome aboard!
           
           // Ensure city has basic activities
           try {
-            const { ensureCityHasActivities } = await import('./services/auto-city-setup');
+            const { ensureCityHasActivities } = await import('./auto-city-setup');
             await ensureCityHasActivities(city, state, country);
             console.log(`🏃 ENSURED ACTIVITIES: ${city}`);
           } catch (error) {
