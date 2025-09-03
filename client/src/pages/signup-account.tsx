@@ -330,15 +330,36 @@ export default function SignupAccount() {
                 <Label htmlFor="confirmPassword" className="text-base font-medium text-gray-900 dark:text-white">
                   Confirm Password *
                 </Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  value={formData.confirmPassword}
-                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                  placeholder="Confirm your password"
-                  className="text-base py-3"
-                  required
-                />
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    value={formData.confirmPassword}
+                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                    placeholder="Confirm your password"
+                    className={`text-base py-3 pr-10 ${
+                      formData.confirmPassword && formData.password ? (
+                        formData.password === formData.confirmPassword ? 'border-green-500' : 'border-red-500'
+                      ) : ''
+                    }`}
+                    required
+                  />
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                    {formData.confirmPassword && formData.password && (
+                      formData.password === formData.confirmPassword ? (
+                        <span className="text-green-500 text-lg">✓</span>
+                      ) : (
+                        <span className="text-red-500 text-lg">✗</span>
+                      )
+                    )}
+                  </div>
+                </div>
+                {formData.confirmPassword && formData.password && formData.password !== formData.confirmPassword && (
+                  <p className="text-red-500 text-sm mt-1">Passwords don't match</p>
+                )}
+                {formData.confirmPassword && formData.password && formData.password === formData.confirmPassword && (
+                  <p className="text-green-500 text-sm mt-1">Passwords match ✓</p>
+                )}
               </div>
 
               <Button
