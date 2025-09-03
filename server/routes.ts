@@ -1642,6 +1642,26 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const { state, country } = req.query;
       if (process.env.NODE_ENV === 'development') console.log(`🏙️ CITY USERS: Getting users for ${city}, ${state}, ${country}`);
       
+      // Get travelers with active trips to this city
+      const today = new Date();
+      const travelersInCity = await db
+        .select({
+          travel: travelPlans,
+          user: users
+        })
+        .from(travelPlans)
+        .leftJoin(users, eq(travelPlans.userId, users.id))
+        .where(
+          and(
+            or(
+              ilike(travelPlans.destinationCity, `%${city}%`),
+              ilike(travelPlans.destination, `%${city}%`)
+            ),
+            lte(travelPlans.startDate, today),
+            gte(travelPlans.endDate, today)
+          )
+        );
+      
       // Use the same logic as /api/users endpoint for consistency
       let query = db.select().from(users);
       const conditions = [];
@@ -1651,7 +1671,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const isLAMetroCity = METRO_AREAS['Los Angeles'].cities.includes(city);
       
       if (isLAMetroCity || city === 'Los Angeles Metro') {
-        // Search for ALL LA metro cities
+        // Search for ALL LA metro cities (locals/residents)
         const allLACities = METRO_AREAS['Los Angeles'].cities;
         if (process.env.NODE_ENV === 'development') console.log(`🌍 LA METRO SEARCH: Searching for users in ALL LA metro cities:`, allLACities.length, 'cities');
         
@@ -1663,7 +1683,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         );
         conditions.push(or(...locationConditions));
       } else {
-        // Regular city search - use exact matching to prevent Austin/Vegas appearing in LA
+        // Regular city search - use exact matching to prevent Austin/Vegas appearing in LA (locals/residents)
         conditions.push(
           or(
             ilike(users.location, `%${city}%`),
@@ -1677,10 +1697,36 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         query = query.where(and(...conditions));
       }
       
-      const filteredUsers = await query;
+      const localUsers = await query;
+      
+      // Combine local residents with active travelers
+      const allCityUsers = new Set();
+      const combinedUsers = [];
+      
+      // Add local residents first
+      for (const user of localUsers) {
+        if (user && !allCityUsers.has(user.id)) {
+          allCityUsers.add(user.id);
+          combinedUsers.push(user);
+        }
+      }
+      
+      // Add active travelers to this city
+      for (const travelRecord of travelersInCity) {
+        const traveler = travelRecord.user;
+        if (traveler && !allCityUsers.has(traveler.id)) {
+          allCityUsers.add(traveler.id);
+          // Mark user as currently traveling for display purposes
+          combinedUsers.push({
+            ...traveler,
+            isCurrentlyTraveling: true,
+            currentTravelDestination: city
+          });
+        }
+      }
       
       // Remove passwords and prepare response
-      const finalUsers = filteredUsers.map(user => {
+      const finalUsers = combinedUsers.map(user => {
         if (!user) return null;
         
         const { password: _, ...userWithoutPassword } = user;
@@ -1692,7 +1738,11 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         };
       }).filter(Boolean);
       
-      if (process.env.NODE_ENV === 'development') console.log(`🏙️ CITY USERS: Final result - ${finalUsers.length} users for ${city}`);
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🏙️ CITY USERS: Found ${localUsers.length} locals + ${travelersInCity.length} travelers`);
+        console.log(`🏙️ CITY USERS: Final result - ${finalUsers.length} users for ${city}`);
+      }
+      
       return res.json(finalUsers);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching city users:", error);
