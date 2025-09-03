@@ -217,9 +217,7 @@ export default function Home() {
       
       return {
         ...user,
-        travelDestination: currentTravelDestination ? 
-          `${currentTravelDestination.destinationCity}${currentTravelDestination.destinationState ? `, ${currentTravelDestination.destinationState}` : ''}, ${currentTravelDestination.destinationCountry}` :
-          user.travelDestination,
+        travelDestination: currentTravelDestination || user.travelDestination,
         isCurrentlyTraveling,
         displayLocation: currentLocation, // This will show "Rome" instead of "Traveling"
         locationContext: isCurrentlyTraveling ? 'traveling' : 'hometown'
@@ -228,15 +226,12 @@ export default function Home() {
     
     // For other users, use THEIR travel plans to detect their travel status
     const isCurrentlyTraveling = !!currentTravelDestination;
-    const displayLocation = currentTravelDestination ? 
-      `${currentTravelDestination.destinationCity}${currentTravelDestination.destinationState ? `, ${currentTravelDestination.destinationState}` : ''}, ${currentTravelDestination.destinationCountry}` :
+    const displayLocation = currentTravelDestination || 
       [user.hometownCity, user.hometownState, user.hometownCountry].filter(Boolean).join(', ') || user.location;
 
     return {
       ...user,
-      travelDestination: currentTravelDestination ? 
-        `${currentTravelDestination.destinationCity}${currentTravelDestination.destinationState ? `, ${currentTravelDestination.destinationState}` : ''}, ${currentTravelDestination.destinationCountry}` :
-        user.travelDestination,
+      travelDestination: currentTravelDestination || user.travelDestination,
       isCurrentlyTraveling,
       displayLocation,
       locationContext: isCurrentlyTraveling ? 'traveling' : 'hometown'
