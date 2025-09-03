@@ -459,19 +459,20 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
   return (
     <div className="fixed inset-0 z-[999999] flex items-start sm:items-center justify-center bg-black/60 backdrop-blur-sm pt-4 sm:pt-0" onClick={onClose}>
       <div 
-        className="bg-gradient-to-br from-white via-blue-50 to-orange-50 dark:from-gray-800 dark:via-blue-900/20 dark:to-orange-900/20 rounded-xl sm:rounded-2xl shadow-2xl max-w-6xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto mx-2 sm:mx-4 my-2 sm:my-4 border border-blue-200/20 dark:border-blue-600/20"
+        className="relative bg-gradient-to-br from-white via-blue-50 to-orange-50 dark:from-gray-800 dark:via-blue-900/20 dark:to-orange-900/20 rounded-xl sm:rounded-2xl shadow-2xl max-w-6xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto mx-2 sm:mx-4 my-2 sm:my-4 border border-blue-200/20 dark:border-blue-600/20"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Close button - positioned absolutely on the modal container */}
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={onClose} 
+          className="absolute top-4 right-4 hover:bg-gray-100/80 dark:hover:bg-gray-700/80 z-[9999] text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-full w-8 h-8 p-0"
+        >
+          <X className="w-5 h-5" />
+        </Button>
+        
         <div className="p-4 sm:p-6 lg:p-8">
-          {/* Close button - positioned absolutely */}
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={onClose} 
-            className="absolute top-4 right-4 hover:bg-gray-100 dark:hover:bg-gray-700 z-50 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-          >
-            <X className="w-5 h-5" />
-          </Button>
 
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-gradient-to-r from-blue-600 to-orange-500 p-3 rounded-xl">
