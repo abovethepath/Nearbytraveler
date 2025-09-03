@@ -68,20 +68,6 @@ export default function MatchInCity() {
   
   const user = getUserData() || authUser;
   
-  // Navigation function to go to profile "Things I Want to Do" section
-  const navigateToThingsIWantToDo = () => {
-    // Navigate to profile page
-    setLocation('/profile');
-    // Wait a bit for the page to load, then scroll to the section
-    setTimeout(() => {
-      const section = document.querySelector('[data-section="things-i-want-to-do"]') ||
-                     document.querySelector('h2:has-text("Things I Want to Do")') ||
-                     document.querySelector('[data-testid="things-i-want-to-do-section"]');
-      if (section) {
-        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 500);
-  };
 
   const [allCities, setAllCities] = useState<any[]>([]);
   const [filteredCities, setFilteredCities] = useState<any[]>([]);
@@ -1205,7 +1191,7 @@ export default function MatchInCity() {
                         <TooltipTrigger asChild>
                           <div className="flex items-center gap-2">
                             <button
-                              onClick={() => toggleEventInterest(event)}
+                              onClick={() => toggleEvent(event.id)}
                               className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1 cursor-pointer hover:shadow-md ${
                                 isActive 
                                   ? 'bg-gradient-to-r from-green-500 to-green-600 shadow-lg border border-green-400/20' 
@@ -1221,7 +1207,7 @@ export default function MatchInCity() {
                               <Info className="w-3 h-3 ml-1 opacity-60" />
                             </button>
                             <button
-                              onClick={() => toggleEventInterest(event)}
+                              onClick={() => toggleEvent(event.id)}
                               className={`w-6 h-6 rounded-full text-xs font-bold transition-all duration-200 ${
                                 isActive 
                                   ? 'bg-green-600 text-white' 
