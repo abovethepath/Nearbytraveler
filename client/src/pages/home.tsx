@@ -1810,13 +1810,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Floating stats badges */}
-              <div className="absolute -top-3 -right-3 bg-white dark:bg-gray-800 rounded-xl px-3 py-2 shadow-xl border border-gray-200 dark:border-gray-600 transform rotate-3 group-hover:rotate-6 transition-transform duration-300">
-                <div className="text-center">
-                  <div className="text-xl font-bold text-blue-600 dark:text-blue-400">5+</div>
-                  <div className="text-xs text-gray-600 dark:text-gray-400">Active Cities</div>
-                </div>
-              </div>
               
               <div className="absolute -bottom-3 -left-3 bg-white dark:bg-gray-800 rounded-xl px-3 py-2 shadow-xl border border-gray-200 dark:border-gray-600 transform -rotate-3 group-hover:-rotate-6 transition-transform duration-300">
                 <div className="text-center">
