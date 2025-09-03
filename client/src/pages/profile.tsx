@@ -3502,8 +3502,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         
                         {/* FORCE SHOW BOTH when user has travel plans */}
                         {(() => {
+                          // Don't render travel status until travel plans are loaded
+                          if (isLoadingTravelPlans) {
+                            return (
+                              <div className="flex items-center gap-2 text-lg font-medium text-black">
+                                <MapPin className="w-5 h-5 text-blue-600" />
+                                <span>Loading status...</span>
+                              </div>
+                            );
+                          }
+                          
                           // Use the corrected travel detection function that checks dates properly
                           const currentDestination = getCurrentTravelDestination(travelPlans || []);
+                          console.log('🚨 UI RENDER DEBUG - Travel plans:', travelPlans?.length || 0, 'Current destination:', currentDestination);
                           
                           if (currentDestination) {
                             return (
