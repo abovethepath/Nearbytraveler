@@ -724,8 +724,8 @@ export default function PlanTrip() {
                 <div className="max-w-2xl space-y-4">
                   <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
                     {isEditMode 
-                      ? "Perfect your journey — <em className=\"text-blue-600 dark:text-blue-400 font-semibold\">every detail matters.</em>"
-                      : "Adventures begin with a plan — <em className=\"text-orange-600 dark:text-orange-400 font-semibold\">connections make them unforgettable.</em>"
+                      ? <>Perfect your journey — <em className="text-blue-600 dark:text-blue-400 font-semibold">every detail matters.</em></>
+                      : <>Adventures begin with a plan — <em className="text-orange-600 dark:text-orange-400 font-semibold">connections make them unforgettable.</em></>
                     }
                   </p>
                   <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed">
