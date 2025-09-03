@@ -3500,25 +3500,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <>
                         <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold text-black break-all">@{user.username}</h1>
                         
-                        {/* Show travel status first if currently traveling, using travel plans */}
-                        {(() => {
-                          const currentDestination = getCurrentTravelDestination(travelPlans || []);
-                          if (currentDestination) {
-                            return (
-                              <div className="flex items-center gap-2 text-lg font-medium text-black">
-                                <Plane className="w-5 h-5 text-orange-600" />
-                                <span>NEARBY TRAVELER ({currentDestination})</span>
-                              </div>
-                            );
-                          } else {
-                            return (
-                              <div className="flex items-center gap-2 text-lg font-medium text-black">
-                                <MapPin className="w-5 h-5 text-blue-600" />
-                                <span>NEARBY LOCAL {hometown}</span>
-                              </div>
-                            );
-                          }
-                        })()}
+                        {/* ALWAYS show NEARBY LOCAL with hometown - never show NEARBY TRAVELER */}
+                        <div className="flex items-center gap-2 text-lg font-medium text-black">
+                          <MapPin className="w-5 h-5 text-blue-600" />
+                          <span>NEARBY LOCAL {hometown}</span>
+                        </div>
                       </>
                     );
                   })()}
