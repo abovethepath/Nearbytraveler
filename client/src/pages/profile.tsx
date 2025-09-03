@@ -3502,8 +3502,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         
                         {/* FORCE SHOW BOTH when user has travel plans */}
                         {(() => {
-                          // Don't render travel status until travel plans are loaded
-                          if (isLoadingTravelPlans) {
+                          // Wait for ALL data to load before checking travel status (same as event discovery)
+                          if (!effectiveUserId || isLoadingTravelPlans || userLoading || !user) {
                             return (
                               <div className="flex items-center gap-2 text-lg font-medium text-black">
                                 <MapPin className="w-5 h-5 text-blue-600" />
