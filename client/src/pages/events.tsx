@@ -458,33 +458,76 @@ export default function Events() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950">
       {/* MobileNav removed - using global MobileTopNav and MobileBottomNav */}
-      {/* Modern Hero Header with Background Image */}
-      <div className="relative overflow-hidden bg-gray-900 min-h-[300px] sm:min-h-[400px]">
-        {/* Background Image */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${eventsBgImage})` }}
-        ></div>
-        {/* Subtle overlay to maintain text readability without heavy color tint */}
-        <div className="absolute inset-0 bg-black/30"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-8 gap-4">
+      {/* HERO SECTION — Airbnb Style Layout (Landing Page Layout) */}
+      <section className="bg-white dark:bg-gray-900 py-8 sm:py-12 lg:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-start justify-between mb-6">
             <BackButton fallbackRoute="/events-landing" />
-            <div className="flex-1"></div>
           </div>
-          <div className="text-center px-2">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
-              Events & Experiences
-            </h1>
-            <p className="text-base sm:text-lg text-blue-100 max-w-2xl mx-auto">
-              Discover amazing events, create memorable experiences, and connect with fellow adventurers
-            </p>
-          </div>
+          
+          {isMobile ? (
+            // Mobile: Keep vertical layout
+            <div className="text-center">
+              <h1 className="text-3xl sm:text-4xl font-bold text-black dark:text-white leading-tight mb-6">
+                Events & Experiences
+              </h1>
+              
+              <div className="mb-6 flex justify-center px-4">
+                <div className="relative w-full max-w-sm rounded-xl overflow-hidden shadow-xl">
+                  <img 
+                    src={eventsBgImage}
+                    alt="Events and experiences"
+                    className="w-full h-auto object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                </div>
+              </div>
+              
+              <p className="text-base text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl mx-auto px-4">
+                Discover amazing events, create memorable experiences, and connect with fellow adventurers
+              </p>
+            </div>
+          ) : (
+            // Desktop: Airbnb-style layout (text left, photo right)
+            <div className="grid gap-6 md:grid-cols-5 items-center">
+              {/* Left text side - wider */}
+              <div className="md:col-span-3">
+                <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white">
+                  <h1>
+                    Events & Experiences
+                  </h1>
+                </div>
+                <div className="mt-3 sm:mt-4 max-w-xl text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300">
+                  <p>
+                    Discover amazing events, create memorable experiences, and connect with fellow adventurers
+                  </p>
+                </div>
+              </div>
+            
+              {/* Right image side */}
+              <div className="md:col-span-2 flex flex-col items-center">
+                {/* Static quote above image */}
+                <div className="mb-2 text-center w-full">
+                  <p className="text-sm md:text-lg lg:text-xl font-bold text-zinc-800 dark:text-zinc-200 italic px-2">
+                    <span className="sm:hidden">Every event tells a story.</span>
+                    <span className="hidden sm:inline">Every event is a story waiting to be shared.</span>
+                  </p>
+                </div>
+                <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[200px] sm:h-[250px] md:h-[350px] rounded-2xl">
+                  <img
+                    src={eventsBgImage}
+                    alt="Events and experiences"
+                    className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl shadow-lg"
+                  />
+                </div>
+                <p className="mt-2 text-xs md:text-sm italic text-orange-600 text-center">
+                  Where Local Experiences Meet Worldwide Connections
+                </p>
+              </div>
+            </div>
+          )}
         </div>
-        {/* Decorative elements */}
-        <div className="absolute -top-4 -right-4 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
-        <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-orange-400/20 rounded-full blur-lg"></div>
-      </div>
+      </section>
       
       {/* SPACE ADDED BETWEEN HEADER AND CTA BUTTONS AS REQUESTED */}
       <div className="py-6"></div>

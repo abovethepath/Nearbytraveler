@@ -1562,67 +1562,139 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
 
-{/* HERO SECTION — Vertical Landing Page Style */}
+{/* HERO SECTION — Airbnb Style Layout (Landing Page Layout) */}
 <section className="bg-white dark:bg-gray-900 py-8 sm:py-12 lg:py-16">
-  <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-    
-    {/* Title above photo - black text - Mobile optimized */}
-    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-black dark:text-white leading-tight mb-6 sm:mb-8 px-2">
-      {effectiveUser?.userType === "business" ? (
-        <>
-          Connect Your Business with Travelers & Locals
-        </>
-      ) : (
-        <>
-          Connect with Travelers & Locals Worldwide
-        </>
+  {isMobile ? (
+    // Mobile: Keep vertical layout
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h1 className="text-2xl sm:text-3xl font-bold text-black dark:text-white leading-tight mb-6 px-2">
+        {effectiveUser?.userType === "business" ? (
+          <>
+            Connect Your Business with Travelers & Locals
+          </>
+        ) : (
+          <>
+            Connect with Travelers & Locals Worldwide
+          </>
+        )}
+      </h1>
+      
+      <div className="mb-6 flex justify-center px-4">
+        <div className="relative w-full max-w-sm rounded-xl overflow-hidden shadow-xl">
+          <img 
+            src="/travelers coffee_1750995178947.png"
+            alt="Travelers connecting at coffee shop"
+            className="w-full h-auto object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+        </div>
+      </div>
+      
+      <p className="text-base text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl mx-auto px-4">
+        {effectiveUser?.userType === "business"
+          ? "Reach customers through interest-based matching, business notifications, and location-targeted discovery."
+          : "Discover amazing experiences & make meaningful connections based on demographics, activities, interests, and events."}
+      </p>
+      
+      {effectiveUser?.userType === "business" && (
+        <div className="flex flex-col gap-4 justify-center pt-8">
+          <Button
+            size="lg"
+            className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-8 py-3 text-lg shadow-lg"
+            onClick={() => setLocation("/business-dashboard")}
+          >
+            <Store className="w-5 h-5 mr-2" />
+            Manage Business
+          </Button>
+          <Button
+            size="lg"
+            variant="outline"
+            className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-3 text-lg"
+            onClick={() => {
+              setConnectModalMode("current");
+              setShowConnectModal(true);
+            }}
+          >
+            <Users className="w-5 h-5 mr-2" />
+            Find Customers
+          </Button>
+        </div>
       )}
-    </h1>
+    </div>
+  ) : (
+    // Desktop: Airbnb-style layout (text left, photo right)
+    <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 py-2 sm:py-4 md:py-6 grid gap-3 sm:gap-4 md:gap-6 md:grid-cols-5 items-center">
+      {/* Left text side - wider */}
+      <div className="md:col-span-3">
+        <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white">
+          <h1>
+            {effectiveUser?.userType === "business" ? (
+              <>
+                Connect Your Business with Travelers & Locals
+              </>
+            ) : (
+              <>
+                Connect with Travelers & Locals Worldwide
+              </>
+            )}
+          </h1>
+        </div>
+        <div className="mt-3 sm:mt-4 max-w-xl text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300">
+          <p>
+            {effectiveUser?.userType === "business"
+              ? "Reach customers through interest-based matching, business notifications, and location-targeted discovery."
+              : "Discover amazing experiences & make meaningful connections based on demographics, activities, interests, and events."}
+          </p>
+        </div>
+        
+        {effectiveUser?.userType === "business" && (
+          <div className="flex flex-col sm:flex-row gap-4 mt-6">
+            <Button
+              size="lg"
+              className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-8 py-3 text-lg shadow-lg"
+              onClick={() => setLocation("/business-dashboard")}
+            >
+              <Store className="w-5 h-5 mr-2" />
+              Manage Business
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-3 text-lg"
+              onClick={() => {
+                setConnectModalMode("current");
+                setShowConnectModal(true);
+              }}
+            >
+              <Users className="w-5 h-5 mr-2" />
+              Find Customers
+            </Button>
+          </div>
+        )}
+      </div>
     
-    {/* Photo in the middle - Mobile optimized */}
-    <div className="mb-6 sm:mb-8 flex justify-center px-4 sm:px-0">
-      <div className="relative w-full max-w-sm sm:max-w-lg lg:max-w-2xl rounded-xl sm:rounded-2xl overflow-hidden shadow-xl sm:shadow-2xl">
-        <img 
-          src="/travelers coffee_1750995178947.png"
-          alt="Travelers connecting at coffee shop"
-          className="w-full h-auto object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+      {/* Right image side */}
+      <div className="md:col-span-2 flex flex-col items-center order-first md:order-last">
+        {/* Static quote above image */}
+        <div className="mb-2 text-center w-full">
+          <p className="text-sm md:text-lg lg:text-xl font-bold text-zinc-800 dark:text-zinc-200 italic px-2">
+            <span className="sm:hidden">Travel doesn't change you — people do.</span>
+            <span className="hidden sm:inline">Travel doesn't change you — the people you meet do.</span>
+          </p>
+        </div>
+        <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[200px] sm:h-[250px] md:h-[350px] rounded-2xl">
+          <img
+            src="/travelers coffee_1750995178947.png"
+            alt="Travelers connecting at coffee shop"
+            className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl shadow-lg"
+          />
+        </div>
+        <p className="mt-2 text-xs md:text-sm italic text-orange-600 text-center">
+          Where Local Experiences Meet Worldwide Connections
+        </p>
       </div>
     </div>
-    
-    {/* Smaller descriptive text below photo - Mobile optimized */}
-    <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl sm:max-w-3xl mx-auto px-4 sm:px-0">
-      {effectiveUser?.userType === "business"
-        ? "Reach customers through interest-based matching, business notifications, and location-targeted discovery."
-        : "Discover amazing experiences & make meaningful connections based on demographics, activities, interests, and events."}
-    </p>
-    
-    {effectiveUser?.userType === "business" && (
-      <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
-        <Button
-          size="lg"
-          className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-8 py-3 text-lg shadow-lg"
-          onClick={() => setLocation("/business-dashboard")}
-        >
-          <Store className="w-5 h-5 mr-2" />
-          Manage Business
-        </Button>
-        <Button
-          size="lg"
-          variant="outline"
-          className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-3 text-lg"
-          onClick={() => {
-            setConnectModalMode("current");
-            setShowConnectModal(true);
-          }}
-        >
-          <Users className="w-5 h-5 mr-2" />
-          Find Customers
-        </Button>
-      </div>
-    )}
-  </div>
+  )}
 </section>
 
       <main className="pt-2 sm:pt-4 pb-24 md:pb-8 lg:pb-4">
