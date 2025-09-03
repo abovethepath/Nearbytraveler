@@ -878,22 +878,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
             </div>
           ) : (
             <>
-              {/* City Search */}
-              <div className="mb-6">
-                <div className="max-w-md mx-auto">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-900 dark:text-gray-500 dark:text-gray-400 w-4 h-4" />
-                    <Input
-                      placeholder="Search cities..."
-                      value={citySearchTerm}
-                      onChange={(e) => setCitySearchTerm(e.target.value)}
-                      className="pl-9 py-2 text-sm bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 dark:focus:border-blue-400"
-                    />
-                  </div>
-                </div>
-              </div>
-
-
               {/* Cities Grid - Bigger cards */}
               {filteredCities.length > 0 && (
             <div className="mb-8">
