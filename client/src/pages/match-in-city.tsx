@@ -379,6 +379,12 @@ export default function MatchInCity() {
     const userId = currentUser.id;
 
     const isCurrentlyActive = userActivities.some(ua => ua.activityId === activity.id);
+    console.log('🎯 Activity state check:', { 
+      activityId: activity.id, 
+      isCurrentlyActive,
+      userActivitiesCount: userActivities.length,
+      userActivities: userActivities.map(ua => ({ id: ua.id, activityId: ua.activityId, activityName: ua.activityName }))
+    });
 
     try {
       if (isCurrentlyActive) {
@@ -439,9 +445,12 @@ export default function MatchInCity() {
           // Immediately update local state - check if already exists first
           setUserActivities(prev => {
             const alreadyExists = prev.some(ua => ua.activityId === activity.id);
+            console.log('🔄 Adding to state:', { alreadyExists, newInterest, activityId: activity.id });
             if (alreadyExists) {
+              console.log('⚠️ Activity already exists, not adding to state');
               return prev; // No need to add again
             }
+            console.log('✅ Adding new activity to state');
             return [...prev, newInterest];
           });
           // Invalidate profile queries to refresh "Things I Want to Do"
