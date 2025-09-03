@@ -5222,6 +5222,35 @@ Questions? Just reply to this message. Welcome aboard!
 
       if (process.env.NODE_ENV === 'development') console.log(`🏠 MY-LOCATIONS: User ${userId} requesting chatrooms`);
 
+      // Get user data to determine relevant locations
+      const user = await storage.getUser(userId.toString());
+      const userLocations = new Set<string>();
+
+      if (user) {
+        // Add hometown
+        if (user.hometownCity) {
+          userLocations.add(user.hometownCity);
+        }
+        
+        // Add travel destinations from active travel plans
+        const currentDate = new Date();
+        const userTravelPlans = await db.select().from(travelPlans)
+          .where(and(
+            eq(travelPlans.userId, userId),
+            gte(travelPlans.endDate, currentDate)
+          ));
+        
+        userTravelPlans.forEach(plan => {
+          if (plan.destinationCity) {
+            userLocations.add(plan.destinationCity);
+          }
+        });
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`🏠 MY-LOCATIONS: User relevant locations:`, Array.from(userLocations));
+        }
+      }
+
       // Get all active chatrooms
       const allChatrooms = await db.select().from(citychatrooms).where(eq(citychatrooms.isActive, true));
       
@@ -5259,18 +5288,57 @@ Questions? Just reply to this message. Welcome aboard!
         memberCount: memberCountMap.get(chatroom.id) || 0,
         userIsMember: userMembershipSet.has(chatroom.id)
       }));
+
+      // Smart sorting: Prioritize city-specific Welcome rooms over global ones
+      const sortedChatrooms = chatroomsWithCounts.sort((a, b) => {
+        // 1. User is member comes first
+        if (a.userIsMember && !b.userIsMember) return -1;
+        if (!a.userIsMember && b.userIsMember) return 1;
+        
+        // 2. User's relevant locations come next
+        const aIsRelevant = userLocations.has(a.city);
+        const bIsRelevant = userLocations.has(b.city);
+        if (aIsRelevant && !bIsRelevant) return -1;
+        if (!aIsRelevant && bIsRelevant) return 1;
+        
+        // 3. City-specific Welcome rooms before global Welcome rooms
+        const aIsWelcome = a.name.toLowerCase().includes('welcome newcomers');
+        const bIsWelcome = b.name.toLowerCase().includes('welcome newcomers');
+        const aIsGlobal = a.city === 'Global';
+        const bIsGlobal = b.city === 'Global';
+        
+        if (aIsWelcome && bIsWelcome) {
+          // Both are welcome rooms - prioritize non-global over global
+          if (!aIsGlobal && bIsGlobal) return -1;
+          if (aIsGlobal && !bIsGlobal) return 1;
+        }
+        
+        // 4. Non-global rooms before global rooms
+        if (!aIsGlobal && bIsGlobal) return -1;
+        if (aIsGlobal && !bIsGlobal) return 1;
+        
+        // 5. Welcome rooms come first overall
+        if (aIsWelcome && !bIsWelcome) return -1;
+        if (!aIsWelcome && bIsWelcome) return 1;
+        
+        // 6. Finally sort by member count (higher first)
+        return (b.memberCount || 0) - (a.memberCount || 0);
+      });
       
       if (process.env.NODE_ENV === 'development') {
-        console.log(`🏠 MY-LOCATIONS: Returning ${chatroomsWithCounts.length} chatrooms with counts`);
-        console.log(`🏠 MY-LOCATIONS: First chatroom details:`, {
-          id: chatroomsWithCounts[0]?.id,
-          name: chatroomsWithCounts[0]?.name,
-          memberCount: chatroomsWithCounts[0]?.memberCount,
-          userIsMember: chatroomsWithCounts[0]?.userIsMember
-        });
+        console.log(`🏠 MY-LOCATIONS: Returning ${sortedChatrooms.length} chatrooms with smart sorting`);
+        console.log(`🏠 MY-LOCATIONS: First 3 chatrooms after sorting:`, 
+          sortedChatrooms.slice(0, 3).map(c => ({ 
+            id: c.id, 
+            name: c.name, 
+            city: c.city,
+            userIsMember: c.userIsMember,
+            memberCount: c.memberCount 
+          }))
+        );
       }
       
-      res.json(chatroomsWithCounts);
+      res.json(sortedChatrooms);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("🔥 ERROR IN MY-LOCATIONS ROUTE:", error);
       res.status(500).json({ message: "Failed to fetch location chatrooms" });
