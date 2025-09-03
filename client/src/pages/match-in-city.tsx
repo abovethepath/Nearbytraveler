@@ -1057,28 +1057,34 @@ export default function MatchInCity() {
 
                 return (
                   <div key={activity.id} className="relative group">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          onClick={() => toggleActivity(activity)}
-                          className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1 shadow-sm hover:shadow-md border ${
-                            isActive 
-                              ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 border-green-400/20 text-white' 
-                              : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 border-blue-400/20 text-white'
-                          }`}
-                        >
-                          {activity.activityName}
-                          {activity.description && (
-                            <Info className="w-3 h-3 ml-1 opacity-60" />
-                          )}
-                        </button>
-                      </TooltipTrigger>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('🔴 BUTTON CLICKED!', activity.activityName);
+                        toggleActivity(activity);
+                      }}
+                      className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1 shadow-sm hover:shadow-md border ${
+                        isActive 
+                          ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 border-green-400/20 text-white' 
+                          : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 border-blue-400/20 text-white'
+                      }`}
+                    >
+                      {activity.activityName}
                       {activity.description && (
+                        <Info className="w-3 h-3 ml-1 opacity-60" />
+                      )}
+                    </button>
+                    {activity.description && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="w-3 h-3 ml-1 opacity-60 absolute top-1 right-1" />
+                        </TooltipTrigger>
                         <TooltipContent className="max-w-xs bg-gray-900 text-white border-gray-700 shadow-xl">
                           <p className="text-sm">{activity.description}</p>
                         </TooltipContent>
-                      )}
-                    </Tooltip>
+                      </Tooltip>
+                    )}
 
                     {/* Edit/Delete on hover */}
                     <div className="absolute -top-2 -right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
