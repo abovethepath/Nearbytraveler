@@ -3888,6 +3888,7 @@ Questions? Just reply to this message. Welcome aboard!
               ilike(users.bio, `%${searchTerm}%`),
               // Array fields search using array_to_string for partial matches
               sql`array_to_string(${users.interests}, ',') ILIKE ${`%${searchTerm}%`}`,
+              sql`array_to_string(${users.privateInterests}, ',') ILIKE ${`%${searchTerm}%`}`,
               sql`array_to_string(${users.activities}, ',') ILIKE ${`%${searchTerm}%`}`,
               ilike(users.gender, `%${searchTerm}%`),
               // Business profile fields
