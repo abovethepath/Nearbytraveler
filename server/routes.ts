@@ -5083,13 +5083,13 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // CRITICAL: Get messages for user - only latest message per conversation, limit to 4 recent conversations
+  // CRITICAL: Get ALL messages for user (needed for full conversation history)
   app.get("/api/messages/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId || '0');
       
-      // Get the latest message from each conversation (only most recent per person)
-      const latestMessages = await db
+      // Get ALL messages for this user (both sent and received)
+      const allMessages = await db
         .select({
           id: messages.id,
           senderId: messages.senderId,
@@ -5115,21 +5115,7 @@ Questions? Just reply to this message. Welcome aboard!
         )
         .orderBy(desc(messages.createdAt));
 
-      // Group by conversation partner and keep only the latest message from each conversation
-      const conversationMap = new Map();
-      for (const message of latestMessages) {
-        const otherPersonId = message.otherPersonId;
-        if (!conversationMap.has(otherPersonId)) {
-          conversationMap.set(otherPersonId, message);
-        }
-      }
-
-      // Convert back to array, sort by creation time, and limit to 4 most recent conversations
-      const recentConversations = Array.from(conversationMap.values())
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-        .slice(0, 4);
-
-      return res.json(recentConversations || []);
+      return res.json(allMessages || []);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching messages:", error);
       return res.status(500).json({ message: "Failed to fetch messages" });
