@@ -3500,11 +3500,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <>
                         <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold text-black break-all">@{user.username}</h1>
                         
-                        {/* Show NEARBY LOCAL and current travel status if traveling */}
+                        {/* FORCE SHOW BOTH when user has travel plans */}
                         {(() => {
-                          const currentDestination = getCurrentTravelDestination(travelPlans || []);
-                          console.log('🚀 PROFILE DEBUG:', { travelPlans, currentDestination, today: new Date().toISOString() });
-                          if (currentDestination) {
+                          const hasActiveTravelPlan = travelPlans && travelPlans.length > 0 && 
+                            travelPlans.some(plan => plan.status === 'active');
+                          
+                          if (hasActiveTravelPlan) {
+                            const activePlan = travelPlans.find(plan => plan.status === 'active');
                             return (
                               <div className="space-y-2">
                                 <div className="flex items-center gap-2 text-lg font-medium text-black">
@@ -3513,7 +3515,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 </div>
                                 <div className="flex items-center gap-2 text-lg font-medium text-black">
                                   <Plane className="w-5 h-5 text-orange-600" />
-                                  <span>NEARBY TRAVELER ({currentDestination})</span>
+                                  <span>NEARBY TRAVELER ({activePlan?.destination || 'Current Destination'})</span>
                                 </div>
                               </div>
                             );
