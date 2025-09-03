@@ -114,71 +114,70 @@ export default function DiscoverPage() {
   }
 
   const pageContent = (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 py-4 sm:py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white dark:bg-gray-900 py-8 sm:py-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Header - Responsive text sizing */}
-        <div className="text-center mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4 px-2">
+        {/* Header - Clean Airbnb style */}
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-black dark:text-white mb-4 sm:mb-6">
             Discover Amazing Destinations
           </h1>
-          <p className="text-sm sm:text-base md:text-lg text-black dark:text-white max-w-2xl mx-auto px-4">
+          <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
             Explore amazing cities, connect with locals and travelers, and find your next adventure
           </p>
         </div>
 
-        {/* Search Bar - Mobile optimized */}
-        <div className="max-w-md mx-auto mb-6 sm:mb-8 px-4">
+        {/* Search Bar - Clean design */}
+        <div className="max-w-md mx-auto mb-8 sm:mb-12">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-3 w-3 sm:h-4 sm:w-4" />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
             <Input
               type="text"
               placeholder="Search destinations..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 sm:pl-10 text-sm sm:text-base"
+              className="pl-12 pr-4 py-3 text-base rounded-2xl border-2 border-gray-200 dark:border-gray-700 focus:border-orange-500 dark:focus:border-orange-400 shadow-sm"
             />
           </div>
         </div>
 
 
 
-        {/* FEATURED LOS ANGELES METRO - Mobile responsive */}
+        {/* FEATURED LOS ANGELES METRO - Airbnb-style featured card */}
         {sortedCities.some(city => city.city === 'Los Angeles Metro') && (
-          <div className="mb-8 sm:mb-12 px-2 sm:px-0">
+          <div className="mb-12 sm:mb-16">
             <div className="flex justify-center">
               {sortedCities.filter(city => city.city === 'Los Angeles Metro').map((city, index) => (
                 <Card
                   key={`featured-${city.city}-${index}`}
-                  className="group cursor-pointer transform hover:scale-105 transition-all duration-300 overflow-hidden relative bg-gradient-to-br from-orange-500/20 to-red-500/20 backdrop-blur-sm border-orange-400/40 ring-2 sm:ring-4 ring-orange-300/40 shadow-2xl w-full max-w-sm"
+                  className="group cursor-pointer hover:shadow-2xl transition-all duration-500 overflow-hidden bg-white dark:bg-gray-800 border-0 shadow-xl w-full max-w-md rounded-3xl"
                   onClick={() => setLocation(`/city/${encodeURIComponent(city.city)}`)}
                 >
-                  <div className="relative h-28 sm:h-36 overflow-hidden">
-                    <div className={`w-full h-full bg-gradient-to-br ${getCityGradient(city.city, index)} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                      <MapPin className="w-8 sm:w-12 h-8 sm:h-12 text-white/60" />
+                  <div className="relative h-48 sm:h-56 overflow-hidden rounded-t-3xl">
+                    <div className={`w-full h-full bg-gradient-to-br ${getCityGradient(city.city, index)} flex items-center justify-center group-hover:scale-105 transition-transform duration-500`}>
+                      <MapPin className="w-16 h-16 text-white/70" />
                     </div>
-                    <div className="absolute inset-0 bg-black/20" />
-                    <div className="absolute top-2 sm:top-4 right-2 sm:right-4">
-                      <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-sm sm:text-lg px-2 sm:px-4 py-1 sm:py-2">
-                        🌟
-                      </Badge>
+                    <div className="absolute top-4 right-4">
+                      <div className="bg-white dark:bg-gray-800 rounded-full px-3 py-1 shadow-lg">
+                        <span className="text-orange-500 font-semibold text-sm">🌟</span>
+                      </div>
                     </div>
                   </div>
-                  <CardContent className="p-3 sm:p-4">
-                    <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                      <MapPin className="w-5 sm:w-6 h-5 sm:h-6 text-orange-600 dark:text-orange-300 flex-shrink-0" />
-                      <h3 className="font-bold text-base sm:text-lg text-gray-900 dark:text-orange-100">
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <MapPin className="w-5 h-5 text-orange-500 flex-shrink-0" />
+                      <h3 className="font-bold text-xl text-gray-900 dark:text-white">
                         {city.city}
                       </h3>
                     </div>
-                    <p className="text-sm sm:text-lg mb-4 sm:mb-6 text-gray-700 dark:text-orange-200/80">
+                    <p className="text-gray-600 dark:text-gray-300 mb-6 text-base leading-relaxed">
                       {city.country === 'United States' 
                         ? `${city.city}, ${city.state || 'California'}, United States`
                         : city.country || 'Unknown Location'
                       }
                     </p>
                     <Button 
-                      className="w-full font-bold text-sm sm:text-base py-2 transition-all duration-300 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-2xl"
+                      className="w-full font-semibold text-base py-3 px-6 transition-all duration-300 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-xl shadow-lg hover:shadow-xl"
                       onClick={(e) => {
                         e.stopPropagation();
                         setLocation(`/city/${encodeURIComponent(city.city)}`);
@@ -193,48 +192,48 @@ export default function DiscoverPage() {
           </div>
         )}
 
-        {/* ALL OTHER CITIES GRID - Mobile responsive */}
+        {/* ALL OTHER CITIES GRID - Clean Airbnb-style cards */}
         {sortedCities.filter(city => city.city !== 'Los Angeles Metro').length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mt-6 sm:mt-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {sortedCities.filter(city => city.city !== 'Los Angeles Metro').map((city, index) => (
               <Card
                 key={`${city.city}-${city.state}-${index}`}
-                className="group cursor-pointer transform hover:scale-105 transition-all duration-300 overflow-hidden relative"
+                className="group cursor-pointer hover:shadow-xl transition-all duration-300 overflow-hidden bg-white dark:bg-gray-800 border-0 shadow-lg rounded-2xl"
                 onClick={() => setLocation(`/city/${encodeURIComponent(city.city)}`)}
               >
-                <div className="relative h-36 sm:h-48 overflow-hidden">
-                  <div className={`w-full h-full bg-gradient-to-br ${getCityGradient(city.city, index + 1)} group-hover:scale-110 transition-transform duration-300`}>
+                <div className="relative h-48 sm:h-56 overflow-hidden rounded-t-2xl">
+                  <div className={`w-full h-full bg-gradient-to-br ${getCityGradient(city.city, index + 1)} group-hover:scale-105 transition-transform duration-300 flex items-center justify-center`}>
+                    <MapPin className="w-12 h-12 text-white/60" />
                   </div>
-                  <div className="absolute inset-0 bg-black/30" />
-
-                  {/* Activity badges - Mobile sized */}
-                  <div className="absolute top-2 sm:top-3 right-2 sm:right-3 space-y-1">
+                  
+                  {/* Activity badges - Clean style */}
+                  <div className="absolute top-3 right-3 space-y-2">
                     {city.eventCount > 5 && (
-                      <Badge className="bg-purple-500 text-white block text-xs">
-                        🎉 Active Events
-                      </Badge>
+                      <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full px-3 py-1 shadow-lg">
+                        <span className="text-purple-600 font-medium text-sm">🎉</span>
+                      </div>
                     )}
                     {(city.localCount + city.travelerCount) > 10 && (
-                      <Badge className="bg-blue-500 text-white block text-xs">
-                        👥 Active Community
-                      </Badge>
+                      <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full px-3 py-1 shadow-lg">
+                        <span className="text-blue-600 font-medium text-sm">👥</span>
+                      </div>
                     )}
                   </div>
-
-                  <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4">
-                    <h3 className="font-bold text-lg sm:text-xl text-white mb-1 sm:mb-2">
-                      {city.city}
-                    </h3>
-                    <p className="text-xs sm:text-sm text-gray-200 mb-2 sm:mb-3 line-clamp-2">
-                      {city.country === 'United States' 
-                        ? `${city.city}, ${city.state || 'Unknown State'}, United States`
-                        : city.state 
-                          ? `${city.city}, ${city.state}, ${city.country}`
-                          : `${city.city}, ${city.country || 'Unknown Location'}`
-                      }
-                    </p>
-                  </div>
                 </div>
+                
+                <CardContent className="p-5">
+                  <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-2">
+                    {city.city}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-base leading-relaxed">
+                    {city.country === 'United States' 
+                      ? `${city.city}, ${city.state || 'Unknown State'}, United States`
+                      : city.state 
+                        ? `${city.city}, ${city.state}, ${city.country}`
+                        : `${city.city}, ${city.country || 'Unknown Location'}`
+                    }
+                  </p>
+                </CardContent>
               </Card>
             ))}
           </div>
