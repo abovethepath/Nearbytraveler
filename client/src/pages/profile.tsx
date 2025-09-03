@@ -3883,6 +3883,22 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </CardContent>
             </Card>
 
+            {/* Secret Activities Section - Below About Section */}
+            {user?.userType !== 'business' && user?.secretActivities && (
+              <Card>
+                <CardContent className="p-4">
+                  <div className="p-3 bg-gradient-to-br from-orange-50 to-blue-50 border-l-4 border-orange-200 rounded-r-lg">
+                    <h5 className="font-medium text-black mb-2">
+                      Secret things I would do if my closest friends came to town
+                    </h5>
+                    <p className="text-black text-sm italic whitespace-pre-wrap break-words">
+                      {user?.secretActivities}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Business Deals Section - Only for business users */}
             {user?.userType === 'business' && (
               <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
@@ -4356,6 +4372,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     ))}
                   </div>
                 </div>
+
 
                 {/* Edit All Preferences Button */}
                 {isOwnProfile && !(editingInterests && editingActivities && editingEvents) && (
