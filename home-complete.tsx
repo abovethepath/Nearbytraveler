@@ -147,9 +147,9 @@ export default function Home() {
     return null;
   }, [user]);
 
-  // Get user travel plans
+  // Get user travel plans - use the same query as profile page for consistency
   const { data: travelPlans = [] } = useQuery({
-    queryKey: ['/api/travel-plans'],
+    queryKey: [`/api/travel-plans-with-itineraries/${effectiveUser?.id}`],
     enabled: !!effectiveUser?.id
   });
 

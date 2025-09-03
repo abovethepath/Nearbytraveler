@@ -206,7 +206,9 @@ export default function Home() {
   const enrichUserWithTravelData = (user: any, travelPlans?: any[]) => {
     if (!user) return user;
     
-    const currentTravelDestination = getCurrentTravelDestination(travelPlans || []);
+    // Use THIS user's individual travel plans, not the current user's travel plans
+    const userTravelPlans = user.travelPlans || [];
+    const currentTravelDestination = getCurrentTravelDestination(userTravelPlans);
     
     if (user.id === effectiveUser?.id) {
       // For current user, use weather widget's location logic
@@ -224,13 +226,20 @@ export default function Home() {
       };
     }
     
-    // For other users
+    // For other users, use THEIR travel plans to detect their travel status
+    const isCurrentlyTraveling = !!currentTravelDestination;
+    const displayLocation = currentTravelDestination ? 
+      `${currentTravelDestination.destinationCity}${currentTravelDestination.destinationState ? `, ${currentTravelDestination.destinationState}` : ''}, ${currentTravelDestination.destinationCountry}` :
+      [user.hometownCity, user.hometownState, user.hometownCountry].filter(Boolean).join(', ') || user.location;
+
     return {
       ...user,
-      displayLocation: user.isCurrentlyTraveling && user.travelDestination 
-        ? user.travelDestination 
-        : [user.hometownCity, user.hometownState, user.hometownCountry].filter(Boolean).join(', ') || user.location,
-      locationContext: user.isCurrentlyTraveling ? 'traveling' : 'hometown'
+      travelDestination: currentTravelDestination ? 
+        `${currentTravelDestination.destinationCity}${currentTravelDestination.destinationState ? `, ${currentTravelDestination.destinationState}` : ''}, ${currentTravelDestination.destinationCountry}` :
+        user.travelDestination,
+      isCurrentlyTraveling,
+      displayLocation,
+      locationContext: isCurrentlyTraveling ? 'traveling' : 'hometown'
     };
   };
 

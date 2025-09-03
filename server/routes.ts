@@ -4375,11 +4375,20 @@ Questions? Just reply to this message. Welcome aboard!
     try {
       if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS: Getting all users`);
       
-      // TEMPORARY: Just return all users to fix the issue
+      // Get all users with their travel plans for travel status detection
       const allUsers = await db.select().from(users);
       
-      if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS SEARCH RESULT: ${allUsers.length} users found`);
-      return res.json(allUsers);
+      // Enrich each user with their travel plans for frontend travel detection
+      const enrichedUsers = await Promise.all(allUsers.map(async (user) => {
+        const userTravelPlans = await db.select().from(travelPlans).where(eq(travelPlans.userId, user.id));
+        return {
+          ...user,
+          travelPlans: userTravelPlans
+        };
+      }));
+      
+      if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS SEARCH RESULT: ${enrichedUsers.length} users found with travel plans`);
+      return res.json(enrichedUsers);
       
       // LOCATION FILTER with LA Metro consolidation
       if (location && typeof location === 'string' && location.trim() !== '' && location !== ', United States') {
