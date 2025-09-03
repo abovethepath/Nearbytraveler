@@ -73,6 +73,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Floating animation for dynamic elements */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
 /* Touch-friendly mobile interactions */
 .touch-target {
   min-width: 44px;

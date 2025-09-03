@@ -114,32 +114,231 @@ export default function DiscoverPage() {
   }
 
   const pageContent = (
-    <div className="min-h-screen bg-white dark:bg-gray-900 py-8 sm:py-12">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Header - Clean Airbnb style */}
-        <div className="text-center mb-8 sm:mb-12">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-black dark:text-white mb-4 sm:mb-6 tracking-tight">
-            Discover Amazing Destinations
-          </h1>
-          <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            Explore amazing cities, connect with locals and travelers, and find your next adventure
-          </p>
-        </div>
-
-        {/* Search Bar - Clean design */}
-        <div className="max-w-md mx-auto mb-8 sm:mb-12">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-            <Input
-              type="text"
-              placeholder="Search destinations..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-4 py-3 text-base rounded-2xl border-2 border-gray-200 dark:border-gray-700 focus:border-orange-500 dark:focus:border-orange-400 shadow-sm"
-            />
+    <div className="min-h-screen bg-white dark:bg-gray-900">
+      {/* Hero Section - Consistent Layout */}
+      <section className="bg-white dark:bg-gray-900 py-8 sm:py-12 lg:py-16">
+        {isMobile ? (
+          // Mobile: Keep vertical layout
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 className="text-2xl sm:text-3xl font-bold text-black dark:text-white leading-tight mb-6 px-2">
+              Discover Amazing Destinations
+            </h1>
+            
+            <div className="mb-6 flex justify-center px-4">
+              <div className="relative w-full max-w-sm rounded-xl overflow-hidden shadow-xl">
+                <div className="relative h-64 bg-gradient-to-br from-orange-400 via-red-500 to-purple-600 overflow-hidden">
+                  {/* Dynamic LA Skyline Background */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-blue-400/30"></div>
+                  
+                  {/* Floating event icons */}
+                  <div className="absolute top-4 left-4 text-2xl animate-bounce" style={{animationDelay: '0s'}}>🎶</div>
+                  <div className="absolute top-8 right-6 text-2xl animate-bounce" style={{animationDelay: '1s'}}>🌮</div>
+                  <div className="absolute bottom-12 left-6 text-2xl animate-bounce" style={{animationDelay: '2s'}}>🔥</div>
+                  <div className="absolute bottom-8 right-4 text-2xl animate-bounce" style={{animationDelay: '3s'}}>🥾</div>
+                  
+                  {/* Floating profile avatars */}
+                  <div className="absolute top-1/4 left-1/4 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold animate-pulse" style={{animationDelay: '0.5s'}}>A</div>
+                  <div className="absolute top-1/3 right-1/4 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold animate-pulse" style={{animationDelay: '1.5s'}}>M</div>
+                  <div className="absolute bottom-1/4 left-1/3 w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-xs font-bold animate-pulse" style={{animationDelay: '2.5s'}}>J</div>
+                  <div className="absolute bottom-1/3 right-1/3 w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs font-bold animate-pulse" style={{animationDelay: '3.5s'}}>S</div>
+                  
+                  {/* Los Angeles Skyline Silhouette */}
+                  <div className="absolute bottom-0 left-0 right-0 h-20 bg-black/80 overflow-hidden">
+                    <div className="flex items-end justify-center h-full space-x-1">
+                      <div className="w-3 h-16 bg-gray-700"></div>
+                      <div className="w-2 h-12 bg-gray-600"></div>
+                      <div className="w-4 h-18 bg-gray-800"></div>
+                      <div className="w-2 h-10 bg-gray-600"></div>
+                      <div className="w-3 h-20 bg-gray-700"></div>
+                      <div className="w-5 h-16 bg-gray-800"></div>
+                      <div className="w-2 h-14 bg-gray-600"></div>
+                      <div className="w-4 h-12 bg-gray-700"></div>
+                      <div className="w-3 h-18 bg-gray-800"></div>
+                      <div className="w-2 h-8 bg-gray-600"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <p className="text-base text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl mx-auto px-4">
+              Explore amazing cities, connect with locals and travelers, and find your next adventure
+            </p>
           </div>
-        </div>
+        ) : (
+          // Desktop: Enhanced engaging layout (text left, image right)
+          <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 py-8 sm:py-12 md:py-16 relative overflow-hidden">
+            {/* Background decorative elements */}
+            <div className="absolute inset-0 opacity-5 pointer-events-none">
+              <div className="absolute top-20 left-10 w-32 h-32 bg-blue-500 rounded-full blur-3xl"></div>
+              <div className="absolute bottom-20 right-10 w-40 h-40 bg-orange-500 rounded-full blur-3xl"></div>
+            </div>
+            
+            <div className="grid gap-8 md:gap-12 md:grid-cols-5 items-center relative z-10">
+              {/* Left text side - wider and enhanced */}
+              <div className="md:col-span-3">
+                {/* Premium badge */}
+                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100/80 to-orange-100/80 dark:from-blue-900/20 dark:to-orange-900/20 border border-blue-200 dark:border-blue-700/50 rounded-full px-4 py-2 mb-6">
+                  <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Explore • Connect • Experience</span>
+                </div>
+
+                <div className="space-y-6">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight leading-tight">
+                    <span className="bg-gradient-to-r from-gray-900 via-blue-800 to-gray-900 dark:from-white dark:via-blue-200 dark:to-white bg-clip-text text-transparent">
+                      Discover Amazing
+                    </span>
+                    <br />
+                    <span className="bg-gradient-to-r from-orange-600 via-red-600 to-orange-600 bg-clip-text text-transparent">
+                      Destinations
+                    </span>
+                  </h1>
+                  
+                  <div className="max-w-2xl space-y-4">
+                    <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
+                      Every destination tells a story — <em className="text-orange-600 dark:text-orange-400 font-semibold">discover yours.</em>
+                    </p>
+                    <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed">
+                      Explore amazing cities, connect with locals and travelers, and find your next adventure. From hidden gems to popular hotspots, discover what makes each destination unique.
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Enhanced Features with attractive icons */}
+                <div className="mt-8 space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                      <MapPin className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white">Global Destinations</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Explore cities worldwide and find your perfect travel match</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-4">
+                    <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg">
+                      <Users className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white">Local Connections</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Meet locals and travelers who share your interests and passion for exploration</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-4">
+                    <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
+                      <Search className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white">Smart Discovery</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">AI-powered recommendations tailored to your travel style and preferences</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          
+              {/* Right image side - Dynamic LA Skyline */}
+              <div className="md:col-span-2 flex justify-center items-center relative order-first md:order-last">
+                {/* Decorative background blur effects */}
+                <div className="absolute inset-0 opacity-30 pointer-events-none">
+                  <div className="absolute top-4 -left-8 w-24 h-24 bg-blue-400/20 rounded-full blur-2xl"></div>
+                  <div className="absolute bottom-4 -right-8 w-32 h-32 bg-orange-400/20 rounded-full blur-2xl"></div>
+                </div>
+                
+                {/* Main image container with enhanced styling */}
+                <div className="relative group">
+                  {/* Quote above image */}
+                  <div className="text-center mb-4 relative z-10">
+                    <p className="text-lg md:text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-200 italic leading-tight">
+                      <span className="sm:hidden">Every destination tells a story.</span>
+                    </p>
+                  </div>
+                  
+                  {/* Enhanced image container */}
+                  <div className="relative">
+                    {/* Subtle background glow */}
+                    <div className="absolute -inset-3 bg-gradient-to-r from-blue-200/30 via-purple-200/30 to-orange-200/30 dark:from-blue-900/20 dark:via-purple-900/20 dark:to-orange-900/20 rounded-3xl blur-lg"></div>
+                    
+                    {/* Dynamic Los Angeles Skyline */}
+                    <div className="relative w-full max-w-sm sm:max-w-md h-[240px] sm:h-[280px] md:h-[320px] lg:h-[380px] rounded-2xl overflow-hidden shadow-2xl border border-gray-200/50 dark:border-gray-700/50 transform group-hover:scale-[1.02] transition-all duration-500">
+                      {/* Loading placeholder */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center">
+                        <div className="text-center">
+                          <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-2 animate-pulse" />
+                          <p className="text-gray-500 text-sm">Loading skyline...</p>
+                        </div>
+                      </div>
+                      
+                      {/* Dynamic Cityscape with Los Angeles */}
+                      <div className="relative w-full h-full bg-gradient-to-br from-orange-400 via-red-500 to-purple-600 overflow-hidden">
+                        {/* Sky gradient */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-blue-400/30"></div>
+                        
+                        {/* Floating event icons with subtle animation */}
+                        <div className="absolute top-6 left-6 text-3xl animate-float" style={{animation: 'float 6s ease-in-out infinite'}}>🎶</div>
+                        <div className="absolute top-12 right-8 text-3xl animate-float" style={{animation: 'float 6s ease-in-out infinite', animationDelay: '1s'}}>🌮</div>
+                        <div className="absolute bottom-20 left-8 text-3xl animate-float" style={{animation: 'float 6s ease-in-out infinite', animationDelay: '2s'}}>🔥</div>
+                        <div className="absolute bottom-16 right-6 text-3xl animate-float" style={{animation: 'float 6s ease-in-out infinite', animationDelay: '3s'}}>🥾</div>
+                        
+                        {/* Floating profile avatars - bubbles */}
+                        <div className="absolute top-1/4 left-1/4 w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg animate-float" style={{animation: 'float 8s ease-in-out infinite', animationDelay: '0.5s'}}>A</div>
+                        <div className="absolute top-1/3 right-1/4 w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg animate-float" style={{animation: 'float 8s ease-in-out infinite', animationDelay: '1.5s'}}>M</div>
+                        <div className="absolute bottom-1/4 left-1/3 w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg animate-float" style={{animation: 'float 8s ease-in-out infinite', animationDelay: '2.5s'}}>J</div>
+                        <div className="absolute bottom-1/3 right-1/3 w-10 h-10 bg-pink-500 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg animate-float" style={{animation: 'float 8s ease-in-out infinite', animationDelay: '3.5s'}}>S</div>
+                        
+                        {/* Los Angeles Skyline Silhouette */}
+                        <div className="absolute bottom-0 left-0 right-0 h-24 bg-black/80 overflow-hidden">
+                          <div className="flex items-end justify-center h-full space-x-1 opacity-90">
+                            {/* Downtown LA skyline representation */}
+                            <div className="w-4 h-20 bg-gray-700 rounded-t-sm"></div>
+                            <div className="w-3 h-16 bg-gray-600 rounded-t-sm"></div>
+                            <div className="w-5 h-22 bg-gray-800 rounded-t-sm"></div>
+                            <div className="w-3 h-14 bg-gray-600 rounded-t-sm"></div>
+                            <div className="w-4 h-24 bg-gray-700 rounded-t-sm"></div>
+                            <div className="w-6 h-20 bg-gray-800 rounded-t-sm"></div>
+                            <div className="w-3 h-18 bg-gray-600 rounded-t-sm"></div>
+                            <div className="w-5 h-16 bg-gray-700 rounded-t-sm"></div>
+                            <div className="w-4 h-22 bg-gray-800 rounded-t-sm"></div>
+                            <div className="w-3 h-12 bg-gray-600 rounded-t-sm"></div>
+                            <div className="w-4 h-18 bg-gray-700 rounded-t-sm"></div>
+                            <div className="w-2 h-10 bg-gray-600 rounded-t-sm"></div>
+                          </div>
+                        </div>
+                        
+                        {/* Subtle city name overlay */}
+                        <div className="absolute bottom-4 left-4 text-white/90 font-bold text-sm bg-black/30 px-2 py-1 rounded">
+                          Los Angeles
+                        </div>
+                      </div>
+                      
+                      {/* Image overlay for better contrast */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
+
+      {/* Search Section */}
+      <section className="bg-gray-50 dark:bg-gray-800 py-12">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Search Bar - Modern style */}
+          <div className="max-w-2xl mx-auto mb-12">
+            <div className="relative group">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-gray-600" />
+              <input
+                type="text"
+                placeholder="Search destinations..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full h-14 pl-12 pr-6 text-lg bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white"
+              />
+            </div>
+          </div>
 
 
 
@@ -239,7 +438,8 @@ export default function DiscoverPage() {
           </div>
         )}
 
-      </div>
+        </div>
+      </section>
     </div>
   );
 
