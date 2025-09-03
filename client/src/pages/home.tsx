@@ -3063,26 +3063,6 @@ export default function Home() {
               </div>
             )}
 
-            {/* Quick Actions Section - Consolidated */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Quick Meetups - Available for all users */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border shadow-sm">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold text-sm text-gray-900 dark:text-white">Ready to Meet</h3>
-                  <Button size="sm" variant="ghost" onClick={() => setLocation('/quick-meetups')}>
-                    <Calendar className="w-4 h-4 mr-1" />
-                    View All
-                  </Button>
-                </div>
-                <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">Spontaneous meetups nearby</p>
-                <Button 
-                  className="w-full text-sm bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600"
-                  onClick={() => setLocation('/quick-meetups')}
-                >
-                  Find Meetups
-                </Button>
-              </div>
-            </div>
 
             {/* Load More / Load Less buttons for Businesses */}
             {businessesDisplayCount > 3 && (
