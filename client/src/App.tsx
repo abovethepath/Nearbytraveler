@@ -129,10 +129,6 @@ import NotFound from "@/pages/not-found";
 import Itinerary from "@/pages/itinerary";
 import UploadCityPhoto from "@/pages/upload-city-photo";
 import TravelBlog from "@/pages/travel-blog";
-import TravelAgentDashboard from "@/pages/travel-agent-dashboard";
-import TravelAgentSignup from "@/pages/travel-agent-signup";
-import TravelAgentPage from "@/pages/travel-agent-page";
-import WelcomeTravelAgent from "@/pages/welcome-travel-agent";
 import QuickLogin from "@/pages/quick-login";
 import MatchInCity from "@/pages/match-in-city";
 import QRSignup from "@/pages/qr-signup";
@@ -200,8 +196,8 @@ function Router() {
   const landingPageRoutes = [
     '/', '/landing', '/landing-new', '/auth', '/join', '/signup', '/signup/local', '/signup/traveler', '/signup/business', '/signup/account', '/signup/traveling',
     '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', '/networking-landing', '/couchsurfing', '/cs', '/b', '/privacy', '/terms', '/cookies', '/about', '/getting-started',
-    '/forgot-password', '/reset-password', '/welcome', '/welcome-business', '/welcome-travel-agent', '/quick-login', '/preview-landing', '/preview-first-landing',
-    '/travel-quiz', '/TravelIntentQuiz', '/signup/travel-agent', '/business-card', '/qr-code'
+    '/forgot-password', '/reset-password', '/welcome', '/welcome-business', '/quick-login', '/preview-landing', '/preview-first-landing',
+    '/travel-quiz', '/TravelIntentQuiz', '/business-card', '/qr-code'
   ];
   const isLandingPage = landingPageRoutes.includes(location);
 
@@ -1034,18 +1030,10 @@ function Router() {
         return <SMSTest />;
       case '/travel-blog':
         return <TravelBlog />;
-      case '/travel-agent-dashboard':
-        return <TravelAgentDashboard />;
-      case '/signup/travel-agent':
-        return <ComingSoon />;
-      case '/agent/:username':
-        return <TravelAgentPage />;
       case '/welcome':
         return <Welcome />;
       case '/welcome-business':
         return <WelcomeBusiness />;
-      case '/welcome-travel-agent':
-        return <WelcomeTravelAgent />;
       case '/getting-started':
         return <GettingStarted />;
       case '/quick-login':

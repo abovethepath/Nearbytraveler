@@ -140,8 +140,6 @@ export default function JoinNowWidget() {
       setLocation('/signup/traveling');
     } else if (userType === 'business') {
       setLocation('/signup/business');
-    } else if (userType === 'travel_agent') {
-      setLocation('/signup/travel-agent');
     }
   };
 

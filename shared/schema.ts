@@ -8,7 +8,7 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
   name: text("name").notNull(),
-  userType: text("user_type").notNull(), // 'traveler', 'local', 'business', 'travel_agent'
+  userType: text("user_type").notNull(), // 'traveler', 'local', 'business'
   bio: text("bio"),
   location: text("location"),
   // NEARBY LOCAL HOMETOWN (never changes unless they move)
