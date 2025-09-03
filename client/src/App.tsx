@@ -222,6 +222,14 @@ function Router() {
           setUser(serverUser);
           // Also store in localStorage for consistency
           authStorage.setUser(serverUser);
+          localStorage.setItem('user', JSON.stringify(serverUser));
+          
+          // Check if this is a new user who needs welcome
+          if (serverUser && !localStorage.getItem('welcomed_' + serverUser.id)) {
+            console.log('🎉 New user detected - showing welcome');
+            localStorage.setItem('welcomed_' + serverUser.id, 'true');
+          }
+          
           setIsLoading(false);
           return;
         } else {
