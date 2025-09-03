@@ -472,18 +472,11 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
             <X className="w-5 h-5" />
           </Button>
 
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="bg-gradient-to-r from-blue-600 to-orange-500 p-3 rounded-xl">
-                <Users className="w-6 h-6 text-white" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent leading-tight">Connect with Travelers & Locals</h2>
-                <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base lg:text-lg mt-1 leading-relaxed">
-                  Find and connect with amazing people in your area
-                </p>
-              </div>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-gradient-to-r from-blue-600 to-orange-500 p-3 rounded-xl">
+              <Users className="w-6 h-6 text-white" />
             </div>
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Connect with Travelers & Locals</h2>
           </div>
 
           <div className="space-y-4 sm:space-y-6">
