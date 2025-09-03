@@ -1794,10 +1794,28 @@ export default function Home() {
               
               {/* Main image */}
               <div className="relative w-full max-w-sm sm:max-w-md h-[240px] sm:h-[280px] md:h-[320px] lg:h-[380px] rounded-2xl overflow-hidden shadow-2xl border border-gray-200/50 dark:border-gray-700/50 transform group-hover:scale-[1.02] transition-all duration-500">
+                {/* Loading placeholder */}
+                <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center">
+                  <div className="text-center">
+                    <Coffee className="w-12 h-12 text-gray-400 mx-auto mb-2 animate-pulse" />
+                    <p className="text-gray-500 text-sm">Loading image...</p>
+                  </div>
+                </div>
+                
                 <img
                   src={staticHeroImage}
                   alt="Travelers connecting at coffee shop"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-opacity duration-500 relative z-10"
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                  onLoad={(e) => {
+                    e.currentTarget.style.opacity = '1';
+                    // Hide the loading placeholder
+                    const placeholder = e.currentTarget.previousElementSibling as HTMLElement;
+                    if (placeholder) placeholder.style.display = 'none';
+                  }}
+                  style={{ opacity: '0' }}
                 />
                 
                 {/* Enhanced overlay with better contrast */}
