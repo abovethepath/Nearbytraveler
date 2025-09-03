@@ -468,7 +468,7 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
             variant="ghost" 
             size="sm" 
             onClick={onClose} 
-            className="absolute top-4 right-4 hover:bg-gray-100 dark:hover:bg-gray-700 z-10"
+            className="absolute top-4 right-4 hover:bg-gray-100 dark:hover:bg-gray-700 z-50 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
           >
             <X className="w-5 h-5" />
           </Button>
