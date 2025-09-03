@@ -19,7 +19,7 @@ import { useEffect } from "react";
 
 const businessSignupSchema = z.object({
   // Account Owner Information (for platform communication)
-  username: z.string().min(6, "Username must be 6-20 characters").max(20, "Username must be 6-20 characters"),
+  username: z.string().min(6, "Username must be 6-12 characters").max(12, "Username must be 6-12 characters"),
   email: z.string().email("Please enter a valid email").refine((val) => {
     // Allow email variants for multiple businesses (e.g., owner+restaurant@example.com)
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
