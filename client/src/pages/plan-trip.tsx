@@ -974,18 +974,32 @@ export default function PlanTrip() {
                         <span className="text-yellow-500 text-base sm:text-lg">⭐</span>
                         <h4 className="text-gray-900 dark:text-white font-bold text-sm sm:text-base md:text-lg break-words overflow-hidden">Top Choices for Most Locals and Travelers</h4>
                       </div>
-                      <Button 
-                        type="button" 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => {
-                          const newInterests = [...new Set([...tripPlan.interests, ...MOST_POPULAR_INTERESTS])];
-                          setTripPlan(prev => ({ ...prev, interests: newInterests }));
-                        }}
-                        className="text-xs h-7 px-2 text-blue-600 border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 bg-white dark:bg-gray-700 ml-auto sm:ml-0 shrink-0"
-                      >
-                        Select All
-                      </Button>
+                      <div className="flex gap-2 ml-auto sm:ml-0 shrink-0">
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => {
+                            const newInterests = [...new Set([...tripPlan.interests, ...MOST_POPULAR_INTERESTS])];
+                            setTripPlan(prev => ({ ...prev, interests: newInterests }));
+                          }}
+                          className="text-xs h-7 px-2 text-blue-600 border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 bg-white dark:bg-gray-700"
+                        >
+                          Select All
+                        </Button>
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => {
+                            const filteredInterests = tripPlan.interests.filter(interest => !MOST_POPULAR_INTERESTS.includes(interest));
+                            setTripPlan(prev => ({ ...prev, interests: filteredInterests }));
+                          }}
+                          className="text-xs h-7 px-2 text-red-600 border-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 bg-white dark:bg-gray-700"
+                        >
+                          Clear All
+                        </Button>
+                      </div>
                     </div>
                     {/* AI-Companion Responsive Grid */}
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 overflow-hidden break-words">
