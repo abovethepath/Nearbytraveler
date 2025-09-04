@@ -4493,7 +4493,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </h4>
                   <div className="flex flex-wrap gap-2 sm:gap-3 p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
                     {MOST_POPULAR_INTERESTS.slice(0, 12).map((item) => (
-                      <div key={item} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-black text-white border-0">
+                      <div key={item} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-white text-black border-0">
                         {item}
                       </div>
                     ))}
