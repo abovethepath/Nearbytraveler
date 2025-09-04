@@ -86,7 +86,7 @@ export const ADDITIONAL_INTERESTS = [
   "Adult Massage Services",
   "Cam Shows & Online Adult",
   "Adult Content Creation",
-  "Sexual Wellness Workshops"
+  "Sexual Wellness Workshops",
   
   // Family/Kids
   "Parent Meetups",
