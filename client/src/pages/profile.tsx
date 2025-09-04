@@ -3217,6 +3217,9 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
 
   // Determine if user can be connected to
   const isValidConnectTarget = user && !isOwnProfile && user.userType !== 'business';
+  
+  // Track connecting state
+  const isConnecting = connectMutation.isPending;
 
   // Get connect button text and state
   const getConnectButtonState = () => {
