@@ -4433,60 +4433,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
                 ) : null}
 
-                {/* Edit All Preferences Button - MOVED TO TOP BEFORE TOP CHOICES */}
-                {isOwnProfile && (
-                  <div className="mb-4">
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        // Initialize editFormData with current user data including custom entries
-                        const userInterests = [...(user?.interests || [])];
-                        const userActivities = [...(user?.activities || [])];
-                        const userEvents = [...(user?.events || [])];
-                        
-                        // Add custom fields from database to the arrays for editing
-                        if (user?.customInterests) {
-                          const customInterests = user.customInterests.split(',').map(s => s.trim()).filter(s => s);
-                          customInterests.forEach(item => {
-                            if (!userInterests.includes(item)) {
-                              userInterests.push(item);
-                            }
-                          });
-                        }
-                        if (user?.customActivities) {
-                          const customActivities = user.customActivities.split(',').map(s => s.trim()).filter(s => s);
-                          customActivities.forEach(item => {
-                            if (!userActivities.includes(item)) {
-                              userActivities.push(item);
-                            }
-                          });
-                        }
-                        if (user?.customEvents) {
-                          const customEvents = user.customEvents.split(',').map(s => s.trim()).filter(s => s);
-                          customEvents.forEach(item => {
-                            if (!userEvents.includes(item)) {
-                              userEvents.push(item);
-                            }
-                          });
-                        }
-                        
-                        setEditFormData({
-                          interests: userInterests,
-                          activities: userActivities,
-                          events: userEvents
-                        });
-                        
-                        setEditingInterests(true);
-                        setEditingActivities(true);
-                        setEditingEvents(true);
-                      }}
-                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0"
-                    >
-                      <Edit className="w-3 h-3 mr-1" />
-                      Edit All Preferences
-                    </Button>
-                  </div>
-                )}
 
                 {/* Top Choices Section - Now comes AFTER Edit Button */}
                 <div className="mb-6">
@@ -4512,7 +4458,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </h4>
                   </div>
                   
-                  {editingInterests && !(editingInterests && editingActivities && editingEvents) ? (
+                  {editingInterests && !editingActivities && !editingEvents ? (
                     <div className="space-y-4">
                       {/* All Interests */}
                       <div>
@@ -4657,7 +4603,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </h4>
                   </div>
                   
-                  {editingActivities && !(editingInterests && editingActivities && editingEvents) ? (
+                  {editingActivities && !editingInterests && !editingEvents ? (
                     <div className="space-y-4">
                       <div className="text-sm text-blue-600 bg-blue-50 border border-blue-400 rounded-md p-3 mb-4 dark:bg-blue-900/20 dark:border-blue-600 dark:text-blue-300">
                         Your default preferences for trips and to match with Nearby Locals and Travelers. They can be added to and changed in the future for specific trips etc.
@@ -4794,7 +4740,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </h4>
                   </div>
                   
-                  {editingEvents && !(editingInterests && editingActivities && editingEvents) ? (
+                  {editingEvents && !editingInterests && !editingActivities ? (
                     <div className="space-y-4">
                       {/* All Available Events */}
                       <div>
