@@ -3613,7 +3613,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             >
               Contacts
               {userConnections.length > 0 && (
-                <span className="ml-2 px-2 py-1 text-xs bg-orange-600 text-white rounded-full">
+                <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
                   {userConnections.length}
                 </span>
               )}
@@ -3629,7 +3629,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             >
               Photos
               {userPhotos?.length > 0 && (
-                <span className="ml-2 px-2 py-1 text-xs bg-orange-600 text-white rounded-full">
+                <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
                   {userPhotos.length}
                 </span>
               )}
@@ -3645,7 +3645,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             >
               References
               {vouches?.length > 0 && (
-                <span className="ml-2 px-2 py-1 text-xs bg-orange-600 text-white rounded-full">
+                <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
                   {vouches.length}
                 </span>
               )}
@@ -3661,7 +3661,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             >
               Travel
               {travelPlans?.length > 0 && (
-                <span className="ml-2 px-2 py-1 text-xs bg-orange-600 text-white rounded-full">
+                <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
                   {travelPlans.length}
                 </span>
               )}
@@ -3677,7 +3677,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             >
               Countries
               {countriesVisited?.length > 0 && (
-                <span className="ml-2 px-2 py-1 text-xs bg-orange-600 text-white rounded-full">
+                <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
                   {countriesVisited.length}
                 </span>
               )}
