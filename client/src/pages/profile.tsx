@@ -614,7 +614,18 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [editingTravelPlan, setEditingTravelPlan] = useState<TravelPlan | null>(null);
   const [showCreateDeal, setShowCreateDeal] = useState(false);
-  const [activeTab, setActiveTab] = useState('about');
+  // Widget open/close states
+  const [openWidgets, setOpenWidgets] = useState<Set<string>>(new Set());
+  
+  const toggleWidget = (widgetName: string) => {
+    const newOpenWidgets = new Set(openWidgets);
+    if (newOpenWidgets.has(widgetName)) {
+      newOpenWidgets.delete(widgetName);
+    } else {
+      newOpenWidgets.add(widgetName);
+    }
+    setOpenWidgets(newOpenWidgets);
+  };
   const [deletingTravelPlan, setDeletingTravelPlan] = useState<TravelPlan | null>(null);
   const [selectedTravelPlan, setSelectedTravelPlan] = useState<TravelPlan | null>(null);
   const [showTravelPlanDetails, setShowTravelPlanDetails] = useState(false);
@@ -3817,14 +3828,14 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
               </div>
             )}
             
-            {/* Couchsurfing-style Tab Navigation */}
+            {/* Widget Navigation - Expandable Widgets */}
             <div className="bg-white border-2 border-black rounded-lg shadow-sm">
               <div className="border-b border-gray-200">
-                <nav className="flex space-x-0" aria-label="Profile sections">
+                <nav className="flex space-x-0" aria-label="Profile widgets">
                   <button
-                    onClick={() => setActiveTab('about')}
+                    onClick={() => toggleWidget('about')}
                     className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors flex flex-col items-center ${
-                      activeTab === 'about'
+                      openWidgets.has('about')
                         ? 'border-blue-500 text-blue-600 bg-blue-50'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                     }`}
@@ -3832,9 +3843,9 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                     <span className="font-semibold">About</span>
                   </button>
                   <button
-                    onClick={() => setActiveTab('photos')}
+                    onClick={() => toggleWidget('photos')}
                     className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors flex flex-col items-center ${
-                      activeTab === 'photos'
+                      openWidgets.has('photos')
                         ? 'border-blue-500 text-blue-600 bg-blue-50'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                     }`}
@@ -3843,9 +3854,9 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                     <span className="text-lg font-bold">{userPhotos?.length || 0}</span>
                   </button>
                   <button
-                    onClick={() => setActiveTab('references')}
+                    onClick={() => toggleWidget('references')}
                     className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors flex flex-col items-center ${
-                      activeTab === 'references'
+                      openWidgets.has('references')
                         ? 'border-blue-500 text-blue-600 bg-blue-50'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                     }`}
@@ -3854,9 +3865,9 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                     <span className="text-lg font-bold">{userReferences?.length || 0}</span>
                   </button>
                   <button
-                    onClick={() => setActiveTab('connections')}
+                    onClick={() => toggleWidget('connections')}
                     className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors flex flex-col items-center ${
-                      activeTab === 'connections'
+                      openWidgets.has('connections')
                         ? 'border-blue-500 text-blue-600 bg-blue-50'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                     }`}
@@ -3865,9 +3876,9 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                     <span className="text-lg font-bold">{userConnections?.length || 0}</span>
                   </button>
                   <button
-                    onClick={() => setActiveTab('chatrooms')}
+                    onClick={() => toggleWidget('chatrooms')}
                     className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors flex flex-col items-center ${
-                      activeTab === 'chatrooms'
+                      openWidgets.has('chatrooms')
                         ? 'border-blue-500 text-blue-600 bg-blue-50'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                     }`}
@@ -3875,12 +3886,23 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                     <span className="font-semibold">Chatrooms</span>
                     <span className="text-lg font-bold">{userChatrooms?.length || 0}</span>
                   </button>
+                  <button
+                    onClick={() => toggleWidget('memories')}
+                    className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors flex flex-col items-center ${
+                      openWidgets.has('memories')
+                        ? 'border-blue-500 text-blue-600 bg-blue-50'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    <span className="font-semibold">Travel Memories</span>
+                    <span className="text-lg font-bold">0</span>
+                  </button>
                 </nav>
               </div>
             </div>
 
-            {/* Tab Content */}
-            {activeTab === 'about' && (
+            {/* Widget Content - Only show when widgets are opened */}
+            {openWidgets.has('about') && (
             /* About Section - Mobile Optimized */
             <Card className="mt-2 relative overflow-visible">
               <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-4 lg:px-6 pt-3 sm:pt-4 lg:pt-6">
@@ -3891,8 +3913,20 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                       : (user?.username || 'User')}
                   </CardTitle>
 
-                  {isOwnProfile && (
-                    <div className="flex-shrink-0">
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {/* Close Widget Button */}
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => toggleWidget('about')}
+                      className="text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                      aria-label="Close About Widget"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                    
+                    {isOwnProfile && (
+                      <div className="flex-shrink-0">
                       {/* Icon-only on phones */}
                       <Button
                         size="sm"
@@ -3914,8 +3948,9 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                         <Edit2 className="w-4 h-4 mr-2" />
                         Edit Profile
                       </Button>
-                    </div>
-                  )}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </CardHeader>
 
@@ -4146,9 +4181,21 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
             </Card>
             )}
 
-            {/* Photos Tab */}
-            {activeTab === 'photos' && (
+            {/* Photos Widget - Only show when opened */}
+            {openWidgets.has('photos') && (
               <Card className="mt-2">
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle className="text-lg font-bold">Photos ({userPhotos?.length || 0})</CardTitle>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => toggleWidget('photos')}
+                    className="text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                    aria-label="Close Photos Widget"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </CardHeader>
                 <CardContent className="p-6">
                   <PhotoAlbumWidget 
                     userId={effectiveUserId || 0}
@@ -4158,11 +4205,20 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
               </Card>
             )}
 
-            {/* References Tab */}
-            {activeTab === 'references' && (
+            {/* References Widget - Only show when opened */}
+            {openWidgets.has('references') && (
               <Card className="mt-2">
-                <CardHeader>
+                <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle className="text-lg font-bold">References ({userReferences?.length || 0})</CardTitle>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => toggleWidget('references')}
+                    className="text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                    aria-label="Close References Widget"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
                 </CardHeader>
                 <CardContent>
                   {userReferences && userReferences.length > 0 ? (
@@ -4187,11 +4243,20 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
               </Card>
             )}
 
-            {/* Connections Tab */}
-            {activeTab === 'connections' && (
+            {/* Connections Widget - Only show when opened */}
+            {openWidgets.has('connections') && (
               <Card className="mt-2">
-                <CardHeader>
+                <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle className="text-lg font-bold">Connections ({userConnections?.length || 0})</CardTitle>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => toggleWidget('connections')}
+                    className="text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                    aria-label="Close Connections Widget"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
                 </CardHeader>
                 <CardContent>
                   {userConnections && userConnections.length > 0 ? (
@@ -4224,11 +4289,20 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
               </Card>
             )}
 
-            {/* Chatrooms Tab */}
-            {activeTab === 'chatrooms' && (
+            {/* Chatrooms Widget - Only show when opened */}
+            {openWidgets.has('chatrooms') && (
               <Card className="mt-2">
-                <CardHeader>
+                <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle className="text-lg font-bold">Chatrooms ({userChatrooms?.length || 0})</CardTitle>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => toggleWidget('chatrooms')}
+                    className="text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                    aria-label="Close Chatrooms Widget"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
                 </CardHeader>
                 <CardContent>
                   {userChatrooms && userChatrooms.length > 0 ? (
@@ -4256,6 +4330,31 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                       )}
                     </div>
                   )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Travel Memories Widget - Only show when opened */}
+            {openWidgets.has('memories') && (
+              <Card className="mt-2">
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle className="text-lg font-bold">Travel Memories</CardTitle>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => toggleWidget('memories')}
+                    className="text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                    aria-label="Close Travel Memories Widget"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-12 text-gray-500">
+                    <History className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                    <p>Travel Memories Coming Soon!</p>
+                    <p className="text-sm mt-2">Share your travel stories, photos, and passport stamps from your adventures around the world.</p>
+                  </div>
                 </CardContent>
               </Card>
             )}
