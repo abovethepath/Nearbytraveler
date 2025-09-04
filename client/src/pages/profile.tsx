@@ -3487,9 +3487,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <h1 className="text-2xl font-bold mb-2">{user?.username}</h1>
                       <div className="text-green-100 mb-1">
                         <span>
-                          Nearby Local • {user?.hometownCity || user?.currentCity || 'Location not set'}
-                          {(user?.hometownState || user?.currentState) && `, ${user.hometownState || user.currentState}`}
-                          {(user?.hometownCountry || user?.currentCountry) && `, ${user.hometownCountry || user.currentCountry}`}
+                          {isCurrentlyTraveling ? (
+                            <>
+                              Nearby Traveler • {currentTravelDestination?.destinationCity || 'Travel destination'}
+                              {currentTravelDestination?.destinationState && `, ${currentTravelDestination.destinationState}`}
+                              {currentTravelDestination?.destinationCountry && `, ${currentTravelDestination.destinationCountry}`}
+                            </>
+                          ) : (
+                            <>
+                              Nearby Local • {user?.hometownCity || user?.currentCity || 'Location not set'}
+                              {(user?.hometownState || user?.currentState) && `, ${user.hometownState || user.currentState}`}
+                              {(user?.hometownCountry || user?.currentCountry) && `, ${user.hometownCountry || user.currentCountry}`}
+                            </>
+                          )}
                         </span>
                       </div>
                     </div>
