@@ -1050,7 +1050,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return "business";
     }
     
-    // PRIORITY 1: Check current travel plans for active trips
+    // PRIORITY 1: Check isCurrentlyTraveling flag (most reliable)
+    if (user.isCurrentlyTraveling && (user.destinationCity || user.travelDestination)) {
+      return "traveler";
+    }
+    
+    // PRIORITY 2: Check current travel plans for active trips
     const currentDestination = getCurrentTravelDestination(travelPlans || []);
     if (currentDestination && user.hometownCity) {
       const travelDestination = currentDestination.toLowerCase();
@@ -1062,7 +1067,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       }
     }
     
-    // PRIORITY 2: Fallback to old travel fields for backwards compatibility
+    // PRIORITY 3: Fallback to old travel fields for backwards compatibility
     const now = new Date();
     const hasActiveTravelPlans = user.travelStartDate && user.travelEndDate && 
       new Date(user.travelStartDate) <= now && 
@@ -1077,7 +1082,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       }
     }
     
-    // PRIORITY 3: Default based on user type
+    // PRIORITY 4: Default based on user type
     return "local";
   };
 
