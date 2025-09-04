@@ -15,16 +15,13 @@ import {
   Settings, 
   ArrowLeft, 
   MessageCircle, 
-  MessageSquare,
   Shield, 
   Phone, 
   CreditCard,
   CheckCircle,
   Globe,
   Users,
-  UserPlus,
   Camera,
-  Heart,
   Eye,
   Languages,
   GraduationCap,
@@ -34,7 +31,9 @@ import {
   AlertCircle,
   Share2,
   Zap,
-  Clock
+  Clock,
+  MessageSquare,
+  UserPlus
 } from "lucide-react";
 import { AuthContext } from "@/App";
 import { formatDateForDisplay, getCurrentTravelDestination } from "@/lib/dateUtils";
@@ -144,13 +143,13 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
 
   const currentTravelDestination = getCurrentTravelDestination(travelPlans || []);
   const isCurrentlyTraveling = !!currentTravelDestination;
-  const userAge = displayUser.dateOfBirth ? calculateAge(displayUser.dateOfBirth) : null;
+  const userAge = displayUser?.dateOfBirth ? calculateAge(displayUser.dateOfBirth) : null;
 
   // Calculate verification badges
   const verificationBadges = [
-    { type: 'profile', verified: displayUser.profileImage && displayUser.bio && displayUser.interests?.length > 0, label: 'Profile Complete' },
-    { type: 'phone', verified: false, label: 'Phone Verified' }, // TODO: Add phone verification
-    { type: 'email', verified: !!displayUser.email, label: 'Email Verified' },
+    { type: 'profile', verified: displayUser?.profileImage && displayUser?.bio && displayUser?.interests?.length > 0, label: 'Profile Complete' },
+    { type: 'phone', verified: false, label: 'Phone Verified' },
+    { type: 'email', verified: !!displayUser?.email, label: 'Email Verified' },
   ];
 
   const verifiedCount = verificationBadges.filter(badge => badge.verified).length;
@@ -206,19 +205,6 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                   Nearby Local • {displayUser.hometownCity}
                 </p>
 
-                {/* Action Buttons */}
-                {!isOwnProfile && (
-                  <div className="space-y-2">
-                    <Button className="w-full bg-white text-blue-600 hover:bg-gray-100">
-                      <MessageCircle className="w-4 h-4 mr-2" />
-                      Send Message
-                    </Button>
-                    <Button variant="outline" className="w-full border-white text-white hover:bg-white/10">
-                      <Heart className="w-4 h-4 mr-2" />
-                      Connect
-                    </Button>
-                  </div>
-                )}
                 
                 {isOwnProfile && (
                   <div className="space-y-2">
@@ -229,10 +215,10 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                     
                     {/* Navigation buttons for own profile */}
                     <div className="flex items-center gap-2">
-                      {displayUser && (displayUser.hometownCity || displayUser.location) && (
+                      {displayUser && (displayUser?.hometownCity || displayUser?.location) && (
                         <Button
                           onClick={() => {
-                            const chatCity = displayUser.hometownCity || displayUser.location?.split(',')[0] || 'General';
+                            const chatCity = displayUser?.hometownCity || displayUser?.location?.split(',')[0] || 'General';
                             setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
                           }}
                           className="flex-1 bg-black hover:bg-gray-800 text-white border-0 shadow-sm rounded-lg px-3 py-2 text-sm"
@@ -291,15 +277,15 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                 </div>
                 <div className="flex items-center gap-3 text-sm">
                   <Users className="w-4 h-4 text-blue-500" />
-                  <span className="text-gray-600 dark:text-gray-400">{connections.length} connections</span>
+                  <span className="text-gray-600 dark:text-gray-400">{Array.isArray(connections) ? connections.length : 0} connections</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
                   <Globe className="w-4 h-4 text-green-500" />
-                  <span className="text-gray-600 dark:text-gray-400">{travelPlans.length} trips planned</span>
+                  <span className="text-gray-600 dark:text-gray-400">{Array.isArray(travelPlans) ? travelPlans.length : 0} trips planned</span>
                 </div>
                 <div className="flex items-center gap-3 text-sm">
                   <Calendar className="w-4 h-4 text-purple-500" />
-                  <span className="text-gray-600 dark:text-gray-400">Member since {new Date(displayUser.createdAt).getFullYear()}</span>
+                  <span className="text-gray-600 dark:text-gray-400">Member since {displayUser?.createdAt ? new Date(displayUser.createdAt).getFullYear() : new Date().getFullYear()}</span>
                 </div>
               </CardContent>
             </Card>
@@ -310,27 +296,16 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
             {/* Top Action Bar for Desktop */}
             <div className="hidden lg:flex justify-between items-center mb-6">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{displayUser.username}</h1>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{displayUser?.username || 'Unknown User'}</h1>
                 <p className="text-gray-600 dark:text-gray-400">
-                  {displayUser.hometownCity}, {displayUser.hometownState && `${displayUser.hometownState}, `}{displayUser.hometownCountry}
+                  {displayUser?.hometownCity}, {displayUser?.hometownState && `${displayUser.hometownState}, `}{displayUser?.hometownCountry}
                 </p>
               </div>
-              {isOwnProfile ? (
+              {isOwnProfile && (
                 <Button onClick={() => window.location.href = '/edit-profile'}>
                   <Settings className="w-4 h-4 mr-2" />
                   Edit My Profile
                 </Button>
-              ) : (
-                <div className="flex gap-2">
-                  <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Send Message
-                  </Button>
-                  <Button variant="outline">
-                    <UserPlus className="w-4 h-4 mr-2" />
-                    Connect
-                  </Button>
-                </div>
               )}
             </div>
 
@@ -345,19 +320,19 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600">{connections.length}</div>
+                    <div className="text-2xl font-bold text-blue-600">{Array.isArray(connections) ? connections.length : 0}</div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">Connections</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-green-600">{travelPlans.length}</div>
+                    <div className="text-2xl font-bold text-green-600">{Array.isArray(travelPlans) ? travelPlans.length : 0}</div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">Travel Plans</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-purple-600">{displayUser.interests?.length || 0}</div>
+                    <div className="text-2xl font-bold text-purple-600">{displayUser?.interests?.length || 0}</div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">Interests</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-orange-600">{displayUser.languages?.length || 1}</div>
+                    <div className="text-2xl font-bold text-orange-600">{displayUser?.languages?.length || 1}</div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">Languages</div>
                   </div>
                 </div>
@@ -366,17 +341,17 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 pt-6 border-t">
                   <div className="flex items-center gap-3">
                     <Languages className="w-5 h-5 text-gray-400" />
-                    <span className="text-gray-600 dark:text-gray-400">Fluent in {displayUser.languages?.[0] || 'English'}</span>
+                    <span className="text-gray-600 dark:text-gray-400">Fluent in {displayUser?.languages?.[0] || 'English'}</span>
                   </div>
                   {userAge && (
                     <div className="flex items-center gap-3">
                       <Calendar className="w-5 h-5 text-gray-400" />
-                      <span className="text-gray-600 dark:text-gray-400">{userAge}, {displayUser.gender || 'Not specified'}</span>
+                      <span className="text-gray-600 dark:text-gray-400">{userAge}, {displayUser?.gender || 'Not specified'}</span>
                     </div>
                   )}
                   <div className="flex items-center gap-3">
                     <Home className="w-5 h-5 text-gray-400" />
-                    <span className="text-gray-600 dark:text-gray-400">From {displayUser.hometownCity}, {displayUser.hometownCountry}</span>
+                    <span className="text-gray-600 dark:text-gray-400">From {displayUser?.hometownCity}, {displayUser?.hometownCountry}</span>
                   </div>
                   {isCurrentlyTraveling && (
                     <div className="flex items-center gap-3">
@@ -399,10 +374,10 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-6">
                 <TabsTrigger value="about">About</TabsTrigger>
-                <TabsTrigger value="travel">Travel <Badge variant="secondary" className="ml-1 text-xs">{travelPlans.length}</Badge></TabsTrigger>
-                <TabsTrigger value="photos">Photos <Badge variant="secondary" className="ml-1 text-xs">{photoAlbums.length}</Badge></TabsTrigger>
-                <TabsTrigger value="events">Events <Badge variant="secondary" className="ml-1 text-xs">{userEvents.length}</Badge></TabsTrigger>
-                <TabsTrigger value="connections">Connections <Badge variant="secondary" className="ml-1 text-xs">{connections.length}</Badge></TabsTrigger>
+                <TabsTrigger value="travel">Travel <Badge variant="secondary" className="ml-1 text-xs">{Array.isArray(travelPlans) ? travelPlans.length : 0}</Badge></TabsTrigger>
+                <TabsTrigger value="photos">Photos <Badge variant="secondary" className="ml-1 text-xs">{Array.isArray(photoAlbums) ? photoAlbums.length : 0}</Badge></TabsTrigger>
+                <TabsTrigger value="events">Events <Badge variant="secondary" className="ml-1 text-xs">{Array.isArray(userEvents) ? userEvents.length : 0}</Badge></TabsTrigger>
+                <TabsTrigger value="connections">Connections <Badge variant="secondary" className="ml-1 text-xs">{Array.isArray(connections) ? connections.length : 0}</Badge></TabsTrigger>
                 <TabsTrigger value="reviews">Reviews</TabsTrigger>
               </TabsList>
 
@@ -412,10 +387,10 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                     <CardTitle>About Me</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    {displayUser.bio ? (
+                    {displayUser?.bio ? (
                       <div className="prose prose-sm max-w-none dark:prose-invert">
                         <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                          {displayUser.bio}
+                          {displayUser?.bio}
                         </p>
                       </div>
                     ) : (
@@ -425,11 +400,11 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                     )}
 
                     {/* Interests */}
-                    {displayUser.interests && displayUser.interests.length > 0 && (
+                    {displayUser?.interests && displayUser.interests.length > 0 && (
                       <div>
                         <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Interests</h3>
                         <div className="flex flex-wrap gap-2">
-                          {displayUser.interests.map((interest, index) => (
+                          {displayUser?.interests?.map((interest, index) => (
                             <Badge key={index} variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
                               {interest}
                             </Badge>
@@ -439,11 +414,11 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                     )}
 
                     {/* Activities */}
-                    {displayUser.activities && displayUser.activities.length > 0 && (
+                    {displayUser?.activities && displayUser.activities.length > 0 && (
                       <div>
                         <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Activities I Enjoy</h3>
                         <div className="flex flex-wrap gap-2">
-                          {displayUser.activities.map((activity, index) => (
+                          {displayUser?.activities?.map((activity, index) => (
                             <Badge key={index} variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                               {activity}
                             </Badge>
@@ -453,11 +428,11 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                     )}
 
                     {/* Languages */}
-                    {displayUser.languages && displayUser.languages.length > 0 && (
+                    {displayUser?.languages && displayUser.languages.length > 0 && (
                       <div>
                         <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Languages</h3>
                         <div className="flex flex-wrap gap-2">
-                          {displayUser.languages.map((language, index) => (
+                          {displayUser?.languages?.map((language, index) => (
                             <Badge key={index} variant="outline" className="border-purple-200 text-purple-800 dark:border-purple-800 dark:text-purple-200">
                               {language}
                             </Badge>
@@ -486,13 +461,13 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                     )}
 
                     {/* Social Media Links */}
-                    {(displayUser.instagram || displayUser.tiktok || displayUser.linkedin || displayUser.website) && (
+                    {(displayUser?.instagram || displayUser?.tiktok || displayUser?.linkedin || displayUser?.website) && (
                       <div>
                         <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Social Media</h3>
                         <div className="space-y-2">
-                          {displayUser.instagram && (
+                          {displayUser?.instagram && (
                             <a
-                              href={displayUser.instagram.startsWith('http') ? displayUser.instagram : `https://instagram.com/${displayUser.instagram}`}
+                              href={displayUser?.instagram?.startsWith('http') ? displayUser.instagram : `https://instagram.com/${displayUser?.instagram}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="flex items-center gap-2 text-pink-600 hover:text-pink-800 dark:text-pink-400 dark:hover:text-pink-200"
@@ -501,9 +476,9 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                               Instagram
                             </a>
                           )}
-                          {displayUser.tiktok && (
+                          {displayUser?.tiktok && (
                             <a
-                              href={displayUser.tiktok.startsWith('http') ? displayUser.tiktok : `https://tiktok.com/@${displayUser.tiktok}`}
+                              href={displayUser?.tiktok?.startsWith('http') ? displayUser.tiktok : `https://tiktok.com/@${displayUser?.tiktok}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="flex items-center gap-2 text-black hover:text-gray-600 dark:text-white dark:hover:text-gray-300"
@@ -512,9 +487,9 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                               TikTok
                             </a>
                           )}
-                          {displayUser.linkedin && (
+                          {displayUser?.linkedin && (
                             <a
-                              href={displayUser.linkedin.startsWith('http') ? displayUser.linkedin : `https://linkedin.com/in/${displayUser.linkedin}`}
+                              href={displayUser?.linkedin?.startsWith('http') ? displayUser.linkedin : `https://linkedin.com/in/${displayUser?.linkedin}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="flex items-center gap-2 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
@@ -523,9 +498,9 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                               LinkedIn
                             </a>
                           )}
-                          {displayUser.website && (
+                          {displayUser?.website && (
                             <a
-                              href={displayUser.website.startsWith('http') ? displayUser.website : `https://${displayUser.website}`}
+                              href={displayUser?.website?.startsWith('http') ? displayUser.website : `https://${displayUser?.website}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="flex items-center gap-2 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
@@ -539,11 +514,11 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                     )}
 
                     {/* Travel Style */}
-                    {displayUser.travelStyle && displayUser.travelStyle.length > 0 && (
+                    {displayUser?.travelStyle && displayUser.travelStyle.length > 0 && (
                       <div>
                         <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Travel Style</h3>
                         <div className="flex flex-wrap gap-2">
-                          {displayUser.travelStyle.map((style, index) => (
+                          {displayUser?.travelStyle?.map((style, index) => (
                             <Badge key={index} variant="outline" className="border-orange-200 text-orange-800 dark:border-orange-800 dark:text-orange-200">
                               {style}
                             </Badge>
@@ -561,9 +536,9 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                     <CardTitle>Travel Plans</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {travelPlans.length > 0 ? (
+                    {Array.isArray(travelPlans) && travelPlans.length > 0 ? (
                       <div className="space-y-4">
-                        {travelPlans.map((plan: any) => (
+                        {travelPlans?.map((plan: any) => (
                           <div key={plan.id} className="border rounded-lg p-4">
                             <div className="flex items-start justify-between">
                               <div>
@@ -601,7 +576,7 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                     <CardTitle>Travel Photos</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {photoAlbums.length > 0 ? (
+                    {Array.isArray(photoAlbums) && photoAlbums.length > 0 ? (
                       <PhotoAlbumWidget 
                         userId={parseInt(profileUserId)} 
                         isOwnProfile={isOwnProfile}
@@ -621,9 +596,9 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                     <CardTitle>My Events</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {userEvents.length > 0 ? (
+                    {Array.isArray(userEvents) && userEvents.length > 0 ? (
                       <div className="space-y-4">
-                        {userEvents.map((event: any) => (
+                        {userEvents?.map((event: any) => (
                           <div key={event.id} className="border rounded-lg p-4 hover:shadow-sm transition-shadow">
                             <div className="flex justify-between items-start">
                               <div className="flex-1">
@@ -671,9 +646,9 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                   </CardHeader>
                   <CardContent>
                     <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                      {connections.length === 0 ? 
+                      {!Array.isArray(connections) || connections.length === 0 ? 
                         (isOwnProfile ? "Start connecting with other travelers and locals" : "No connections to show") :
-                        `${connections.length} connections`
+                        `${Array.isArray(connections) ? connections.length : 0} connections`
                       }
                     </div>
                   </CardContent>
