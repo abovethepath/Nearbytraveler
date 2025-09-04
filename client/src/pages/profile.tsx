@@ -8524,6 +8524,29 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       )}
                     />
 
+                    {/* Children Ages Input - Only show when have children is checked */}
+                    <FormField
+                      control={profileForm.control}
+                      name="childrenAges"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-900 dark:text-white">Children's Ages (if applicable)</FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              placeholder="e.g., 8, 12, 16 or 'None'"
+                              className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+                              maxLength={100}
+                            />
+                          </FormControl>
+                          <FormDescription className="text-xs text-gray-700 dark:text-gray-300">
+                            List ages separated by commas, or write "None" if no children
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
                   </div>
                 </div>
               )}
