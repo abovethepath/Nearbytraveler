@@ -35,6 +35,8 @@ import { SimpleAvatar } from "@/components/simple-avatar";
 import { PhotoAlbumWidget } from "@/components/photo-album-widget";
 import { VouchWidget } from "@/components/vouch-widget";
 import { LocationSharingSection } from "@/components/LocationSharingSection";
+import { ThingsIWantToDoSection } from "@/components/ThingsIWantToDoSection";
+import { MOST_POPULAR_INTERESTS } from "@shared/base-options";
 import type { User } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 
@@ -97,6 +99,12 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
   // Fetch countries visited
   const { data: countriesVisited = [] } = useQuery({
     queryKey: [`/api/users/${profileUserId}/passport-stamps`],
+    enabled: !!profileUserId,
+  });
+
+  // Fetch user's chatroom participation
+  const { data: userChatrooms = [] } = useQuery({
+    queryKey: [`/api/users/${profileUserId}/chatroom-participation`],
     enabled: !!profileUserId,
   });
 
@@ -185,7 +193,7 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                 </div>
 
                 {/* User Name and Location */}
-                <h1 className="text-2xl font-bold mb-2">{displayUser.name || displayUser.username}</h1>
+                <h1 className="text-2xl font-bold mb-2">{displayUser.username}</h1>
                 <p className="text-white/90 mb-4">
                   {displayUser.hometownCity}, {displayUser.hometownState && `${displayUser.hometownState}, `}{displayUser.hometownCountry}
                 </p>
@@ -268,16 +276,27 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
             {/* Top Action Bar for Desktop */}
             <div className="hidden lg:flex justify-between items-center mb-6">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{displayUser.name || displayUser.username}</h1>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{displayUser.username}</h1>
                 <p className="text-gray-600 dark:text-gray-400">
                   {displayUser.hometownCity}, {displayUser.hometownState && `${displayUser.hometownState}, `}{displayUser.hometownCountry}
                 </p>
               </div>
-              {isOwnProfile && (
-                <Button>
+              {isOwnProfile ? (
+                <Button onClick={() => window.location.href = '/edit-profile'}>
                   <Settings className="w-4 h-4 mr-2" />
                   Edit My Profile
                 </Button>
+              ) : (
+                <div className="flex gap-2">
+                  <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    Send Message
+                  </Button>
+                  <Button variant="outline">
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Connect
+                  </Button>
+                </div>
               )}
             </div>
 
@@ -641,6 +660,75 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                 </Card>
               </TabsContent>
             </Tabs>
+
+            {/* Top Choices Section - For non-business users */}
+            {displayUser.userType !== 'business' && (
+              <Card className="mt-6">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Star className="w-5 h-5 text-yellow-500" />
+                    Top Choices for Most Travelers
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2">
+                    {displayUser.interests?.filter((interest: string) => 
+                      MOST_POPULAR_INTERESTS.includes(interest)
+                    ).map((interest: string) => (
+                      <Badge key={interest} className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                        {interest}
+                      </Badge>
+                    )) || <p className="text-gray-500 text-sm">No top choices selected yet</p>}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Things I Want to Do Widget - For non-business users */}
+            {displayUser.userType !== 'business' && (
+              <ThingsIWantToDoSection
+                userId={effectiveUserId || 0}
+                isOwnProfile={isOwnProfile}
+              />
+            )}
+
+            {/* Chatrooms Section */}
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5 text-purple-500" />
+                  City Chatrooms
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">Active Chatrooms</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold">{userChatrooms?.length || 0}</span>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => window.location.href = '/city-chatrooms'}
+                    >
+                      View All
+                    </Button>
+                  </div>
+                </div>
+                {userChatrooms && userChatrooms.length > 0 && (
+                  <div className="mt-4 space-y-2">
+                    {userChatrooms.slice(0, 3).map((chatroom: any) => (
+                      <div key={chatroom.id} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <div>
+                          <p className="font-medium">{chatroom.name}</p>
+                          <p className="text-sm text-gray-500">{chatroom.city}, {chatroom.country}</p>
+                        </div>
+                        <Badge variant="secondary">{chatroom.memberCount || 0} members</Badge>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
 
             {/* Location Sharing for Own Profile */}
             {isOwnProfile && displayUser && (
