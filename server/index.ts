@@ -40,7 +40,6 @@ process.on('SIGINT', () => {
 
 // Debug environment variables
 console.log('Environment check:', {
-  SENDGRID_API_KEY: process.env.SENDGRID_API_KEY ? 'LOADED' : 'NOT FOUND',
   NODE_ENV: process.env.NODE_ENV
 });
 

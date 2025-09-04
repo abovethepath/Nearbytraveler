@@ -3594,7 +3594,6 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                       )}
                     </div>
                   </div>
-                </div>
             </div>
           </div>
 
@@ -3810,13 +3809,10 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                     </CardContent>
                   </Card>
                 </div>
-              );
-            })()}
-
           </div>
 
-          {/* MIDDLE CONTENT AREA - Main Profile Content */}
-          <div className="w-full lg:col-span-3 space-y-3 sm:space-y-4 lg:space-y-6">
+          {/* MAIN CONTENT AREA - Tab-based content */}
+          <div className="w-full lg:col-span-4 space-y-3 sm:space-y-4 lg:space-y-6">
             
             {/* About Section - Mobile Optimized */}
             <Card className="mt-2 relative overflow-visible">
