@@ -3604,56 +3604,80 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             <div className="flex space-x-6 sm:space-x-8">
             <button
               onClick={() => setActiveTab('contacts')}
-              className="text-sm sm:text-base font-medium px-3 py-2 bg-white border border-black text-black rounded-lg transition-colors hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700"
+              className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
+                activeTab === 'contacts'
+                  ? 'bg-blue-600 text-white border border-blue-600'
+                  : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
+              }`}
+              data-testid="tab-contacts"
             >
               Contacts
               {userConnections.length > 0 && (
-                <span className="ml-2 px-2 py-1 text-xs bg-blue-600 text-white rounded-full">
+                <span className="ml-2 px-2 py-1 text-xs bg-orange-600 text-white rounded-full">
                   {userConnections.length}
                 </span>
               )}
             </button>
             <button
               onClick={() => setActiveTab('photos')}
-              className="text-sm sm:text-base font-medium px-3 py-2 bg-white border border-black text-black rounded-lg transition-colors hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700"
+              className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
+                activeTab === 'photos'
+                  ? 'bg-blue-600 text-white border border-blue-600'
+                  : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
+              }`}
+              data-testid="tab-photos"
             >
               Photos
               {userPhotos?.length > 0 && (
-                <span className="ml-2 px-2 py-1 text-xs bg-blue-600 text-white rounded-full">
+                <span className="ml-2 px-2 py-1 text-xs bg-orange-600 text-white rounded-full">
                   {userPhotos.length}
                 </span>
               )}
             </button>
             <button
               onClick={() => setActiveTab('references')}
-              className="text-sm sm:text-base font-medium px-3 py-2 bg-white border border-black text-black rounded-lg transition-colors hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700"
+              className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
+                activeTab === 'references'
+                  ? 'bg-blue-600 text-white border border-blue-600'
+                  : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
+              }`}
+              data-testid="tab-references"
             >
               References
               {vouches?.length > 0 && (
-                <span className="ml-2 px-2 py-1 text-xs bg-blue-600 text-white rounded-full">
+                <span className="ml-2 px-2 py-1 text-xs bg-orange-600 text-white rounded-full">
                   {vouches.length}
                 </span>
               )}
             </button>
             <button
               onClick={() => setActiveTab('travel')}
-              className="text-sm sm:text-base font-medium px-3 py-2 bg-white border border-black text-black rounded-lg transition-colors hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700"
+              className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
+                activeTab === 'travel'
+                  ? 'bg-blue-600 text-white border border-blue-600'
+                  : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
+              }`}
+              data-testid="tab-travel"
             >
               Travel
               {travelPlans?.length > 0 && (
-                <span className="ml-2 px-2 py-1 text-xs bg-blue-600 text-white rounded-full">
+                <span className="ml-2 px-2 py-1 text-xs bg-orange-600 text-white rounded-full">
                   {travelPlans.length}
                 </span>
               )}
             </button>
             <button
               onClick={() => setActiveTab('countries')}
-              className="text-sm sm:text-base font-medium px-3 py-2 bg-white border border-black text-black rounded-lg transition-colors hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700"
+              className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
+                activeTab === 'countries'
+                  ? 'bg-blue-600 text-white border border-blue-600'
+                  : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
+              }`}
               data-testid="tab-countries"
             >
               Countries
               {countriesVisited?.length > 0 && (
-                <span className="ml-2 px-2 py-1 text-xs bg-blue-600 text-white rounded-full">
+                <span className="ml-2 px-2 py-1 text-xs bg-orange-600 text-white rounded-full">
                   {countriesVisited.length}
                 </span>
               )}
