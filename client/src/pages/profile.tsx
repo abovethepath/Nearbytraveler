@@ -614,6 +614,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [editingTravelPlan, setEditingTravelPlan] = useState<TravelPlan | null>(null);
   const [showCreateDeal, setShowCreateDeal] = useState(false);
+  const [activeTab, setActiveTab] = useState('about');
   const [deletingTravelPlan, setDeletingTravelPlan] = useState<TravelPlan | null>(null);
   const [selectedTravelPlan, setSelectedTravelPlan] = useState<TravelPlan | null>(null);
   const [showTravelPlanDetails, setShowTravelPlanDetails] = useState(false);
@@ -3805,7 +3806,79 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
           {/* MIDDLE CONTENT AREA - Main Profile Content */}
           <div className="w-full md:col-span-3 space-y-3 sm:space-y-4 lg:space-y-6">
             
-            {/* About Section - Mobile Optimized */}
+            {/* Couchsurfing-style Tab Navigation */}
+            <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+              <div className="border-b border-gray-200">
+                <nav className="flex space-x-0" aria-label="Profile sections">
+                  <button
+                    onClick={() => setActiveTab('about')}
+                    className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                      activeTab === 'about'
+                        ? 'border-blue-500 text-blue-600 bg-blue-50'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    About
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('photos')}
+                    className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                      activeTab === 'photos'
+                        ? 'border-blue-500 text-blue-600 bg-blue-50'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    Photos
+                    <span className="ml-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                      {userPhotos?.length || 0}
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('references')}
+                    className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                      activeTab === 'references'
+                        ? 'border-blue-500 text-blue-600 bg-blue-50'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    References
+                    <span className="ml-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      {userReferences?.length || 0}
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('connections')}
+                    className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                      activeTab === 'connections'
+                        ? 'border-blue-500 text-blue-600 bg-blue-50'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    Connections
+                    <span className="ml-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      {userConnections?.length || 0}
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('chatrooms')}
+                    className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                      activeTab === 'chatrooms'
+                        ? 'border-blue-500 text-blue-600 bg-blue-50'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    Chatrooms
+                    <span className="ml-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                      {userChatrooms?.length || 0}
+                    </span>
+                  </button>
+                </nav>
+              </div>
+            </div>
+
+            {/* Tab Content */}
+            {activeTab === 'about' && (
+            /* About Section - Mobile Optimized */
             <Card className="mt-2 relative overflow-visible">
               <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-4 lg:px-6 pt-3 sm:pt-4 lg:pt-6">
                 <div className="flex items-center justify-between w-full">
@@ -4068,6 +4141,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                 )}
               </CardContent>
             </Card>
+            )}
 
             {/* What You Have in Common - Consolidated Section */}
             {!isOwnProfile && currentUser && user?.id && (
@@ -6087,85 +6161,154 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
               </Card>
             )}
 
-
-
-            {/* Photo Gallery */}
-            <Card>
-              <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <CardTitle className="flex items-center gap-2">
-                  <Camera className="w-5 h-5" />
-                  Photos ({photos.length})
-                </CardTitle>
-                <div className="flex flex-wrap gap-2 w-full sm:w-auto">
-                  <Button 
-                    size="sm" 
-                    className="bg-blue-500 text-white hover:bg-blue-600 border-blue-500 flex-1 sm:flex-none text-xs sm:text-sm"
-                    onClick={() => setLocation('/photos')}
-                  >
-                    View Gallery
-                  </Button>
-                  {isOwnProfile && (
-                    <>
-                      <Button 
-                        size="sm" 
-                        onClick={() => setLocation('/upload-photos')}
-                        className="bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600 flex-1 sm:flex-none text-xs sm:text-sm"
-                      >
-                        Upload Photos
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        className="bg-blue-500 text-white hover:bg-blue-600 border-blue-500 flex-1 sm:flex-none text-xs sm:text-sm"
-                        onClick={() => document.getElementById('photo-upload')?.click()}
-                        disabled={uploadingPhoto}
-                      >
-                        {uploadingPhoto ? 'Uploading...' : 'Quick Add'}
-                      </Button>
-                    </>
+            {/* Photos Tab */}
+            {activeTab === 'photos' && (
+              <Card className="mt-2">
+                <CardHeader>
+                  <CardTitle className="text-lg font-bold">Photos ({userPhotos?.length || 0})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {userPhotos && userPhotos.length > 0 ? (
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {userPhotos.map((photo, index) => (
+                        <div
+                          key={photo.id}
+                          className="aspect-square cursor-pointer rounded-lg overflow-hidden relative group"
+                          onClick={() => setSelectedPhotoIndex(index)}
+                        >
+                          <img 
+                            src={photo.imageUrl} 
+                            alt={photo.caption || 'Photo'}
+                            className="w-full h-full object-cover hover:scale-105 transition-transform"
+                          />
+                          {isOwnProfile && (
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              className="absolute top-2 right-2 w-6 h-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                // handleDeletePhoto(photo.id);
+                              }}
+                            >
+                              ×
+                            </Button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 text-gray-500">
+                      <Camera className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                      <p>No photos yet</p>
+                      {isOwnProfile && (
+                        <p className="text-sm mt-2">Start sharing your memories!</p>
+                      )}
+                    </div>
                   )}
-                </div>
-              </CardHeader>
-              <CardContent>
-                {photos.length > 0 ? (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {photos.map((photo, index) => (
-                      <div
-                        key={photo.id}
-                        className="aspect-square cursor-pointer rounded-lg overflow-hidden relative group"
-                        onClick={() => setSelectedPhotoIndex(index)}
-                      >
-                        <img 
-                          src={photo.imageUrl} 
-                          alt={photo.caption || 'Travel photo'}
-                          className="w-full h-full object-cover"
-                        />
-                        {isOwnProfile && (
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            className="absolute top-2 right-2 w-8 h-8 p-0"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeletePhoto(photo.id);
-                            }}
-                          >
-                            ×
-                          </Button>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12 text-gray-500">
-                    <Camera className="w-12 h-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
-                    <p className="text-gray-600 dark:text-white">No photos yet</p>
-                    {isOwnProfile && (
-                      <p className="text-sm text-gray-600 dark:text-white">Share your travel memories!</p>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* References Tab */}
+            {activeTab === 'references' && (
+              <Card className="mt-2">
+                <CardHeader>
+                  <CardTitle className="text-lg font-bold">References ({userReferences?.length || 0})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {userReferences && userReferences.length > 0 ? (
+                    <div className="space-y-4">
+                      {userReferences.map((reference, index) => (
+                        <div key={index} className="border-l-4 border-blue-500 pl-4 py-2">
+                          <p className="text-gray-700 italic">"{reference.content}"</p>
+                          <p className="text-sm text-gray-500 mt-2">— {reference.reviewerName}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 text-gray-500">
+                      <MessageCircle className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                      <p>No references yet</p>
+                      {!isOwnProfile && (
+                        <p className="text-sm mt-2">Be the first to write a reference!</p>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Connections Tab */}
+            {activeTab === 'connections' && (
+              <Card className="mt-2">
+                <CardHeader>
+                  <CardTitle className="text-lg font-bold">Connections ({userConnections?.length || 0})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {userConnections && userConnections.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {userConnections.map((connection) => (
+                        <div key={connection.id} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50">
+                          <Avatar className="w-12 h-12">
+                            <AvatarImage src={connection.profileImage} alt={connection.username} />
+                            <AvatarFallback>{connection.username?.charAt(0)?.toUpperCase()}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <h4 className="font-medium">{connection.username}</h4>
+                            <p className="text-sm text-gray-500">{connection.location}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 text-gray-500">
+                      <Users className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                      <p>No connections yet</p>
+                      {isOwnProfile && (
+                        <p className="text-sm mt-2">Start connecting with other travelers!</p>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Chatrooms Tab */}
+            {activeTab === 'chatrooms' && (
+              <Card className="mt-2">
+                <CardHeader>
+                  <CardTitle className="text-lg font-bold">Chatrooms ({userChatrooms?.length || 0})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {userChatrooms && userChatrooms.length > 0 ? (
+                    <div className="space-y-3">
+                      {userChatrooms.map((chatroom) => (
+                        <div key={chatroom.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                             onClick={() => setLocation(`/city-chatrooms?city=${encodeURIComponent(chatroom.city)}&room=${chatroom.id}`)}>
+                          <div className="flex-1">
+                            <h4 className="font-medium">{chatroom.name}</h4>
+                            <p className="text-sm text-gray-500">{chatroom.city}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm text-gray-500">{chatroom.memberCount} members</p>
+                            <ChevronRight className="w-4 h-4 text-gray-400" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 text-gray-500">
+                      <MessageCircle className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                      <p>No chatrooms yet</p>
+                      {isOwnProfile && (
+                        <p className="text-sm mt-2">Join chatrooms to connect with locals!</p>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
           </div>
 
