@@ -3512,14 +3512,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         {/* Always show hometown */}
                         <div className="flex items-center gap-2 text-lg font-medium text-black">
                           <MapPin className="w-5 h-5 text-blue-600" />
-                          <span>NEARBY LOCAL {hometown}</span>
+                          <span>Nearby Local {hometown}</span>
                         </div>
                         
                         {/* Show travel status if currently traveling, using database fields */}
                         {user.isCurrentlyTraveling && user.travelDestination && (
                           <div className="flex items-center gap-2 text-lg font-medium text-black">
                             <Plane className="w-5 h-5 text-orange-600" />
-                            <span>NEARBY TRAVELER ({user.travelDestination})</span>
+                            <span>Nearby Traveler {user.travelDestination}</span>
                           </div>
                         )}
                       </>
