@@ -4578,10 +4578,10 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                                       setEditFormData({ ...editFormData, interests: newInterests })
                                     );
                                   }}
-                                  className={`inline-flex items-center justify-center h-7 sm:h-8 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                  className={`inline-flex items-center justify-center h-7 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none border transition-all ${
                                     isSelected
-                                      ? 'bg-green-600 text-white font-bold transform scale-105 shadow-lg'
-                                      : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600 shadow-sm'
+                                      ? 'bg-green-600 text-white font-bold transform scale-105 shadow-lg border-green-600'
+                                      : 'bg-white dark:bg-gray-700 text-black dark:text-white border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
                                   }`}
                                 >
                                   {item}
@@ -4920,7 +4920,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                   </h4>
                   <div className="flex flex-wrap gap-2 sm:gap-3 p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
                     {MOST_POPULAR_INTERESTS.slice(0, 12).map((item) => (
-                      <div key={item} className="inline-flex items-center justify-center h-7 sm:h-8 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium whitespace-nowrap leading-none bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0 shadow-sm">
+                      <div key={item} className="inline-flex items-center justify-center h-7 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none bg-white dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600">
                         {item}
                       </div>
                     ))}
