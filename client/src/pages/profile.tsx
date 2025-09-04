@@ -5736,7 +5736,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Photo Gallery */}
             {activeTab === 'photos' && (
-            <div className="space-y-4">
+            <div className="space-y-4 mt-6" style={{zIndex: 10, position: 'relative'}}>
               <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700">
                 <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white dark:bg-gray-900">
                   <CardTitle className="flex items-center gap-2 text-black dark:text-white">
@@ -5862,7 +5862,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Countries Tab */}
             {activeTab === 'countries' && (
-              <div className="space-y-4">
+              <div className="space-y-4 mt-6" style={{zIndex: 10, position: 'relative'}}>
                 <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
                   <CardHeader className="bg-white dark:bg-gray-900">
                     <div className="flex items-center justify-between">
@@ -6080,8 +6080,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
 
             {/* Current Connections Widget - Visible to all - MOVED UNDER TRAVEL STATS */}
+            {console.log('🔧 TAB CONTENT DEBUG:', { activeTab, showingContacts: activeTab === 'contacts' })}
             {activeTab === 'contacts' && (
-            <div className="space-y-4">
+            <div className="space-y-4 mt-6" style={{zIndex: 10, position: 'relative'}}>
               <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700">
                 <CardHeader className="bg-white dark:bg-gray-900">
                   <CardTitle className="flex items-center justify-between text-black dark:text-white">
@@ -6718,7 +6719,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* References Widget */}
             {activeTab === 'references' && user?.id && (
-              <div className="space-y-4">
+              <div className="space-y-4 mt-6" style={{zIndex: 10, position: 'relative'}}>
                 <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
                   <CardHeader className="bg-white dark:bg-gray-900">
                     <CardTitle className="flex items-center gap-2 text-black dark:text-white">
