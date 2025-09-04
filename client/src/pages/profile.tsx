@@ -267,7 +267,7 @@ interface ExtendedUser extends User {
   specialOffers?: string;
   targetCustomers?: string;
   certifications?: string;
-  customInterests: string;
+  customInterests?: string;
   customActivities?: string;
   customEvents?: string;
 }
@@ -882,7 +882,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   }, [currentUser, setAuthUser]);
   
   const effectiveUserId = propUserId || currentUser?.id;
-  const isOwnProfile = propUserId ? (parseInt(propUserId) === currentUser?.id) : true;
+  const isOwnProfile = propUserId ? (parseInt(propUserId.toString()) === currentUser?.id) : true;
   
   console.log('🔧 AUTHENTICATION STATE:', {
     currentUserId: currentUser?.id,
@@ -902,7 +902,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     comparison: `${propUserId} === ${currentUser?.id}`,
     comparisonResult: propUserId === currentUser?.id,
     parsedComparison: `parseInt(${propUserId}) === ${currentUser?.id}`,
-    parsedResult: parseInt(propUserId || '') === currentUser?.id
+    parsedResult: parseInt(propUserId?.toString() || '0') === currentUser?.id
   });
   
 
@@ -1300,9 +1300,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       zipCode: "",
       phoneNumber: "",
       websiteUrl: "",
-      // Owner/Internal Contact Information
-      ownerName: "",
-      ownerPhone: "",
       travelStyle: [],
       interests: [],
       activities: [],
@@ -1435,7 +1432,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           // interests: user.interests || [],
           // activities: user.activities || [],
           // events: user.events || [],
-          customInterests: (user as any).customInterests || (user as any).custom_interests || "",
+          // customInterests: (user as any).customInterests || (user as any).custom_interests || "",
           customActivities: (user as any).customActivities || (user as any).custom_activities || "",
           customEvents: (user as any).customEvents || (user as any).custom_events || "",
         });
@@ -1480,8 +1477,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           hometownCity: user.hometownCity || "",
           hometownState: user.hometownState || "",
           hometownCountry: user.hometownCountry || "",
-          dateOfBirth: user.dateOfBirth ? 
-            (typeof user.dateOfBirth === 'string' ? user.dateOfBirth : new Date(user.dateOfBirth).toISOString().split('T')[0]) : "",
           travelStyle: user.travelStyle || [],
           city: user.city || "",
           state: user.state || "",
@@ -2972,12 +2967,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         ...data,
         isVeteran: !!data.isVeteran,
         isActiveDuty: !!data.isActiveDuty,
-        isMinorityOwned: !!data.isMinorityOwned,
-        isFemaleOwned: !!data.isFemaleOwned,
-        isLGBTQIAOwned: !!data.isLGBTQIAOwned,
-        showMinorityOwned: data.showMinorityOwned !== false,
-        showFemaleOwned: data.showFemaleOwned !== false,
-        showLGBTQIAOwned: data.showLGBTQIAOwned !== false,
+        isMinorityOwned: !!(data as any).isMinorityOwned,
+        isFemaleOwned: !!(data as any).isFemaleOwned,
+        isLGBTQIAOwned: !!(data as any).isLGBTQIAOwned,
+        showMinorityOwned: (data as any).showMinorityOwned !== false,
+        showFemaleOwned: (data as any).showFemaleOwned !== false,
+        showLGBTQIAOwned: (data as any).showLGBTQIAOwned !== false,
       } : {
         ...data,
         // Only include traveler fields if they exist in the data
@@ -2987,12 +2982,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         // Always include veteran status fields
         isVeteran: !!data.isVeteran,
         isActiveDuty: !!data.isActiveDuty,
-        isMinorityOwned: !!data.isMinorityOwned,
-        isFemaleOwned: !!data.isFemaleOwned,
-        isLGBTQIAOwned: !!data.isLGBTQIAOwned,
-        showMinorityOwned: data.showMinorityOwned !== false,
-        showFemaleOwned: data.showFemaleOwned !== false,
-        showLGBTQIAOwned: data.showLGBTQIAOwned !== false,
+        isMinorityOwned: !!(data as any).isMinorityOwned,
+        isFemaleOwned: !!(data as any).isFemaleOwned,
+        isLGBTQIAOwned: !!(data as any).isLGBTQIAOwned,
+        showMinorityOwned: (data as any).showMinorityOwned !== false,
+        showFemaleOwned: (data as any).showFemaleOwned !== false,
+        showLGBTQIAOwned: (data as any).showLGBTQIAOwned !== false,
       };
       
       console.log('🔥 MUTATION: Profile payload with explicit booleans:', payload);
