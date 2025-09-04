@@ -3445,7 +3445,13 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
           
           {/* LEFT SIDEBAR - Couchsurfing Style (Profile Info) */}
           <div className="w-full lg:col-span-1 space-y-3 sm:space-y-4 lg:space-y-6">
-            <div>
+            {(() => {
+              // Calculate travel status for Couchsurfing layout
+              const currentTravelDestination = getCurrentTravelDestination(travelPlans || []);
+              const isCurrentlyTraveling = !!currentTravelDestination;
+              
+              return (
+                <>
                   {/* COMPLETE COUCHSURFING SIDEBAR - All in green */}
                   <div className="bg-gradient-to-br from-green-500 to-green-600 p-8 text-white border-0 rounded-lg shadow-lg">
                     {/* Large Profile Photo */}
@@ -3594,7 +3600,10 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                       )}
                     </div>
                   </div>
-            </div>
+                </>
+              );
+            })()}
+
           </div>
 
           {/* MAIN CONTENT AREA - Tab-based content */}
@@ -3808,11 +3817,15 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                       </div>
                     </CardContent>
                   </Card>
-                </div>
+
+                </>
+              );
+            })()}
+
           </div>
 
-          {/* MAIN CONTENT AREA - Tab-based content */}
-          <div className="w-full lg:col-span-4 space-y-3 sm:space-y-4 lg:space-y-6">
+          {/* MIDDLE CONTENT AREA - Main Profile Content */}
+          <div className="w-full lg:col-span-3 space-y-3 sm:space-y-4 lg:space-y-6">
             
             {/* About Section - Mobile Optimized */}
             <Card className="mt-2 relative overflow-visible">
@@ -6387,6 +6400,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
 
         </div>
       </div>
+    </div>
     </div>
   );
 };
