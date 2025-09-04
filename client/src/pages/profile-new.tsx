@@ -200,29 +200,10 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                   )}
                 </div>
 
-                {/* User Name and Location */}
+                {/* User Name and Type */}
                 <h1 className="text-2xl font-bold mb-2">{displayUser.username}</h1>
-                
-                {/* User Type Badge */}
-                <div className="mb-3">
-                  <Badge 
-                    variant="secondary" 
-                    className={`${
-                      displayUser.userType === 'traveler'
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
-                        : displayUser.userType === 'business'
-                        ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
-                        : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
-                    }`}
-                  >
-                    {displayUser.userType === 'traveler' ? 'Nearby Traveler' : 
-                     displayUser.userType === 'business' ? 'Business User' : 
-                     'Nearby Local'}
-                  </Badge>
-                </div>
-                
                 <p className="text-white/90 mb-4">
-                  {displayUser.hometownCity}, {displayUser.hometownState && `${displayUser.hometownState}, `}{displayUser.hometownCountry}
+                  {displayUser.userType === 'local' ? 'Nearby Local' : displayUser.userType === 'traveler' ? 'Nearby Traveler' : 'Business User'} • {displayUser.hometownCity}
                 </p>
 
                 {/* Action Buttons */}
