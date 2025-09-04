@@ -6066,4 +6066,216 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   );
 };
 
+// Event Organizer Hub Section Component
+function EventOrganizerHubSection({ userId }: { userId: number }) {
+  const { toast } = useToast();
+  
+  // Fetch user events
+  const { data: userEvents = [], isLoading } = useQuery({
+    queryKey: [`/api/events/organizer/${userId}`],
+    enabled: !!userId,
+  });
+
+  // Calculate event statistics
+  const totalEvents = userEvents.length;
+  const totalRSVPs = userEvents.reduce((sum: number, event: any) => sum + (event.participantCount || 0), 0);
+  const upcomingEvents = userEvents.filter((event: any) => new Date(event.date) >= new Date()).length;
+  const avgRSVPs = totalEvents > 0 ? Math.round((totalRSVPs / totalEvents) * 10) / 10 : 0;
+
+  // Generate Instagram post for an event
+  const generateInstagramPost = (event: any) => {
+    const eventDate = new Date(event.date).toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    
+    const instagramText = `🎉 ${event.title}\n\n📅 ${eventDate}\n📍 ${event.venue || 'Location TBD'}\n\n${event.description}\n\n#${event.city?.replace(/\s+/g, '')}Events #Community #${event.category?.replace(/\s+/g, '')} #Meetup\n\nRSVP: ${window.location.origin}/events/${event.id}`;
+    
+    navigator.clipboard.writeText(instagramText);
+    toast({
+      title: "Instagram post copied!",
+      description: "The Instagram-optimized post has been copied to your clipboard.",
+    });
+  };
+
+  // Duplicate event function
+  const duplicateEvent = (event: any) => {
+    const duplicateData = {
+      title: `${event.title} (Copy)`,
+      description: event.description,
+      venue: event.venue,
+      streetAddress: event.streetAddress,
+      city: event.city,
+      state: event.state,
+      country: event.country,
+      category: event.category,
+      tags: event.tags,
+      requirements: event.requirements,
+    };
+    
+    // Store in localStorage for the create event page
+    localStorage.setItem('duplicateEventData', JSON.stringify(duplicateData));
+    
+    // Navigate to create event page
+    window.location.href = '/create-event';
+    
+    toast({
+      title: "Event template ready",
+      description: "Event details have been copied. Complete the new event details.",
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="text-center text-gray-500">Loading your events...</div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardContent className="p-0">
+        {/* Event Organizer Hub Header */}
+        <div className="bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 p-4 sm:p-6 border-b border-blue-200 dark:border-blue-700">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
+            <div>
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white flex items-center">
+                <Calendar className="w-5 h-5 mr-2 text-blue-600" />
+                Event Organizer Hub
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                Create, manage, and promote your events with powerful organizer tools
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button 
+                onClick={() => window.location.href = '/create-event'}
+                className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Create New Event
+              </Button>
+            </div>
+          </div>
+          
+          {/* Event Organizer Quick Stats */}
+          {totalEvents > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4 pt-4 border-t border-blue-200 dark:border-blue-700">
+              <div className="text-center">
+                <div className="text-lg sm:text-xl font-bold text-blue-600">
+                  {totalEvents}
+                </div>
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Total Events</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg sm:text-xl font-bold text-green-600">
+                  {totalRSVPs}
+                </div>
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Total RSVPs</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg sm:text-xl font-bold text-orange-600">
+                  {upcomingEvents}
+                </div>
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Upcoming</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg sm:text-xl font-bold text-purple-600">
+                  {avgRSVPs}
+                </div>
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Avg RSVPs</div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Events List */}
+        <div className="p-4 sm:p-6">
+          {userEvents.length > 0 ? (
+            <div className="space-y-4">
+              {userEvents.map((event: any) => (
+                <div key={event.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-sm transition-shadow">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-3 sm:space-y-0">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-gray-900 dark:text-white">{event.title}</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{event.description}</p>
+                      <div className="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400 mt-2">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          {new Date(event.date).toLocaleDateString()}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3" />
+                          {event.venue || event.city}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Users className="w-3 h-3" />
+                          {event.participantCount || 0} RSVPs
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => generateInstagramPost(event)}
+                        className="text-xs h-8 px-3 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white border-0"
+                        title="Copy Instagram post"
+                      >
+                        <Share2 className="w-3 h-3 mr-1" />
+                        Instagram
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => duplicateEvent(event)}
+                        className="text-xs h-8 px-3 bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-0"
+                        title="Duplicate this event"
+                      >
+                        <Calendar className="w-3 h-3 mr-1" />
+                        Duplicate
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => window.location.href = `/manage-event/${event.id}`}
+                        className="text-xs h-8 px-3"
+                        title="Manage event"
+                      >
+                        <Edit className="w-3 h-3 mr-1" />
+                        Manage
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No events yet</h3>
+              <p className="text-gray-600 dark:text-gray-300 mb-6">
+                Start organizing events to connect with your community
+              </p>
+              <Button 
+                onClick={() => window.location.href = '/create-event'}
+                className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Create Your First Event
+              </Button>
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default ProfileContent;
