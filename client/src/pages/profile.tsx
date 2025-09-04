@@ -6050,6 +6050,69 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </div>
             )}
 
+            {/* Travel Intent Widget in Right Sidebar */}
+            {user?.userType !== 'business' && (
+              <Card className="mt-4 border-purple-200 dark:border-purple-800 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-purple-600" />
+                    <span className="text-sm">Travel Intent</span>
+                    {isOwnProfile && (
+                      <Button
+                        size="sm"
+                        onClick={() => setLocation('/travel-quiz')}
+                        className="ml-auto bg-purple-600 hover:bg-purple-700 text-white border-0"
+                      >
+                        <Edit className="w-3 h-3" />
+                      </Button>
+                    )}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm">
+                  <div className="space-y-2">
+                    <div><span className="font-medium">Why:</span> {user?.travelWhy || 'adventure'}</div>
+                    <div><span className="font-medium">Style:</span> {user?.travelHow || 'spontaneous'}</div>
+                    <div><span className="font-medium">Budget:</span> {user?.travelBudget || 'moderate'}</div>
+                    <div><span className="font-medium">Group:</span> {user?.travelGroup || 'couple'}</div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Photo Gallery Widget in Right Sidebar */}
+            <Card className="mt-4">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Camera className="w-5 h-5" />
+                  <span className="text-sm">Photos ({photos.length})</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {photos.length > 0 ? (
+                  <div className="grid grid-cols-2 gap-2">
+                    {photos.slice(0, 4).map((photo, index) => (
+                      <div key={photo.id} className="aspect-square rounded overflow-hidden">
+                        <img 
+                          src={photo.imageUrl} 
+                          alt={photo.caption || 'Photo'}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 dark:text-gray-400">No photos yet</p>
+                )}
+                <Button 
+                  size="sm" 
+                  className="w-full mt-3 bg-blue-500 hover:bg-blue-600"
+                  onClick={() => setLocation('/photos')}
+                >
+                  View All Photos
+                </Button>
+              </CardContent>
+            </Card>
+
             {/* Connection Requests Widget - Action item for right sidebar */}
             {isOwnProfile && connectionRequests.length > 0 && (
               <Card>
@@ -6715,121 +6778,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             )}
 
 
-            {/* Travel Intent Widget - TangoTrips-inspired */}
-            {user?.userType !== 'business' && (
-              <Card className="hover:shadow-lg transition-all duration-200 hover:border-purple-300 dark:hover:border-purple-600 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-purple-600" />
-                    Travel Intent & Style
-                    {isOwnProfile && (
-                      <Button
-                        size="sm"
-                        onClick={() => setLocation('/travel-quiz')}
-                        className="ml-auto bg-purple-600 hover:bg-purple-700 text-white border-0"
-                      >
-                        <Edit className="w-3 h-3 mr-1" />
-                        Update
-                      </Button>
-                    )}
-                  </CardTitle>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">
-                    What drives your travel and how you like to explore
-                  </p>
-                </CardHeader>
-                <CardContent>
-                  {isOwnProfile ? (
-                    <div className="space-y-4">
-                      {/* Display Current Travel Intent */}
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Why you travel</Label>
-                          <div className="mt-1 p-2 rounded border bg-white dark:bg-gray-800">
-                            <span className="text-sm text-gray-900 dark:text-white">
-                              {user?.travelWhy || 'Not set'}
-                            </span>
-                          </div>
-                        </div>
-                        <div>
-                          <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Travel style</Label>
-                          <div className="mt-1 p-2 rounded border bg-white dark:bg-gray-800">
-                            <span className="text-sm text-gray-900 dark:text-white">
-                              {user?.travelHow || 'Not set'}
-                            </span>
-                          </div>
-                        </div>
-                        <div>
-                          <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Budget range</Label>
-                          <div className="mt-1 p-2 rounded border bg-white dark:bg-gray-800">
-                            <span className="text-sm text-gray-900 dark:text-white">
-                              {user?.travelBudget || 'Not set'}
-                            </span>
-                          </div>
-                        </div>
-                        <div>
-                          <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Group type</Label>
-                          <div className="mt-1 p-2 rounded border bg-white dark:bg-gray-800">
-                            <span className="text-sm text-gray-900 dark:text-white">
-                              {user?.travelGroup || 'Not set'}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setLocation('/travel-quiz')}
-                        className="w-full border-purple-500 text-purple-600 hover:bg-purple-50 dark:border-purple-400 dark:text-purple-400"
-                      >
-                        Update Travel Intent
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      <div className="grid grid-cols-2 gap-3 text-sm">
-                        <div>
-                          <span className="font-medium text-gray-700 dark:text-gray-300">Why:</span>
-                          <span className="ml-2 text-gray-900 dark:text-white">
-                            {user?.travelWhy ? user.travelWhy.charAt(0).toUpperCase() + user.travelWhy.slice(1) : 'Not shared'}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="font-medium text-gray-700 dark:text-gray-300">Style:</span>
-                          <span className="ml-2 text-gray-900 dark:text-white">
-                            {user?.travelHow ? user.travelHow.charAt(0).toUpperCase() + user.travelHow.slice(1) : 'Not shared'}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="font-medium text-gray-700 dark:text-gray-300">Budget:</span>
-                          <span className="ml-2 text-gray-900 dark:text-white">
-                            {user?.travelBudget ? user.travelBudget.charAt(0).toUpperCase() + user.travelBudget.slice(1) : 'Not shared'}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="font-medium text-gray-700 dark:text-gray-300">Group:</span>
-                          <span className="ml-2 text-gray-900 dark:text-white">
-                            {user?.travelGroup ? user.travelGroup.charAt(0).toUpperCase() + user.travelGroup.slice(1) : 'Not shared'}
-                          </span>
-                        </div>
-                      </div>
-                      
-                      {/* Compatibility indicator when viewing other profiles */}
-                      {compatibilityData?.travelStyleCompatibility && (
-                        <div className="mt-3 p-2 rounded bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700">
-                          <div className="flex items-center gap-2">
-                            <Heart className="w-4 h-4 text-green-600" />
-                            <span className="text-sm font-medium text-green-700 dark:text-green-300">
-                              {compatibilityData.travelStyleCompatibility}% Travel Style Match
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
 
 
 
