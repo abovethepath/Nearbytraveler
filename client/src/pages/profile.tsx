@@ -3465,10 +3465,10 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
       
       {/* COUCHSURFING-STYLE LAYOUT - Left sidebar + Right content */}
       <div className="w-full max-w-7xl mx-auto pb-20 sm:pb-4 px-1 sm:px-4 lg:px-6 mt-2 overflow-x-hidden">
-        <div className="flex flex-col lg:grid lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-6">
+        <div className="flex flex-col md:grid md:grid-cols-5 gap-3 sm:gap-4 lg:gap-6">
           
           {/* LEFT SIDEBAR - Couchsurfing Style (Profile Info) */}
-          <div className="w-full lg:col-span-1 space-y-3 sm:space-y-4 lg:space-y-6">
+          <div className="w-full md:col-span-1 space-y-3 sm:space-y-4 lg:space-y-6">
             {(() => {
               // Calculate travel status for Couchsurfing layout
               const currentTravelDestination = getCurrentTravelDestination(travelPlans || []);
@@ -3795,7 +3795,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
           </div>
 
           {/* MIDDLE CONTENT AREA - Main Profile Content */}
-          <div className="w-full lg:col-span-3 space-y-3 sm:space-y-4 lg:space-y-6">
+          <div className="w-full md:col-span-3 space-y-3 sm:space-y-4 lg:space-y-6">
             
             {/* About Section - Mobile Optimized */}
             <Card className="mt-2 relative overflow-visible">
@@ -6162,7 +6162,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
           </div>
 
           {/* RIGHT SIDEBAR - Action Widgets */}
-          <div className="w-full lg:col-span-1 space-y-3 sm:space-y-4 lg:space-y-6">
+          <div className="w-full md:col-span-1 space-y-3 sm:space-y-4 lg:space-y-6">
             {/* Quick Meetup Widget - Only show for own profile (travelers/locals only, NOT business) */}
             {isOwnProfile && user && user.userType !== 'business' && (
               <div>
