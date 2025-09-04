@@ -142,8 +142,8 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                 {/* Profile Photo */}
                 <div className="relative mb-4">
                   <SimpleAvatar
-                    user={user}
-                    size="large"
+                    user={displayUser}
+                    size="xl"
                     className="w-32 h-32 mx-auto border-4 border-white/20"
                   />
                   {isOwnProfile && (
