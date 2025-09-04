@@ -3533,21 +3533,27 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* CTAs — wrap on mobile */}
             {!isOwnProfile ? (
-              <div className="flex items-center justify-between gap-3 flex-wrap min-w-0">
-                <Button className="bg-orange-500 hover:bg-orange-600 text-white border-0 w-full sm:w-auto" onClick={handleMessage}>
+              <div className="flex items-center gap-3 flex-wrap min-w-0">
+                <Button 
+                  className="bg-orange-500 hover:bg-orange-600 text-white border-0 px-6 py-2 rounded-lg shadow-md transition-all"
+                  onClick={handleMessage}
+                  data-testid="button-message"
+                >
+                  <MessageCircle className="w-4 h-4 mr-2" />
                   Message
                 </Button>
                 <Button
-                  className={`w-full sm:w-auto ${getConnectButtonState().className}`}
+                  className={`px-6 py-2 rounded-lg shadow-md transition-all ${getConnectButtonState().className}`}
                   variant={getConnectButtonState().variant}
                   onClick={handleConnect}
                   disabled={getConnectButtonState().disabled}
+                  data-testid="button-connect"
                 >
                   {getConnectButtonState().text}
                 </Button>
               </div>
             ) : (
-              <div className="flex items-center justify-between gap-3 flex-wrap min-w-0">
+              <div className="flex items-center gap-3 flex-wrap min-w-0">
                 {user && (user.hometownCity || user.location) && (
                   <Button
                     onClick={() => {
@@ -3555,26 +3561,25 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
                     }}
                     className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700
-                               text-white border-0 shadow-lg rounded-full
+                               text-white border-0 shadow-md rounded-lg
                                inline-flex items-center justify-center gap-2
-                               w-full sm:w-auto max-w-full sm:max-w-none
-                               px-4 py-3 overflow-hidden break-words"
+                               px-6 py-2 transition-all"
+                    data-testid="button-chatrooms"
                   >
-                    <MessageCircle className="w-4 h-4 shrink-0" />
-                    <span className="truncate">Go to Chatrooms</span>
+                    <MessageCircle className="w-4 h-4" />
+                    <span>Go to Chatrooms</span>
                   </Button>
                 )}
                 <Button
                   onClick={() => setLocation('/share-qr')}
                   className="bg-gradient-to-r from-orange-600 to-blue-600 hover:from-orange-700 hover:to-blue-700
-                             text-white border-0 shadow-lg rounded-full
+                             text-white border-0 shadow-md rounded-lg
                              inline-flex items-center justify-center gap-2
-                             w-full sm:w-auto max-w-full sm:max-w-none
-                             px-4 py-3 overflow-hidden break-words"
-                  data-testid="button-share-qr-code"
+                             px-6 py-2 transition-all"
+                  data-testid="button-share-qr"
                 >
-                  <Share2 className="w-4 h-4 shrink-0" />
-                  <span className="truncate">Invite Friends</span>
+                  <Share2 className="w-4 h-4" />
+                  <span>Invite Friends</span>
                 </Button>
               </div>
             )}
@@ -3869,6 +3874,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </Card>
             )}
 
+            {/* Travel Plans and Business Information Card */}
+            <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm w-full overflow-hidden">
+              <CardContent className="p-4">
                 {/* Current Travel Plans - Show when user is currently traveling */}
                 {user?.userType !== 'business' && user?.isCurrentlyTraveling && user?.travelDestination && (
                   <div className="border-t pt-4 mt-4">
