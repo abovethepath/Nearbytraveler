@@ -96,6 +96,7 @@ import { ThingsIWantToDoSection } from "@/components/ThingsIWantToDoSection";
 
 
 import { PhotoAlbumWidget } from "@/components/photo-album-widget";
+import { PhotoGallerySection } from "@/components/PhotoGallerySection";
 import { MobileTopNav } from "@/components/MobileTopNav";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { SimpleAvatar } from "@/components/simple-avatar";
@@ -5887,83 +5888,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
 
 
-            {/* Photo Gallery */}
-            <Card>
-              <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <CardTitle className="flex items-center gap-2">
-                  <Camera className="w-5 h-5" />
-                  Photos ({photos.length})
-                </CardTitle>
-                <div className="flex flex-wrap gap-2 w-full sm:w-auto">
-                  <Button 
-                    size="sm" 
-                    className="bg-blue-500 text-white hover:bg-blue-600 border-blue-500 flex-1 sm:flex-none text-xs sm:text-sm"
-                    onClick={() => setLocation('/photos')}
-                  >
-                    View Gallery
-                  </Button>
-                  {isOwnProfile && (
-                    <>
-                      <Button 
-                        size="sm" 
-                        onClick={() => setLocation('/upload-photos')}
-                        className="bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600 flex-1 sm:flex-none text-xs sm:text-sm"
-                      >
-                        Upload Photos
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        className="bg-blue-500 text-white hover:bg-blue-600 border-blue-500 flex-1 sm:flex-none text-xs sm:text-sm"
-                        onClick={() => document.getElementById('photo-upload')?.click()}
-                        disabled={uploadingPhoto}
-                      >
-                        {uploadingPhoto ? 'Uploading...' : 'Quick Add'}
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent>
-                {photos.length > 0 ? (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {photos.map((photo, index) => (
-                      <div
-                        key={photo.id}
-                        className="aspect-square cursor-pointer rounded-lg overflow-hidden relative group"
-                        onClick={() => setSelectedPhotoIndex(index)}
-                      >
-                        <img 
-                          src={photo.imageUrl} 
-                          alt={photo.caption || 'Travel photo'}
-                          className="w-full h-full object-cover"
-                        />
-                        {isOwnProfile && (
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            className="absolute top-2 right-2 w-8 h-8 p-0"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeletePhoto(photo.id);
-                            }}
-                          >
-                            ×
-                          </Button>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12 text-gray-500">
-                    <Camera className="w-12 h-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
-                    <p className="text-gray-600 dark:text-white">No photos yet</p>
-                    {isOwnProfile && (
-                      <p className="text-sm text-gray-600 dark:text-white">Share your travel memories!</p>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            {/* Photo Gallery - Modularized Component */}
+            <PhotoGallerySection
+              photos={photos}
+              isOwnProfile={isOwnProfile}
+              uploadingPhoto={uploadingPhoto}
+              setSelectedPhotoIndex={setSelectedPhotoIndex}
+              handleDeletePhoto={handleDeletePhoto}
+            />
 
             {/* Event Organizer Hub - for ALL users who want to organize events */}
             {isOwnProfile && (
@@ -9453,22 +9385,8 @@ export default function EnhancedProfile(props: EnhancedProfileProps) {
   // ALWAYS use the massive profile with all features (Couchsurfing-style layout coming)
 
   return (
-    <div>
-      {/* Design Toggle Button - Made More Prominent */}
-      <div className="fixed top-20 right-4 z-[9999]">
-        <Button
-          onClick={() => setUseNewDesign(true)}
-          variant="outline"
-          size="lg"
-          className="bg-orange-500 text-white shadow-2xl border-4 border-orange-600 hover:bg-orange-600 hover:text-white font-bold text-lg px-6 py-3"
-        >
-          🎨 Try New Design
-        </Button>
-      </div>
-      
-      <ProfileErrorBoundary>
-        <ProfileContent {...props} />
-      </ProfileErrorBoundary>
-    </div>
+    <ProfileErrorBoundary>
+      <ProfileContent {...props} />
+    </ProfileErrorBoundary>
   );
 }
