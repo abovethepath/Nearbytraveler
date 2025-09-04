@@ -3603,7 +3603,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           <div className="flex items-center justify-between">
             <div className="flex space-x-6 sm:space-x-8">
             <button
-              onClick={() => setActiveTab('contacts')}
+              onClick={() => {
+                console.log('🔥 Contacts tab clicked, setting activeTab to contacts');
+                setActiveTab('contacts');
+                console.log('🔥 Current activeTab state:', activeTab);
+              }}
               className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
                 activeTab === 'contacts'
                   ? 'bg-blue-600 text-white border border-blue-600'
@@ -3619,7 +3623,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               )}
             </button>
             <button
-              onClick={() => setActiveTab('photos')}
+              onClick={() => {
+                console.log('🔥 Photos tab clicked, setting activeTab to photos');
+                setActiveTab('photos');
+                console.log('🔥 Current activeTab state:', activeTab);
+              }}
               className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
                 activeTab === 'photos'
                   ? 'bg-blue-600 text-white border border-blue-600'
@@ -6313,6 +6321,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
 
             {/* Current Connections Widget - Visible to all - MOVED UNDER TRAVEL STATS */}
+            {console.log('🔥 Rendering contacts section check:', { activeTab, isContacts: activeTab === 'contacts' })}
             {activeTab === 'contacts' && (
             <div className="space-y-4">
               <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700">
