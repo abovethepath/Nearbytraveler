@@ -6152,63 +6152,15 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
             )}
 
 
-            {/* Photo Albums Widget - Separate from Travel Memories */}
-            {user?.userType !== 'business' && (
-              <Card>
+
+            {/* Photos Tab */}
+            {activeTab === 'photos' && (
+              <Card className="mt-2">
                 <CardContent className="p-6">
                   <PhotoAlbumWidget 
                     userId={effectiveUserId || 0}
                     isOwnProfile={isOwnProfile}
                   />
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Photos Tab */}
-            {activeTab === 'photos' && (
-              <Card className="mt-2">
-                <CardHeader>
-                  <CardTitle className="text-lg font-bold">Photos ({userPhotos?.length || 0})</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {userPhotos && userPhotos.length > 0 ? (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                      {userPhotos.map((photo, index) => (
-                        <div
-                          key={photo.id}
-                          className="aspect-square cursor-pointer rounded-lg overflow-hidden relative group"
-                          onClick={() => setSelectedPhotoIndex(index)}
-                        >
-                          <img 
-                            src={photo.imageUrl} 
-                            alt={photo.caption || 'Photo'}
-                            className="w-full h-full object-cover hover:scale-105 transition-transform"
-                          />
-                          {isOwnProfile && (
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              className="absolute top-2 right-2 w-6 h-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                // handleDeletePhoto(photo.id);
-                              }}
-                            >
-                              ×
-                            </Button>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12 text-gray-500">
-                      <Camera className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                      <p>No photos yet</p>
-                      {isOwnProfile && (
-                        <p className="text-sm mt-2">Start sharing your memories!</p>
-                      )}
-                    </div>
-                  )}
                 </CardContent>
               </Card>
             )}
@@ -6252,7 +6204,8 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                   {userConnections && userConnections.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {userConnections.map((connection) => (
-                        <div key={connection.id} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50">
+                        <div key={connection.id} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                             onClick={() => setLocation(`/profile/${connection.username}`)}>
                           <Avatar className="w-12 h-12">
                             <AvatarImage src={connection.profileImage} alt={connection.username} />
                             <AvatarFallback>{connection.username?.charAt(0)?.toUpperCase()}</AvatarFallback>
@@ -6261,6 +6214,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                             <h4 className="font-medium">{connection.username}</h4>
                             <p className="text-sm text-gray-500">{connection.location}</p>
                           </div>
+                          <ChevronRight className="w-4 h-4 text-gray-400" />
                         </div>
                       ))}
                     </div>
