@@ -180,7 +180,7 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                   <SimpleAvatar
                     user={displayUser}
                     size="xl"
-                    className="w-32 h-32 mx-auto border-4 border-white/20"
+                    className="w-40 h-40 mx-auto border-4 border-white/20"
                   />
                   {isOwnProfile && (
                     <Button
