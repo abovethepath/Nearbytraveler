@@ -3540,6 +3540,85 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </>
               );
             })()}
+
+            {/* MOVED FROM RIGHT SIDEBAR - All widgets now under green section */}
+            
+            {/* Quick Meetup Widget - Only show for own profile (travelers/locals only, NOT business) */}
+            {isOwnProfile && user && user.userType !== 'business' && (
+              <div className="mt-6">
+                <QuickMeetupWidget city={user?.hometownCity ?? ''} profileUserId={user?.id} />
+              </div>
+            )}
+
+            {/* Quick Deals Widget for Business Users - Only show if deals exist */}
+            {isOwnProfile && user?.userType === 'business' && quickDeals && quickDeals.length > 0 && (
+              <div className="mt-6">
+                <QuickDealsWidget 
+                  city={user?.hometownCity ?? ''} 
+                  profileUserId={user?.id} 
+                  showCreateForm={showCreateDeal}
+                  onCloseCreateForm={() => {
+                    console.log('🔥 CLOSING create deal form');
+                    setShowCreateDeal(false);
+                  }}
+                />
+              </div>
+            )}
+
+            {/* Travel Stats - Hidden for business profiles */}
+            {user?.userType !== 'business' && (
+              <Card 
+                className="hover:shadow-lg transition-all duration-200 hover:border-orange-300"
+              >
+                <CardHeader>
+                  <CardTitle className="dark:text-white">Travel Stats</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 break-words overflow-hidden">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-orange-500" />
+                      Travel Aura
+                    </span>
+                    <span className="font-semibold text-orange-600 dark:text-orange-400">{user?.aura || 0}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300">Connections</span>
+                    <span className="font-semibold dark:text-white">{userConnections.length}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300">Active Travel Plans</span>
+                    <span className="font-semibold dark:text-white">{travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300">Cumulative Trips Taken</span>
+                    <span className="font-semibold dark:text-white">{travelPlans.filter(plan => plan.status === 'completed').length}</span>
+                  </div>
+                  <div 
+                    className="flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 -m-2 transition-colors"
+                    onClick={() => setShowChatroomList(true)}
+                  >
+                    <span className="text-gray-600 dark:text-gray-300">City Chatrooms</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold dark:text-white">{userChatrooms.length}</span>
+                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-blue-500" />
+                      <span className="hidden sm:inline">Vouches</span>
+                      <span className="sm:hidden">Vouches {(vouches?.length || 0) === 0 ? '• Get vouched by community' : ''}</span>
+                    </span>
+                    <span className="font-semibold text-blue-600 dark:text-blue-400">{vouches?.length || 0}</span>
+                  </div>
+                  {(vouches?.length || 0) === 0 && (
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6 hidden sm:block">
+                      Get vouched by vouched community members who know you personally
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           {/* RIGHT CONTENT AREA - Main Profile Content */}
@@ -5913,85 +5992,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             )}
           </div>
 
-          {/* Right Sidebar - Mobile Responsive */}
-          <div className="w-full lg:col-span-1 space-y-2 lg:space-y-4">
-            {/* Quick Meetup Widget - Only show for own profile (travelers/locals only, NOT business) */}
-            {isOwnProfile && user && user.userType !== 'business' && (
-              <div className="mt-6">
-                <QuickMeetupWidget city={user?.hometownCity ?? ''} profileUserId={user?.id} />
-              </div>
-            )}
-
-            {/* Quick Deals Widget for Business Users - Only show if deals exist */}
-            {isOwnProfile && user?.userType === 'business' && quickDeals && quickDeals.length > 0 && (
-              <div className="mt-6">
-                <QuickDealsWidget 
-                  city={user?.hometownCity ?? ''} 
-                  profileUserId={user?.id} 
-                  showCreateForm={showCreateDeal}
-                  onCloseCreateForm={() => {
-                    console.log('🔥 CLOSING create deal form');
-                    setShowCreateDeal(false);
-                  }}
-                />
-              </div>
-            )}
-
-
-            {/* Travel Stats - Hidden for business profiles - MOVED UP */}
-            {user?.userType !== 'business' && (
-              <Card 
-                className="hover:shadow-lg transition-all duration-200 hover:border-orange-300"
-              >
-                <CardHeader>
-                  <CardTitle className="dark:text-white">Travel Stats</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4 break-words overflow-hidden">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-orange-500" />
-                      Travel Aura
-                    </span>
-                    <span className="font-semibold text-orange-600 dark:text-orange-400">{user?.aura || 0}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">Connections</span>
-                    <span className="font-semibold dark:text-white">{userConnections.length}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">Active Travel Plans</span>
-                    <span className="font-semibold dark:text-white">{travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">Cumulative Trips Taken</span>
-                    <span className="font-semibold dark:text-white">{travelPlans.filter(plan => plan.status === 'completed').length}</span>
-                  </div>
-                  <div 
-                    className="flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 -m-2 transition-colors"
-                    onClick={() => setShowChatroomList(true)}
-                  >
-                    <span className="text-gray-600 dark:text-gray-300">City Chatrooms</span>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold dark:text-white">{userChatrooms.length}</span>
-                      <ChevronRight className="w-4 h-4 text-gray-400" />
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
-                      <Shield className="w-4 h-4 text-blue-500" />
-                      <span className="hidden sm:inline">Vouches</span>
-                      <span className="sm:hidden">Vouches {(vouches?.length || 0) === 0 ? '• Get vouched by community' : ''}</span>
-                    </span>
-                    <span className="font-semibold text-blue-600 dark:text-blue-400">{vouches?.length || 0}</span>
-                  </div>
-                  {(vouches?.length || 0) === 0 && (
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6 hidden sm:block">
-                      Get vouched by vouched community members who know you personally
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
 
 
 
