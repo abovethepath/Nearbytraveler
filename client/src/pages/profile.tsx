@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useContext, useEffect } from "react";
+import ProfileNew from "./profile-new";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 // Removed goBackProperly import
@@ -9453,11 +9454,31 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
   );
 }
 
-// Main export with error boundary
+// Main export with design toggle
 export default function EnhancedProfile(props: EnhancedProfileProps) {
+  const [useNewDesign, setUseNewDesign] = useState(false);
+
+  if (useNewDesign) {
+    return <ProfileNew userId={props.userId} />;
+  }
+
   return (
-    <ProfileErrorBoundary>
-      <ProfileContent {...props} />
-    </ProfileErrorBoundary>
+    <div>
+      {/* Design Toggle Button */}
+      <div className="fixed top-4 right-4 z-50">
+        <Button
+          onClick={() => setUseNewDesign(true)}
+          variant="outline"
+          size="sm"
+          className="bg-white dark:bg-gray-800 shadow-lg border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
+        >
+          Try New Design
+        </Button>
+      </div>
+      
+      <ProfileErrorBoundary>
+        <ProfileContent {...props} />
+      </ProfileErrorBoundary>
+    </div>
   );
 }
