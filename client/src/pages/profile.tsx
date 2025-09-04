@@ -3832,10 +3832,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                     <span className="font-semibold">About</span>
                   </button>
                   <button
-                    onClick={() => {
-                      console.log('🔍 CLICKING PHOTOS TAB');
-                      setActiveTab('photos');
-                    }}
+                    onClick={() => setActiveTab('photos')}
                     className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors flex flex-col items-center ${
                       activeTab === 'photos'
                         ? 'border-blue-500 text-blue-600 bg-blue-50'
@@ -3883,7 +3880,6 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
             </div>
 
             {/* Tab Content */}
-            {console.log('🔍 ACTIVE TAB:', activeTab)}
             {activeTab === 'about' && (
             /* About Section - Mobile Optimized */
             <Card className="mt-2 relative overflow-visible">
@@ -4148,6 +4144,120 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                 )}
               </CardContent>
             </Card>
+            )}
+
+            {/* Photos Tab */}
+            {activeTab === 'photos' && (
+              <Card className="mt-2">
+                <CardContent className="p-6">
+                  <PhotoAlbumWidget 
+                    userId={effectiveUserId || 0}
+                    isOwnProfile={isOwnProfile}
+                  />
+                </CardContent>
+              </Card>
+            )}
+
+            {/* References Tab */}
+            {activeTab === 'references' && (
+              <Card className="mt-2">
+                <CardHeader>
+                  <CardTitle className="text-lg font-bold">References ({userReferences?.length || 0})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {userReferences && userReferences.length > 0 ? (
+                    <div className="space-y-4">
+                      {userReferences.map((reference, index) => (
+                        <div key={index} className="border-l-4 border-blue-500 pl-4 py-2">
+                          <p className="text-gray-700 italic">"{reference.content}"</p>
+                          <p className="text-sm text-gray-500 mt-2">— {reference.reviewerName}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 text-gray-500">
+                      <MessageCircle className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                      <p>No references yet</p>
+                      {!isOwnProfile && (
+                        <p className="text-sm mt-2">Be the first to write a reference!</p>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Connections Tab */}
+            {activeTab === 'connections' && (
+              <Card className="mt-2">
+                <CardHeader>
+                  <CardTitle className="text-lg font-bold">Connections ({userConnections?.length || 0})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {userConnections && userConnections.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {userConnections.map((connection) => (
+                        <div key={connection.id} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                             onClick={() => setLocation(`/profile/${connection.username}`)}>
+                          <Avatar className="w-12 h-12">
+                            <AvatarImage src={connection.profileImage} alt={connection.username} />
+                            <AvatarFallback>{connection.username?.charAt(0)?.toUpperCase()}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <h4 className="font-medium">{connection.username}</h4>
+                            <p className="text-sm text-gray-500">{connection.location}</p>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-gray-400" />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 text-gray-500">
+                      <Users className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                      <p>No connections yet</p>
+                      {isOwnProfile && (
+                        <p className="text-sm mt-2">Start connecting with other travelers!</p>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Chatrooms Tab */}
+            {activeTab === 'chatrooms' && (
+              <Card className="mt-2">
+                <CardHeader>
+                  <CardTitle className="text-lg font-bold">Chatrooms ({userChatrooms?.length || 0})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {userChatrooms && userChatrooms.length > 0 ? (
+                    <div className="space-y-3">
+                      {userChatrooms.map((chatroom) => (
+                        <div key={chatroom.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                             onClick={() => setLocation(`/city-chatrooms?city=${encodeURIComponent(chatroom.city)}&room=${chatroom.id}`)}>
+                          <div className="flex-1">
+                            <h4 className="font-medium">{chatroom.name}</h4>
+                            <p className="text-sm text-gray-500">{chatroom.city}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm text-gray-500">{chatroom.memberCount} members</p>
+                            <ChevronRight className="w-4 h-4 text-gray-400" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 text-gray-500">
+                      <MessageCircle className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                      <p>No chatrooms yet</p>
+                      {isOwnProfile && (
+                        <p className="text-sm mt-2">Join chatrooms to connect with locals!</p>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             )}
 
             {/* What You Have in Common - Consolidated Section */}
@@ -6151,122 +6261,6 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                 </CardHeader>
                 <CardContent>
                   <BusinessEventsWidget userId={effectiveUserId || 0} />
-                </CardContent>
-              </Card>
-            )}
-
-
-
-            {/* Photos Tab */}
-            {activeTab === 'photos' && (
-              <Card className="mt-2">
-                <CardContent className="p-6">
-                  <PhotoAlbumWidget 
-                    userId={effectiveUserId || 0}
-                    isOwnProfile={isOwnProfile}
-                  />
-                </CardContent>
-              </Card>
-            )}
-
-            {/* References Tab */}
-            {activeTab === 'references' && (
-              <Card className="mt-2">
-                <CardHeader>
-                  <CardTitle className="text-lg font-bold">References ({userReferences?.length || 0})</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {userReferences && userReferences.length > 0 ? (
-                    <div className="space-y-4">
-                      {userReferences.map((reference, index) => (
-                        <div key={index} className="border-l-4 border-blue-500 pl-4 py-2">
-                          <p className="text-gray-700 italic">"{reference.content}"</p>
-                          <p className="text-sm text-gray-500 mt-2">— {reference.reviewerName}</p>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12 text-gray-500">
-                      <MessageCircle className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                      <p>No references yet</p>
-                      {!isOwnProfile && (
-                        <p className="text-sm mt-2">Be the first to write a reference!</p>
-                      )}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Connections Tab */}
-            {activeTab === 'connections' && (
-              <Card className="mt-2">
-                <CardHeader>
-                  <CardTitle className="text-lg font-bold">Connections ({userConnections?.length || 0})</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {userConnections && userConnections.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {userConnections.map((connection) => (
-                        <div key={connection.id} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
-                             onClick={() => setLocation(`/profile/${connection.username}`)}>
-                          <Avatar className="w-12 h-12">
-                            <AvatarImage src={connection.profileImage} alt={connection.username} />
-                            <AvatarFallback>{connection.username?.charAt(0)?.toUpperCase()}</AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1">
-                            <h4 className="font-medium">{connection.username}</h4>
-                            <p className="text-sm text-gray-500">{connection.location}</p>
-                          </div>
-                          <ChevronRight className="w-4 h-4 text-gray-400" />
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12 text-gray-500">
-                      <Users className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                      <p>No connections yet</p>
-                      {isOwnProfile && (
-                        <p className="text-sm mt-2">Start connecting with other travelers!</p>
-                      )}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Chatrooms Tab */}
-            {activeTab === 'chatrooms' && (
-              <Card className="mt-2">
-                <CardHeader>
-                  <CardTitle className="text-lg font-bold">Chatrooms ({userChatrooms?.length || 0})</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {userChatrooms && userChatrooms.length > 0 ? (
-                    <div className="space-y-3">
-                      {userChatrooms.map((chatroom) => (
-                        <div key={chatroom.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
-                             onClick={() => setLocation(`/city-chatrooms?city=${encodeURIComponent(chatroom.city)}&room=${chatroom.id}`)}>
-                          <div className="flex-1">
-                            <h4 className="font-medium">{chatroom.name}</h4>
-                            <p className="text-sm text-gray-500">{chatroom.city}</p>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-sm text-gray-500">{chatroom.memberCount} members</p>
-                            <ChevronRight className="w-4 h-4 text-gray-400" />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12 text-gray-500">
-                      <MessageCircle className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                      <p>No chatrooms yet</p>
-                      {isOwnProfile && (
-                        <p className="text-sm mt-2">Join chatrooms to connect with locals!</p>
-                      )}
-                    </div>
-                  )}
                 </CardContent>
               </Card>
             )}
