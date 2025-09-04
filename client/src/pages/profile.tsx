@@ -4438,6 +4438,58 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             );
                           })}
                         </div>
+                        
+                        {/* Save Button with Privacy Notice */}
+                        <div className="mt-6 pt-4 border-t border-red-200 dark:border-red-600">
+                          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-300 dark:border-yellow-700 rounded-lg p-4 mb-4">
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="w-4 h-4 rounded-full bg-yellow-500 flex items-center justify-center">
+                                <span className="text-xs text-white font-bold">!</span>
+                              </div>
+                              <p className="text-sm font-semibold text-yellow-800 dark:text-yellow-200">
+                                Important: Search Visibility
+                              </p>
+                            </div>
+                            <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                              <strong>Private interests help you find compatible people through search</strong> but will <strong>never appear on your public profile</strong>. 
+                              Only you can see these selections, and they're used solely for matching purposes.
+                            </p>
+                          </div>
+                          
+                          <Button
+                            type="button"
+                            onClick={async () => {
+                              setIsSubmitting(true);
+                              try {
+                                const success = await handleSave();
+                                if (success) {
+                                  setEditingInterests(false);
+                                  setEditingActivities(false);
+                                  setEditingEvents(false);
+                                }
+                              } catch (error) {
+                                console.error('Save failed:', error);
+                              } finally {
+                                setIsSubmitting(false);
+                              }
+                            }}
+                            disabled={isSubmitting}
+                            className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-semibold py-3 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
+                            data-testid="button-save-preferences"
+                          >
+                            {isSubmitting ? (
+                              <div className="flex items-center justify-center gap-2">
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                Saving Preferences...
+                              </div>
+                            ) : (
+                              <div className="flex items-center justify-center gap-2">
+                                <span className="text-lg">💾</span>
+                                Save All Preferences
+                              </div>
+                            )}
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </div>
