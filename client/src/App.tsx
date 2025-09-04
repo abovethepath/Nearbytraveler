@@ -949,8 +949,8 @@ function Router() {
       case '/business-registration':
         return <BusinessRegistration />;
       case '/profile':
-        // NEW PROFILE DESIGN - Using Couchsurfing-inspired layout
-        return <ProfileComplete />;
+        // USING ORIGINAL MASSIVE PROFILE - Full feature set
+        return <Profile />;
       case '/profile-new':
         return <ProfileNew />;
       case '/profile-complete':

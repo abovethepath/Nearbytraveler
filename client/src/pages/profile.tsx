@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useContext, useEffect } from "react";
-import ProfileNew from "./profile-new";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 // Removed goBackProperly import
@@ -9451,11 +9450,7 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
 
 // Main export with design toggle
 export default function EnhancedProfile(props: EnhancedProfileProps) {
-  const [useNewDesign, setUseNewDesign] = useState(false);
-
-  if (useNewDesign) {
-    return <ProfileNew userId={props.userId} />;
-  }
+  // ALWAYS use the massive profile with all features (Couchsurfing-style layout coming)
 
   return (
     <div>
