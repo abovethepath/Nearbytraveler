@@ -706,6 +706,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     hometownState: string;
     hometownCountry: string;
   } | null>(null);
+  const [scrollToLocation, setScrollToLocation] = useState(false);
   
   // Connection filters state
   const [connectionFilters, setConnectionFilters] = useState({
@@ -7926,7 +7927,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
       {/* LOCATION EDITOR - MOVED OUTSIDE DIALOG FOR DROPDOWN FUNCTIONALITY */}
       {isOwnProfile && (
-        <Card className="max-w-4xl mx-auto mt-6 mb-6">
+        <Card className="max-w-4xl mx-auto mt-6 mb-6" data-testid="location-widget">
           <CardContent className="p-6">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               {user?.userType === 'business' ? 'Business Location' : 'Hometown Location ** ONLY CHANGE IF YOU MOVE **'}
@@ -8070,6 +8071,45 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </Button>
             </div>
           </DialogHeader>
+          
+          {/* Moving/Hometown Change CTA */}
+          <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-4 mb-4">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <p className="text-sm font-medium text-orange-800 dark:text-orange-200">
+                  📍 Are you moving or want to change your hometown location?
+                </p>
+                <p className="text-xs text-orange-600 dark:text-orange-300 mt-1">
+                  Update where you're a local to connect with the right community
+                </p>
+              </div>
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => {
+                  // Close the edit profile modal
+                  setIsEditMode(false);
+                  
+                  // Scroll to the location widget
+                  setTimeout(() => {
+                    const locationWidget = document.querySelector('[data-testid="location-widget"]');
+                    if (locationWidget) {
+                      locationWidget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    } else {
+                      // Fallback: scroll to bottom where location widget usually is
+                      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                    }
+                  }, 100);
+                }}
+                className="bg-orange-600 hover:bg-orange-700 text-white ml-3 flex-shrink-0"
+                data-testid="button-change-hometown"
+              >
+                <MapPin className="w-4 h-4 mr-1" />
+                Change Location
+              </Button>
+            </div>
+          </div>
+          
           <Form {...profileForm}>
             <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-6">
               
