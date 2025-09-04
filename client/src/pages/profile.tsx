@@ -353,6 +353,13 @@ const createProfileSchema = (userType: string) => {
       travelHow: z.string().optional(),
       travelBudget: z.string().optional(),
       travelGroup: z.string().optional(),
+      // Add missing fields for comprehensive profile editing
+      languagesSpoken: z.array(z.string()).default([]),
+      countriesVisited: z.array(z.string()).default([]),
+      instagramUrl: z.string().optional(),
+      twitterUrl: z.string().optional(),
+      linkedinUrl: z.string().optional(),
+      websiteUrl: z.string().optional(),
     });
   }
 };
@@ -1347,6 +1354,13 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
       childrenAges: "",
       isVeteran: false,
       isActiveDuty: false,
+      // Add default values for new fields
+      languagesSpoken: [],
+      countriesVisited: [],
+      instagramUrl: "",
+      twitterUrl: "",
+      linkedinUrl: "",
+      websiteUrl: "",
     },
   });
 
@@ -6636,6 +6650,151 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                 </FormItem>
               )}
             />
+
+            {/* Gender Field */}
+            <FormField
+              control={profileForm.control}
+              name="gender"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Gender</FormLabel>
+                  <FormControl>
+                    <select 
+                      {...field}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">Select gender</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="non-binary">Non-binary</option>
+                      <option value="prefer-not-to-say">Prefer not to say</option>
+                    </select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Age Visibility */}
+            <FormField
+              control={profileForm.control}
+              name="ageVisible"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <FormLabel>Show Age on Profile</FormLabel>
+                    <FormDescription>
+                      Allow others to see your age
+                    </FormDescription>
+                  </div>
+                  <FormControl>
+                    <input
+                      type="checkbox"
+                      checked={field.value}
+                      onChange={field.onChange}
+                      className="w-5 h-5"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            {/* Languages Spoken */}
+            <FormField
+              control={profileForm.control}
+              name="languagesSpoken"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Languages Spoken</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="e.g., English, Spanish, French (comma separated)"
+                      value={Array.isArray(field.value) ? field.value.join(', ') : field.value || ''}
+                      onChange={(e) => field.onChange(e.target.value.split(',').map(lang => lang.trim()).filter(Boolean))}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Countries Visited */}
+            <FormField
+              control={profileForm.control}
+              name="countriesVisited"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Countries Visited</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="e.g., Italy, France, Japan (comma separated)"
+                      value={Array.isArray(field.value) ? field.value.join(', ') : field.value || ''}
+                      onChange={(e) => field.onChange(e.target.value.split(',').map(country => country.trim()).filter(Boolean))}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Social Media Links */}
+            <div className="space-y-4">
+              <FormLabel>Social Media (Optional)</FormLabel>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={profileForm.control}
+                  name="instagramUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Instagram URL</FormLabel>
+                      <FormControl>
+                        <Input placeholder="https://instagram.com/username" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={profileForm.control}
+                  name="twitterUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Twitter/X URL</FormLabel>
+                      <FormControl>
+                        <Input placeholder="https://twitter.com/username" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={profileForm.control}
+                  name="linkedinUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>LinkedIn URL</FormLabel>
+                      <FormControl>
+                        <Input placeholder="https://linkedin.com/in/username" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={profileForm.control}
+                  name="websiteUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Personal Website</FormLabel>
+                      <FormControl>
+                        <Input placeholder="https://yourwebsite.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
 
             {/* Hometown Location */}
             <div className="space-y-4">
