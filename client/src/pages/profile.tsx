@@ -616,8 +616,8 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [editingTravelPlan, setEditingTravelPlan] = useState<TravelPlan | null>(null);
   const [showCreateDeal, setShowCreateDeal] = useState(false);
-  // Widget open/close states
-  const [openWidgets, setOpenWidgets] = useState<Set<string>>(new Set());
+  // Widget open/close states - auto-open About widget when viewing other people's profiles
+  const [openWidgets, setOpenWidgets] = useState<Set<string>>(new Set(isOwnProfile ? [] : ['about']));
   // Connection note editing states
   const [editingConnectionNote, setEditingConnectionNote] = useState<number | null>(null);
   const [connectionNoteText, setConnectionNoteText] = useState("");
