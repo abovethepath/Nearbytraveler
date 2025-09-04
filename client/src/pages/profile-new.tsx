@@ -26,6 +26,7 @@ interface ProfileNewProps {
 }
 
 export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
+  // Force rebuild to clear browser cache
   const [, setLocation] = useLocation();
   const { userId: paramUserId } = useParams<{ userId: string }>();
   const { user: currentUser } = useContext(AuthContext);
