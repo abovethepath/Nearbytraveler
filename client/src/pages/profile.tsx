@@ -3453,7 +3453,8 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                   <div className="bg-gradient-to-br from-green-500 to-green-600 p-8 text-white border-0 rounded-lg shadow-lg">
                     {/* Large Profile Photo */}
                     <div className="text-center mb-6">
-                      <Avatar className="w-48 h-48 border-4 border-white shadow-lg mx-auto mb-4">
+                      <div className="relative inline-block">
+                      <Avatar className="w-48 h-48 border-4 border-white shadow-lg mb-4">
                         <AvatarImage src={user?.profileImage} alt={user?.username} />
                         <AvatarFallback className="bg-green-300 text-green-800 text-3xl font-bold">
                           {user?.username?.charAt(0)?.toUpperCase() || '?'}
@@ -3472,6 +3473,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                           <Camera className="h-4 w-4 sm:h-5 sm:w-5" />
                         </Button>
                       )}
+                      </div>
                       {isCurrentlyTraveling && (
                         <div className="inline-block">
                           <div className="bg-white text-green-600 text-xs px-3 py-1 rounded-full flex items-center">
@@ -3487,19 +3489,9 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                       <h1 className="text-2xl font-bold mb-2">{user?.username}</h1>
                       <div className="text-green-100 mb-1">
                         <span>
-                          {isCurrentlyTraveling ? (
-                            <>
-                              Nearby Traveler • {currentTravelDestination?.destinationCity || 'Travel destination'}
-                              {currentTravelDestination?.destinationState && `, ${currentTravelDestination.destinationState}`}
-                              {currentTravelDestination?.destinationCountry && `, ${currentTravelDestination.destinationCountry}`}
-                            </>
-                          ) : (
-                            <>
-                              Nearby Local • {user?.hometownCity || user?.currentCity || 'Location not set'}
-                              {(user?.hometownState || user?.currentState) && `, ${user.hometownState || user.currentState}`}
-                              {(user?.hometownCountry || user?.currentCountry) && `, ${user.hometownCountry || user.currentCountry}`}
-                            </>
-                          )}
+                          Nearby Local • {user?.hometownCity || 'Location not set'}
+                          {user?.hometownState && `, ${user.hometownState}`}
+                          {user?.hometownCountry && `, ${user.hometownCountry}`}
                         </span>
                       </div>
                     </div>
