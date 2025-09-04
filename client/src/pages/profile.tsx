@@ -621,6 +621,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [showDestinationSuggestions, setShowDestinationSuggestions] = useState(false);
   const [showChatroomList, setShowChatroomList] = useState(false);
   const [activeTab, setActiveTab] = useState('contacts');
+  console.log('🎯 CURRENT ACTIVE TAB:', activeTab);
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [showKeywordSearch, setShowKeywordSearch] = useState(false);
@@ -3603,7 +3604,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           <div className="flex items-center justify-between">
             <div className="flex space-x-6 sm:space-x-8">
             <button
-              onClick={() => setActiveTab('contacts')}
+              onClick={() => {console.log('🔥 CONTACTS CLICKED'); setActiveTab('contacts');}}
               className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
                 activeTab === 'contacts'
                   ? 'bg-blue-600 text-white border border-blue-600'
@@ -3619,7 +3620,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               )}
             </button>
             <button
-              onClick={() => setActiveTab('photos')}
+              onClick={() => {console.log('🔥 PHOTOS CLICKED'); setActiveTab('photos');}}
               className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
                 activeTab === 'photos'
                   ? 'bg-blue-600 text-white border border-blue-600'
@@ -3635,7 +3636,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               )}
             </button>
             <button
-              onClick={() => setActiveTab('references')}
+              onClick={() => {console.log('🔥 REFERENCES CLICKED'); setActiveTab('references');}}
               className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
                 activeTab === 'references'
                   ? 'bg-blue-600 text-white border border-blue-600'
@@ -3651,7 +3652,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               )}
             </button>
             <button
-              onClick={() => setActiveTab('travel')}
+              onClick={() => {console.log('🔥 TRAVEL CLICKED'); setActiveTab('travel');}}
               className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
                 activeTab === 'travel'
                   ? 'bg-blue-600 text-white border border-blue-600'
@@ -3667,7 +3668,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               )}
             </button>
             <button
-              onClick={() => setActiveTab('countries')}
+              onClick={() => {console.log('🔥 COUNTRIES CLICKED'); setActiveTab('countries');}}
               className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
                 activeTab === 'countries'
                   ? 'bg-blue-600 text-white border border-blue-600'
