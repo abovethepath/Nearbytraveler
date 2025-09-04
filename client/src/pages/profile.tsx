@@ -3789,7 +3789,6 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                   {/* References Widget - Left sidebar */}
                   <ReferencesWidgetNew 
                     userId={effectiveUserId || 0}
-                    isOwnProfile={isOwnProfile}
                   />
 
                   {/* Friend Referral Widget - Left sidebar */}
