@@ -617,6 +617,9 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
   const [showCreateDeal, setShowCreateDeal] = useState(false);
   // Widget open/close states
   const [openWidgets, setOpenWidgets] = useState<Set<string>>(new Set());
+  // Connection note editing states
+  const [editingConnectionNote, setEditingConnectionNote] = useState<number | null>(null);
+  const [connectionNoteText, setConnectionNoteText] = useState("");
   
   const toggleWidget = (widgetName: string) => {
     const newOpenWidgets = new Set(openWidgets);
@@ -716,8 +719,6 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
   });
   const [showConnectionFilters, setShowConnectionFilters] = useState(false);
   const [connectionsDisplayCount, setConnectionsDisplayCount] = useState(3);
-  const [editingConnectionNote, setEditingConnectionNote] = useState<number | null>(null);
-  const [connectionNoteText, setConnectionNoteText] = useState('');
   const [eventsDisplayCount, setEventsDisplayCount] = useState(3);
   const [businessesDisplayCount, setBusinessesDisplayCount] = useState(3);
   const [expandedTravelPlan, setExpandedTravelPlan] = useState<number | null>(null);
@@ -1620,6 +1621,39 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
       toast({
         title: "Submission failed",
         description: error?.message || "Failed to submit reference. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Update connection note mutation
+  const updateConnectionNote = useMutation({
+    mutationFn: async ({ connectionId, note }: { connectionId: number; note: string }) => {
+      const response = await fetch(`/api/connections/${connectionId}/note`, {
+        method: 'PATCH',
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-user-id': user?.id?.toString() || ''
+        },
+        body: JSON.stringify({ connectionNote: note }),
+      });
+      if (!response.ok) throw new Error('Failed to update connection note');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/connections/${effectiveUserId}`, connectionFilters] });
+      setEditingConnectionNote(null);
+      setConnectionNoteText("");
+      toast({
+        title: "Note saved",
+        description: "Your 'How we met' note has been saved.",
+      });
+    },
+    onError: (error) => {
+      console.error('Update connection note error:', error);
+      toast({
+        title: "Save failed",
+        description: "Failed to save note. Please try again.",
         variant: "destructive",
       });
     },
@@ -4204,19 +4238,89 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                 </CardHeader>
                 <CardContent>
                   {userConnections && userConnections.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4">
                       {userConnections.map((connection) => (
-                        <div key={connection.id} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
-                             onClick={() => setLocation(`/profile/${connection.username}`)}>
-                          <Avatar className="w-12 h-12">
-                            <AvatarImage src={connection.profileImage} alt={connection.username} />
-                            <AvatarFallback>{connection.username?.charAt(0)?.toUpperCase()}</AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1">
-                            <h4 className="font-medium">{connection.username}</h4>
-                            <p className="text-sm text-gray-500">{connection.location}</p>
+                        <div key={connection.id} className="border rounded-lg p-4 hover:bg-gray-50">
+                          <div className="flex items-center space-x-3 mb-3 cursor-pointer"
+                               onClick={() => setLocation(`/profile/${connection.username}`)}>
+                            <Avatar className="w-12 h-12">
+                              <AvatarImage src={connection.profileImage} alt={connection.username} />
+                              <AvatarFallback>{connection.username?.charAt(0)?.toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1">
+                              <h4 className="font-medium">{connection.username}</h4>
+                              <p className="text-sm text-gray-500">{connection.location}</p>
+                            </div>
+                            <ChevronRight className="w-4 h-4 text-gray-400" />
                           </div>
-                          <ChevronRight className="w-4 h-4 text-gray-400" />
+                          
+                          {/* How we met section - only visible to the profile owner */}
+                          {isOwnProfile && (
+                            <div className="border-t pt-3">
+                              <div className="flex items-center justify-between mb-2">
+                                <h5 className="text-sm font-medium text-gray-700">How we met</h5>
+                                {editingConnectionNote !== connection.id && (
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setEditingConnectionNote(connection.id);
+                                      setConnectionNoteText(connection.connectionNote || "");
+                                    }}
+                                    className="text-xs px-2 py-1 h-6"
+                                  >
+                                    {connection.connectionNote ? "Edit" : "Add note"}
+                                  </Button>
+                                )}
+                              </div>
+                              
+                              {editingConnectionNote === connection.id ? (
+                                <div className="space-y-2">
+                                  <textarea
+                                    value={connectionNoteText}
+                                    onChange={(e) => setConnectionNoteText(e.target.value)}
+                                    placeholder="How did you meet this person?"
+                                    className="w-full p-2 border rounded text-sm resize-none"
+                                    rows={2}
+                                    onClick={(e) => e.stopPropagation()}
+                                  />
+                                  <div className="flex space-x-2">
+                                    <Button
+                                      size="sm"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        updateConnectionNote.mutate({
+                                          connectionId: connection.id,
+                                          note: connectionNoteText
+                                        });
+                                      }}
+                                      disabled={updateConnectionNote.isPending}
+                                      className="text-xs px-3 py-1 h-6"
+                                    >
+                                      {updateConnectionNote.isPending ? "Saving..." : "Save"}
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setEditingConnectionNote(null);
+                                        setConnectionNoteText("");
+                                      }}
+                                      className="text-xs px-3 py-1 h-6"
+                                    >
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <p className="text-sm text-gray-600 italic">
+                                  {connection.connectionNote || "No notes yet"}
+                                </p>
+                              )}
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
