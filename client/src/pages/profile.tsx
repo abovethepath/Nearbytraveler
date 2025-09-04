@@ -3571,7 +3571,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                   {user?.userType !== 'business' && (
                     <Card className="mt-4 hover:shadow-lg transition-all duration-200 hover:border-orange-300">
                       <CardHeader>
-                        <CardTitle className="text-sm dark:text-white">Stats</CardTitle>
+                        <CardTitle className="text-sm dark:text-white">Travel Stats</CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-3 text-sm">
                         <div className="flex items-center justify-between">
@@ -3584,6 +3584,18 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                         <div className="flex items-center justify-between">
                           <span className="text-gray-600 dark:text-gray-300">Connections</span>
                           <span className="font-semibold dark:text-white">{userConnections.length}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-600 dark:text-gray-300">Countries Visited</span>
+                          <span className="font-semibold dark:text-white">{countriesVisited.length}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-600 dark:text-gray-300">References</span>
+                          <span className="font-semibold dark:text-white">{userReferences.length}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-600 dark:text-gray-300">Vouches</span>
+                          <span className="font-semibold dark:text-white">{vouches?.length || 0}</span>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-gray-600 dark:text-gray-300">Active Plans</span>
