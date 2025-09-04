@@ -3903,31 +3903,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {/* Travel Plans and Business Information Card */}
             <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm w-full overflow-hidden">
               <CardContent className="p-4">
-                {/* Current Travel Plans - Show when user is currently traveling */}
-                {user?.userType !== 'business' && user?.isCurrentlyTraveling && user?.travelDestination && (
-                  <div className="border-t pt-4 mt-4">
-                    <div className="bg-gradient-to-r from-orange-50 to-blue-50 dark:from-orange-900/20 dark:to-blue-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-4">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Plane className="w-5 h-5 text-orange-600" />
-                        <h4 className="font-semibold text-gray-800 dark:text-white">Current Travel Plan</h4>
-                      </div>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex items-start">
-                          <span className="font-medium text-gray-600 dark:text-gray-400 w-24 flex-shrink-0">Destination:</span>
-                          <span className="text-gray-900 dark:text-gray-100 flex-1 break-words font-semibold">{user.travelDestination}</span>
-                        </div>
-                        {user.travelEndDate && (
-                          <div className="flex items-start">
-                            <span className="font-medium text-gray-600 dark:text-gray-400 w-24 flex-shrink-0">Return:</span>
-                            <span className="text-gray-900 dark:text-gray-100 flex-1 break-words">
-                              {formatDateForDisplay(user.travelEndDate)}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
 
                 {/* Business Contact Information */}
                 {user.userType === 'business' && (
