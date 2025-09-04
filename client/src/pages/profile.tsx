@@ -3806,71 +3806,74 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
           {/* MIDDLE CONTENT AREA - Main Profile Content */}
           <div className="w-full md:col-span-3 space-y-3 sm:space-y-4 lg:space-y-6">
             
+            {/* Travel Status Banner */}
+            {user?.userType === 'traveler' && user?.destinationCity ? (
+              <div className="bg-gradient-to-r from-orange-500 to-blue-600 text-white rounded-lg p-4 text-center font-bold text-lg">
+                Boldly, Nearby Traveler
+              </div>
+            ) : user?.userType === 'local' && (
+              <div className="bg-gradient-to-r from-green-500 to-blue-600 text-white rounded-lg p-4 text-center font-bold text-lg">
+                Nearby Local • {user?.hometownCity || user?.location || 'Local'}
+              </div>
+            )}
+            
             {/* Couchsurfing-style Tab Navigation */}
-            <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div className="bg-white border-2 border-black rounded-lg shadow-sm">
               <div className="border-b border-gray-200">
                 <nav className="flex space-x-0" aria-label="Profile sections">
                   <button
                     onClick={() => setActiveTab('about')}
-                    className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                    className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors flex flex-col items-center ${
                       activeTab === 'about'
                         ? 'border-blue-500 text-blue-600 bg-blue-50'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                     }`}
                   >
-                    About
+                    <span className="font-semibold">About</span>
                   </button>
                   <button
                     onClick={() => setActiveTab('photos')}
-                    className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                    className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors flex flex-col items-center ${
                       activeTab === 'photos'
                         ? 'border-blue-500 text-blue-600 bg-blue-50'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                     }`}
                   >
-                    Photos
-                    <span className="ml-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                      {userPhotos?.length || 0}
-                    </span>
+                    <span className="font-semibold">Photos</span>
+                    <span className="text-lg font-bold">{userPhotos?.length || 0}</span>
                   </button>
                   <button
                     onClick={() => setActiveTab('references')}
-                    className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                    className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors flex flex-col items-center ${
                       activeTab === 'references'
                         ? 'border-blue-500 text-blue-600 bg-blue-50'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                     }`}
                   >
-                    References
-                    <span className="ml-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                      {userReferences?.length || 0}
-                    </span>
+                    <span className="font-semibold">References</span>
+                    <span className="text-lg font-bold">{userReferences?.length || 0}</span>
                   </button>
                   <button
                     onClick={() => setActiveTab('connections')}
-                    className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                    className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors flex flex-col items-center ${
                       activeTab === 'connections'
                         ? 'border-blue-500 text-blue-600 bg-blue-50'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                     }`}
                   >
-                    Connections
-                    <span className="ml-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      {userConnections?.length || 0}
-                    </span>
+                    <span className="font-semibold">Connections</span>
+                    <span className="text-lg font-bold">{userConnections?.length || 0}</span>
                   </button>
                   <button
                     onClick={() => setActiveTab('chatrooms')}
-                    className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                    className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors flex flex-col items-center ${
                       activeTab === 'chatrooms'
                         ? 'border-blue-500 text-blue-600 bg-blue-50'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
                     }`}
                   >
-                    Chatrooms
-                    <span className="ml-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                      {userChatrooms?.length || 0}
-                    </span>
+                    <span className="font-semibold">Chatrooms</span>
+                    <span className="text-lg font-bold">{userChatrooms?.length || 0}</span>
                   </button>
                 </nav>
               </div>
