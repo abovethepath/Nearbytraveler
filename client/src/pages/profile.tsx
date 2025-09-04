@@ -6623,74 +6623,27 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
         </DialogHeader>
         <Form {...profileForm}>
           <form onSubmit={profileForm.handleSubmit(editProfile.mutate)} className="space-y-6">
-            {user?.userType === 'business' && (
-              <FormField
-                control={profileForm.control}
-                name="businessName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Business Name</FormLabel>
-                    <FormControl>
-                      <Input 
-                        {...field} 
-                        placeholder="Enter your business name..."
-                        maxLength={100}
-                      />
-                    </FormControl>
-                    <div className="text-xs text-gray-500 text-right">
-                      {field.value?.length || 0}/100 characters
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-            
-            {user?.userType === 'business' ? (
-              <FormField
-                control={profileForm.control}
-                name="businessDescription"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Business Description</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        {...field} 
-                        placeholder="Describe your business, services, and what makes you special..."
-                        className="min-h-[100px] resize-none"
-                        maxLength={1000}
-                      />
-                    </FormControl>
-                    <div className="text-xs text-gray-500 text-right">
-                      {field.value?.length || 0}/1000 characters
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            ) : (
-              <FormField
-                control={profileForm.control}
-                name="bio"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Bio</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        {...field} 
-                        placeholder="Tell us about yourself..."
-                        className="min-h-[100px] resize-none"
-                        maxLength={1000}
-                      />
-                    </FormControl>
-                    <div className="text-xs text-gray-500 text-right">
-                      {field.value?.length || 0}/1000 characters
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
+            <FormField
+              control={profileForm.control}
+              name="bio"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Bio</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      {...field} 
+                      placeholder="Tell us about yourself..."
+                      className="min-h-[100px] resize-none"
+                      maxLength={1000}
+                    />
+                  </FormControl>
+                  <div className="text-xs text-gray-500 text-right">
+                    {field.value?.length || 0}/1000 characters
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {user?.userType !== 'business' && (
               <FormField
