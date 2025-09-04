@@ -4016,7 +4016,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                       </div>
                       <Button
                         size="sm"
-                        onClick={() => setIsEditMode(true)}
+                        onClick={() => setEditingBio(true)}
                         className="bg-blue-600 hover:bg-blue-700 text-white ml-2 flex-shrink-0"
                         data-testid="button-edit-bio-mobile"
                       >
