@@ -9088,7 +9088,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           </Card>
         </div>
       )}
-      </div>
       
       {/* Edit Mode Modal - Temporarily disabled */}
       {/* {isEditMode && user && (
