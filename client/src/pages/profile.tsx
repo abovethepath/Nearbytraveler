@@ -4432,62 +4432,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </div>
                   </div>
                 ) : null}
-                          </div>
-                        </div>
-                        
-                        {/* Bottom Save/Cancel Buttons */}
-                        <div className="flex flex-col sm:flex-row gap-2 mt-6 pt-4 border-t border-gray-200 dark:border-gray-600">
-                          <Button 
-                            onClick={async () => {
-                              try {
-                                console.log('🔧 BOTTOM SAVE - DATA:', editFormData);
-                                const response = await fetch(`/api/users/${user.id}`, {
-                                  method: 'PUT',
-                                  headers: { 'Content-Type': 'application/json' },
-                                  body: JSON.stringify(editFormData)
-                                });
-                                if (!response.ok) throw new Error('Failed to save');
-                                // Refresh data instead of page reload
-                                queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
-                                // Close all editing modes after successful save
-                                setEditingInterests(false);
-                                setEditingActivities(false);
-                                setEditingEvents(false);
-                              } catch (error) {
-                                console.error('Failed to update preferences:', error);
-                              }
-                            }}
-                            disabled={false}
-                            className="bg-green-600 hover:bg-green-700 text-white flex-1 text-sm sm:text-base"
-                          >
-                            Save All Changes
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            onClick={() => {
-                              // Cancel all edits and close all editing modes
-                              setEditingInterests(false);
-                              setEditingActivities(false);
-                              setEditingEvents(false);
-                              // Reset temp values AND editFormData to original user data
-                              setTempInterests(user?.interests || []);
-                              setTempActivities(user?.activities || []);
-                              setTempEvents(user?.events || []);
-                              setEditFormData({
-                                interests: user?.interests || [],
-                                activities: user?.activities || [],
-                                events: user?.events || []
-                              });
-                            }}
-                            className="border-orange-500 text-orange-600 hover:bg-orange-50 dark:border-orange-400 dark:text-orange-400 dark:hover:bg-orange-900/20 flex-1 text-sm sm:text-base"
-                          >
-                            Cancel All
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ) : null}
 
                 {/* Edit All Preferences Button - MOVED TO TOP BEFORE TOP CHOICES */}
                 {isOwnProfile && (
