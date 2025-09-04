@@ -208,7 +208,11 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                 {/* User Name and Type */}
                 <h1 className="text-2xl font-bold mb-2">{displayUser.username}</h1>
                 <p className="text-white/90 mb-4">
-                  Nearby Local • {displayUser.hometownCity}
+                  {isCurrentlyTraveling ? (
+                    `Nearby Traveler • ${currentTravelDestination}`
+                  ) : (
+                    `Nearby Local • ${displayUser.hometownCity}`
+                  )}
                 </p>
 
                 
