@@ -1090,7 +1090,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
     return "local";
   };
 
-  // Fetch connections data with filters
+  // Fetch connections data with filters - only when connections widget is open
   const { data: userConnections = [], refetch: refetchConnections } = useQuery({
     queryKey: [`/api/connections/${effectiveUserId}`, connectionFilters],
     queryFn: async () => {
@@ -1115,7 +1115,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
       console.log('Filtered connections result:', result);
       return result;
     },
-    enabled: !!effectiveUserId,
+    enabled: !!effectiveUserId && openWidgets.has('connections'),
     staleTime: 0, // Always refetch when filters change
   });
 
@@ -3753,45 +3753,6 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                   </Card>
 
                   {/* Connections Widget - Left sidebar */}
-                  <Card className="mt-4">
-                    <CardHeader>
-                      <CardTitle className="text-sm flex items-center justify-between dark:text-white">
-                        <span className="flex items-center gap-2">
-                          <Users className="w-4 h-4 text-blue-500" />
-                          Connections ({userConnections.length})
-                        </span>
-                        {isOwnProfile && (
-                          <Button size="sm" variant="outline" onClick={() => setShowConnectionFilters(!showConnectionFilters)}>
-                            Sort & Filter
-                          </Button>
-                        )}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        {userConnections.slice(0, connectionsDisplayCount).map((connection: any) => (
-                          <div key={connection.id} className="flex items-center gap-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg cursor-pointer transition-colors"
-                               onClick={() => setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`)}>
-                            <SimpleAvatar user={connection.connectedUser} size="sm" />
-                            <div className="flex-1 min-w-0">
-                              <p className="font-medium text-xs truncate dark:text-white">@{connection.connectedUser?.username}</p>
-                              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{connection.connectedUser?.name}</p>
-                            </div>
-                          </div>
-                        ))}
-                        {userConnections.length > connectionsDisplayCount && (
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={() => setConnectionsDisplayCount(prev => prev + 5)}
-                            className="w-full text-xs"
-                          >
-                            View {Math.min(5, userConnections.length - connectionsDisplayCount)} more
-                          </Button>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
 
                   {/* References Widget - Left sidebar */}
                   <ReferencesWidgetNew 
