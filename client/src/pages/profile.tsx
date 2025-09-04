@@ -3543,14 +3543,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                     {/* Action Buttons */}
                     <div className="space-y-3">
                       {isOwnProfile ? (
-                        <Button
-                          onClick={() => setIsEditMode(true)}
-                          className="w-full bg-white text-green-600 hover:bg-green-50 font-semibold"
-                          data-testid="button-edit-profile"
-                        >
-                          <Edit2 className="w-4 h-4 mr-2" />
-                          Edit Profile
-                        </Button>
+                        <div></div>
                       ) : (
                         <>
                           <Button
