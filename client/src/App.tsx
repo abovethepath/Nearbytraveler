@@ -14,6 +14,7 @@ import Discover from "@/pages/discover";
 import Profile from "@/pages/profile";
 import ProfileNew from "@/pages/profile-new";
 import ProfileDebug from "@/pages/profile-debug";
+import ProfileComplete from "@/pages/profile-complete";
 import Messages from "@/pages/messages";
 import Events from "@/pages/events";
 import CreateEvent from "@/pages/create-event";
@@ -709,7 +710,7 @@ function Router() {
 
       // Enhanced routing for potentially authenticated users accessing main routes
       // Check for common app routes that authenticated users might be trying to access
-      const commonAppRoutes = ['/discover', '/match-in-city', '/quick-meetups', '/messages', '/profile', '/profile-new', '/cities', '/plan-trip', '/home', '/events', '/deals', '/simple-chatroom', '/city-chatrooms', '/chatroom'];
+      const commonAppRoutes = ['/discover', '/match-in-city', '/quick-meetups', '/messages', '/profile', '/profile-new', '/profile-complete', '/cities', '/plan-trip', '/home', '/events', '/deals', '/simple-chatroom', '/city-chatrooms', '/chatroom'];
       const isCommonAppRoute = commonAppRoutes.some(route => location.startsWith(route));
 
       if (isCommonAppRoute && (localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token'))) {
@@ -949,9 +950,11 @@ function Router() {
         return <BusinessRegistration />;
       case '/profile':
         // NEW PROFILE DESIGN - Using Couchsurfing-inspired layout
-        return <ProfileNew />;
+        return <ProfileComplete />;
       case '/profile-new':
         return <ProfileNew />;
+      case '/profile-complete':
+        return <ProfileComplete />;
       case '/messages':
         return <Messages />;
       case '/meetups':
