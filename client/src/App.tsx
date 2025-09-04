@@ -272,15 +272,8 @@ function Router() {
         setUser(null);
       }
 
-      // Always set loading to false after auth check
-      if (location.includes('chatroom')) {
-        console.log('🚀 CHATROOM ROUTE: Skipping auth delay to prevent white screen');
-        setIsLoading(false);
-      } else {
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 100);
-      }
+      // Always set loading to false after auth check - no delay needed
+      setIsLoading(false);
     };
 
     checkServerAuth();
