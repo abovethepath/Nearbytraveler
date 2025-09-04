@@ -6655,7 +6655,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
 
     {/* Profile Edit Modal - ORIGINAL COMPREHENSIVE VERSION */}
     <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white">
         <DialogHeader>
           <DialogTitle>Edit Profile</DialogTitle>
         </DialogHeader>
