@@ -3817,7 +3817,6 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                       </div>
                     </CardContent>
                   </Card>
-
                 </>
               );
             })()}
