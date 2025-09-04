@@ -15,6 +15,7 @@ import EventCard from "@/components/event-card";
 import { Calendar, UserPlus } from "lucide-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { authStorage } from "@/lib/auth";
+import { ALL_INTERESTS } from "@shared/base-options";
 
 interface AdvancedSearchWidgetProps {
   open: boolean;
@@ -223,12 +224,8 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
   const travelerTypeOptions = ["Solo", "Couple", "Group", "Family", "Business"];
   const militaryStatusOptions = ["Active Duty", "Veteran", "Civilian"];
 
-  // Sample interests and activities (you might want to get these from an API)
-  const interestOptions = [
-    "Family Activities", "Local Food Specialties", "Cheap Eats", "Fine Dining", "Brunch Spots",
-    "Craft Beer & Breweries", "Cocktails & Bars", "Photography", "Live Music Venues", "Architecture",
-    "Art Galleries", "Cultural Sites", "Hiking & Nature", "Beach Activities", "City Tours & Sightseeing"
-  ];
+  // All interests from base-options including private/adult interests
+  const interestOptions = ALL_INTERESTS;
 
   const activityOptions = [
     "Local Connections", "Experience Sharing", "Travel Buddy", "Language Exchange", 
