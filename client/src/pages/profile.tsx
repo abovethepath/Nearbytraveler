@@ -3832,7 +3832,10 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                     <span className="font-semibold">About</span>
                   </button>
                   <button
-                    onClick={() => setActiveTab('photos')}
+                    onClick={() => {
+                      console.log('🔍 CLICKING PHOTOS TAB');
+                      setActiveTab('photos');
+                    }}
                     className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors flex flex-col items-center ${
                       activeTab === 'photos'
                         ? 'border-blue-500 text-blue-600 bg-blue-50'
@@ -3880,6 +3883,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
             </div>
 
             {/* Tab Content */}
+            {console.log('🔍 ACTIVE TAB:', activeTab)}
             {activeTab === 'about' && (
             /* About Section - Mobile Optimized */
             <Card className="mt-2 relative overflow-visible">
