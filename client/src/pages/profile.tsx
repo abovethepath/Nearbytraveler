@@ -6388,7 +6388,6 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
         </div>
       </div>
     </div>
-    </div>
   );
 };
 
