@@ -6401,39 +6401,6 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
               </Card>
             )}
 
-            {/* Photo Gallery Widget in Right Sidebar */}
-            <Card className="mt-4">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Camera className="w-5 h-5" />
-                  <span className="text-sm">Photos ({photos.length})</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {photos.length > 0 ? (
-                  <div className="grid grid-cols-2 gap-2">
-                    {photos.slice(0, 4).map((photo, index) => (
-                      <div key={photo.id} className="aspect-square rounded overflow-hidden">
-                        <img 
-                          src={photo.imageUrl} 
-                          alt={photo.caption || 'Photo'}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-500 dark:text-gray-400">No photos yet</p>
-                )}
-                <Button 
-                  size="sm" 
-                  className="w-full mt-3 bg-blue-500 hover:bg-blue-600"
-                  onClick={() => setLocation('/photos')}
-                >
-                  View All Photos
-                </Button>
-              </CardContent>
-            </Card>
 
             {/* Vouch Widget - Right sidebar */}
             <VouchWidget 
