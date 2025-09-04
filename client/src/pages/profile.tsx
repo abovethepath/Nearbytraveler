@@ -96,6 +96,7 @@ import { ThingsIWantToDoSection } from "@/components/ThingsIWantToDoSection";
 
 
 import { PhotoAlbumWidget } from "@/components/photo-album-widget";
+import { PhotoUploadWidget } from "@/components/photo-upload-widget";
 import { MobileTopNav } from "@/components/MobileTopNav";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { SimpleAvatar } from "@/components/simple-avatar";
@@ -4197,7 +4198,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                   </Button>
                 </CardHeader>
                 <CardContent className="p-6">
-                  <PhotoAlbumWidget 
+                  <PhotoUploadWidget 
                     userId={effectiveUserId || 0}
                     isOwnProfile={isOwnProfile}
                   />
@@ -4349,12 +4350,11 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                     <X className="w-4 h-4" />
                   </Button>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-center py-12 text-gray-500">
-                    <History className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                    <p>Travel Memories Coming Soon!</p>
-                    <p className="text-sm mt-2">Share your travel stories, photos, and passport stamps from your adventures around the world.</p>
-                  </div>
+                <CardContent className="p-6">
+                  <PhotoAlbumWidget 
+                    userId={effectiveUserId || 0}
+                    isOwnProfile={isOwnProfile}
+                  />
                 </CardContent>
               </Card>
             )}
