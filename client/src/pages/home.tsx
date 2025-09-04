@@ -37,7 +37,7 @@ import SmartPhotoGallery from "@/components/smart-photo-gallery";
 import SmartLocationInput from "@/components/SmartLocationInput";
 import AICityEventsWidget from "@/components/ai-city-events";
 import TravelMatches from "@/components/travel-matches";
-import staticHeroImage from "@assets/travelers-hero.webp";
+import staticHeroImage from "/assets/travelers-hero.webp";
 
 import ResponsiveUserGrid from "@/components/ResponsiveUserGrid";
 import { SimpleAvatar } from "@/components/simple-avatar";

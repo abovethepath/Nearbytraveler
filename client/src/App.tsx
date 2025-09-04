@@ -12,6 +12,7 @@ import GlobalHotfixes from "@/GlobalHotfixes";
 import Home from "@/pages/home";
 import Discover from "@/pages/discover";
 import Profile from "@/pages/profile";
+import ProfileNew from "@/pages/profile-new";
 import ProfileDebug from "@/pages/profile-debug";
 import Messages from "@/pages/messages";
 import Events from "@/pages/events";
@@ -680,6 +681,9 @@ function Router() {
       }
       if (location === '/profile-responsive') {
         return <ProfilePageResponsive />;
+      }
+      if (location === '/profile-new') {
+        return <ProfileNew />;
       }
       if (location === '/events-responsive') {
         return <EventsListResponsive />;
