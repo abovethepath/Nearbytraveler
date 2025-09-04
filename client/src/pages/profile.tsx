@@ -3716,7 +3716,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <div className="text-xs text-gray-500">References</div>
                   </div>
                   <div>
-                    <div className="text-xl font-bold text-orange-600">{connections?.length || 0}</div>
+                    <div className="text-xl font-bold text-orange-600">{userConnections?.length || 0}</div>
                     <div className="text-xs text-gray-500">Connections</div>
                   </div>
                 </div>
