@@ -3589,7 +3589,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-gray-600 dark:text-gray-300">References</span>
-                          <span className="font-semibold dark:text-white">{userReferences.length}</span>
+                          <span className="font-semibold dark:text-white">{userReferences?.length || 0}</span>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-gray-600 dark:text-gray-300">Vouches</span>
