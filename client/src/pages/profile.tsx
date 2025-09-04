@@ -3712,7 +3712,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 {/* Quick Stats */}
                 <div className="grid grid-cols-2 gap-4 text-center py-3 border-t border-gray-200 dark:border-gray-600">
                   <div>
-                    <div className="text-xl font-bold text-orange-600">{referencesData?.counts?.total || 0}</div>
+                    <div className="text-xl font-bold text-orange-600">{userReferences?.counts?.total || userReferences?.length || 0}</div>
                     <div className="text-xs text-gray-500">References</div>
                   </div>
                   <div>
