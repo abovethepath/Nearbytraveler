@@ -203,7 +203,7 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                 {/* User Name and Type */}
                 <h1 className="text-2xl font-bold mb-2">{displayUser.username}</h1>
                 <p className="text-white/90 mb-4">
-                  {displayUser.hometownCity}
+                  Nearby Local • {displayUser.hometownCity}
                 </p>
 
                 {/* Action Buttons */}
