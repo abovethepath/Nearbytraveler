@@ -33,7 +33,8 @@ import {
   Zap,
   Clock,
   MessageSquare,
-  UserPlus
+  UserPlus,
+  Edit2
 } from "lucide-react";
 import { AuthContext } from "@/App";
 import { formatDateForDisplay, getCurrentTravelDestination } from "@/lib/dateUtils";
@@ -43,6 +44,8 @@ import { PhotoAlbumWidget } from "@/components/photo-album-widget";
 import { VouchWidget } from "@/components/vouch-widget";
 import { LocationSharingSection } from "@/components/LocationSharingSection";
 import { ThingsIWantToDoSection } from "@/components/ThingsIWantToDoSection";
+import WorldMap from "@/components/world-map";
+import FriendReferralWidget from "@/components/friend-referral-widget";
 import { MOST_POPULAR_INTERESTS } from "@shared/base-options";
 import type { User } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
@@ -144,6 +147,9 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
   const currentTravelDestination = getCurrentTravelDestination(travelPlans || []);
   const isCurrentlyTraveling = !!currentTravelDestination;
   const userAge = displayUser?.dateOfBirth ? calculateAge(displayUser.dateOfBirth) : null;
+  
+  // Initialize toast
+  const toast = useToast();
 
   // Calculate verification badges
   const verificationBadges = [
@@ -208,8 +214,11 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                 
                 {isOwnProfile && (
                   <div className="space-y-2">
-                    <Button className="w-full bg-white text-blue-600 hover:bg-gray-100">
-                      <Settings className="w-4 h-4 mr-2" />
+                    <Button 
+                      onClick={() => setLocation('/profile')}
+                      className="w-full bg-white text-blue-600 hover:bg-gray-100"
+                    >
+                      <Edit2 className="w-4 h-4 mr-2" />
                       Edit Profile
                     </Button>
                     
@@ -829,6 +838,35 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
               </Card>
             )}
 
+            {/* World Map for Passport Stamps */}
+            {Array.isArray(countriesVisited) && countriesVisited.length > 0 && (
+              <Card className="mt-6">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Globe className="w-5 h-5 text-blue-500" />
+                    Countries Visited
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <WorldMap visitedCountries={countriesVisited} />
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Location Sharing Section - Only show for own profile */}
+            {isOwnProfile && displayUser && (
+              <div className="mt-6">
+                <LocationSharingSection user={displayUser} queryClient={queryClient} toast={toast} />
+              </div>
+            )}
+
+            {/* Friend Referral Widget - Only show for own profile and non-business users */}
+            {isOwnProfile && displayUser?.userType !== 'business' && (
+              <div className="mt-6">
+                <FriendReferralWidget />
+              </div>
+            )}
+
             {/* Boost Connections Widget - Only show for own profile */}
             {isOwnProfile && (
               <Card className="mt-6 border-orange-200 dark:border-orange-800 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-orange-900/30 dark:to-blue-900/30 hover:shadow-lg transition-all duration-200">
@@ -846,7 +884,7 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                 </CardHeader>
                 <CardContent className="pt-0">
                   <Button 
-                    onClick={() => window.location.href = '/getting-started'}
+                    onClick={() => setLocation('/getting-started')}
                     className="w-full bg-gradient-to-r from-blue-500 via-orange-500 to-violet-500 hover:from-blue-600 hover:via-orange-600 hover:to-violet-600 text-white border-0"
                   >
                     <Star className="w-4 h-4 mr-2" />
