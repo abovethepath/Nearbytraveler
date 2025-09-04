@@ -623,8 +623,8 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [editingTravelPlan, setEditingTravelPlan] = useState<TravelPlan | null>(null);
   const [showCreateDeal, setShowCreateDeal] = useState(false);
-  // Widget open/close states - auto-open About widget when viewing other people's profiles
-  const [openWidgets, setOpenWidgets] = useState<Set<string>>(new Set(isOwnProfile ? [] : ['about']));
+  // Widget open/close states - initialize empty first, will be set properly after isOwnProfile is calculated
+  const [openWidgets, setOpenWidgets] = useState<Set<string>>(new Set());
   // Connection note editing states
   const [editingConnectionNote, setEditingConnectionNote] = useState<number | null>(null);
   const [connectionNoteText, setConnectionNoteText] = useState("");
@@ -925,6 +925,16 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
     parsedComparison: `parseInt(${propUserId}) === ${currentUser?.id}`,
     parsedResult: parseInt(propUserId?.toString() || '0') === currentUser?.id
   });
+
+  // Set default widget state based on profile ownership after isOwnProfile is calculated
+  React.useEffect(() => {
+    // Auto-open About widget when viewing other people's profiles
+    if (!isOwnProfile) {
+      setOpenWidgets(new Set(['about']));
+    } else {
+      setOpenWidgets(new Set());
+    }
+  }, [isOwnProfile]);
   
 
 
