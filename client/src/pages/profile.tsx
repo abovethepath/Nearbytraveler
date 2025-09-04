@@ -3887,17 +3887,6 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                     <span className="font-semibold">Chatrooms</span>
                     <span className="text-lg font-bold">{userChatrooms?.length || 0}</span>
                   </button>
-                  <button
-                    onClick={() => toggleWidget('memories')}
-                    className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors flex flex-col items-center ${
-                      openWidgets.has('memories')
-                        ? 'border-blue-500 text-blue-600 bg-blue-50'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    <span className="font-semibold">Travel Memories</span>
-                    <span className="text-lg font-bold">0</span>
-                  </button>
                 </nav>
               </div>
             </div>
