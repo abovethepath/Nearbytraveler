@@ -3520,11 +3520,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     );
                   })()}
 
-                  {/* Stats */}
-                  <div className="flex items-center flex-wrap gap-4 text-sm font-medium w-full mt-3">
-                    <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full">🌍 {countriesVisited?.length || 0} countries</span>
-                    <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full">⭐ {references?.length || 0} references</span>
-                  </div>
+                  {/* Stats - Removed countries and references badges */}
                 </div>
               )}
             </div>
@@ -3636,6 +3632,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               {travelPlans?.length > 0 && (
                 <span className="ml-2 px-2 py-1 text-xs bg-blue-600 text-white rounded-full">
                   {travelPlans.length}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab('countries')}
+              className="text-sm sm:text-base font-medium px-3 py-2 bg-white border border-black text-black rounded-lg transition-colors hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700"
+              data-testid="tab-countries"
+            >
+              Countries
+              {countriesVisited?.length > 0 && (
+                <span className="ml-2 px-2 py-1 text-xs bg-blue-600 text-white rounded-full">
+                  {countriesVisited.length}
                 </span>
               )}
             </button>
@@ -6003,6 +6011,133 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </Card>
               )}
             </div>
+            )}
+
+            {/* Countries Tab */}
+            {activeTab === 'countries' && (
+              <div className="space-y-4">
+                <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
+                  <CardHeader className="bg-white dark:bg-gray-900">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center gap-2 text-black dark:text-white">
+                        <Globe className="w-5 h-5" />
+                        Countries I've Visited ({countriesVisited.length})
+                      </CardTitle>
+                      {isOwnProfile && !editingCountries && (
+                        <Button size="sm" variant="outline" onClick={handleEditCountries}>
+                          <Edit className="w-4 h-4 mr-2" />
+                          Edit
+                        </Button>
+                      )}
+                    </div>
+                  </CardHeader>
+                  <CardContent className="bg-white dark:bg-gray-900">
+                    {editingCountries ? (
+                      <div className="space-y-4">
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              className="w-full justify-between bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+                            >
+                              {tempCountries.length > 0 
+                                ? `${tempCountries.length} countr${tempCountries.length > 1 ? 'ies' : 'y'} selected`
+                                : "Select countries visited..."
+                              }
+                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-full p-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
+                            <Command className="bg-white dark:bg-gray-800">
+                              <CommandInput placeholder="Search countries..." className="border-0" />
+                              <CommandEmpty>No country found.</CommandEmpty>
+                              <CommandGroup className="max-h-64 overflow-auto">
+                                {COUNTRIES_OPTIONS.map((country) => (
+                                  <CommandItem
+                                    key={country}
+                                    value={country}
+                                    onSelect={() => {
+                                      setTempCountries(current =>
+                                        current.includes(country)
+                                          ? current.filter(c => c !== country)
+                                          : [...current, country]
+                                      );
+                                    }}
+                                    className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                                  >
+                                    <Check
+                                      className={`mr-2 h-4 w-4 ${
+                                        tempCountries.includes(country) ? "opacity-100" : "opacity-0"
+                                      }`}
+                                    />
+                                    {country}
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+
+                        {/* Show selected countries */}
+                        {tempCountries.length > 0 && (
+                          <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                            {tempCountries.map((country) => (
+                              <div key={country} className="flex items-center gap-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-md">
+                                <span className="text-sm">{country}</span>
+                                <button
+                                  onClick={() => setTempCountries(current => current.filter(c => c !== country))}
+                                  className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200"
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={() => {
+                              updateCountries.mutate(tempCountries);
+                            }}
+                            disabled={updateCountries.isPending}
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                          >
+                            {updateCountries.isPending ? "Saving..." : "Save Countries"}
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              setEditingCountries(false);
+                              setTempCountries(user?.countriesVisited || []);
+                            }}
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        {countriesVisited.length > 0 ? (
+                          <div className="flex flex-wrap gap-2">
+                            {countriesVisited.map((country: string, index: number) => (
+                              <div 
+                                key={country} 
+                                className="pill-interests"
+                              >
+                                {country}
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-gray-500 dark:text-white text-sm">No countries visited yet</p>
+                        )}
+                      </>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
             )}
 
             {/* Event Organizer Hub - for ALL users who want to organize events */}
