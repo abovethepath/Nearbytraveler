@@ -3453,7 +3453,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <div className="bg-gradient-to-br from-green-500 to-green-600 p-8 text-white border-0 rounded-lg shadow-lg">
                     {/* Large Profile Photo */}
                     <div className="text-center mb-6">
-                      <Avatar className="w-32 h-32 border-4 border-white shadow-lg mx-auto mb-4">
+                      <Avatar className="w-48 h-48 border-4 border-white shadow-lg mx-auto mb-4">
                         <AvatarImage src={user?.profileImage} alt={user?.username} />
                         <AvatarFallback className="bg-green-300 text-green-800 text-3xl font-bold">
                           {user?.username?.charAt(0)?.toUpperCase() || '?'}
@@ -3498,33 +3498,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </div>
                     </div>
 
-                    {/* Verified Profile Section */}
-                    <div className="border-t border-green-400 pt-4 mb-6">
-                      <h3 className="text-lg font-bold mb-3">Verified Profile</h3>
-                      {/* Verification items */}
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center">
-                            <Check className="w-3 h-3 text-green-600" />
-                          </div>
-                          <span className="text-sm">Email Address</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center">
-                            <Check className="w-3 h-3 text-green-600" />
-                          </div>
-                          <span className="text-sm">Identity</span>
-                        </div>
-                        {user?.profileImage && (
-                          <div className="flex items-center gap-2">
-                            <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center">
-                              <Check className="w-3 h-3 text-green-600" />
-                            </div>
-                            <span className="text-sm">Profile Photo</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
 
                     {/* Action Buttons */}
                     <div className="space-y-3">
