@@ -305,10 +305,10 @@ interface UserStatusDisplayProps {
 }
 
 function UserStatusDisplay({ userId, user }: UserStatusDisplayProps) {
-  // Fetch user status from the temporal service
+  // Fetch user status from the temporal service - only for traveler/local users
   const { data: userStatus, isLoading } = useQuery({
     queryKey: [`/api/users/${userId}/status`],
-    enabled: !!userId && user?.userType !== 'business',
+    enabled: !!userId && (user?.userType === 'traveler' || user?.userType === 'local'),
     staleTime: 1 * 60 * 1000, // 1 minute
   });
 
@@ -3885,8 +3885,8 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
           {/* MIDDLE CONTENT AREA - Main Profile Content */}
           <div className="w-full md:col-span-3 space-y-3 sm:space-y-4 lg:space-y-6">
             
-            {/* Temporal User Status Banner */}
-            {user?.userType !== 'business' && <UserStatusDisplay userId={effectiveUserId} user={user} />}
+            {/* Temporal User Status Banner - Only for traveler/local users */}
+            {(user?.userType === 'traveler' || user?.userType === 'local') && <UserStatusDisplay userId={effectiveUserId} user={user} />}
             
             {/* Widget Navigation - Expandable Widgets */}
             <div className="bg-white border-2 border-black rounded-lg shadow-sm">
