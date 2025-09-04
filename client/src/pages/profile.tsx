@@ -8414,29 +8414,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   />
 
 
-                  {/* Age of Children Field */}
-                  <FormField
-                    control={profileForm.control}
-                    name="childrenAges"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Age of Children (if applicable)</FormLabel>
-                        <FormControl>
-                          <Input 
-                            {...field} 
-                            placeholder="e.g., 8, 12, 16 or 'None'"
-                            className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
-                            maxLength={100}
-                          />
-                        </FormControl>
-                        <FormDescription className="text-xs text-gray-500 dark:text-gray-400">
-                          List ages separated by commas, or write "None" if no children
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
                   {/* Family Travel Section */}
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
