@@ -246,7 +246,7 @@ import { BlockUserButton } from "@/components/block-user-button";
 
 import type { User, UserPhoto, PassportStamp, TravelPlan } from "@shared/schema";
 import { insertUserReferenceSchema } from "@shared/schema";
-import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS } from "../../../shared/base-options";
+import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, getPublicInterests, getPrivateInterests } from "../../../shared/base-options";
 
 // Extended user interface for additional properties
 interface ExtendedUser extends User {
@@ -4092,25 +4092,53 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </CardHeader>
               <CardContent className="space-y-6 px-4 sm:px-6 pb-4 sm:pb-6 break-words overflow-hidden">
 
-                {/* Unified Edit Form for All Preferences */}
+                {/* Edit All Preferences Button - CLEAN SINGLE ENTRY POINT */}
+                {isOwnProfile && !editingInterests && !editingActivities && !editingEvents && (
+                  <div className="flex justify-center mb-6">
+                    <Button
+                      onClick={() => {
+                        // Open all editing modes at once
+                        setEditingInterests(true);
+                        setEditingActivities(true);
+                        setEditingEvents(true);
+                        
+                        // Initialize form data
+                        setEditFormData({
+                          interests: user?.interests || [],
+                          activities: user?.activities || [],
+                          events: user?.events || []
+                        });
+                      }}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
+                    >
+                      Edit All Preferences
+                    </Button>
+                  </div>
+                )}
+
+                {/* UNIFIED EDIT MODAL - CLEAN ORGANIZED FLOW */}
                 {isOwnProfile && (editingInterests && editingActivities && editingEvents) ? (
-                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-600">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Edit All Preferences</h3>
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg border border-blue-200 dark:border-blue-600">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Edit All Preferences</h3>
                       <div className="flex gap-2 w-full sm:w-auto">
                         <Button 
                           onClick={async () => {
                             try {
                               console.log('🔧 SAVING DATA:', editFormData);
                               
-                              // Separate predefined vs custom entries for proper database storage
-                              const predefinedInterests = INTERESTS_OPTIONS.filter(opt => editFormData.interests.includes(opt));
-                              const predefinedActivities = ACTIVITIES_OPTIONS.filter(opt => editFormData.activities.includes(opt));
-                              const predefinedEvents = EVENTS_OPTIONS.filter(opt => editFormData.events.includes(opt));
+                              // Separate predefined vs custom entries
+                              const allInterests = getAllInterests();
+                              const allActivities = getAllActivities();
+                              const allEvents = getAllEvents();
                               
-                              const customInterests = editFormData.interests.filter(int => !INTERESTS_OPTIONS.includes(int));
-                              const customActivities = editFormData.activities.filter(act => !ACTIVITIES_OPTIONS.includes(act));
-                              const customEvents = editFormData.events.filter(evt => !EVENTS_OPTIONS.includes(evt));
+                              const predefinedInterests = editFormData.interests.filter(int => allInterests.includes(int));
+                              const predefinedActivities = editFormData.activities.filter(act => allActivities.includes(act));
+                              const predefinedEvents = editFormData.events.filter(evt => allEvents.includes(evt));
+                              
+                              const customInterests = editFormData.interests.filter(int => !allInterests.includes(int));
+                              const customActivities = editFormData.activities.filter(act => !allActivities.includes(act));
+                              const customEvents = editFormData.events.filter(evt => !allEvents.includes(evt));
                               
                               const saveData = {
                                 interests: predefinedInterests,
@@ -4121,17 +4149,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 customEvents: customEvents.join(', ')
                               };
                               
-                              console.log('🔧 SAVE - Separated data:', saveData);
-                              
                               const response = await fetch(`/api/users/${user.id}`, {
                                 method: 'PUT',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify(saveData)
                               });
                               if (!response.ok) throw new Error('Failed to save');
-                              // Refresh data instead of page reload
+                              
+                              // Refresh data and close editing
                               queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
-                              // Close all editing modes after successful save
                               setEditingInterests(false);
                               setEditingActivities(false);
                               setEditingEvents(false);
@@ -4140,239 +4166,272 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               console.error('❌ Failed to update preferences:', error);
                             }
                           }}
-                          disabled={false}
-                          className="bg-green-600 hover:bg-green-700 text-white flex-1 sm:flex-none text-sm sm:text-base"
+                          className="bg-green-600 hover:bg-green-700 text-white flex-1 sm:flex-none"
                         >
                           Save All Changes
                         </Button>
                         <Button 
                           variant="outline" 
                           onClick={() => {
-                            // Cancel all edits and close all editing modes
                             setEditingInterests(false);
                             setEditingActivities(false);
                             setEditingEvents(false);
-                            // Reset form data
                             setEditFormData({
                               interests: user?.interests || [],
                               activities: user?.activities || [],
                               events: user?.events || []
                             });
                           }}
-                          className="border-orange-500 text-orange-600 hover:bg-orange-50 dark:border-orange-400 dark:text-orange-400 dark:hover:bg-orange-900/20 flex-1 sm:flex-none text-sm sm:text-base"
+                          className="border-orange-500 text-orange-600 hover:bg-orange-50 dark:border-orange-400 dark:text-orange-400 dark:hover:bg-orange-900/20 flex-1 sm:flex-none"
                         >
                           Cancel All
                         </Button>
                       </div>
                     </div>
                     
-                    {/* When editing all preferences, show the unified content */}
-                    {editingInterests && editingActivities && editingEvents && (
-                      <div className="space-y-6 mt-6">
-                        {/* Interests Section */}
-                        <div>
-                          <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
-                            <Heart className="w-5 h-5 text-blue-500" />
-                            Interests
-                          </h4>
-                          
-                          <div className="flex flex-wrap gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border overflow-hidden break-words">
-                            {getAllInterests().map((interest) => {
-                              const displayText = interest.startsWith("**") && interest.endsWith("**") ? 
-                                interest.slice(2, -2) : interest;
-                              const isSelected = editFormData.interests.includes(interest);
-                              
-                              return (
-                                <button
-                                  key={interest}
-                                  type="button"
-                                  onClick={() => {
-                                    toggleArrayValue(editFormData.interests, interest, (newInterests) => 
-                                      setEditFormData({ ...editFormData, interests: newInterests })
-                                    );
-                                  }}
-                                  className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
-                                    isSelected
-                                      ? 'bg-green-600 text-white font-bold transform scale-105'
-                                      : 'bg-white text-black border border-black'
-                                  }`}
-                                >
-                                  {displayText}
-                                </button>
-                              );
-                            })}
-                          </div>
-                          
-                          {/* Custom Interest Input */}
-                          <div className="flex space-x-2 mt-4">
-                            <Input
-                              placeholder="Add your own interests not listed above - Hit enter after each choice"
-                              value={customInterestInput}
-                              onChange={(e) => setCustomInterestInput(e.target.value)}
-                              onKeyPress={(e) => {
-                                if (e.key === 'Enter') {
-                                  e.preventDefault();
-                                  const trimmed = customInterestInput.trim();
-                                  if (trimmed && !editFormData.interests.includes(trimmed)) {
-                                    setEditFormData(prev => ({ ...prev, interests: [...prev.interests, trimmed] }));
-                                    setCustomInterestInput('');
-                                  }
-                                }
-                              }}
-                            />
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
+                    <div className="space-y-8">
+                      {/* PUBLIC INTERESTS SECTION */}
+                      <div>
+                        <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+                          <Heart className="w-5 h-5 text-blue-500" />
+                          General Interests
+                        </h4>
+                        
+                        <div className="flex flex-wrap gap-2 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border">
+                          {getPublicInterests().map((interest) => {
+                            const isSelected = editFormData.interests.includes(interest);
+                            
+                            return (
+                              <button
+                                key={interest}
+                                type="button"
+                                onClick={() => {
+                                  toggleArrayValue(editFormData.interests, interest, (newInterests) => 
+                                    setEditFormData({ ...editFormData, interests: newInterests })
+                                  );
+                                }}
+                                className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                  isSelected
+                                    ? 'bg-green-600 text-white font-bold transform scale-105'
+                                    : 'bg-white text-black border border-black'
+                                }`}
+                              >
+                                {interest}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* PRIVATE INTERESTS SECTION */}
+                      <div>
+                        <h4 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white flex items-center gap-2">
+                          <Eye className="w-5 h-5 text-red-500" />
+                          Private Interests (18+)
+                        </h4>
+                        <p className="text-sm text-red-600 dark:text-red-400 mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-600 rounded-lg">
+                          🔒 <strong>Private Section:</strong> These interests are for adult content and mature audiences only. 
+                          They help match you with like-minded people but are kept separate from your public profile.
+                        </p>
+                        
+                        <div className="flex flex-wrap gap-2 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-600">
+                          {getPrivateInterests().map((interest) => {
+                            const isSelected = editFormData.interests.includes(interest);
+                            
+                            return (
+                              <button
+                                key={interest}
+                                type="button"
+                                onClick={() => {
+                                  toggleArrayValue(editFormData.interests, interest, (newInterests) => 
+                                    setEditFormData({ ...editFormData, interests: newInterests })
+                                  );
+                                }}
+                                className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                  isSelected
+                                    ? 'bg-red-600 text-white font-bold transform scale-105'
+                                    : 'bg-white text-black border border-red-400'
+                                }`}
+                              >
+                                {interest}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* CUSTOM INTERESTS INPUT */}
+                      <div>
+                        <h5 className="font-medium mb-2 text-gray-900 dark:text-white">Add Custom Interests</h5>
+                        <div className="flex space-x-2">
+                          <Input
+                            placeholder="Add your own interests not listed above - Hit enter after each choice"
+                            value={customInterestInput}
+                            onChange={(e) => setCustomInterestInput(e.target.value)}
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
                                 const trimmed = customInterestInput.trim();
                                 if (trimmed && !editFormData.interests.includes(trimmed)) {
                                   setEditFormData(prev => ({ ...prev, interests: [...prev.interests, trimmed] }));
                                   setCustomInterestInput('');
                                 }
-                              }}
-                              className="h-8 px-2"
-                            >
-                              <Plus className="w-3 h-3" />
-                            </Button>
-                          </div>
+                              }
+                            }}
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const trimmed = customInterestInput.trim();
+                              if (trimmed && !editFormData.interests.includes(trimmed)) {
+                                setEditFormData(prev => ({ ...prev, interests: [...prev.interests, trimmed] }));
+                                setCustomInterestInput('');
+                              }
+                            }}
+                          >
+                            <Plus className="w-4 h-4" />
+                          </Button>
                         </div>
+                      </div>
 
-                        {/* Activities Section */}
-                        <div>
-                          <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
-                            <Globe className="w-5 h-5 text-green-500" />
-                            Activities
-                          </h4>
-                          
-                          <div className="text-sm text-blue-600 bg-blue-50 border border-blue-400 rounded-md p-3 mb-4 dark:bg-blue-900/20 dark:border-blue-600 dark:text-blue-300">
-                            Your default preferences for trips and to match with Nearby Locals and Travelers. They can be added to and changed in the future for specific trips etc.
-                          </div>
-                          
-                          <div className="flex flex-wrap gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border overflow-hidden break-words">
-                            {getAllActivities().map((activity, index) => {
-                              const isSelected = editFormData.activities.includes(activity);
-                              
-                              return (
-                                <button
-                                  key={`activity-${activity}-${index}`}
-                                  type="button"
-                                  onClick={() => {
-                                    toggleArrayValue(editFormData.activities, activity, (newActivities) => 
-                                      setEditFormData({ ...editFormData, activities: newActivities })
-                                    );
-                                  }}
-                                  className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
-                                    isSelected
-                                      ? 'bg-green-600 text-white font-bold transform scale-105'
-                                      : 'bg-white text-black border border-black'
-                                  }`}
-                                >
-                                  {activity}
-                                </button>
-                              );
-                            })}
-                          </div>
-                          
-                          {/* Custom Activity Input */}
-                          <div className="flex space-x-2 mt-4">
-                            <Input
-                              placeholder="Add your own activities not listed above - Hit enter after each choice"
-                              value={customActivityInput}
-                              onChange={(e) => setCustomActivityInput(e.target.value)}
-                              onKeyPress={(e) => {
-                                if (e.key === 'Enter') {
-                                  e.preventDefault();
-                                  const trimmed = customActivityInput.trim();
-                                  if (trimmed && !editFormData.activities.includes(trimmed)) {
-                                    setEditFormData(prev => ({ ...prev, activities: [...prev.activities, trimmed] }));
-                                    setCustomActivityInput('');
-                                  }
-                                }
-                              }}
-                            />
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
+                      {/* ACTIVITIES SECTION */}
+                      <div>
+                        <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+                          <Globe className="w-5 h-5 text-green-500" />
+                          Activities
+                        </h4>
+                        
+                        <div className="text-sm text-blue-600 bg-blue-50 border border-blue-400 rounded-md p-3 mb-4 dark:bg-blue-900/20 dark:border-blue-600 dark:text-blue-300">
+                          Your default preferences for trips and to match with Nearby Locals and Travelers.
+                        </div>
+                        
+                        <div className="flex flex-wrap gap-2 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border">
+                          {getAllActivities().map((activity) => {
+                            const isSelected = editFormData.activities.includes(activity);
+                            
+                            return (
+                              <button
+                                key={activity}
+                                type="button"
+                                onClick={() => {
+                                  toggleArrayValue(editFormData.activities, activity, (newActivities) => 
+                                    setEditFormData({ ...editFormData, activities: newActivities })
+                                  );
+                                }}
+                                className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                  isSelected
+                                    ? 'bg-green-600 text-white font-bold transform scale-105'
+                                    : 'bg-white text-black border border-black'
+                                }`}
+                              >
+                                {activity}
+                              </button>
+                            );
+                          })}
+                        </div>
+                        
+                        <div className="flex space-x-2 mt-4">
+                          <Input
+                            placeholder="Add custom activities - Hit enter after each choice"
+                            value={customActivityInput}
+                            onChange={(e) => setCustomActivityInput(e.target.value)}
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
                                 const trimmed = customActivityInput.trim();
                                 if (trimmed && !editFormData.activities.includes(trimmed)) {
                                   setEditFormData(prev => ({ ...prev, activities: [...prev.activities, trimmed] }));
                                   setCustomActivityInput('');
                                 }
-                              }}
-                              className="h-8 px-2"
-                            >
-                              <Plus className="w-3 h-3" />
-                            </Button>
-                          </div>
+                              }
+                            }}
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const trimmed = customActivityInput.trim();
+                              if (trimmed && !editFormData.activities.includes(trimmed)) {
+                                setEditFormData(prev => ({ ...prev, activities: [...prev.activities, trimmed] }));
+                                setCustomActivityInput('');
+                              }
+                            }}
+                          >
+                            <Plus className="w-4 h-4" />
+                          </Button>
                         </div>
+                      </div>
 
-                        {/* Events Section */}
-                        <div>
-                          <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
-                            <Calendar className="w-5 h-5 text-purple-500" />
-                            Events
-                          </h4>
-                          
-                          <div className="flex flex-wrap gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border">
-                            {getAllEvents().map((event, index) => {
-                              const isSelected = editFormData.events.includes(event);
-                              
-                              return (
-                                <button
-                                  key={`event-${event}-${index}`}
-                                  type="button"
-                                  onClick={() => {
-                                    toggleArrayValue(editFormData.events, event, (newEvents) => 
-                                      setEditFormData({ ...editFormData, events: newEvents })
-                                    );
-                                  }}
-                                  className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
-                                    isSelected
-                                      ? 'bg-green-600 text-white font-bold transform scale-105'
-                                      : 'bg-white text-black border border-black'
-                                  }`}
-                                >
-                                  {event}
-                                </button>
-                              );
-                            })}
-                          </div>
-                          
-                          {/* Custom Event Input */}
-                          <div className="flex space-x-2 mt-4">
-                            <Input
-                              placeholder="Add your own events not listed above - Hit enter after each choice"
-                              value={customEventInput}
-                              onChange={(e) => setCustomEventInput(e.target.value)}
-                              onKeyPress={(e) => {
-                                if (e.key === 'Enter') {
-                                  e.preventDefault();
-                                  const trimmed = customEventInput.trim();
-                                  if (trimmed && !editFormData.events.includes(trimmed)) {
-                                    setEditFormData(prev => ({ ...prev, events: [...prev.events, trimmed] }));
-                                    setCustomEventInput('');
-                                  }
-                                }
-                              }}
-                            />
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
+                      {/* EVENTS SECTION */}
+                      <div>
+                        <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+                          <Calendar className="w-5 h-5 text-purple-500" />
+                          Events
+                        </h4>
+                        
+                        <div className="flex flex-wrap gap-2 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border">
+                          {getAllEvents().map((event) => {
+                            const isSelected = editFormData.events.includes(event);
+                            
+                            return (
+                              <button
+                                key={event}
+                                type="button"
+                                onClick={() => {
+                                  toggleArrayValue(editFormData.events, event, (newEvents) => 
+                                    setEditFormData({ ...editFormData, events: newEvents })
+                                  );
+                                }}
+                                className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                  isSelected
+                                    ? 'bg-purple-600 text-white font-bold transform scale-105'
+                                    : 'bg-white text-black border border-black'
+                                }`}
+                              >
+                                {event}
+                              </button>
+                            );
+                          })}
+                        </div>
+                        
+                        <div className="flex space-x-2 mt-4">
+                          <Input
+                            placeholder="Add custom events - Hit enter after each choice"
+                            value={customEventInput}
+                            onChange={(e) => setCustomEventInput(e.target.value)}
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
                                 const trimmed = customEventInput.trim();
                                 if (trimmed && !editFormData.events.includes(trimmed)) {
                                   setEditFormData(prev => ({ ...prev, events: [...prev.events, trimmed] }));
                                   setCustomEventInput('');
                                 }
-                              }}
-                              className="h-8 px-2"
-                            >
-                              <Plus className="w-3 h-3" />
-                            </Button>
+                              }
+                            }}
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const trimmed = customEventInput.trim();
+                              if (trimmed && !editFormData.events.includes(trimmed)) {
+                                setEditFormData(prev => ({ ...prev, events: [...prev.events, trimmed] }));
+                                setCustomEventInput('');
+                              }
+                            }}
+                          >
+                            <Plus className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
                           </div>
                         </div>
                         

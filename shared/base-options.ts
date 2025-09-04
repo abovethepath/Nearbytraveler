@@ -211,10 +211,43 @@ export const ALL_LANGUAGES = [
   "Arabic", "Hebrew", "Turkish", "Greek", "Hindi", "Urdu", "Bengali"
 ];
 
+// PRIVATE/ADULT INTERESTS - Need 18+ verification and separate section
+export const PRIVATE_INTERESTS = [
+  // Dating/Adult/Private Content
+  "LGBTQIA+",
+  "Local Gay Parties/Events", 
+  "Polyamory and ENM",
+  "Adult Entertainment",
+  "Strip Clubs & Adult Shows",
+  "Sex Shops & Adult Stores", 
+  "BDSM & Kink Community",
+  "Swinger Parties & Clubs",
+  "Adult Dating & Hookups",
+  "Sugar Dating",
+  "Escort & Companion Services",
+  "Sex-Positive Communities",
+  "Adult Gaming & VR",
+  "Fetish Events & Meetups", 
+  "Open Relationships",
+  "Threesome & Group Activities",
+  "Adult Massage Services",
+  "Cam Shows & Online Adult",
+  "Adult Content Creation",
+  "Sexual Wellness Workshops",
+  
+  // Cannabis/Substance
+  "Marijuana/Cannabis User"
+];
+
+// PUBLIC INTERESTS - Safe for all audiences  
+export const PUBLIC_INTERESTS = ALL_INTERESTS.filter(interest => !PRIVATE_INTERESTS.includes(interest));
+
 // MASTER EXPORT FUNCTIONS - USE THESE EVERYWHERE
 export const getMostPopularInterests = () => MOST_POPULAR_INTERESTS;
 export const getAdditionalInterests = () => ADDITIONAL_INTERESTS;
 export const getAllInterests = () => ALL_INTERESTS;
+export const getPublicInterests = () => PUBLIC_INTERESTS;
+export const getPrivateInterests = () => PRIVATE_INTERESTS;
 export const getAllActivities = () => ALL_ACTIVITIES; 
 export const getAllEvents = () => ALL_EVENTS;
 export const getAllLanguages = () => ALL_LANGUAGES;
