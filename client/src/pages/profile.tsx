@@ -620,6 +620,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [showTravelPlanDetails, setShowTravelPlanDetails] = useState(false);
   const [showDestinationSuggestions, setShowDestinationSuggestions] = useState(false);
   const [showChatroomList, setShowChatroomList] = useState(false);
+  const [activeTab, setActiveTab] = useState('contacts');
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [showKeywordSearch, setShowKeywordSearch] = useState(false);
@@ -3585,6 +3586,74 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           </div>
         )}
       </section>
+
+      {/* Navigation Tabs - Couchsurfing Style */}
+      <div className="w-full bg-black text-white px-4 sm:px-6 lg:px-10 py-3">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex space-x-6 sm:space-x-8">
+            <button
+              onClick={() => setActiveTab('contacts')}
+              className={`text-sm sm:text-base font-medium px-3 py-2 rounded-t-lg transition-colors ${
+                activeTab === 'contacts' 
+                  ? 'bg-white text-black' 
+                  : 'text-white hover:text-gray-200'
+              }`}
+            >
+              Contacts
+              {userConnections.length > 0 && (
+                <span className="ml-2 px-2 py-1 text-xs bg-blue-600 text-white rounded-full">
+                  {userConnections.length}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab('photos')}
+              className={`text-sm sm:text-base font-medium px-3 py-2 rounded-t-lg transition-colors ${
+                activeTab === 'photos' 
+                  ? 'bg-white text-black' 
+                  : 'text-white hover:text-gray-200'
+              }`}
+            >
+              Photos
+              {userPhotos?.length > 0 && (
+                <span className="ml-2 px-2 py-1 text-xs bg-blue-600 text-white rounded-full">
+                  {userPhotos.length}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab('references')}
+              className={`text-sm sm:text-base font-medium px-3 py-2 rounded-t-lg transition-colors ${
+                activeTab === 'references' 
+                  ? 'bg-white text-black' 
+                  : 'text-white hover:text-gray-200'
+              }`}
+            >
+              References
+              {vouchData?.totalReceived > 0 && (
+                <span className="ml-2 px-2 py-1 text-xs bg-blue-600 text-white rounded-full">
+                  {vouchData.totalReceived}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab('travel')}
+              className={`text-sm sm:text-base font-medium px-3 py-2 rounded-t-lg transition-colors ${
+                activeTab === 'travel' 
+                  ? 'bg-white text-black' 
+                  : 'text-white hover:text-gray-200'
+              }`}
+            >
+              Travel
+              {travelPlans?.length > 0 && (
+                <span className="ml-2 px-2 py-1 text-xs bg-blue-600 text-white rounded-full">
+                  {travelPlans.length}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
       
       {/* Main content section - Mobile Responsive Layout */}
       <div className="w-full max-w-full mx-auto pb-20 sm:pb-4 px-1 sm:px-4 lg:px-6 mt-2 overflow-x-hidden">
@@ -3592,12 +3661,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           {/* Main Content Column */}
           <div className="w-full lg:col-span-2 space-y-3 sm:space-y-4 lg:space-y-6">
 
-
-            
-
-
-            
-            {/* About Section - Mobile Optimized */}
+            {/* About Section - Always Visible */}
             <Card className="mt-2 relative overflow-visible">
               <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-4 lg:px-6 pt-3 sm:pt-4 lg:pt-6">
                 <div className="flex items-center justify-between w-full">
@@ -5436,7 +5500,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             )}
 
             {/* Travel Plans - Hidden for business profiles */}
-            {user?.userType !== 'business' && (
+            {activeTab === 'travel' && user?.userType !== 'business' && (
               <>
                 {/* Current & Upcoming Travel Plans */}
                 <Card>
@@ -5806,6 +5870,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
 
             {/* Photo Gallery */}
+            {activeTab === 'photos' && (
             <Card>
               <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <CardTitle className="flex items-center gap-2">
@@ -5882,6 +5947,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 )}
               </CardContent>
             </Card>
+            )}
 
             {/* Event Organizer Hub - for ALL users who want to organize events */}
             {isOwnProfile && (
@@ -5972,6 +6038,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
 
             {/* Current Connections Widget - Visible to all - MOVED UNDER TRAVEL STATS */}
+            {activeTab === 'contacts' && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
@@ -6251,6 +6318,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 )}
               </CardContent>
             </Card>
+            )}
 
 
 
@@ -6521,7 +6589,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </Card>
 
             {/* References Widget */}
-            {user?.id && (
+            {activeTab === 'references' && user?.id && (
               <Card className="hover:shadow-lg transition-all duration-200">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
