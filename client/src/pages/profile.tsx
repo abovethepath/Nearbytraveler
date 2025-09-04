@@ -4427,6 +4427,43 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <Button
                       size="sm"
                       onClick={() => {
+                        // Initialize editFormData with current user data including custom entries
+                        const userInterests = [...(user?.interests || [])];
+                        const userActivities = [...(user?.activities || [])];
+                        const userEvents = [...(user?.events || [])];
+                        
+                        // Add custom fields from database to the arrays for editing
+                        if (user?.customInterests) {
+                          const customInterests = user.customInterests.split(',').map(s => s.trim()).filter(s => s);
+                          customInterests.forEach(item => {
+                            if (!userInterests.includes(item)) {
+                              userInterests.push(item);
+                            }
+                          });
+                        }
+                        if (user?.customActivities) {
+                          const customActivities = user.customActivities.split(',').map(s => s.trim()).filter(s => s);
+                          customActivities.forEach(item => {
+                            if (!userActivities.includes(item)) {
+                              userActivities.push(item);
+                            }
+                          });
+                        }
+                        if (user?.customEvents) {
+                          const customEvents = user.customEvents.split(',').map(s => s.trim()).filter(s => s);
+                          customEvents.forEach(item => {
+                            if (!userEvents.includes(item)) {
+                              userEvents.push(item);
+                            }
+                          });
+                        }
+                        
+                        setEditFormData({
+                          interests: userInterests,
+                          activities: userActivities,
+                          events: userEvents
+                        });
+                        
                         setEditingInterests(true);
                         setEditingActivities(true);
                         setEditingEvents(true);
