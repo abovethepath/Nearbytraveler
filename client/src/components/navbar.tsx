@@ -363,7 +363,7 @@ function Navbar() {
           <div className="max-w-7xl mx-auto flex items-center justify-center gap-2">
             <span>⚠️ Complete your profile to unlock all features</span>
             <Link href={`/profile/${directUser?.id || ''}`}>
-              <Button variant="secondary" size="sm" className="ml-2 bg-red-600 text-white hover:bg-red-700">
+              <Button variant="secondary" size="sm" className="ml-2 bg-white text-red-600 hover:bg-gray-100">
                 Complete Profile
               </Button>
             </Link>
