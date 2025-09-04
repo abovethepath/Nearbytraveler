@@ -105,16 +105,7 @@ export const ADDITIONAL_INTERESTS = [
   "Nudist Beach",
   
   // Cannabis/Substance Culture (Adults Only)
-  "Cannabis Tours & Dispensaries",
-  "420 Friendly Activities", 
-  "Psychedelic Experiences",
-  "Magic Mushroom Tours",
-  "Amsterdam Coffee Shops",
-  "Rave Scene & Electronic Music",
-  "Festival Drug Culture",
-  "Party Favors & Enhancement",
-  "Cannabis Social Clubs",
-  "Medical Marijuana Tourism",
+  "Marijuana/Cannabis User",
   
   // Sports/Recreation
   "Sports & Recreation",
