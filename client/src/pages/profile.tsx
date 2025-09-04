@@ -3547,6 +3547,108 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       )}
                     </div>
                   </div>
+
+                  {/* Travel Stats - User info goes in left sidebar */}
+                  {user?.userType !== 'business' && (
+                    <Card className="mt-4 hover:shadow-lg transition-all duration-200 hover:border-orange-300">
+                      <CardHeader>
+                        <CardTitle className="text-sm dark:text-white">Stats</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3 text-sm">
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-600 dark:text-gray-300 flex items-center gap-1">
+                            <Sparkles className="w-3 h-3 text-orange-500" />
+                            Aura
+                          </span>
+                          <span className="font-semibold text-orange-600 dark:text-orange-400">{user?.aura || 0}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-600 dark:text-gray-300">Connections</span>
+                          <span className="font-semibold dark:text-white">{userConnections.length}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-600 dark:text-gray-300">Active Plans</span>
+                          <span className="font-semibold dark:text-white">{travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-gray-600 dark:text-gray-300">Trips Taken</span>
+                          <span className="font-semibold dark:text-white">{travelPlans.filter(plan => plan.status === 'completed').length}</span>
+                        </div>
+                        <div 
+                          className="flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 -m-2 transition-colors"
+                          onClick={() => setShowChatroomList(true)}
+                        >
+                          <span className="text-gray-600 dark:text-gray-300">Chatrooms</span>
+                          <div className="flex items-center gap-1">
+                            <span className="font-semibold dark:text-white">{userChatrooms.length}</span>
+                            <ChevronRight className="w-3 h-3 text-gray-400" />
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Countries Visited - User info in left sidebar */}
+                  {user?.userType !== 'business' && (
+                    <Card className="mt-4">
+                      <CardHeader>
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-sm">
+                            <span className="text-black dark:text-white">Countries ({countriesVisited.length})</span>
+                          </CardTitle>
+                          {isOwnProfile && !editingCountries && (
+                            <Button size="sm" variant="outline" onClick={handleEditCountries}>
+                              <Edit className="w-3 h-3" />
+                            </Button>
+                          )}
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        {editingCountries ? (
+                          <div className="space-y-3">
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  role="combobox"
+                                  className="w-full justify-between bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-left"
+                                >
+                                  {tempCountries.length > 0 
+                                    ? `${tempCountries.length} countr${tempCountries.length > 1 ? 'ies' : 'y'} selected`
+                                    : "Select countries..."
+                                  }
+                                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                </Button>
+                              </PopoverTrigger>
+                            </Popover>
+                            <div className="flex gap-2">
+                              <Button size="sm" onClick={handleSaveCountries}>
+                                Save
+                              </Button>
+                              <Button size="sm" variant="outline" onClick={handleCancelCountries}>
+                                Cancel
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex flex-wrap gap-1">
+                            {countriesVisited.length > 0 ? (
+                              countriesVisited.slice(0, 6).map((country, idx) => (
+                                <span key={idx} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-200">
+                                  {country}
+                                </span>
+                              ))
+                            ) : (
+                              <span className="text-sm text-gray-500 dark:text-gray-400">No countries added yet</span>
+                            )}
+                            {countriesVisited.length > 6 && (
+                              <span className="text-xs text-gray-500 dark:text-gray-400">+{countriesVisited.length - 6} more</span>
+                            )}
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  )}
                 </>
               );
             })()}
@@ -5924,7 +6026,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             )}
           </div>
 
-          {/* RIGHT SIDEBAR - Widgets */}
+          {/* RIGHT SIDEBAR - Action Widgets */}
           <div className="w-full lg:col-span-1 space-y-3 sm:space-y-4 lg:space-y-6">
             {/* Quick Meetup Widget - Only show for own profile (travelers/locals only, NOT business) */}
             {isOwnProfile && user && user.userType !== 'business' && (
@@ -5948,41 +6050,93 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </div>
             )}
 
-            {/* Travel Stats - Hidden for business profiles */}
-            {user?.userType !== 'business' && (
-              <Card className="hover:shadow-lg transition-all duration-200 hover:border-orange-300">
+            {/* Connection Requests Widget - Action item for right sidebar */}
+            {isOwnProfile && connectionRequests.length > 0 && (
+              <Card>
                 <CardHeader>
-                  <CardTitle className="text-sm dark:text-white">Stats</CardTitle>
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <Users className="w-4 h-4 text-blue-500" />
+                    Requests ({connectionRequests.length})
+                  </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3 text-sm">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-1">
-                      <Sparkles className="w-3 h-3 text-orange-500" />
-                      Aura
-                    </span>
-                    <span className="font-semibold text-orange-600 dark:text-orange-400">{user?.aura || 0}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">Connections</span>
-                    <span className="font-semibold dark:text-white">{userConnections.length}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">Active Plans</span>
-                    <span className="font-semibold dark:text-white">{travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">Trips Taken</span>
-                    <span className="font-semibold dark:text-white">{travelPlans.filter(plan => plan.status === 'completed').length}</span>
-                  </div>
-                  <div 
-                    className="flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 -m-2 transition-colors"
-                    onClick={() => setShowChatroomList(true)}
-                  >
-                    <span className="text-gray-600 dark:text-gray-300">Chatrooms</span>
-                    <div className="flex items-center gap-1">
-                      <span className="font-semibold dark:text-white">{userChatrooms.length}</span>
-                      <ChevronRight className="w-3 h-3 text-gray-400" />
-                    </div>
+                <CardContent>
+                  <div className="space-y-2">
+                    {connectionRequests.slice(0, 3).map((request: any) => (
+                      <div key={request.id} className="flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                        <div 
+                          className="flex items-center gap-2 cursor-pointer flex-1 min-w-0 mr-2"
+                          onClick={() => setLocation(`/profile/${request.requesterUser?.id?.toString() || ''}`)}
+                        >
+                          <SimpleAvatar 
+                            user={request.requesterUser} 
+                            size="sm" 
+                            className="flex-shrink-0"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-xs truncate text-gray-900 dark:text-white">@{request.requesterUser?.username}</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-1 flex-shrink-0">
+                          <Button
+                            size="sm"
+                            className="h-6 px-2 text-xs"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              apiRequest('PUT', `/api/connections/${request.id}`, { status: 'accepted' })
+                                .then(() => {
+                                  queryClient.invalidateQueries({ queryKey: [`/api/connections/${effectiveUserId}/requests`] });
+                                  queryClient.invalidateQueries({ queryKey: [`/api/connections/${effectiveUserId}`] });
+                                  toast({
+                                    title: "Connection accepted",
+                                    description: `You are now connected with @${request.requesterUser?.username}`,
+                                  });
+                                })
+                                .catch(error => {
+                                  console.error('Error accepting connection request:', error);
+                                  toast({
+                                    title: "Error",
+                                    description: "Failed to accept connection request",
+                                    variant: "destructive"
+                                  });
+                                });
+                            }}
+                          >
+                            ✓
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-6 px-2 text-xs"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              apiRequest('PUT', `/api/connections/${request.id}`, { status: 'rejected' })
+                                .then(() => {
+                                  queryClient.invalidateQueries({ queryKey: [`/api/connections/${effectiveUserId}/requests`] });
+                                  toast({
+                                    title: "Connection declined",
+                                    description: "Request has been declined",
+                                  });
+                                })
+                                .catch(error => {
+                                  console.error('Error declining connection request:', error);
+                                  toast({
+                                    title: "Error",
+                                    description: "Failed to decline connection request",
+                                    variant: "destructive"
+                                  });
+                                });
+                            }}
+                          >
+                            ✕
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                    {connectionRequests.length > 3 && (
+                      <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-2">
+                        +{connectionRequests.length - 3} more
+                      </p>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -6690,123 +6844,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
 
 
-            {/* Connection Requests Widget - Only visible to profile owner */}
-            {isOwnProfile && connectionRequests.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Users className="w-5 h-5 text-blue-500" />
-                    Connection Requests ({connectionRequests.length})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {connectionRequests.slice(0, 5).map((request: any) => (
-                      <div key={request.id} className="flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors">
-                        <div 
-                          className="flex items-center gap-2 cursor-pointer flex-1 min-w-0 mr-2"
-                          onClick={() => setLocation(`/profile/${request.requesterUser?.id?.toString() || ''}`)}
-                        >
-                          <SimpleAvatar 
-                            user={request.requesterUser} 
-                            size="sm" 
-                            className="flex-shrink-0"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-sm truncate text-gray-900 dark:text-white">@{request.requesterUser?.username}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                              {request.requesterUser?.location || `@${request.requesterUser?.username}`}
-                            </p>
-                          </div>
-                        </div>
-                        
-                        <div className="flex gap-1 flex-shrink-0">
-                          <Button
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              // Accept connection request
-                              apiRequest('PUT', `/api/connections/${request.id}`, { status: 'accepted' })
-                                .then(() => {
-                                  queryClient.invalidateQueries({ queryKey: [`/api/connections/${effectiveUserId}/requests`] });
-                                  queryClient.invalidateQueries({ queryKey: [`/api/connections/${effectiveUserId}`] });
-                                  toast({
-                                    title: "Connection accepted",
-                                    description: `You are now connected with @${request.requesterUser?.username}`,
-                                  });
-                                })
-                                .catch(() => {
-                                  toast({
-                                    title: "Error",
-                                    description: "Failed to accept connection request",
-                                    variant: "destructive",
-                                  });
-                                });
-                            }}
-                            className="h-8 w-16 px-2 text-xs"
-                          >
-                            Accept
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              // Decline connection request
-                              apiRequest('PUT', `/api/connections/${request.id}`, { status: 'rejected' })
-                                .then(() => {
-                                  queryClient.invalidateQueries({ queryKey: [`/api/connections/${effectiveUserId}/requests`] });
-                                  toast({
-                                    title: "Connection declined",
-                                    description: "Connection request declined",
-                                  });
-                                })
-                                .catch(() => {
-                                  toast({
-                                    title: "Error",
-                                    description: "Failed to decline connection request",
-                                    variant: "destructive",
-                                  });
-                                });
-                            }}
-                            className="h-8 w-16 px-2 text-xs"
-                          >
-                            Decline
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                    {connectionRequests.length > 5 && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="w-full text-xs text-gray-500 hover:text-blue-600 h-8"
-                        onClick={() => setLocation('/requests')}
-                      >
-                        View all {connectionRequests.length} requests
-                      </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
 
 
-            {/* Countries Visited - Hidden for business profiles */}
-            {user?.userType !== 'business' && (
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle>
-                      <span className="text-black dark:text-white">Countries I've Visited ({countriesVisited.length})</span>
-                    </CardTitle>
-                    {isOwnProfile && !editingCountries && (
-                      <Button size="sm" variant="outline" onClick={handleEditCountries}>
-                        <Edit className="w-3 h-3" />
-                      </Button>
-                    )}
-                  </div>
-                </CardHeader>
                 <CardContent>
                   {editingCountries ? (
                     <div className="space-y-3">
