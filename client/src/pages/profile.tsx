@@ -3438,7 +3438,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       
       {/* COUCHSURFING-STYLE LAYOUT - Left sidebar + Right content */}
       <div className="w-full max-w-7xl mx-auto pb-20 sm:pb-4 px-1 sm:px-4 lg:px-6 mt-2 overflow-x-hidden">
-        <div className="flex flex-col lg:grid lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+        <div className="flex flex-col lg:grid lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-6">
           
           {/* LEFT SIDEBAR - Couchsurfing Style (Profile Info) */}
           <div className="w-full lg:col-span-1 space-y-3 sm:space-y-4 lg:space-y-6">
@@ -3543,7 +3543,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
           </div>
 
-          {/* RIGHT CONTENT AREA - Main Profile Content */}
+          {/* MIDDLE CONTENT AREA - Main Profile Content */}
           <div className="w-full lg:col-span-3 space-y-3 sm:space-y-4 lg:space-y-6">
             
             {/* About Section - Mobile Optimized */}
@@ -5911,6 +5911,71 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {/* Event Organizer Hub - for ALL users who want to organize events */}
             {isOwnProfile && (
               <EventOrganizerHubSection userId={effectiveUserId || 0} />
+            )}
+          </div>
+
+          {/* RIGHT SIDEBAR - Widgets */}
+          <div className="w-full lg:col-span-1 space-y-3 sm:space-y-4 lg:space-y-6">
+            {/* Quick Meetup Widget - Only show for own profile (travelers/locals only, NOT business) */}
+            {isOwnProfile && user && user.userType !== 'business' && (
+              <div>
+                <QuickMeetupWidget city={user?.hometownCity ?? ''} profileUserId={user?.id} />
+              </div>
+            )}
+
+            {/* Quick Deals Widget for Business Users - Only show if deals exist */}
+            {isOwnProfile && user?.userType === 'business' && quickDeals && quickDeals.length > 0 && (
+              <div>
+                <QuickDealsWidget 
+                  city={user?.hometownCity ?? ''} 
+                  profileUserId={user?.id} 
+                  showCreateForm={showCreateDeal}
+                  onCloseCreateForm={() => {
+                    console.log('🔥 CLOSING create deal form');
+                    setShowCreateDeal(false);
+                  }}
+                />
+              </div>
+            )}
+
+            {/* Travel Stats - Hidden for business profiles */}
+            {user?.userType !== 'business' && (
+              <Card className="hover:shadow-lg transition-all duration-200 hover:border-orange-300">
+                <CardHeader>
+                  <CardTitle className="text-sm dark:text-white">Stats</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-1">
+                      <Sparkles className="w-3 h-3 text-orange-500" />
+                      Aura
+                    </span>
+                    <span className="font-semibold text-orange-600 dark:text-orange-400">{user?.aura || 0}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300">Connections</span>
+                    <span className="font-semibold dark:text-white">{userConnections.length}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300">Active Plans</span>
+                    <span className="font-semibold dark:text-white">{travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300">Trips Taken</span>
+                    <span className="font-semibold dark:text-white">{travelPlans.filter(plan => plan.status === 'completed').length}</span>
+                  </div>
+                  <div 
+                    className="flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 -m-2 transition-colors"
+                    onClick={() => setShowChatroomList(true)}
+                  >
+                    <span className="text-gray-600 dark:text-gray-300">Chatrooms</span>
+                    <div className="flex items-center gap-1">
+                      <span className="font-semibold dark:text-white">{userChatrooms.length}</span>
+                      <ChevronRight className="w-3 h-3 text-gray-400" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             )}
           </div>
 
