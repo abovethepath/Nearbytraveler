@@ -3641,6 +3641,122 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                       </CardContent>
                     </Card>
                   )}
+
+                  {/* Languages Widget - Left sidebar */}
+                  <Card className="mt-4">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-sm dark:text-white">Languages I Speak</CardTitle>
+                        {isOwnProfile && !editingLanguages && (
+                          <Button size="sm" variant="outline" onClick={handleEditLanguages}>
+                            <Edit className="w-3 h-3" />
+                          </Button>
+                        )}
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      {editingLanguages ? (
+                        <div className="space-y-3">
+                          <div className="flex flex-wrap gap-1 p-2 border rounded">
+                            {getAllLanguages().map((language) => {
+                              const isSelected = tempLanguages.includes(language);
+                              return (
+                                <button
+                                  key={language}
+                                  type="button"
+                                  onClick={() => {
+                                    if (isSelected) {
+                                      setTempLanguages(tempLanguages.filter(l => l !== language));
+                                    } else {
+                                      setTempLanguages([...tempLanguages, language]);
+                                    }
+                                  }}
+                                  className={`inline-flex items-center justify-center h-6 rounded-full px-2 text-xs font-medium whitespace-nowrap border-0 ${
+                                    isSelected
+                                      ? 'bg-green-600 text-white'
+                                      : 'bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200'
+                                  }`}
+                                >
+                                  {language}
+                                </button>
+                              );
+                            })}
+                          </div>
+                          <div className="flex gap-2">
+                            <Button size="sm" onClick={handleSaveLanguages}>Save</Button>
+                            <Button size="sm" variant="outline" onClick={handleCancelLanguages}>Cancel</Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex flex-wrap gap-1">
+                          {(user?.languagesSpoken && user.languagesSpoken.length > 0) ? (
+                            user.languagesSpoken.slice(0, 4).map((language, idx) => (
+                              <span key={idx} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-200">
+                                {language}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-sm text-gray-500 dark:text-gray-400">No languages listed</span>
+                          )}
+                          {user?.languagesSpoken && user.languagesSpoken.length > 4 && (
+                            <span className="text-xs text-gray-500">+{user.languagesSpoken.length - 4} more</span>
+                          )}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Connections Widget - Left sidebar */}
+                  <Card className="mt-4">
+                    <CardHeader>
+                      <CardTitle className="text-sm flex items-center justify-between dark:text-white">
+                        <span className="flex items-center gap-2">
+                          <Users className="w-4 h-4 text-blue-500" />
+                          Connections ({userConnections.length})
+                        </span>
+                        {isOwnProfile && (
+                          <Button size="sm" variant="outline" onClick={() => setShowConnectionFilters(!showConnectionFilters)}>
+                            Sort & Filter
+                          </Button>
+                        )}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        {userConnections.slice(0, connectionsDisplayCount).map((connection: any) => (
+                          <div key={connection.id} className="flex items-center gap-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg cursor-pointer transition-colors"
+                               onClick={() => setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`)}>
+                            <SimpleAvatar user={connection.connectedUser} size="sm" />
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-xs truncate dark:text-white">@{connection.connectedUser?.username}</p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{connection.connectedUser?.name}</p>
+                            </div>
+                          </div>
+                        ))}
+                        {userConnections.length > connectionsDisplayCount && (
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => setConnectionsDisplayCount(prev => prev + 5)}
+                            className="w-full text-xs"
+                          >
+                            View {Math.min(5, userConnections.length - connectionsDisplayCount)} more
+                          </Button>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* References Widget - Left sidebar */}
+                  <ReferencesWidgetNew 
+                    userId={effectiveUserId || 0}
+                    isOwnProfile={isOwnProfile}
+                  />
+
+                  {/* Friend Referral Widget - Left sidebar */}
+                  {isOwnProfile && (
+                    <FriendReferralWidget />
+                  )}
                 </>
               );
             })()}
@@ -6100,6 +6216,18 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                 </Button>
               </CardContent>
             </Card>
+
+            {/* Vouch Widget - Right sidebar */}
+            <VouchWidget 
+              userId={effectiveUserId || 0}
+              isOwnProfile={isOwnProfile}
+            />
+
+            {/* Location Sharing Widget - Right sidebar */}
+            <LocationSharingSection 
+              user={user}
+              isOwnProfile={isOwnProfile}
+            />
 
             {/* Connection Requests Widget - Action item for right sidebar */}
             {isOwnProfile && connectionRequests.length > 0 && (
