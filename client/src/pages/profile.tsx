@@ -9115,6 +9115,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </div>
       )}
       </div>
+      
+      {/* Edit Mode Modal */}
+      {isEditMode && user && (
+        <ProfileEditMode
+          user={user}
+          onClose={() => setIsEditMode(false)}
+          onSave={(updatedUser) => {
+            setUser(updatedUser);
+            setIsEditMode(false);
+          }}
+        />
+      )}
     </>
   );
 }
@@ -9371,22 +9383,8 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
             </div>
           )}
         </div>
-          </div>
-        </div>
-      </div>
-      
-      {/* Edit Mode Modal */
-      {isEditMode && user && (
-        <ProfileEditMode
-          user={user}
-          onClose={() => setIsEditMode(false)}
-          onSave={(updatedUser) => {
-            setUser(updatedUser);
-            setIsEditMode(false);
-          }}
-        />
-      )}
-    </div>
+      </CardContent>
+    </Card>
   );
 }
 
