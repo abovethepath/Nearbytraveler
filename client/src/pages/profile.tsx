@@ -3486,15 +3486,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <div className="text-center mb-6">
                       <h1 className="text-2xl font-bold mb-2">{user?.username}</h1>
                       <div className="text-green-100 mb-1">
-                        {isCurrentlyTraveling && currentTravelDestination ? (
-                          <span>Nearby Traveler • {currentTravelDestination}</span>
-                        ) : (
-                          <span>
-                            {user?.currentCity || user?.hometownCity || 'Location not set'}
-                            {user?.currentState && `, ${user.currentState}`}
-                            {user?.currentCountry && `, ${user.currentCountry}`}
-                          </span>
-                        )}
+                        <span>
+                          Nearby Local • {user?.hometownCity || user?.currentCity || 'Location not set'}
+                          {(user?.hometownState || user?.currentState) && `, ${user.hometownState || user.currentState}`}
+                          {(user?.hometownCountry || user?.currentCountry) && `, ${user.hometownCountry || user.currentCountry}`}
+                        </span>
                       </div>
                     </div>
 
@@ -9089,8 +9085,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       )}
       </div>
       
-      {/* Edit Mode Modal */}
-      {isEditMode && user && (
+      {/* Edit Mode Modal - Temporarily disabled */}
+      {/* {isEditMode && user && (
         <ProfileEditMode
           user={user}
           onClose={() => setIsEditMode(false)}
@@ -9099,7 +9095,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             setIsEditMode(false);
           }}
         />
-      )}
+      )} */}
     </>
   );
 }
