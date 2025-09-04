@@ -55,10 +55,7 @@ export function PeopleDiscoveryWidget({
     return destination;
   };
 
-  // Debug current user ID
-  React.useEffect(() => {
-    console.log(`🔍 PEOPLE DISCOVERY WIDGET: currentUser:`, currentUser?.username || 'null', 'ID:', currentUserId || 'undefined', 'prop ID:', propCurrentUserId || 'undefined');
-  }, [currentUser, currentUserId, propCurrentUserId]);
+  // Debug disabled for performance
 
   const PersonWithCommonalities = ({ person }: { person: PersonCard }) => {
     // Show loading state to prevent avatar blinking
@@ -108,18 +105,9 @@ export function PeopleDiscoveryWidget({
       retry: false
     });
 
-    const { data: compatibilityData, isLoading: compatibilityLoading } = useQuery({
-      queryKey: [`/api/compatibility/${currentUserId}/${person.id}`],
-      enabled: enabledCompat,
-      staleTime: 5 * 60 * 1000,
-      gcTime: Infinity,
-      refetchOnMount: false,
-      refetchOnWindowFocus: false,
-      refetchInterval: false,
-      refetchIntervalInBackground: false,
-      refetchOnReconnect: false,
-      retry: false
-    });
+    // DISABLED FOR PERFORMANCE - compatibility calculations are too expensive for 500+ users
+    const compatibilityData = null;
+    const compatibilityLoading = false;
 
     // COMPUTE VALUES AFTER ALL HOOKS
     // NEW: count + list the top common items

@@ -34,7 +34,7 @@ export function MobileBottomNav() {
   const { data: unreadData } = useQuery({
     queryKey: [`/api/messages/${user?.id}/unread-count`],
     enabled: !!user?.id,
-    refetchInterval: 60000, // Refetch every 60 seconds to catch new messages
+    refetchInterval: 30000, // Reduced from 3s to 30s for performance with 500+ users
   });
 
   const unreadCount = (unreadData as any)?.unreadCount || 0;
