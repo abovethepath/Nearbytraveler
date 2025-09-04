@@ -4131,16 +4131,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {user?.userType !== 'business' && (
             <Card>
               <CardHeader className="pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
-                <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
-                  <Heart className="w-5 h-5 text-red-500" />
-                  Local Interests, Activities & Events
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6 px-4 sm:px-6 pb-4 sm:pb-6 break-words overflow-hidden">
-
-                {/* Edit All Preferences Button - CLEAN SINGLE ENTRY POINT */}
-                {isOwnProfile && !editingInterests && !editingActivities && !editingEvents && (
-                  <div className="flex justify-center mb-6">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                    <Heart className="w-5 h-5 text-red-500" />
+                    Local Interests, Activities & Events
+                  </CardTitle>
+                  {/* Edit All Preferences Button - TOP RIGHT */}
+                  {isOwnProfile && !editingInterests && !editingActivities && !editingEvents && (
                     <Button
                       onClick={() => {
                         // Open all editing modes at once
@@ -4155,12 +4152,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           events: user?.events || []
                         });
                       }}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm"
+                      size="sm"
                     >
-                      Edit All Preferences
+                      <Edit2 className="w-4 h-4 mr-1" />
+                      Edit
                     </Button>
-                  </div>
-                )}
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6 px-4 sm:px-6 pb-4 sm:pb-6 break-words overflow-hidden">
 
                 {/* UNIFIED EDIT MODAL - CLEAN ORGANIZED FLOW */}
                 {isOwnProfile && (editingInterests && editingActivities && editingEvents) ? (
@@ -5031,15 +5032,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {user?.userType === 'business' && (
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Heart className="w-5 h-5 text-orange-500" />
-                  Business Interests, Activities & Events
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6 break-words overflow-hidden">
-                {/* Single Edit Button for All Business Preferences */}
-                {isOwnProfile && !editingInterests && !editingActivities && !editingEvents && (
-                  <div className="flex justify-center mb-4">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Heart className="w-5 h-5 text-orange-500" />
+                    Business Interests, Activities & Events
+                  </CardTitle>
+                  {/* Single Edit Button for All Business Preferences - TOP RIGHT */}
+                  {isOwnProfile && !editingInterests && !editingActivities && !editingEvents && (
                     <Button
                       onClick={() => {
                         console.log('🔧 BUSINESS EDIT - Starting:', { 
@@ -5103,13 +5102,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           events: userEvents
                         });
                       }}
-                      className="bg-orange-600 hover:bg-orange-700 text-white"
+                      className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 text-sm"
+                      size="sm"
                     >
-                      <Edit className="w-4 h-4 mr-2" />
-                      Edit Business Preferences
+                      <Edit2 className="w-4 h-4 mr-1" />
+                      Edit
                     </Button>
-                  </div>
-                )}
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6 break-words overflow-hidden">
 
                 {/* Display current business interests/activities/events when not editing */}
                 {(!editingInterests || !editingActivities || !editingEvents) && (
