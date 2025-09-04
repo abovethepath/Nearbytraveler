@@ -1,0 +1,316 @@
+    {/* Profile Edit Modal - COMPREHENSIVE VERSION FROM BACKUP */}
+    <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white">
+        <DialogHeader>
+          <DialogTitle>Edit Profile</DialogTitle>
+        </DialogHeader>
+        <Form {...profileForm}>
+          <form onSubmit={profileForm.handleSubmit(editProfile.mutate)} className="space-y-6">
+            {user?.userType === 'business' && (
+              <FormField
+                control={profileForm.control}
+                name="businessName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Business Name</FormLabel>
+                    <FormControl>
+                      <Input 
+                        {...field} 
+                        placeholder="Enter your business name..."
+                        maxLength={100}
+                      />
+                    </FormControl>
+                    <div className="text-xs text-gray-500 text-right">
+                      {field.value?.length || 0}/100 characters
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+            
+            {user?.userType === 'business' ? (
+              <FormField
+                control={profileForm.control}
+                name="businessDescription"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Business Description</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        {...field} 
+                        placeholder="Describe your business, services, and what makes you special..."
+                        className="min-h-[100px] resize-none"
+                        maxLength={1000}
+                      />
+                    </FormControl>
+                    <div className="text-xs text-gray-500 text-right">
+                      {field.value?.length || 0}/1000 characters
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ) : (
+              <FormField
+                control={profileForm.control}
+                name="bio"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Bio</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        {...field} 
+                        placeholder="Tell us about yourself..."
+                        className="min-h-[100px] resize-none"
+                        maxLength={1000}
+                      />
+                    </FormControl>
+                    <div className="text-xs text-gray-500 text-right">
+                      {field.value?.length || 0}/1000 characters
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {user?.userType !== 'business' && (
+              <FormField
+                control={profileForm.control}
+                name="secretActivities"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>If I could list a few Secret Local things in my hometown I would say they are...</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        {...field} 
+                        placeholder="Secret activities you'd share with Nearby Travelers and friends..."
+                        className="min-h-[80px] resize-none"
+                        maxLength={500}
+                      />
+                    </FormControl>
+                    <div className="text-xs text-gray-500 text-right">
+                      {field.value?.length || 0}/500 characters
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            <div className="space-y-4">
+              <FormLabel>Hometown Location ** ONLY CHANGE IF YOU MOVE **</FormLabel>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <FormField
+                  control={profileForm.control}
+                  name="hometownCountry"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Country</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Country" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={profileForm.control}
+                  name="hometownState"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>State/Province</FormLabel>
+                      <FormControl>
+                        <Input placeholder="State/Province" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={profileForm.control}
+                  name="hometownCity"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>City</FormLabel>
+                      <FormControl>
+                        <Input placeholder="City" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* Date of Birth Fields - Only show for non-business users */}
+            {user?.userType !== 'business' && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
+                  Date of Birth
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={profileForm.control}
+                    name="dateOfBirth"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Date of Birth</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            type="date"
+                            max={new Date().toISOString().split('T')[0]}
+                            className="dark:bg-gray-800 dark:border-gray-600 dark:text-white [&::-webkit-calendar-picker-indicator]:dark:invert"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={profileForm.control}
+                    name="ageVisible"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                        <div className="space-y-0.5">
+                          <FormLabel>Show Age</FormLabel>
+                          <div className="text-sm text-gray-500">
+                            Display your age on your profile
+                          </div>
+                        </div>
+                        <FormControl>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => field.onChange(!field.value)}
+                            className="flex items-center gap-2"
+                          >
+                            {field.value ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                            {field.value ? "Visible" : "Hidden"}
+                          </Button>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Gender and Sexual Preference Fields - Only show for non-business users */}
+            {user?.userType !== 'business' && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
+                  Gender & Sexual Preference
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={profileForm.control}
+                    name="gender"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Gender</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select gender" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="dark:bg-gray-800 dark:border-gray-600">
+                            <SelectItem value="Male" className="dark:text-white dark:hover:bg-gray-700">Male</SelectItem>
+                            <SelectItem value="Female" className="dark:text-white dark:hover:bg-gray-700">Female</SelectItem>
+                            <SelectItem value="Non-binary" className="dark:text-white dark:hover:bg-gray-700">Non-binary</SelectItem>
+                            <SelectItem value="Other" className="dark:text-white dark:hover:bg-gray-700">Other</SelectItem>
+                            <SelectItem value="Prefer not to say" className="dark:text-white dark:hover:bg-gray-700">Prefer not to say</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={profileForm.control}
+                    name="sexualPreference"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Sexual Preference</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select preference" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="dark:bg-gray-800 dark:border-gray-600">
+                            <SelectItem value="Straight" className="dark:text-white dark:hover:bg-gray-700">Straight</SelectItem>
+                            <SelectItem value="Gay" className="dark:text-white dark:hover:bg-gray-700">Gay</SelectItem>
+                            <SelectItem value="Lesbian" className="dark:text-white dark:hover:bg-gray-700">Lesbian</SelectItem>
+                            <SelectItem value="Bisexual" className="dark:text-white dark:hover:bg-gray-700">Bisexual</SelectItem>
+                            <SelectItem value="Pansexual" className="dark:text-white dark:hover:bg-gray-700">Pansexual</SelectItem>
+                            <SelectItem value="Asexual" className="dark:text-white dark:hover:bg-gray-700">Asexual</SelectItem>
+                            <SelectItem value="Other" className="dark:text-white dark:hover:bg-gray-700">Other</SelectItem>
+                            <SelectItem value="Prefer not to say" className="dark:text-white dark:hover:bg-gray-700">Prefer not to say</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Sexual Preference Visibility - Only show for non-business users */}
+            {user?.userType !== 'business' && (
+              <FormField
+                control={profileForm.control}
+                name="sexualPreferenceVisible"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                    <div className="space-y-0.5">
+                      <FormLabel>Show Sexual Preference</FormLabel>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
+                        Display your sexual preference on your profile
+                      </div>
+                    </div>
+                    <FormControl>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => field.onChange(!field.value)}
+                        className="flex items-center gap-2"
+                      >
+                        {field.value ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                        {field.value ? "Visible" : "Hidden"}
+                      </Button>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            )}
+
+            <div className="flex gap-2 pt-4">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setIsEditMode(false)}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={editProfile.isPending}
+                className="flex-1"
+              >
+                {editProfile.isPending ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
