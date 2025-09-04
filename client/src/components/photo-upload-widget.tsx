@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   Camera, Upload, Trash2, Plus, X, Grid, Eye, Download, Share2,
-  ImageIcon, CheckCircle, Heart, Edit3
+  ImageIcon, CheckCircle, Heart, Edit3, Map, Calendar
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -37,6 +37,17 @@ export function PhotoUploadWidget({ userId, isOwnProfile = false }: PhotoUploadW
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingPhoto, setEditingPhoto] = useState<Photo | null>(null);
+  
+  // Travel Memory states
+  const [showTravelMemoryModal, setShowTravelMemoryModal] = useState(false);
+  const [selectedPhotosForMemory, setSelectedPhotosForMemory] = useState<number[]>([]);
+  const [travelMemoryForm, setTravelMemoryForm] = useState({
+    title: '',
+    description: '',
+    location: '',
+    date: '',
+    tags: [] as string[]
+  });
   
   // Upload form state
   const [uploadForm, setUploadForm] = useState({
@@ -135,6 +146,37 @@ export function PhotoUploadWidget({ userId, isOwnProfile = false }: PhotoUploadW
         variant: "destructive"
       });
     }
+  });
+
+  // Create travel memory mutation
+  const createTravelMemoryMutation = useMutation({
+    mutationFn: async (memoryData: any) => {
+      const response = await apiRequest('POST', `/api/users/${userId}/travel-memories`, memoryData);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/travel-memories`] });
+      setShowTravelMemoryModal(false);
+      setSelectedPhotosForMemory([]);
+      setTravelMemoryForm({
+        title: '',
+        description: '',
+        location: '',
+        date: '',
+        tags: []
+      });
+      toast({ 
+        title: "Success",
+        description: "Travel memory created successfully!" 
+      });
+    },
+    onError: () => {
+      toast({ 
+        title: "Error",
+        description: "Failed to create travel memory",
+        variant: "destructive" 
+      });
+    },
   });
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -249,6 +291,35 @@ export function PhotoUploadWidget({ userId, isOwnProfile = false }: PhotoUploadW
     setShowPhotoModal(false);
   };
 
+  // Travel Memory functions
+  const togglePhotoSelection = (photoId: number) => {
+    setSelectedPhotosForMemory(prev => 
+      prev.includes(photoId) 
+        ? prev.filter(id => id !== photoId)
+        : [...prev, photoId]
+    );
+  };
+
+  const handleCreateTravelMemory = () => {
+    if (selectedPhotosForMemory.length === 0) {
+      toast({
+        title: "No photos selected",
+        description: "Please select at least one photo to create a travel memory",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const memoryData = {
+      ...travelMemoryForm,
+      photoIds: selectedPhotosForMemory,
+      date: travelMemoryForm.date || new Date().toISOString().split('T')[0],
+      tags: travelMemoryForm.tags.length > 0 ? travelMemoryForm.tags : ['travel', 'memories']
+    };
+
+    createTravelMemoryMutation.mutate(memoryData);
+  };
+
   const handleEdit = () => {
     if (!editingPhoto) return;
 
@@ -279,14 +350,27 @@ export function PhotoUploadWidget({ userId, isOwnProfile = false }: PhotoUploadW
           Photo Gallery
         </h2>
         {isOwnProfile && (
-          <Button
-            onClick={() => setShowUploadModal(true)}
-            className="bg-blue-500 hover:bg-blue-600 text-white"
-            data-testid="button-upload-photo"
-          >
-            <Upload className="w-4 h-4 mr-2" />
-            Upload Photos
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => setShowUploadModal(true)}
+              className="bg-blue-500 hover:bg-blue-600 text-white"
+              data-testid="button-upload-photo"
+            >
+              <Upload className="w-4 h-4 mr-2" />
+              Upload Photos
+            </Button>
+            {photos.length > 0 && (
+              <Button
+                onClick={() => setShowTravelMemoryModal(true)}
+                variant="outline"
+                className="border-blue-500 text-blue-600 hover:bg-blue-50"
+                data-testid="button-create-travel-memory"
+              >
+                <Map className="w-4 h-4 mr-2" />
+                Create Travel Memory
+              </Button>
+            )}
+          </div>
         )}
       </div>
 
@@ -573,6 +657,132 @@ export function PhotoUploadWidget({ userId, isOwnProfile = false }: PhotoUploadW
                 data-testid="button-save-edit"
               >
                 Save Changes
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Travel Memory Modal */}
+      <Dialog open={showTravelMemoryModal} onOpenChange={setShowTravelMemoryModal}>
+        <DialogContent className="w-[95vw] max-w-2xl h-[95vh] max-h-[90vh] overflow-y-auto bg-white border-gray-300">
+          <DialogHeader>
+            <DialogTitle className="text-black">Create Travel Memory</DialogTitle>
+            <DialogDescription className="text-gray-600">
+              Select photos and add details to create a travel memory album
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {/* Photo Selection Grid */}
+            <div>
+              <label className="block text-sm font-medium mb-2 text-black">
+                Select Photos ({selectedPhotosForMemory.length} selected)
+              </label>
+              <div className="grid grid-cols-3 gap-2 max-h-60 overflow-y-auto">
+                {photos.map((photo) => (
+                  <div key={photo.id} className="relative aspect-square">
+                    <img
+                      src={photo.imageUrl}
+                      alt={photo.title}
+                      className="w-full h-full object-cover rounded-md"
+                    />
+                    <div className="absolute top-2 right-2">
+                      <Checkbox
+                        checked={selectedPhotosForMemory.includes(photo.id)}
+                        onCheckedChange={() => togglePhotoSelection(photo.id)}
+                        className="bg-white"
+                        data-testid={`checkbox-photo-${photo.id}`}
+                      />
+                    </div>
+                    {selectedPhotosForMemory.includes(photo.id) && (
+                      <div className="absolute inset-0 bg-blue-500 bg-opacity-30 rounded-md flex items-center justify-center">
+                        <CheckCircle className="w-8 h-8 text-white" />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Memory Details Form */}
+            <div>
+              <label className="block text-sm font-medium mb-2 text-black">
+                Memory Title *
+              </label>
+              <Input
+                value={travelMemoryForm.title}
+                onChange={(e) => setTravelMemoryForm(prev => ({ ...prev, title: e.target.value }))}
+                placeholder="Enter a title for this travel memory"
+                className="bg-white border-gray-300 text-black placeholder-gray-500"
+                data-testid="input-memory-title"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 text-black">
+                Description
+              </label>
+              <Textarea
+                value={travelMemoryForm.description}
+                onChange={(e) => setTravelMemoryForm(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Describe this travel memory..."
+                rows={3}
+                className="bg-white border-gray-300 text-black placeholder-gray-500"
+                data-testid="textarea-memory-description"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 text-black">
+                Location
+              </label>
+              <Input
+                value={travelMemoryForm.location}
+                onChange={(e) => setTravelMemoryForm(prev => ({ ...prev, location: e.target.value }))}
+                placeholder="Where was this taken?"
+                className="bg-white border-gray-300 text-black placeholder-gray-500"
+                data-testid="input-memory-location"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 text-black">
+                Date
+              </label>
+              <Input
+                type="date"
+                value={travelMemoryForm.date}
+                onChange={(e) => setTravelMemoryForm(prev => ({ ...prev, date: e.target.value }))}
+                className="bg-white border-gray-300 text-black placeholder-gray-500"
+                data-testid="input-memory-date"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-4">
+              <Button
+                variant="outline"
+                onClick={() => setShowTravelMemoryModal(false)}
+                data-testid="button-cancel-memory"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleCreateTravelMemory}
+                disabled={createTravelMemoryMutation.isPending || !travelMemoryForm.title}
+                className="bg-blue-500 hover:bg-blue-600 text-white"
+                data-testid="button-save-memory"
+              >
+                {createTravelMemoryMutation.isPending ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Creating...
+                  </>
+                ) : (
+                  <>
+                    <Calendar className="w-4 h-4 mr-2" />
+                    Create Memory
+                  </>
+                )}
               </Button>
             </div>
           </div>
