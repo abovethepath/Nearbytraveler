@@ -700,6 +700,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [showAllReferences, setShowAllReferences] = useState(false);
   const [showPhotoUpload, setShowPhotoUpload] = useState(false);
   
+  // Location editing state
+  const [pendingLocationData, setPendingLocationData] = useState<{
+    hometownCity: string;
+    hometownState: string;
+    hometownCountry: string;
+  } | null>(null);
+  
   // Connection filters state
   const [connectionFilters, setConnectionFilters] = useState({
     location: 'all',
@@ -4531,11 +4538,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             onClick={async () => {
                               setIsSubmitting(true);
                               try {
+                                // Store current scroll position
+                                const currentScrollY = window.scrollY;
+                                
                                 const success = await handleSave();
                                 if (success) {
                                   setEditingInterests(false);
                                   setEditingActivities(false);
                                   setEditingEvents(false);
+                                  
+                                  // Restore scroll position after brief delay to allow re-render
+                                  setTimeout(() => {
+                                    window.scrollTo({ top: currentScrollY, behavior: 'instant' });
+                                  }, 100);
                                 }
                               } catch (error) {
                                 console.error('Save failed:', error);
@@ -7918,34 +7933,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </h3>
             
             <SmartLocationInput
-              city={user?.hometownCity || ''}
-              state={user?.hometownState || ''}
-              country={user?.hometownCountry || ''}
-              onLocationChange={async (location) => {
-                try {
-                  const response = await fetch(`/api/users/${user.id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                      hometownCountry: location.country,
-                      hometownState: location.state,
-                      hometownCity: location.city,
-                    })
-                  });
-                  if (!response.ok) throw new Error('Failed to save');
-                  queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
-                  toast({
-                    title: "Location Updated",
-                    description: "Your location has been successfully updated."
-                  });
-                } catch (error) {
-                  console.error('Failed to update location:', error);
-                  toast({
-                    title: "Error",
-                    description: "Failed to update location. Please try again.",
-                    variant: "destructive"
-                  });
-                }
+              city={pendingLocationData?.hometownCity || user?.hometownCity || ''}
+              state={pendingLocationData?.hometownState || user?.hometownState || ''}
+              country={pendingLocationData?.hometownCountry || user?.hometownCountry || ''}
+              onLocationChange={(location) => {
+                // Store the pending location change instead of auto-saving
+                setPendingLocationData({
+                  hometownCountry: location.country,
+                  hometownState: location.state,
+                  hometownCity: location.city,
+                });
               }}
               required={false}
               placeholder={{
@@ -7954,6 +7951,53 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 city: user?.userType === 'business' ? "Select your business city" : "Select your hometown city"
               }}
             />
+            
+            {/* Save Button for Location Changes */}
+            {pendingLocationData && (
+              <div className="mt-4 flex gap-3">
+                <Button
+                  onClick={async () => {
+                    if (!user?.id || !pendingLocationData) return;
+                    
+                    try {
+                      const response = await fetch(`/api/users/${user.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(pendingLocationData)
+                      });
+                      if (!response.ok) throw new Error('Failed to save');
+                      
+                      // Update the cache and clear pending data
+                      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+                      setPendingLocationData(null);
+                      
+                      toast({
+                        title: "Location Updated",
+                        description: "Your location has been successfully updated. This will update your local status across the site.",
+                      });
+                    } catch (error) {
+                      console.error('Failed to update location:', error);
+                      toast({
+                        title: "Error",
+                        description: "Failed to update location. Please try again.",
+                        variant: "destructive"
+                      });
+                    }
+                  }}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Save Location
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setPendingLocationData(null)}
+                  className="border-gray-300 hover:bg-gray-50"
+                >
+                  Cancel Changes
+                </Button>
+              </div>
+            )}
             
             {user?.userType === 'business' && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
