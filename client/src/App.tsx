@@ -948,19 +948,7 @@ function Router() {
       case '/business-registration':
         return <BusinessRegistration />;
       case '/profile':
-        console.log('🔍 PROFILE ROUTE: user in context:', user?.id, 'user object:', !!user);
-
-        // For /profile route (own profile), don't pass userId prop so it defaults to own profile
-        if (!user?.id) {
-          console.log('🔍 PROFILE ROUTE: No user found, checking auth storage');
-          const storageUser = authStorage.getUser();
-          if (!storageUser?.id) {
-            console.log('🔍 PROFILE ROUTE: No user found anywhere, redirecting to auth');
-            window.location.href = '/signin';
-            return null;
-          }
-        }
-
+        // NEW PROFILE DESIGN - Using Couchsurfing-inspired layout
         return <ProfileNew />;
       case '/profile-new':
         return <ProfileNew />;
