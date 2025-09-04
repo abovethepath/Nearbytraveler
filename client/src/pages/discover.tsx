@@ -260,8 +260,8 @@ export default function DiscoverPage() {
                     {/* Subtle background glow */}
                     <div className="absolute -inset-2 bg-gradient-to-r from-blue-200/30 via-purple-200/30 to-orange-200/30 dark:from-blue-900/20 dark:via-purple-900/20 dark:to-orange-900/20 rounded-2xl blur-lg"></div>
                     
-                    {/* Compact Los Angeles Photo */}
-                    <div className="relative w-full max-w-xs sm:max-w-sm h-[180px] sm:h-[200px] md:h-[220px] lg:h-[240px] rounded-xl overflow-hidden shadow-xl border border-gray-200/50 dark:border-gray-700/50 transform group-hover:scale-[1.01] transition-all duration-300">
+                    {/* Standardized Los Angeles Photo */}
+                    <div className="relative w-full max-w-sm h-[240px] rounded-xl overflow-hidden shadow-xl border border-gray-200/50 dark:border-gray-700/50 transform group-hover:scale-[1.02] transition-all duration-300">
                       {/* Loading placeholder */}
                       <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center">
                         <div className="text-center">

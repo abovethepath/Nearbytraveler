@@ -847,7 +847,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
               {/* Right image side - compact and consistent */}
               <div className="md:col-span-2 flex flex-col items-center">
                 {/* Compact matching illustration */}
-                <div className="relative w-full max-w-xs h-[220px] rounded-xl overflow-hidden shadow-xl bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 flex items-center justify-center">
+                <div className="relative w-full max-w-sm h-[240px] rounded-xl overflow-hidden shadow-xl bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 flex items-center justify-center">
                   <img 
                     src={cityMatchingIllustration}
                     alt="City activity matching illustration"
