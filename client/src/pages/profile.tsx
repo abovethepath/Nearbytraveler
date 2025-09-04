@@ -97,6 +97,8 @@ import { ThingsIWantToDoSection } from "@/components/ThingsIWantToDoSection";
 
 import { PhotoAlbumWidget } from "@/components/photo-album-widget";
 import { PhotoGallerySection } from "@/components/PhotoGallerySection";
+import { ConnectionsWidget } from "@/components/ConnectionsWidget";
+import { LanguagesWidget } from "@/components/LanguagesWidget";
 import { MobileTopNav } from "@/components/MobileTopNav";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { SimpleAvatar } from "@/components/simple-avatar";
@@ -5985,43 +5987,37 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
 
 
-            {/* Current Connections Widget - Visible to all - MOVED UNDER TRAVEL STATS */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
+            {/* Connections Widget - Modularized Component */}
+            <ConnectionsWidget
+              userConnections={userConnections}
+              isOwnProfile={isOwnProfile}
+              effectiveUserId={effectiveUserId}
+              showConnectionFilters={showConnectionFilters}
+              setShowConnectionFilters={setShowConnectionFilters}
+              connectionFilters={connectionFilters}
+              setConnectionFilters={setConnectionFilters}
+              connectionsDisplayCount={connectionsDisplayCount}
+              setConnectionsDisplayCount={setConnectionsDisplayCount}
+              editingConnectionNote={editingConnectionNote}
+              setEditingConnectionNote={setEditingConnectionNote}
+              connectionNoteText={connectionNoteText}
+              setConnectionNoteText={setConnectionNoteText}
+            />
+
+
+            {/* Reference Widget - Only show for other users' profiles */}
+            {!isOwnProfile && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
                     <Users className="w-5 h-5 text-green-500" />
-                    Connections ({userConnections.length})
-                  </div>
-                  {userConnections.length > 0 && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowConnectionFilters(!showConnectionFilters)}
-                      className="h-8 text-xs bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600"
-                    >
-                      {showConnectionFilters ? "Hide Options" : "Sort & View"}
-                    </Button>
-                  )}
-                </CardTitle>
-                
-                {/* Filter Panel */}
-                {showConnectionFilters && userConnections.length > 0 && (
-                  <div className="mt-4 p-4 bg-gray-50 rounded-lg space-y-3">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                      <div>
-                        <label className="text-xs font-medium text-gray-700 mb-1 block">Location</label>
-                        <Select
-                          value={connectionFilters.location || "all"}
-                          onValueChange={(value) => setConnectionFilters(prev => ({ ...prev, location: value === "all" ? "" : value }))}
-                        >
-                          <SelectTrigger className="h-8 text-xs bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600">
-                            <SelectValue placeholder="All locations" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="all">All locations</SelectItem>
-                            {userConnections
-                              .map((conn: any) => conn.connectedUser?.location)
+                    Write a Reference
+                  </CardTitle>
+                  <p className="text-sm text-gray-600">
+                    Share your experience with {user?.username} to help others in the community
+                  </p>
+                </CardHeader>
+                <CardContent>
                               .filter((location: any) => Boolean(location))
                               .filter((location: any, index: number, arr: any[]) => arr.indexOf(location) === index)
                               .map((location: any) => (
@@ -6381,15 +6377,24 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* MOBILE-FRIENDLY RIGHT-SIDE WIDGETS SECTION */}
             
-            {/* Languages Widget - Top Priority for Customer Visibility */}
-            <Card className="hover:shadow-lg transition-all duration-200 border-2 border-blue-200 dark:border-blue-700 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <Globe className="w-5 h-5 text-blue-600" />
-                    Languages I Speak
-                  </CardTitle>
-                  {isOwnProfile && !editingLanguages && (
+            {/* Languages Widget - Modularized Component */}
+            <LanguagesWidget
+              user={user}
+              isOwnProfile={isOwnProfile}
+              editingLanguages={editingLanguages}
+              setEditingLanguages={setEditingLanguages}
+              tempLanguages={tempLanguages}
+              setTempLanguages={setTempLanguages}
+              customLanguageInput={customLanguageInput}
+              setCustomLanguageInput={setCustomLanguageInput}
+              handleEditLanguages={handleEditLanguages}
+              handleSaveLanguages={handleSaveLanguages}
+              handleCancelLanguages={handleCancelLanguages}
+              updateLanguages={updateLanguages}
+            />
+            
+            {/* Interests Widget - Next Section */}
+            <Card>
                     <Button size="sm" variant="outline" onClick={handleEditLanguages} className="border-blue-300 text-blue-700 hover:bg-blue-100 dark:border-blue-600 dark:text-blue-300">
                       <Edit className="w-3 h-3" />
                     </Button>
