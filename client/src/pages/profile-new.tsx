@@ -21,6 +21,7 @@ import {
   CheckCircle,
   Globe,
   Users,
+  UserPlus,
   Camera,
   Heart,
   Eye,
