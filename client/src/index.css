@@ -120,7 +120,7 @@ img,
   }
 }
 
-/* COMPREHENSIVE PILL CONSISTENCY FIX - Force ALL pills to use standard white bg/black text styling */
+/* LIGHT MODE ONLY PILL CONSISTENCY FIX - Force ALL pills to use standard white bg/black text styling */
 .pill, 
 [class*="pill"],
 [class*="pill-"],
@@ -151,34 +151,15 @@ div[class*="pill-events"] {
   text-transform: none !important; /* Prevent uppercase transformation */
 }
 
-/* Dark mode pill consistency - Broader selectors */
+/* Dark mode - Let pills use their natural dark mode styling */
 .dark .pill,
 .dark [class*="pill"],
 .dark [class*="pill-"],
-.dark .inline-flex.items-center.justify-center.rounded-full[class*="bg-green"],
-.dark .inline-flex[class*="bg-green"][class*="text-white"],
-.dark .inline-flex.items-center.justify-center.rounded-full[class*="bg-blue"],
-.dark .inline-flex[class*="bg-blue"][class*="text-white"],
-.dark .inline-flex.items-center.justify-center.rounded-full[class*="bg-purple"],
-.dark .inline-flex[class*="bg-purple"][class*="text-white"],
-.dark div[class*="bg-green-500 text-white"],
-.dark div[class*="bg-green-600 text-white"],
-.dark div[class*="bg-blue-500 text-white"],
-.dark div[class*="bg-blue-600 text-white"],
-.dark div[class*="bg-purple-500 text-white"],
-.dark div[class*="bg-purple-600 text-white"],
-.dark button[class*="bg-green"][class*="text-white"][class*="rounded-full"],
-.dark button[class*="bg-blue"][class*="text-white"][class*="rounded-full"],
-.dark button[class*="bg-purple"][class*="text-white"][class*="rounded-full"],
 .dark div[class*="pill-activities"],
 .dark div[class*="pill-interests"],
 .dark div[class*="pill-events"] {
-  background-color: white !important;
-  background: white !important;
-  color: black !important;
-  border: 1px solid black !important;
-  border-color: black !important;
-  text-transform: none !important; /* Prevent uppercase transformation */
+  /* Only prevent uppercase transformation in dark mode, let colors be natural */
+  text-transform: none !important;
 }
 
 /* Set Inter as the default font for the entire application */
