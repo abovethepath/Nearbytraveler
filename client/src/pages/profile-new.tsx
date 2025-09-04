@@ -59,6 +59,9 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
   const { userId: paramUserId } = useParams<{ userId: string }>();
   const { user: currentUser } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState("about");
+  
+  // Initialize toast hook immediately - must be called before any early returns
+  const { toast } = useToast();
 
   // Determine which user profile to show
   const profileUserId = propUserId || paramUserId || currentUser?.id?.toString();
@@ -147,9 +150,6 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
   const currentTravelDestination = getCurrentTravelDestination(travelPlans || []);
   const isCurrentlyTraveling = !!currentTravelDestination;
   const userAge = displayUser?.dateOfBirth ? calculateAge(displayUser.dateOfBirth) : null;
-  
-  // Initialize toast
-  const toast = useToast();
 
   // Calculate verification badges
   const verificationBadges = [
