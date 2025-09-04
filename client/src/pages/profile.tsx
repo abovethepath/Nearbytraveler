@@ -301,6 +301,7 @@ interface EnhancedProfileProps {
 // Profile schema for form validation - conditional based on user type
 const createProfileSchema = (userType: string) => {
   const baseSchema = z.object({
+    name: z.string().optional(),
     bio: z.string().optional(),
     hometownCity: z.string().optional(),
     hometownState: z.string().optional(), 
@@ -1298,6 +1299,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
   const profileForm = useForm<z.infer<typeof dynamicProfileSchema>>({
     resolver: zodResolver(dynamicProfileSchema),
     defaultValues: currentUserType === 'business' ? {
+      name: "",
       bio: "",
       businessName: "",
       businessDescription: "",
@@ -1329,6 +1331,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
       showFemaleOwned: true,
       showLGBTQIAOwned: true,
     } : {
+      name: "",
       bio: "",
       secretActivities: "",
       hometownCity: "",
@@ -1391,6 +1394,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
           .filter((item: string) => getAllEvents().includes(item));
         
         profileForm.reset({
+          name: user.name || "",
           bio: user.bio || "",
           businessName: (user as any).business_name || (user as any).businessName || "",
           hometownCity: user.hometownCity || "",
@@ -1422,6 +1426,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
         const travelingWithChildrenValue = !!(user as any).travelingWithChildren;
         
         profileForm.reset({
+          name: user.name || "",
           bio: user.bio || "",
           secretActivities: user.secretActivities || "",
           hometownCity: user.hometownCity || "",
@@ -1483,6 +1488,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
           .filter((item: string) => getAllEvents().includes(item));
         
         profileForm.reset({
+          name: user.name || "",
           bio: user.bio || "",
           businessName: (user as any).business_name || (user as any).businessName || "",
           businessDescription: (user as any).business_description || (user as any).businessDescription || "",
@@ -1518,6 +1524,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
       } else {
         // For non-business users, reset with their data
         profileForm.reset({
+          name: user.name || "",
           bio: user.bio || "",
           secretActivities: user.secretActivities || "",
           hometownCity: user.hometownCity || "",
@@ -1663,6 +1670,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
   React.useEffect(() => {
     if (user) {
       profileForm.reset({
+        name: user.name || "",
         bio: user.bio || "",
         ...(user?.userType === 'business' ? { 
           businessName: (user as any).business_name || (user as any).businessName || "",
@@ -3077,6 +3085,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
         console.log('🔥 Re-syncing form with updated user data');
         if (user?.userType !== 'business') {
           profileForm.reset({
+            name: updatedUser.name || "",
             bio: updatedUser.bio || "",
             secretActivities: updatedUser.secretActivities || "",
             hometownCity: updatedUser.hometownCity || "",
@@ -6584,7 +6593,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
 
     {/* Edit Profile Dialog */}
     <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
         <DialogHeader>
           <DialogTitle>Edit Profile</DialogTitle>
           <DialogDescription>
