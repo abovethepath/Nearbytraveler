@@ -9464,15 +9464,15 @@ export default function EnhancedProfile(props: EnhancedProfileProps) {
 
   return (
     <div>
-      {/* Design Toggle Button */}
-      <div className="fixed top-4 right-4 z-50">
+      {/* Design Toggle Button - Made More Prominent */}
+      <div className="fixed top-20 right-4 z-[9999]">
         <Button
           onClick={() => setUseNewDesign(true)}
           variant="outline"
-          size="sm"
-          className="bg-white dark:bg-gray-800 shadow-lg border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
+          size="lg"
+          className="bg-orange-500 text-white shadow-2xl border-4 border-orange-600 hover:bg-orange-600 hover:text-white font-bold text-lg px-6 py-3"
         >
-          Try New Design
+          🎨 Try New Design
         </Button>
       </div>
       
