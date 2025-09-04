@@ -3445,13 +3445,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
           
           {/* LEFT SIDEBAR - Couchsurfing Style (Profile Info) */}
           <div className="w-full lg:col-span-1 space-y-3 sm:space-y-4 lg:space-y-6">
-            {(() => {
-              // Calculate travel status for Couchsurfing layout
-              const currentTravelDestination = getCurrentTravelDestination(travelPlans || []);
-              const isCurrentlyTraveling = !!currentTravelDestination;
-              
-              return (
-                <>
+            <div>
                   {/* COMPLETE COUCHSURFING SIDEBAR - All in green */}
                   <div className="bg-gradient-to-br from-green-500 to-green-600 p-8 text-white border-0 rounded-lg shadow-lg">
                     {/* Large Profile Photo */}
@@ -3600,10 +3594,8 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                       )}
                     </div>
                   </div>
-                </>
-              );
-            })()}
-
+                </div>
+            </div>
           </div>
 
           {/* MAIN CONTENT AREA - Tab-based content */}
@@ -3817,7 +3809,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                       </div>
                     </CardContent>
                   </Card>
-                </>
+                </div>
               );
             })()}
 
