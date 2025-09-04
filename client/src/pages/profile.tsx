@@ -8138,6 +8138,98 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </DialogContent>
       </Dialog>
 
+      {/* LOCATION EDITOR - MOVED OUTSIDE DIALOG FOR DROPDOWN FUNCTIONALITY */}
+      {isOwnProfile && (
+        <Card className="max-w-4xl mx-auto mt-6 mb-6">
+          <CardContent className="p-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              {user?.userType === 'business' ? 'Business Location' : 'Hometown Location ** ONLY CHANGE IF YOU MOVE **'}
+            </h3>
+            
+            <SmartLocationInput
+              city={user?.hometownCity || ''}
+              state={user?.hometownState || ''}
+              country={user?.hometownCountry || ''}
+              onLocationChange={async (location) => {
+                try {
+                  const response = await fetch(`/api/users/${user.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      hometownCountry: location.country,
+                      hometownState: location.state,
+                      hometownCity: location.city,
+                    })
+                  });
+                  if (!response.ok) throw new Error('Failed to save');
+                  queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+                  toast({
+                    title: "Location Updated",
+                    description: "Your location has been successfully updated."
+                  });
+                } catch (error) {
+                  console.error('Failed to update location:', error);
+                  toast({
+                    title: "Error",
+                    description: "Failed to update location. Please try again.",
+                    variant: "destructive"
+                  });
+                }
+              }}
+              required={false}
+              placeholder={{
+                country: user?.userType === 'business' ? "Select your business country" : "Select your hometown country",
+                state: user?.userType === 'business' ? "Select your business state/region" : "Select your hometown state/region", 
+                city: user?.userType === 'business' ? "Select your business city" : "Select your hometown city"
+              }}
+            />
+            
+            {user?.userType === 'business' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <Input 
+                  placeholder="Street Address (Optional)"
+                  defaultValue={user?.streetAddress || ''}
+                  onBlur={async (e) => {
+                    const value = e.target.value;
+                    try {
+                      const response = await fetch(`/api/users/${user.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ streetAddress: value })
+                      });
+                      if (!response.ok) throw new Error('Failed to save');
+                      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+                    } catch (error) {
+                      console.error('Failed to update street address:', error);
+                    }
+                  }}
+                  className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                />
+                <Input 
+                  placeholder="ZIP Code (Optional)"
+                  defaultValue={user?.zipCode || ''}
+                  onBlur={async (e) => {
+                    const value = e.target.value;
+                    try {
+                      const response = await fetch(`/api/users/${user.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ zipCode: value })
+                      });
+                      if (!response.ok) throw new Error('Failed to save');
+                      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+                    } catch (error) {
+                      console.error('Failed to update ZIP code:', error);
+                    }
+                  }}
+                  className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                />
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       {/* Profile Edit Modal */}
       <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
         <DialogContent className="max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
@@ -8810,71 +8902,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </div>
             )}
 
-              {/* Location Section - Moved to bottom as requested */}
-              <div className="space-y-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-600">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
-                  {user?.userType === 'business' ? 'Business Location' : 'Hometown Location ** ONLY CHANGE IF YOU MOVE **'}
-                </h3>
-                
-                {/* Business users get street address and ZIP code fields first */}
-                {user?.userType === 'business' && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={profileForm.control}
-                      name="streetAddress"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Street Address</FormLabel>
-                          <FormControl>
-                            <Input 
-                              {...field} 
-                              placeholder="123 Main Street"
-                              className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={profileForm.control}
-                      name="zipCode"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>ZIP Code</FormLabel>
-                          <FormControl>
-                            <Input 
-                              {...field} 
-                              placeholder="12345"
-                              className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                )}
-                
-                {/* Standard location dropdowns for all users */}
-                <SmartLocationInput
-                  city={profileForm.watch('hometownCity') || ''}
-                  state={profileForm.watch('hometownState') || ''}
-                  country={profileForm.watch('hometownCountry') || ''}
-                  onLocationChange={(location) => {
-                    profileForm.setValue('hometownCountry', location.country);
-                    profileForm.setValue('hometownState', location.state);
-                    profileForm.setValue('hometownCity', location.city);
-                  }}
-                  required={false}
-                  placeholder={{
-                    country: user?.userType === 'business' ? "Select your business country" : "Select your hometown country",
-                    state: user?.userType === 'business' ? "Select your business state/region" : "Select your hometown state/region", 
-                    city: user?.userType === 'business' ? "Select your business city" : "Select your hometown city"
-                  }}
-                />
-              </div>
+              {/* Location Section - REMOVED FROM DIALOG - NOW SEPARATE */}
 
               <div className="flex gap-2 pt-4">
                 <Button 
