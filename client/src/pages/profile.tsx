@@ -6615,209 +6615,118 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
       </div>
     </div>
 
-    {/* Edit Profile Dialog */}
+    {/* Profile Edit Modal - ORIGINAL COMPREHENSIVE VERSION */}
     <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Profile</DialogTitle>
-          <DialogDescription>
-            Update your profile information
-          </DialogDescription>
         </DialogHeader>
-        
         <Form {...profileForm}>
           <form onSubmit={profileForm.handleSubmit(editProfile.mutate)} className="space-y-6">
-            {/* Name Field */}
-            <FormField
-              control={profileForm.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Your full name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {user?.userType === 'business' && (
+              <FormField
+                control={profileForm.control}
+                name="businessName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Business Name</FormLabel>
+                    <FormControl>
+                      <Input 
+                        {...field} 
+                        placeholder="Enter your business name..."
+                        maxLength={100}
+                      />
+                    </FormControl>
+                    <div className="text-xs text-gray-500 text-right">
+                      {field.value?.length || 0}/100 characters
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+            
+            {user?.userType === 'business' ? (
+              <FormField
+                control={profileForm.control}
+                name="businessDescription"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Business Description</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        {...field} 
+                        placeholder="Describe your business, services, and what makes you special..."
+                        className="min-h-[100px] resize-none"
+                        maxLength={1000}
+                      />
+                    </FormControl>
+                    <div className="text-xs text-gray-500 text-right">
+                      {field.value?.length || 0}/1000 characters
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ) : (
+              <FormField
+                control={profileForm.control}
+                name="bio"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Bio</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        {...field} 
+                        placeholder="Tell us about yourself..."
+                        className="min-h-[100px] resize-none"
+                        maxLength={1000}
+                      />
+                    </FormControl>
+                    <div className="text-xs text-gray-500 text-right">
+                      {field.value?.length || 0}/1000 characters
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
-            {/* Bio Field */}
-            <FormField
-              control={profileForm.control}
-              name="bio"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Bio</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Tell people about yourself..."
-                      className="min-h-[100px]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {user?.userType !== 'business' && (
+              <FormField
+                control={profileForm.control}
+                name="secretActivities"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>If I could list a few Secret Local things in my hometown I would say they are...</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        {...field} 
+                        placeholder="Secret activities you'd share with Nearby Travelers and friends..."
+                        className="min-h-[80px] resize-none"
+                        maxLength={500}
+                      />
+                    </FormControl>
+                    <div className="text-xs text-gray-500 text-right">
+                      {field.value?.length || 0}/500 characters
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
-            {/* Gender Field */}
-            <FormField
-              control={profileForm.control}
-              name="gender"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Gender</FormLabel>
-                  <FormControl>
-                    <select 
-                      {...field}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">Select gender</option>
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
-                      <option value="non-binary">Non-binary</option>
-                      <option value="prefer-not-to-say">Prefer not to say</option>
-                    </select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Age Visibility */}
-            <FormField
-              control={profileForm.control}
-              name="ageVisible"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel>Show Age on Profile</FormLabel>
-                    <FormDescription>
-                      Allow others to see your age
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <input
-                      type="checkbox"
-                      checked={field.value}
-                      onChange={field.onChange}
-                      className="w-5 h-5"
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-
-            {/* Languages Spoken */}
-            <FormField
-              control={profileForm.control}
-              name="languagesSpoken"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Languages Spoken</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="e.g., English, Spanish, French (comma separated)"
-                      value={Array.isArray(field.value) ? field.value.join(', ') : field.value || ''}
-                      onChange={(e) => field.onChange(e.target.value.split(',').map(lang => lang.trim()).filter(Boolean))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Countries Visited */}
-            <FormField
-              control={profileForm.control}
-              name="countriesVisited"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Countries Visited</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="e.g., Italy, France, Japan (comma separated)"
-                      value={Array.isArray(field.value) ? field.value.join(', ') : field.value || ''}
-                      onChange={(e) => field.onChange(e.target.value.split(',').map(country => country.trim()).filter(Boolean))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Social Media Links */}
             <div className="space-y-4">
-              <FormLabel>Social Media (Optional)</FormLabel>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={profileForm.control}
-                  name="instagramUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Instagram URL</FormLabel>
-                      <FormControl>
-                        <Input placeholder="https://instagram.com/username" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={profileForm.control}
-                  name="twitterUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Twitter/X URL</FormLabel>
-                      <FormControl>
-                        <Input placeholder="https://twitter.com/username" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={profileForm.control}
-                  name="linkedinUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>LinkedIn URL</FormLabel>
-                      <FormControl>
-                        <Input placeholder="https://linkedin.com/in/username" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={profileForm.control}
-                  name="websiteUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Personal Website</FormLabel>
-                      <FormControl>
-                        <Input placeholder="https://yourwebsite.com" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-
-            {/* Hometown Location */}
-            <div className="space-y-4">
-              <FormLabel>Hometown Location</FormLabel>
+              <FormLabel>Hometown Location ** ONLY CHANGE IF YOU MOVE **</FormLabel>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <FormField
                   control={profileForm.control}
-                  name="hometownCity"
+                  name="hometownCountry"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>City</FormLabel>
+                      <FormLabel>Country</FormLabel>
                       <FormControl>
-                        <Input placeholder="City" {...field} />
+                        <Input placeholder="Country" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -6838,12 +6747,12 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                 />
                 <FormField
                   control={profileForm.control}
-                  name="hometownCountry"
+                  name="hometownCity"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Country</FormLabel>
+                      <FormLabel>City</FormLabel>
                       <FormControl>
-                        <Input placeholder="Country" {...field} />
+                        <Input placeholder="City" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -6851,6 +6760,120 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                 />
               </div>
             </div>
+
+            {/* Date of Birth and Age Visibility - Only show for non-business users */}
+            {user?.userType !== 'business' && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
+                  Personal Information
+                </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={profileForm.control}
+                  name="dateOfBirth"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Date of Birth</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="date" 
+                          placeholder="Your date of birth" 
+                          {...field}
+                          className="dark:bg-gray-800 dark:border-gray-600 dark:text-white [&::-webkit-calendar-picker-indicator]:dark:invert"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={profileForm.control}
+                  name="ageVisible"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                      <div className="space-y-0.5">
+                        <FormLabel>Show Age</FormLabel>
+                        <div className="text-sm text-gray-500">
+                          Display your age on your profile
+                        </div>
+                      </div>
+                      <FormControl>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => field.onChange(!field.value)}
+                          className="flex items-center gap-2"
+                        >
+                          {field.value ? "Visible" : "Hidden"}
+                        </Button>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              </div>
+            )}
+
+            {/* Gender and Sexual Preference Fields - Only show for non-business users */}
+            {user?.userType !== 'business' && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
+                  Gender & Preferences
+                </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={profileForm.control}
+                  name="gender"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Gender</FormLabel>
+                      <FormControl>
+                        <select 
+                          {...field}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="">Select gender</option>
+                          <option value="male">Male</option>
+                          <option value="female">Female</option>
+                          <option value="non-binary">Non-binary</option>
+                          <option value="prefer-not-to-say">Prefer not to say</option>
+                        </select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={profileForm.control}
+                  name="sexualPreferenceVisible"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                      <div className="space-y-0.5">
+                        <FormLabel>Show Sexual Preference</FormLabel>
+                        <div className="text-sm text-gray-500">
+                          Display preferences on profile
+                        </div>
+                      </div>
+                      <FormControl>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => field.onChange(!field.value)}
+                          className="flex items-center gap-2"
+                        >
+                          {field.value ? "Visible" : "Hidden"}
+                        </Button>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+              </div>
+            )}
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setIsEditMode(false)}>
