@@ -493,7 +493,7 @@ function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3,
             ) : (
               <>
                 {selected.slice(0, maxDisplay).map((item) => (
-                  <div key={item} className={pillType === 'pill-interests' ? 'inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0 appearance-none select-none' : pillType === 'pill-activities' ? 'inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-green-500 text-white border-0 appearance-none select-none' : 'inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-purple-500 text-white border-0 appearance-none select-none'}>
+                  <div key={item} className="inline-flex items-center justify-center h-7 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none bg-white dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600 appearance-none select-none">
                     {item}
                   </div>
                 ))}
@@ -4413,7 +4413,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                         <div key={deal.id} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:shadow-md dark:hover:shadow-gray-800/50 transition-shadow bg-white dark:bg-gray-800">
                           <div className="flex items-start justify-between mb-2">
                             <h4 className="font-semibold text-gray-900 dark:text-white">{deal.title}</h4>
-                            <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+                            <div className="inline-flex items-center justify-center h-7 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none bg-white dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600">
                               {deal.discountValue}
                             </div>
                           </div>
@@ -5010,7 +5010,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                           <p className="text-sm font-medium text-gray-700 mb-2">Selected Additional Interests:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempInterests.filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)).map((interest) => (
-                              <div key={interest} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+                              <div key={interest} className="inline-flex items-center justify-center h-7 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none bg-white dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600">
                                 {interest}
                                 <button
                                   onClick={() => setTempInterests(tempInterests.filter(i => i !== interest))}
@@ -5053,7 +5053,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                               return (
                                 <>
                                   {topInterests.map((interest, index) => (
-                                    <div key={`interest-${index}`} className="inline-flex items-center justify-center h-7 sm:h-8 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+                                    <div key={`interest-${index}`} className="inline-flex items-center justify-center h-7 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none bg-white dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600">
                                       {interest}
                                     </div>
                                   ))}
@@ -5148,7 +5148,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                           <p className="text-sm font-medium text-gray-700 mb-2">Current Activities:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempActivities.map((activity, index) => (
-                              <span key={`activity-${activity}-${index}`} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+                              <span key={`activity-${activity}-${index}`} className="inline-flex items-center justify-center h-7 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none bg-white dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600">
                                 {activity}
                                 <button
                                   onClick={() => setTempActivities(tempActivities.filter(a => a !== activity))}
@@ -5190,12 +5190,12 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                               return (
                                 <>
                                   {topActivities.map((activity, index) => (
-                                    <div key={`activity-${index}`} className="pill pill-activities inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none" >
+                                    <div key={`activity-${index}`} className="pill pill-activities inline-flex items-center justify-center h-7 rounded-full px-4 text-xs font-medium leading-none whitespace-nowrap bg-white dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600 appearance-none select-none" >
                                       {activity}
                                     </div>
                                   ))}
                                   {remaining > 0 && (
-                                    <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none">
+                                    <div className="inline-flex items-center justify-center h-7 rounded-full px-4 text-xs font-medium leading-none whitespace-nowrap bg-white dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600 appearance-none select-none">
                                       +{remaining} more
                                     </div>
                                   )}
@@ -5283,7 +5283,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                           <p className="text-sm font-medium text-gray-700 mb-2">Current Events:</p>
                           <div className="flex flex-wrap gap-2">
                             {tempEvents.map((event, index) => (
-                              <span key={`event-${event}-${index}`} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+                              <span key={`event-${event}-${index}`} className="inline-flex items-center justify-center h-7 rounded-full px-4 text-xs font-medium whitespace-nowrap leading-none bg-white dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600">
                                 {event}
                                 <button
                                   onClick={() => setTempEvents(tempEvents.filter(e => e !== event))}
@@ -5328,12 +5328,12 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                               return (
                                 <>
                                   {topEvents.map((event, index) => (
-                                    <div key={`event-${index}`} className="pill pill-events inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none">
+                                    <div key={`event-${index}`} className="pill pill-events inline-flex items-center justify-center h-7 rounded-full px-4 text-xs font-medium leading-none whitespace-nowrap bg-white dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600 appearance-none select-none">
                                       {event}
                                     </div>
                                   ))}
                                   {remaining > 0 && (
-                                    <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none">
+                                    <div className="inline-flex items-center justify-center h-7 rounded-full px-4 text-xs font-medium leading-none whitespace-nowrap bg-white dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600 appearance-none select-none">
                                       +{remaining} more
                                     </div>
                                   )}
@@ -5491,7 +5491,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                               <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Interests</h4>
                               <div className="flex flex-wrap gap-2">
                                 {allInterests.map((interest, index) => (
-                                  <div key={`interest-${index}`} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+                                  <div key={`interest-${index}`} className="inline-flex items-center justify-center h-7 rounded-full px-4 text-xs font-medium leading-none whitespace-nowrap bg-white dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600 appearance-none select-none gap-1.5">
                                     {interest}
                                   </div>
                                 ))}
@@ -5503,7 +5503,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                               <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Activities</h4>
                               <div className="flex flex-wrap gap-2">
                                 {allActivities.map((activity, index) => (
-                                  <div key={`activity-${index}`} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5">
+                                  <div key={`activity-${index}`} className="inline-flex items-center justify-center h-7 rounded-full px-4 text-xs font-medium leading-none whitespace-nowrap bg-white dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600 appearance-none select-none gap-1.5">
                                     {activity}
                                   </div>
                                 ))}
@@ -5515,7 +5515,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                               <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Business Events</h4>
                               <div className="flex flex-wrap gap-2">
                                 {allEvents.map((event, index) => (
-                                  <div key={`event-${index}`} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5">
+                                  <div key={`event-${index}`} className="inline-flex items-center justify-center h-7 rounded-full px-4 text-xs font-medium leading-none whitespace-nowrap bg-white dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600 appearance-none select-none gap-1.5">
                                     {event}
                                   </div>
                                 ))}
@@ -5869,7 +5869,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                                 {editFormData.activities.filter(activity => !getAllActivities().includes(activity)).map((activity, index) => (
                                   <span
                                     key={`custom-activity-${index}`}
-                                    className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5"
+                                    className="inline-flex items-center justify-center h-7 rounded-full px-4 text-xs font-medium leading-none whitespace-nowrap bg-white dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600 appearance-none select-none gap-1.5"
                                   >
                                     {activity}
                                     <button
@@ -6132,7 +6132,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                             <div className="mb-2">
                               <div className="flex flex-wrap gap-2">
                                 {(expandedPlanInterests.has(plan.id) ? plan.interests : plan.interests.slice(0, 2)).map((interest: string) => (
-                                  <div key={interest} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+                                  <div key={interest} className="inline-flex items-center justify-center h-7 rounded-full px-4 text-xs font-medium leading-none whitespace-nowrap bg-white dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600 appearance-none select-none gap-1.5">
                                     {interest}
                                   </div>
                                 ))}
@@ -6159,12 +6159,12 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                             <div>
                               <div className="flex flex-wrap gap-2">
                                 {plan.travelStyle.slice(0, 2).map((style: string) => (
-                                  <div key={style} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+                                  <div key={style} className="inline-flex items-center justify-center h-7 rounded-full px-4 text-xs font-medium leading-none whitespace-nowrap bg-white dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600 appearance-none select-none gap-1.5">
                                     {style}
                                   </div>
                                 ))}
                                 {plan.travelStyle.length > 2 && (
-                                  <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+                                  <div className="inline-flex items-center justify-center h-7 rounded-full px-4 text-xs font-medium leading-none whitespace-nowrap bg-white dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600 appearance-none select-none gap-1.5">
                                     +{plan.travelStyle.length - 2} more
                                   </div>
                                 )}
@@ -6266,7 +6266,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                               <div className="mb-2">
                                 <div className="flex flex-wrap gap-2">
                                   {(expandedPlanInterests.has(plan.id) ? plan.interests : plan.interests.slice(0, 2)).map((interest: string) => (
-                                    <div key={interest} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+                                    <div key={interest} className="inline-flex items-center justify-center h-7 rounded-full px-4 text-xs font-medium leading-none whitespace-nowrap bg-white dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600 appearance-none select-none gap-1.5">
                                       {interest}
                                     </div>
                                   ))}
@@ -6293,12 +6293,12 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                               <div>
                                 <div className="flex flex-wrap gap-2">
                                   {plan.travelStyle.slice(0, 2).map((style: string) => (
-                                    <div key={style} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+                                    <div key={style} className="inline-flex items-center justify-center h-7 rounded-full px-4 text-xs font-medium leading-none whitespace-nowrap bg-white dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600 appearance-none select-none gap-1.5">
                                       {style}
                                     </div>
                                   ))}
                                   {plan.travelStyle.length > 2 && (
-                                    <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+                                    <div className="inline-flex items-center justify-center h-7 rounded-full px-4 text-xs font-medium leading-none whitespace-nowrap bg-white dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600 appearance-none select-none gap-1.5">
                                       +{plan.travelStyle.length - 2} more
                                     </div>
                                   )}
