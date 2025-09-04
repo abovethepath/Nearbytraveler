@@ -199,13 +199,13 @@ export function parseInputDate(dateString: string): Date {
  */
 export function getCurrentTravelDestination(travelPlans: any[]): string | null {
   if (!travelPlans || !Array.isArray(travelPlans) || travelPlans.length === 0) {
-    console.log('🚨 TRAVEL DEBUG: No travel plans provided');
+    // Debug disabled for performance
     return null;
   }
   
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  console.log('🚨 TRAVEL DEBUG: Today date for comparison:', today.toISOString(), 'Plans count:', travelPlans.length);
+  // Debug disabled for performance
   
   // Check travel plans array for active trips - ONLY active trips make someone a NEARBY TRAVELER
   for (const plan of travelPlans) {
@@ -227,20 +227,14 @@ export function getCurrentTravelDestination(travelPlans: any[]): string | null {
       endDate.setHours(23, 59, 59, 999);
       
       // TEMPORAL LOGIC: Only active trips count - future trips don't make someone a traveler yet
-      console.log('🚨 TRAVEL DEBUG: Comparing dates for plan', plan.id, {
-        today: today.toISOString(),
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString(),
-        isCurrentTrip: today >= startDate && today <= endDate,
-        destination: plan.destination
-      });
+      // Debug disabled for performance
       
       if (today >= startDate && today <= endDate) {
         // Parse destination into consistent field naming
         const destinationParts = plan.destination.split(', ');
         const [destinationCity, destinationState = null, destinationCountry] = destinationParts;
         
-        console.log('🚨 TRAVEL DEBUG: ACTIVE TRIP FOUND!', plan.destination);
+        // Debug disabled for performance
         // ALWAYS return the destination if there's an active trip, even if it's the same as hometown
         return plan.destination; // Return the full destination string for display
       }

@@ -37,7 +37,7 @@ import SmartPhotoGallery from "@/components/smart-photo-gallery";
 import SmartLocationInput from "@/components/SmartLocationInput";
 import AICityEventsWidget from "@/components/ai-city-events";
 import TravelMatches from "@/components/travel-matches";
-const staticHeroImage = "/assets/travelers-hero.webp";
+const staticHeroImage = "/travelers_1756778615408.jpg";
 
 import ResponsiveUserGrid from "@/components/ResponsiveUserGrid";
 import { SimpleAvatar } from "@/components/simple-avatar";
@@ -1155,16 +1155,7 @@ export default function Home() {
   // Use matched users when "best-matches" filter is active, otherwise use regular users
   const usersToFilter = activeFilter === "best-matches" ? matchedUsers : users;
 
-  // DEBUG: Check if events are somehow in the users data
-  if (process.env.NODE_ENV === 'development') {
-    console.log('🔍 PEOPLE DISCOVERY DEBUG:', {
-      totalUsers: users.length,
-      usersToFilterCount: usersToFilter.length,
-      firstUser: usersToFilter[0],
-      hasEventsInUsers: usersToFilter.some((item: any) => item.title || item.eventDate || item.description?.includes('Event')),
-      userTypes: usersToFilter.map((item: any) => item.userType || item.type || 'unknown').slice(0, 5)
-    });
-  }
+  // Debug disabled for performance
 
 
   const filteredUsers = prioritizeUsers(usersToFilter).filter(otherUser => {
