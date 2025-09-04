@@ -478,7 +478,7 @@ export default function LandingStreamlined() {
                       Traveler Signup
                     </Button>
                     <Button 
-                      onClick={() => setLocation('/signup-local-traveler')}
+                      onClick={() => setLocation('/unified-signup')}
                       className="w-full bg-teal-600 hover:bg-teal-700 text-white text-sm"
                     >
                       Local Signup

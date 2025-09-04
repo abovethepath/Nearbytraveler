@@ -81,7 +81,6 @@ function JoinPageWithSignIn() {
   );
 }
 // import SignupLocal from "@/pages/signup-local"; // Removed broken file
-import SignupLocalTraveler from "@/pages/signup-local-traveler";
 import SignupTraveling from "@/pages/signup-traveling";
 import SignupBusinessSimple from "@/pages/signup-business-simple";
 import SignupSteps from "@/pages/signup-steps";
@@ -655,7 +654,7 @@ function Router() {
 
       // Signup pages
       if (location === '/signup/local' || location === '/signup/traveler') {
-        return <SignupLocalTraveler />;
+        return <UnifiedSignup />;
       }
       if (location === '/signup/traveling') {
         return <SignupTraveling />;
@@ -748,7 +747,7 @@ function Router() {
       }
       if (location === '/signup/local') {
         console.log('✅ SIGNUP LOCAL - Unauthenticated access allowed');
-        return <SignupLocalTraveler />;
+        return <UnifiedSignup />;
       }
       if (location === '/signup/traveling') {
         console.log('✅ SIGNUP TRAVELING - Unauthenticated access allowed');
