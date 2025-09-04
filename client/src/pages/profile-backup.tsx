@@ -29,7 +29,6 @@ import FriendReferralWidget from "@/components/friend-referral-widget";
 
 import ReferencesWidgetNew from "@/components/references-widget-new";
 import { VouchWidget } from "@/components/vouch-widget";
-import { LocationSharingSection } from "@/components/LocationSharingSection";
 // Removed framer-motion import for static interface
 import { useToast } from "@/hooks/use-toast";
 import { AuthContext } from "@/App";
@@ -91,6 +90,7 @@ const AUSTRALIAN_STATES = [
 import WorldMap from "@/components/world-map";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
 import { QuickDealsWidget } from "@/components/QuickDealsWidget";
+import TravelItinerary from "@/components/travel-itinerary";
 import { ThingsIWantToDoSection } from "@/components/ThingsIWantToDoSection";
 
 
@@ -573,7 +573,7 @@ const getFilteredInterestsForProfile = (user: User, isOwnProfile: boolean) => {
   return filteredInterests;
 };
 
-function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
+function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const { user: authContextUser, setUser: setAuthUser } = useContext(AuthContext);
@@ -619,9 +619,6 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
   const [showTravelPlanDetails, setShowTravelPlanDetails] = useState(false);
   const [showDestinationSuggestions, setShowDestinationSuggestions] = useState(false);
   const [showChatroomList, setShowChatroomList] = useState(false);
-  
-  // Tab navigation state - Couchsurfing style
-  const [activeTab, setActiveTab] = useState('about');
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [showKeywordSearch, setShowKeywordSearch] = useState(false);
@@ -659,7 +656,6 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
   // Simple edit form data (copying signup pattern)
   const [editFormData, setEditFormData] = useState({
     interests: [] as string[],
-    privateInterests: [] as string[],
     activities: [] as string[],
     events: [] as string[]
   });
@@ -884,7 +880,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
   }, [currentUser, setAuthUser]);
   
   const effectiveUserId = propUserId || currentUser?.id;
-  const isOwnProfile = propUserId ? (parseInt(propUserId.toString()) === currentUser?.id) : true;
+  const isOwnProfile = propUserId ? (parseInt(propUserId) === currentUser?.id) : true;
   
   console.log('🔧 AUTHENTICATION STATE:', {
     currentUserId: currentUser?.id,
@@ -904,7 +900,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
     comparison: `${propUserId} === ${currentUser?.id}`,
     comparisonResult: propUserId === currentUser?.id,
     parsedComparison: `parseInt(${propUserId}) === ${currentUser?.id}`,
-    parsedResult: parseInt(propUserId?.toString() || '0') === currentUser?.id
+    parsedResult: parseInt(propUserId || '') === currentUser?.id
   });
   
 
@@ -1302,6 +1298,9 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
       zipCode: "",
       phoneNumber: "",
       websiteUrl: "",
+      // Owner/Internal Contact Information
+      ownerName: "",
+      ownerPhone: "",
       travelStyle: [],
       interests: [],
       activities: [],
@@ -1353,7 +1352,6 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
       // Initialize editFormData with current user preferences
       setEditFormData({
         interests: user.interests || [],
-        privateInterests: user.privateInterests || [],
         activities: user.activities || [],
         events: user.events || []
       });
@@ -1434,7 +1432,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
           // interests: user.interests || [],
           // activities: user.activities || [],
           // events: user.events || [],
-          // customInterests: (user as any).customInterests || (user as any).custom_interests || "",
+          customInterests: (user as any).customInterests || (user as any).custom_interests || "",
           customActivities: (user as any).customActivities || (user as any).custom_activities || "",
           customEvents: (user as any).customEvents || (user as any).custom_events || "",
         });
@@ -1479,6 +1477,8 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
           hometownCity: user.hometownCity || "",
           hometownState: user.hometownState || "",
           hometownCountry: user.hometownCountry || "",
+          dateOfBirth: user.dateOfBirth ? 
+            (typeof user.dateOfBirth === 'string' ? user.dateOfBirth : new Date(user.dateOfBirth).toISOString().split('T')[0]) : "",
           travelStyle: user.travelStyle || [],
           city: user.city || "",
           state: user.state || "",
@@ -2969,12 +2969,12 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
         ...data,
         isVeteran: !!data.isVeteran,
         isActiveDuty: !!data.isActiveDuty,
-        isMinorityOwned: !!(data as any).isMinorityOwned,
-        isFemaleOwned: !!(data as any).isFemaleOwned,
-        isLGBTQIAOwned: !!(data as any).isLGBTQIAOwned,
-        showMinorityOwned: (data as any).showMinorityOwned !== false,
-        showFemaleOwned: (data as any).showFemaleOwned !== false,
-        showLGBTQIAOwned: (data as any).showLGBTQIAOwned !== false,
+        isMinorityOwned: !!data.isMinorityOwned,
+        isFemaleOwned: !!data.isFemaleOwned,
+        isLGBTQIAOwned: !!data.isLGBTQIAOwned,
+        showMinorityOwned: data.showMinorityOwned !== false,
+        showFemaleOwned: data.showFemaleOwned !== false,
+        showLGBTQIAOwned: data.showLGBTQIAOwned !== false,
       } : {
         ...data,
         // Only include traveler fields if they exist in the data
@@ -2984,12 +2984,12 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
         // Always include veteran status fields
         isVeteran: !!data.isVeteran,
         isActiveDuty: !!data.isActiveDuty,
-        isMinorityOwned: !!(data as any).isMinorityOwned,
-        isFemaleOwned: !!(data as any).isFemaleOwned,
-        isLGBTQIAOwned: !!(data as any).isLGBTQIAOwned,
-        showMinorityOwned: (data as any).showMinorityOwned !== false,
-        showFemaleOwned: (data as any).showFemaleOwned !== false,
-        showLGBTQIAOwned: (data as any).showLGBTQIAOwned !== false,
+        isMinorityOwned: !!data.isMinorityOwned,
+        isFemaleOwned: !!data.isFemaleOwned,
+        isLGBTQIAOwned: !!data.isLGBTQIAOwned,
+        showMinorityOwned: data.showMinorityOwned !== false,
+        showFemaleOwned: data.showFemaleOwned !== false,
+        showLGBTQIAOwned: data.showLGBTQIAOwned !== false,
       };
       
       console.log('🔥 MUTATION: Profile payload with explicit booleans:', payload);
@@ -3384,7 +3384,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
   }
 
   return (
-    <div>
+    <>
       {/* Mobile Navigation */}
       <MobileTopNav />
       <MobileBottomNav />
@@ -3418,414 +3418,183 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
         </div>
       )}
     
-      {/* Hidden upload input and overlay */}
-      {isOwnProfile && (
-        <input
-          id="avatar-upload-input"
-          type="file"
-          accept="image/*"
-          onChange={handleAvatarUpload}
-          className="hidden"
-        />
-      )}
-      
-      {uploadingPhoto && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-4 text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
-            <p className="text-sm font-medium">Uploading...</p>
-          </div>
-        </div>
-      )}
+      {/* PROFILE HEADER - Mobile Responsive */}
+      <section
+        className={`relative -mt-px isolate w-full bg-gradient-to-r ${gradientOptions[selectedGradient]} px-3 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12`}
+      >
+        {/* floating color button */}
+        {isOwnProfile && (
+          <button
+            type="button"
+            onClick={() => setSelectedGradient((prev) => (prev + 1) % gradientOptions.length)}
+            aria-label="Change header colors"
+            className="absolute right-3 top-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/85 text-gray-700 shadow-md hover:bg-white"
+          >
+            🎨
+          </button>
+        )}
 
-      
-      {/* COUCHSURFING-STYLE LAYOUT - Left sidebar + Right content */}
-      <div className="w-full max-w-7xl mx-auto pb-20 sm:pb-4 px-1 sm:px-4 lg:px-6 mt-2 overflow-x-hidden">
-        <div className="flex flex-col lg:grid lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-6">
-          
-          {/* LEFT SIDEBAR - Couchsurfing Style (Profile Info) */}
-          <div className="w-full lg:col-span-1 space-y-3 sm:space-y-4 lg:space-y-6">
-            {(() => {
-              // Calculate travel status for Couchsurfing layout
-              const currentTravelDestination = getCurrentTravelDestination(travelPlans || []);
-              const isCurrentlyTraveling = !!currentTravelDestination;
-              
-              return (
+        <div className="max-w-7xl mx-auto">
+          {/* allow wrapping so CTAs drop below on small screens */}
+          <div className="flex flex-row flex-wrap items-start gap-4 sm:gap-6">
+
+            {/* Avatar + camera (bigger, no scrollbars) */}
+            <div className="relative flex-shrink-0">
+              <div className="rounded-full bg-white ring-4 ring-white shadow-lg overflow-hidden">
+                <div className="w-36 h-36 sm:w-40 sm:h-40 md:w-56 md:h-56 rounded-full overflow-hidden no-scrollbar">
+                  <SimpleAvatar
+                    user={user}
+                    size="xl"
+                    className="w-full h-full block object-cover"
+                  />
+                </div>
+              </div>
+
+              {isOwnProfile && (
                 <>
-                  {/* COMPLETE COUCHSURFING SIDEBAR - All in green */}
-                  <div className="bg-gradient-to-br from-green-500 to-green-600 p-8 text-white border-0 rounded-lg shadow-lg">
-                    {/* Large Profile Photo */}
-                    <div className="text-center mb-6">
-                      <div className="relative inline-block">
-                      <Avatar className="w-48 h-48 border-4 border-white shadow-lg mb-4">
-                        <AvatarImage src={user?.profileImage} alt={user?.username} />
-                        <AvatarFallback className="bg-green-300 text-green-800 text-3xl font-bold">
-                          {user?.username?.charAt(0)?.toUpperCase() || '?'}
-                        </AvatarFallback>
-                      </Avatar>
-                      {isOwnProfile && (
-                        <Button
-                          size="icon"
-                          aria-label="Change avatar"
-                          className="absolute -bottom-2 -right-2 translate-x-1/4 translate-y-1/4
-                                     h-10 w-10 sm:h-11 sm:w-11 rounded-full p-0
-                                     bg-white hover:bg-gray-100 text-green-600 shadow-md ring-2 ring-white z-10"
-                          onClick={() => document.getElementById('avatar-upload-input')?.click()}
-                          disabled={uploadingPhoto}
-                        >
-                          <Camera className="h-4 w-4 sm:h-5 sm:w-5" />
-                        </Button>
-                      )}
-                      </div>
-                      {isCurrentlyTraveling && (
-                        <div className="inline-block">
-                          <div className="bg-white text-green-600 text-xs px-3 py-1 rounded-full flex items-center">
-                            <MapPin className="w-3 h-3 mr-1" />
-                            Traveling
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Username and Location */}
-                    <div className="text-center mb-6">
-                      <h1 className="text-2xl font-bold mb-2">{user?.username}</h1>
-                      <div className="text-green-100 mb-1">
-                        <span>
-                          Nearby Local • {user?.hometownCity || 'Location not set'}
-                          {user?.hometownState && `, ${user.hometownState}`}
-                          {user?.hometownCountry && `, ${user.hometownCountry}`}
-                        </span>
-                      </div>
-                    </div>
-
-
-                    {/* Action Buttons */}
-                    <div className="space-y-3">
-                      {isOwnProfile ? (
-                        <Button
-                          onClick={() => {
-                            toast({
-                              title: "Coming soon!",
-                              description: "Profile editing is being updated with new features.",
-                            });
-                          }}
-                          className="w-full bg-white text-green-600 hover:bg-green-50 font-semibold"
-                          data-testid="button-edit-profile"
-                        >
-                          <Edit2 className="w-4 h-4 mr-2" />
-                          Edit Profile
-                        </Button>
-                      ) : (
-                        <>
-                          <Button
-                            onClick={isValidConnectTarget ? getConnectButtonState().onClick : undefined}
-                            disabled={!isValidConnectTarget || isConnecting}
-                            className={`w-full font-semibold ${getConnectButtonState().bgColor}`}
-                            data-testid="button-send-connection-request"
-                          >
-                            {getConnectButtonState().text}
-                          </Button>
-                          {user && (user.hometownCity || user.location) && (
-                            <Button
-                              onClick={() => {
-                                const chatCity = user.hometownCity || user.location?.split(',')[0] || 'General';
-                                setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
-                              }}
-                              className="w-full bg-white text-green-600 hover:bg-green-50 font-semibold"
-                            >
-                              <MessageCircle className="w-4 h-4 mr-2" />
-                              Go to Chatrooms
-                            </Button>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Couchsurfing-style Tab Navigation */}
-                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-                    <div className="flex flex-wrap gap-1 p-2">
-                      <button
-                        onClick={() => setActiveTab('about')}
-                        className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
-                          activeTab === 'about' 
-                            ? 'bg-blue-500 text-white' 
-                            : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
-                        }`}
-                      >
-                        About
-                      </button>
-                      <button
-                        onClick={() => setActiveTab('photos')}
-                        className={`px-3 py-2 rounded text-sm font-medium transition-colors flex items-center gap-1 ${
-                          activeTab === 'photos' 
-                            ? 'bg-orange-500 text-white' 
-                            : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
-                        }`}
-                      >
-                        Photos <span className="bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full">{photos.length}</span>
-                      </button>
-                      <button
-                        onClick={() => setActiveTab('references')}
-                        className={`px-3 py-2 rounded text-sm font-medium transition-colors flex items-center gap-1 ${
-                          activeTab === 'references' 
-                            ? 'bg-orange-500 text-white' 
-                            : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
-                        }`}
-                      >
-                        References <span className="bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full">{userReferences.length}</span>
-                      </button>
-                      <button
-                        onClick={() => setActiveTab('friends')}
-                        className={`px-3 py-2 rounded text-sm font-medium transition-colors flex items-center gap-1 ${
-                          activeTab === 'friends' 
-                            ? 'bg-blue-500 text-white' 
-                            : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
-                        }`}
-                      >
-                        Friends <span className="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">{userConnections.length}</span>
-                      </button>
-                      {isOwnProfile && (
-                        <button
-                          onClick={() => setActiveTab('travel')}
-                          className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
-                            activeTab === 'travel' 
-                              ? 'bg-purple-500 text-white' 
-                              : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
-                          }`}
-                        >
-                          Travel Plans
-                        </button>
-                      )}
-                    </div>
-                  </div>
+                  <Button
+                    size="icon"
+                    aria-label="Change avatar"
+                    className="absolute -bottom-2 -right-2 translate-x-1/4 translate-y-1/4
+                               h-10 w-10 sm:h-11 sm:w-11 rounded-full p-0
+                               bg-blue-600 hover:bg-blue-700 text-white shadow-lg ring-4 ring-white z-10"
+                    onClick={() => document.getElementById('avatar-upload-input')?.click()}
+                    disabled={uploadingPhoto}
+                  >
+                    <Camera className="h-4 w-4 sm:h-5 sm:w-5" />
+                  </Button>
+                  <input
+                    id="avatar-upload-input"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    className="hidden"
+                  />
                 </>
-              );
-            })()}
+              )}
+            </div>
 
-          </div>
-
-          {/* MAIN CONTENT AREA - Tab-based content */}
-          <div className="w-full lg:col-span-4 space-y-3 sm:space-y-4 lg:space-y-6">
-            
-            {/* About Tab Content */}
-            {activeTab === 'about' && (
-              <div className="space-y-4">
-                {user?.userType !== 'business' && (
-                    <Card className="mt-4 hover:shadow-lg transition-all duration-200 hover:border-orange-300">
-                      <CardHeader>
-                        <CardTitle className="text-sm dark:text-white">Stats</CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-3 text-sm">
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-600 dark:text-gray-300 flex items-center gap-1">
-                            <Sparkles className="w-3 h-3 text-orange-500" />
-                            Aura
-                          </span>
-                          <span className="font-semibold text-orange-600 dark:text-orange-400">{user?.aura || 0}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-600 dark:text-gray-300">Connections</span>
-                          <span className="font-semibold dark:text-white">{userConnections.length}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-600 dark:text-gray-300">Active Plans</span>
-                          <span className="font-semibold dark:text-white">{travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-600 dark:text-gray-300">Trips Taken</span>
-                          <span className="font-semibold dark:text-white">{travelPlans.filter(plan => plan.status === 'completed').length}</span>
-                        </div>
-                        <div 
-                          className="flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 -m-2 transition-colors"
-                          onClick={() => setShowChatroomList(true)}
-                        >
-                          <span className="text-gray-600 dark:text-gray-300">Chatrooms</span>
-                          <div className="flex items-center gap-1">
-                            <span className="font-semibold dark:text-white">{userChatrooms.length}</span>
-                            <ChevronRight className="w-3 h-3 text-gray-400" />
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-
-                  {/* Countries Visited - User info in left sidebar */}
-                  {user?.userType !== 'business' && (
-                    <Card className="mt-4">
-                      <CardHeader>
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="text-sm">
-                            <span className="text-black dark:text-white">Countries ({countriesVisited.length})</span>
-                          </CardTitle>
-                          {isOwnProfile && !editingCountries && (
-                            <Button size="sm" variant="outline" onClick={handleEditCountries}>
-                              <Edit className="w-3 h-3" />
-                            </Button>
-                          )}
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        {editingCountries ? (
-                          <div className="space-y-3">
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  role="combobox"
-                                  className="w-full justify-between bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-left"
-                                >
-                                  {tempCountries.length > 0 
-                                    ? `${tempCountries.length} countr${tempCountries.length > 1 ? 'ies' : 'y'} selected`
-                                    : "Select countries..."
-                                  }
-                                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                </Button>
-                              </PopoverTrigger>
-                            </Popover>
-                            <div className="flex gap-2">
-                              <Button size="sm" onClick={handleSaveCountries}>
-                                Save
-                              </Button>
-                              <Button size="sm" variant="outline" onClick={handleCancelCountries}>
-                                Cancel
-                              </Button>
-                            </div>
+            {/* Profile text */}
+            <div className="flex-1 min-w-0">
+              {user?.userType === 'business' ? (
+                <div className="space-y-2 text-black w-full mt-2">
+                  <h1 className="text-2xl sm:text-4xl font-bold text-black">
+                    {user.businessName || user.name || `@${user.username}`}
+                  </h1>
+                  <div className="flex items-center gap-2 text-sm sm:text-base">
+                    <span className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium bg-blue-500 text-white">
+                      Nearby Business
+                    </span>
+                    {user.businessType && <span className="text-black/80">• {user.businessType}</span>}
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-2 text-black w-full mt-2">
+                  {(() => {
+                    const hometown = user.hometownCity ? 
+                      `${user.hometownCity}${user.hometownState ? `, ${user.hometownState}` : ''}` :
+                      'Unknown';
+                    
+                    return (
+                      <>
+                        <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold text-black break-all">@{user.username}</h1>
+                        
+                        {/* Show travel status first if currently traveling, using database fields */}
+                        {user.isCurrentlyTraveling && user.travelDestination ? (
+                          <div className="flex items-center gap-2 text-lg font-medium text-black">
+                            <Plane className="w-5 h-5 text-orange-600" />
+                            <span>NEARBY TRAVELER ({user.travelDestination})</span>
                           </div>
                         ) : (
-                          <div className="flex flex-wrap gap-1">
-                            {countriesVisited.length > 0 ? (
-                              countriesVisited.slice(0, 6).map((country, idx) => (
-                                <span key={idx} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-200">
-                                  {country}
-                                </span>
-                              ))
-                            ) : (
-                              <span className="text-sm text-gray-500 dark:text-gray-400">No countries added yet</span>
-                            )}
-                            {countriesVisited.length > 6 && (
-                              <span className="text-xs text-gray-500 dark:text-gray-400">+{countriesVisited.length - 6} more</span>
-                            )}
+                          <div className="flex items-center gap-2 text-lg font-medium text-black">
+                            <MapPin className="w-5 h-5 text-blue-600" />
+                            <span>NEARBY LOCAL {hometown}</span>
                           </div>
                         )}
-                      </CardContent>
-                    </Card>
-                  )}
+                      </>
+                    );
+                  })()}
 
-                  {/* Languages Widget - Left sidebar */}
-                  <Card className="mt-4">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-sm dark:text-white">Languages I Speak</CardTitle>
-                        {isOwnProfile && !editingLanguages && (
-                          <Button size="sm" variant="outline" onClick={handleEditLanguages}>
-                            <Edit className="w-3 h-3" />
-                          </Button>
-                        )}
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      {editingLanguages ? (
-                        <div className="space-y-3">
-                          <div className="flex flex-wrap gap-1 p-2 border rounded">
-                            {getAllLanguages().map((language) => {
-                              const isSelected = tempLanguages.includes(language);
-                              return (
-                                <button
-                                  key={language}
-                                  type="button"
-                                  onClick={() => {
-                                    if (isSelected) {
-                                      setTempLanguages(tempLanguages.filter(l => l !== language));
-                                    } else {
-                                      setTempLanguages([...tempLanguages, language]);
-                                    }
-                                  }}
-                                  className={`inline-flex items-center justify-center h-6 rounded-full px-2 text-xs font-medium whitespace-nowrap border-0 ${
-                                    isSelected
-                                      ? 'bg-green-600 text-white'
-                                      : 'bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200'
-                                  }`}
-                                >
-                                  {language}
-                                </button>
-                              );
-                            })}
-                          </div>
-                          <div className="flex gap-2">
-                            <Button size="sm" onClick={handleSaveLanguages}>Save</Button>
-                            <Button size="sm" variant="outline" onClick={handleCancelLanguages}>Cancel</Button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex flex-wrap gap-1">
-                          {(user?.languagesSpoken && user.languagesSpoken.length > 0) ? (
-                            user.languagesSpoken.slice(0, 4).map((language, idx) => (
-                              <span key={idx} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-200">
-                                {language}
-                              </span>
-                            ))
-                          ) : (
-                            <span className="text-sm text-gray-500 dark:text-gray-400">No languages listed</span>
-                          )}
-                          {user?.languagesSpoken && user.languagesSpoken.length > 4 && (
-                            <span className="text-xs text-gray-500">+{user.languagesSpoken.length - 4} more</span>
-                          )}
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
+                  {/* Stats */}
+                  <div className="flex items-center flex-wrap gap-4 text-sm font-medium w-full mt-3">
+                    <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full">🌍 {countriesVisited?.length || 0} countries</span>
+                    <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full">⭐ {references?.length || 0} references</span>
+                  </div>
+                </div>
+              )}
+            </div>
 
-                  {/* Connections Widget - Left sidebar */}
-                  <Card className="mt-4">
-                    <CardHeader>
-                      <CardTitle className="text-sm flex items-center justify-between dark:text-white">
-                        <span className="flex items-center gap-2">
-                          <Users className="w-4 h-4 text-blue-500" />
-                          Connections ({userConnections.length})
-                        </span>
-                        {isOwnProfile && (
-                          <Button size="sm" variant="outline" onClick={() => setShowConnectionFilters(!showConnectionFilters)}>
-                            Sort & Filter
-                          </Button>
-                        )}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        {userConnections.slice(0, connectionsDisplayCount).map((connection: any) => (
-                          <div key={connection.id} className="flex items-center gap-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg cursor-pointer transition-colors"
-                               onClick={() => setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`)}>
-                            <SimpleAvatar user={connection.connectedUser} size="sm" />
-                            <div className="flex-1 min-w-0">
-                              <p className="font-medium text-xs truncate dark:text-white">@{connection.connectedUser?.username}</p>
-                              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{connection.connectedUser?.name}</p>
-                            </div>
-                          </div>
-                        ))}
-                        {userConnections.length > connectionsDisplayCount && (
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={() => setConnectionsDisplayCount(prev => prev + 5)}
-                            className="w-full text-xs"
-                          >
-                            View {Math.min(5, userConnections.length - connectionsDisplayCount)} more
-                          </Button>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                </>
-              );
-            })()}
-
+            {/* CTAs — wrap on mobile */}
+            {!isOwnProfile ? (
+              <div className="flex items-center justify-between gap-3 flex-wrap min-w-0">
+                <Button className="bg-orange-500 hover:bg-orange-600 text-white border-0 w-full sm:w-auto" onClick={handleMessage}>
+                  Message
+                </Button>
+                <Button
+                  className={`w-full sm:w-auto ${getConnectButtonState().className}`}
+                  variant={getConnectButtonState().variant}
+                  onClick={handleConnect}
+                  disabled={getConnectButtonState().disabled}
+                >
+                  {getConnectButtonState().text}
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between gap-3 flex-wrap min-w-0">
+                {user && (user.hometownCity || user.location) && (
+                  <Button
+                    onClick={() => {
+                      const chatCity = user.hometownCity || user.location?.split(',')[0] || 'General';
+                      setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
+                    }}
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700
+                               text-white border-0 shadow-lg rounded-full
+                               inline-flex items-center justify-center gap-2
+                               w-full sm:w-auto max-w-full sm:max-w-none
+                               px-4 py-3 overflow-hidden break-words"
+                  >
+                    <MessageCircle className="w-4 h-4 shrink-0" />
+                    <span className="truncate">Go to Chatrooms</span>
+                  </Button>
+                )}
+                <Button
+                  onClick={() => setLocation('/share-qr')}
+                  className="bg-gradient-to-r from-orange-600 to-blue-600 hover:from-orange-700 hover:to-blue-700
+                             text-white border-0 shadow-lg rounded-full
+                             inline-flex items-center justify-center gap-2
+                             w-full sm:w-auto max-w-full sm:max-w-none
+                             px-4 py-3 overflow-hidden break-words"
+                  data-testid="button-share-qr-code"
+                >
+                  <Share2 className="w-4 h-4 shrink-0" />
+                  <span className="truncate">Invite Friends</span>
+                </Button>
+              </div>
+            )}
           </div>
+        </div>
 
-          {/* MIDDLE CONTENT AREA - Main Profile Content */}
-          <div className="w-full lg:col-span-3 space-y-3 sm:space-y-4 lg:space-y-6">
+        {/* Upload overlay (unchanged) */}
+        {uploadingPhoto && (
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-30">
+            <div className="bg-white rounded-lg p-4 text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
+              <p className="text-sm font-medium">Uploading...</p>
+            </div>
+          </div>
+        )}
+      </section>
+      
+      {/* Main content section - Mobile Responsive Layout */}
+      <div className="w-full max-w-full mx-auto pb-20 sm:pb-4 px-1 sm:px-4 lg:px-6 mt-2 overflow-x-hidden">
+        <div className="flex flex-col lg:grid lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+          {/* Main Content Column */}
+          <div className="w-full lg:col-span-2 space-y-3 sm:space-y-4 lg:space-y-6">
+
+
+            
+
+
             
             {/* About Section - Mobile Optimized */}
             <Card className="mt-2 relative overflow-visible">
@@ -3913,6 +3682,24 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                   );
                 })()}
 
+                {/* Secret Activities (non-business) */}
+                {user?.userType !== 'business' && user?.secretActivities && (
+                  <div className="p-3 bg-gradient-to-br from-orange-50 to-blue-50 border-l-4 border-orange-200 rounded-r-lg">
+                    <h5 className="font-medium text-black mb-2">
+                      Secret things I would do if my closest friends came to town
+                    </h5>
+                    <p className="text-black text-sm italic whitespace-pre-wrap break-words">
+                      {user?.secretActivities}
+                    </p>
+                  </div>
+                )}
+
+                {/* What you have in common (for other profiles) - Mobile and Desktop */}
+                {!isOwnProfile && currentUser && user?.id && (
+                  <div>
+                    <WhatYouHaveInCommon currentUserId={currentUser.id} otherUserId={user.id} />
+                  </div>
+                )}
 
                 {/* Basic Info — grid so lines never run together */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
@@ -4091,27 +3878,6 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
               </CardContent>
             </Card>
 
-            {/* What You Have in Common - Consolidated Section */}
-            {!isOwnProfile && currentUser && user?.id && (
-              <WhatYouHaveInCommon currentUserId={currentUser.id} otherUserId={user.id} />
-            )}
-
-            {/* Secret Activities Section - Below About Section */}
-            {user?.userType !== 'business' && user?.secretActivities && (
-              <Card>
-                <CardContent className="p-4">
-                  <div className="p-3 bg-gradient-to-br from-orange-50 to-blue-50 border-l-4 border-orange-200 rounded-r-lg">
-                    <h5 className="font-medium text-black mb-2">
-                      Secret things I would do if my closest friends came to town
-                    </h5>
-                    <p className="text-black text-sm italic whitespace-pre-wrap break-words">
-                      {user?.secretActivities}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
             {/* Business Deals Section - Only for business users */}
             {user?.userType === 'business' && (
               <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
@@ -4193,33 +3959,10 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
             {user?.userType !== 'business' && (
             <Card>
               <CardHeader className="pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
-                    <Heart className="w-5 h-5 text-red-500" />
-                    Local Interests, Activities & Events
-                  </CardTitle>
-                  {isOwnProfile && !(editingInterests && editingActivities && editingEvents) && (
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        setEditingInterests(true);
-                        setEditingActivities(true);
-                        setEditingEvents(true);
-                        // Initialize edit form data
-                        setEditFormData({
-                          interests: user?.interests || [],
-                          privateInterests: user?.privateInterests || [],
-                          activities: user?.activities || [],
-                          events: user?.events || []
-                        });
-                      }}
-                      className="bg-green-600 hover:bg-green-700 text-white border-0 shadow-sm"
-                    >
-                      <Edit className="w-3 h-3 mr-1" />
-                      Edit All Preferences
-                    </Button>
-                  )}
-                </div>
+                <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                  <Heart className="w-5 h-5 text-red-500" />
+                  Local Interests, Activities & Events
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6 px-4 sm:px-6 pb-4 sm:pb-6 break-words overflow-hidden">
 
@@ -4286,7 +4029,6 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                             // Reset form data
                             setEditFormData({
                               interests: user?.interests || [],
-                              privateInterests: user?.privateInterests || [],
                               activities: user?.activities || [],
                               events: user?.events || []
                             });
@@ -4301,44 +4043,11 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                     {/* When editing all preferences, show the unified content */}
                     {editingInterests && editingActivities && editingEvents && (
                       <div className="space-y-6 mt-6">
-                        {/* Top Choices Section - FIRST */}
-                        <div>
-                          <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
-                            <Star className="w-5 h-5 text-yellow-500" />
-                            Top Choices for Most Travelers
-                          </h4>
-                          
-                          <div className="flex flex-wrap gap-2 p-3 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
-                            {MOST_POPULAR_INTERESTS.slice(0, 12).map((item) => {
-                              const isSelected = editFormData.interests.includes(item);
-                              
-                              return (
-                                <button
-                                  key={item}
-                                  type="button"
-                                  onClick={() => {
-                                    toggleArrayValue(editFormData.interests, item, (newInterests) => 
-                                      setEditFormData({ ...editFormData, interests: newInterests })
-                                    );
-                                  }}
-                                  className={`inline-flex items-center justify-center h-7 sm:h-8 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium whitespace-nowrap leading-none border-0 transition-all ${
-                                    isSelected
-                                      ? 'bg-green-600 text-white font-bold transform scale-105 shadow-lg'
-                                      : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600 shadow-sm'
-                                  }`}
-                                >
-                                  {item}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-
-                        {/* Interests Section - SECOND */}
+                        {/* Interests Section */}
                         <div>
                           <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
                             <Heart className="w-5 h-5 text-blue-500" />
-                            Additional Interests
+                            Interests
                           </h4>
                           
                           <div className="flex flex-wrap gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border overflow-hidden break-words">
@@ -4400,65 +4109,6 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                             >
                               <Plus className="w-3 h-3" />
                             </Button>
-                          </div>
-                        </div>
-
-                        {/* Private Interests Section */}
-                        <div className="border-t pt-6">
-                          <div className="flex items-center gap-2 mb-4">
-                            <Eye className="w-5 h-5 text-purple-500" />
-                            <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
-                              Private Matching Interests
-                            </h4>
-                            <div className="ml-2 px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full font-medium dark:bg-purple-900 dark:text-purple-200">
-                              PRIVATE
-                            </div>
-                          </div>
-                          
-                          <div className="text-sm text-purple-600 bg-purple-50 border border-purple-400 rounded-md p-3 mb-4 dark:bg-purple-900/20 dark:border-purple-600 dark:text-purple-300">
-                            <div className="flex items-start gap-2">
-                              <Shield className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                              <div>
-                                <strong>For matching only - never displayed publicly.</strong> Select sensitive interests like LGBTQ+ events, alternative lifestyles, or personal preferences. These help you find compatible people while keeping your privacy.
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="flex flex-wrap gap-2 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
-                            {[
-                              "LGBTQ+ Events", "Gay Bars & Clubs", "Lesbian Events", "Pride Festivals", "Queer Community", 
-                              "Polyamory", "Open Relationships", "Swinging", "Kink & BDSM", "Alternative Lifestyles",
-                              "Cannabis Culture", "Psychedelic Experiences", "Adult Entertainment", "Strip Clubs", "Adult Parties",
-                              "Sex-Positive Events", "Tantric Workshops", "Fetish Events", "Adult Dating", "Hook-up Culture",
-                              "Divorce Support", "Single Parent Events", "Mental Health Support", "Addiction Recovery", "Therapy Groups"
-                            ].map((interest) => {
-                              const isSelected = editFormData.privateInterests?.includes(interest);
-                              
-                              return (
-                                <button
-                                  key={interest}
-                                  type="button"
-                                  onClick={() => {
-                                    const currentPrivate = editFormData.privateInterests || [];
-                                    const newPrivateInterests = isSelected
-                                      ? currentPrivate.filter(i => i !== interest)
-                                      : [...currentPrivate, interest];
-                                    
-                                    setEditFormData({ 
-                                      ...editFormData, 
-                                      privateInterests: newPrivateInterests 
-                                    });
-                                  }}
-                                  className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
-                                    isSelected
-                                      ? 'bg-purple-600 text-white font-bold transform scale-105'
-                                      : 'bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-800 dark:text-purple-200 dark:hover:bg-purple-700'
-                                  }`}
-                                >
-                                  {interest}
-                                </button>
-                              );
-                            })}
                           </div>
                         </div>
 
@@ -4640,7 +4290,6 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                               setTempEvents(user?.events || []);
                               setEditFormData({
                                 interests: user?.interests || [],
-                                privateInterests: user?.privateInterests || [],
                                 activities: user?.activities || [],
                                 events: user?.events || []
                               });
@@ -4670,7 +4319,23 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
                 </div>
 
-
+                {/* Edit All Preferences Button - Now comes after Top Choices */}
+                {isOwnProfile && (
+                  <div className="mb-4">
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setEditingInterests(true);
+                        setEditingActivities(true);
+                        setEditingEvents(true);
+                      }}
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0"
+                    >
+                      <Edit className="w-3 h-3 mr-1" />
+                      Edit All Preferences
+                    </Button>
+                  </div>
+                )}
 
                 {/* Interests */}
                 <div className="mb-6">
@@ -5363,7 +5028,6 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                             setEditingEvents(false);
                             setEditFormData({
                               interests: user?.interests || [],
-                              privateInterests: user?.privateInterests || [],
                               activities: user?.activities || [],
                               events: user?.events || []
                             });
@@ -5473,64 +5137,6 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                               </div>
                             </div>
                           )}
-                        </div>
-                      </div>
-
-                      {/* Business Private Interests Section */}
-                      <div className="border-t pt-6">
-                        <div className="flex items-center gap-2 mb-4">
-                          <Eye className="w-5 h-5 text-purple-500" />
-                          <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
-                            Private Business Matching
-                          </h4>
-                          <div className="ml-2 px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full font-medium dark:bg-purple-900 dark:text-purple-200">
-                            PRIVATE
-                          </div>
-                        </div>
-                        
-                        <div className="text-sm text-purple-600 bg-purple-50 border border-purple-400 rounded-md p-3 mb-4 dark:bg-purple-900/20 dark:border-purple-600 dark:text-purple-300">
-                          <div className="flex items-start gap-2">
-                            <Shield className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                            <div>
-                              <strong>For matching only - never shown publicly.</strong> Select sensitive business interests that help you connect with compatible customers and partners while keeping your privacy.
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="flex flex-wrap gap-2 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
-                          {[
-                            "LGBTQ+ Friendly Business", "Pride Month Events", "Diversity & Inclusion", "Women-Owned Business", 
-                            "Minority-Owned Business", "Cannabis Tourism", "Adult Entertainment Venue", "18+ Events Only", 
-                            "Alternative Lifestyle Friendly", "Sex-Positive Space", "Kink Community Welcome", "Polyamory Friendly",
-                            "Mental Health Support", "Addiction Recovery Support", "Therapy & Wellness", "Support Groups"
-                          ].map((interest) => {
-                            const isSelected = editFormData.privateInterests?.includes(interest);
-                            
-                            return (
-                              <button
-                                key={interest}
-                                type="button"
-                                onClick={() => {
-                                  const currentPrivate = editFormData.privateInterests || [];
-                                  const newPrivateInterests = isSelected
-                                    ? currentPrivate.filter(i => i !== interest)
-                                    : [...currentPrivate, interest];
-                                  
-                                  setEditFormData({ 
-                                    ...editFormData, 
-                                    privateInterests: newPrivateInterests 
-                                  });
-                                }}
-                                className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
-                                  isSelected
-                                    ? 'bg-purple-600 text-white font-bold transform scale-105'
-                                    : 'bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-800 dark:text-purple-200 dark:hover:bg-purple-700'
-                                }`}
-                              >
-                                {interest}
-                              </button>
-                            );
-                          })}
                         </div>
                       </div>
 
@@ -5735,6 +5341,95 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
                 )}
 
+                {/* Bottom Save Button for Business Preferences */}
+                {isOwnProfile && (editingInterests && editingActivities && editingEvents) && (
+                  <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border-t border-gray-200 dark:border-gray-600">
+                    <div className="flex justify-center">
+                      <Button 
+                        onClick={async () => {
+                          try {
+                            console.log('🔧 BUSINESS SAVING DATA (Bottom Button):', editFormData);
+                            
+                            // Separate predefined vs custom entries for proper database storage
+                            const predefinedInterests = getAllInterests().filter(opt => editFormData.interests.includes(opt));
+                            const predefinedActivities = getAllActivities().filter(opt => editFormData.activities.includes(opt));
+                            const predefinedEvents = getAllEvents().filter(opt => editFormData.events.includes(opt));
+                            
+                            const customInterests = editFormData.interests.filter(int => !getAllInterests().includes(int));
+                            const customActivities = editFormData.activities.filter(act => !getAllActivities().includes(act));
+                            const customEvents = editFormData.events.filter(evt => !getAllEvents().includes(evt));
+                            
+                            const saveData = {
+                              interests: predefinedInterests,
+                              activities: predefinedActivities, 
+                              events: predefinedEvents,
+                              customInterests: customInterests.join(', '),
+                              customActivities: customActivities.join(', '),
+                              customEvents: customEvents.join(', ')
+                            };
+                            
+                            console.log('🔧 BUSINESS SAVE - Final payload:', JSON.stringify(saveData, null, 2));
+                            
+                            const response = await fetch(`/api/users/${effectiveUserId}`, {
+                              method: 'PUT',
+                              headers: {
+                                'Content-Type': 'application/json',
+                                // CRITICAL FIX: Remove massive x-user-data header causing 431 error
+                                'x-user-id': effectiveUserId?.toString() || '',
+                                'x-user-type': user?.userType || 'business'
+                              },
+                              body: JSON.stringify(saveData)
+                            });
+                            
+                            console.log('🔧 BUSINESS SAVE - Response status:', response.status);
+                            
+                            if (!response.ok) {
+                              const errorText = await response.text();
+                              console.error('🔴 BUSINESS SAVE - Error response:', errorText);
+                              throw new Error(`Failed to save: ${response.status} ${errorText}`);
+                            }
+                            
+                            const responseData = await response.json();
+                            console.log('🔧 BUSINESS SAVE - Response data:', responseData);
+                            
+                            if (!response.ok) {
+                              throw new Error(`Failed to save: ${response.status} ${response.statusText}`);
+                            }
+                            
+                            // Update cache and UI
+                            queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+                            
+                            // Close editing modes
+                            setEditingInterests(false);
+                            setEditingActivities(false);
+                            setEditingEvents(false);
+                            
+                            // Clear custom inputs
+                            setCustomInterestInput('');
+                            setCustomActivityInput('');
+                            setCustomEventInput('');
+                            
+                            toast({
+                              title: "Success!",
+                              description: "Business preferences saved successfully.",
+                            });
+                          } catch (error: any) {
+                            console.error('Failed to update business preferences:', error);
+                            toast({
+                              title: "Error",
+                              description: error.message || "Failed to save business preferences. Please try again.",
+                              variant: "destructive",
+                            });
+                          }
+                        }}
+                        className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg font-semibold"
+                        size="lg"
+                      >
+                        💾 Save Business Changes
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
             )}
@@ -5808,30 +5503,28 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                             }, 100);
                           }}
                         >
-                          <div className="flex items-start justify-between mb-3 sm:flex-row flex-col gap-3 sm:gap-0">
+                          <div className="flex items-start justify-between mb-2 sm:flex-row flex-col gap-2 sm:gap-0">
                             <div className="flex-1">
-                              <div className="flex items-center flex-wrap gap-3 mb-2">
+                              <div className="flex items-center gap-2 mb-1">
                                 <h4 className="font-medium text-sm">{plan.destination}</h4>
-                                <div className="flex items-center gap-2">
-                                  {plan.status === 'active' && (
-                                    <div className="inline-flex items-center justify-center h-7 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
-                                      ✈️ Currently Traveling
-                                    </div>
-                                  )}
-                                  {plan.status === 'planned' && (
-                                    <div className="inline-flex items-center justify-center h-7 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-orange-500 text-white border-0 appearance-none select-none gap-1">
-                                      📅 Upcoming
-                                    </div>
-                                  )}
-                                </div>
+                                {plan.status === 'active' && (
+                                  <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+                                    ✈️ Currently Traveling
+                                  </div>
+                                )}
+                                {plan.status === 'planned' && (
+                                  <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-orange-500 text-white border-0 appearance-none select-none gap-1">
+                                    📅 Upcoming
+                                  </div>
+                                )}
                               </div>
                               <p className="text-black dark:text-white text-xs mb-1 font-medium">
                                 {plan.startDate ? formatDateForDisplay(plan.startDate, user?.hometownCity || 'UTC') : 'Start date TBD'} - {plan.endDate ? formatDateForDisplay(plan.endDate, user?.hometownCity || 'UTC') : 'End date TBD'}
                               </p>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1">
                               {isOwnProfile && (
-                                <div className="flex gap-2 sm:flex-row flex-col sm:items-center">
+                                <div className="flex gap-1 sm:flex-row flex-col sm:items-center">
                                   <Button
                                     size="sm"
                                     variant="outline"
@@ -5839,7 +5532,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                                       e.stopPropagation();
                                       setLocation(`/plan-trip?edit=${plan.id}`);
                                     }}
-                                    className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600 h-7 w-7 p-0 sm:w-7 w-full sm:mb-0 mb-1"
+                                    className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600 h-6 w-6 p-0 sm:w-6 w-full sm:mb-0 mb-1"
                                   >
                                     <Edit className="w-3 h-3" />
                                     <span className="ml-1 text-xs sm:hidden">Edit</span>
@@ -5850,9 +5543,9 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                                       e.stopPropagation();
                                       setLocation(`/itinerary/${plan.id}`);
                                     }}
-                                    className="bg-gradient-to-r from-blue-600 to-orange-600 text-white hover:opacity-90 h-7 text-xs px-3 sm:mb-0 mb-1 whitespace-nowrap flex items-center gap-1"
+                                    className="bg-gradient-to-r from-blue-600 to-orange-600 text-white hover:opacity-90 h-6 text-xs px-2 sm:mb-0 mb-1 whitespace-nowrap"
                                   >
-                                    <Calendar className="w-3 h-3" />
+                                    <Calendar className="w-3 h-3 mr-1" />
                                     Itinerary
                                   </Button>
                                   <Button
@@ -5862,7 +5555,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                                       e.stopPropagation();
                                       handleDeleteTravelPlan(plan);
                                     }}
-                                    className="text-red-600 hover:text-red-700 hover:bg-red-50 h-7 w-7 p-0 sm:w-7 w-full"
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50 h-6 w-6 p-0 sm:w-6 w-full"
                                   >
                                     <Trash2 className="w-3 h-3" />
                                     <span className="ml-1 text-xs sm:hidden">Delete</span>
@@ -6096,6 +5789,10 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
               </Card>
             )}
 
+            {/* Event Organizer Hub - for ALL users who want to organize events */}
+            {isOwnProfile && (
+              <EventOrganizerHubSection userId={effectiveUserId || 0} />
+            )}
 
             {/* Photo Albums Widget - Separate from Travel Memories */}
             {user?.userType !== 'business' && (
@@ -6188,63 +5885,20 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                 )}
               </CardContent>
             </Card>
-              </div>
-            )}
-
-            {/* Photos Tab Content */}
-            {activeTab === 'photos' && (
-              <div className="space-y-4">
-                <PhotoAlbumWidget 
-                  userId={effectiveUserId || 0}
-                  isOwnProfile={isOwnProfile}
-                />
-              </div>
-            )}
-
-            {/* References Tab Content */}
-            {activeTab === 'references' && (
-              <div className="space-y-4">
-                <ReferencesWidgetNew 
-                  userId={effectiveUserId || 0}
-                />
-              </div>
-            )}
-
-            {/* Friends Tab Content */}
-            {activeTab === 'friends' && (
-              <div className="space-y-4">
-                <FriendReferralWidget />
-              </div>
-            )}
-
-            {/* Travel Plans Tab Content */}
-            {activeTab === 'travel' && isOwnProfile && (
-              <div className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Travel Plans</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p>Travel plans content will go here</p>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
-
           </div>
 
-          {/* RIGHT SIDEBAR - Action Widgets */}
-          <div className="w-full lg:col-span-1 space-y-3 sm:space-y-4 lg:space-y-6">
+          {/* Right Sidebar - Mobile Responsive */}
+          <div className="w-full lg:col-span-1 space-y-2 lg:space-y-4">
             {/* Quick Meetup Widget - Only show for own profile (travelers/locals only, NOT business) */}
             {isOwnProfile && user && user.userType !== 'business' && (
-              <div>
+              <div className="mt-6">
                 <QuickMeetupWidget city={user?.hometownCity ?? ''} profileUserId={user?.id} />
               </div>
             )}
 
             {/* Quick Deals Widget for Business Users - Only show if deals exist */}
             {isOwnProfile && user?.userType === 'business' && quickDeals && quickDeals.length > 0 && (
-              <div>
+              <div className="mt-6">
                 <QuickDealsWidget 
                   city={user?.hometownCity ?? ''} 
                   profileUserId={user?.id} 
@@ -6257,60 +5911,779 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
               </div>
             )}
 
-            {/* Travel Intent Widget in Right Sidebar */}
+
+            {/* Travel Stats - Hidden for business profiles - MOVED UP */}
             {user?.userType !== 'business' && (
-              <Card className="mt-4 border-purple-200 dark:border-purple-800 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
+              <Card 
+                className="hover:shadow-lg transition-all duration-200 hover:border-orange-300"
+              >
+                <CardHeader>
+                  <CardTitle className="dark:text-white">Travel Stats</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4 break-words overflow-hidden">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-orange-500" />
+                      Travel Aura
+                    </span>
+                    <span className="font-semibold text-orange-600 dark:text-orange-400">{user?.aura || 0}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300">Connections</span>
+                    <span className="font-semibold dark:text-white">{userConnections.length}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300">Active Travel Plans</span>
+                    <span className="font-semibold dark:text-white">{travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300">Cumulative Trips Taken</span>
+                    <span className="font-semibold dark:text-white">{travelPlans.filter(plan => plan.status === 'completed').length}</span>
+                  </div>
+                  <div 
+                    className="flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 -m-2 transition-colors"
+                    onClick={() => setShowChatroomList(true)}
+                  >
+                    <span className="text-gray-600 dark:text-gray-300">City Chatrooms</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold dark:text-white">{userChatrooms.length}</span>
+                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-blue-500" />
+                      <span className="hidden sm:inline">Vouches</span>
+                      <span className="sm:hidden">Vouches {(vouches?.length || 0) === 0 ? '• Get vouched by community' : ''}</span>
+                    </span>
+                    <span className="font-semibold text-blue-600 dark:text-blue-400">{vouches?.length || 0}</span>
+                  </div>
+                  {(vouches?.length || 0) === 0 && (
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6 hidden sm:block">
+                      Get vouched by vouched community members who know you personally
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+
+
+            {/* Current Connections Widget - Visible to all - MOVED UNDER TRAVEL STATS */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Users className="w-5 h-5 text-green-500" />
+                    Connections ({userConnections.length})
+                  </div>
+                  {userConnections.length > 0 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowConnectionFilters(!showConnectionFilters)}
+                      className="h-8 text-xs bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600"
+                    >
+                      {showConnectionFilters ? "Hide Options" : "Sort & View"}
+                    </Button>
+                  )}
+                </CardTitle>
+                
+                {/* Filter Panel */}
+                {showConnectionFilters && userConnections.length > 0 && (
+                  <div className="mt-4 p-4 bg-gray-50 rounded-lg space-y-3">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <div>
+                        <label className="text-xs font-medium text-gray-700 mb-1 block">Location</label>
+                        <Select
+                          value={connectionFilters.location || "all"}
+                          onValueChange={(value) => setConnectionFilters(prev => ({ ...prev, location: value === "all" ? "" : value }))}
+                        >
+                          <SelectTrigger className="h-8 text-xs bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600">
+                            <SelectValue placeholder="All locations" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">All locations</SelectItem>
+                            {userConnections
+                              .map((conn: any) => conn.connectedUser?.location)
+                              .filter((location: any) => Boolean(location))
+                              .filter((location: any, index: number, arr: any[]) => arr.indexOf(location) === index)
+                              .map((location: any) => (
+                              <SelectItem key={location} value={location}>{location}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-gray-700 mb-1 block">Gender</label>
+                        <Select
+                          value={connectionFilters.gender}
+                          onValueChange={(value) => setConnectionFilters(prev => ({ ...prev, gender: value === "all" ? "" : value }))}
+                        >
+                          <SelectTrigger className="h-8 text-xs bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600">
+                            <SelectValue placeholder="Any gender" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">Any gender</SelectItem>
+                            {GENDER_OPTIONS.map((gender) => (
+                              <SelectItem key={gender} value={gender.toLowerCase()}>
+                                {gender}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-gray-700 mb-1 block">Sexual Preference</label>
+                        <Select
+                          value={connectionFilters.sexualPreference}
+                          onValueChange={(value) => setConnectionFilters(prev => ({ ...prev, sexualPreference: value === "all" ? "" : value }))}
+                        >
+                          <SelectTrigger className="h-8 text-xs bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600">
+                            <SelectValue placeholder="Any preference" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">Any preference</SelectItem>
+                            {SEXUAL_PREFERENCE_OPTIONS.map((preference) => (
+                              <SelectItem key={preference} value={preference}>
+                                {preference}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-xs font-medium text-gray-700 mb-1 block">Min Age</label>
+                        <Input
+                          type="number"
+                          placeholder="Min age"
+                          value={connectionFilters.minAge}
+                          onChange={(e) => setConnectionFilters(prev => ({ ...prev, minAge: e.target.value }))}
+                          className="h-8 text-xs bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600"
+                          min="18"
+                          max="100"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-medium text-gray-700 mb-1 block">Max Age</label>
+                        <Input
+                          type="number"
+                          placeholder="Max age"
+                          value={connectionFilters.maxAge}
+                          onChange={(e) => setConnectionFilters(prev => ({ ...prev, maxAge: e.target.value }))}
+                          className="h-8 text-xs bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600"
+                          min="18"
+                          max="100"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setConnectionFilters({ location: 'all', gender: 'all', sexualPreference: 'all', minAge: '', maxAge: '' })}
+                        className="h-8 text-xs bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600"
+                      >
+                        Reset
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </CardHeader>
+              <CardContent>
+                {userConnections.length > 0 ? (
+                  <div className="space-y-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                    {userConnections.slice(0, connectionsDisplayCount).map((connection: any) => (
+                      <div
+                        key={connection.id}
+                        className="rounded-xl border p-3 hover:shadow-sm bg-white dark:bg-gray-800 flex flex-col items-center text-center gap-2"
+                      >
+                        <SimpleAvatar
+                          user={connection.connectedUser}
+                          size="md"
+                          className="w-16 h-16 sm:w-14 sm:h-14 rounded-full border-2 object-cover cursor-pointer"
+                          onClick={() => setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`)}
+                        />
+                        <div className="w-full">
+                          <p className="font-medium text-sm truncate text-gray-900 dark:text-white">
+                            {connection.connectedUser?.name || connection.connectedUser?.username}
+                          </p>
+                          <p className="text-xs truncate text-gray-500 dark:text-gray-400">
+                            {connection.connectedUser?.hometownCity && connection.connectedUser?.hometownCountry
+                              ? `${connection.connectedUser?.hometownCity}, ${connection.connectedUser?.hometownCountry.replace("United States", "USA")}`
+                              : "New member"}
+                          </p>
+                          
+                          {/* Connection Note - How We Met */}
+                          {isOwnProfile && (
+                            <div className="mt-2 w-full">
+                              {editingConnectionNote === connection.id ? (
+                                <div className="space-y-2">
+                                  <Input
+                                    value={connectionNoteText}
+                                    onChange={(e) => setConnectionNoteText(e.target.value)}
+                                    placeholder="How did we meet? e.g., met at bonfire BBQ"
+                                    className="text-xs h-7 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700"
+                                    onKeyPress={(e) => {
+                                      if (e.key === 'Enter') {
+                                        // Save connection note
+                                        apiRequest('PATCH', `/api/connections/${connection.id}/note`, {
+                                          connectionNote: connectionNoteText
+                                        }).then(() => {
+                                          queryClient.invalidateQueries({ queryKey: [`/api/connections/${effectiveUserId}`] });
+                                          setEditingConnectionNote(null);
+                                          setConnectionNoteText('');
+                                        }).catch(console.error);
+                                      }
+                                    }}
+                                  />
+                                  <div className="flex gap-1">
+                                    <Button
+                                      size="sm"
+                                      onClick={() => {
+                                        apiRequest('PATCH', `/api/connections/${connection.id}/note`, {
+                                          connectionNote: connectionNoteText
+                                        }).then(() => {
+                                          queryClient.invalidateQueries({ queryKey: [`/api/connections/${effectiveUserId}`] });
+                                          setEditingConnectionNote(null);
+                                          setConnectionNoteText('');
+                                        }).catch(console.error);
+                                      }}
+                                      className="h-6 px-2 text-xs bg-green-500 hover:bg-green-600 text-white border-0"
+                                    >
+                                      Save
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => {
+                                        setEditingConnectionNote(null);
+                                        setConnectionNoteText('');
+                                      }}
+                                      className="h-6 px-2 text-xs"
+                                    >
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div 
+                                  className="cursor-pointer text-xs text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 rounded px-2 py-1 mt-1 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setEditingConnectionNote(connection.id);
+                                    setConnectionNoteText(connection.connectionNote || '');
+                                  }}
+                                  title="Click to edit how you met"
+                                >
+                                  {connection.connectionNote ? (
+                                    <span className="text-blue-600 dark:text-blue-400">📍 {connection.connectionNote}</span>
+                                  ) : (
+                                    <span className="text-gray-400 italic">+ How did we meet?</span>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                          
+                          {/* Show connection note for others viewing */}
+                          {!isOwnProfile && connection.connectionNote && (
+                            <div className="mt-2 text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded px-2 py-1">
+                              📍 {connection.connectionNote}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Show the button on ≥sm only; on mobile the whole tile is tappable */}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="hidden sm:inline-flex h-8 px-3 text-xs bg-blue-500 hover:bg-blue-600 text-white border-0"
+                          onClick={() => setLocation(`/profile/${connection.connectedUser?.id?.toString() || ''}`)}
+                        >
+                          View
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                    
+                    {/* Load More / Load Less buttons */}
+                    {userConnections.length > 3 && (
+                      <div className="text-center pt-2">
+                        {connectionsDisplayCount < userConnections.length ? (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setConnectionsDisplayCount(userConnections.length)}
+                            className="text-xs text-blue-600 hover:text-blue-800 hover:bg-blue-50 dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-950 h-8"
+                          >
+                            Load More ({userConnections.length - connectionsDisplayCount} more)
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setConnectionsDisplayCount(3)}
+                            className="text-xs text-gray-600 hover:text-gray-800 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:bg-gray-800 h-8"
+                          >
+                            Load Less
+                          </Button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    <Users className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                    <p className="text-sm">No connections yet</p>
+                    <p className="text-xs">
+                      {isOwnProfile 
+                        ? "Start connecting with other travelers" 
+                        : "This user hasn't made any connections yet"
+                      }
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+
+
+            {/* Reference Widget - Only show for other users' profiles */}
+            {!isOwnProfile && userConnections.some((conn: any) => conn.status === 'accepted') && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="w-5 h-5 text-green-500" />
+                    Write a Reference
+                  </CardTitle>
+                  <p className="text-sm text-gray-600">
+                    Share your experience with {user?.username} to help others in the community
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div 
+                    onClick={() => setShowWriteReferenceModal(true)}
+                    className="w-full px-6 py-3 rounded-lg font-semibold text-white cursor-pointer transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center gap-3"
+                    style={{
+                      background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 25%, #f97316 75%, #ea580c 100%)',
+                      boxShadow: '0 4px 15px rgba(59, 130, 246, 0.4)'
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.background = 'linear-gradient(135deg, #1d4ed8 0%, #2563eb 25%, #ea580c 75%, #dc2626 100%)';
+                      e.currentTarget.style.boxShadow = '0 6px 20px rgba(59, 130, 246, 0.6)';
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.background = 'linear-gradient(135deg, #2563eb 0%, #3b82f6 25%, #f97316 75%, #ea580c 100%)';
+                      e.currentTarget.style.boxShadow = '0 4px 15px rgba(59, 130, 246, 0.4)';
+                    }}
+                  >
+                    <MessageSquare className="w-5 h-5" />
+                    Write Reference for {user?.username}
+                  </div>
+                  
+                  {showReferenceForm && (
+                    <div className="space-y-4 mt-4">
+                      <Form {...referenceForm}>
+                        <form onSubmit={referenceForm.handleSubmit((data) => {
+                          console.log('Form submitted with data:', data);
+                          console.log('Form errors:', referenceForm.formState.errors);
+                          // Ensure required fields are set according to userReferences schema
+                          const submissionData = {
+                            reviewerId: currentUser?.id || 0,
+                            revieweeId: user?.id || 0,
+                            experience: data.experience || 'positive',
+                            content: data.content || '',
+                          };
+                          createReference.mutate(submissionData);
+                        }, (errors) => {
+                          console.log('Form validation errors:', errors);
+                        })} className="space-y-4">
+                          
+                          {/* Note: revieweeId and reviewerId handled in submission data */}
+
+                          {/* Reference Content */}
+                          <FormField
+                            control={referenceForm.control}
+                            name="content"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Your Reference</FormLabel>
+                                <FormControl>
+                                  <textarea
+                                    placeholder="Share your experience with this person..."
+                                    className="w-full min-h-[100px] p-3 border rounded-lg resize-none"
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          {/* Experience Type */}
+                          <FormField
+                            control={referenceForm.control}
+                            name="experience"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Experience Type</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select experience type" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="positive">Positive Experience</SelectItem>
+                                    <SelectItem value="neutral">Neutral Experience</SelectItem>
+                                    <SelectItem value="negative">Negative Experience</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <div className="flex justify-end space-x-2">
+                            <Button 
+                              type="button" 
+                              variant="outline"
+                              onClick={() => setShowReferenceForm(false)}
+                            >
+                              Cancel
+                            </Button>
+                            <Button type="submit" disabled={createReference.isPending}>
+                              {createReference.isPending ? 'Submitting...' : 'Submit Reference'}
+                            </Button>
+                          </div>
+                        </form>
+                      </Form>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* MOBILE-FRIENDLY RIGHT-SIDE WIDGETS SECTION */}
+            
+            {/* Languages Widget - Top Priority for Customer Visibility */}
+            <Card className="hover:shadow-lg transition-all duration-200 border-2 border-blue-200 dark:border-blue-700 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Globe className="w-5 h-5 text-blue-600" />
+                    Languages I Speak
+                  </CardTitle>
+                  {isOwnProfile && !editingLanguages && (
+                    <Button size="sm" variant="outline" onClick={handleEditLanguages} className="border-blue-300 text-blue-700 hover:bg-blue-100 dark:border-blue-600 dark:text-blue-300">
+                      <Edit className="w-3 h-3" />
+                    </Button>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent>
+                {editingLanguages ? (
+                  <div className="space-y-3">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className="w-full justify-between bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-left"
+                        >
+                          {tempLanguages.length > 0 
+                            ? `${tempLanguages.length} language${tempLanguages.length > 1 ? 's' : ''} selected`
+                            : "Select languages..."
+                          }
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
+                        <Command className="bg-white dark:bg-gray-800">
+                          <CommandInput placeholder="Search languages..." className="border-0" />
+                          <CommandEmpty>No language found.</CommandEmpty>
+                          <CommandGroup className="max-h-64 overflow-auto">
+                            {LANGUAGES_OPTIONS.map((language) => (
+                              <CommandItem
+                                key={language}
+                                value={language}
+                                onSelect={() => {
+                                  const isSelected = tempLanguages.includes(language);
+                                  if (isSelected) {
+                                    setTempLanguages(tempLanguages.filter(l => l !== language));
+                                  } else {
+                                    setTempLanguages([...tempLanguages, language]);
+                                  }
+                                }}
+                                className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                              >
+                                <Check
+                                  className={`mr-2 h-4 w-4 ${
+                                    tempLanguages.includes(language) ? "opacity-100" : "opacity-0"
+                                  }`}
+                                />
+                                {language}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                    
+                    {/* Custom Language Input */}
+                    <div className="mt-3">
+                      <label className="text-xs font-medium mb-1 block text-gray-600 dark:text-gray-400">
+                        Add Custom Language (hit Enter after each)
+                      </label>
+                      <div className="flex space-x-2">
+                        <Input
+                          placeholder="e.g., Sign Language, Mandarin"
+                          value={customLanguageInput}
+                          onChange={(e) => setCustomLanguageInput(e.target.value)}
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              const trimmed = customLanguageInput.trim();
+                              if (trimmed && !tempLanguages.includes(trimmed)) {
+                                setTempLanguages([...tempLanguages, trimmed]);
+                                setCustomLanguageInput('');
+                              }
+                            }
+                          }}
+                          className="text-xs dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const trimmed = customLanguageInput.trim();
+                            if (trimmed && !tempLanguages.includes(trimmed)) {
+                              setTempLanguages([...tempLanguages, trimmed]);
+                              setCustomLanguageInput('');
+                            }
+                          }}
+                          className="h-8 px-2"
+                        >
+                          <Plus className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Show selected languages */}
+                    {tempLanguages.length > 0 && (
+                      <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        {tempLanguages.map((language) => (
+                          <div key={language} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0">
+                            {language}
+                            <button
+                              onClick={() => setTempLanguages(tempLanguages.filter(l => l !== language))}
+                              className="ml-2 text-blue-200 hover:text-white"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    <div className="flex gap-2">
+                      <Button size="sm" onClick={handleSaveLanguages} disabled={updateLanguages.isPending} className="bg-blue-600 hover:bg-blue-700">
+                        {updateLanguages.isPending ? "Saving..." : "Save"}
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={handleCancelLanguages}>
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {user.languagesSpoken && user.languagesSpoken.length > 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {user.languagesSpoken.map((language: string) => (
+                          <div key={language} className="inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium leading-none whitespace-nowrap bg-gradient-to-r from-orange-400 to-pink-500 text-white border-0 appearance-none select-none gap-1.5 shadow-md">
+                            {language}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-gray-500 text-sm">No languages listed</p>
+                    )}
+                  </>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* References Widget */}
+            {user?.id && (
+              <Card className="hover:shadow-lg transition-all duration-200">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Star className="w-5 h-5 text-yellow-500" />
+                    References
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ReferencesWidgetNew userId={user.id} />
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Vouch Widget */}
+            {user?.id && (
+              <VouchWidget 
+                userId={user.id} 
+                isOwnProfile={isOwnProfile}
+                currentUserId={currentUser?.id}
+              />
+            )}
+
+
+            {/* Travel Intent Widget - TangoTrips-inspired */}
+            {user?.userType !== 'business' && (
+              <Card className="hover:shadow-lg transition-all duration-200 hover:border-purple-300 dark:hover:border-purple-600 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-purple-600" />
-                    <span className="text-sm">Travel Intent</span>
+                    Travel Intent & Style
                     {isOwnProfile && (
                       <Button
                         size="sm"
                         onClick={() => setLocation('/travel-quiz')}
                         className="ml-auto bg-purple-600 hover:bg-purple-700 text-white border-0"
                       >
-                        <Edit className="w-3 h-3" />
+                        <Edit className="w-3 h-3 mr-1" />
+                        Update
                       </Button>
                     )}
                   </CardTitle>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    What drives your travel and how you like to explore
+                  </p>
                 </CardHeader>
-                <CardContent className="text-sm">
-                  <div className="space-y-2">
-                    <div><span className="font-medium">Why:</span> {user?.travelWhy || 'adventure'}</div>
-                    <div><span className="font-medium">Style:</span> {user?.travelHow || 'spontaneous'}</div>
-                    <div><span className="font-medium">Budget:</span> {user?.travelBudget || 'moderate'}</div>
-                    <div><span className="font-medium">Group:</span> {user?.travelGroup || 'couple'}</div>
-                  </div>
+                <CardContent>
+                  {isOwnProfile ? (
+                    <div className="space-y-4">
+                      {/* Display Current Travel Intent */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Why you travel</Label>
+                          <div className="mt-1 p-2 rounded border bg-white dark:bg-gray-800">
+                            <span className="text-sm text-gray-900 dark:text-white">
+                              {user?.travelWhy || 'Not set'}
+                            </span>
+                          </div>
+                        </div>
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Travel style</Label>
+                          <div className="mt-1 p-2 rounded border bg-white dark:bg-gray-800">
+                            <span className="text-sm text-gray-900 dark:text-white">
+                              {user?.travelHow || 'Not set'}
+                            </span>
+                          </div>
+                        </div>
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Budget range</Label>
+                          <div className="mt-1 p-2 rounded border bg-white dark:bg-gray-800">
+                            <span className="text-sm text-gray-900 dark:text-white">
+                              {user?.travelBudget || 'Not set'}
+                            </span>
+                          </div>
+                        </div>
+                        <div>
+                          <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Group type</Label>
+                          <div className="mt-1 p-2 rounded border bg-white dark:bg-gray-800">
+                            <span className="text-sm text-gray-900 dark:text-white">
+                              {user?.travelGroup || 'Not set'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setLocation('/travel-quiz')}
+                        className="w-full border-purple-500 text-purple-600 hover:bg-purple-50 dark:border-purple-400 dark:text-purple-400"
+                      >
+                        Update Travel Intent
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                          <span className="font-medium text-gray-700 dark:text-gray-300">Why:</span>
+                          <span className="ml-2 text-gray-900 dark:text-white">
+                            {user?.travelWhy ? user.travelWhy.charAt(0).toUpperCase() + user.travelWhy.slice(1) : 'Not shared'}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="font-medium text-gray-700 dark:text-gray-300">Style:</span>
+                          <span className="ml-2 text-gray-900 dark:text-white">
+                            {user?.travelHow ? user.travelHow.charAt(0).toUpperCase() + user.travelHow.slice(1) : 'Not shared'}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="font-medium text-gray-700 dark:text-gray-300">Budget:</span>
+                          <span className="ml-2 text-gray-900 dark:text-white">
+                            {user?.travelBudget ? user.travelBudget.charAt(0).toUpperCase() + user.travelBudget.slice(1) : 'Not shared'}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="font-medium text-gray-700 dark:text-gray-300">Group:</span>
+                          <span className="ml-2 text-gray-900 dark:text-white">
+                            {user?.travelGroup ? user.travelGroup.charAt(0).toUpperCase() + user.travelGroup.slice(1) : 'Not shared'}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      {/* Compatibility indicator when viewing other profiles */}
+                      {compatibilityData?.travelStyleCompatibility && (
+                        <div className="mt-3 p-2 rounded bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700">
+                          <div className="flex items-center gap-2">
+                            <Heart className="w-4 h-4 text-green-600" />
+                            <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                              {compatibilityData.travelStyleCompatibility}% Travel Style Match
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
 
 
-            {/* Vouch Widget - Right sidebar */}
-            <VouchWidget 
-              userId={effectiveUserId || 0}
-              isOwnProfile={isOwnProfile}
-            />
 
-            {/* Location Sharing Widget - Right sidebar */}
-            <LocationSharingSection 
-              user={user}
-              isOwnProfile={isOwnProfile}
-            />
 
-            {/* Connection Requests Widget - Action item for right sidebar */}
+
+            {/* Friend Referral Widget - Only show for own profile and non-business users */}
+            {isOwnProfile && user?.userType !== 'business' && (
+              <FriendReferralWidget />
+            )}
+
+
+
+
+
+            {/* Connection Requests Widget - Only visible to profile owner */}
             {isOwnProfile && connectionRequests.length > 0 && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <Users className="w-4 h-4 text-blue-500" />
-                    Requests ({connectionRequests.length})
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="w-5 h-5 text-blue-500" />
+                    Connection Requests ({connectionRequests.length})
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2">
-                    {connectionRequests.slice(0, 3).map((request: any) => (
+                  <div className="space-y-3">
+                    {connectionRequests.slice(0, 5).map((request: any) => (
                       <div key={request.id} className="flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors">
                         <div 
                           className="flex items-center gap-2 cursor-pointer flex-1 min-w-0 mr-2"
@@ -6322,15 +6695,19 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                             className="flex-shrink-0"
                           />
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-xs truncate text-gray-900 dark:text-white">@{request.requesterUser?.username}</p>
+                            <p className="font-medium text-sm truncate text-gray-900 dark:text-white">@{request.requesterUser?.username}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                              {request.requesterUser?.location || `@${request.requesterUser?.username}`}
+                            </p>
                           </div>
                         </div>
+                        
                         <div className="flex gap-1 flex-shrink-0">
                           <Button
                             size="sm"
-                            className="h-6 px-2 text-xs"
                             onClick={(e) => {
                               e.stopPropagation();
+                              // Accept connection request
                               apiRequest('PUT', `/api/connections/${request.id}`, { status: 'accepted' })
                                 .then(() => {
                                   queryClient.invalidateQueries({ queryKey: [`/api/connections/${effectiveUserId}/requests`] });
@@ -6340,69 +6717,2883 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                                     description: `You are now connected with @${request.requesterUser?.username}`,
                                   });
                                 })
-                                .catch(error => {
-                                  console.error('Error accepting connection request:', error);
+                                .catch(() => {
                                   toast({
                                     title: "Error",
                                     description: "Failed to accept connection request",
-                                    variant: "destructive"
+                                    variant: "destructive",
                                   });
                                 });
                             }}
+                            className="h-8 w-16 px-2 text-xs"
                           >
-                            ✓
+                            Accept
                           </Button>
                           <Button
                             size="sm"
                             variant="outline"
-                            className="h-6 px-2 text-xs"
                             onClick={(e) => {
                               e.stopPropagation();
+                              // Decline connection request
                               apiRequest('PUT', `/api/connections/${request.id}`, { status: 'rejected' })
                                 .then(() => {
                                   queryClient.invalidateQueries({ queryKey: [`/api/connections/${effectiveUserId}/requests`] });
                                   toast({
                                     title: "Connection declined",
-                                    description: "Request has been declined",
+                                    description: "Connection request declined",
                                   });
                                 })
-                                .catch(error => {
-                                  console.error('Error declining connection request:', error);
+                                .catch(() => {
                                   toast({
                                     title: "Error",
                                     description: "Failed to decline connection request",
-                                    variant: "destructive"
+                                    variant: "destructive",
                                   });
                                 });
                             }}
+                            className="h-8 w-16 px-2 text-xs"
                           >
-                            ✕
+                            Decline
                           </Button>
                         </div>
                       </div>
                     ))}
-                    {connectionRequests.length > 3 && (
-                      <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-2">
-                        +{connectionRequests.length - 3} more
-                      </p>
+                    {connectionRequests.length > 5 && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full text-xs text-gray-500 hover:text-blue-600 h-8"
+                        onClick={() => setLocation('/requests')}
+                      >
+                        View all {connectionRequests.length} requests
+                      </Button>
                     )}
                   </div>
                 </CardContent>
               </Card>
             )}
+
+
+            {/* Countries Visited - Hidden for business profiles */}
+            {user?.userType !== 'business' && (
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>
+                      <span className="text-black dark:text-white">Countries I've Visited ({countriesVisited.length})</span>
+                    </CardTitle>
+                    {isOwnProfile && !editingCountries && (
+                      <Button size="sm" variant="outline" onClick={handleEditCountries}>
+                        <Edit className="w-3 h-3" />
+                      </Button>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {editingCountries ? (
+                    <div className="space-y-3">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            className="w-full justify-between bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-left"
+                          >
+                            {tempCountries.length > 0 
+                              ? `${tempCountries.length} countr${tempCountries.length > 1 ? 'ies' : 'y'} selected`
+                              : "Select countries visited..."
+                            }
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-full p-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
+                          <Command className="bg-white dark:bg-gray-800">
+                            <CommandInput placeholder="Search countries..." className="border-0" />
+                            <CommandEmpty>No country found.</CommandEmpty>
+                            <CommandGroup className="max-h-64 overflow-auto">
+                              {COUNTRIES_OPTIONS.map((country) => (
+                                <CommandItem
+                                  key={country}
+                                  value={country}
+                                  onSelect={() => {
+                                    const isSelected = tempCountries.includes(country);
+                                    if (isSelected) {
+                                      setTempCountries(tempCountries.filter(c => c !== country));
+                                    } else {
+                                      setTempCountries([...tempCountries, country]);
+                                    }
+                                  }}
+                                  className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                                >
+                                  <Check
+                                    className={`mr-2 h-4 w-4 ${
+                                      tempCountries.includes(country) ? "opacity-100" : "opacity-0"
+                                    }`}
+                                  />
+                                  {country}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                      
+                      {/* Custom Country Input */}
+                      <div className="mt-3">
+                        <label className="text-xs font-medium mb-1 block text-gray-600 dark:text-gray-400">
+                          Add Custom Country (hit Enter after each)
+                        </label>
+                        <div className="flex space-x-2">
+                          <Input
+                            placeholder="e.g., Vatican City, San Marino"
+                            value={customCountryInput}
+                            onChange={(e) => setCustomCountryInput(e.target.value)}
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                const trimmed = customCountryInput.trim();
+                                if (trimmed && !tempCountries.includes(trimmed)) {
+                                  setTempCountries([...tempCountries, trimmed]);
+                                  setCustomCountryInput('');
+                                }
+                              }
+                            }}
+                            className="text-xs dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const trimmed = customCountryInput.trim();
+                              if (trimmed && !tempCountries.includes(trimmed)) {
+                                setTempCountries([...tempCountries, trimmed]);
+                                setCustomCountryInput('');
+                              }
+                            }}
+                            className="h-8 px-2"
+                          >
+                            <Plus className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Show selected countries */}
+                      {tempCountries.length > 0 && (
+                        <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                          {tempCountries.map((country) => (
+                            <div key={country} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-green-500 text-white border-0">
+                              {country}
+                              <button
+                                onClick={() => setTempCountries(tempCountries.filter(c => c !== country))}
+                                className="ml-2 text-green-200 hover:text-white"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      
+                      <div className="flex gap-2">
+                        <Button size="sm" onClick={handleSaveCountries} disabled={updateCountries.isPending}>
+                          {updateCountries.isPending ? "Saving..." : "Save"}
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={handleCancelCountries}>
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      {countriesVisited.length > 0 ? (
+                        <div className="flex flex-wrap gap-2">
+                          {countriesVisited.map((country: string, index: number) => (
+                            <div 
+                              key={country} 
+                              className="pill-interests"
+                            >
+                              {country}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-gray-500 dark:text-white text-sm">No countries visited yet</p>
+                      )}
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+
+
+            {/* Comprehensive Geolocation System - Enhanced location sharing for users, businesses, and events */}
+            {console.log('🔧 Profile: Checking if location sharing should render:', { isOwnProfile, userId: user?.id })}
+            {isOwnProfile && user && (
+              <LocationSharingSection user={user} queryClient={queryClient} toast={toast} />
+            )}
+
+            {/* Business Referral Program Widget */}
+            {isOwnProfile && user && user.userType !== 'business' && (
+              <Card
+                            // Revert the optimistic update
+                            queryClient.setQueryData([`/api/users/${user.id}`], user);
+                            toast({
+                              title: "Location not supported",
+                              description: "Your browser doesn't support location services",
+                              variant: "destructive",
+                            });
+                            return;
+                          }
+                          
+                          // Get current location before enabling sharing
+                          navigator.geolocation.getCurrentPosition(
+                            async (position) => {
+                              const { latitude, longitude } = position.coords;
+                              console.log('🔧 DIRECT: Got location:', { latitude, longitude });
+                              
+                              try {
+                                // Update location sharing with coordinates
+                                const response = await apiRequest('PUT', `/api/users/${user.id}`, {
+                                  locationSharingEnabled: enabled,
+                                  currentLatitude: latitude,
+                                  currentLongitude: longitude
+                                });
+                                
+                                console.log('🔧 DIRECT: Location sharing updated successfully');
+                                
+                                // Update the cache with the response data
+                                queryClient.setQueryData([`/api/users/${user.id}`], response);
+                                
+                                // Also refetch to ensure consistency
+                                await queryClient.refetchQueries({ queryKey: [`/api/users/${user.id}`] });
+                                
+                                toast({
+                                  title: "Location sharing enabled",
+                                  description: "Your location is now visible on city maps",
+                                });
+                              } catch (error) {
+                                console.error('🔧 DIRECT: Error updating location sharing:', error);
+                                // Revert the optimistic update on error
+                                queryClient.setQueryData([`/api/users/${user.id}`], user);
+                                toast({
+                                  title: "Error", 
+                                  description: "Failed to update location sharing",
+                                  variant: "destructive",
+                                });
+                              }
+                            },
+                            (error) => {
+                              console.error('🔧 DIRECT: Location error:', error);
+                              // Revert the optimistic update on location error
+                              queryClient.setQueryData([`/api/users/${user.id}`], user);
+                              
+                              let message = "Unable to get your location";
+                              
+                              switch (error.code) {
+                                case error.PERMISSION_DENIED:
+                                  message = "Location access denied. Please enable location permissions in your browser settings.";
+                                  break;
+                                case error.POSITION_UNAVAILABLE:
+                                  message = "Location information unavailable.";
+                                  break;
+                                case error.TIMEOUT:
+                                  message = "Location request timed out.";
+                                  break;
+                              }
+                              
+                              toast({
+                                title: "Location Error",
+                                description: message,
+                                variant: "destructive",
+                              });
+                            },
+                            {
+                              enableHighAccuracy: true,
+                              timeout: 10000,
+                              maximumAge: 300000 // 5 minutes
+                            }
+                          );
+                        } else {
+                          // Simply disable location sharing
+                          try {
+                            const response = await apiRequest('PUT', `/api/users/${user.id}`, {
+                              locationSharingEnabled: enabled
+                            });
+                            
+                            console.log('🔧 DIRECT: Location sharing disabled');
+                            
+                            // Update the cache with the response data
+                            queryClient.setQueryData([`/api/users/${user.id}`], response);
+                            
+                            // Also refetch to ensure consistency
+                            await queryClient.refetchQueries({ queryKey: [`/api/users/${user.id}`] });
+                            
+                            toast({
+                              title: "Location sharing disabled",
+                              description: "Your location is no longer visible on city maps",
+                            });
+                          } catch (error) {
+                            console.error('🔧 DIRECT: Error disabling location sharing:', error);
+                            // Revert the optimistic update on error
+                            queryClient.setQueryData([`/api/users/${user.id}`], user);
+                            toast({
+                              title: "Error", 
+                              description: "Failed to update location sharing",
+                              variant: "destructive",
+                            });
+                          }
+                        }
+                      }}
+                      data-testid="location-sharing-toggle"
+                    />
+                  </div>
+
+                  {user.locationSharingEnabled && (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                        <AlertCircle className="h-4 w-4" />
+                        <span>
+                          Your location will be visible to other users on the city map
+                          {user.userType === 'business' && ' while you are running deals and events'}
+                        </span>
+                      </div>
+                      {user.currentLatitude && user.currentLongitude && (
+                        <div className="text-xs text-gray-500 bg-gray-50 dark:bg-gray-800 p-2 rounded">
+                          Current location: {user.currentLatitude.toFixed(4)}, {user.currentLongitude.toFixed(4)}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {!user.locationSharingEnabled && (
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      Enable location sharing to appear on city maps and help other travelers find you
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            );
+            })()}
+
+            {/* Business Referral Program Widget */}
+            {isOwnProfile && user && user.userType !== 'business' && (
+              <Card 
+                className="cursor-pointer hover:shadow-lg transition-shadow duration-200"
+                onClick={() => setLocation('/referrals')}
+              >
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Share2 className="w-5 h-5" />
+                    Business Referral Program
+                    <Button
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setLocation('/referrals');
+                      }}
+                      className="ml-auto bg-green-600 hover:bg-green-700 text-white border-0"
+                    >
+                      <Edit className="w-3 h-3 mr-1" />
+                      Manage
+                    </Button>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="bg-green-50 dark:bg-green-900 border-2 border-green-600 dark:border-green-500 rounded-lg p-4">
+                    <p className="text-green-800 dark:text-green-200 text-lg font-bold text-center">
+                      💰 Earn $100 for Referring Businesses to Nearby Traveler!!*
+                    </p>
+                    <p className="text-green-600 dark:text-green-400 text-sm mt-2 text-center">
+                      Help fund your trips • Get deals from local hotspots • Earn extra income
+                    </p>
+                    <p className="text-green-600 dark:text-green-400 text-sm mt-1 text-center">
+                      Share your Favorite Businesses with others and help them market to Nearby Travelers and Nearby Locals
+                    </p>
+                    <p className="text-green-500 dark:text-green-500 text-xs mt-2 text-center italic">
+                      (* When a Business Becomes a Paying Client)
+                    </p>
+                  </div>
+                  <div className="text-center py-4">
+                    <p className="text-gray-600 dark:text-gray-300 mb-2">Invite businesses to join Nearby Traveler and earn rewards when they subscribe!</p>
+                    <Button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setLocation('/referrals');
+                      }}
+                      className="bg-gradient-to-r from-blue-500 via-orange-500 to-violet-500 hover:from-blue-600 hover:via-orange-600 hover:to-violet-600 text-white"
+                    >
+                      <Share2 className="w-4 h-4 mr-2" />
+                      Manage Referrals
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+
+            {/* Owner/Admin Contact Information - Only visible to business owner */}
+            {isOwnProfile && user?.userType === 'business' && (
+              <Card className="border-purple-200 dark:border-purple-800 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/30 dark:to-indigo-900/30">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Shield className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                      <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+                        Admin Information
+                      </CardTitle>
+                      <div className="inline-flex items-center justify-center h-6 min-w-[4rem] rounded-full px-2 text-xs font-medium leading-none whitespace-nowrap bg-purple-100 text-purple-700 dark:bg-purple-800 dark:text-purple-200 border-0 appearance-none select-none gap-1">
+                        Private
+                      </div>
+                    </div>
+                    {!editingOwnerInfo && (
+                      <Button
+                        size="sm"
+                        onClick={() => setEditingOwnerInfo(true)}
+                        className="bg-purple-600 hover:bg-purple-700 text-white border-0"
+                      >
+                        <Edit className="w-3 h-3 mr-1" />
+                        Edit
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">
+                    Internal contact information for platform communications
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  {editingOwnerInfo ? (
+                    <div className="space-y-4">
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Business Name</Label>
+                        <Input 
+                          value={ownerContactForm.ownerName}
+                          onChange={(e) => setOwnerContactForm(prev => ({ ...prev, ownerName: e.target.value }))}
+                          placeholder="Enter business name"
+                          className="mt-1"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Contact Name</Label>
+                        <Input 
+                          value={ownerContactForm.contactName}
+                          onChange={(e) => setOwnerContactForm(prev => ({ ...prev, contactName: e.target.value }))}
+                          placeholder="Enter main contact person name"
+                          className="mt-1"
+                        />
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          The person we should contact (may be different from owner)
+                        </p>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Contact Email</Label>
+                        <Input 
+                          value={ownerContactForm.ownerEmail}
+                          onChange={(e) => setOwnerContactForm(prev => ({ ...prev, ownerEmail: e.target.value }))}
+                          placeholder="owner@business.com"
+                          type="email"
+                          className="mt-1"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Contact Person Phone Number</Label>
+                        <Input 
+                          value={ownerContactForm.ownerPhone}
+                          onChange={(e) => setOwnerContactForm(prev => ({ ...prev, ownerPhone: e.target.value }))}
+                          placeholder="(555) 123-4567"
+                          className="mt-1"
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          onClick={handleSaveOwnerContact}
+                          disabled={updateOwnerContact.isPending}
+                          className="bg-purple-600 hover:bg-purple-700 text-white"
+                        >
+                          {updateOwnerContact.isPending ? "Saving..." : "Save"}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            setEditingOwnerInfo(false);
+                            setOwnerContactForm({
+                              ownerName: user?.ownerName || "",
+                              contactName: user?.contactName || "",
+                              ownerEmail: user?.ownerEmail || "",
+                              ownerPhone: user?.ownerPhone || ""
+                            });
+                          }}
+                          className="border-purple-500 text-purple-600 hover:bg-purple-50 dark:border-purple-400 dark:text-purple-400 dark:hover:bg-purple-900/20"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Business Name:</span>
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          {user?.ownerName || "Not set"}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Contact Name:</span>
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          {user?.contactName || "Not set"}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Contact Email:</span>
+                        {user?.ownerEmail ? (
+                          <a 
+                            href={`mailto:${user.ownerEmail}`} 
+                            className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline transition-colors"
+                          >
+                            {user.ownerEmail}
+                          </a>
+                        ) : (
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">
+                            Not set
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Contact Person Phone:</span>
+                        {user?.ownerPhone ? (
+                          <a 
+                            href={`tel:${user.ownerPhone}`} 
+                            className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline transition-colors"
+                          >
+                            {user.ownerPhone}
+                          </a>
+                        ) : (
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">
+                            Not set
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 bg-purple-100 dark:bg-purple-900/50 p-2 rounded">
+                        <AlertCircle className="w-3 h-3 inline mr-1" />
+                        This information is only visible to you and used for platform communications
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Boost Connections Widget - MOVED TO BOTTOM - Only show for own profile */}
+            {isOwnProfile && (
+              <Card className="border-orange-200 dark:border-orange-800 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-orange-900/30 dark:to-blue-900/30 hover:shadow-lg transition-all duration-200">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <TrendingUp className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                    <div className="inline-flex items-center justify-center h-6 min-w-[4rem] rounded-full px-2 text-xs font-medium leading-none whitespace-nowrap bg-orange-600 text-white border-0 appearance-none select-none gap-1">Success Tips</div>
+                  </div>
+                  <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+                    Boost Your Connections
+                  </CardTitle>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">
+                    Get better matches and more connections with our optimization guide
+                  </p>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <Button 
+                    onClick={() => setLocation('/getting-started')}
+                    className="w-full bg-gradient-to-r from-blue-500 via-orange-500 to-violet-500 hover:from-blue-600 hover:via-orange-600 hover:to-violet-600 text-white border-0"
+                  >
+                    <Star className="w-4 h-4 mr-2" />
+                    Optimize Profile
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
           </div>
-
-
-
-
-
-
-
         </div>
       </div>
-    </div>
-    </div>
-  );
-};
 
-export default ProfilePage;
+
+      {/* Photo Lightbox */}
+      {photos.length > 0 && selectedPhotoIndex >= 0 && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div 
+            className="fixed inset-0 bg-black/80" 
+            onClick={() => setSelectedPhotoIndex(-1)}
+          />
+          <div className="relative bg-white dark:bg-gray-800 rounded-lg max-w-4xl max-h-[90vh] p-6 m-4 overflow-hidden">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Photo {selectedPhotoIndex + 1} of {photos.length}
+              </h3>
+              <button 
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                onClick={() => setSelectedPhotoIndex(-1)}
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="flex items-center justify-center mb-4">
+              <img 
+                src={photos[selectedPhotoIndex]?.imageUrl} 
+                alt="Photo"
+                className="max-w-full max-h-[60vh] object-contain"
+              />
+            </div>
+            <div className="flex justify-between items-center">
+              <Button 
+                variant="outline" 
+                onClick={() => setSelectedPhotoIndex(Math.max(0, selectedPhotoIndex - 1))}
+                disabled={selectedPhotoIndex === 0}
+              >
+                Previous
+              </Button>
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                {photos[selectedPhotoIndex]?.caption}
+              </span>
+              <Button 
+                variant="outline" 
+                onClick={() => setSelectedPhotoIndex(Math.min(photos.length - 1, selectedPhotoIndex + 1))}
+                disabled={selectedPhotoIndex === photos.length - 1}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cover Photo Crop Modal */}
+      <Dialog open={showCropModal} onOpenChange={() => setShowCropModal(false)}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Crop Cover Photo</DialogTitle>
+            <DialogDescription>
+              Adjust the position and size of your cover photo. The photo will be cropped to a 16:9 aspect ratio.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {/* Image preview with crop overlay */}
+            <div 
+              className="relative bg-gray-100 rounded-lg overflow-hidden select-none" 
+              style={{ aspectRatio: '16/9', height: '400px' }}
+            >
+              {cropImageSrc ? (
+                <div className="relative w-full h-full overflow-hidden">
+                  <img
+                    src={cropImageSrc}
+                    alt=""
+                    className={`absolute transition-transform ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+                    style={{
+                      width: `${cropSettings.scale * 100}%`,
+                      height: `${cropSettings.scale * 100}%`,
+                      left: `${-cropSettings.x * (cropSettings.scale - 1) * 100}%`,
+                      top: `${-cropSettings.y * (cropSettings.scale - 1) * 100}%`,
+                      objectFit: 'cover'
+                    }}
+                    onLoad={() => console.log('Crop image loaded successfully')}
+                    onError={(e) => console.error('Crop image failed to load:', e)}
+
+                    draggable={false}
+                  />
+                  {/* Crop overlay frame */}
+                  <div className="absolute inset-0 border-2 border-blue-500 shadow-lg pointer-events-none" />
+                  {/* Grid overlay for better cropping guidance */}
+                  <div className="absolute inset-0 pointer-events-none opacity-50">
+                    <div className="grid grid-cols-3 grid-rows-3 w-full h-full">
+                      <div className="border-r border-b border-white/50"></div>
+                      <div className="border-r border-b border-white/50"></div>
+                      <div className="border-b border-white/50"></div>
+                      <div className="border-r border-b border-white/50"></div>
+                      <div className="border-r border-b border-white/50"></div>
+                      <div className="border-b border-white/50"></div>
+                      <div className="border-r border-white/50"></div>
+                      <div className="border-r border-white/50"></div>
+                      <div></div>
+                    </div>
+                  </div>
+                  {/* Instructions overlay */}
+                  <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded pointer-events-none">
+                    Drag to position • Scroll to zoom
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center h-full text-gray-500">
+                  <p>No image selected</p>
+                </div>
+              )}
+            </div>
+            
+            {/* Crop controls */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between text-sm text-gray-600">
+                <span>Zoom: {Math.round(cropSettings.scale * 100)}%</span>
+                <div className="flex space-x-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCropSettings(prev => ({ ...prev, scale: Math.max(0.5, prev.scale - 0.1) }))}
+                  >
+                    <Minus className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCropSettings(prev => ({ ...prev, scale: Math.min(3, prev.scale + 0.1) }))}
+                  >
+                    <Plus className="h-3 w-3" />
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="flex justify-center">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCropSettings({ x: 0.5, y: 0.5, scale: 1 })}
+                >
+                  <RotateCcw className="h-4 w-4 mr-2" />
+                  Reset Position
+                </Button>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCropModal(false)}>
+              Cancel
+            </Button>
+            <Button onClick={() => setShowCropModal(false)}>
+              Save Cover Photo
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Travel Plan Edit Modal */}
+      <Dialog open={!!editingTravelPlan} onOpenChange={() => {
+        // Close travel plan editing and any profile editing to avoid conflicts
+        setEditingTravelPlan(null);
+        setEditingInterests(false);
+        setEditingActivities(false);
+        setEditingEvents(false);
+      }}>
+        <DialogContent className="w-[calc(100vw-16px)] max-w-[calc(100vw-16px)] md:max-w-4xl max-h-[85vh] md:max-h-[90vh] overflow-y-auto no-scrollbar mx-2 md:mx-auto p-4 md:p-6 safe-area-inset-bottom">
+          <DialogHeader>
+            <DialogTitle>Edit Travel Plan</DialogTitle>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit((data) => {
+              console.log('Travel plan update:', data);
+              setEditingTravelPlan(null);
+            })} className="space-y-4">
+
+              {/* Travel Destination - Use SmartLocationInput for consistency */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Travel Destination *</Label>
+                <SmartLocationInput
+                  city={form.watch("destinationCity") || ""}
+                  state={form.watch("destinationState") || ""}
+                  country={form.watch("destinationCountry") || ""}
+                  onLocationChange={(location) => {
+                    form.setValue("destinationCity", location.city);
+                    form.setValue("destinationState", location.state);
+                    form.setValue("destinationCountry", location.country);
+                    form.setValue("destination", `${location.city}${location.state ? `, ${location.state}` : ""}, ${location.country}`);
+                    setSelectedCountry(location.country);
+                    setSelectedCity(location.city);
+                    setSelectedState(location.state);
+                  }}
+                  required={true}
+                  placeholder={{
+                    country: "Select country",
+                    state: "Select state/region",
+                    city: "Select city"
+                  }}
+                />
+              </div>
+
+
+              
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="startDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Start Date</FormLabel>
+                      <FormControl>
+                        <Input {...field} type="date" max="9999-12-31" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="endDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>End Date</FormLabel>
+                      <FormControl>
+                        <Input {...field} type="date" max="9999-12-31" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Connection Preferences Validation Message */}
+              <div className="text-center mb-4">
+                <div className="text-sm text-blue-600 bg-blue-50 border border-blue-400 rounded-md p-3 mb-2 dark:bg-blue-900/20 dark:border-blue-500 dark:text-blue-300">
+                  <strong>Connection Preferences for This Trip</strong> - Choose interests, activities, and events to find the right travel matches
+                </div>
+                <div className="text-sm text-orange-600 bg-orange-50 border border-orange-400 rounded-md p-3 dark:bg-orange-900/20 dark:border-orange-500 dark:text-orange-300">
+                  <strong>Minimum: To better match others on this site, choose at least 10 from the following next 4 lists (top choices, interests, activities, events)</strong>
+                </div>
+              </div>
+
+              {/* Travel Plan Specific Interests Section */}
+              <div>
+                <Label className="text-sm font-medium mb-2 block">
+                  <span className="text-orange-600">🌍 Travel Plan Specific Interests</span>
+                </Label>
+                <div className="text-xs text-gray-600 mb-3 p-2 bg-orange-50 rounded border">
+                  <strong>Note:</strong> These are interests specific to this travel plan only, separate from your main profile interests.
+                </div>
+                
+                {/* I am a Veteran checkbox */}
+                <div className="mb-4">
+                  <FormField
+                    control={form.control}
+                    name="isVeteran"
+                    render={({ field }) => (
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="profile-veteran-checkbox"
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                        <Label htmlFor="profile-veteran-checkbox" className="text-sm font-bold cursor-pointer">I am a Veteran</Label>
+                      </div>
+                    )}
+                  />
+                </div>
+
+                {/* I am active duty checkbox */}
+                <div className="mb-4">
+                  <FormField
+                    control={form.control}
+                    name="isActiveDuty"
+                    render={({ field }) => (
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="profile-active-duty-checkbox"
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                        <Label htmlFor="profile-active-duty-checkbox" className="text-sm font-bold cursor-pointer">I am active duty</Label>
+                      </div>
+                    )}
+                  />
+                </div>
+                
+                <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-orange-50">
+                  {getAllInterests().map((interest, index) => (
+                    <div key={`interest-edit-${index}`} className="flex items-center space-x-1">
+                      <FormField
+                        control={form.control}
+                        name="interests"
+                        render={({ field }) => (
+                          <Checkbox
+                            id={`interest-edit-${interest}`}
+                            checked={field.value?.includes(interest) || false}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                field.onChange([...(field.value || []), interest]);
+                              } else {
+                                field.onChange(field.value?.filter(i => i !== interest));
+                              }
+                            }}
+                          />
+                        )}
+                      />
+                      <Label 
+                        htmlFor={`interest-edit-${interest}`} 
+                        className="text-xs cursor-pointer leading-tight font-medium"
+                      >
+                        {interest}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Custom Interests Input */}
+                <div className="mt-3">
+                  <Label className="text-xs font-medium mb-1 block text-gray-600">
+                    Add Custom Interests (comma-separated)
+                  </Label>
+                  <FormField
+                    control={form.control}
+                    name="customInterests"
+                    render={({ field }) => (
+                      <Input
+                        placeholder="e.g., Photography, Rock Climbing, Local Cuisine"
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const value = field.value?.trim();
+                            if (value) {
+                              // Process custom interests by adding them to the interests array
+                              const customItems = value.split(',').map(item => item.trim()).filter(item => item);
+                              const currentInterests = form.getValues('interests') || [];
+                              const newInterests = [...currentInterests];
+                              customItems.forEach(item => {
+                                if (!newInterests.includes(item)) {
+                                  newInterests.push(item);
+                                }
+                              });
+                              form.setValue('interests', newInterests);
+                              field.onChange(''); // Clear the input
+                            }
+                          }
+                        }}
+                        className="text-xs"
+                      />
+                    )}
+                  />
+                </div>
+              </div>
+
+              {/* Activities Section */}
+              <div>
+                <Label className="text-sm font-medium mb-2 block">
+                  Activities on This Trip
+                </Label>
+                
+                <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-green-50">
+                  {getAllActivities().map((activity, index) => {
+                    const displayText = activity.startsWith("**") && activity.endsWith("**") ? 
+                      activity.slice(2, -2) : activity;
+                    return (
+                      <div key={`activity-edit-${index}`} className="flex items-center space-x-1">
+                        <FormField
+                          control={form.control}
+                          name="activities"
+                          render={({ field }) => (
+                            <Checkbox
+                              id={`activity-edit-${activity}`}
+                              checked={field.value?.includes(activity) || false}
+                              onCheckedChange={(checked) => {
+                                if (checked) {
+                                  field.onChange([...(field.value || []), activity]);
+                                } else {
+                                  field.onChange(field.value?.filter(a => a !== activity));
+                                }
+                              }}
+                            />
+                          )}
+                        />
+                        <Label 
+                          htmlFor={`activity-edit-${activity}`} 
+                          className="text-xs cursor-pointer leading-tight font-medium"
+                        >
+                          {displayText}
+                        </Label>
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                {/* Custom Activities Input */}
+                <div className="mt-3">
+                  <Label className="text-xs font-medium mb-1 block text-gray-600">
+                    Add Custom Activities (comma-separated)
+                  </Label>
+                  <FormField
+                    control={form.control}
+                    name="customActivities"
+                    render={({ field }) => (
+                      <Input
+                        placeholder="e.g., Surfing Lessons, Wine Tasting, Museum Tours"
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const value = field.value?.trim();
+                            if (value) {
+                              // Process custom activities by adding them to the activities array
+                              const customItems = value.split(',').map(item => item.trim()).filter(item => item);
+                              const currentActivities = form.getValues('activities') || [];
+                              const newActivities = [...currentActivities];
+                              customItems.forEach(item => {
+                                if (!newActivities.includes(item)) {
+                                  newActivities.push(item);
+                                }
+                              });
+                              form.setValue('activities', newActivities);
+                              field.onChange(''); // Clear the input
+                            }
+                          }
+                        }}
+                        className="text-xs"
+                      />
+                    )}
+                  />
+                </div>
+              </div>
+
+              {/* Events Section */}
+              <div>
+                <Label className="text-sm font-medium mb-2 block">
+                  Events on This Trip
+                </Label>
+                
+                <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-orange-50">
+                  {getAllEvents().map((event, index) => (
+                    <div key={`event-edit-${index}`} className="flex items-center space-x-1">
+                      <FormField
+                        control={form.control}
+                        name="events"
+                        render={({ field }) => (
+                          <Checkbox
+                            id={`event-edit-${event}`}
+                            checked={field.value?.includes(event) || false}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                field.onChange([...(field.value || []), event]);
+                              } else {
+                                field.onChange(field.value?.filter(e => e !== event));
+                              }
+                            }}
+                          />
+                        )}
+                      />
+                      <Label 
+                        htmlFor={`event-edit-${event}`} 
+                        className="text-xs cursor-pointer leading-tight font-medium"
+                      >
+                        {event}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Custom Events Input */}
+                <div className="mt-3">
+                  <Label className="text-xs font-medium mb-1 block text-gray-600">
+                    Add Custom Events (comma-separated)
+                  </Label>
+                  <FormField
+                    control={form.control}
+                    name="customEvents"
+                    render={({ field }) => (
+                      <Input
+                        placeholder="e.g., Jazz Festival, Food Market, Art Exhibition"
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const value = field.value?.trim();
+                            if (value) {
+                              // Process custom events by adding them to the events array
+                              const customItems = value.split(',').map(item => item.trim()).filter(item => item);
+                              const currentEvents = form.getValues('events') || [];
+                              const newEvents = [...currentEvents];
+                              customItems.forEach(item => {
+                                if (!newEvents.includes(item)) {
+                                  newEvents.push(item);
+                                }
+                              });
+                              form.setValue('events', newEvents);
+                              field.onChange(''); // Clear the input
+                            }
+                          }
+                        }}
+                        className="text-xs"
+                      />
+                    )}
+                  />
+                </div>
+              </div>
+
+              {/* Accommodation */}
+              <div>
+                <Label htmlFor="accommodation">
+                  Accommodation on This Trip
+                </Label>
+                <FormField
+                  control={form.control}
+                  name="accommodation"
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} value={field.value || ""}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="hotel-booked">Hotel Booked</SelectItem>
+                        <SelectItem value="hostel-booked">Hostel Booked</SelectItem>
+                        <SelectItem value="airbnb-booked">Airbnb Booked</SelectItem>
+                        <SelectItem value="hotel">Looking for Hotel</SelectItem>
+                        <SelectItem value="hostel">Looking for Hostel</SelectItem>
+                        <SelectItem value="airbnb">Looking for Airbnb</SelectItem>
+                        <SelectItem value="couch">Looking for Couch</SelectItem>
+                        <SelectItem value="friends-family">Stay with Friends/Family</SelectItem>
+                        <SelectItem value="camping">Camping</SelectItem>
+                        <SelectItem value="undecided">Undecided</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </div>
+
+              {/* Additional Activities and Events */}
+              <div>
+                <Label htmlFor="notes">
+                  Additional Activities and Events<br />
+                  (Concerts, Seminars, Must Do Activities)
+                </Label>
+                <FormField
+                  control={form.control}
+                  name="notes"
+                  render={({ field }) => (
+                    <textarea
+                      id="notes"
+                      className="w-full p-2 border rounded-md resize-none"
+                      rows={3}
+                      placeholder="List specific activities, concerts, seminars, or must-do experiences..."
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+              </div>
+
+              <div className="flex gap-2 pt-4">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setEditingTravelPlan(null)}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  disabled={editTravelPlan.isPending}
+                  className="flex-1"
+                >
+                  {editTravelPlan.isPending ? "Saving..." : "Save Changes"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Profile Edit Modal */}
+      <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
+        <DialogContent className="max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
+          <DialogHeader>
+            <div className="flex items-center justify-between">
+              <DialogTitle>Edit Profile</DialogTitle>
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => {
+                  console.log('🔥 SAVE BUTTON CLICKED - Header');
+                  console.log('🔥 Form errors:', profileForm.formState.errors);
+                  console.log('🔥 Form values:', profileForm.getValues());
+                  console.log('🔥 Form valid:', profileForm.formState.isValid);
+                  profileForm.handleSubmit(onSubmitProfile, (errors) => {
+                    console.log('🔥 VALIDATION ERRORS:', errors);
+                  })();
+                }}
+                disabled={editProfile.isPending}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {editProfile.isPending ? "Saving..." : "Save"}
+              </Button>
+            </div>
+          </DialogHeader>
+          <Form {...profileForm}>
+            <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-6">
+              
+              {/* ALWAYS VISIBLE PERSONAL INFORMATION SECTION */}
+              <div className="space-y-6 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border-2 border-blue-200 dark:border-blue-700">
+                <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 flex items-center gap-2">
+                  <UserIcon className="w-5 h-5" />
+                  Personal Information
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Age of Children Field */}
+                  <FormField
+                    control={profileForm.control}
+                    name="childrenAges"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-blue-900 dark:text-blue-100">Age of Children (if applicable)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            placeholder="e.g., 8, 12, 16 or 'None'"
+                            className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-blue-300 dark:border-blue-600"
+                            maxLength={100}
+                          />
+                        </FormControl>
+                        <FormDescription className="text-xs text-blue-700 dark:text-blue-300">
+                          List ages separated by commas, or write "None" if no children
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Veteran Status Field */}
+                  <FormField
+                    control={profileForm.control}
+                    name="isVeteran"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            checked={field.value}
+                            onChange={field.onChange}
+                            className="mt-1 h-4 w-4 border-blue-300 rounded text-blue-600 focus:ring-blue-500"
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel className="text-blue-900 dark:text-blue-100">
+                            Military Veteran
+                          </FormLabel>
+                          <FormDescription className="text-xs text-blue-700 dark:text-blue-300">
+                            Check if you are a military veteran
+                          </FormDescription>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Active Duty Field */}
+                  <FormField
+                    control={profileForm.control}
+                    name="isActiveDuty"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            checked={field.value}
+                            onChange={field.onChange}
+                            className="mt-1 h-4 w-4 border-blue-300 rounded text-blue-600 focus:ring-blue-500"
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel className="text-blue-900 dark:text-blue-100">
+                            Active Duty Military
+                          </FormLabel>
+                          <FormDescription className="text-xs text-blue-700 dark:text-blue-300">
+                            Check if you are currently active duty military
+                          </FormDescription>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              {/* Business Profile Fields */}
+              {user?.userType === 'business' ? (
+                <div className="space-y-6">
+                  <FormField
+                    control={profileForm.control}
+                    name="businessName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Business Name</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            placeholder="Enter your business name..."
+                            maxLength={100}
+                          />
+                        </FormControl>
+                        <div className="text-xs text-gray-500 text-right">
+                          {field.value?.length || 0}/100 characters
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+
+
+                  <FormField
+                    control={profileForm.control}
+                    name="businessType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Business Type</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value || ''}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select business type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="dark:bg-gray-800 dark:border-gray-600">
+                            {BUSINESS_TYPES.map((type) => (
+                              <SelectItem key={type} value={type} className="dark:text-white dark:hover:bg-gray-700">
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={profileForm.control}
+                    name="phoneNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            placeholder="(555) 123-4567"
+                            type="tel"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={profileForm.control}
+                    name="websiteUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Website URL</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            placeholder="www.yourwebsite.com"
+                            type="text"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+
+
+
+                  {/* Business Description Field */}
+                  <FormField
+                    control={profileForm.control}
+                    name="businessDescription"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Business Description</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            {...field} 
+                            placeholder="Describe your business and services..."
+                            className="min-h-[100px] resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+                            maxLength={1000}
+                          />
+                        </FormControl>
+                        <div className="text-xs text-gray-500 text-right">
+                          {field.value?.length || 0}/1000 characters {(field.value?.length || 0) < 30 && '(minimum 30 required)'}
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              ) : (
+                /* Traveler Profile Fields */
+                <div className="space-y-6">
+                  <FormField
+                    control={profileForm.control}
+                    name="bio"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Bio</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            {...field} 
+                            placeholder="Tell us about yourself..."
+                            className="min-h-[100px] resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+                            maxLength={1000}
+                          />
+                        </FormControl>
+                        <div className="text-xs text-gray-500 text-right">
+                          {field.value?.length || 0}/1000 characters {(field.value?.length || 0) < 30 && '(minimum 30 required)'}
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={profileForm.control}
+                    name="secretActivities"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>If I could list a few Secret Local things in my hometown I would say they are...</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            {...field} 
+                            placeholder="Fill this out for others to see secret activities, hidden gems, local spots, or insider tips that only locals know about. Example: There's a hidden waterfall behind the old mill that locals love, or try the secret menu at Joe's Diner..."
+                            className="min-h-[80px] resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+                            maxLength={500}
+                          />
+                        </FormControl>
+                        <div className="text-xs text-gray-500 text-right">
+                          {field.value?.length || 0}/500 characters
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+
+                  {/* Age of Children Field */}
+                  <FormField
+                    control={profileForm.control}
+                    name="childrenAges"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Age of Children (if applicable)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            placeholder="e.g., 8, 12, 16 or 'None'"
+                            className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+                            maxLength={100}
+                          />
+                        </FormControl>
+                        <FormDescription className="text-xs text-gray-500 dark:text-gray-400">
+                          List ages separated by commas, or write "None" if no children
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Family Travel Section */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
+                      Family Travel and/or Willing to Meet Families
+                    </h3>
+                    
+                    <FormField
+                      control={profileForm.control}
+                      name="travelingWithChildren"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Do you have children?</FormLabel>
+                          <FormControl>
+                            <div className="space-y-2 border rounded-md p-3">
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id="have-children"
+                                  checked={!!field.value}
+                                  onChange={(e) => {
+                                    const checked = e.target.checked;
+                                    field.onChange(checked);
+                                    // Don't clear children ages - keep them for matching purposes
+                                  }}
+                                  className="h-4 w-4 border-gray-300 rounded text-purple-600 focus:ring-purple-500"
+                                  data-testid="checkbox-have-children"
+                                />
+                                <label 
+                                  htmlFor="have-children" 
+                                  className="text-sm font-medium text-gray-700 dark:text-white cursor-pointer"
+                                >
+                                  Yes, I have children
+                                </label>
+                              </div>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                  </div>
+                </div>
+              )}
+
+
+              {/* Travel Style removed from general profile - it's trip-specific */}
+
+              {/* Date of Birth and Age Visibility - Only show for non-business users */}
+              {user?.userType !== 'business' && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
+                    {FORM_HEADERS.DATE_OF_BIRTH}
+                  </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={profileForm.control}
+                    name="dateOfBirth"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Date of Birth</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="date" 
+                            placeholder="Your date of birth" 
+                            {...field}
+                            min={getDateInputConstraints().min}
+                            max={getDateInputConstraints().max}
+                            onChange={(e) => {
+                              field.onChange(e.target.value);
+                            }}
+                            className="dark:bg-gray-800 dark:border-gray-600 dark:text-white [&::-webkit-calendar-picker-indicator]:dark:invert"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={profileForm.control}
+                    name="ageVisible"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
+                        <div className="space-y-0.5">
+                          <FormLabel>Show Age</FormLabel>
+                          <div className="text-sm text-gray-500">
+                            Display your age on your profile
+                          </div>
+                          <div className="text-sm font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded">
+                            {PRIVACY_NOTES.DATE_OF_BIRTH}
+                          </div>
+                        </div>
+                        <FormControl>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => field.onChange(!field.value)}
+                            className="flex items-center gap-2"
+                          >
+                            {field.value ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                            {field.value ? "Visible" : "Hidden"}
+                          </Button>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                </div>
+              )}
+
+              {/* Gender and Sexual Preference Fields - Only show for non-business users */}
+              {user?.userType !== 'business' && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
+                    {FORM_HEADERS.GENDER_SEXUAL_PREFERENCE}
+                  </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={profileForm.control}
+                    name="gender"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Gender</FormLabel>
+                        <div className="flex flex-wrap gap-3">
+                          {GENDER_OPTIONS.map((gender) => (
+                            <div key={gender} className="flex items-center space-x-2">
+                              <Checkbox
+                                id={`gender-${gender}`}
+                                checked={field.value === gender}
+                                onCheckedChange={(checked) => {
+                                  field.onChange(checked ? gender : "");
+                                }}
+                              />
+                              <label
+                                htmlFor={`gender-${gender}`}
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                              >
+                                {gender}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={profileForm.control}
+                    name="sexualPreference"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Sexual Preference (Select all that apply)</FormLabel>
+                        <FormControl>
+                          <div className="space-y-2 border rounded-md p-3">
+                            {SEXUAL_PREFERENCE_OPTIONS.map((preference) => (
+                              <div key={preference} className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id={`preference-${preference}`}
+                                  checked={field.value?.includes(preference) || false}
+                                  onChange={(e) => {
+                                    const currentValue = field.value || [];
+                                    if (e.target.checked) {
+                                      field.onChange([...currentValue, preference]);
+                                    } else {
+                                      field.onChange(currentValue.filter((p: string) => p !== preference));
+                                    }
+                                  }}
+                                  className="h-4 w-4 border-gray-300 rounded text-purple-600 focus:ring-purple-500"
+                                />
+                                <label 
+                                  htmlFor={`preference-${preference}`} 
+                                  className="text-sm font-medium text-gray-700 dark:text-white cursor-pointer"
+                                >
+                                  {preference}
+                                </label>
+                              </div>
+                            ))}
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                </div>
+              )}
+
+              {/* Sexual Preference Visibility - Only show for non-business users */}
+              {user?.userType !== 'business' && (
+                <FormField
+                  control={profileForm.control}
+                  name="sexualPreferenceVisible"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
+                      <div className="space-y-0.5">
+                        <FormLabel>Show Sexual Preference</FormLabel>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          Display your sexual preference on your profile
+                        </div>
+                        <div className="text-sm font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded">
+                          {PRIVACY_NOTES.SEXUAL_PREFERENCE}
+                        </div>
+                      </div>
+                      <FormControl>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => field.onChange(!field.value)}
+                          className="flex items-center gap-2"
+                        >
+                          {field.value ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                          {field.value ? "Visible" : "Hidden"}
+                        </Button>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              )}
+
+
+
+
+
+            {/* Diversity Business Ownership - Only show for business users */}
+            {user?.userType === 'business' && (
+              <div className="space-y-4">
+                <div className="border-t pt-4">
+                  <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Diversity Business Ownership</h3>
+                  <div className="text-sm text-gray-600 dark:text-gray-300 mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    These categories can be hidden from public view but will still appear in keyword searches to help customers find diverse businesses.
+                  </div>
+                
+                {/* Minority Owned Business */}
+                <FormField
+                  control={profileForm.control}
+                  name="isMinorityOwned"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3 rounded-lg border p-4 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
+                      <div className="flex flex-row items-center justify-between">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-gray-900 dark:text-white">Minority Owned Business</FormLabel>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                            Check if your business is minority-owned
+                          </div>
+                        </div>
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            checked={field.value}
+                            onChange={(e) => field.onChange(e.target.checked)}
+                            className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:checked:bg-purple-600 rounded"
+                          />
+                        </FormControl>
+                      </div>
+                      {field.value && (
+                        <FormField
+                          control={profileForm.control}
+                          name="showMinorityOwned"
+                          render={({ field: publicField }) => (
+                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 ml-6">
+                              <FormControl>
+                                <input
+                                  type="checkbox"
+                                  checked={publicField.value}
+                                  onChange={(e) => publicField.onChange(e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-300">
+                                  Show publicly (uncheck to hide but keep searchable)
+                                </FormLabel>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                    </FormItem>
+                  )}
+                />
+
+                {/* Female Owned Business */}
+                <FormField
+                  control={profileForm.control}
+                  name="isFemaleOwned"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3 rounded-lg border p-4 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
+                      <div className="flex flex-row items-center justify-between">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-gray-900 dark:text-white">Female Owned Business</FormLabel>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                            Check if your business is female-owned
+                          </div>
+                        </div>
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            checked={field.value}
+                            onChange={(e) => field.onChange(e.target.checked)}
+                            className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:checked:bg-pink-600 rounded"
+                          />
+                        </FormControl>
+                      </div>
+                      {field.value && (
+                        <FormField
+                          control={profileForm.control}
+                          name="showFemaleOwned"
+                          render={({ field: publicField }) => (
+                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 ml-6">
+                              <FormControl>
+                                <input
+                                  type="checkbox"
+                                  checked={publicField.value}
+                                  onChange={(e) => publicField.onChange(e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-300">
+                                  Show publicly (uncheck to hide but keep searchable)
+                                </FormLabel>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                    </FormItem>
+                  )}
+                />
+
+                {/* LGBTQIA+ Owned Business */}
+                <FormField
+                  control={profileForm.control}
+                  name="isLGBTQIAOwned"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3 rounded-lg border p-4 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600">
+                      <div className="flex flex-row items-center justify-between">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-gray-900 dark:text-white">LGBTQIA+ Owned Business</FormLabel>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                            Check if your business is LGBTQIA+ owned
+                          </div>
+                        </div>
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            checked={field.value}
+                            onChange={(e) => field.onChange(e.target.checked)}
+                            className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:checked:bg-purple-600 rounded"
+                            style={{ accentColor: '#8B5CF6' }}
+                          />
+                        </FormControl>
+                      </div>
+                      {field.value && (
+                        <FormField
+                          control={profileForm.control}
+                          name="showLGBTQIAOwned"
+                          render={({ field: publicField }) => (
+                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 ml-6">
+                              <FormControl>
+                                <input
+                                  type="checkbox"
+                                  checked={publicField.value}
+                                  onChange={(e) => publicField.onChange(e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel className="text-sm font-normal text-gray-600 dark:text-gray-300">
+                                  Show publicly (uncheck to hide but keep searchable)
+                                </FormLabel>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                    </FormItem>
+                  )}
+                />
+
+                <div className="mt-4 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Privacy & Search Information:</h4>
+                  <ul className="text-xs text-gray-600 dark:text-gray-300 space-y-1">
+                    <li>• Even if unchecked for public display, these categories remain searchable</li>
+                    <li>• Customers can find your business using keywords like "minority owned", "female owned", etc.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            )}
+
+              {/* Location Section - Moved to bottom as requested */}
+              <div className="space-y-4 mt-8 pt-6 border-t border-gray-200 dark:border-gray-600">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
+                  {user?.userType === 'business' ? 'Business Location' : 'Hometown Location ** ONLY CHANGE IF YOU MOVE **'}
+                </h3>
+                
+                {/* Business users get street address and ZIP code fields first */}
+                {user?.userType === 'business' && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={profileForm.control}
+                      name="streetAddress"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Street Address</FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              placeholder="123 Main Street"
+                              className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={profileForm.control}
+                      name="zipCode"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>ZIP Code</FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              placeholder="12345"
+                              className="dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                )}
+                
+                {/* Standard location dropdowns for all users */}
+                <SmartLocationInput
+                  city={profileForm.watch('hometownCity') || ''}
+                  state={profileForm.watch('hometownState') || ''}
+                  country={profileForm.watch('hometownCountry') || ''}
+                  onLocationChange={(location) => {
+                    profileForm.setValue('hometownCountry', location.country);
+                    profileForm.setValue('hometownState', location.state);
+                    profileForm.setValue('hometownCity', location.city);
+                  }}
+                  required={false}
+                  placeholder={{
+                    country: user?.userType === 'business' ? "Select your business country" : "Select your hometown country",
+                    state: user?.userType === 'business' ? "Select your business state/region" : "Select your hometown state/region", 
+                    city: user?.userType === 'business' ? "Select your business city" : "Select your hometown city"
+                  }}
+                />
+              </div>
+
+              <div className="flex gap-2 pt-4">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setIsEditMode(false)}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  disabled={editProfile.isPending}
+                  className="flex-1"
+                  onClick={() => {
+                    console.log('🔥 SAVE BUTTON CLICKED');
+                    console.log('🔥 Form errors:', profileForm.formState.errors);
+                    console.log('🔥 Form values:', profileForm.getValues());
+                    console.log('🔥 Form valid:', profileForm.formState.isValid);
+                  }}
+                >
+                  {editProfile.isPending ? "Saving..." : "Save Changes"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Travel Plan Delete Confirmation Dialog */}
+      <Dialog open={!!deletingTravelPlan} onOpenChange={() => setDeletingTravelPlan(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Travel Plan</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete your trip to {deletingTravelPlan?.destination}? This action cannot be undone and will remove the plan from everywhere on the site.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeletingTravelPlan(null)} className="border-orange-500 text-orange-600 hover:bg-orange-50 dark:border-orange-400 dark:text-orange-400 dark:hover:bg-orange-900/20">
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={confirmDeleteTravelPlan}
+              disabled={deleteTravelPlan.isPending}
+            >
+              {deleteTravelPlan.isPending ? "Deleting..." : "Delete Plan"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Travel Plan Details Modal - FIXED WITH PROPER BACK NAVIGATION */}
+      <Dialog open={showTravelPlanDetails} onOpenChange={setShowTravelPlanDetails}>
+        <DialogContent className="max-w-2xl bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
+              <MapPin className="w-5 h-5" />
+              {selectedTravelPlan?.destination} Trip Details
+            </DialogTitle>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              onClick={() => setShowTravelPlanDetails(false)}
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          </DialogHeader>
+          
+          {selectedTravelPlan && (
+            <div className="space-y-4">
+              {/* Trip Info */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-medium text-lg text-gray-900 dark:text-white">{selectedTravelPlan.destination}</h3>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">
+                    {selectedTravelPlan.startDate ? formatDateForDisplay(selectedTravelPlan.startDate, user?.currentCity || 'UTC') : 'Start date TBD'} - {selectedTravelPlan.endDate ? formatDateForDisplay(selectedTravelPlan.endDate, user?.currentCity || 'UTC') : 'End date TBD'}
+                  </p>
+                </div>
+                <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5">
+                  Trip Details
+                </div>
+              </div>
+              
+              {/* Close Button */}
+              <div className="flex justify-end">
+                <Button 
+                  onClick={() => setShowTravelPlanDetails(false)}
+                  className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600"
+                >
+                  Close
+                </Button>
+              </div>
+
+              {/* Interests - LIMITED TO PREVENT OVERWHELMING */}
+              {selectedTravelPlan.interests && selectedTravelPlan.interests.length > 0 && (
+                <div>
+                  <h4 className="font-medium text-sm mb-3 flex items-center gap-2 text-gray-900 dark:text-white">
+                    <Star className="w-4 h-4" />
+                    Top Interests ({selectedTravelPlan.interests.length})
+                  </h4>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    {selectedTravelPlan.interests.slice(0, 9).map((interest) => (
+                      <div key={interest} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+                        {interest}
+                      </div>
+                    ))}
+                    {selectedTravelPlan.interests.length > 9 && (
+                      <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+                        +{selectedTravelPlan.interests.length - 9} more
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Activities */}
+              {selectedTravelPlan.activities && selectedTravelPlan.activities.length > 0 && (
+                <div>
+                  <h4 className="font-medium text-sm mb-3 flex items-center gap-2 text-white">
+                    <Users className="w-4 h-4 text-white" />
+                    Activities
+                  </h4>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    {selectedTravelPlan.activities.map((activity) => (
+                      <div key={activity} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-green-500 text-white border-0 appearance-none select-none gap-1.5">
+                        {activity}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Events */}
+              {selectedTravelPlan.events && selectedTravelPlan.events.length > 0 && (
+                <div>
+                  <h4 className="font-medium text-sm mb-3 flex items-center gap-2 text-white">
+                    <Calendar className="w-4 h-4 text-white" />
+                    Events
+                  </h4>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    {selectedTravelPlan.events.map((event) => (
+                      <div key={event} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-purple-500 text-white border-0 appearance-none select-none gap-1.5">
+                        {event}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Travel Style */}
+              {selectedTravelPlan.travelStyle && selectedTravelPlan.travelStyle.length > 0 && (
+                <div>
+                  <h4 className="font-medium text-sm mb-3 flex items-center gap-2 text-white">
+                    <Globe className="w-4 h-4 text-white" />
+                    Travel Style
+                  </h4>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    {selectedTravelPlan.travelStyle.map((style) => (
+                      <div key={style} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+                        {style}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* No details message */}
+              {(!selectedTravelPlan.interests || selectedTravelPlan.interests.length === 0) &&
+               (!selectedTravelPlan.activities || selectedTravelPlan.activities.length === 0) &&
+               (!selectedTravelPlan.events || selectedTravelPlan.events.length === 0) &&
+               (!selectedTravelPlan.travelStyle || selectedTravelPlan.travelStyle.length === 0) && (
+                <div className="text-center py-8">
+                  <Calendar className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                  <p className="text-white">No trip details added yet</p>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+
+
+      {/* Simplified Cover Photo Selector Dialog */}
+      {showCoverPhotoSelector && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto no-scrollbar">
+            <div className="p-4 border-b flex justify-between items-center">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Choose Cover Photo</h2>
+              <button
+                onClick={() => setShowCoverPhotoSelector(false)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="p-4 space-y-4">
+              {photos && photos.length > 0 ? (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {photos.map((photo) => (
+                    <div
+                      key={photo.id}
+                      className="aspect-video rounded-lg overflow-hidden cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all relative"
+                      onClick={async () => {
+                        try {
+                          setUploadingPhoto(true);
+                          
+                          const response = await fetch(`/api/users/${effectiveUserId}/cover-photo`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ imageData: photo.imageUrl }),
+                          });
+                          
+                          if (!response.ok) throw new Error('Upload failed');
+                          
+                          const responseData = await response.json();
+                          const updatedUser = responseData?.user || responseData;
+                          
+                          if (updatedUser && isOwnProfile) {
+                            setCoverPhotoKey(Date.now());
+                            authStorage.setUser(updatedUser);
+                            if (typeof setAuthUser === 'function') {
+                              setAuthUser(updatedUser);
+                            }
+                            queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+                          }
+                          
+                          setShowCoverPhotoSelector(false);
+                          setUploadingPhoto(false);
+                          
+                          toast({
+                            title: "Success!",
+                            description: "Cover photo updated successfully",
+                          });
+                          
+                        } catch (error) {
+                          console.error('Error setting cover photo:', error);
+                          setUploadingPhoto(false);
+                          toast({
+                            title: "Error",
+                            description: "Failed to update cover photo",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                    >
+                      <img
+                        src={photo.imageUrl}
+                        alt={photo.caption || `Travel photo ${photo.id}`}
+                        className="w-full h-full object-cover"
+                      />
+                      {uploadingPhoto && (
+                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <Camera className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                  <p>No travel photos available yet</p>
+                  <Button
+                    onClick={() => {
+                      setShowCoverPhotoSelector(false);
+                      setLocation('/photos');
+                    }}
+                    className="mt-4"
+                  >
+                    Upload Photos First
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            <div className="p-4 border-t">
+              <Button
+                variant="outline"
+                onClick={() => setShowCoverPhotoSelector(false)}
+                className="w-full"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Write Reference Modal */}
+      <Dialog open={showWriteReferenceModal} onOpenChange={setShowWriteReferenceModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Write a Reference for {user?.username}</DialogTitle>
+            <DialogDescription>
+              Share your experience with this traveler to help others in the community
+            </DialogDescription>
+          </DialogHeader>
+          
+          <Form {...referenceForm}>
+            <form onSubmit={referenceForm.handleSubmit((data) => createReference.mutate(data))} className="space-y-4">
+              <FormField
+                control={referenceForm.control}
+                name="content"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Your Reference</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        placeholder="Share your experience with this person..."
+                        className="min-h-[100px] text-black dark:text-white"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={referenceForm.control}
+                name="experience"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Experience</FormLabel>
+                    <FormControl>
+                      <div className="flex gap-4">
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            value="positive"
+                            checked={String(field.value) === "positive"}
+                            onChange={() => field.onChange("positive")}
+                            className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500"
+                          />
+                          <span className="text-sm text-green-700">Positive</span>
+                        </label>
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            value="neutral"
+                            checked={String(field.value) === "neutral"}
+                            onChange={() => field.onChange("neutral")}
+                            className="w-4 h-4 text-yellow-600 border-gray-300 focus:ring-yellow-500"
+                          />
+                          <span className="text-sm text-yellow-700">Neutral</span>
+                        </label>
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            value="negative"
+                            checked={String(field.value) === "negative"}
+                            onChange={() => field.onChange("negative")}
+                            className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
+                          />
+                          <span className="text-sm text-red-700">Negative</span>
+                        </label>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex justify-end gap-2 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    referenceForm.reset();
+                    setShowWriteReferenceModal(false);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={createReference.isPending}>
+                  {createReference.isPending ? "Submitting..." : "Submit Reference"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Reference Modal */}
+      <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Reference</DialogTitle>
+            <DialogDescription>
+              Update your reference for this traveler
+            </DialogDescription>
+          </DialogHeader>
+          
+          <Form {...editReferenceForm}>
+            <form onSubmit={editReferenceForm.handleSubmit((data) => {
+              if (editingReference) {
+                updateReference.mutate({
+                  referenceId: editingReference.id,
+                  content: data.content,
+                  experience: data.experience,
+                });
+              }
+            })} className="space-y-4">
+              <FormField
+                control={editReferenceForm.control}
+                name="content"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Your Reference</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        placeholder="Share your experience with this person..."
+                        className="min-h-[100px] text-black dark:text-white"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={editReferenceForm.control}
+                name="experience"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Experience</FormLabel>
+                    <FormControl>
+                      <div className="flex gap-4">
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            value="positive"
+                            checked={String(field.value) === "positive"}
+                            onChange={() => field.onChange("positive")}
+                            className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500"
+                          />
+                          <span className="text-sm text-green-700">Positive</span>
+                        </label>
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            value="neutral"
+                            checked={String(field.value) === "neutral"}
+                            onChange={() => field.onChange("neutral")}
+                            className="w-4 h-4 text-yellow-600 border-gray-300 focus:ring-yellow-500"
+                          />
+                          <span className="text-sm text-yellow-700">Neutral</span>
+                        </label>
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            value="negative"
+                            checked={String(field.value) === "negative"}
+                            onChange={() => field.onChange("negative")}
+                            className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
+                          />
+                          <span className="text-sm text-red-700">Negative</span>
+                        </label>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex justify-end gap-2 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    editReferenceForm.reset();
+                    setShowEditModal(false);
+                    setEditingReference(null);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={updateReference.isPending}>
+                  {updateReference.isPending ? "Updating..." : "Update Reference"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Customer Uploaded Photos - Only for business profiles - Moved to bottom */}
+      {user?.userType === 'business' && (
+        <CustomerUploadedPhotos businessId={user.id} isOwnProfile={isOwnProfile} />
+      )}
+
+      {/* Photo Upload Modal - ORIGINAL SYSTEM RESTORED */}
+      <Dialog open={showPhotoUpload} onOpenChange={setShowPhotoUpload}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Upload Photo</DialogTitle>
+            <DialogDescription>
+              Add a new photo to your profile
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleProfilePhotoUpload}
+                className="hidden"
+                id="photo-upload-input"
+              />
+              <label htmlFor="photo-upload-input" className="cursor-pointer">
+                <Camera className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                <p className="text-lg font-medium text-gray-700 mb-2">Choose a photo</p>
+                <p className="text-sm text-gray-500">
+                  Click to select an image file (max 5MB)
+                </p>
+              </label>
+            </div>
+            
+            {uploadingPhoto && (
+              <div className="text-center">
+                <p className="text-blue-600">Uploading photo...</p>
+              </div>
+            )}
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowPhotoUpload(false)}
+              disabled={uploadingPhoto}
+            >
+              Cancel
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Chatroom List Modal */}
+      <Dialog open={showChatroomList} onOpenChange={setShowChatroomList}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <MessageCircle className="w-5 h-5 text-blue-600" />
+              Your City Chatrooms ({userChatrooms.length})
+            </DialogTitle>
+            <DialogDescription>
+              Chatrooms you've joined for your hometown and travel destinations
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-3">
+            {userChatrooms.length > 0 ? (
+              userChatrooms.map((chatroom: any) => (
+                <div 
+                  key={chatroom.id}
+                  className="flex items-start gap-4 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors"
+                  onClick={() => {
+                    setShowChatroomList(false);
+                    setLocation(`/simple-chatroom/${chatroom.id}`);
+                  }}
+                >
+                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                    {chatroom.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold text-gray-900 dark:text-white text-base leading-tight">
+                      {chatroom.name}
+                    </h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                      {chatroom.city}, {chatroom.country}
+                    </p>
+                    {chatroom.description && (
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 line-clamp-2">
+                        {chatroom.description}
+                      </p>
+                    )}
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="text-xs bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-200 rounded-full px-2 py-1">
+                        {chatroom.memberCount || 0} members
+                      </span>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 mt-1" />
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8">
+                <MessageCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No chatrooms yet</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-4">
+                  You'll automatically join chatrooms for your hometown and travel destinations
+                </p>
+                <Button 
+                  onClick={() => {
+                    setShowChatroomList(false);
+                    setLocation('/city-chatrooms');
+                  }}
+                  className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white"
+                >
+                  Browse All Chatrooms
+                </Button>
+              </div>
+            )}
+          </div>
+          
+          <div className="border-t pt-4 mt-4">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowChatroomList(false);
+                setLocation('/city-chatrooms');
+              }}
+              className="w-full"
+            >
+              Browse All City Chatrooms
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
+      </div>
+    </>
+  );
+}
+
+// Error boundary wrapper component
+class ProfileErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error: Error | null; errorInfo: React.ErrorInfo | null }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null, errorInfo: null };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    console.error('ProfileErrorBoundary - Error caught:', error);
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('Profile page error details:', {
+      error: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack
+    });
+    this.setState({ errorInfo });
+  }
+
+  render() {
+    if (this.state.hasError) {
+      const errorDetails = {
+        message: this.state.error?.message || 'Unknown error',
+        stack: this.state.error?.stack || 'No stack trace',
+        componentStack: this.state.errorInfo?.componentStack || 'No component stack'
+      };
+
+      return (
+        <div className="min-h-screen bg-gray-50 p-4">
+          <div className="max-w-4xl mx-auto pt-20">
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <h2 className="text-2xl font-bold text-red-600 mb-4">Profile Page Error</h2>
+              <p className="text-gray-600 mb-6">The profile page encountered a rendering error.</p>
+              
+              <div className="bg-red-50 border border-red-200 rounded p-4 mb-6">
+                <h3 className="font-semibold text-red-800 mb-2">Error Details:</h3>
+                <p className="text-sm text-red-700 mb-2">Message: {errorDetails.message}</p>
+                
+                <details className="mt-3">
+                  <summary className="cursor-pointer text-sm font-medium text-red-800">Show Stack Trace</summary>
+                  <pre className="text-xs text-red-600 mt-2 whitespace-pre-wrap overflow-auto max-h-40">
+                    {errorDetails.stack}
+                  </pre>
+                </details>
+                
+                <details className="mt-3">
+                  <summary className="cursor-pointer text-sm font-medium text-red-800">Show Component Stack</summary>
+                  <pre className="text-xs text-red-600 mt-2 whitespace-pre-wrap overflow-auto max-h-40">
+                    {errorDetails.componentStack}
+                  </pre>
+                </details>
+              </div>
+
+              <div className="flex gap-3">
+                <Button 
+                  onClick={() => {
+                    this.setState({ hasError: false, error: null, errorInfo: null });
+                    window.location.reload();
+                  }}
+                  variant="outline"
+                >
+                  Reload Page
+                </Button>
+                <Button 
+                  onClick={() => window.location.href = '/'}
+                  variant="secondary"
+                >
+                  Go Home
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+// Event Organizer Hub Section Component
+function EventOrganizerHubSection({ userId }: { userId: number }) {
+  const { toast } = useToast();
+  
+  // Fetch user events
+  const { data: userEvents = [], isLoading } = useQuery({
+    queryKey: [`/api/events/organizer/${userId}`],
+    enabled: !!userId,
+  });
+
+  // Calculate event statistics
+  const totalEvents = userEvents.length;
+  const totalRSVPs = userEvents.reduce((sum: number, event: any) => sum + (event.participantCount || 0), 0);
+  const upcomingEvents = userEvents.filter((event: any) => new Date(event.date) >= new Date()).length;
+  const avgRSVPs = totalEvents > 0 ? Math.round((totalRSVPs / totalEvents) * 10) / 10 : 0;
+
+  // Generate Instagram post for an event
+  const generateInstagramPost = (event: any) => {
+    const eventDate = new Date(event.date).toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    
+    const instagramText = `🎉 ${event.title}\n\n📅 ${eventDate}\n📍 ${event.venue || 'Location TBD'}\n\n${event.description}\n\n#${event.city?.replace(/\s+/g, '')}Events #Community #${event.category?.replace(/\s+/g, '')} #Meetup\n\nRSVP: ${window.location.origin}/events/${event.id}`;
+    
+    navigator.clipboard.writeText(instagramText);
+    toast({
+      title: "Instagram post copied!",
+      description: "The Instagram-optimized post has been copied to your clipboard.",
+    });
+  };
+
+  // Duplicate event function
+  const duplicateEvent = (event: any) => {
+    const duplicateData = {
+      title: `${event.title} (Copy)`,
+      description: event.description,
+      venue: event.venue,
+      streetAddress: event.streetAddress,
+      city: event.city,
+      state: event.state,
+      country: event.country,
+      category: event.category,
+      tags: event.tags,
+      requirements: event.requirements,
+    };
+    
+    // Store in localStorage for the create event page
+    localStorage.setItem('duplicateEventData', JSON.stringify(duplicateData));
+    
+    // Navigate to create event page
+    window.location.href = '/create-event';
+    
+    toast({
+      title: "Event template ready",
+      description: "Event details have been copied. Complete the new event details.",
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="text-center text-gray-500">Loading your events...</div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardContent className="p-0">
+        {/* Event Organizer Hub Header */}
+        <div className="bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/20 dark:to-orange-900/20 p-4 sm:p-6 border-b border-blue-200 dark:border-blue-700">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
+            <div>
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white flex items-center">
+                <Calendar className="w-5 h-5 mr-2 text-blue-600" />
+                Event Organizer Hub
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                Create, manage, and promote your events with powerful organizer tools
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button 
+                onClick={() => window.location.href = '/create-event'}
+                className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Create New Event
+              </Button>
+            </div>
+          </div>
+          
+          {/* Event Organizer Quick Stats */}
+          {totalEvents > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4 pt-4 border-t border-blue-200 dark:border-blue-700">
+              <div className="text-center">
+                <div className="text-lg sm:text-xl font-bold text-blue-600">
+                  {totalEvents}
+                </div>
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Total Events</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg sm:text-xl font-bold text-green-600">
+                  {totalRSVPs}
+                </div>
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Total RSVPs</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg sm:text-xl font-bold text-orange-600">
+                  {upcomingEvents}
+                </div>
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Upcoming</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg sm:text-xl font-bold text-purple-600">
+                  {avgRSVPs}
+                </div>
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Avg RSVPs</div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Events List */}
+        <div className="p-4 sm:p-6">
+          {userEvents.length > 0 ? (
+            <div className="space-y-4">
+              {userEvents.map((event: any) => (
+                <div key={event.id} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-sm transition-shadow">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-3 sm:space-y-0">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-gray-900 dark:text-white">{event.title}</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{event.description}</p>
+                      <div className="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400 mt-2">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          {new Date(event.date).toLocaleDateString()}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3" />
+                          {event.venue || event.city}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Users className="w-3 h-3" />
+                          {event.participantCount || 0} RSVPs
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => generateInstagramPost(event)}
+                        className="text-xs h-8 px-3 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white border-0"
+                        title="Copy Instagram post"
+                      >
+                        <Share2 className="w-3 h-3 mr-1" />
+                        Instagram
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => duplicateEvent(event)}
+                        className="text-xs h-8 px-3 bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-0"
+                        title="Duplicate this event"
+                      >
+                        <Calendar className="w-3 h-3 mr-1" />
+                        Duplicate
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => window.location.href = `/manage-event/${event.id}`}
+                        className="text-xs h-8 px-3"
+                        title="Manage event"
+                      >
+                        <Edit className="w-3 h-3 mr-1" />
+                        Manage
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No events yet</h3>
+              <p className="text-gray-600 dark:text-gray-300 mb-6">
+                Start organizing events to connect with your community
+              </p>
+              <Button 
+                onClick={() => window.location.href = '/create-event'}
+                className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Create Your First Event
+              </Button>
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Main export with error boundary
+export default function EnhancedProfile(props: EnhancedProfileProps) {
+  return (
+    <ProfileErrorBoundary>
+      <ProfileContent {...props} />
+    </ProfileErrorBoundary>
+  );
+}

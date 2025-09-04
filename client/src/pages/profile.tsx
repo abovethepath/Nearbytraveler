@@ -619,9 +619,6 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
   const [showTravelPlanDetails, setShowTravelPlanDetails] = useState(false);
   const [showDestinationSuggestions, setShowDestinationSuggestions] = useState(false);
   const [showChatroomList, setShowChatroomList] = useState(false);
-  
-  // Tab navigation state - Couchsurfing style
-  const [activeTab, setActiveTab] = useState('about');
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [showKeywordSearch, setShowKeywordSearch] = useState(false);
@@ -3543,76 +3540,8 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                     </div>
                   </div>
 
-                  {/* Couchsurfing-style Tab Navigation */}
-                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-                    <div className="flex flex-wrap gap-1 p-2">
-                      <button
-                        onClick={() => setActiveTab('about')}
-                        className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
-                          activeTab === 'about' 
-                            ? 'bg-blue-500 text-white' 
-                            : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
-                        }`}
-                      >
-                        About
-                      </button>
-                      <button
-                        onClick={() => setActiveTab('photos')}
-                        className={`px-3 py-2 rounded text-sm font-medium transition-colors flex items-center gap-1 ${
-                          activeTab === 'photos' 
-                            ? 'bg-orange-500 text-white' 
-                            : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
-                        }`}
-                      >
-                        Photos <span className="bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full">{photos.length}</span>
-                      </button>
-                      <button
-                        onClick={() => setActiveTab('references')}
-                        className={`px-3 py-2 rounded text-sm font-medium transition-colors flex items-center gap-1 ${
-                          activeTab === 'references' 
-                            ? 'bg-orange-500 text-white' 
-                            : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
-                        }`}
-                      >
-                        References <span className="bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full">{userReferences.length}</span>
-                      </button>
-                      <button
-                        onClick={() => setActiveTab('friends')}
-                        className={`px-3 py-2 rounded text-sm font-medium transition-colors flex items-center gap-1 ${
-                          activeTab === 'friends' 
-                            ? 'bg-blue-500 text-white' 
-                            : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
-                        }`}
-                      >
-                        Friends <span className="bg-blue-500 text-white text-xs px-2 py-0.5 rounded-full">{userConnections.length}</span>
-                      </button>
-                      {isOwnProfile && (
-                        <button
-                          onClick={() => setActiveTab('travel')}
-                          className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
-                            activeTab === 'travel' 
-                              ? 'bg-purple-500 text-white' 
-                              : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
-                          }`}
-                        >
-                          Travel Plans
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </>
-              );
-            })()}
-
-          </div>
-
-          {/* MAIN CONTENT AREA - Tab-based content */}
-          <div className="w-full lg:col-span-4 space-y-3 sm:space-y-4 lg:space-y-6">
-            
-            {/* About Tab Content */}
-            {activeTab === 'about' && (
-              <div className="space-y-4">
-                {user?.userType !== 'business' && (
+                  {/* Travel Stats - User info goes in left sidebar */}
+                  {user?.userType !== 'business' && (
                     <Card className="mt-4 hover:shadow-lg transition-all duration-200 hover:border-orange-300">
                       <CardHeader>
                         <CardTitle className="text-sm dark:text-white">Stats</CardTitle>
@@ -3818,6 +3747,16 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                     </CardContent>
                   </Card>
 
+                  {/* References Widget - Left sidebar */}
+                  <ReferencesWidgetNew 
+                    userId={effectiveUserId || 0}
+                    isOwnProfile={isOwnProfile}
+                  />
+
+                  {/* Friend Referral Widget - Left sidebar */}
+                  {isOwnProfile && (
+                    <FriendReferralWidget />
+                  )}
                 </>
               );
             })()}
@@ -6188,48 +6127,6 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                 )}
               </CardContent>
             </Card>
-              </div>
-            )}
-
-            {/* Photos Tab Content */}
-            {activeTab === 'photos' && (
-              <div className="space-y-4">
-                <PhotoAlbumWidget 
-                  userId={effectiveUserId || 0}
-                  isOwnProfile={isOwnProfile}
-                />
-              </div>
-            )}
-
-            {/* References Tab Content */}
-            {activeTab === 'references' && (
-              <div className="space-y-4">
-                <ReferencesWidgetNew 
-                  userId={effectiveUserId || 0}
-                />
-              </div>
-            )}
-
-            {/* Friends Tab Content */}
-            {activeTab === 'friends' && (
-              <div className="space-y-4">
-                <FriendReferralWidget />
-              </div>
-            )}
-
-            {/* Travel Plans Tab Content */}
-            {activeTab === 'travel' && isOwnProfile && (
-              <div className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Travel Plans</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p>Travel plans content will go here</p>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
 
           </div>
 
@@ -6286,6 +6183,39 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
               </Card>
             )}
 
+            {/* Photo Gallery Widget in Right Sidebar */}
+            <Card className="mt-4">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Camera className="w-5 h-5" />
+                  <span className="text-sm">Photos ({photos.length})</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {photos.length > 0 ? (
+                  <div className="grid grid-cols-2 gap-2">
+                    {photos.slice(0, 4).map((photo, index) => (
+                      <div key={photo.id} className="aspect-square rounded overflow-hidden">
+                        <img 
+                          src={photo.imageUrl} 
+                          alt={photo.caption || 'Photo'}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 dark:text-gray-400">No photos yet</p>
+                )}
+                <Button 
+                  size="sm" 
+                  className="w-full mt-3 bg-blue-500 hover:bg-blue-600"
+                  onClick={() => setLocation('/photos')}
+                >
+                  View All Photos
+                </Button>
+              </CardContent>
+            </Card>
 
             {/* Vouch Widget - Right sidebar */}
             <VouchWidget 
