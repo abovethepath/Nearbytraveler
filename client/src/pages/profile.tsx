@@ -3587,16 +3587,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         )}
       </section>
 
-      {/* Navigation Tabs - Couchsurfing Style */}
-      <div className="w-full bg-black text-white px-4 sm:px-6 lg:px-10 py-3">
+      {/* Navigation Tabs - Card Style */}
+      <div className="w-full bg-white border border-gray-200 dark:bg-gray-900 dark:border-gray-700 px-4 sm:px-6 lg:px-10 py-3">
         <div className="max-w-7xl mx-auto">
           <div className="flex space-x-6 sm:space-x-8">
             <button
               onClick={() => setActiveTab('contacts')}
               className={`text-sm sm:text-base font-medium px-3 py-2 rounded-t-lg transition-colors ${
                 activeTab === 'contacts' 
-                  ? 'bg-white text-black' 
-                  : 'text-white hover:text-gray-200'
+                  ? 'bg-blue-600 text-white' 
+                  : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400'
               }`}
             >
               Contacts
@@ -3610,8 +3610,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               onClick={() => setActiveTab('photos')}
               className={`text-sm sm:text-base font-medium px-3 py-2 rounded-t-lg transition-colors ${
                 activeTab === 'photos' 
-                  ? 'bg-white text-black' 
-                  : 'text-white hover:text-gray-200'
+                  ? 'bg-blue-600 text-white' 
+                  : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400'
               }`}
             >
               Photos
@@ -3625,8 +3625,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               onClick={() => setActiveTab('references')}
               className={`text-sm sm:text-base font-medium px-3 py-2 rounded-t-lg transition-colors ${
                 activeTab === 'references' 
-                  ? 'bg-white text-black' 
-                  : 'text-white hover:text-gray-200'
+                  ? 'bg-blue-600 text-white' 
+                  : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400'
               }`}
             >
               References
@@ -3640,8 +3640,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               onClick={() => setActiveTab('travel')}
               className={`text-sm sm:text-base font-medium px-3 py-2 rounded-t-lg transition-colors ${
                 activeTab === 'travel' 
-                  ? 'bg-white text-black' 
-                  : 'text-white hover:text-gray-200'
+                  ? 'bg-blue-600 text-white' 
+                  : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400'
               }`}
             >
               Travel
