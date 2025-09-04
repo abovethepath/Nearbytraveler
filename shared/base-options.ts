@@ -66,10 +66,27 @@ export const ADDITIONAL_INTERESTS = [
   "Escape Rooms",
   "Gaming & Esports",
   
-  // Dating/Relationships
+  // Dating/Relationships - Including Private/Adult Options
   "LGBTQIA+",
   "Local Gay Parties/Events",
   "Polyamory and ENM",
+  "Adult Entertainment",
+  "Strip Clubs & Adult Shows",
+  "Sex Shops & Adult Stores",
+  "BDSM & Kink Community",
+  "Swinger Parties & Clubs",
+  "Adult Dating & Hookups",
+  "Sugar Dating",
+  "Escort & Companion Services",
+  "Sex-Positive Communities",
+  "Adult Gaming & VR",
+  "Fetish Events & Meetups",
+  "Open Relationships",
+  "Threesome & Group Activities",
+  "Adult Massage Services",
+  "Cam Shows & Online Adult",
+  "Adult Content Creation",
+  "Sexual Wellness Workshops"
   
   // Family/Kids
   "Parent Meetups",
@@ -81,11 +98,23 @@ export const ADDITIONAL_INTERESTS = [
   "Cooking Classes",
   
   // Outdoor/Adventure
-  "Surfing",
+  "Surfing", 
   "Adventure Tours",
   "Wildlife & Nature",
   "Biking / Cycling",
   "Nudist Beach",
+  
+  // Cannabis/Substance Culture (Adults Only)
+  "Cannabis Tours & Dispensaries",
+  "420 Friendly Activities", 
+  "Psychedelic Experiences",
+  "Magic Mushroom Tours",
+  "Amsterdam Coffee Shops",
+  "Rave Scene & Electronic Music",
+  "Festival Drug Culture",
+  "Party Favors & Enhancement",
+  "Cannabis Social Clubs",
+  "Medical Marijuana Tourism",
   
   // Sports/Recreation
   "Sports & Recreation",
