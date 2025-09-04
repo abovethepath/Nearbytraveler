@@ -298,6 +298,52 @@ interface EnhancedProfileProps {
   userId?: number;
 }
 
+// User Status Display Component for temporal local/traveler logic
+interface UserStatusDisplayProps {
+  userId: number | undefined;
+  user: any;
+}
+
+function UserStatusDisplay({ userId, user }: UserStatusDisplayProps) {
+  // Fetch user status from the temporal service
+  const { data: userStatus, isLoading } = useQuery({
+    queryKey: [`/api/users/${userId}/status`],
+    enabled: !!userId && user?.userType !== 'business',
+    staleTime: 1 * 60 * 1000, // 1 minute
+  });
+
+  if (isLoading || !userStatus) {
+    // Fallback to basic display while loading
+    return (
+      <div className="bg-gradient-to-r from-green-500 to-blue-600 text-white rounded-lg p-4 text-center font-bold text-lg">
+        Nearby Local • {user?.hometownCity || user?.location || 'Loading...'}
+      </div>
+    );
+  }
+
+  // Use the temporal service data for display
+  const isCurrentlyTraveling = userStatus.isCurrentlyTraveling;
+  const displayLocation = userStatus.displayLocation;
+  const hometownLocation = userStatus.hometownLocation;
+
+  if (isCurrentlyTraveling) {
+    // User is currently traveling - show both travel destination and hometown
+    return (
+      <div className="bg-gradient-to-r from-orange-500 to-blue-600 text-white rounded-lg p-4 text-center font-bold text-lg">
+        <div>{displayLocation}</div>
+        <div className="text-sm font-normal opacity-90">{hometownLocation}</div>
+      </div>
+    );
+  } else {
+    // User is currently local - show hometown
+    return (
+      <div className="bg-gradient-to-r from-green-500 to-blue-600 text-white rounded-lg p-4 text-center font-bold text-lg">
+        {displayLocation}
+      </div>
+    );
+  }
+}
+
 // Profile schema for form validation - conditional based on user type
 const createProfileSchema = (userType: string) => {
   const baseSchema = z.object({
@@ -3839,16 +3885,8 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
           {/* MIDDLE CONTENT AREA - Main Profile Content */}
           <div className="w-full md:col-span-3 space-y-3 sm:space-y-4 lg:space-y-6">
             
-            {/* Travel Status Banner */}
-            {user?.userType === 'traveler' && user?.destinationCity ? (
-              <div className="bg-gradient-to-r from-orange-500 to-blue-600 text-white rounded-lg p-4 text-center font-bold text-lg">
-                Boldly, Nearby Traveler
-              </div>
-            ) : user?.userType === 'local' && (
-              <div className="bg-gradient-to-r from-green-500 to-blue-600 text-white rounded-lg p-4 text-center font-bold text-lg">
-                Nearby Local • {user?.hometownCity || user?.location || 'Local'}
-              </div>
-            )}
+            {/* Temporal User Status Banner */}
+            {user?.userType !== 'business' && <UserStatusDisplay userId={effectiveUserId} user={user} />}
             
             {/* Widget Navigation - Expandable Widgets */}
             <div className="bg-white border-2 border-black rounded-lg shadow-sm">

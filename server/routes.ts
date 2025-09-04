@@ -2026,6 +2026,23 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
   // NOTE: This route moved below to avoid conflict with /api/users/search
   
+  // User status endpoint for temporal local/traveler logic
+  app.get("/api/users/:userId/status", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      if (isNaN(userId)) {
+        return res.status(400).json({ error: 'Invalid user ID' });
+      }
+      
+      const { getUserCurrentStatus } = await import('./services/user-status-service');
+      const status = await getUserCurrentStatus(userId);
+      res.json(status);
+    } catch (error) {
+      console.error('Error fetching user status:', error);
+      res.status(500).json({ error: 'Failed to fetch user status' });
+    }
+  });
+
   // General user search endpoint for tagging functionality
   app.get("/api/users/search", async (req, res) => {
     try {
