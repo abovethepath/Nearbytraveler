@@ -6807,6 +6807,62 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
               </div>
             )}
 
+            {/* Date of Birth - Only show for non-business users */}
+            {user?.userType !== 'business' && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white border-b pb-2">
+                  Date of Birth
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={profileForm.control}
+                    name="dateOfBirth"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Date of Birth</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            type="date"
+                            max={new Date().toISOString().split('T')[0]}
+                            className="dark:bg-gray-800 dark:border-gray-600 dark:text-white [&::-webkit-calendar-picker-indicator]:dark:invert"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={profileForm.control}
+                    name="ageVisible"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                        <div className="space-y-0.5">
+                          <FormLabel>Show Age</FormLabel>
+                          <div className="text-sm text-gray-500">
+                            Display your age on your profile
+                          </div>
+                        </div>
+                        <FormControl>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => field.onChange(!field.value)}
+                            className="flex items-center gap-2"
+                          >
+                            {field.value ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                            {field.value ? "Visible" : "Hidden"}
+                          </Button>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            )}
+
             {/* Gender and Sexual Preference Fields - Only show for non-business users */}
             {user?.userType !== 'business' && (
               <div className="space-y-4">
