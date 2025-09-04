@@ -716,7 +716,7 @@ function Router() {
 
       // Enhanced routing for potentially authenticated users accessing main routes
       // Check for common app routes that authenticated users might be trying to access
-      const commonAppRoutes = ['/discover', '/match-in-city', '/quick-meetups', '/messages', '/profile', '/cities', '/plan-trip', '/home', '/events', '/deals', '/simple-chatroom', '/city-chatrooms', '/chatroom'];
+      const commonAppRoutes = ['/discover', '/match-in-city', '/quick-meetups', '/messages', '/profile', '/profile-new', '/cities', '/plan-trip', '/home', '/events', '/deals', '/simple-chatroom', '/city-chatrooms', '/chatroom'];
       const isCommonAppRoute = commonAppRoutes.some(route => location.startsWith(route));
 
       if (isCommonAppRoute && (localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token'))) {
@@ -969,6 +969,8 @@ function Router() {
         }
 
         return <Profile />;
+      case '/profile-new':
+        return <ProfileNew />;
       case '/messages':
         return <Messages />;
       case '/meetups':
