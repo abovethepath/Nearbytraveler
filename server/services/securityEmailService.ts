@@ -1,11 +1,11 @@
-import { MailService } from '@sendgrid/mail';
+import * as brevo from '@getbrevo/brevo';
 
-if (!process.env.SENDGRID_API_KEY) {
-  throw new Error("SENDGRID_API_KEY environment variable must be set");
+if (!process.env.BREVO_API_KEY) {
+  throw new Error("BREVO_API_KEY environment variable must be set");
 }
 
-const mailService = new MailService();
-mailService.setApiKey(process.env.SENDGRID_API_KEY);
+const brevoApiInstance = brevo.TransactionalEmailsApi.getDefaultApi();
+brevoApiInstance.authentications['apiKey'].apiKey = process.env.BREVO_API_KEY;
 
 interface BlockingNotificationData {
   blockerUsername: string;
@@ -78,13 +78,14 @@ Please review this incident. Multiple blocks for the same user may require admin
 This is an automated security notification.
     `;
 
-    await mailService.send({
-      to: 'security@thenearbytraveler.com',
-      from: 'aaron_marc2004@yahoo.com',
-      subject: `🚨 User Blocking Alert: @${data.blockerUsername} blocked @${data.blockedUsername}`,
-      text: emailText,
-      html: emailHtml,
-    });
+    const sendSmtpEmail = new brevo.SendSmtpEmail();
+    sendSmtpEmail.to = [{ email: 'security@thenearbytraveler.com', name: 'Security Team' }];
+    sendSmtpEmail.sender = { email: 'aaron_marc2004@yahoo.com', name: 'NearbyTraveler Security' };
+    sendSmtpEmail.subject = `🚨 User Blocking Alert: @${data.blockerUsername} blocked @${data.blockedUsername}`;
+    sendSmtpEmail.textContent = emailText;
+    sendSmtpEmail.htmlContent = emailHtml;
+    
+    await brevoApiInstance.sendTransacEmail(sendSmtpEmail);
 
     console.log('Security blocking notification sent successfully');
     return true;

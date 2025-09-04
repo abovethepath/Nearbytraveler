@@ -17,10 +17,10 @@ function formatDateForDisplay(dateString: string, timezone: string): string {
   if (!dateString) return 'Date TBD';
   
   let inputString: string;
-  if (dateString instanceof Date) {
+  if (typeof dateString === 'object' && dateString instanceof Date) {
     inputString = dateString.toISOString();
   } else {
-    inputString = dateString;
+    inputString = String(dateString);
   }
   
   const parts = inputString.split('T')[0].split('-');
@@ -33,7 +33,9 @@ function formatDateForDisplay(dateString: string, timezone: string): string {
       year: 'numeric', // CRITICAL: Always shows 4-digit year (2025, not 25) 
       month: 'short', 
       day: 'numeric' 
-  });
+    });
+  }
+  return 'Date TBD';
 }
 
 export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
@@ -286,15 +288,15 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
             ));
           })()}
           
-          {user?.travelDestination && user?.travelStartDate && user?.travelEndDate && 
-           !travelPlans.some((plan: any) => plan.destination === user.travelDestination) && (
+          {(user as any)?.travelDestination && (user as any)?.travelStartDate && (user as any)?.travelEndDate && 
+           !travelPlans.some((plan: any) => plan.destination === (user as any).travelDestination) && (
             <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">{user.travelDestination}</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">{(user as any).travelDestination}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {formatDateForDisplay(user.travelStartDate, "PLAYA DEL REY")}
-                    {user.travelEndDate && ` - ${formatDateForDisplay(user.travelEndDate, "PLAYA DEL REY")}`}
+                    {formatDateForDisplay((user as any).travelStartDate, "PLAYA DEL REY")}
+                    {(user as any).travelEndDate && ` - ${formatDateForDisplay((user as any).travelEndDate, "PLAYA DEL REY")}`}
                   </p>
                 </div>
                 <Button
@@ -327,10 +329,10 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
                 }
                 return null;
               })();
-              return endDate >= today;
+              return endDate ? endDate >= today : true;
             });
             
-            if (relevantPlans.length === 0 && (!user?.travelDestination)) {
+            if (relevantPlans.length === 0 && (!(user as any)?.travelDestination)) {
               return (
                 <div className="text-center py-4">
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">No upcoming travel plans</p>
