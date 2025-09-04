@@ -48,11 +48,18 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
   const profileUserId = propUserId || paramUserId || currentUser?.id?.toString();
   const isOwnProfile = profileUserId === currentUser?.id?.toString();
 
-  // Fetch user data
-  const { data: user, isLoading } = useQuery<User>({
+  // For own profile when no specific userId is provided, use the current user data directly
+  const shouldFetchUser = profileUserId && profileUserId !== currentUser?.id?.toString();
+  const user = shouldFetchUser ? undefined : currentUser; // Use current user for own profile
+  
+  // Fetch user data only for other users' profiles
+  const { data: fetchedUser, isLoading } = useQuery<User>({
     queryKey: [`/api/users/${profileUserId}`],
-    enabled: !!profileUserId,
+    enabled: shouldFetchUser,
   });
+
+  // Use fetched user data if available, otherwise use current user
+  const displayUser = fetchedUser || user;
 
   // Fetch user's travel plans
   const { data: travelPlans = [] } = useQuery({
@@ -77,7 +84,7 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
     );
   }
 
-  if (!user) {
+  if (!displayUser) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
@@ -94,13 +101,13 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
 
   const currentTravelDestination = getCurrentTravelDestination(travelPlans || []);
   const isCurrentlyTraveling = !!currentTravelDestination;
-  const userAge = user.dateOfBirth ? calculateAge(user.dateOfBirth) : null;
+  const userAge = displayUser.dateOfBirth ? calculateAge(displayUser.dateOfBirth) : null;
 
   // Calculate verification badges
   const verificationBadges = [
-    { type: 'profile', verified: user.profileImage && user.bio && user.interests?.length > 0, label: 'Profile Complete' },
+    { type: 'profile', verified: displayUser.profileImage && displayUser.bio && displayUser.interests?.length > 0, label: 'Profile Complete' },
     { type: 'phone', verified: false, label: 'Phone Verified' }, // TODO: Add phone verification
-    { type: 'email', verified: !!user.email, label: 'Email Verified' },
+    { type: 'email', verified: !!displayUser.email, label: 'Email Verified' },
   ];
 
   const verifiedCount = verificationBadges.filter(badge => badge.verified).length;
@@ -129,7 +136,7 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                   </Badge>
                 ) : (
                   <Badge className="bg-blue-600 text-white text-xs mb-4">
-                    {user.userType === 'local' ? 'Local Host' : 'Available to Meet'}
+                    {displayUser.userType === 'local' ? 'Local Host' : 'Available to Meet'}
                   </Badge>
                 )}
 
@@ -151,9 +158,9 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                 </div>
 
                 {/* User Name and Location */}
-                <h1 className="text-2xl font-bold mb-2">{user.name || user.username}</h1>
+                <h1 className="text-2xl font-bold mb-2">{displayUser.name || displayUser.username}</h1>
                 <p className="text-white/90 mb-4">
-                  {user.hometownCity}, {user.hometownState && `${user.hometownState}, `}{user.hometownCountry}
+                  {displayUser.hometownCity}, {displayUser.hometownState && `${displayUser.hometownState}, `}{displayUser.hometownCountry}
                 </p>
 
                 {/* Action Buttons */}
@@ -223,7 +230,7 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                 </div>
                 <div className="flex items-center gap-3 text-sm">
                   <Calendar className="w-4 h-4 text-purple-500" />
-                  <span className="text-gray-600 dark:text-gray-400">Member since {new Date(user.createdAt).getFullYear()}</span>
+                  <span className="text-gray-600 dark:text-gray-400">Member since {new Date(displayUser.createdAt).getFullYear()}</span>
                 </div>
               </CardContent>
             </Card>
@@ -234,9 +241,9 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
             {/* Top Action Bar for Desktop */}
             <div className="hidden lg:flex justify-between items-center mb-6">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{user.name || user.username}</h1>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{displayUser.name || displayUser.username}</h1>
                 <p className="text-gray-600 dark:text-gray-400">
-                  {user.hometownCity}, {user.hometownState && `${user.hometownState}, `}{user.hometownCountry}
+                  {displayUser.hometownCity}, {displayUser.hometownState && `${displayUser.hometownState}, `}{displayUser.hometownCountry}
                 </p>
               </div>
               {isOwnProfile && (
@@ -266,11 +273,11 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                     <div className="text-sm text-gray-600 dark:text-gray-400">Travel Plans</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-purple-600">{user.interests?.length || 0}</div>
+                    <div className="text-2xl font-bold text-purple-600">{displayUser.interests?.length || 0}</div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">Interests</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-orange-600">{user.languages?.length || 1}</div>
+                    <div className="text-2xl font-bold text-orange-600">{displayUser.languages?.length || 1}</div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">Languages</div>
                   </div>
                 </div>
@@ -279,17 +286,17 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 pt-6 border-t">
                   <div className="flex items-center gap-3">
                     <Languages className="w-5 h-5 text-gray-400" />
-                    <span className="text-gray-600 dark:text-gray-400">Fluent in {user.languages?.[0] || 'English'}</span>
+                    <span className="text-gray-600 dark:text-gray-400">Fluent in {displayUser.languages?.[0] || 'English'}</span>
                   </div>
                   {userAge && (
                     <div className="flex items-center gap-3">
                       <Calendar className="w-5 h-5 text-gray-400" />
-                      <span className="text-gray-600 dark:text-gray-400">{userAge}, {user.gender || 'Not specified'}</span>
+                      <span className="text-gray-600 dark:text-gray-400">{userAge}, {displayUser.gender || 'Not specified'}</span>
                     </div>
                   )}
                   <div className="flex items-center gap-3">
                     <Home className="w-5 h-5 text-gray-400" />
-                    <span className="text-gray-600 dark:text-gray-400">From {user.hometownCity}, {user.hometownCountry}</span>
+                    <span className="text-gray-600 dark:text-gray-400">From {displayUser.hometownCity}, {displayUser.hometownCountry}</span>
                   </div>
                   {isCurrentlyTraveling && (
                     <div className="flex items-center gap-3">
@@ -317,10 +324,10 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                     <CardTitle>About Me</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    {user.bio ? (
+                    {displayUser.bio ? (
                       <div className="prose prose-sm max-w-none dark:prose-invert">
                         <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                          {user.bio}
+                          {displayUser.bio}
                         </p>
                       </div>
                     ) : (
@@ -330,11 +337,11 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                     )}
 
                     {/* Interests */}
-                    {user.interests && user.interests.length > 0 && (
+                    {displayUser.interests && displayUser.interests.length > 0 && (
                       <div>
                         <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Interests</h3>
                         <div className="flex flex-wrap gap-2">
-                          {user.interests.map((interest, index) => (
+                          {displayUser.interests.map((interest, index) => (
                             <Badge key={index} variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
                               {interest}
                             </Badge>
@@ -344,11 +351,11 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                     )}
 
                     {/* Activities */}
-                    {user.activities && user.activities.length > 0 && (
+                    {displayUser.activities && displayUser.activities.length > 0 && (
                       <div>
                         <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Activities I Enjoy</h3>
                         <div className="flex flex-wrap gap-2">
-                          {user.activities.map((activity, index) => (
+                          {displayUser.activities.map((activity, index) => (
                             <Badge key={index} variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                               {activity}
                             </Badge>
@@ -358,11 +365,11 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                     )}
 
                     {/* Languages */}
-                    {user.languages && user.languages.length > 0 && (
+                    {displayUser.languages && displayUser.languages.length > 0 && (
                       <div>
                         <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Languages</h3>
                         <div className="flex flex-wrap gap-2">
-                          {user.languages.map((language, index) => (
+                          {displayUser.languages.map((language, index) => (
                             <Badge key={index} variant="outline" className="border-purple-200 text-purple-800 dark:border-purple-800 dark:text-purple-200">
                               {language}
                             </Badge>
