@@ -50,16 +50,15 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
 
   // For own profile when no specific userId is provided, use the current user data directly
   const shouldFetchUser = profileUserId && profileUserId !== currentUser?.id?.toString();
-  const user = shouldFetchUser ? undefined : currentUser; // Use current user for own profile
   
   // Fetch user data only for other users' profiles
   const { data: fetchedUser, isLoading } = useQuery<User>({
     queryKey: [`/api/users/${profileUserId}`],
-    enabled: shouldFetchUser,
+    enabled: shouldFetchUser && !!profileUserId,
   });
 
   // Use fetched user data if available, otherwise use current user
-  const displayUser = fetchedUser || user;
+  const displayUser = fetchedUser || currentUser;
 
   // Fetch user's travel plans
   const { data: travelPlans = [] } = useQuery({
