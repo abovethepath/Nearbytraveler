@@ -3499,7 +3499,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <div className="space-y-3">
                       {isOwnProfile ? (
                         <Button
-                          onClick={() => setIsEditMode(true)}
+                          onClick={() => {
+                            toast({
+                              title: "Coming soon!",
+                              description: "Profile editing is being updated with new features.",
+                            });
+                          }}
                           className="w-full bg-white text-green-600 hover:bg-green-50 font-semibold"
                           data-testid="button-edit-profile"
                         >
