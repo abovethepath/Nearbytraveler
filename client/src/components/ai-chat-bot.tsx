@@ -92,7 +92,7 @@ export default function AIChatBot() {
   return (
     <div className="fixed bottom-6 right-6 z-50 w-80 h-96">
       <Card className="h-full flex flex-col shadow-xl border-2">
-        <CardHeader className="bg-gradient-to-r from-blue-500 to-orange-500 text-black rounded-t-lg py-3">
+        <CardHeader className="bg-white text-black rounded-t-lg py-3 border-b">
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg flex items-center gap-2">
               <Bot className="h-5 w-5" />
@@ -118,15 +118,15 @@ export default function AIChatBot() {
                 className={`flex gap-2 ${message.isBot ? "justify-start" : "justify-end"}`}
               >
                 {message.isBot && (
-                  <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center">
+                  <div className="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
                     <Bot className="h-4 w-4 text-white" />
                   </div>
                 )}
                 <div
                   className={`max-w-[240px] rounded-lg px-3 py-2 text-sm ${
                     message.isBot
-                      ? "bg-gray-100 text-gray-800"
-                      : "bg-gradient-to-r from-blue-500 to-orange-500 text-black"
+                      ? "bg-white border text-gray-800"
+                      : "bg-blue-500 text-white"
                   }`}
                 >
                   {message.content}
@@ -140,10 +140,10 @@ export default function AIChatBot() {
             ))}
             {chatMutation.isPending && (
               <div className="flex gap-2 justify-start">
-                <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center">
+                <div className="flex-shrink-0 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
                   <Bot className="h-4 w-4 text-white" />
                 </div>
-                <div className="bg-gray-100 rounded-lg px-3 py-2 text-sm text-gray-600">
+                <div className="bg-white border rounded-lg px-3 py-2 text-sm text-gray-600">
                   <div className="flex space-x-1">
                     <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                     <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></div>
