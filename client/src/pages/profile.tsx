@@ -636,6 +636,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   
   // Edit mode states for individual widgets
   const [editingInterests, setEditingInterests] = useState(false);
+  const [showAllInterests, setShowAllInterests] = useState(false);
+  const [showAllActivities, setShowAllActivities] = useState(false);
+  const [showAllEvents, setShowAllEvents] = useState(false);
   const [editingActivities, setEditingActivities] = useState(false);
   const [editingEvents, setEditingEvents] = useState(false);
   const [editingLanguages, setEditingLanguages] = useState(false);
@@ -4616,42 +4619,47 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {/* SIMPLIFIED VIEW: Just show count and top few for own profile */}
-                      {true ? (
-                        <div>
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
-                              {(user?.interests || []).filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)).length} additional interests selected
-                            </span>
+                      {/* FULL VIEW: Show ALL interests (except private) for matching purposes */}
+                      {(() => {
+                        // Get all interests and filter out private ones for display
+                        const allInterests = user?.interests || [];
+                        const publicInterests = allInterests.filter(interest => !getPrivateInterests().includes(interest));
+                        
+                        if (publicInterests.length === 0) {
+                          return <p className="text-gray-500 text-sm">No interests selected yet</p>;
+                        }
+
+                        const displayLimit = 12; // Show more initially since this is a matching site
+                        const shouldShowToggle = publicInterests.length > displayLimit;
+                        const displayedInterests = showAllInterests ? publicInterests : publicInterests.slice(0, displayLimit);
+                        const hiddenCount = publicInterests.length - displayLimit;
+                        
+                        return (
+                          <div>
+                            <div className="flex items-center justify-between mb-3">
+                              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                {publicInterests.length} interest{publicInterests.length !== 1 ? 's' : ''} selected
+                              </span>
+                              {shouldShowToggle && (
+                                <button
+                                  onClick={() => setShowAllInterests(!showAllInterests)}
+                                  className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium"
+                                  data-testid="button-toggle-interests"
+                                >
+                                  {showAllInterests ? 'Show Less' : `Show All (${hiddenCount} more)`}
+                                </button>
+                              )}
+                            </div>
+                            <div className="flex flex-wrap gap-2 sm:gap-3">
+                              {displayedInterests.map((interest, index) => (
+                                <div key={`interest-${index}`} className="inline-flex items-center justify-center h-7 sm:h-8 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium whitespace-nowrap leading-none bg-white text-black border border-black">
+                                  {interest}
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                          <div className="flex flex-wrap gap-2 sm:gap-3">
-                            {(() => {
-                              // Filter out top choices from interests to avoid duplication
-                              const allInterests = user?.interests || [];
-                              const filteredInterests = allInterests.filter(interest => !MOST_POPULAR_INTERESTS.includes(interest));
-                              const topInterests = filteredInterests.slice(0, 8); // Show only first 8
-                              const remaining = filteredInterests.length - 8;
-                              
-                              return (
-                                <>
-                                  {topInterests.map((interest, index) => (
-                                    <div key={`interest-${index}`} className="inline-flex items-center justify-center h-7 sm:h-8 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium whitespace-nowrap leading-none bg-white text-black border border-black">
-                                      {interest}
-                                    </div>
-                                  ))}
-                                  {remaining > 0 && (
-                                    <div className="inline-flex items-center justify-center h-7 sm:h-8 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium whitespace-nowrap leading-none border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 bg-transparent">
-                                      +{remaining} more
-                                    </div>
-                                  )}
-                                </>
-                              );
-                            })()}
-                          </div>
-                        </div>
-                      ) : (
-                        <p className="text-gray-500 text-sm">No interests selected yet</p>
-                      )}
+                        );
+                      })()}
                     </div>
                   )}
                 </div>
@@ -4755,40 +4763,45 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {/* SIMPLIFIED VIEW: Just show count and top few for own profile */}
-                      {(user.activities && user.activities.length > 0) ? (
-                        <div>
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
-                              {user.activities.length} activities selected
-                            </span>
+                      {/* FULL VIEW: Show ALL activities for matching purposes */}
+                      {(() => {
+                        const activities = user?.activities || [];
+                        
+                        if (activities.length === 0) {
+                          return <p className="text-gray-500 text-sm">No activities selected yet</p>;
+                        }
+
+                        const displayLimit = 10;
+                        const shouldShowToggle = activities.length > displayLimit;
+                        const displayedActivities = showAllActivities ? activities : activities.slice(0, displayLimit);
+                        const hiddenCount = activities.length - displayLimit;
+                        
+                        return (
+                          <div>
+                            <div className="flex items-center justify-between mb-3">
+                              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                {activities.length} activit{activities.length !== 1 ? 'ies' : 'y'} selected
+                              </span>
+                              {shouldShowToggle && (
+                                <button
+                                  onClick={() => setShowAllActivities(!showAllActivities)}
+                                  className="text-xs text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300 font-medium"
+                                  data-testid="button-toggle-activities"
+                                >
+                                  {showAllActivities ? 'Show Less' : `Show All (${hiddenCount} more)`}
+                                </button>
+                              )}
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              {displayedActivities.map((activity, index) => (
+                                <div key={`activity-${index}`} className="pill pill-activities inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white text-black border border-black appearance-none select-none">
+                                  {activity}
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                          <div className="flex flex-wrap gap-2">
-                            {(() => {
-                              const activities = user.activities || [];
-                              const topActivities = activities.slice(0, 6); // Show only first 6
-                              const remaining = activities.length - 6;
-                              
-                              return (
-                                <>
-                                  {topActivities.map((activity, index) => (
-                                    <div key={`activity-${index}`} className="pill pill-activities inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white text-black border border-black appearance-none select-none" >
-                                      {activity}
-                                    </div>
-                                  ))}
-                                  {remaining > 0 && (
-                                    <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white text-black border border-black appearance-none select-none">
-                                      +{remaining} more
-                                    </div>
-                                  )}
-                                </>
-                              );
-                            })()}
-                          </div>
-                        </div>
-                      ) : (
-                        <p className="text-gray-500 text-sm">No activities selected yet</p>
-                      )}
+                        );
+                      })()}
                     </div>
                   )}
                 </div>
@@ -4893,40 +4906,45 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {/* SIMPLIFIED VIEW: Just show count and top few for own profile */}
-                      {(user.events && user.events.length > 0) ? (
-                        <div>
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
-                              {user.events.length} event types selected
-                            </span>
+                      {/* FULL VIEW: Show ALL events for matching purposes */}
+                      {(() => {
+                        const events = user?.events || [];
+                        
+                        if (events.length === 0) {
+                          return <p className="text-gray-500 text-sm">No event types selected yet</p>;
+                        }
+
+                        const displayLimit = 8;
+                        const shouldShowToggle = events.length > displayLimit;
+                        const displayedEvents = showAllEvents ? events : events.slice(0, displayLimit);
+                        const hiddenCount = events.length - displayLimit;
+                        
+                        return (
+                          <div>
+                            <div className="flex items-center justify-between mb-3">
+                              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                {events.length} event type{events.length !== 1 ? 's' : ''} selected
+                              </span>
+                              {shouldShowToggle && (
+                                <button
+                                  onClick={() => setShowAllEvents(!showAllEvents)}
+                                  className="text-xs text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 font-medium"
+                                  data-testid="button-toggle-events"
+                                >
+                                  {showAllEvents ? 'Show Less' : `Show All (${hiddenCount} more)`}
+                                </button>
+                              )}
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              {displayedEvents.map((event, index) => (
+                                <div key={`event-${index}`} className="pill pill-events inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white text-black border border-black appearance-none select-none">
+                                  {event}
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                          <div className="flex flex-wrap gap-2">
-                            {(() => {
-                              const events = user.events || [];
-                              const topEvents = events.slice(0, 6); // Show only first 6
-                              const remaining = events.length - 6;
-                              
-                              return (
-                                <>
-                                  {topEvents.map((event, index) => (
-                                    <div key={`event-${index}`} className="pill pill-events inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white text-black border border-black appearance-none select-none">
-                                      {event}
-                                    </div>
-                                  ))}
-                                  {remaining > 0 && (
-                                    <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white text-black border border-black appearance-none select-none">
-                                      +{remaining} more
-                                    </div>
-                                  )}
-                                </>
-                              );
-                            })()}
-                          </div>
-                        </div>
-                      ) : (
-                        <p className="text-gray-500 text-sm">No event preferences selected yet</p>
-                      )}
+                        );
+                      })()}
                     </div>
                   )}
                 </div>
