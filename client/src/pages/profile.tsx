@@ -4177,7 +4177,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           </h4>
                           
                           <div className="flex flex-wrap gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border overflow-hidden break-words">
-                            {getAllInterests().filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)).map((interest) => {
+                            {getAllInterests().map((interest) => {
                               const displayText = interest.startsWith("**") && interest.endsWith("**") ? 
                                 interest.slice(2, -2) : interest;
                               const isSelected = editFormData.interests.includes(interest);
