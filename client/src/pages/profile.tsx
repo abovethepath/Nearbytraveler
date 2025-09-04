@@ -3608,12 +3608,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   {/* Main Profile Card - Couchsurfing Style */}
                   <Card className="overflow-hidden bg-white dark:bg-gray-800 border shadow-lg">
                     {/* Profile Header with Orange Gradient */}
-                    <div className="bg-gradient-to-br from-orange-400 to-orange-600 p-6 text-white text-center">
+                    <div className="bg-gradient-to-br from-green-500 to-green-600 p-6 text-white text-center">
                       {/* Profile Photo */}
                       <div className="relative inline-block mb-4">
                         <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
                           <AvatarImage src={user?.profileImage} alt={user?.username} />
-                          <AvatarFallback className="bg-orange-300 text-orange-800 text-2xl font-bold">
+                          <AvatarFallback className="bg-green-300 text-green-800 text-2xl font-bold">
                             {user?.username?.charAt(0)?.toUpperCase() || '?'}
                           </AvatarFallback>
                         </Avatar>
@@ -3631,7 +3631,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <h1 className="text-2xl font-bold mb-1">{user?.username}</h1>
                       
                       {/* Location Status - EXACTLY "Nearby Traveler • destination" format */}
-                      <div className="text-orange-100 mb-3">
+                      <div className="text-green-100 mb-3">
                         {isCurrentlyTraveling && currentTravelDestination ? (
                           <span className="flex items-center justify-center">
                             <MapPin className="w-4 h-4 mr-1" />
@@ -3648,7 +3648,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </div>
 
                 {/* Age and Hometown */}
-                <div className="text-orange-100 text-sm mb-4">
+                <div className="text-green-100 text-sm mb-4">
                   {user?.dateOfBirth && <span>Age {calculateAge(user.dateOfBirth)}</span>}
                   {user?.dateOfBirth && user?.hometownCity && <span> • </span>}
                   {user?.hometownCity && (
@@ -3672,7 +3672,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <Button 
                       onClick={() => setLocation('/chatrooms')}
                       variant="outline" 
-                      className="w-full bg-transparent border-2 border-white text-white hover:bg-white hover:text-orange-600"
+                      className="w-full bg-transparent border-2 border-white text-white hover:bg-white hover:text-green-600"
                       data-testid="button-join-chatrooms"
                     >
                       <MessageCircle className="w-4 h-4 mr-2" />
@@ -3690,7 +3690,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     
                     <Button 
                       variant="outline" 
-                      className="w-full bg-transparent border-2 border-white text-white hover:bg-white hover:text-orange-600"
+                      className="w-full bg-transparent border-2 border-white text-white hover:bg-white hover:text-green-600"
                     >
                       <UserIcon className="w-4 h-4 mr-2" />
                       Connect
@@ -3712,11 +3712,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 {/* Quick Stats */}
                 <div className="grid grid-cols-2 gap-4 text-center py-3 border-t border-gray-200 dark:border-gray-600">
                   <div>
-                    <div className="text-xl font-bold text-orange-600">{userReferences?.counts?.total || userReferences?.length || 0}</div>
+                    <div className="text-xl font-bold text-green-600">{userReferences?.counts?.total || userReferences?.length || 0}</div>
                     <div className="text-xs text-gray-500">References</div>
                   </div>
                   <div>
-                    <div className="text-xl font-bold text-orange-600">{userConnections?.length || 0}</div>
+                    <div className="text-xl font-bold text-green-600">{userConnections?.length || 0}</div>
                     <div className="text-xs text-gray-500">Connections</div>
                   </div>
                 </div>
