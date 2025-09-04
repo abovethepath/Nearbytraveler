@@ -9357,39 +9357,6 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
                         </span>
                       </div>
                     </div>
-                    
-                    <div className="flex flex-wrap gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => generateInstagramPost(event)}
-                        className="text-xs h-8 px-3 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white border-0"
-                        title="Copy Instagram post"
-                      >
-                        <Share2 className="w-3 h-3 mr-1" />
-                        Instagram
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => duplicateEvent(event)}
-                        className="text-xs h-8 px-3 bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-0"
-                        title="Duplicate this event"
-                      >
-                        <Calendar className="w-3 h-3 mr-1" />
-                        Duplicate
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => window.location.href = `/manage-event/${event.id}`}
-                        className="text-xs h-8 px-3"
-                        title="Manage event"
-                      >
-                        <Edit className="w-3 h-3 mr-1" />
-                        Manage
-                      </Button>
-                    </div>
                   </div>
                 </div>
               ))}
@@ -9401,23 +9368,14 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
               <p className="text-gray-600 dark:text-gray-300 mb-6">
                 Start organizing events to connect with your community
               </p>
-              <Button 
-                onClick={() => window.location.href = '/create-event'}
-                className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Create Your First Event
-              </Button>
             </div>
           )}
         </div>
-      </CardContent>
-    </Card>
           </div>
         </div>
       </div>
       
-      {/* Edit Mode Modal */}
+      {/* Edit Mode Modal */
       {isEditMode && user && (
         <ProfileEditMode
           user={user}
