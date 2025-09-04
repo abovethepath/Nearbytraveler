@@ -707,6 +707,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     hometownCountry: string;
   } | null>(null);
   const [scrollToLocation, setScrollToLocation] = useState(false);
+  const [showLocationWidget, setShowLocationWidget] = useState(false);
   
   // Connection filters state
   const [connectionFilters, setConnectionFilters] = useState({
@@ -7925,13 +7926,24 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </DialogContent>
       </Dialog>
 
-      {/* LOCATION EDITOR - MOVED OUTSIDE DIALOG FOR DROPDOWN FUNCTIONALITY */}
-      {isOwnProfile && (
+      {/* LOCATION EDITOR - COLLAPSIBLE WIDGET */}
+      {isOwnProfile && showLocationWidget && (
         <Card className="max-w-4xl mx-auto mt-6 mb-6" data-testid="location-widget">
           <CardContent className="p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              {user?.userType === 'business' ? 'Business Location' : 'Hometown Location ** ONLY CHANGE IF YOU MOVE **'}
-            </h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                {user?.userType === 'business' ? 'Business Location' : 'Hometown Location ** ONLY CHANGE IF YOU MOVE **'}
+              </h3>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowLocationWidget(false)}
+                className="text-gray-500 hover:text-gray-700 border-gray-300"
+                data-testid="button-close-location"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
             
             <SmartLocationInput
               city={pendingLocationData?.hometownCity || user?.hometownCity || ''}
@@ -8090,7 +8102,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   // Close the edit profile modal
                   setIsEditMode(false);
                   
-                  // Scroll to the location widget
+                  // Open the location widget
+                  setShowLocationWidget(true);
+                  
+                  // Scroll to the location widget after it opens
                   setTimeout(() => {
                     const locationWidget = document.querySelector('[data-testid="location-widget"]');
                     if (locationWidget) {
@@ -8099,7 +8114,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       // Fallback: scroll to bottom where location widget usually is
                       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
                     }
-                  }, 100);
+                  }, 200);
                 }}
                 className="bg-orange-600 hover:bg-orange-700 text-white ml-3 flex-shrink-0"
                 data-testid="button-change-hometown"
