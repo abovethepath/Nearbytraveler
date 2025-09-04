@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation, useParams } from "wouter";
+import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,7 +31,10 @@ import {
   Briefcase,
   Home,
   TrendingUp,
-  AlertCircle
+  AlertCircle,
+  Share2,
+  Zap,
+  Clock
 } from "lucide-react";
 import { AuthContext } from "@/App";
 import { formatDateForDisplay, getCurrentTravelDestination } from "@/lib/dateUtils";
@@ -217,10 +221,36 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                 )}
                 
                 {isOwnProfile && (
-                  <Button className="w-full bg-white text-blue-600 hover:bg-gray-100">
-                    <Settings className="w-4 h-4 mr-2" />
-                    Edit Profile
-                  </Button>
+                  <div className="space-y-2">
+                    <Button className="w-full bg-white text-blue-600 hover:bg-gray-100">
+                      <Settings className="w-4 h-4 mr-2" />
+                      Edit Profile
+                    </Button>
+                    
+                    {/* Navigation buttons for own profile */}
+                    <div className="flex items-center gap-2">
+                      {displayUser && (displayUser.hometownCity || displayUser.location) && (
+                        <Button
+                          onClick={() => {
+                            const chatCity = displayUser.hometownCity || displayUser.location?.split(',')[0] || 'General';
+                            setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
+                          }}
+                          className="flex-1 bg-black hover:bg-gray-800 text-white border-0 shadow-sm rounded-lg px-3 py-2 text-sm"
+                        >
+                          <MessageCircle className="w-4 h-4 mr-1 shrink-0" />
+                          <span className="truncate">Go to Chatrooms</span>
+                        </Button>
+                      )}
+                      <Button
+                        onClick={() => setLocation('/share-qr')}
+                        className="flex-1 bg-gray-100 hover:bg-gray-200 text-black dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 shadow-sm rounded-lg px-3 py-2 text-sm"
+                        data-testid="button-share-qr-code"
+                      >
+                        <Share2 className="w-4 h-4 mr-1 shrink-0" />
+                        <span className="truncate">Invite Friends</span>
+                      </Button>
+                    </div>
+                  </div>
                 )}
               </CardContent>
             </Card>
@@ -357,6 +387,13 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Quick Meetup Widget - Let's Meet Now */}
+            {isOwnProfile && (
+              <div className="mb-6">
+                <QuickMeetupWidget />
+              </div>
+            )}
 
             {/* Tabbed Content */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
