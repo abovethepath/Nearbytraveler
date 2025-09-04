@@ -73,6 +73,26 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Improve image rendering quality on mobile devices */
+img,
+.avatar img,
+[data-radix-avatar-image] {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  image-rendering: optimizeQuality;
+  -ms-interpolation-mode: bicubic;
+}
+
+/* Ensure avatar images are sharp on high-DPI displays */
+.avatar,
+[data-radix-avatar] {
+  image-rendering: -webkit-optimize-contrast;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
 /* Floating animation for dynamic elements */
 @keyframes float {
   0%, 100% {

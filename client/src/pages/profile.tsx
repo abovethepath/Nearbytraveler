@@ -3482,7 +3482,12 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                     <div className="text-center mb-4">
                       <div className="relative inline-block">
                         <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
-                          <AvatarImage src={user?.profileImage} alt={user?.username} />
+                          <AvatarImage 
+                            src={user?.profileImage} 
+                            alt={user?.username}
+                            className="object-cover w-full h-full"
+                            loading="eager"
+                          />
                           <AvatarFallback className="bg-green-300 text-green-800 text-xl font-bold">
                             {user?.username?.charAt(0)?.toUpperCase() || '?'}
                           </AvatarFallback>
