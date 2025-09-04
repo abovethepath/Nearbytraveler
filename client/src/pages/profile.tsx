@@ -708,6 +708,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   } | null>(null);
   const [scrollToLocation, setScrollToLocation] = useState(false);
   const [showLocationWidget, setShowLocationWidget] = useState(false);
+  const [showPhotosContent, setShowPhotosContent] = useState(false);
+  const [showReferencesContent, setShowReferencesContent] = useState(false);
+  const [showTravelContent, setShowTravelContent] = useState(false);
+  const [showCountriesContent, setShowCountriesContent] = useState(false);
+  const [showContactsContent, setShowContactsContent] = useState(false);
   
   // Connection filters state
   const [connectionFilters, setConnectionFilters] = useState({
@@ -3686,13 +3691,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               onClick={() => {
                 console.log('🔥 CONTACTS CLICKED'); 
                 setActiveTab('contacts');
-                // Smart scroll to contacts content
+                setShowContactsContent(true);
+                // Smart scroll to contacts content after it renders
                 setTimeout(() => {
                   const contactsContent = document.querySelector('[data-testid="contacts-content"]');
                   if (contactsContent) {
                     contactsContent.scrollIntoView({ behavior: 'smooth', block: 'center' });
                   }
-                }, 100);
+                }, 200);
               }}
               className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
                 activeTab === 'contacts'
@@ -3712,13 +3718,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               onClick={() => {
                 console.log('🔥 PHOTOS CLICKED'); 
                 setActiveTab('photos');
-                // Smart scroll to photos content
+                setShowPhotosContent(true);
+                // Smart scroll to photos content after it renders
                 setTimeout(() => {
                   const photosContent = document.querySelector('[data-testid="photos-content"]');
                   if (photosContent) {
                     photosContent.scrollIntoView({ behavior: 'smooth', block: 'center' });
                   }
-                }, 100);
+                }, 200);
               }}
               className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
                 activeTab === 'photos'
@@ -3738,13 +3745,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               onClick={() => {
                 console.log('🔥 REFERENCES CLICKED'); 
                 setActiveTab('references');
-                // Smart scroll to references content
+                setShowReferencesContent(true);
+                // Smart scroll to references content after it renders
                 setTimeout(() => {
                   const referencesContent = document.querySelector('[data-testid="references-content"]');
                   if (referencesContent) {
                     referencesContent.scrollIntoView({ behavior: 'smooth', block: 'center' });
                   }
-                }, 100);
+                }, 200);
               }}
               className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
                 activeTab === 'references'
@@ -3764,13 +3772,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               onClick={() => {
                 console.log('🔥 TRAVEL CLICKED'); 
                 setActiveTab('travel');
-                // Smart scroll to travel content
+                setShowTravelContent(true);
+                // Smart scroll to travel content after it renders
                 setTimeout(() => {
                   const travelContent = document.querySelector('[data-testid="travel-content"]');
                   if (travelContent) {
                     travelContent.scrollIntoView({ behavior: 'smooth', block: 'center' });
                   }
-                }, 100);
+                }, 200);
               }}
               className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
                 activeTab === 'travel'
@@ -3790,13 +3799,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               onClick={() => {
                 console.log('🔥 COUNTRIES CLICKED'); 
                 setActiveTab('countries');
-                // Smart scroll to countries content
+                setShowCountriesContent(true);
+                // Smart scroll to countries content after it renders
                 setTimeout(() => {
                   const countriesContent = document.querySelector('[data-testid="countries-content"]');
                   if (countriesContent) {
                     countriesContent.scrollIntoView({ behavior: 'smooth', block: 'center' });
                   }
-                }, 100);
+                }, 200);
               }}
               className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
                 activeTab === 'countries'
@@ -5783,7 +5793,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             )}
 
             {/* Travel Plans - Hidden for business profiles */}
-            {activeTab === 'travel' && user?.userType !== 'business' && (
+            {activeTab === 'travel' && user?.userType !== 'business' && showTravelContent && (
               <div data-testid="travel-content">
                 <TravelPlansWidget 
                   userId={effectiveUserId || 0} 
@@ -5807,7 +5817,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
 
             {/* Photo Gallery */}
-            {activeTab === 'photos' && (
+            {activeTab === 'photos' && showPhotosContent && (
             <div className="space-y-4 mt-6" style={{zIndex: 10, position: 'relative'}} data-testid="photos-content">
               <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700">
                 <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white dark:bg-gray-900">
@@ -5933,7 +5943,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             )}
 
             {/* Countries Tab */}
-            {activeTab === 'countries' && (
+            {activeTab === 'countries' && showCountriesContent && (
               <div className="space-y-4 mt-6" style={{zIndex: 10, position: 'relative'}} data-testid="countries-content">
                 <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
                   <CardHeader className="bg-white dark:bg-gray-900">
@@ -6153,7 +6163,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Current Connections Widget - Visible to all - MOVED UNDER TRAVEL STATS */}
             {console.log('🔧 TAB CONTENT DEBUG:', { activeTab, showingContacts: activeTab === 'contacts' })}
-            {activeTab === 'contacts' && (
+            {activeTab === 'contacts' && showContactsContent && (
             <div className="space-y-4 mt-6" style={{zIndex: 10, position: 'relative'}} data-testid="contacts-content">
               <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700">
                 <CardHeader className="bg-white dark:bg-gray-900">
@@ -6807,7 +6817,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             )}
 
             {/* Vouch Widget */}
-            {user?.id && (
+            {user?.id && showReferencesContent && (
               <div data-testid="references-content">
                 <VouchWidget 
                   userId={user.id} 
