@@ -6018,22 +6018,31 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </p>
                 </CardHeader>
                 <CardContent>
-                              .filter((location: any) => Boolean(location))
-                              .filter((location: any, index: number, arr: any[]) => arr.indexOf(location) === index)
-                              .map((location: any) => (
-                              <SelectItem key={location} value={location}>{location}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                  <div 
+                    className="p-3 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
+                    onClick={() => setShowReferenceDialog(true)}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+                        <Users className="w-4 h-4 text-white" />
                       </div>
-                      <div>
-                        <label className="text-xs font-medium text-gray-700 mb-1 block">Gender</label>
-                        <Select
-                          value={connectionFilters.gender}
-                          onValueChange={(value) => setConnectionFilters(prev => ({ ...prev, gender: value === "all" ? "" : value }))}
-                        >
-                          <SelectTrigger className="h-8 text-xs bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600">
-                            <SelectValue placeholder="Any gender" />
+                      <span className="text-sm font-medium">Write a Reference</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+
+            {/* Interests Widget */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Heart className="w-5 h-5 text-red-500" />
+                  My Interests
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="all">Any gender</SelectItem>

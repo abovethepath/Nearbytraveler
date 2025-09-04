@@ -1,0 +1,55 @@
+
+> rest-express@1.0.0 dev
+> tsx server/index.ts
+
+The `fetchConnectionCache` option is deprecated (now always `true`)
+Environment check: { SENDGRID_API_KEY: 'LOADED', NODE_ENV: undefined }
+🚀 REGISTERING CRITICAL API ROUTES FIRST TO BYPASS VITE INTERCEPTION
+✅ CRITICAL API ROUTES REGISTERED BEFORE OTHER MIDDLEWARE
+Starting server initialization...
+Basic routes added, starting lazy route registration...
+Loading minimal routes for startup...
+Quick login fix temporarily disabled for deployment stability
+Minimal routes registered successfully
+Loading main API routes from routes.ts...
+📱 SMS Service: Twilio credentials not configured - SMS notifications disabled
+✅ Main API routes registered successfully
+🚀 REGISTERING CRITICAL API ROUTES TO BYPASS VITE INTERCEPTION
+🔧 Development: Setting up Vite development server...
+✅ Vite development setup successful
+6:40:00 AM [express] serving on port 5000
+🚀 Server successfully started on http://0.0.0.0:5000
+⚠️  Background services temporarily disabled during startup debugging
+✅ Server started successfully (background services disabled)
+Origin: undefined
+Origin: undefined
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: undefined
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Browserslist: browsers data (caniuse-lite) is 11 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+6:40:04 AM [vite] (client) Pre-transform error: /home/runner/workspace/client/src/pages/profile.tsx: Expected corresponding JSX closing tag for <p>. (6018:26)
+
+  6016 |                   <p className="text-sm text-gray-600">
+  6017 |                     Share your experience with {user?.username} to help others in the community
+> 6018 |                           </SelectTrigger>
+       |                           ^
+  6019 |                           <SelectContent>
+  6020 |                             <SelectItem value="all">All locations</SelectItem>
+  6021 |                             {userConnections
+  Plugin: vite:react-babel
+  File: /home/runner/workspace/client/src/pages/profile.tsx:6018:26
+  6016|                    <p className="text-sm text-gray-600">
+  6017|                      Share your experience with {user?.username} to help others in the community
+  6018|                            </SelectTrigger>
+     |                            ^
+  6019|                            <SelectContent>
+  6020|                              <SelectItem value="all">All locations</SelectItem>
