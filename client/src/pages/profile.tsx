@@ -3630,9 +3630,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               }`}
             >
               References
-              {vouchData?.totalReceived > 0 && (
+              {vouches?.length > 0 && (
                 <span className="ml-2 px-2 py-1 text-xs bg-blue-600 text-white rounded-full">
-                  {vouchData.totalReceived}
+                  {vouches.length}
                 </span>
               )}
             </button>
