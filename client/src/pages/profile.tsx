@@ -707,6 +707,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [editingConnectionNote, setEditingConnectionNote] = useState<number | null>(null);
   const [connectionNoteText, setConnectionNoteText] = useState('');
   const [eventsDisplayCount, setEventsDisplayCount] = useState(3);
+  const [showQuickMeetupModal, setShowQuickMeetupModal] = useState(false);
+  const [selectedAlbum, setSelectedAlbum] = useState<any>(null);
+  const [showAlbumModal, setShowAlbumModal] = useState(false);
   const [businessesDisplayCount, setBusinessesDisplayCount] = useState(3);
   const [expandedTravelPlan, setExpandedTravelPlan] = useState<number | null>(null);
   
@@ -3590,7 +3593,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       {/* Navigation Tabs - Card Style with Border */}
       <div className="w-full bg-white border border-black dark:bg-gray-900 dark:border-gray-700 px-4 sm:px-6 lg:px-10 py-3 mx-1 sm:mx-4 lg:mx-6 rounded-lg mt-4">
         <div className="max-w-7xl mx-auto">
-          <div className="flex space-x-6 sm:space-x-8">
+          <div className="flex items-center justify-between">
+            <div className="flex space-x-6 sm:space-x-8">
             <button
               onClick={() => setActiveTab('contacts')}
               className="text-sm sm:text-base font-medium px-3 py-2 bg-white border border-black text-black rounded-lg transition-colors hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700"
@@ -3635,6 +3639,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </span>
               )}
             </button>
+            </div>
+            
+            {/* Let's Meet Now CTA */}
+            <Button
+              onClick={() => setShowQuickMeetupModal(true)}
+              className="bg-gradient-to-r from-green-500 to-blue-500 text-white border-0 hover:from-green-600 hover:to-blue-600 px-6 py-2 text-sm font-medium rounded-lg"
+            >
+              <Calendar className="w-4 h-4 mr-2" />
+              Let's Meet Now
+            </Button>
           </div>
         </div>
       </div>
@@ -5855,12 +5869,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Photo Gallery */}
             {activeTab === 'photos' && (
-            <Card>
-              <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <CardTitle className="flex items-center gap-2">
-                  <Camera className="w-5 h-5" />
-                  Photos ({photos.length})
-                </CardTitle>
+            <div className="space-y-4">
+              <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700">
+                <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white dark:bg-gray-900">
+                  <CardTitle className="flex items-center gap-2 text-black dark:text-white">
+                    <Camera className="w-5 h-5" />
+                    Photos ({photos.length})
+                  </CardTitle>
                 <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                   <Button 
                     size="sm" 
@@ -5931,6 +5946,51 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 )}
               </CardContent>
             </Card>
+              
+              {/* Travel Memories */}
+              {userTravelMemories && userTravelMemories.length > 0 && (
+                <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700">
+                  <CardHeader className="bg-white dark:bg-gray-900">
+                    <CardTitle className="flex items-center gap-2 text-black dark:text-white">
+                      <MapPin className="w-5 h-5" />
+                      Travel Memories ({userTravelMemories.length})
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="bg-white dark:bg-gray-900">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {userTravelMemories.map((album) => (
+                        <div
+                          key={album.id}
+                          className="cursor-pointer rounded-lg overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-600"
+                          onClick={() => {
+                            setSelectedAlbum(album);
+                            setShowAlbumModal(true);
+                          }}
+                        >
+                          {album.coverPhoto ? (
+                            <img 
+                              src={album.coverPhoto} 
+                              alt={album.title}
+                              className="w-full h-32 object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-32 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                              <Camera className="w-8 h-8 text-gray-400" />
+                            </div>
+                          )}
+                          <div className="p-3 bg-white dark:bg-gray-800">
+                            <h4 className="font-medium text-sm text-gray-900 dark:text-white truncate">{album.title}</h4>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              {album.photoCount} photo{album.photoCount !== 1 ? 's' : ''}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
             )}
 
             {/* Event Organizer Hub - for ALL users who want to organize events */}
@@ -6024,9 +6084,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {/* Current Connections Widget - Visible to all - MOVED UNDER TRAVEL STATS */}
             {activeTab === 'contacts' && (
             <div className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
+              <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700">
+                <CardHeader className="bg-white dark:bg-gray-900">
+                  <CardTitle className="flex items-center justify-between text-black dark:text-white">
                     <div className="flex items-center gap-2">
                       <Users className="w-5 h-5 text-green-500" />
                       Connections ({userConnections.length})
@@ -6170,6 +6230,80 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               ? `${connection.connectedUser?.hometownCity}, ${connection.connectedUser?.hometownCountry.replace("United States", "USA")}`
                               : "New member"}
                           </p>
+                          
+                          {/* How We Met Notes - Only for Profile Owner */}
+                          {isOwnProfile && (
+                            <div className="mt-2 w-full">
+                              {connection.connectionNote ? (
+                                <div className="bg-blue-50 dark:bg-blue-900/30 p-2 rounded text-xs">
+                                  <p className="text-blue-700 dark:text-blue-300 font-medium">How we met:</p>
+                                  <p className="text-blue-600 dark:text-blue-200">{connection.connectionNote}</p>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="mt-1 h-6 px-2 text-xs text-blue-600 hover:text-blue-700"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setEditingConnectionNote(connection.id);
+                                      setConnectionNoteText(connection.connectionNote || '');
+                                    }}
+                                  >
+                                    Edit note
+                                  </Button>
+                                </div>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="mt-1 h-6 px-2 text-xs w-full border-dashed"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setEditingConnectionNote(connection.id);
+                                    setConnectionNoteText('');
+                                  }}
+                                >
+                                  + Add note
+                                </Button>
+                              )}
+                            </div>
+                          )}
+                          
+                          {/* Connection Note Edit Form */}
+                          {isOwnProfile && editingConnectionNote === connection.id && (
+                            <div className="mt-2 w-full space-y-2">
+                              <textarea
+                                value={connectionNoteText}
+                                onChange={(e) => setConnectionNoteText(e.target.value)}
+                                placeholder="How did you meet? Add a private note..."
+                                className="w-full p-2 text-xs border rounded resize-none"
+                                rows={3}
+                              />
+                              <div className="flex gap-1">
+                                <Button
+                                  size="sm"
+                                  className="h-6 px-2 text-xs bg-green-600 hover:bg-green-700"
+                                  onClick={() => {
+                                    // TODO: Add save mutation here
+                                    setEditingConnectionNote(null);
+                                    setConnectionNoteText('');
+                                  }}
+                                >
+                                  Save
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs"
+                                  onClick={() => {
+                                    setEditingConnectionNote(null);
+                                    setConnectionNoteText('');
+                                  }}
+                                >
+                                  Cancel
+                                </Button>
+                              </div>
+                            </div>
+                          )}
                           
                           {/* Connection Note - How We Met */}
                           {isOwnProfile && (
