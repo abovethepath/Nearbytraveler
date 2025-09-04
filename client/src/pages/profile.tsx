@@ -3818,16 +3818,6 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                     </CardContent>
                   </Card>
 
-                  {/* References Widget - Left sidebar */}
-                  <ReferencesWidgetNew 
-                    userId={effectiveUserId || 0}
-                    isOwnProfile={isOwnProfile}
-                  />
-
-                  {/* Friend Referral Widget - Left sidebar */}
-                  {isOwnProfile && (
-                    <FriendReferralWidget />
-                  )}
                 </>
               );
             })()}
@@ -6198,9 +6188,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                 )}
               </CardContent>
             </Card>
-
-          </div>
-
+              </div>
             )}
 
             {/* Photos Tab Content */}
@@ -6218,7 +6206,6 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
               <div className="space-y-4">
                 <ReferencesWidgetNew 
                   userId={effectiveUserId || 0}
-                  isOwnProfile={isOwnProfile}
                 />
               </div>
             )}
@@ -6226,17 +6213,21 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
             {/* Friends Tab Content */}
             {activeTab === 'friends' && (
               <div className="space-y-4">
-                <FriendReferralWidget 
-                  userId={effectiveUserId || 0}
-                  isOwnProfile={isOwnProfile}
-                />
+                <FriendReferralWidget />
               </div>
             )}
 
             {/* Travel Plans Tab Content */}
             {activeTab === 'travel' && isOwnProfile && (
               <div className="space-y-4">
-                <TravelPlansWidget />
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Travel Plans</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>Travel plans content will go here</p>
+                  </CardContent>
+                </Card>
               </div>
             )}
 
