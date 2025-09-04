@@ -6602,7 +6602,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
         </DialogHeader>
         
         <Form {...profileForm}>
-          <form onSubmit={profileForm.handleSubmit(updateProfile.mutate)} className="space-y-6">
+          <form onSubmit={profileForm.handleSubmit(editProfile.mutate)} className="space-y-6">
             {/* Name Field */}
             <FormField
               control={profileForm.control}
@@ -6687,8 +6687,8 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
               <Button type="button" variant="outline" onClick={() => setIsEditMode(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={updateProfile.isPending}>
-                {updateProfile.isPending ? "Saving..." : "Save Changes"}
+              <Button type="submit" disabled={editProfile.isPending}>
+                {editProfile.isPending ? "Saving..." : "Save Changes"}
               </Button>
             </DialogFooter>
           </form>
