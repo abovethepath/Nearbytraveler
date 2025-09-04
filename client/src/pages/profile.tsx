@@ -3479,9 +3479,9 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                   {/* COMPLETE COUCHSURFING SIDEBAR - All in green */}
                   <div className="bg-gradient-to-br from-green-500 to-green-600 p-8 text-white border-0 rounded-lg shadow-lg">
                     {/* Large Profile Photo */}
-                    <div className="text-center mb-6">
-                      <div className="relative inline-block">
-                      <Avatar className="w-48 h-48 border-4 border-white shadow-lg mb-4">
+                    <div className="flex justify-center items-center mb-6">
+                      <div className="relative">
+                      <Avatar className="w-48 h-48 border-4 border-white shadow-lg mx-auto">
                         <AvatarImage src={user?.profileImage} alt={user?.username} />
                         <AvatarFallback className="bg-green-300 text-green-800 text-3xl font-bold">
                           {user?.username?.charAt(0)?.toUpperCase() || '?'}
