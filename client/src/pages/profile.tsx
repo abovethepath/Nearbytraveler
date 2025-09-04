@@ -3587,17 +3587,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         )}
       </section>
 
-      {/* Navigation Tabs - Card Style */}
-      <div className="w-full bg-white border border-gray-200 dark:bg-gray-900 dark:border-gray-700 px-4 sm:px-6 lg:px-10 py-3">
+      {/* Navigation Tabs - Card Style with Border */}
+      <div className="w-full bg-white border border-black dark:bg-gray-900 dark:border-gray-700 px-4 sm:px-6 lg:px-10 py-3 mx-4 sm:mx-6 lg:mx-10 rounded-lg">
         <div className="max-w-7xl mx-auto">
           <div className="flex space-x-6 sm:space-x-8">
             <button
               onClick={() => setActiveTab('contacts')}
-              className={`text-sm sm:text-base font-medium px-3 py-2 rounded-t-lg transition-colors ${
-                activeTab === 'contacts' 
-                  ? 'bg-blue-600 text-white' 
-                  : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400'
-              }`}
+              className="text-sm sm:text-base font-medium px-3 py-2 bg-white border border-black text-black rounded-lg transition-colors hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700"
             >
               Contacts
               {userConnections.length > 0 && (
@@ -3608,11 +3604,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </button>
             <button
               onClick={() => setActiveTab('photos')}
-              className={`text-sm sm:text-base font-medium px-3 py-2 rounded-t-lg transition-colors ${
-                activeTab === 'photos' 
-                  ? 'bg-blue-600 text-white' 
-                  : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400'
-              }`}
+              className="text-sm sm:text-base font-medium px-3 py-2 bg-white border border-black text-black rounded-lg transition-colors hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700"
             >
               Photos
               {userPhotos?.length > 0 && (
@@ -3623,11 +3615,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </button>
             <button
               onClick={() => setActiveTab('references')}
-              className={`text-sm sm:text-base font-medium px-3 py-2 rounded-t-lg transition-colors ${
-                activeTab === 'references' 
-                  ? 'bg-blue-600 text-white' 
-                  : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400'
-              }`}
+              className="text-sm sm:text-base font-medium px-3 py-2 bg-white border border-black text-black rounded-lg transition-colors hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700"
             >
               References
               {vouches?.length > 0 && (
@@ -3638,11 +3626,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </button>
             <button
               onClick={() => setActiveTab('travel')}
-              className={`text-sm sm:text-base font-medium px-3 py-2 rounded-t-lg transition-colors ${
-                activeTab === 'travel' 
-                  ? 'bg-blue-600 text-white' 
-                  : 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400'
-              }`}
+              className="text-sm sm:text-base font-medium px-3 py-2 bg-white border border-black text-black rounded-lg transition-colors hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700"
             >
               Travel
               {travelPlans?.length > 0 && (
