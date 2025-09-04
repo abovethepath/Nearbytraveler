@@ -585,6 +585,32 @@ div[class*="bg-"][class*="text-"][class*="rounded"] {
   font-size: var(--pill-font-size) !important;
 }
 
+/* ALL PILLS BLACK BACKGROUND WHITE TEXT */
+.pill-interests,
+.pill-activities, 
+.pill-events,
+.pill,
+[class*="pill"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 1.5rem !important; /* h-6 */
+  border-radius: 9999px !important; /* rounded-full */
+  padding-left: 0.75rem !important; /* px-3 */
+  padding-right: 0.75rem !important;
+  font-size: 0.75rem !important; /* text-xs */
+  font-weight: 500 !important; /* font-medium */
+  white-space: nowrap !important;
+  line-height: 1 !important; /* leading-none */
+  background-color: #000000 !important; /* black background */
+  color: #ffffff !important; /* white text */
+  border: 0 !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  user-select: none !important;
+}
+
 /* Critical iPhone Mobile Fixes */
 @media screen and (max-width: 768px) {
   /* Fix iOS viewport units */
