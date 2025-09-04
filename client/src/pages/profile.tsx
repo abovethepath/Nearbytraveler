@@ -493,7 +493,7 @@ function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3,
             ) : (
               <>
                 {selected.slice(0, maxDisplay).map((item) => (
-                  <div key={item} className={pillType === 'pill-interests' ? 'inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0 appearance-none select-none' : pillType === 'pill-activities' ? 'inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-green-500 text-white border-0 appearance-none select-none' : 'inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-purple-500 text-white border-0 appearance-none select-none'}>
+                  <div key={item} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-white text-black border border-gray-300 dark:border-gray-600 appearance-none select-none">
                     {item}
                   </div>
                 ))}
