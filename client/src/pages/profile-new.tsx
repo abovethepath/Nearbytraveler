@@ -32,7 +32,11 @@ import { AuthContext } from "@/App";
 import { formatDateForDisplay, getCurrentTravelDestination } from "@/lib/dateUtils";
 import { calculateAge } from "@/lib/ageUtils";
 import { SimpleAvatar } from "@/components/simple-avatar";
+import { PhotoAlbumWidget } from "@/components/photo-album-widget";
+import { VouchWidget } from "@/components/vouch-widget";
+import { LocationSharingSection } from "@/components/LocationSharingSection";
 import type { User } from "@shared/schema";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProfileNewProps {
   userId?: string;
@@ -69,6 +73,30 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
   // Fetch user's connections
   const { data: connections = [] } = useQuery({
     queryKey: [`/api/connections/${profileUserId}`],
+    enabled: !!profileUserId,
+  });
+
+  // Fetch user's photo albums
+  const { data: photoAlbums = [] } = useQuery({
+    queryKey: [`/api/users/${profileUserId}/photo-albums`],
+    enabled: !!profileUserId,
+  });
+
+  // Fetch user's references
+  const { data: references } = useQuery({
+    queryKey: [`/api/users/${profileUserId}/references`],
+    enabled: !!profileUserId,
+  });
+
+  // Fetch user's events
+  const { data: userEvents = [] } = useQuery({
+    queryKey: [`/api/users/${profileUserId}/all-events`],
+    enabled: !!profileUserId,
+  });
+
+  // Fetch countries visited
+  const { data: countriesVisited = [] } = useQuery({
+    queryKey: [`/api/users/${profileUserId}/passport-stamps`],
     enabled: !!profileUserId,
   });
 
@@ -309,10 +337,11 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
 
             {/* Tabbed Content */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-5">
+              <TabsList className="grid w-full grid-cols-6">
                 <TabsTrigger value="about">About</TabsTrigger>
-                <TabsTrigger value="travel">Travel Plans <Badge variant="secondary" className="ml-1 text-xs">{travelPlans.length}</Badge></TabsTrigger>
-                <TabsTrigger value="photos">Photos</TabsTrigger>
+                <TabsTrigger value="travel">Travel <Badge variant="secondary" className="ml-1 text-xs">{travelPlans.length}</Badge></TabsTrigger>
+                <TabsTrigger value="photos">Photos <Badge variant="secondary" className="ml-1 text-xs">{photoAlbums.length}</Badge></TabsTrigger>
+                <TabsTrigger value="events">Events <Badge variant="secondary" className="ml-1 text-xs">{userEvents.length}</Badge></TabsTrigger>
                 <TabsTrigger value="connections">Connections <Badge variant="secondary" className="ml-1 text-xs">{connections.length}</Badge></TabsTrigger>
                 <TabsTrigger value="reviews">Reviews</TabsTrigger>
               </TabsList>
@@ -376,6 +405,92 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                         </div>
                       </div>
                     )}
+
+                    {/* Countries Visited */}
+                    {countriesVisited.length > 0 && (
+                      <div>
+                        <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Countries Visited ({countriesVisited.length})</h3>
+                        <div className="flex flex-wrap gap-2">
+                          {countriesVisited.slice(0, 10).map((country: any, index: number) => (
+                            <Badge key={index} variant="outline" className="border-green-200 text-green-800 dark:border-green-800 dark:text-green-200">
+                              {country.country || country}
+                            </Badge>
+                          ))}
+                          {countriesVisited.length > 10 && (
+                            <Badge variant="outline" className="border-gray-200 text-gray-600 dark:border-gray-600 dark:text-gray-400">
+                              +{countriesVisited.length - 10} more
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Social Media Links */}
+                    {(displayUser.instagram || displayUser.tiktok || displayUser.linkedin || displayUser.website) && (
+                      <div>
+                        <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Social Media</h3>
+                        <div className="space-y-2">
+                          {displayUser.instagram && (
+                            <a
+                              href={displayUser.instagram.startsWith('http') ? displayUser.instagram : `https://instagram.com/${displayUser.instagram}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 text-pink-600 hover:text-pink-800 dark:text-pink-400 dark:hover:text-pink-200"
+                            >
+                              <Share2 className="w-4 h-4" />
+                              Instagram
+                            </a>
+                          )}
+                          {displayUser.tiktok && (
+                            <a
+                              href={displayUser.tiktok.startsWith('http') ? displayUser.tiktok : `https://tiktok.com/@${displayUser.tiktok}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 text-black hover:text-gray-600 dark:text-white dark:hover:text-gray-300"
+                            >
+                              <Share2 className="w-4 h-4" />
+                              TikTok
+                            </a>
+                          )}
+                          {displayUser.linkedin && (
+                            <a
+                              href={displayUser.linkedin.startsWith('http') ? displayUser.linkedin : `https://linkedin.com/in/${displayUser.linkedin}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
+                            >
+                              <Share2 className="w-4 h-4" />
+                              LinkedIn
+                            </a>
+                          )}
+                          {displayUser.website && (
+                            <a
+                              href={displayUser.website.startsWith('http') ? displayUser.website : `https://${displayUser.website}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
+                            >
+                              <Globe className="w-4 h-4" />
+                              Website
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Travel Style */}
+                    {displayUser.travelStyle && displayUser.travelStyle.length > 0 && (
+                      <div>
+                        <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Travel Style</h3>
+                        <div className="flex flex-wrap gap-2">
+                          {displayUser.travelStyle.map((style, index) => (
+                            <Badge key={index} variant="outline" className="border-orange-200 text-orange-800 dark:border-orange-800 dark:text-orange-200">
+                              {style}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -423,12 +538,68 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
               <TabsContent value="photos" className="mt-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Photos</CardTitle>
+                    <CardTitle>Travel Photos</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                      {isOwnProfile ? "Upload photos to share your travel experiences" : "No photos shared yet"}
-                    </div>
+                    {photoAlbums.length > 0 ? (
+                      <PhotoAlbumWidget 
+                        userId={parseInt(profileUserId)} 
+                        isOwnProfile={isOwnProfile}
+                      />
+                    ) : (
+                      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                        {isOwnProfile ? "Upload photos to share your travel experiences" : "No photos shared yet"}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="events" className="mt-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>My Events</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {userEvents.length > 0 ? (
+                      <div className="space-y-4">
+                        {userEvents.map((event: any) => (
+                          <div key={event.id} className="border rounded-lg p-4 hover:shadow-sm transition-shadow">
+                            <div className="flex justify-between items-start">
+                              <div className="flex-1">
+                                <h3 className="font-semibold text-gray-900 dark:text-white">
+                                  {event.title}
+                                </h3>
+                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                  {event.description}
+                                </p>
+                                <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                  <span className="flex items-center gap-1">
+                                    <Calendar className="w-3 h-3" />
+                                    {formatDateForDisplay(event.date)}
+                                  </span>
+                                  <span className="flex items-center gap-1">
+                                    <MapPin className="w-3 h-3" />
+                                    {event.venue || event.city}
+                                  </span>
+                                  <span className="flex items-center gap-1">
+                                    <Users className="w-3 h-3" />
+                                    {event.participantCount || 0} attending
+                                  </span>
+                                </div>
+                              </div>
+                              <Badge variant={event.status === 'active' ? 'default' : 'secondary'}>
+                                {event.status}
+                              </Badge>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                        {isOwnProfile ? "Create events to connect with your community" : "No events to show"}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -452,16 +623,134 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
               <TabsContent value="reviews" className="mt-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Reviews</CardTitle>
+                    <CardTitle>Reviews & References</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                      {isOwnProfile ? "Reviews from your travel connections will appear here" : "No reviews yet"}
-                    </div>
+                    {references ? (
+                      <VouchWidget 
+                        userId={parseInt(profileUserId)} 
+                        isOwnProfile={isOwnProfile}
+                        currentUserId={currentUser?.id}
+                      />
+                    ) : (
+                      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                        {isOwnProfile ? "Reviews from your travel connections will appear here" : "No reviews yet"}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>
             </Tabs>
+
+            {/* Location Sharing for Own Profile */}
+            {isOwnProfile && displayUser && (
+              <div className="mt-6">
+                <LocationSharingSection 
+                  user={displayUser} 
+                  queryClient={queryClient} 
+                  toast={toast} 
+                />
+              </div>
+            )}
+
+            {/* Business Admin Contact Information - Only visible to business owner */}
+            {isOwnProfile && displayUser?.userType === 'business' && (
+              <Card className="mt-6 border-purple-200 dark:border-purple-800 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/30 dark:to-indigo-900/30">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Shield className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                      <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+                        Admin Information
+                      </CardTitle>
+                      <div className="inline-flex items-center justify-center h-6 min-w-[4rem] rounded-full px-2 text-xs font-medium leading-none whitespace-nowrap bg-purple-100 text-purple-700 dark:bg-purple-800 dark:text-purple-200 border-0 appearance-none select-none gap-1">
+                        Private
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">
+                    Internal contact information for platform communications
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Business Name:</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">
+                        {displayUser?.ownerName || "Not set"}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Contact Name:</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">
+                        {displayUser?.contactName || "Not set"}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Contact Email:</span>
+                      {displayUser?.ownerEmail ? (
+                        <a 
+                          href={`mailto:${displayUser.ownerEmail}`} 
+                          className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline transition-colors"
+                        >
+                          {displayUser.ownerEmail}
+                        </a>
+                      ) : (
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          Not set
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Contact Phone:</span>
+                      {displayUser?.ownerPhone ? (
+                        <a 
+                          href={`tel:${displayUser.ownerPhone}`} 
+                          className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline transition-colors"
+                        >
+                          {displayUser.ownerPhone}
+                        </a>
+                      ) : (
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          Not set
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 bg-purple-100 dark:bg-purple-900/50 p-2 rounded">
+                      <AlertCircle className="w-3 h-3 inline mr-1" />
+                      This information is only visible to you and used for platform communications
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Boost Connections Widget - Only show for own profile */}
+            {isOwnProfile && (
+              <Card className="mt-6 border-orange-200 dark:border-orange-800 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-orange-900/30 dark:to-blue-900/30 hover:shadow-lg transition-all duration-200">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <TrendingUp className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                    <div className="inline-flex items-center justify-center h-6 min-w-[4rem] rounded-full px-2 text-xs font-medium leading-none whitespace-nowrap bg-orange-600 text-white border-0 appearance-none select-none gap-1">Success Tips</div>
+                  </div>
+                  <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+                    Boost Your Connections
+                  </CardTitle>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">
+                    Get better matches and more connections with our optimization guide
+                  </p>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <Button 
+                    onClick={() => window.location.href = '/getting-started'}
+                    className="w-full bg-gradient-to-r from-blue-500 via-orange-500 to-violet-500 hover:from-blue-600 hover:via-orange-600 hover:to-violet-600 text-white border-0"
+                  >
+                    <Star className="w-4 h-4 mr-2" />
+                    Optimize Profile
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>
