@@ -1611,6 +1611,7 @@ export default function Home() {
           </Button>
         </div>
       )}
+      
     </div>
   ) : (
     // Desktop: Enhanced engaging layout
@@ -1757,6 +1758,20 @@ export default function Home() {
                   </div>
                 </div>
               </>
+            )}
+            
+            {/* PROFILE BUTTON FOR TRAVELERS AND LOCALS */}
+            {effectiveUser?.userType !== "business" && effectiveUser?.id && (
+              <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <Button
+                  size="lg"
+                  className="w-full sm:w-auto bg-gradient-to-r from-green-600 to-blue-500 hover:from-green-700 hover:to-blue-600 text-white px-12 py-4 text-xl font-bold shadow-xl transform hover:scale-105 transition-all duration-200"
+                  onClick={() => setLocation(`/profile/${effectiveUser.id}`)}
+                >
+                  <User className="w-6 h-6 mr-3" />
+                  VIEW MY PROFILE
+                </Button>
+              </div>
             )}
           </div>
         </div>
