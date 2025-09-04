@@ -248,7 +248,7 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                   <div>
                     <h3 className="text-lg font-semibold mb-3">Interests</h3>
                     <div className="flex flex-wrap gap-2">
-                      {displayUser.interests.slice(0, 10).map((interest: string, index: number) => (
+                      {(displayUser.interests as string[]).slice(0, 10).map((interest: string, index: number) => (
                         <Badge key={index} variant="secondary" className="text-xs">
                           {interest}
                         </Badge>
@@ -265,7 +265,7 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
             </Card>
 
             {/* World Map Component for passport stamps */}
-            {countriesVisited && countriesVisited.length > 0 && (
+            {Array.isArray(countriesVisited) && countriesVisited.length > 0 && (
               <Card className="mb-6">
                 <CardContent className="p-6">
                   <h2 className="text-xl font-semibold mb-4">Countries Visited</h2>
