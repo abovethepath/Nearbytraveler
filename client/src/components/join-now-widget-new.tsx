@@ -16,7 +16,7 @@ export default function JoinNowWidgetNew() {
       console.log('❌ JOIN WIDGET: No user type selected');
       toast({
         title: "Please select your type",
-        description: "Choose whether you're a local/traveler or business.",
+        description: "Choose whether you're a local or traveler.",
         variant: "destructive",
       });
       return;
@@ -55,9 +55,9 @@ export default function JoinNowWidgetNew() {
 
           {/* Nearby Traveler */}
           <div
-            onClick={() => setUserType("currently_traveling")}
+            onClick={() => setUserType("traveler")}
             className={`cursor-pointer border-2 rounded-lg p-3 text-center transition-all ${
-              userType === "currently_traveling" 
+              userType === "traveler" 
                 ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20" 
                 : "border-gray-300 hover:border-gray-400"
             }`}
@@ -66,24 +66,7 @@ export default function JoinNowWidgetNew() {
               Nearby Traveler
             </div>
             <div className="text-xs text-gray-600 dark:text-gray-400">
-              Currently Traveling
-            </div>
-          </div>
-
-          {/* Nearby Business */}
-          <div
-            onClick={() => setUserType("business")}
-            className={`cursor-pointer border-2 rounded-lg p-3 text-center transition-all ${
-              userType === "business" 
-                ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20" 
-                : "border-gray-300 hover:border-gray-400"
-            }`}
-          >
-            <div className="text-sm font-medium text-gray-900 dark:text-white">
-              Nearby Business
-            </div>
-            <div className="text-xs text-gray-600 dark:text-gray-400">
-              Local Business
+              Planning or Taking Trips
             </div>
           </div>
         </div>
