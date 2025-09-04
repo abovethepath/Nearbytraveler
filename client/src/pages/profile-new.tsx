@@ -208,12 +208,16 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                   <Badge 
                     variant="secondary" 
                     className={`${
-                      isCurrentlyTraveling 
+                      displayUser.userType === 'traveler'
                         ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
+                        : displayUser.userType === 'business'
+                        ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'
                         : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
                     }`}
                   >
-                    {isCurrentlyTraveling ? 'Nearby Traveler' : 'Nearby Local'}
+                    {displayUser.userType === 'traveler' ? 'Nearby Traveler' : 
+                     displayUser.userType === 'business' ? 'Business User' : 
+                     'Nearby Local'}
                   </Badge>
                 </div>
                 
