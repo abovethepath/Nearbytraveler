@@ -3592,11 +3592,133 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         )}
       </section>
       
-      {/* Main content section - Mobile Responsive Layout */}
-      <div className="w-full max-w-full mx-auto pb-20 sm:pb-4 px-1 sm:px-4 lg:px-6 mt-2 overflow-x-hidden">
-        <div className="flex flex-col lg:grid lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
-          {/* Main Content Column */}
-          <div className="w-full lg:col-span-2 space-y-3 sm:space-y-4 lg:space-y-6">
+      {/* COUCHSURFING-STYLE LAYOUT - Left sidebar + Right content */}
+      <div className="w-full max-w-7xl mx-auto pb-20 sm:pb-4 px-1 sm:px-4 lg:px-6 mt-2 overflow-x-hidden">
+        <div className="flex flex-col lg:grid lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+          
+          {/* LEFT SIDEBAR - Couchsurfing Style (Profile Info) */}
+          <div className="w-full lg:col-span-1 space-y-3 sm:space-y-4 lg:space-y-6">
+            {/* Main Profile Card - Couchsurfing Style */}
+            <Card className="overflow-hidden bg-white dark:bg-gray-800 border shadow-lg">
+              {/* Profile Header with Orange Gradient */}
+              <div className="bg-gradient-to-br from-orange-400 to-orange-600 p-6 text-white text-center">
+                {/* Profile Photo */}
+                <div className="relative inline-block mb-4">
+                  <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
+                    <AvatarImage src={user?.profileImage} alt={user?.username} />
+                    <AvatarFallback className="bg-orange-300 text-orange-800 text-2xl font-bold">
+                      {user?.username?.charAt(0)?.toUpperCase() || '?'}
+                    </AvatarFallback>
+                  </Avatar>
+                  {isCurrentlyTraveling && (
+                    <div className="absolute -bottom-1 -right-1">
+                      <div className="bg-green-500 text-white text-xs px-2 py-1 rounded-full flex items-center">
+                        <MapPin className="w-3 h-3 mr-1" />
+                        Traveling
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Name and Username */}
+                <h1 className="text-2xl font-bold mb-1">{user?.username}</h1>
+                
+                {/* Location Status - EXACTLY "Nearby Traveler • destination" format */}
+                <div className="text-orange-100 mb-3">
+                  {isCurrentlyTraveling && currentTravelDestination ? (
+                    <span className="flex items-center justify-center">
+                      <MapPin className="w-4 h-4 mr-1" />
+                      Nearby Traveler • {currentTravelDestination.destinationCity}, {currentTravelDestination.destinationState || currentTravelDestination.destinationCountry}
+                    </span>
+                  ) : (
+                    <span className="flex items-center justify-center">
+                      <MapPin className="w-4 h-4 mr-1" />
+                      {user?.currentCity || user?.hometownCity || 'Location not set'}
+                      {user?.currentState && `, ${user.currentState}`}
+                      {user?.currentCountry && `, ${user.currentCountry}`}
+                    </span>
+                  )}
+                </div>
+
+                {/* Age and Hometown */}
+                <div className="text-orange-100 text-sm mb-4">
+                  {user?.dateOfBirth && <span>Age {calculateAge(user.dateOfBirth)}</span>}
+                  {user?.dateOfBirth && user?.hometownCity && <span> • </span>}
+                  {user?.hometownCity && (
+                    <span>From {user.hometownCity}, {user.hometownState || user.hometownCountry}</span>
+                  )}
+                </div>
+
+                {/* Action Buttons */}
+                {isOwnProfile ? (
+                  <div className="space-y-3">
+                    <Button 
+                      onClick={() => setLocation('/edit-profile')}
+                      variant="secondary" 
+                      className="w-full bg-white text-orange-600 hover:bg-gray-100"
+                      data-testid="button-edit-profile"
+                    >
+                      <Edit2 className="w-4 h-4 mr-2" />
+                      Edit Profile
+                    </Button>
+                    
+                    <Button 
+                      onClick={() => setLocation('/chatrooms')}
+                      variant="outline" 
+                      className="w-full bg-transparent border-2 border-white text-white hover:bg-white hover:text-orange-600"
+                      data-testid="button-join-chatrooms"
+                    >
+                      <MessageCircle className="w-4 h-4 mr-2" />
+                      Join Chatrooms
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <Button 
+                      className="w-full bg-white text-orange-600 hover:bg-gray-100"
+                    >
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      Send Message
+                    </Button>
+                    
+                    <Button 
+                      variant="outline" 
+                      className="w-full bg-transparent border-2 border-white text-white hover:bg-white hover:text-orange-600"
+                    >
+                      <UserIcon className="w-4 h-4 mr-2" />
+                      Connect
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              {/* Profile Stats and Details */}
+              <div className="p-4">
+                {/* Bio/About */}
+                <div className="mb-4">
+                  <h3 className="font-semibold text-gray-800 dark:text-white mb-2">About</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                    {user?.bio || "No bio available yet."}
+                  </p>
+                </div>
+
+                {/* Quick Stats */}
+                <div className="grid grid-cols-2 gap-4 text-center py-3 border-t border-gray-200 dark:border-gray-600">
+                  <div>
+                    <div className="text-xl font-bold text-orange-600">{referencesData?.counts?.total || 0}</div>
+                    <div className="text-xs text-gray-500">References</div>
+                  </div>
+                  <div>
+                    <div className="text-xl font-bold text-orange-600">{connections?.length || 0}</div>
+                    <div className="text-xs text-gray-500">Connections</div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          {/* RIGHT CONTENT AREA - All other widgets and sections */}
+          <div className="w-full lg:col-span-3 space-y-3 sm:space-y-4 lg:space-y-6">
 
 
             
@@ -9453,22 +9575,8 @@ export default function EnhancedProfile(props: EnhancedProfileProps) {
   // ALWAYS use the massive profile with all features (Couchsurfing-style layout coming)
 
   return (
-    <div>
-      {/* Design Toggle Button - Made More Prominent */}
-      <div className="fixed top-20 right-4 z-[9999]">
-        <Button
-          onClick={() => setUseNewDesign(true)}
-          variant="outline"
-          size="lg"
-          className="bg-orange-500 text-white shadow-2xl border-4 border-orange-600 hover:bg-orange-600 hover:text-white font-bold text-lg px-6 py-3"
-        >
-          🎨 Try New Design
-        </Button>
-      </div>
-      
-      <ProfileErrorBoundary>
-        <ProfileContent {...props} />
-      </ProfileErrorBoundary>
-    </div>
+    <ProfileErrorBoundary>
+      <ProfileContent {...props} />
+    </ProfileErrorBoundary>
   );
 }
