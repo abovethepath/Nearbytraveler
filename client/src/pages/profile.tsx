@@ -3598,47 +3598,54 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           
           {/* LEFT SIDEBAR - Couchsurfing Style (Profile Info) */}
           <div className="w-full lg:col-span-1 space-y-3 sm:space-y-4 lg:space-y-6">
-            {/* Main Profile Card - Couchsurfing Style */}
-            <Card className="overflow-hidden bg-white dark:bg-gray-800 border shadow-lg">
-              {/* Profile Header with Orange Gradient */}
-              <div className="bg-gradient-to-br from-orange-400 to-orange-600 p-6 text-white text-center">
-                {/* Profile Photo */}
-                <div className="relative inline-block mb-4">
-                  <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
-                    <AvatarImage src={user?.profileImage} alt={user?.username} />
-                    <AvatarFallback className="bg-orange-300 text-orange-800 text-2xl font-bold">
-                      {user?.username?.charAt(0)?.toUpperCase() || '?'}
-                    </AvatarFallback>
-                  </Avatar>
-                  {isCurrentlyTraveling && (
-                    <div className="absolute -bottom-1 -right-1">
-                      <div className="bg-green-500 text-white text-xs px-2 py-1 rounded-full flex items-center">
-                        <MapPin className="w-3 h-3 mr-1" />
-                        Traveling
+            {(() => {
+              // Calculate travel status for Couchsurfing layout
+              const currentTravelDestination = getCurrentTravelDestination(travelPlans || []);
+              const isCurrentlyTraveling = !!currentTravelDestination;
+              
+              return (
+                <>
+                  {/* Main Profile Card - Couchsurfing Style */}
+                  <Card className="overflow-hidden bg-white dark:bg-gray-800 border shadow-lg">
+                    {/* Profile Header with Orange Gradient */}
+                    <div className="bg-gradient-to-br from-orange-400 to-orange-600 p-6 text-white text-center">
+                      {/* Profile Photo */}
+                      <div className="relative inline-block mb-4">
+                        <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
+                          <AvatarImage src={user?.profileImage} alt={user?.username} />
+                          <AvatarFallback className="bg-orange-300 text-orange-800 text-2xl font-bold">
+                            {user?.username?.charAt(0)?.toUpperCase() || '?'}
+                          </AvatarFallback>
+                        </Avatar>
+                        {isCurrentlyTraveling && (
+                          <div className="absolute -bottom-1 -right-1">
+                            <div className="bg-green-500 text-white text-xs px-2 py-1 rounded-full flex items-center">
+                              <MapPin className="w-3 h-3 mr-1" />
+                              Traveling
+                            </div>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  )}
-                </div>
 
-                {/* Name and Username */}
-                <h1 className="text-2xl font-bold mb-1">{user?.username}</h1>
-                
-                {/* Location Status - EXACTLY "Nearby Traveler • destination" format */}
-                <div className="text-orange-100 mb-3">
-                  {isCurrentlyTraveling && currentTravelDestination ? (
-                    <span className="flex items-center justify-center">
-                      <MapPin className="w-4 h-4 mr-1" />
-                      Nearby Traveler • {currentTravelDestination.destinationCity}, {currentTravelDestination.destinationState || currentTravelDestination.destinationCountry}
-                    </span>
-                  ) : (
-                    <span className="flex items-center justify-center">
-                      <MapPin className="w-4 h-4 mr-1" />
-                      {user?.currentCity || user?.hometownCity || 'Location not set'}
-                      {user?.currentState && `, ${user.currentState}`}
-                      {user?.currentCountry && `, ${user.currentCountry}`}
-                    </span>
-                  )}
-                </div>
+                      {/* Name and Username */}
+                      <h1 className="text-2xl font-bold mb-1">{user?.username}</h1>
+                      
+                      {/* Location Status - EXACTLY "Nearby Traveler • destination" format */}
+                      <div className="text-orange-100 mb-3">
+                        {isCurrentlyTraveling && currentTravelDestination ? (
+                          <span className="flex items-center justify-center">
+                            <MapPin className="w-4 h-4 mr-1" />
+                            Nearby Traveler • {currentTravelDestination}
+                          </span>
+                        ) : (
+                          <span className="flex items-center justify-center">
+                            <MapPin className="w-4 h-4 mr-1" />
+                            {user?.currentCity || user?.hometownCity || 'Location not set'}
+                            {user?.currentState && `, ${user.currentState}`}
+                            {user?.currentCountry && `, ${user.currentCountry}`}
+                          </span>
+                        )}
+                      </div>
 
                 {/* Age and Hometown */}
                 <div className="text-orange-100 text-sm mb-4">
@@ -3715,6 +3722,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
               </div>
             </Card>
+                </>
+              );
+            })()}
           </div>
 
           {/* RIGHT CONTENT AREA - All other widgets and sections */}
