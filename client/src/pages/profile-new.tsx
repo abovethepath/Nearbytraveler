@@ -184,7 +184,7 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                   <SimpleAvatar
                     user={displayUser}
                     size="xl"
-                    className="w-48 h-48 mx-auto border-4 border-white/20"
+                    className="w-64 h-64 mx-auto border-4 border-white/20"
                   />
                   {isOwnProfile && (
                     <Button
