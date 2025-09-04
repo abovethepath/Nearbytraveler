@@ -28,7 +28,9 @@ import {
   Languages,
   GraduationCap,
   Briefcase,
-  Home
+  Home,
+  TrendingUp,
+  AlertCircle
 } from "lucide-react";
 import { AuthContext } from "@/App";
 import { formatDateForDisplay, getCurrentTravelDestination } from "@/lib/dateUtils";
