@@ -8156,19 +8156,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   // Close the edit profile modal
                   setIsEditMode(false);
                   
-                  // Open the location widget
+                  // Open the location widget (which was hidden)
                   setShowLocationWidget(true);
                   
-                  // Scroll to the location widget after it opens
+                  // Scroll to the location widget after it opens and renders
                   setTimeout(() => {
                     const locationWidget = document.querySelector('[data-testid="location-widget"]');
                     if (locationWidget) {
                       locationWidget.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    } else {
-                      // Fallback: scroll to bottom where location widget usually is
-                      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
                     }
-                  }, 200);
+                  }, 300); // Longer delay to ensure widget is rendered
                 }}
                 className="bg-orange-600 hover:bg-orange-700 text-white ml-3 flex-shrink-0"
                 data-testid="button-change-hometown"
