@@ -3479,31 +3479,29 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                   {/* COMPLETE COUCHSURFING SIDEBAR - All in green */}
                   <div className="bg-gradient-to-br from-green-500 to-green-600 p-8 text-white border-0 rounded-lg shadow-lg">
                     {/* Large Profile Photo */}
-                    <div className="flex justify-center items-center mb-6">
-                      <div className="relative">
-                      <Avatar className="w-48 h-48 border-4 border-white shadow-lg mx-auto">
-                        <AvatarImage src={user?.profileImage} alt={user?.username} />
-                        <AvatarFallback className="bg-green-300 text-green-800 text-3xl font-bold">
-                          {user?.username?.charAt(0)?.toUpperCase() || '?'}
-                        </AvatarFallback>
-                      </Avatar>
-                      {isOwnProfile && (
-                        <Button
-                          size="icon"
-                          aria-label="Change avatar"
-                          className="absolute -bottom-2 -right-2 translate-x-1/4 translate-y-1/4
-                                     h-10 w-10 sm:h-11 sm:w-11 rounded-full p-0
-                                     bg-white hover:bg-gray-100 text-green-600 shadow-md ring-2 ring-white z-10"
-                          onClick={() => document.getElementById('avatar-upload-input')?.click()}
-                          disabled={uploadingPhoto}
-                        >
-                          <Camera className="h-4 w-4 sm:h-5 sm:w-5" />
-                        </Button>
-                      )}
+                    <div className="text-center mb-4">
+                      <div className="relative inline-block">
+                        <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
+                          <AvatarImage src={user?.profileImage} alt={user?.username} />
+                          <AvatarFallback className="bg-green-300 text-green-800 text-xl font-bold">
+                            {user?.username?.charAt(0)?.toUpperCase() || '?'}
+                          </AvatarFallback>
+                        </Avatar>
+                        {isOwnProfile && (
+                          <Button
+                            size="sm"
+                            aria-label="Change avatar"
+                            className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full p-0 bg-white hover:bg-gray-100 text-green-600 shadow-md"
+                            onClick={() => document.getElementById('avatar-upload-input')?.click()}
+                            disabled={uploadingPhoto}
+                          >
+                            <Camera className="h-3 w-3" />
+                          </Button>
+                        )}
                       </div>
                       {isCurrentlyTraveling && (
-                        <div className="inline-block">
-                          <div className="bg-white text-green-600 text-xs px-3 py-1 rounded-full flex items-center">
+                        <div className="mt-2">
+                          <div className="bg-white text-green-600 text-xs px-2 py-1 rounded-full inline-flex items-center">
                             <MapPin className="w-3 h-3 mr-1" />
                             Traveling
                           </div>
@@ -3512,14 +3510,14 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                     </div>
 
                     {/* Username and Location */}
-                    <div className="text-center mb-6">
-                      <h1 className="text-2xl font-bold mb-2">{user?.username}</h1>
-                      <div className="text-green-100 mb-1">
-                        <span>
+                    <div className="text-center mb-4">
+                      <h1 className="text-lg font-bold mb-1">{user?.username}</h1>
+                      <div className="text-green-100 text-sm">
+                        <div>
                           Nearby Local • {user?.hometownCity || 'Location not set'}
                           {user?.hometownState && `, ${user.hometownState}`}
                           {user?.hometownCountry && `, ${user.hometownCountry}`}
-                        </span>
+                        </div>
                       </div>
                     </div>
 
@@ -3528,12 +3526,7 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                     <div className="space-y-3">
                       {isOwnProfile ? (
                         <Button
-                          onClick={() => {
-                            toast({
-                              title: "Coming soon!",
-                              description: "Profile editing is being updated with new features.",
-                            });
-                          }}
+                          onClick={() => setIsEditMode(true)}
                           className="w-full bg-white text-green-600 hover:bg-green-50 font-semibold"
                           data-testid="button-edit-profile"
                         >
