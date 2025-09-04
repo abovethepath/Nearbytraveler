@@ -2798,6 +2798,71 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     setTempEvents([]);
   };
 
+  // CRITICAL: Main save function that properly separates private interests
+  const handleSave = async () => {
+    if (!user) return false;
+    
+    try {
+      console.log('🔧 COMPREHENSIVE SAVE: Starting save process');
+      
+      // Separate private interests from regular interests
+      const privateInterestsSet = new Set(getPrivateInterests());
+      
+      // Split interests based on whether they're private
+      const regularInterests = editFormData.interests.filter(interest => !privateInterestsSet.has(interest));
+      const privateInterests = editFormData.interests.filter(interest => privateInterestsSet.has(interest));
+      
+      console.log('🔧 PRIVATE INTERESTS: Separated interests', {
+        totalInterests: editFormData.interests.length,
+        regularInterests: regularInterests.length,
+        privateInterests: privateInterests.length,
+        privateInterestsList: privateInterests
+      });
+      
+      // Prepare the update payload with separated interests
+      const updateData: any = {
+        interests: regularInterests,
+        privateInterests: privateInterests,
+        activities: editFormData.activities,
+        events: editFormData.events
+      };
+      
+      console.log('🔧 SAVE PAYLOAD: Sending update with separated data', updateData);
+      
+      // Send the update request
+      const response = await fetch(`/api/users/${effectiveUserId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save preferences');
+      }
+
+      // Update the query cache
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+      
+      toast({
+        title: "All preferences saved!",
+        description: `Successfully saved ${regularInterests.length} public interests, ${privateInterests.length} private interests, ${editFormData.activities.length} activities, and ${editFormData.events.length} events.`,
+      });
+      
+      console.log('✓ COMPREHENSIVE SAVE: All preferences saved successfully');
+      return true;
+    } catch (error) {
+      console.error('❌ COMPREHENSIVE SAVE: Save failed:', error);
+      toast({
+        title: "Save failed",
+        description: "Failed to save preferences. Please try again.",
+        variant: "destructive",
+      });
+      return false;
+    }
+  };
+
   // Force reset all editing states
   const forceResetEditingStates = () => {
     setEditingInterests(false);
