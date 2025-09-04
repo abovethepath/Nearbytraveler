@@ -30,6 +30,7 @@ import FriendReferralWidget from "@/components/friend-referral-widget";
 import ReferencesWidgetNew from "@/components/references-widget-new";
 import { VouchWidget } from "@/components/vouch-widget";
 import { LocationSharingSection } from "@/components/LocationSharingSection";
+import { TravelPlansWidget } from "@/components/TravelPlansWidget";
 // Removed framer-motion import for static interface
 import { useToast } from "@/hooks/use-toast";
 import { AuthContext } from "@/App";
@@ -4191,6 +4192,39 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </div>
                     
                     <div className="space-y-8">
+                      {/* TOP CHOICES SECTION */}
+                      <div>
+                        <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
+                          <Star className="w-5 h-5 text-yellow-500" />
+                          Top Choices for Most Travelers
+                        </h4>
+                        
+                        <div className="flex flex-wrap gap-2 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/30 dark:to-orange-900/30 rounded-lg border border-yellow-200 dark:border-yellow-700">
+                          {MOST_POPULAR_INTERESTS.map((interest) => {
+                            const isSelected = editFormData.interests.includes(interest);
+                            
+                            return (
+                              <button
+                                key={interest}
+                                type="button"
+                                onClick={() => {
+                                  toggleArrayValue(editFormData.interests, interest, (newInterests) => 
+                                    setEditFormData({ ...editFormData, interests: newInterests })
+                                  );
+                                }}
+                                className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                  isSelected
+                                    ? 'bg-yellow-600 text-white font-bold transform scale-105'
+                                    : 'bg-white text-black border border-black'
+                                }`}
+                              >
+                                {interest}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
                       {/* PUBLIC INTERESTS SECTION */}
                       <div>
                         <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
@@ -4215,43 +4249,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                   isSelected
                                     ? 'bg-green-600 text-white font-bold transform scale-105'
                                     : 'bg-white text-black border border-black'
-                                }`}
-                              >
-                                {interest}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-
-                      {/* PRIVATE INTERESTS SECTION */}
-                      <div>
-                        <h4 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white flex items-center gap-2">
-                          <Eye className="w-5 h-5 text-red-500" />
-                          Private Interests (18+)
-                        </h4>
-                        <p className="text-sm text-red-600 dark:text-red-400 mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-600 rounded-lg">
-                          🔒 <strong>Private Section:</strong> These interests are for adult content and mature audiences only. 
-                          They help match you with like-minded people but are kept separate from your public profile.
-                        </p>
-                        
-                        <div className="flex flex-wrap gap-2 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-600">
-                          {getPrivateInterests().map((interest) => {
-                            const isSelected = editFormData.interests.includes(interest);
-                            
-                            return (
-                              <button
-                                key={interest}
-                                type="button"
-                                onClick={() => {
-                                  toggleArrayValue(editFormData.interests, interest, (newInterests) => 
-                                    setEditFormData({ ...editFormData, interests: newInterests })
-                                  );
-                                }}
-                                className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
-                                  isSelected
-                                    ? 'bg-red-600 text-white font-bold transform scale-105'
-                                    : 'bg-white text-black border border-red-400'
                                 }`}
                               >
                                 {interest}
@@ -4428,6 +4425,43 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           >
                             <Plus className="w-4 h-4" />
                           </Button>
+                        </div>
+                      </div>
+
+                      {/* PRIVATE INTERESTS SECTION - MOVED TO END */}
+                      <div>
+                        <h4 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white flex items-center gap-2">
+                          <Eye className="w-5 h-5 text-red-500" />
+                          Private Interests (18+)
+                        </h4>
+                        <p className="text-sm text-red-600 dark:text-red-400 mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-600 rounded-lg">
+                          🔒 <strong>Private Section:</strong> These interests are for adult content and mature audiences only. 
+                          They help match you with like-minded people but are kept separate from your public profile.
+                        </p>
+                        
+                        <div className="flex flex-wrap gap-2 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-600">
+                          {getPrivateInterests().map((interest) => {
+                            const isSelected = editFormData.interests.includes(interest);
+                            
+                            return (
+                              <button
+                                key={interest}
+                                type="button"
+                                onClick={() => {
+                                  toggleArrayValue(editFormData.interests, interest, (newInterests) => 
+                                    setEditFormData({ ...editFormData, interests: newInterests })
+                                  );
+                                }}
+                                className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                  isSelected
+                                    ? 'bg-red-600 text-white font-bold transform scale-105'
+                                    : 'bg-white text-black border border-red-400'
+                                }`}
+                              >
+                                {interest}
+                              </button>
+                            );
+                          })}
                         </div>
                       </div>
                     </div>
@@ -5568,6 +5602,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </Card>
             )}
 
+            {/* Travel Plans - Hidden for business profiles */}
+            {activeTab === 'travel' && user?.userType !== 'business' && (
+              <TravelPlansWidget 
+                userId={effectiveUserId || 0} 
+                isOwnProfile={isOwnProfile}
+              />
+            )}
 
             {/* Photo Albums Widget - Separate from Travel Memories */}
             {user?.userType !== 'business' && (
