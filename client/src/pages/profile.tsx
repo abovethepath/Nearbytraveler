@@ -3778,7 +3778,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
                 )}
 
-                {/* Basic Info — only location for main section */}
+                {/* Basic Info — grid so lines never run together */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
                   <div className="flex items-start">
                     <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">From:</span>
@@ -3792,6 +3792,63 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       }
                     </span>
                   </div>
+
+                  {user?.userType !== 'business' && user?.gender && (
+                    <div className="flex items-start">
+                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Gender:</span>
+                      <span className="capitalize flex-1 break-words">{user?.gender?.replace('-', ' ')}</span>
+                    </div>
+                  )}
+
+                  {/* Children Info for non-business users */}
+                  {user?.userType !== 'business' && user?.childrenAges && user?.childrenAges !== 'None' && user?.childrenAges.trim() !== '' && (
+                    <div className="flex items-start">
+                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Children:</span>
+                      <span className="flex-1 break-words">Ages {user.childrenAges}</span>
+                    </div>
+                  )}
+
+                  {user.sexualPreferenceVisible && user.sexualPreference && (
+                    <div className="flex items-start">
+                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Preference:</span>
+                      <span className="flex-1 break-words">
+                        {Array.isArray(user.sexualPreference) 
+                          ? user.sexualPreference.join(', ')
+                          : typeof user.sexualPreference === 'string'
+                          ? (user.sexualPreference as string).split(',').join(', ')
+                          : user.sexualPreference
+                        }
+                      </span>
+                    </div>
+                  )}
+
+                  {user.userType !== 'business' && user.ageVisible && user.dateOfBirth && (
+                    <div className="flex items-start">
+                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Age:</span>
+                      <span className="flex-1 break-words">{calculateAge(user.dateOfBirth)} years old</span>
+                    </div>
+                  )}
+
+                  {/* Military Status for non-business users */}
+                  {user.userType !== 'business' && (user.isVeteran || (user as any).is_veteran || user.isActiveDuty || (user as any).is_active_duty) && (
+                    <div className="flex items-start">
+                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Military:</span>
+                      <span className="flex-1 break-words flex items-center gap-2">
+                        {(user.isVeteran || (user as any).is_veteran) && (
+                          <span className="inline-flex items-center gap-1 text-sm font-medium text-green-700 dark:text-green-400">
+                            <span className="text-green-600">✓</span>
+                            Veteran
+                          </span>
+                        )}
+                        {(user.isActiveDuty || (user as any).is_active_duty) && (
+                          <span className="inline-flex items-center gap-1 text-sm font-medium text-blue-700 dark:text-blue-400">
+                            <span className="text-blue-600">✓</span>
+                            Active Duty
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -3811,79 +3868,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </CardContent>
               </Card>
             )}
-
-            {/* Personal Information Section - Separate Card */}
-            {user?.userType !== 'business' && (user?.gender || user?.childrenAges || user.sexualPreferenceVisible || user.ageVisible || user.isVeteran || user.isActiveDuty) && (
-              <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm w-full overflow-hidden">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">Personal Information</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3 px-4 pb-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
-                    {user?.gender && (
-                      <div className="flex items-start">
-                        <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Gender:</span>
-                        <span className="capitalize flex-1 break-words">{user?.gender?.replace('-', ' ')}</span>
-                      </div>
-                    )}
-
-                    {/* Children Info for non-business users */}
-                    {user?.childrenAges && user?.childrenAges !== 'None' && user?.childrenAges.trim() !== '' && (
-                      <div className="flex items-start">
-                        <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Children:</span>
-                        <span className="flex-1 break-words">Ages {user.childrenAges}</span>
-                      </div>
-                    )}
-
-                    {user.sexualPreferenceVisible && user.sexualPreference && (
-                      <div className="flex items-start">
-                        <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Preference:</span>
-                        <span className="flex-1 break-words">
-                          {Array.isArray(user.sexualPreference) 
-                            ? user.sexualPreference.join(', ')
-                            : typeof user.sexualPreference === 'string'
-                            ? (user.sexualPreference as string).split(',').join(', ')
-                            : user.sexualPreference
-                          }
-                        </span>
-                      </div>
-                    )}
-
-                    {user.ageVisible && user.dateOfBirth && (
-                      <div className="flex items-start">
-                        <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Age:</span>
-                        <span className="flex-1 break-words">{calculateAge(user.dateOfBirth)} years old</span>
-                      </div>
-                    )}
-
-                    {/* Military Status for non-business users */}
-                    {(user.isVeteran || (user as any).is_veteran || user.isActiveDuty || (user as any).is_active_duty) && (
-                      <div className="flex items-start">
-                        <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Military:</span>
-                        <span className="flex-1 break-words flex items-center gap-2">
-                          {(user.isVeteran || (user as any).is_veteran) && (
-                            <span className="inline-flex items-center gap-1 text-sm font-medium text-green-700 dark:text-green-400">
-                              <span className="text-green-600">✓</span>
-                              Veteran
-                            </span>
-                          )}
-                          {(user.isActiveDuty || (user as any).is_active_duty) && (
-                            <span className="inline-flex items-center gap-1 text-sm font-medium text-blue-700 dark:text-blue-400">
-                              <span className="text-blue-600">✓</span>
-                              Active Duty
-                            </span>
-                          )}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Continue with existing About card structure below... */}
-            <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm w-full overflow-hidden">
-              <CardContent className="p-0">
 
                 {/* Current Travel Plans - Show when user is currently traveling */}
                 {user?.userType !== 'business' && user?.isCurrentlyTraveling && user?.travelDestination && (
