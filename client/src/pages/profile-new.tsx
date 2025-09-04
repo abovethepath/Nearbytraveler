@@ -14,6 +14,7 @@ import {
   Settings, 
   ArrowLeft, 
   MessageCircle, 
+  MessageSquare,
   Shield, 
   Phone, 
   CreditCard,
