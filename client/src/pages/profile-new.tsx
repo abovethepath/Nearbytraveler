@@ -689,7 +689,7 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
             {/* Things I Want to Do Widget - For non-business users */}
             {displayUser.userType !== 'business' && (
               <ThingsIWantToDoSection
-                userId={effectiveUserId || 0}
+                userId={Number(profileUserId) || 0}
                 isOwnProfile={isOwnProfile}
               />
             )}
