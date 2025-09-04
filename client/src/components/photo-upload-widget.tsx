@@ -355,28 +355,29 @@ export function PhotoUploadWidget({ userId, isOwnProfile = false }: PhotoUploadW
 
       {/* Upload Modal */}
       <Dialog open={showUploadModal} onOpenChange={setShowUploadModal}>
-        <DialogContent className="w-[95vw] max-w-2xl h-[95vh] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[95vw] max-w-2xl h-[95vh] max-h-[90vh] overflow-y-auto bg-gray-900 border-gray-700">
           <DialogHeader>
-            <DialogTitle>Upload Photos</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-white">Upload Photos</DialogTitle>
+            <DialogDescription className="text-gray-300">
               Upload photos to your gallery to share with others
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label className="block text-sm font-medium mb-2 text-gray-300">
                 Photo Title
               </label>
               <Input
                 value={uploadForm.title}
                 onChange={(e) => setUploadForm(prev => ({ ...prev, title: e.target.value }))}
                 placeholder="Enter a title for your photos"
+                className="bg-gray-800 border-gray-600 text-white placeholder-gray-400"
                 data-testid="input-photo-title"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label className="block text-sm font-medium mb-2 text-gray-300">
                 Description (Optional)
               </label>
               <Textarea
@@ -384,6 +385,7 @@ export function PhotoUploadWidget({ userId, isOwnProfile = false }: PhotoUploadW
                 onChange={(e) => setUploadForm(prev => ({ ...prev, description: e.target.value }))}
                 placeholder="Add a description..."
                 rows={3}
+                className="bg-gray-800 border-gray-600 text-white placeholder-gray-400"
                 data-testid="textarea-photo-description"
               />
             </div>
@@ -395,12 +397,12 @@ export function PhotoUploadWidget({ userId, isOwnProfile = false }: PhotoUploadW
                 onCheckedChange={(checked) => setUploadForm(prev => ({ ...prev, isPublic: !!checked }))}
                 data-testid="checkbox-photo-public"
               />
-              <Label htmlFor="isPublic">Make photos public</Label>
+              <Label htmlFor="isPublic" className="text-gray-300">Make photos public</Label>
             </div>
 
             {/* File Upload */}
             <div>
-              <label className="block text-sm font-medium mb-2">
+              <label className="block text-sm font-medium mb-2 text-gray-300">
                 Select Photos
               </label>
               <input
@@ -408,7 +410,7 @@ export function PhotoUploadWidget({ userId, isOwnProfile = false }: PhotoUploadW
                 accept="image/*"
                 multiple
                 onChange={handleFileSelect}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="w-full p-2 border border-gray-600 rounded bg-gray-800 text-white"
                 data-testid="input-photo-files"
               />
             </div>
@@ -416,7 +418,7 @@ export function PhotoUploadWidget({ userId, isOwnProfile = false }: PhotoUploadW
             {/* Photo Previews */}
             {photoPreview.length > 0 && (
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-sm font-medium mb-2 text-gray-300">
                   Photo Previews ({photoPreview.length})
                 </label>
                 <div className="grid grid-cols-3 gap-2">
@@ -526,24 +528,26 @@ export function PhotoUploadWidget({ userId, isOwnProfile = false }: PhotoUploadW
 
       {/* Edit Photo Modal */}
       <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
-        <DialogContent>
+        <DialogContent className="bg-gray-900 border-gray-700">
           <DialogHeader>
-            <DialogTitle>Edit Photo</DialogTitle>
+            <DialogTitle className="text-white">Edit Photo</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label>Title</Label>
+              <Label className="text-gray-300">Title</Label>
               <Input
                 value={editForm.title}
                 onChange={(e) => setEditForm(prev => ({ ...prev, title: e.target.value }))}
+                className="bg-gray-800 border-gray-600 text-white placeholder-gray-400"
                 data-testid="input-edit-title"
               />
             </div>
             <div>
-              <Label>Description</Label>
+              <Label className="text-gray-300">Description</Label>
               <Textarea
                 value={editForm.description}
                 onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
+                className="bg-gray-800 border-gray-600 text-white placeholder-gray-400"
                 data-testid="textarea-edit-description"
               />
             </div>
@@ -554,7 +558,7 @@ export function PhotoUploadWidget({ userId, isOwnProfile = false }: PhotoUploadW
                 onCheckedChange={(checked) => setEditForm(prev => ({ ...prev, isPublic: !!checked }))}
                 data-testid="checkbox-edit-public"
               />
-              <Label htmlFor="editIsPublic">Make photo public</Label>
+              <Label htmlFor="editIsPublic" className="text-gray-300">Make photo public</Label>
             </div>
             <div className="flex justify-end gap-2">
               <Button
