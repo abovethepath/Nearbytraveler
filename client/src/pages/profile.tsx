@@ -3605,7 +3605,10 @@ function ProfilePage({ userId: propUserId }: EnhancedProfileProps) {
                         </div>
                         <div 
                           className="flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 -m-2 transition-colors"
-                          onClick={() => setShowChatroomList(true)}
+                          onClick={() => {
+                            const chatCity = user?.hometownCity || 'General';
+                            setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
+                          }}
                         >
                           <span className="text-gray-600 dark:text-gray-300">Chatrooms</span>
                           <div className="flex items-center gap-1">
