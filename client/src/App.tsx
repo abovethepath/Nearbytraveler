@@ -968,7 +968,7 @@ function Router() {
           }
         }
 
-        return <Profile />;
+        return <ProfileNew />;
       case '/profile-new':
         return <ProfileNew />;
       case '/messages':
