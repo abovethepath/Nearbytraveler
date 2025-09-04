@@ -202,6 +202,21 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
 
                 {/* User Name and Location */}
                 <h1 className="text-2xl font-bold mb-2">{displayUser.username}</h1>
+                
+                {/* User Type Badge */}
+                <div className="mb-3">
+                  <Badge 
+                    variant="secondary" 
+                    className={`${
+                      isCurrentlyTraveling 
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
+                        : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                    }`}
+                  >
+                    {isCurrentlyTraveling ? 'Nearby Traveler' : 'Nearby Local'}
+                  </Badge>
+                </div>
+                
                 <p className="text-white/90 mb-4">
                   {displayUser.hometownCity}, {displayUser.hometownState && `${displayUser.hometownState}, `}{displayUser.hometownCountry}
                 </p>
