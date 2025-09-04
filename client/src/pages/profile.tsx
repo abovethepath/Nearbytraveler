@@ -6039,13 +6039,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Current Connections Widget - Visible to all - MOVED UNDER TRAVEL STATS */}
             {activeTab === 'contacts' && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Users className="w-5 h-5 text-green-500" />
-                    Connections ({userConnections.length})
-                  </div>
+            <div className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Users className="w-5 h-5 text-green-500" />
+                      Connections ({userConnections.length})
+                    </div>
                   {userConnections.length > 0 && (
                     <Button
                       variant="outline"
@@ -6318,6 +6319,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 )}
               </CardContent>
             </Card>
+              
+              {/* Add Contact-related widgets here if any */}
+              {isOwnProfile && connectionRequests.length === 0 && (
+                <Card>
+                  <CardContent className="text-center py-8 text-gray-500">
+                    <Users className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                    <p>Connect with other travelers to see them here</p>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
             )}
 
 
