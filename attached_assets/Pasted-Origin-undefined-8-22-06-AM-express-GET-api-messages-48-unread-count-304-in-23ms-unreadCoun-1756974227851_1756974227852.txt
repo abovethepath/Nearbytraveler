@@ -1,0 +1,277 @@
+Origin: undefined
+8:22:06 AM [express] GET /api/messages/48/unread-count 304 in 23ms :: {"unreadCount":"1"}
+Origin: undefined
+8:22:12 AM [express] GET /api/messages/48/unread-count 304 in 32ms :: {"unreadCount":"1"}
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+8:22:13 AM [express] GET /api/messages/48/unread-count 304 in 24ms :: {"unreadCount":"1"}
+8:22:13 AM [vite] (client) hmr update /src/pages/profile.tsx, /src/index.css?v=3XIbaN50uluaDOIS350Ib (x5)
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+8:22:14 AM [express] GET /api/messages/48/unread-count 304 in 24ms :: {"unreadCount":"1"}
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+8:22:15 AM [express] GET /api/messages/48/unread-count 304 in 25ms :: {"unreadCount":"1"}
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+8:22:17 AM [express] GET /api/messages/48/unread-count 304 in 23ms :: {"unreadCount":"1"}
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+8:22:25 AM [express] GET /api/messages/48/unread-count 304 in 24ms :: {"unreadCount":"1"}
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+8:22:30 AM [express] GET /api/messages/48/unread-count 304 in 24ms :: {"unreadCount":"1"}
+Origin: undefined
+8:22:32 AM [express] GET /api/messages/48/unread-count 304 in 24ms :: {"unreadCount":"1"}
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+8:22:36 AM [express] GET /api/messages/48/unread-count 304 in 24ms :: {"unreadCount":"1"}
+Origin: undefined
+8:22:42 AM [express] GET /api/messages/48/unread-count 304 in 23ms :: {"unreadCount":"1"}
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+8:22:43 AM [express] GET /api/messages/48/unread-count 304 in 23ms :: {"unreadCount":"1"}
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+8:22:44 AM [express] GET /api/messages/48/unread-count 304 in 23ms :: {"unreadCount":"1"}
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+8:22:46 AM [express] GET /api/messages/48/unread-count 304 in 24ms :: {"unreadCount":"1"}
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+8:22:47 AM [express] GET /api/messages/48/unread-count 304 in 24ms :: {"unreadCount":"1"}
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+🔴 User aarontest (48) disconnected
+🔴 User aarontest (48) disconnected
+🔴 User aarontest (48) disconnected
+🔴 User aarontest (48) disconnected
+🔴 User aarontest (48) disconnected
+🔴 User aarontest (48) disconnected
+🔴 User aarontest (48) disconnected
+🔴 User aarontest (48) disconnected
+🔴 User aarontest (48) disconnected
+ New WebSocket connection
+📥 WebSocket message received: { type: 'auth', userId: 48, username: 'aarontest' }
+ User aarontest (48) authenticated via WebSocket
+📬 Delivering 1 offline messages to user 48
+ Delivered 1 offline messages to user 48 (kept as unread for notifications)
+ New WebSocket connection
+📥 WebSocket message received: { type: 'auth', userId: 48, username: 'aarontest' }
+ User aarontest (48) authenticated via WebSocket
+📬 Delivering 1 offline messages to user 48
+ Delivered 1 offline messages to user 48 (kept as unread for notifications)
+ New WebSocket connection
+📥 WebSocket message received: { type: 'auth', userId: 48, username: 'aarontest' }
+ User aarontest (48) authenticated via WebSocket
+📬 Delivering 1 offline messages to user 48
+ Delivered 1 offline messages to user 48 (kept as unread for notifications)
+ New WebSocket connection
+📥 WebSocket message received: { type: 'auth', userId: 48, username: 'aarontest' }
+ User aarontest (48) authenticated via WebSocket
+📬 Delivering 1 offline messages to user 48
+ Delivered 1 offline messages to user 48 (kept as unread for notifications)
+ New WebSocket connection
+📥 WebSocket message received: { type: 'auth', userId: 48, username: 'aarontest' }
+ User aarontest (48) authenticated via WebSocket
+📬 Delivering 1 offline messages to user 48
+ Delivered 1 offline messages to user 48 (kept as unread for notifications)
+ New WebSocket connection
+📥 WebSocket message received: { type: 'auth', userId: 48, username: 'aarontest' }
+ User aarontest (48) authenticated via WebSocket
+📬 Delivering 1 offline messages to user 48
+ Delivered 1 offline messages to user 48 (kept as unread for notifications)
+ New WebSocket connection
+📥 WebSocket message received: { type: 'auth', userId: 48, username: 'aarontest' }
+ User aarontest (48) authenticated via WebSocket
+📬 Delivering 1 offline messages to user 48
+ Delivered 1 offline messages to user 48 (kept as unread for notifications)
+ New WebSocket connection
+Origin: undefined
+8:22:55 AM [express] GET /api/messages/48/unread-count 304 in 23ms :: {"unreadCount":"1"}
+📥 WebSocket message received: { type: 'auth', userId: 48, username: 'aarontest' }
+ User aarontest (48) authenticated via WebSocket
+📬 Delivering 1 offline messages to user 48
+ Delivered 1 offline messages to user 48 (kept as unread for notifications)
+ New WebSocket connection
+📥 WebSocket message received: { type: 'auth', userId: 48, username: 'aarontest' }
+ User aarontest (48) authenticated via WebSocket
+📬 Delivering 1 offline messages to user 48
+ Delivered 1 offline messages to user 48 (kept as unread for notifications)
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+8:23:01 AM [express] GET /api/messages/48/unread-count 304 in 23ms :: {"unreadCount":"1"}
+Origin: undefined
+8:23:02 AM [express] GET /api/messages/48/unread-count 304 in 23ms :: {"unreadCount":"1"}
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+8:23:04 AM [vite] (client) hmr update /src/pages/profile.tsx, /src/index.css?v=3XIbaN50uluaDOIS350Ib (x6)
+Origin: undefined
+8:23:06 AM [express] GET /api/messages/48/unread-count 304 in 23ms :: {"unreadCount":"1"}
+Origin: undefined
+8:23:13 AM [express] GET /api/messages/48/unread-count 304 in 23ms :: {"unreadCount":"1"}
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+8:23:13 AM [express] GET /api/messages/48/unread-count 304 in 23ms :: {"unreadCount":"1"}
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+8:23:15 AM [express] GET /api/messages/48/unread-count 304 in 23ms :: {"unreadCount":"1"}
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+8:23:16 AM [express] GET /api/messages/48/unread-count 304 in 23ms :: {"unreadCount":"1"}
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+8:23:17 AM [express] GET /api/messages/48/unread-count 304 in 23ms :: {"unreadCount":"1"}
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+8:23:25 AM [express] GET /api/messages/48/unread-count 304 in 24ms :: {"unreadCount":"1"}
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+8:23:31 AM [express] GET /api/messages/48/unread-count 304 in 23ms :: {"unreadCount":"1"}
+Origin: undefined
+8:23:32 AM [express] GET /api/messages/48/unread-count 304 in 25ms :: {"unreadCount":"1"}
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+8:23:36 AM [express] GET /api/messages/48/unread-count 304 in 23ms :: {"unreadCount":"1"}
+Origin: undefined
+Origin: undefined
+8:23:36 AM [express] GET /api/messages/48 304 in 24ms :: [{"id":62,"senderId":48,"receiverId":47,"co…
+Origin: undefined
+🔍 USERS: Getting all users
+Origin: undefined
+🟢 EVENTS ENDPOINT HIT! Query: { city: 'Venice' } URL: /api/events?city=Venice
+📅 EVENTS DEBUG: Full query parameters: { city: 'Venice' }
+📅 EVENTS DEBUG: Extracted city="Venice" state="undefined" country="undefined"
+📅 EVENTS DEBUG: City type: string, truthy: true, trimmed: "Venice"
+📅 DIRECT API: Fetching events with query: { city: 'Venice' }
+📅 EVENTS DEBUG: City parameter received: "Venice", type: string
+🎪 EVENTS: Getting events for city: Venice
+🌍 LA METRO EVENTS: Searching for events in ALL LA metro cities: 78 cities
+🌍 EVENTS: Final searchCities array: [
+  'Los Angeles',       'Playa del Rey',    'Santa Monica',
+  'Venice',            'Venice Beach',     'Culver City',
+  'Marina del Rey',    'El Segundo',       'Manhattan Beach',
+  'Hermosa Beach',     'Redondo Beach',    'Beverly Hills',
+  'West Hollywood',    'Hollywood',        'North Hollywood',
+  'Burbank',           'Glendale',         'Pasadena',
+  'South Pasadena',    'Long Beach',       'Torrance',
+  'Inglewood',         'Hawthorne',        'Gardena',
+  'Carson',            'Compton',          'Downey',
+  'Norwalk',           'Whittier',         'Pomona',
+  'West LA',           'Westwood',         'Brentwood',
+  'Pacific Palisades', 'Malibu',           'Studio City',
+  'Sherman Oaks',      'Encino',           'Tarzana',
+  'Woodland Hills',    'Canoga Park',      'Chatsworth',
+  'Northridge',        'Granada Hills',    'Van Nuys',
+  'Reseda',            'Panorama City',    'Sun Valley',
+  'Pacoima',           'Sylmar',           'Mission Hills',
+  'Eagle Rock',        'Highland Park',    'Silver Lake',
+  'Echo Park',         'Los Feliz',        'Atwater Village',
+  'Downtown LA',       'Koreatown',        'Mid-City',
+  'Miracle Mile',      'Crenshaw',         'Leimert Park',
+  'Baldwin Hills',     'Ladera Heights',   'View Park',
+  'Watts',             'South LA',         'Boyle Heights',
+  'East LA',           'East Los Angeles', 'Monterey Park',
+  'Alhambra',          'Montebello',       'San Pedro',
+  'Wilmington',        'Harbor City',      'Harbor Gateway'
+]
+Database connected successfully
+Origin: undefined
+🎯 FETCHING ALL BUSINESS DEALS
+Origin: undefined
+🔍 USERS: Getting all users
+Origin: undefined
+⚡ DIRECT API: Fetching quick meetups
+Origin: undefined
+🔍 EVENTS: Found 0 events across 78 metro cities
+🎪 EVENTS: Found 0 events in next 6 weeks for Venice
+🎪 EVENTS: Event details: []
+🤖 AI TRIGGER: Venice has only 0 events - generating AI events with OpenAI
+🔒 PRIVATE EVENTS: No user provided - filtered 0 events down to 0 public events
+🎪 EVENTS: Enhanced 0 events with participant counts and organizer info
+8:23:36 AM [express] GET /api/events 304 in 157ms :: []
+⚠️ AI EVENT GENERATION DISABLED for safety - no fake events created for Venice
+🎯 FOUND 0 ACTIVE BUSINESS OFFERS
+🔍 FIRST OFFER RAW FROM DB: undefined
+📡 API RESPONSE SAMPLE: undefined
+🔍 BUSINESS FIELDS IN RESPONSE: {
+  businessName: undefined,
+  businessDescription: undefined,
+  businessPhone: undefined,
+  businessAddress: undefined,
+  businessLocation: undefined
+}
+8:23:36 AM [express] GET /api/business-deals 200 in 24ms :: []
+Database connected successfully
+Database connected successfully
+Database connected successfully
+Origin: undefined
+🌤️ WEATHER: Getting weather for Venice, undefined, Italy
+🌤️ WEATHER: Fetching real weather data for "Venice, Italy"
+🔑 WEATHER: Using API key: Present
+🌐 WEATHER: Making request to: http://api.weatherapi.com/v1/current.json?key=API_KEY_HIDDEN&q=Venice%2C%20Italy&aqi=no
+🔍 USERS SEARCH RESULT: 5 users found with travel plans
+8:23:37 AM [express] GET /api/users 304 in 249ms :: [{"id":1,"username":"nearbytravlr","email":"info…
+🔍 USERS SEARCH RESULT: 5 users found with travel plans
+8:23:37 AM [express] GET /api/users 304 in 125ms :: [{"id":1,"username":"nearbytravlr","email":"info…
+📡 WEATHER: Response status: 200 OK
+✅ WEATHER: Received data for Venice, temp: 73.4°F
+8:23:37 AM [express] GET /api/weather 200 in 155ms :: {"location":{"name":"Venice","region":"Veneto"…
+Origin: undefined
+Origin: undefined
+Origin: undefined
+🏠 CHATROOM PARTICIPATION: Getting chatroom participation for user 48
+Origin: undefined
+Origin: undefined
+8:23:38 AM [express] GET /api/users/48/connections 200 in 5ms
+Origin: undefined
+8:23:38 AM [express] GET /api/users/48 200 in 75ms :: {"id":48,"username":"aarontest","email":"aaron…
+8:23:38 AM [express] GET /api/users/48/references 304 in 58ms :: {"references":[],"counts":{"total":…
+8:23:38 AM [vite] (client) Pre-transform error: /home/runner/workspace/client/src/pages/profile.tsx: Expected corresponding JSX closing tag for <div>. (6983:14)
+
+  6981 |                   )}
+  6982 |                 </CardContent>
+> 6983 |               </Card>
+       |               ^
+  6984 |             )}
+  6985 |
+  6986 |
+  Plugin: vite:react-babel
+  File: /home/runner/workspace/client/src/pages/profile.tsx:6983:14
+  6981|                    )}
+  6982|                  </CardContent>
+  6983|                </Card>
+     |                ^
+  6984|              )}
+  6985|  
