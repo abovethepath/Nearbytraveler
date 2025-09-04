@@ -707,7 +707,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [editingConnectionNote, setEditingConnectionNote] = useState<number | null>(null);
   const [connectionNoteText, setConnectionNoteText] = useState('');
   const [eventsDisplayCount, setEventsDisplayCount] = useState(3);
-  const [showQuickMeetupModal, setShowQuickMeetupModal] = useState(false);
+  const [triggerQuickMeetup, setTriggerQuickMeetup] = useState(false);
   const [selectedAlbum, setSelectedAlbum] = useState<any>(null);
   const [showAlbumModal, setShowAlbumModal] = useState(false);
   const [businessesDisplayCount, setBusinessesDisplayCount] = useState(3);
@@ -3643,8 +3643,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             
             {/* Let's Meet Now CTA */}
             <Button
-              onClick={() => setShowQuickMeetupModal(true)}
+              onClick={() => {
+                setTriggerQuickMeetup(true);
+                // Scroll to the QuickMeetupWidget
+                setTimeout(() => {
+                  const widget = document.querySelector('[data-testid="quick-meetup-widget"]');
+                  if (widget) {
+                    widget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }
+                  // Reset trigger after a moment
+                  setTimeout(() => setTriggerQuickMeetup(false), 1000);
+                }, 100);
+              }}
               className="bg-gradient-to-r from-green-500 to-blue-500 text-white border-0 hover:from-green-600 hover:to-blue-600 px-6 py-2 text-sm font-medium rounded-lg"
+              data-testid="button-lets-meet-now"
             >
               <Calendar className="w-4 h-4 mr-2" />
               Let's Meet Now
@@ -5499,9 +5511,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Travel Plans - Hidden for business profiles */}
             {activeTab === 'travel' && user?.userType !== 'business' && (
-              <>
+              <div className="space-y-4">
                 {/* Current & Upcoming Travel Plans */}
-                <Card>
+                <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700">
                   <CardHeader className="flex flex-col items-start gap-3">
                     <CardTitle className="flex items-center gap-2">
                       <Calendar className="w-5 h-5" />
@@ -5829,7 +5841,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </CardContent>
                   </Card>
                 )}
-              </>
+              </div>
             )}
 
 
@@ -6003,8 +6015,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           <div className="w-full lg:col-span-1 space-y-2 lg:space-y-4">
             {/* Quick Meetup Widget - Only show for own profile (travelers/locals only, NOT business) */}
             {isOwnProfile && user && user.userType !== 'business' && (
-              <div className="mt-6">
-                <QuickMeetupWidget city={user?.hometownCity ?? ''} profileUserId={user?.id} />
+              <div className="mt-6" data-testid="quick-meetup-widget">
+                <QuickMeetupWidget 
+                  city={user?.hometownCity ?? ''} 
+                  profileUserId={user?.id}
+                  triggerCreate={triggerQuickMeetup}
+                />
               </div>
             )}
 
@@ -6720,17 +6736,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* References Widget */}
             {activeTab === 'references' && user?.id && (
-              <Card className="hover:shadow-lg transition-all duration-200">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Star className="w-5 h-5 text-yellow-500" />
-                    References
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ReferencesWidgetNew userId={user.id} />
-                </CardContent>
-              </Card>
+              <div className="space-y-4">
+                <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
+                  <CardHeader className="bg-white dark:bg-gray-900">
+                    <CardTitle className="flex items-center gap-2 text-black dark:text-white">
+                      <Star className="w-5 h-5 text-yellow-500" />
+                      References
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="bg-white dark:bg-gray-900">
+                    <ReferencesWidgetNew userId={user.id} />
+                  </CardContent>
+                </Card>
+              </div>
             )}
 
             {/* Vouch Widget */}

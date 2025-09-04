@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,7 +26,7 @@ interface NewMeetup {
   responseTime: string;
 }
 
-export function QuickMeetupWidget({ city, profileUserId }: { city?: string; profileUserId?: number }) {
+export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city?: string; profileUserId?: number; triggerCreate?: boolean }) {
   const { user } = useAuth();
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [expandedMeetup, setExpandedMeetup] = useState<number | null>(null);
@@ -78,6 +78,13 @@ export function QuickMeetupWidget({ city, profileUserId }: { city?: string; prof
   const { toast } = useToast();
 
   const currentCityName = city?.split(',')[0] || 'your city';
+
+  // Trigger create form when triggerCreate prop is true
+  useEffect(() => {
+    if (triggerCreate) {
+      setShowCreateForm(true);
+    }
+  }, [triggerCreate]);
 
   // Debug logging - check authentication (REMOVED - using actualUser now)
 
