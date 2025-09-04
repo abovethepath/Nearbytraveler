@@ -31,7 +31,7 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
   const { user: currentUser } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState("about");
   
-  // Initialize toast hook immediately - must be called before any early returns
+  // Initialize toast hook immediately - must be called before any early returns  
   const { toast } = useToast();
 
   // Determine which user profile to show
@@ -44,11 +44,11 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
   // Fetch user data only for other users' profiles
   const { data: fetchedUser, isLoading } = useQuery<User>({
     queryKey: [`/api/users/${profileUserId}`],
-    enabled: shouldFetchUser && !!profileUserId,
+    enabled: Boolean(shouldFetchUser && profileUserId),
   });
 
   // Use fetched user data if available, otherwise use current user
-  const displayUser = fetchedUser || currentUser;
+  const displayUser: User | null = fetchedUser || currentUser;
 
   // Fetch user's travel plans
   const { data: travelPlans = [] } = useQuery({
@@ -88,7 +88,7 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
     );
   }
 
-  const currentTravelDestination = getCurrentTravelDestination(travelPlans || []);
+  const currentTravelDestination = getCurrentTravelDestination(Array.isArray(travelPlans) ? travelPlans : []);
   const isCurrentlyTraveling = !!currentTravelDestination;
   const userAge = displayUser?.dateOfBirth ? calculateAge(displayUser.dateOfBirth) : null;
 
@@ -143,7 +143,7 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                   {isCurrentlyTraveling ? (
                     `Nearby Traveler • ${currentTravelDestination}`
                   ) : (
-                    `Nearby Local • ${displayUser.hometownCity}`
+                    `Nearby Local • ${displayUser?.hometownCity || displayUser?.location || 'Local'}`
                   )}
                 </p>
 
@@ -208,9 +208,9 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
             {/* About Section */}
             <Card className="mb-6">
               <CardContent className="p-6">
-                <h2 className="text-xl font-semibold mb-4">About {displayUser.username}</h2>
+                <h2 className="text-xl font-semibold mb-4">About {displayUser?.username}</h2>
                 
-                {displayUser.bio ? (
+                {displayUser?.bio ? (
                   <p className="text-gray-700 dark:text-gray-300 mb-4">{displayUser.bio}</p>
                 ) : (
                   <p className="text-gray-500 dark:text-gray-400 italic mb-4">No bio added yet</p>
@@ -224,7 +224,7 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                       <span className="ml-2">{userAge}</span>
                     </div>
                   )}
-                  {displayUser.hometownCity && (
+                  {displayUser?.hometownCity && (
                     <div>
                       <span className="font-semibold text-gray-600 dark:text-gray-400">From:</span>
                       <span className="ml-2">{displayUser.hometownCity}, {displayUser.hometownState || displayUser.hometownCountry}</span>
@@ -232,22 +232,22 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                   )}
                   <div>
                     <span className="font-semibold text-gray-600 dark:text-gray-400">Member since:</span>
-                    <span className="ml-2">{displayUser.createdAt ? formatDateForDisplay(displayUser.createdAt) : 'Recently'}</span>
+                    <span className="ml-2">{displayUser?.createdAt ? formatDateForDisplay(displayUser.createdAt) : 'Recently'}</span>
                   </div>
-                  {displayUser.languages && displayUser.languages.length > 0 && (
+                  {displayUser?.languagesSpoken && displayUser.languagesSpoken.length > 0 && (
                     <div>
                       <span className="font-semibold text-gray-600 dark:text-gray-400">Languages:</span>
-                      <span className="ml-2">{displayUser.languages.join(', ')}</span>
+                      <span className="ml-2">{displayUser.languagesSpoken.join(', ')}</span>
                     </div>
                   )}
                 </div>
 
                 {/* Interests */}
-                {displayUser.interests && displayUser.interests.length > 0 && (
+                {displayUser?.interests && displayUser.interests.length > 0 && (
                   <div>
                     <h3 className="text-lg font-semibold mb-3">Interests</h3>
                     <div className="flex flex-wrap gap-2">
-                      {displayUser.interests.slice(0, 10).map((interest, index) => (
+                      {displayUser.interests.slice(0, 10).map((interest: string, index: number) => (
                         <Badge key={index} variant="secondary" className="text-xs">
                           {interest}
                         </Badge>
@@ -269,10 +269,7 @@ export default function ProfileNew({ userId: propUserId }: ProfileNewProps) {
                 <CardContent className="p-6">
                   <h2 className="text-xl font-semibold mb-4">Countries Visited</h2>
                   <WorldMap 
-                    visitedCountries={countriesVisited.map(stamp => stamp.country)}
-                    onCountryClick={(country) => {
-                      console.log('Country clicked:', country);
-                    }}
+                    visitedCountries={Array.isArray(countriesVisited) ? countriesVisited.map((stamp: any) => stamp.country) : []}
                   />
                 </CardContent>
               </Card>
