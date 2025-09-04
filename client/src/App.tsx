@@ -949,6 +949,7 @@ function Router() {
         return <BusinessRegistration />;
       case '/profile':
         console.log('🔍 PROFILE ROUTE: user in context:', user?.id, 'user object:', !!user);
+        console.log('🚀 LOADING NEW PROFILE DESIGN NOW!');
 
         // For /profile route (own profile), don't pass userId prop so it defaults to own profile
         if (!user?.id) {
