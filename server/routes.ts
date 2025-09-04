@@ -5278,8 +5278,60 @@ Questions? Just reply to this message. Welcome aboard!
   app.get("/api/connections/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId || '0');
-      const connections = await storage.getUserConnections(userId);
-      return res.json(connections);
+      
+      // Get connections with full user details
+      const connectionsWithUsers = await db
+        .select({
+          id: connections.id,
+          status: connections.status,
+          createdAt: connections.createdAt,
+          connectionNote: connections.connectionNote,
+          // Get the connected user's details (not the requesting user)
+          userId: sql`
+            CASE 
+              WHEN ${connections.requesterId} = ${userId} THEN ${connections.receiverId}
+              ELSE ${connections.requesterId}
+            END
+          `,
+          username: sql`
+            CASE 
+              WHEN ${connections.requesterId} = ${userId} THEN ${users.username}
+              ELSE requester.username
+            END
+          `,
+          name: sql`
+            CASE 
+              WHEN ${connections.requesterId} = ${userId} THEN ${users.name}
+              ELSE requester.name
+            END
+          `,
+          profileImage: sql`
+            CASE 
+              WHEN ${connections.requesterId} = ${userId} THEN ${users.profileImage}
+              ELSE requester.profile_image
+            END
+          `,
+          location: sql`
+            CASE 
+              WHEN ${connections.requesterId} = ${userId} THEN ${users.location}
+              ELSE requester.location
+            END
+          `
+        })
+        .from(connections)
+        .leftJoin(users, eq(connections.receiverId, users.id))
+        .leftJoin(sql`users AS requester`, sql`${connections.requesterId} = requester.id`)
+        .where(
+          and(
+            eq(connections.status, 'accepted'),
+            or(
+              eq(connections.requesterId, userId),
+              eq(connections.receiverId, userId)
+            )
+          )
+        );
+
+      return res.json(connectionsWithUsers);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching connections:", error);
       return res.status(500).json({ message: "Failed to fetch connections" });
