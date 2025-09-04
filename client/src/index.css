@@ -585,7 +585,7 @@ div[class*="bg-"][class*="text-"][class*="rounded"] {
   font-size: var(--pill-font-size) !important;
 }
 
-/* ALL PILLS BLACK BACKGROUND WHITE TEXT */
+/* ALL PILLS WHITE BACKGROUND BLACK TEXT BLACK BORDER */
 .pill-interests,
 .pill-activities, 
 .pill-events,
@@ -602,9 +602,9 @@ div[class*="bg-"][class*="text-"][class*="rounded"] {
   font-weight: 500 !important; /* font-medium */
   white-space: nowrap !important;
   line-height: 1 !important; /* leading-none */
-  background-color: #000000 !important; /* black background */
-  color: #ffffff !important; /* white text */
-  border: 0 !important;
+  background-color: #ffffff !important; /* white background */
+  color: #000000 !important; /* black text */
+  border: 1px solid #000000 !important; /* black border */
   -webkit-appearance: none !important;
   -moz-appearance: none !important;
   appearance: none !important;
