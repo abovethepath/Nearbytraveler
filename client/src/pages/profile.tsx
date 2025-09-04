@@ -3588,7 +3588,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       </section>
 
       {/* Navigation Tabs - Card Style with Border */}
-      <div className="w-full bg-white border border-black dark:bg-gray-900 dark:border-gray-700 px-4 sm:px-6 lg:px-10 py-3 mx-4 sm:mx-6 lg:mx-10 rounded-lg">
+      <div className="w-full bg-white border border-black dark:bg-gray-900 dark:border-gray-700 px-4 sm:px-6 lg:px-10 py-3 mx-1 sm:mx-4 lg:mx-6 rounded-lg mt-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex space-x-6 sm:space-x-8">
             <button
