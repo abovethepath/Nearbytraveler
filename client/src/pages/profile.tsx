@@ -639,6 +639,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [showAllInterests, setShowAllInterests] = useState(false);
   const [showAllActivities, setShowAllActivities] = useState(false);
   const [showAllEvents, setShowAllEvents] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingActivities, setEditingActivities] = useState(false);
   const [editingEvents, setEditingEvents] = useState(false);
   const [editingLanguages, setEditingLanguages] = useState(false);
