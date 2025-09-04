@@ -3597,27 +3597,115 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         )}
       </section>
 
-      {/* Let's Meet Now CTA - Standalone */}
-      <div className="w-full flex justify-center px-4 sm:px-6 lg:px-10 py-3 mx-1 sm:mx-4 lg:mx-6 mt-4">
-        <Button
-          onClick={() => {
-            setTriggerQuickMeetup(true);
-            // Scroll to the QuickMeetupWidget
-            setTimeout(() => {
-              const widget = document.querySelector('[data-testid="quick-meetup-widget"]');
-              if (widget) {
-                widget.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              }
-              // Reset trigger after a moment
-              setTimeout(() => setTriggerQuickMeetup(false), 1000);
-            }, 100);
-          }}
-          className="bg-gradient-to-r from-green-500 to-blue-500 text-white border-0 hover:from-green-600 hover:to-blue-600 px-6 py-3 text-base font-medium rounded-lg shadow-md"
-          data-testid="button-lets-meet-now"
-        >
-          <Calendar className="w-5 h-5 mr-2" />
-          Let's Meet Now
-        </Button>
+      {/* Navigation Tabs - Card Style with Border */}
+      <div className="w-full bg-white border border-black dark:bg-gray-900 dark:border-gray-700 px-4 sm:px-6 lg:px-10 py-3 mx-1 sm:mx-4 lg:mx-6 rounded-lg mt-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between">
+            <div className="flex space-x-6 sm:space-x-8">
+            <button
+              onClick={() => setActiveTab('contacts')}
+              className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
+                activeTab === 'contacts'
+                  ? 'bg-blue-600 text-white border border-blue-600'
+                  : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
+              }`}
+              data-testid="tab-contacts"
+            >
+              Contacts
+              {userConnections.length > 0 && (
+                <span className="ml-2 px-2 py-1 text-xs bg-orange-600 text-white rounded-full">
+                  {userConnections.length}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab('photos')}
+              className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
+                activeTab === 'photos'
+                  ? 'bg-blue-600 text-white border border-blue-600'
+                  : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
+              }`}
+              data-testid="tab-photos"
+            >
+              Photos
+              {userPhotos?.length > 0 && (
+                <span className="ml-2 px-2 py-1 text-xs bg-orange-600 text-white rounded-full">
+                  {userPhotos.length}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab('references')}
+              className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
+                activeTab === 'references'
+                  ? 'bg-blue-600 text-white border border-blue-600'
+                  : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
+              }`}
+              data-testid="tab-references"
+            >
+              References
+              {vouches?.length > 0 && (
+                <span className="ml-2 px-2 py-1 text-xs bg-orange-600 text-white rounded-full">
+                  {vouches.length}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab('travel')}
+              className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
+                activeTab === 'travel'
+                  ? 'bg-blue-600 text-white border border-blue-600'
+                  : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
+              }`}
+              data-testid="tab-travel"
+            >
+              Travel
+              {travelPlans?.length > 0 && (
+                <span className="ml-2 px-2 py-1 text-xs bg-orange-600 text-white rounded-full">
+                  {travelPlans.length}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab('countries')}
+              className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
+                activeTab === 'countries'
+                  ? 'bg-blue-600 text-white border border-blue-600'
+                  : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
+              }`}
+              data-testid="tab-countries"
+            >
+              Countries
+              {countriesVisited?.length > 0 && (
+                <span className="ml-2 px-2 py-1 text-xs bg-orange-600 text-white rounded-full">
+                  {countriesVisited.length}
+                </span>
+              )}
+            </button>
+            </div>
+            
+            {/* Let's Meet Now CTA */}
+            <Button
+              onClick={() => {
+                setTriggerQuickMeetup(true);
+                // Scroll to the QuickMeetupWidget
+                setTimeout(() => {
+                  const widget = document.querySelector('[data-testid="quick-meetup-widget"]');
+                  if (widget) {
+                    widget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }
+                  // Reset trigger after a moment
+                  setTimeout(() => setTriggerQuickMeetup(false), 1000);
+                }, 100);
+              }}
+              className="bg-gradient-to-r from-green-500 to-blue-500 text-white border-0 hover:from-green-600 hover:to-blue-600 px-6 py-2 text-sm font-medium rounded-lg"
+              data-testid="button-lets-meet-now"
+            >
+              <Calendar className="w-4 h-4 mr-2" />
+              Let's Meet Now
+            </Button>
+          </div>
+        </div>
       </div>
       
       {/* Main content section - Mobile Responsive Layout */}
@@ -7119,8 +7207,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             )}
 
 
-            {/* Countries Visited - Hidden for business profiles */}
-            {user?.userType !== 'business' && (
+            {/* Countries Visited - Hidden for business profiles - Only show in countries tab */}
+            {activeTab === 'countries' && user?.userType !== 'business' && (
               <Card>
                 <CardHeader>
                   <div className="flex items-center justify-between">
