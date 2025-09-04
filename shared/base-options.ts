@@ -85,6 +85,7 @@ export const ADDITIONAL_INTERESTS = [
   "Adventure Tours",
   "Wildlife & Nature",
   "Biking / Cycling",
+  "Nudist Beach",
   
   // Sports/Recreation
   "Sports & Recreation",
