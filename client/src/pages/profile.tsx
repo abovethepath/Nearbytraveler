@@ -3683,7 +3683,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           <div className="flex items-center justify-between">
             <div className="flex space-x-6 sm:space-x-8">
             <button
-              onClick={() => {console.log('🔥 CONTACTS CLICKED'); setActiveTab('contacts');}}
+              onClick={() => {
+                console.log('🔥 CONTACTS CLICKED'); 
+                setActiveTab('contacts');
+                // Smart scroll to contacts content
+                setTimeout(() => {
+                  const contactsContent = document.querySelector('[data-testid="contacts-content"]');
+                  if (contactsContent) {
+                    contactsContent.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }
+                }, 100);
+              }}
               className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
                 activeTab === 'contacts'
                   ? 'bg-blue-600 text-white border border-blue-600'
@@ -3699,7 +3709,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               )}
             </button>
             <button
-              onClick={() => {console.log('🔥 PHOTOS CLICKED'); setActiveTab('photos');}}
+              onClick={() => {
+                console.log('🔥 PHOTOS CLICKED'); 
+                setActiveTab('photos');
+                // Smart scroll to photos content
+                setTimeout(() => {
+                  const photosContent = document.querySelector('[data-testid="photos-content"]');
+                  if (photosContent) {
+                    photosContent.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }
+                }, 100);
+              }}
               className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
                 activeTab === 'photos'
                   ? 'bg-blue-600 text-white border border-blue-600'
@@ -3715,7 +3735,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               )}
             </button>
             <button
-              onClick={() => {console.log('🔥 REFERENCES CLICKED'); setActiveTab('references');}}
+              onClick={() => {
+                console.log('🔥 REFERENCES CLICKED'); 
+                setActiveTab('references');
+                // Smart scroll to references content
+                setTimeout(() => {
+                  const referencesContent = document.querySelector('[data-testid="references-content"]');
+                  if (referencesContent) {
+                    referencesContent.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }
+                }, 100);
+              }}
               className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
                 activeTab === 'references'
                   ? 'bg-blue-600 text-white border border-blue-600'
@@ -3731,7 +3761,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               )}
             </button>
             <button
-              onClick={() => {console.log('🔥 TRAVEL CLICKED'); setActiveTab('travel');}}
+              onClick={() => {
+                console.log('🔥 TRAVEL CLICKED'); 
+                setActiveTab('travel');
+                // Smart scroll to travel content
+                setTimeout(() => {
+                  const travelContent = document.querySelector('[data-testid="travel-content"]');
+                  if (travelContent) {
+                    travelContent.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }
+                }, 100);
+              }}
               className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
                 activeTab === 'travel'
                   ? 'bg-blue-600 text-white border border-blue-600'
@@ -3747,7 +3787,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               )}
             </button>
             <button
-              onClick={() => {console.log('🔥 COUNTRIES CLICKED'); setActiveTab('countries');}}
+              onClick={() => {
+                console.log('🔥 COUNTRIES CLICKED'); 
+                setActiveTab('countries');
+                // Smart scroll to countries content
+                setTimeout(() => {
+                  const countriesContent = document.querySelector('[data-testid="countries-content"]');
+                  if (countriesContent) {
+                    countriesContent.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }
+                }, 100);
+              }}
               className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
                 activeTab === 'countries'
                   ? 'bg-blue-600 text-white border border-blue-600'
@@ -5734,10 +5784,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Travel Plans - Hidden for business profiles */}
             {activeTab === 'travel' && user?.userType !== 'business' && (
-              <TravelPlansWidget 
-                userId={effectiveUserId || 0} 
-                isOwnProfile={isOwnProfile}
-              />
+              <div data-testid="travel-content">
+                <TravelPlansWidget 
+                  userId={effectiveUserId || 0} 
+                  isOwnProfile={isOwnProfile}
+                />
+              </div>
             )}
 
             {/* Photo Albums Widget - Separate from Travel Memories */}
@@ -5756,7 +5808,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Photo Gallery */}
             {activeTab === 'photos' && (
-            <div className="space-y-4 mt-6" style={{zIndex: 10, position: 'relative'}}>
+            <div className="space-y-4 mt-6" style={{zIndex: 10, position: 'relative'}} data-testid="photos-content">
               <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700">
                 <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white dark:bg-gray-900">
                   <CardTitle className="flex items-center gap-2 text-black dark:text-white">
@@ -5882,7 +5934,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Countries Tab */}
             {activeTab === 'countries' && (
-              <div className="space-y-4 mt-6" style={{zIndex: 10, position: 'relative'}}>
+              <div className="space-y-4 mt-6" style={{zIndex: 10, position: 'relative'}} data-testid="countries-content">
                 <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
                   <CardHeader className="bg-white dark:bg-gray-900">
                     <div className="flex items-center justify-between">
@@ -6102,7 +6154,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {/* Current Connections Widget - Visible to all - MOVED UNDER TRAVEL STATS */}
             {console.log('🔧 TAB CONTENT DEBUG:', { activeTab, showingContacts: activeTab === 'contacts' })}
             {activeTab === 'contacts' && (
-            <div className="space-y-4 mt-6" style={{zIndex: 10, position: 'relative'}}>
+            <div className="space-y-4 mt-6" style={{zIndex: 10, position: 'relative'}} data-testid="contacts-content">
               <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700">
                 <CardHeader className="bg-white dark:bg-gray-900">
                   <CardTitle className="flex items-center justify-between text-black dark:text-white">
@@ -6756,11 +6808,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Vouch Widget */}
             {user?.id && (
-              <VouchWidget 
-                userId={user.id} 
-                isOwnProfile={isOwnProfile}
-                currentUserId={currentUser?.id}
-              />
+              <div data-testid="references-content">
+                <VouchWidget 
+                  userId={user.id} 
+                  isOwnProfile={isOwnProfile}
+                  currentUserId={currentUser?.id}
+                />
+              </div>
             )}
 
 
