@@ -56,7 +56,7 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
   // Mark messages as read mutation
   const markAsReadMutation = useMutation({
     mutationFn: async (senderId: number) => {
-      return apiRequest(`/api/messages/${user?.id}/mark-read`, 'POST', { senderId });
+      return apiRequest('POST', `/api/messages/${user?.id}/mark-read`, { senderId });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/messages/${user?.id}/unread-count`] });
@@ -92,7 +92,7 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
   // Send message mutation
   const sendMessageMutation = useMutation({
     mutationFn: async (messageData: any) => {
-      return apiRequest('/api/messages', 'POST', messageData);
+      return apiRequest('POST', '/api/messages', messageData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/messages/${user?.id}`] });
