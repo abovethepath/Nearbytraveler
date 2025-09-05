@@ -1011,7 +1011,7 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                   <Label className="text-sm font-medium">Gender Restriction</Label>
                   <Select onValueChange={(value) => setValue("genderRestriction", value || undefined)}>
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Open to all genders" />
+                      <SelectValue placeholder="Select gender restriction" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="female">Women only</SelectItem>
