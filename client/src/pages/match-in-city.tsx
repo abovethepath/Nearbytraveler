@@ -135,48 +135,176 @@ const UNIVERSAL_ACTIVITIES = [
 // City-specific "ALWAYS" activities for popular destinations
 const CITY_ALWAYS_ACTIVITIES = {
   "Los Angeles": [
+    // Theme Parks & Major Attractions
+    { name: "Disneyland", description: "The original Disney theme park in Anaheim" },
+    { name: "Disney California Adventure", description: "Disney's California-themed park" },
+    { name: "Knott's Berry Farm", description: "America's first theme park with roller coasters" },
+    { name: "Universal Studios Hollywood", description: "Movie theme park and studio tours" },
+    { name: "Six Flags Magic Mountain", description: "Thrill ride capital with extreme coasters" },
+    
+    // Iconic LA Landmarks
     { name: "Hollywood Sign Hike", description: "Iconic hike to the famous Hollywood sign" },
-    { name: "Universal Studios", description: "Movie theme park and studio tours" },
-    { name: "Getty Villa", description: "Art museum with ancient Greek & Roman artifacts" },
-    { name: "Getty Center", description: "Art museum with city views and gardens" },
-    { name: "Lakers Games", description: "NBA basketball at Crypto.com Arena" },
-    { name: "Kings Games", description: "NHL hockey at Crypto.com Arena" },
-    { name: "Venice Beach Boardwalk", description: "Famous beach boardwalk with street performers" },
-    { name: "Santa Monica Pier", description: "Amusement park pier with ferris wheel" },
     { name: "Griffith Observatory", description: "Planetarium with Hollywood views" },
-    { name: "Rodeo Drive", description: "Luxury shopping in Beverly Hills" },
+    { name: "Getty Center", description: "Art museum with city views and gardens" },
+    { name: "Getty Villa", description: "Ancient art in a Roman villa setting" },
     { name: "Walk of Fame", description: "Celebrity stars on Hollywood Boulevard" },
-    { name: "Melrose Avenue", description: "Trendy shopping and vintage stores" },
-    { name: "The Grove", description: "Outdoor shopping and entertainment complex" },
-    { name: "Malibu Beach", description: "Scenic coastal beach and surfing" },
-    { name: "Dodgers Games", description: "MLB baseball at Dodger Stadium" },
-    { name: "LA Live", description: "Entertainment district downtown" },
-    { name: "Beverly Hills", description: "Upscale area with luxury shopping" },
+    { name: "TCL Chinese Theatre", description: "Historic movie palace with handprints" },
+    { name: "Hollywood Bowl", description: "Outdoor amphitheater for concerts" },
+    { name: "Walt Disney Concert Hall", description: "Stunning modern concert venue downtown" },
+    
+    // Beaches & Coastal Areas
+    { name: "Santa Monica Pier", description: "Amusement park pier with ferris wheel" },
+    { name: "Venice Beach Boardwalk", description: "Famous beach boardwalk with street performers" },
     { name: "Manhattan Beach", description: "Beautiful beach town with volleyball" },
+    { name: "Malibu Beach", description: "Scenic coastal beach and celebrity homes" },
+    { name: "Hermosa Beach", description: "Party beach with nightlife and volleyball" },
+    { name: "Redondo Beach", description: "Family-friendly beach with pier" },
+    { name: "El Segundo Beach", description: "Local beach near LAX" },
+    
+    // Shopping & Entertainment Districts
+    { name: "Rodeo Drive", description: "Luxury shopping in Beverly Hills" },
+    { name: "The Grove", description: "Outdoor shopping and entertainment complex" },
     { name: "Third Street Promenade", description: "Shopping and dining in Santa Monica" },
-    { name: "Hollywood Bowl", description: "Outdoor amphitheater for concerts" }
+    { name: "Melrose Avenue", description: "Trendy shopping and vintage stores" },
+    { name: "Beverly Hills", description: "Upscale area with luxury shopping" },
+    { name: "Sunset Strip", description: "Famous nightlife and music venue strip" },
+    { name: "LA Live", description: "Entertainment district downtown" },
+    { name: "Hollywood & Highland", description: "Shopping complex near Chinese Theatre" },
+    
+    // Sports Venues
+    { name: "Lakers Games", description: "NBA basketball at Crypto.com Arena" },
+    { name: "Clippers Games", description: "NBA basketball at Crypto.com Arena" },
+    { name: "Kings Games", description: "NHL hockey at Crypto.com Arena" },
+    { name: "Dodgers Games", description: "MLB baseball at Dodger Stadium" },
+    { name: "Angels Games", description: "MLB baseball in nearby Anaheim" },
+    { name: "Rams Games", description: "NFL football at SoFi Stadium" },
+    { name: "Chargers Games", description: "NFL football at SoFi Stadium" },
+    { name: "LAFC Games", description: "MLS soccer at BMO Stadium" },
+    
+    // Museums & Culture
+    { name: "LACMA", description: "Los Angeles County Museum of Art" },
+    { name: "The Broad", description: "Contemporary art museum downtown" },
+    { name: "California Science Center", description: "Interactive science museum with Space Shuttle" },
+    { name: "Natural History Museum", description: "Dinosaurs and natural specimens" },
+    { name: "Museum of Tolerance", description: "Human rights and tolerance education" },
+    { name: "Grammy Museum", description: "Music history and interactive exhibits" },
+    { name: "Petersen Automotive Museum", description: "Classic and exotic cars" },
+    
+    // Studios & Entertainment
+    { name: "Warner Bros Studio Tour", description: "Behind-the-scenes movie studio tour" },
+    { name: "Sony Pictures Studio Tour", description: "TV and movie production tour" },
+    { name: "Paramount Pictures Tour", description: "Historic movie studio tours" },
+    { name: "Comedy Store", description: "Famous comedy club on Sunset Strip" },
+    { name: "Improv Comedy Club", description: "Stand-up comedy venue" },
+    
+    // Neighborhoods & Areas
+    { name: "Little Tokyo", description: "Japanese cultural district downtown" },
+    { name: "Chinatown", description: "Historic Chinese cultural area" },
+    { name: "Koreatown", description: "Korean cultural district with BBQ and karaoke" },
+    { name: "Olvera Street", description: "Historic Mexican marketplace" },
+    { name: "Arts District", description: "Hip downtown area with galleries and lofts" },
+    { name: "West Hollywood", description: "Trendy area with nightlife and dining" },
+    
+    // Outdoor & Adventure
+    { name: "Runyon Canyon", description: "Popular hiking trail with city views" },
+    { name: "Mulholland Drive", description: "Scenic drive with panoramic views" },
+    { name: "Bronson Canyon", description: "Hiking trail near Hollywood Sign" },
+    { name: "Will Rogers State Beach", description: "Beach with volleyball and surfing" },
+    { name: "Zuma Beach", description: "Wide sandy beach in Malibu" },
+    
+    // Unique LA Experiences
+    { name: "LA Zoo", description: "Griffith Park zoo with diverse animals" },
+    { name: "Aquarium of the Pacific", description: "Large aquarium in Long Beach" },
+    { name: "Queen Mary", description: "Historic ocean liner turned hotel/museum" },
+    { name: "Farmer's Markets", description: "Original Farmer's Market and others" },
+    { name: "Pink's Hot Dogs", description: "Famous LA hot dog stand since 1939" },
+    { name: "In-N-Out Burger", description: "California's iconic burger chain" }
   ],
   "Los Angeles Metro": [
+    // Theme Parks & Major Attractions
+    { name: "Disneyland", description: "The original Disney theme park in Anaheim" },
+    { name: "Disney California Adventure", description: "Disney's California-themed park" },
+    { name: "Knott's Berry Farm", description: "America's first theme park with roller coasters" },
+    { name: "Universal Studios Hollywood", description: "Movie theme park and studio tours" },
+    { name: "Six Flags Magic Mountain", description: "Thrill ride capital with extreme coasters" },
+    
+    // Iconic LA Landmarks
     { name: "Hollywood Sign Hike", description: "Iconic hike to the famous Hollywood sign" },
-    { name: "Universal Studios", description: "Movie theme park and studio tours" },
-    { name: "Getty Villa", description: "Art museum with ancient Greek & Roman artifacts" },
-    { name: "Getty Center", description: "Art museum with city views and gardens" },
-    { name: "Lakers Games", description: "NBA basketball at Crypto.com Arena" },
-    { name: "Kings Games", description: "NHL hockey at Crypto.com Arena" },
-    { name: "Venice Beach Boardwalk", description: "Famous beach boardwalk with street performers" },
-    { name: "Santa Monica Pier", description: "Amusement park pier with ferris wheel" },
     { name: "Griffith Observatory", description: "Planetarium with Hollywood views" },
-    { name: "Rodeo Drive", description: "Luxury shopping in Beverly Hills" },
+    { name: "Getty Center", description: "Art museum with city views and gardens" },
+    { name: "Getty Villa", description: "Ancient art in a Roman villa setting" },
     { name: "Walk of Fame", description: "Celebrity stars on Hollywood Boulevard" },
-    { name: "Melrose Avenue", description: "Trendy shopping and vintage stores" },
-    { name: "The Grove", description: "Outdoor shopping and entertainment complex" },
-    { name: "Malibu Beach", description: "Scenic coastal beach and surfing" },
-    { name: "Dodgers Games", description: "MLB baseball at Dodger Stadium" },
-    { name: "LA Live", description: "Entertainment district downtown" },
-    { name: "Beverly Hills", description: "Upscale area with luxury shopping" },
+    { name: "TCL Chinese Theatre", description: "Historic movie palace with handprints" },
+    { name: "Hollywood Bowl", description: "Outdoor amphitheater for concerts" },
+    { name: "Walt Disney Concert Hall", description: "Stunning modern concert venue downtown" },
+    
+    // Beaches & Coastal Areas
+    { name: "Santa Monica Pier", description: "Amusement park pier with ferris wheel" },
+    { name: "Venice Beach Boardwalk", description: "Famous beach boardwalk with street performers" },
     { name: "Manhattan Beach", description: "Beautiful beach town with volleyball" },
+    { name: "Malibu Beach", description: "Scenic coastal beach and celebrity homes" },
+    { name: "Hermosa Beach", description: "Party beach with nightlife and volleyball" },
+    { name: "Redondo Beach", description: "Family-friendly beach with pier" },
+    { name: "El Segundo Beach", description: "Local beach near LAX" },
+    
+    // Shopping & Entertainment Districts
+    { name: "Rodeo Drive", description: "Luxury shopping in Beverly Hills" },
+    { name: "The Grove", description: "Outdoor shopping and entertainment complex" },
     { name: "Third Street Promenade", description: "Shopping and dining in Santa Monica" },
-    { name: "Hollywood Bowl", description: "Outdoor amphitheater for concerts" }
+    { name: "Melrose Avenue", description: "Trendy shopping and vintage stores" },
+    { name: "Beverly Hills", description: "Upscale area with luxury shopping" },
+    { name: "Sunset Strip", description: "Famous nightlife and music venue strip" },
+    { name: "LA Live", description: "Entertainment district downtown" },
+    { name: "Hollywood & Highland", description: "Shopping complex near Chinese Theatre" },
+    
+    // Sports Venues
+    { name: "Lakers Games", description: "NBA basketball at Crypto.com Arena" },
+    { name: "Clippers Games", description: "NBA basketball at Crypto.com Arena" },
+    { name: "Kings Games", description: "NHL hockey at Crypto.com Arena" },
+    { name: "Dodgers Games", description: "MLB baseball at Dodger Stadium" },
+    { name: "Angels Games", description: "MLB baseball in nearby Anaheim" },
+    { name: "Rams Games", description: "NFL football at SoFi Stadium" },
+    { name: "Chargers Games", description: "NFL football at SoFi Stadium" },
+    { name: "LAFC Games", description: "MLS soccer at BMO Stadium" },
+    
+    // Museums & Culture
+    { name: "LACMA", description: "Los Angeles County Museum of Art" },
+    { name: "The Broad", description: "Contemporary art museum downtown" },
+    { name: "California Science Center", description: "Interactive science museum with Space Shuttle" },
+    { name: "Natural History Museum", description: "Dinosaurs and natural specimens" },
+    { name: "Museum of Tolerance", description: "Human rights and tolerance education" },
+    { name: "Grammy Museum", description: "Music history and interactive exhibits" },
+    { name: "Petersen Automotive Museum", description: "Classic and exotic cars" },
+    
+    // Studios & Entertainment
+    { name: "Warner Bros Studio Tour", description: "Behind-the-scenes movie studio tour" },
+    { name: "Sony Pictures Studio Tour", description: "TV and movie production tour" },
+    { name: "Paramount Pictures Tour", description: "Historic movie studio tours" },
+    { name: "Comedy Store", description: "Famous comedy club on Sunset Strip" },
+    { name: "Improv Comedy Club", description: "Stand-up comedy venue" },
+    
+    // Neighborhoods & Areas
+    { name: "Little Tokyo", description: "Japanese cultural district downtown" },
+    { name: "Chinatown", description: "Historic Chinese cultural area" },
+    { name: "Koreatown", description: "Korean cultural district with BBQ and karaoke" },
+    { name: "Olvera Street", description: "Historic Mexican marketplace" },
+    { name: "Arts District", description: "Hip downtown area with galleries and lofts" },
+    { name: "West Hollywood", description: "Trendy area with nightlife and dining" },
+    
+    // Outdoor & Adventure
+    { name: "Runyon Canyon", description: "Popular hiking trail with city views" },
+    { name: "Mulholland Drive", description: "Scenic drive with panoramic views" },
+    { name: "Bronson Canyon", description: "Hiking trail near Hollywood Sign" },
+    { name: "Will Rogers State Beach", description: "Beach with volleyball and surfing" },
+    { name: "Zuma Beach", description: "Wide sandy beach in Malibu" },
+    
+    // Unique LA Experiences
+    { name: "LA Zoo", description: "Griffith Park zoo with diverse animals" },
+    { name: "Aquarium of the Pacific", description: "Large aquarium in Long Beach" },
+    { name: "Queen Mary", description: "Historic ocean liner turned hotel/museum" },
+    { name: "Farmer's Markets", description: "Original Farmer's Market and others" },
+    { name: "Pink's Hot Dogs", description: "Famous LA hot dog stand since 1939" },
+    { name: "In-N-Out Burger", description: "California's iconic burger chain" }
   ]
 };
 
