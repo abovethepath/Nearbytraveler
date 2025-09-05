@@ -4,7 +4,6 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MessageCircle } from "lucide-react";
-import { openFloatingChat } from "@/components/instant-messaging/FloatingChatManager";
 import type { Message, User } from "@shared/schema";
 
 interface MessagesWidgetProps {
