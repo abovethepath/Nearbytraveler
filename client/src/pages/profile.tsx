@@ -22,6 +22,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight, AlertCircle, Phone, Plane, User as UserIcon } from "lucide-react";
+
+type TabKey = 'contacts' | 'photos' | 'references' | 'travel' | 'countries';
 import { compressPhotoAdaptive } from "@/utils/photoCompression";
 import { AdaptiveCompressionIndicator } from "@/components/adaptive-compression-indicator";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
@@ -621,8 +623,24 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [showTravelPlanDetails, setShowTravelPlanDetails] = useState(false);
   const [showDestinationSuggestions, setShowDestinationSuggestions] = useState(false);
   const [showChatroomList, setShowChatroomList] = useState(false);
-  const [activeTab, setActiveTab] = useState('');
+  const [activeTab, setActiveTab] = React.useState<TabKey>('contacts');
   console.log('🎯 CURRENT ACTIVE TAB:', activeTab);
+  
+  const tabRefs = {
+    contacts: React.useRef<HTMLDivElement>(null),
+    photos: React.useRef<HTMLDivElement>(null),
+    references: React.useRef<HTMLDivElement>(null),
+    travel: React.useRef<HTMLDivElement>(null),
+    countries: React.useRef<HTMLDivElement>(null),
+  };
+
+  function openTab(key: TabKey) {
+    setActiveTab(key);
+    // Wait for the panel to render, then scroll it into view
+    requestAnimationFrame(() => {
+      tabRefs[key].current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [showKeywordSearch, setShowKeywordSearch] = useState(false);
@@ -708,11 +726,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   } | null>(null);
   const [scrollToLocation, setScrollToLocation] = useState(false);
   const [showLocationWidget, setShowLocationWidget] = useState(false);
-  const [showPhotosContent, setShowPhotosContent] = useState(false);
-  const [showReferencesContent, setShowReferencesContent] = useState(false);
-  const [showTravelContent, setShowTravelContent] = useState(false);
-  const [showCountriesContent, setShowCountriesContent] = useState(false);
-  const [showContactsContent, setShowContactsContent] = useState(false);
   
   // Connection filters state
   const [connectionFilters, setConnectionFilters] = useState({
@@ -3686,142 +3699,108 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       <div className="w-full bg-white border border-black dark:bg-gray-900 dark:border-gray-700 px-4 sm:px-6 lg:px-10 py-3 mx-1 sm:mx-4 lg:mx-6 rounded-lg mt-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between">
-            <div className="flex space-x-6 sm:space-x-8">
-            <button
-              onClick={() => {
-                console.log('🔥 CONTACTS CLICKED'); 
-                setActiveTab('contacts');
-                setShowContactsContent(true);
-                // Smart scroll to contacts content after it renders
-                setTimeout(() => {
-                  const contactsContent = document.querySelector('[data-testid="contacts-content"]');
-                  if (contactsContent) {
-                    contactsContent.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                  }
-                }, 200);
-              }}
-              className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
-                activeTab === 'contacts'
-                  ? 'bg-blue-600 text-white border border-blue-600'
-                  : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
-              }`}
-              data-testid="tab-contacts"
-            >
-              Contacts
-              {userConnections.length > 0 && (
-                <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
-                  {userConnections.length}
-                </span>
+            <div className="flex flex-wrap gap-3 sm:gap-4">
+              <button
+                role="tab"
+                aria-selected={activeTab === 'contacts'}
+                aria-controls="panel-contacts"
+                onClick={() => openTab('contacts')}
+                className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
+                  activeTab === 'contacts'
+                    ? 'bg-blue-600 text-white border border-blue-600'
+                    : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
+                }`}
+                data-testid="tab-contacts"
+              >
+                Contacts
+                {!!(userConnections?.length) && (
+                  <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
+                    {userConnections.length}
+                  </span>
+                )}
+              </button>
+
+              <button
+                role="tab"
+                aria-selected={activeTab === 'photos'}
+                aria-controls="panel-photos"
+                onClick={() => openTab('photos')}
+                className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
+                  activeTab === 'photos'
+                    ? 'bg-blue-600 text-white border border-blue-600'
+                    : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
+                }`}
+                data-testid="tab-photos"
+              >
+                Photos
+                {!!(userPhotos?.length) && (
+                  <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
+                    {userPhotos.length}
+                  </span>
+                )}
+              </button>
+
+              <button
+                role="tab"
+                aria-selected={activeTab === 'references'}
+                aria-controls="panel-references"
+                onClick={() => openTab('references')}
+                className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
+                  activeTab === 'references'
+                    ? 'bg-blue-600 text-white border border-blue-600'
+                    : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
+                }`}
+                data-testid="tab-references"
+              >
+                References
+                {!!(vouches?.length) && (
+                  <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
+                    {vouches.length}
+                  </span>
+                )}
+              </button>
+
+              {user?.userType !== 'business' && (
+                <button
+                  role="tab"
+                  aria-selected={activeTab === 'travel'}
+                  aria-controls="panel-travel"
+                  onClick={() => openTab('travel')}
+                  className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
+                    activeTab === 'travel'
+                      ? 'bg-blue-600 text-white border border-blue-600'
+                      : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
+                  }`}
+                  data-testid="tab-travel"
+                >
+                  Travel
+                  {!!(travelPlans?.length) && (
+                    <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
+                      {travelPlans.length}
+                    </span>
+                  )}
+                </button>
               )}
-            </button>
-            <button
-              onClick={() => {
-                console.log('🔥 PHOTOS CLICKED'); 
-                setActiveTab('photos');
-                setShowPhotosContent(true);
-                // Smart scroll to photos content after it renders
-                setTimeout(() => {
-                  const photosContent = document.querySelector('[data-testid="photos-content"]');
-                  if (photosContent) {
-                    photosContent.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                  }
-                }, 200);
-              }}
-              className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
-                activeTab === 'photos'
-                  ? 'bg-blue-600 text-white border border-blue-600'
-                  : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
-              }`}
-              data-testid="tab-photos"
-            >
-              Photos
-              {userPhotos?.length > 0 && (
-                <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
-                  {userPhotos.length}
-                </span>
-              )}
-            </button>
-            <button
-              onClick={() => {
-                console.log('🔥 REFERENCES CLICKED'); 
-                setActiveTab('references');
-                setShowReferencesContent(true);
-                // Smart scroll to references content after it renders
-                setTimeout(() => {
-                  const referencesContent = document.querySelector('[data-testid="references-content"]');
-                  if (referencesContent) {
-                    referencesContent.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                  }
-                }, 200);
-              }}
-              className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
-                activeTab === 'references'
-                  ? 'bg-blue-600 text-white border border-blue-600'
-                  : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
-              }`}
-              data-testid="tab-references"
-            >
-              References
-              {vouches?.length > 0 && (
-                <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
-                  {vouches.length}
-                </span>
-              )}
-            </button>
-            <button
-              onClick={() => {
-                console.log('🔥 TRAVEL CLICKED'); 
-                setActiveTab('travel');
-                setShowTravelContent(true);
-                // Smart scroll to travel content after it renders
-                setTimeout(() => {
-                  const travelContent = document.querySelector('[data-testid="travel-content"]');
-                  if (travelContent) {
-                    travelContent.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                  }
-                }, 200);
-              }}
-              className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
-                activeTab === 'travel'
-                  ? 'bg-blue-600 text-white border border-blue-600'
-                  : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
-              }`}
-              data-testid="tab-travel"
-            >
-              Travel
-              {travelPlans?.length > 0 && (
-                <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
-                  {travelPlans.length}
-                </span>
-              )}
-            </button>
-            <button
-              onClick={() => {
-                console.log('🔥 COUNTRIES CLICKED'); 
-                setActiveTab('countries');
-                setShowCountriesContent(true);
-                // Smart scroll to countries content after it renders
-                setTimeout(() => {
-                  const countriesContent = document.querySelector('[data-testid="countries-content"]');
-                  if (countriesContent) {
-                    countriesContent.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                  }
-                }, 200);
-              }}
-              className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
-                activeTab === 'countries'
-                  ? 'bg-blue-600 text-white border border-blue-600'
-                  : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
-              }`}
-              data-testid="tab-countries"
-            >
-              Countries
-              {countriesVisited?.length > 0 && (
-                <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
-                  {countriesVisited.length}
-                </span>
-              )}
-            </button>
+
+              <button
+                role="tab"
+                aria-selected={activeTab === 'countries'}
+                aria-controls="panel-countries"
+                onClick={() => openTab('countries')}
+                className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
+                  activeTab === 'countries'
+                    ? 'bg-blue-600 text-white border border-blue-600'
+                    : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
+                }`}
+                data-testid="tab-countries"
+              >
+                Countries
+                {!!(countriesVisited?.length) && (
+                  <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
+                    {countriesVisited.length}
+                  </span>
+                )}
+              </button>
             </div>
             
             {/* Let's Meet Now CTA */}
@@ -5793,14 +5772,25 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             )}
 
             {/* Travel Plans - Hidden for business profiles */}
-            {activeTab === 'travel' && user?.userType !== 'business' && showTravelContent && (
-              <div data-testid="travel-content">
+            {/* Travel Panel */}
+            <div 
+              role="tabpanel"
+              id="panel-travel"
+              aria-labelledby="tab-travel"
+              hidden={activeTab !== 'travel'}
+              ref={tabRefs.travel}
+              className="mt-6"
+              data-testid="travel-content"
+            >
+              {user?.userType !== 'business' && (
+                <div>
                 <TravelPlansWidget 
                   userId={effectiveUserId || 0} 
                   isOwnProfile={isOwnProfile}
                 />
-              </div>
-            )}
+                </div>
+              )}
+            </div>
 
             {/* Photo Albums Widget - Separate from Travel Memories */}
             {user?.userType !== 'business' && (
@@ -5817,8 +5807,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
 
             {/* Photo Gallery */}
-            {activeTab === 'photos' && showPhotosContent && (
-            <div className="space-y-4 mt-6" style={{zIndex: 10, position: 'relative'}} data-testid="photos-content">
+            {/* Photos Panel */}
+            <div 
+              role="tabpanel"
+              id="panel-photos"
+              aria-labelledby="tab-photos"
+              hidden={activeTab !== 'photos'}
+              ref={tabRefs.photos}
+              className="space-y-4 mt-6" 
+              style={{zIndex: 10, position: 'relative'}} 
+              data-testid="photos-content"
+            >
               <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700">
                 <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white dark:bg-gray-900">
                   <CardTitle className="flex items-center gap-2 text-black dark:text-white">
@@ -5940,11 +5939,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </Card>
               )}
             </div>
-            )}
 
             {/* Countries Tab */}
-            {activeTab === 'countries' && showCountriesContent && (
-              <div className="space-y-4 mt-6" style={{zIndex: 10, position: 'relative'}} data-testid="countries-content">
+            {/* Countries Panel */}
+            <div 
+              role="tabpanel"
+              id="panel-countries"
+              aria-labelledby="tab-countries"
+              hidden={activeTab !== 'countries'}
+              ref={tabRefs.countries}
+              className="space-y-4 mt-6" 
+              style={{zIndex: 10, position: 'relative'}} 
+              data-testid="countries-content"
+            >
                 <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
                   <CardHeader className="bg-white dark:bg-gray-900">
                     <div className="flex items-center justify-between">
@@ -6066,8 +6073,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     )}
                   </CardContent>
                 </Card>
-              </div>
-            )}
+            </div>
 
             {/* Event Organizer Hub - for ALL users who want to organize events */}
             {isOwnProfile && (
@@ -6161,10 +6167,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
 
 
-            {/* Current Connections Widget - Visible to all - MOVED UNDER TRAVEL STATS */}
-            {console.log('🔧 TAB CONTENT DEBUG:', { activeTab, showingContacts: activeTab === 'contacts' })}
-            {activeTab === 'contacts' && showContactsContent && (
-            <div className="space-y-4 mt-6" style={{zIndex: 10, position: 'relative'}} data-testid="contacts-content">
+            {/* Contacts Panel */}
+            <div 
+              role="tabpanel"
+              id="panel-contacts"
+              aria-labelledby="tab-contacts"
+              hidden={activeTab !== 'contacts'}
+              ref={tabRefs.contacts}
+              className="space-y-4 mt-6" 
+              style={{zIndex: 10, position: 'relative'}} 
+              data-testid="contacts-content"
+            >
               <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700">
                 <CardHeader className="bg-white dark:bg-gray-900">
                   <CardTitle className="flex items-center justify-between text-black dark:text-white">
@@ -6529,7 +6542,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </Card>
               )}
             </div>
-            )}
 
 
 
@@ -6817,15 +6829,26 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             )}
 
             {/* Vouch Widget */}
-            {activeTab === 'references' && user?.id && showReferencesContent && (
-              <div data-testid="references-content">
+            {/* References Panel */}
+            <div 
+              role="tabpanel"
+              id="panel-references"
+              aria-labelledby="tab-references"
+              hidden={activeTab !== 'references'}
+              ref={tabRefs.references}
+              className="mt-6"
+              data-testid="references-content"
+            >
+              {user?.id && (
+                <div>
                 <VouchWidget 
                   userId={user.id} 
                   isOwnProfile={isOwnProfile}
                   currentUserId={currentUser?.id}
                 />
-              </div>
-            )}
+                </div>
+              )}
+            </div>
 
 
             {/* Travel Intent Widget - TangoTrips-inspired */}
