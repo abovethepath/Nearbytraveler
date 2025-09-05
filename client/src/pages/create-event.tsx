@@ -682,14 +682,27 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
               {/* Event Location - Use SmartLocationInput like signup forms */}
               <div className="space-y-2">
                 <Label className="text-sm font-medium dark:text-white">Event Location *</Label>
+                {/* Hidden form inputs for validation */}
+                <input 
+                  type="hidden" 
+                  {...register("city", { required: "City is required" })} 
+                />
+                <input 
+                  type="hidden" 
+                  {...register("country", { required: "Country is required" })} 
+                />
+                <input 
+                  type="hidden" 
+                  {...register("state")} 
+                />
                 <SmartLocationInput
                   city={watch("city") || ""}
                   state={watch("state") || ""}
                   country={watch("country") || ""}
                   onLocationChange={(location) => {
-                    setValue("city", location.city);
-                    setValue("state", location.state);
-                    setValue("country", location.country);
+                    setValue("city", location.city, { shouldValidate: true });
+                    setValue("state", location.state, { shouldValidate: true });
+                    setValue("country", location.country, { shouldValidate: true });
                     setValue("location", `${location.city}${location.state ? `, ${location.state}` : ""}`);
                   }}
                   required={true}
