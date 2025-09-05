@@ -91,8 +91,6 @@ const UNIVERSAL_ACTIVITIES = [
   { name: "Photography Walks", description: "Capture the city's beauty" },
   { name: "Historical Sites", description: "Learn about local history" },
   { name: "Architecture Tours", description: "Explore unique buildings" },
-  { name: "Cultural Centers", description: "Community cultural spaces" },
-  { name: "Film Screenings", description: "Movies and cinema culture" },
   { name: "Open Mic Nights", description: "Performance opportunities" },
   
   // Nightlife & Entertainment
@@ -107,19 +105,15 @@ const UNIVERSAL_ACTIVITIES = [
   
   // Shopping & Local Exploration
   { name: "Vintage & Thrift", description: "Unique finds and antiques" },
-  { name: "Bookstores & Cafes", description: "Literary spots" },
   { name: "Flea Markets", description: "Treasure hunting and bargains" },
-  { name: "Record Stores", description: "Vinyl and music shopping" },
   
   // Wellness & Self-Care
   { name: "Spa & Wellness", description: "Relaxation and self-care" },
   { name: "Yoga Classes", description: "Find inner peace" },
   { name: "Meditation Groups", description: "Mindfulness practice" },
-  { name: "Hot Springs", description: "Natural relaxation" },
   { name: "Massage Therapy", description: "Professional relaxation" },
   { name: "Fitness Centers", description: "Gyms and workout facilities" },
   { name: "Pilates Classes", description: "Core strengthening workouts" },
-  { name: "Martial Arts", description: "Self-defense and discipline" },
   
   // Adventure & Unique Experiences
   { name: "Local Tours", description: "Guided city experiences" },
@@ -128,23 +122,11 @@ const UNIVERSAL_ACTIVITIES = [
   { name: "Local Sports", description: "Watch or play local games" },
   { name: "Scavenger Hunts", description: "City exploration games" },
   { name: "Boat Tours", description: "Water-based sightseeing" },
-  { name: "Helicopter Tours", description: "Aerial city views" },
-  { name: "Zip Lining", description: "Thrilling aerial adventures" },
-  { name: "Go-Kart Racing", description: "High-speed fun" },
-  { name: "Mini Golf", description: "Miniature golf courses" },
-  { name: "Laser Tag", description: "Strategic combat games" },
-  { name: "Paintball", description: "Team-based combat sport" },
   
   // Transportation & Getting Around
   { name: "Bike Rentals", description: "Rent bikes for exploration" },
   { name: "Walking Groups", description: "Explore the city on foot" },
   
-  // Seasonal & Weather Activities
-  { name: "Winter Sports", description: "Cold weather activities" },
-  { name: "Summer Activities", description: "Warm weather fun" },
-  { name: "Rainy Day Activities", description: "Indoor options for bad weather" },
-  { name: "Outdoor Concerts", description: "Music in open air venues" },
-  { name: "Seasonal Markets", description: "Holiday and seasonal shopping" },
   
   // Special Interests
   { name: "LGBTQ+ Friendly", description: "Inclusive spaces and events" }
