@@ -72,8 +72,18 @@ export default function Home() {
   const [connectModalMode, setConnectModalMode] = useState<'current' | 'hometown'>('current');
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [sortBy, setSortBy] = useState<'recent' | 'active' | 'compatibility' | 'travel_experience' | 'closest_nearby' | 'aura' | 'references' | 'alphabetical'>('recent');
+  
+  // Lazy loading state - track which sections have been loaded
+  const [loadedSections, setLoadedSections] = useState<Set<string>>(new Set(['hero'])); // Only hero loads immediately
+  const [activeSection, setActiveSection] = useState<string>('hero');
 
   const { user, setUser } = useContext(AuthContext);
+
+  // Function to handle section loading
+  const handleSectionView = (sectionName: string) => {
+    setActiveSection(sectionName);
+    setLoadedSections(prev => new Set([...prev, sectionName]));
+  };
 
   // Fetch current user profile data
   const getCurrentUserId = () => {
@@ -285,9 +295,10 @@ export default function Home() {
     enabled: !!(user?.id || currentUserProfile?.id || effectiveUser?.id),
   });
 
-  // ONLY USER-CREATED EVENTS: Get events from both hometown AND travel destination
+  // ONLY USER-CREATED EVENTS: Get events from both hometown AND travel destination - LAZY LOADED
   const { data: userPriorityEvents = [] } = useQuery({
     queryKey: ['/api/events', effectiveUser?.hometownCity, effectiveUser?.travelDestination],
+    enabled: loadedSections.has('events'), // Only load when events section is viewed
     queryFn: async () => {
       const cities = [];
       
@@ -982,10 +993,10 @@ export default function Home() {
 
   const { data: messages = [], isLoading: messagesLoading } = useQuery<Message[]>({
     queryKey: [`/api/messages/${currentUserId}`],
-    enabled: !!currentUserId,
+    enabled: !!currentUserId && loadedSections.has('messages'), // Only load when messages section is viewed
   });
 
-  // Fetch business offers from ALL locations (hometown + all travel destinations)
+  // Fetch business offers from ALL locations (hometown + all travel destinations) - LAZY LOADED
   const { data: allBusinessOffers = [], isLoading: businessOffersLoading } = useQuery<any[]>({
     queryKey: [`/api/business-deals/all-locations`, discoveryLocations.allCities.map(loc => loc.city)],
     queryFn: async () => {
@@ -1021,7 +1032,6 @@ export default function Home() {
       console.log('Combined business deals:', unique.length, 'deals from ALL', discoveryLocations.allCities.length, 'locations');
       return unique;
     },
-    enabled: discoveryLocations.allCities.length > 0 && !!currentUserId && !isLoadingTravelPlans && !isLoadingCurrentUser,
     staleTime: 0,
     gcTime: 0,
   });
@@ -1031,7 +1041,7 @@ export default function Home() {
 
   // businessOffersLoading is now defined in the query above
 
-  // Fetch active quick meetups from ALL locations (hometown + all travel destinations)
+  // Fetch active quick meetups from ALL locations (hometown + all travel destinations) - LAZY LOADED
   const { data: allMeetups = [], isLoading: meetupsLoading } = useQuery<any[]>({
     queryKey: [`/api/quick-meetups/all-locations`, discoveryLocations.allCities.map(loc => loc.city)],
     queryFn: async () => {
@@ -1067,16 +1077,16 @@ export default function Home() {
       console.log('Combined meetups:', unique.length, 'meetups from ALL', discoveryLocations.allCities.length, 'locations');
       return unique;
     },
-    enabled: discoveryLocations.allCities.length > 0 && !!currentUserId && !isLoadingTravelPlans && !isLoadingCurrentUser,
     staleTime: 30 * 1000, // 30-second cache
     gcTime: 0,
   });
 
   const meetups = allMeetups;
 
-  // Query users - prioritize specific location filter, otherwise show ALL users
+  // Query users - prioritize specific location filter, otherwise show ALL users - LAZY LOADED
   const { data: rawUsers = [], isLoading: usersLoading, error: usersError } = useQuery<User[]>({
     queryKey: ["/api/users/discover-people", { location: filters.location }],
+    enabled: loadedSections.has('people'), // Only load when people section is viewed
     queryFn: async () => {
       const searchLocation = filters.location;
 
@@ -2689,7 +2699,17 @@ export default function Home() {
               )}
             </div>
 
-            {(usersLoading || (activeFilter === "best-matches" && matchedUsersLoading)) ? (
+            {!loadedSections.has('people') ? (
+              <div className="text-center py-12">
+                <Button
+                  onClick={() => handleSectionView('people')}
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600"
+                >
+                  <Users className="w-4 h-4 mr-2" />
+                  Load Enhanced Discovery
+                </Button>
+              </div>
+            ) : (usersLoading || (activeFilter === "best-matches" && matchedUsersLoading)) ? (
               <div className="space-y-6">
                 {[...Array(3)].map((_, i) => (
                   <div key={i} className="animate-pulse">
@@ -2965,7 +2985,7 @@ export default function Home() {
             )}
 
 
-            {/* Community Events Section - ONLY USER-CREATED EVENTS */}
+            {/* Community Events Section - ONLY USER-CREATED EVENTS - LAZY LOADED */}
             <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -2982,14 +3002,26 @@ export default function Home() {
                   View All
                 </Button>
               </div>
-              <EventsGrid
-                events={userPriorityEvents?.filter((event: any) => event.organizerId && !event.isAIGenerated) || []}
-                displayCount={6}
-                onShowMore={() => {}}
-                travelDestination={effectiveUser?.travelDestination}
-                useDualLocation={!!effectiveUser?.isCurrentlyTraveling}
-                showCommunityOnly={true}
-              />
+              {!loadedSections.has('events') ? (
+                <div className="text-center py-8">
+                  <Button
+                    onClick={() => handleSectionView('events')}
+                    className="bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600"
+                  >
+                    <Calendar className="w-4 h-4 mr-2" />
+                    Load Community Events
+                  </Button>
+                </div>
+              ) : (
+                <EventsGrid
+                  events={userPriorityEvents?.filter((event: any) => event.organizerId && !event.isAIGenerated) || []}
+                  displayCount={6}
+                  onShowMore={() => {}}
+                  travelDestination={effectiveUser?.travelDestination}
+                  useDualLocation={!!effectiveUser?.isCurrentlyTraveling}
+                  showCommunityOnly={true}
+                />
+              )}
             </div>
 
             {/* External Events Section - AI & API SOURCED EVENTS */}
@@ -3100,24 +3132,35 @@ export default function Home() {
             )}
 
 
-            {/* Local Businesses Section - Only show if user is business type OR there are actual deals */}
-            {(effectiveUser?.userType === 'business' || (businessDeals && businessDeals.length > 0)) && (
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">Local Businesses</h2>
+            {/* Local Businesses Section - LAZY LOADED */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Local Businesses</h2>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setLocation('/discover')}
+                  className="text-gray-600 dark:text-gray-400"
+                >
+                  <Store className="w-4 h-4 mr-1" />
+                  View All
+                </Button>
+              </div>
+              
+              {!loadedSections.has('business') ? (
+                <div className="text-center py-8">
                   <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setLocation('/discover')}
-                    className="text-gray-600 dark:text-gray-400"
+                    onClick={() => handleSectionView('business')}
+                    className="bg-gradient-to-r from-green-500 to-blue-500 text-white hover:from-green-600 hover:to-blue-600"
                   >
-                    <Store className="w-4 h-4 mr-1" />
-                    View All
+                    <Store className="w-4 h-4 mr-2" />
+                    Load Business Deals
                   </Button>
                 </div>
-                
-                {/* Business Deals Display */}
-                {businessDeals && businessDeals.length > 0 ? (
+              ) : (
+                <>  
+                  {/* Business Deals Display */}
+                  {businessDeals && businessDeals.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {businessDeals.slice(0, businessesDisplayCount).map((deal: any) => (
                     <Card 
@@ -3253,22 +3296,9 @@ export default function Home() {
                   )}
                 </div>
               )}
-              </div>
-            )}
-
-
-            {/* Load More / Load Less buttons for Businesses */}
-            {businessesDisplayCount > 3 && (
-              <div className="text-center pt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => setBusinessesDisplayCount(3)}
-                  className="bg-gray-50 hover:bg-gray-100 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white dark:border-gray-500"
-                >
-                  Load Less
-                </Button>
-              </div>
-            )}
+                </>
+              )}
+            </div>
 
           </div>
 
@@ -3279,14 +3309,40 @@ export default function Home() {
               <CurrentLocationWeatherWidget />
             </div>
 
-            {/* Messages Widget - Always Show */}
+            {/* Messages Widget - LAZY LOADED */}
             <div>
-              <MessagesWidget userId={currentUserId} />
+              {!loadedSections.has('messages') ? (
+                <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border shadow-sm text-center">
+                  <h3 className="text-lg font-semibold mb-3">Recent Messages</h3>
+                  <Button
+                    onClick={() => handleSectionView('messages')}
+                    className="bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600"
+                  >
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    Load Messages
+                  </Button>
+                </div>
+              ) : (
+                <MessagesWidget userId={currentUserId} />
+              )}
             </div>
 
-            {/* Quick Meetup Widget - Always Show */}
+            {/* Quick Meetup Widget - LAZY LOADED */}
             <div>
-              <QuickMeetupWidget city={getCurrentUserLocation()} />
+              {!loadedSections.has('meetups') ? (
+                <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border shadow-sm text-center">
+                  <h3 className="text-lg font-semibold mb-3">Quick Meetups</h3>
+                  <Button
+                    onClick={() => handleSectionView('meetups')}
+                    className="bg-gradient-to-r from-green-500 to-teal-500 text-white hover:from-green-600 hover:to-teal-600"
+                  >
+                    <Users className="w-4 h-4 mr-2" />
+                    Load Meetups
+                  </Button>
+                </div>
+              ) : (
+                <QuickMeetupWidget city={getCurrentUserLocation()} />
+              )}
             </div>
 
             {/* City Map Widget - Desktop Only - Interactive map showing users, events, and businesses */}
