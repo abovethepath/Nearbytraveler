@@ -835,6 +835,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [triggerQuickMeetup, setTriggerQuickMeetup] = useState(false);
   const [selectedAlbum, setSelectedAlbum] = useState<any>(null);
   const [showAlbumModal, setShowAlbumModal] = useState(false);
+  const [showFullGallery, setShowFullGallery] = useState(false);
   const [businessesDisplayCount, setBusinessesDisplayCount] = useState(3);
   const [expandedTravelPlan, setExpandedTravelPlan] = useState<number | null>(null);
   
@@ -5908,8 +5909,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
 
 
-            {/* Photo Gallery */}
-            {/* Photos Panel - Lazy Loaded */}
+            {/* Photo Gallery Preview */}
+            {/* Photos Panel - Optimized Preview */}
             {activeTab === 'photos' && loadedTabs.has('photos') && (
               <div 
                 role="tabpanel"
@@ -5924,22 +5925,22 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white dark:bg-gray-900">
                   <CardTitle className="flex items-center gap-2 text-black dark:text-white">
                     <Camera className="w-5 h-5" />
-                    Photos ({photos.length})
+                    Photos & Travel Memories ({photos.length + (userTravelMemories?.length || 0)})
                   </CardTitle>
                 <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                   <Button 
                     size="sm" 
-                    className="bg-white text-black hover:bg-blue-600 border-blue-500 flex-1 sm:flex-none text-xs sm:text-sm"
-                    onClick={() => setLocation('/photos')}
+                    className="bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600 flex-1 sm:flex-none text-xs sm:text-sm"
+                    onClick={() => setShowFullGallery(true)}
                   >
-                    View Gallery
+                    View Full Gallery
                   </Button>
                   {isOwnProfile && (
                     <>
                       <Button 
                         size="sm" 
                         onClick={() => setLocation('/upload-photos')}
-                        className="bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600 flex-1 sm:flex-none text-xs sm:text-sm"
+                        className="bg-green-500 text-white hover:bg-green-600 flex-1 sm:flex-none text-xs sm:text-sm"
                       >
                         Upload Photos
                       </Button>
@@ -5956,39 +5957,69 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
               </CardHeader>
               <CardContent>
-                {photos.length > 0 ? (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {photos.map((photo, index) => (
-                      <div
-                        key={photo.id}
-                        className="aspect-square cursor-pointer rounded-lg overflow-hidden relative group"
-                        onClick={() => setSelectedPhotoIndex(index)}
-                      >
-                        <img 
-                          src={photo.imageUrl} 
-                          alt={photo.caption || 'Travel photo'}
-                          className="w-full h-full object-cover"
-                        />
-                        {isOwnProfile && (
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            className="absolute top-2 right-2 w-8 h-8 p-0"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeletePhoto(photo.id);
-                            }}
-                          >
-                            ×
-                          </Button>
+                {(photos.length > 0 || userTravelMemories?.length > 0) ? (
+                  <div className="space-y-4">
+                    {/* Recent Photos Preview (max 6) */}
+                    {photos.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Recent Photos</h4>
+                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                          {photos.slice(0, 6).map((photo, index) => (
+                            <div
+                              key={photo.id}
+                              className="aspect-square cursor-pointer rounded-lg overflow-hidden relative group"
+                              onClick={() => { setSelectedPhotoIndex(index); setShowFullGallery(true); }}
+                            >
+                              <img 
+                                src={photo.imageUrl} 
+                                alt={photo.caption || 'Travel photo'}
+                                className="w-full h-full object-cover hover:scale-105 transition-transform"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                        {photos.length > 6 && (
+                          <p className="text-xs text-gray-500 mt-2">
+                            +{photos.length - 6} more photos. Click "View Full Gallery" to see all.
+                          </p>
                         )}
                       </div>
-                    ))}
+                    )}
+                    
+                    {/* Travel Memories Preview */}
+                    {userTravelMemories && userTravelMemories.length > 0 && (
+                      <div>
+                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Travel Memories</h4>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                          {userTravelMemories.slice(0, 3).map((memory: any) => (
+                            <div
+                              key={memory.id}
+                              className="aspect-square cursor-pointer rounded-lg overflow-hidden relative group"
+                              onClick={() => setShowFullGallery(true)}
+                            >
+                              <img 
+                                src={memory.imageUrl} 
+                                alt={memory.caption || 'Travel memory'}
+                                className="w-full h-full object-cover hover:scale-105 transition-transform"
+                              />
+                              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2">
+                                <p className="text-white text-xs font-medium truncate">{memory.location}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        {userTravelMemories.length > 3 && (
+                          <p className="text-xs text-gray-500 mt-2">
+                            +{userTravelMemories.length - 3} more memories. Click "View Full Gallery" to see all.
+                          </p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="text-center py-12 text-gray-500">
                     <Camera className="w-12 h-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
-                    <p className="text-gray-600 dark:text-white">No photos yet</p>
+                    <p className="text-gray-600 dark:text-white">No photos or travel memories yet</p>
                     {isOwnProfile && (
                       <p className="text-sm text-gray-600 dark:text-white">Share your travel memories!</p>
                     )}
