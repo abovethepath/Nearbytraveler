@@ -113,14 +113,17 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
     fetchAllCities();
   }, []);
 
-  // Fetch only essential data immediately, use previews for the rest
+  // Load essential data when city is selected
   useEffect(() => {
     if (selectedCity) {
       console.log('🎯 CITY SELECTED:', selectedCity);
       console.log('🎯 FETCHING ESSENTIAL DATA FOR CITY:', selectedCity);
-      // Only load connections immediately (small data)
+      // Load essential data immediately
       fetchConnections();
-      // All other heavy data will be loaded on-demand with preview sections
+      fetchCityActivities();
+      fetchUserActivities();
+      fetchCityEvents();
+      fetchUserEvents();
     }
   }, [selectedCity]);
 
@@ -1092,10 +1095,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
         {/* Removed problematic photo gallery */}
 
         {/* HOW MATCHING WORKS - MOBILE RESPONSIVE */}
-        <Card className="mb-3 bg-white/5 backdrop-blur-sm border-white/10">
+        <Card className="mb-3 bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
           <CardContent className="p-3">
-            <div className="text-gray-600 dark:text-gray-300 text-xs md:text-sm">
-              <strong className="text-blue-400">Quick Start:</strong> Click blue activities below to add them to your profile, then see who else wants to do the same things in {selectedCity}!
+            <div className="text-gray-800 dark:text-gray-200 text-xs md:text-sm">
+              <strong className="text-black dark:text-white">Quick Start:</strong> Click activities below to add them to your profile, then see who else wants to do the same things in {selectedCity}!
             </div>
           </CardContent>
         </Card>
@@ -1118,12 +1121,12 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
         </div>
 
         {/* Global Activities Section - MOBILE RESPONSIVE */}
-        <div className="bg-gray-800/60 rounded-lg p-3 md:p-4 mb-6">
-          <h3 className="text-blue-400 font-semibold text-base md:text-lg mb-2 md:mb-3">
+        <div className="bg-white border border-gray-200 dark:bg-gray-800 dark:border-gray-700 rounded-lg p-3 md:p-4 mb-6">
+          <h3 className="text-black dark:text-white font-semibold text-base md:text-lg mb-2 md:mb-3">
             Everyone can add/edit activities for {selectedCity}
           </h3>
-          <div className="text-gray-300 text-xs md:text-sm mb-3">
-            🔵 Click blue activities to add them to your personal list below<br className="sm:hidden" />
+          <div className="text-gray-700 dark:text-gray-300 text-xs md:text-sm mb-3">
+            ✅ Click activities to add them to your personal list below<br className="sm:hidden" />
             <span className="hidden sm:inline"> • </span>✏️ Edit/delete to change for EVERYONE
           </div>
 
