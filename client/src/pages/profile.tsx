@@ -621,7 +621,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [showTravelPlanDetails, setShowTravelPlanDetails] = useState(false);
   const [showDestinationSuggestions, setShowDestinationSuggestions] = useState(false);
   const [showChatroomList, setShowChatroomList] = useState(false);
-  const [activeTab, setActiveTab] = useState('contacts');
+  const [activeTab, setActiveTab] = useState('');
   console.log('🎯 CURRENT ACTIVE TAB:', activeTab);
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
@@ -6817,7 +6817,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             )}
 
             {/* Vouch Widget */}
-            {user?.id && showReferencesContent && (
+            {activeTab === 'references' && user?.id && showReferencesContent && (
               <div data-testid="references-content">
                 <VouchWidget 
                   userId={user.id} 
