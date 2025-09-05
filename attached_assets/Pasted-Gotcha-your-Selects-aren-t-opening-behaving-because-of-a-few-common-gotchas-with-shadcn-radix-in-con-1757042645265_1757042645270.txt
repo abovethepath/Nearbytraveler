@@ -1,3 +1,15 @@
+Gotcha—your Selects aren’t opening/behaving because of a few common gotchas with shadcn/radix in constrained previews (like Replit):
+
+They don’t love value="" (use undefined when empty).
+
+Sometimes the dropdown is there but under another layer; give it a high z-index and position="popper".
+
+Your data might be strings or objects; normalize so SelectItem.value is always a string.
+
+If a country has no city list, show a text input fallback so mobile users can still type it.
+
+Here’s a drop-in replacement for your SmartLocationInput that fixes all that, stays mobile friendly, and keeps your existing API.
+
 import { useState, useEffect, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -206,7 +218,7 @@ export function SmartLocationInput({
               >
                 {(country === "United States"
                   ? [
-                      "Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"
+                      "Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming",
                     ]
                   : [
                       "Alberta","British Columbia","Manitoba","New Brunswick","Newfoundland and Labrador","Northwest Territories","Nova Scotia","Nunavut","Ontario","Prince Edward Island","Quebec","Saskatchewan","Yukon",
@@ -235,3 +247,23 @@ export function SmartLocationInput({
     </div>
   );
 }
+
+Why this fixes Replit “not opening” issues
+
+value={country || undefined} (and city/state) avoids the controlled-with-empty-string quirk that can block Radix Select behavior.
+
+position="popper" + z-[2000] ensure the dropdown renders above any sticky headers/overlays in the preview.
+
+Data is normalized so your COUNTRIES / CITIES_BY_COUNTRY can be either strings or objects.
+
+If a country has no city dataset, users still get a plain text input—so it always works on mobile.
+
+Quick checks (if it’s still not opening)
+
+Make sure no global overlay (like a mobile menu) is left open with a higher z-index than 2000.
+
+Ensure you didn’t wrap this area in a container with pointer-events: none.
+
+Verify COUNTRIES and CITIES_BY_COUNTRY[country] are populated; if they’re empty, you’ll see the fallback input.
+
+If you paste your current COUNTRIES and CITIES_BY_COUNTRY shapes, I’ll tailor the normalizer so it matches exactly.
