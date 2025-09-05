@@ -518,7 +518,7 @@ export default function Events() {
                     
                     <div className="max-w-2xl space-y-4">
                       <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
-                        Every event is a story — <em className="text-purple-600 dark:text-purple-400 font-semibold">waiting to be shared.</em>
+                        Every event is a story — <em className="text-purple-600 dark:text-purple-400 font-semibold">waiting to be created.</em>
                       </p>
                       <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed">
                         From intimate coffee meetups to grand festivals, discover events that match your interests and travel style. Create unforgettable experiences with locals and fellow travelers.
@@ -574,7 +574,7 @@ export default function Events() {
                     <div className="text-center mb-4 relative z-10">
                       <p className="text-lg md:text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-200 italic leading-tight">
                         <span className="sm:hidden">Every event tells a story.</span>
-                        <span className="hidden sm:inline">Every event is a story waiting to be shared.</span>
+                        <span className="hidden sm:inline">Every event is a story waiting to be created.</span>
                       </p>
                     </div>
                     
