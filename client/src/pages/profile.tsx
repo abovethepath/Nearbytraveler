@@ -3790,8 +3790,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       {/* Navigation Tabs - Card Style with Border */}
       <div className="w-auto bg-white border border-black dark:bg-gray-900 dark:border-gray-700 px-3 sm:px-6 lg:px-10 py-4 mx-4 sm:mx-6 lg:mx-8 rounded-lg mt-4">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between">
-            <div className="flex flex-wrap gap-3 sm:gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="flex flex-wrap gap-2 sm:gap-3 lg:gap-4">
               <button
                 role="tab"
                 aria-selected={activeTab === 'contacts'}
@@ -3909,7 +3909,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   setTimeout(() => setTriggerQuickMeetup(false), 1000);
                 }, 100);
               }}
-              className="bg-gradient-to-r from-green-500 to-blue-500 text-white border-0 hover:from-green-600 hover:to-blue-600 px-6 py-2 text-sm font-medium rounded-lg"
+              className="bg-gradient-to-r from-green-500 to-blue-500 text-white border-0 hover:from-green-600 hover:to-blue-600 
+                         px-4 sm:px-6 py-2 sm:py-2 text-sm font-medium rounded-lg
+                         w-full sm:w-auto flex items-center justify-center"
               data-testid="button-lets-meet-now"
             >
               <Calendar className="w-4 h-4 mr-2" />
