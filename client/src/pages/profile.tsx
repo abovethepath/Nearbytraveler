@@ -6020,50 +6020,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 )}
               </CardContent>
             </Card>
-              
-              {/* Travel Memories */}
-              {userTravelMemories && userTravelMemories.length > 0 && (
-                <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700">
-                  <CardHeader className="bg-white dark:bg-gray-900">
-                    <CardTitle className="flex items-center gap-2 text-black dark:text-white">
-                      <MapPin className="w-5 h-5" />
-                      Travel Memories ({userTravelMemories.length})
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="bg-white dark:bg-gray-900">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {userTravelMemories.map((album) => (
-                        <div
-                          key={album.id}
-                          className="cursor-pointer rounded-lg overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-600"
-                          onClick={() => {
-                            setSelectedAlbum(album);
-                            setShowAlbumModal(true);
-                          }}
-                        >
-                          {album.coverPhoto ? (
-                            <img 
-                              src={album.coverPhoto} 
-                              alt={album.title}
-                              className="w-full h-32 object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-32 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                              <Camera className="w-8 h-8 text-gray-400" />
-                            </div>
-                          )}
-                          <div className="p-3 bg-white dark:bg-gray-800">
-                            <h4 className="font-medium text-sm text-gray-900 dark:text-white truncate">{album.title}</h4>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                              {album.photoCount} photo{album.photoCount !== 1 ? 's' : ''}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
               </div>
             )}
 
