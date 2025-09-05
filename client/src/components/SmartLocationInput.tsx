@@ -235,3 +235,5 @@ export function SmartLocationInput({
     </div>
   );
 }
+
+export default SmartLocationInput;
