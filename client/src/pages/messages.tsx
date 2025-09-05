@@ -461,7 +461,7 @@ export default function Messages() {
                   onClick={() => navigate(`/profile/${selectedUser.id}`)}
                 >
                   <Avatar className="w-10 h-10">
-                    <AvatarImage src={selectedUser.profileImage} />
+                    <AvatarImage src={selectedUser?.profileImage} />
                     <AvatarFallback className="bg-blue-600 text-white">
                       {selectedUser.username?.charAt(0)?.toUpperCase() || '?'}
                     </AvatarFallback>
@@ -505,7 +505,7 @@ export default function Messages() {
                             onClick={() => window.location.href = `/profile/${selectedUser.id}`}
                           >
                             <Avatar className="w-8 h-8">
-                              <AvatarImage src={selectedUser.profileImage} />
+                              <AvatarImage src={selectedUser?.profileImage} />
                               <AvatarFallback className="bg-blue-600 text-white text-xs">
                                 {selectedUser.username?.charAt(0)?.toUpperCase() || '?'}
                               </AvatarFallback>
@@ -591,7 +591,7 @@ export default function Messages() {
                       onClick={() => navigate(`/profile/${connection.connectedUser.id}`)}
                     >
                       <Avatar className="w-10 h-10">
-                        <AvatarImage src={connection.connectedUser.profileImage} />
+                        <AvatarImage src={connection.connectedUser?.profileImage} />
                         <AvatarFallback className="bg-green-600 text-white">
                           {connection.connectedUser.username?.charAt(0)?.toUpperCase() || '?'}
                         </AvatarFallback>
