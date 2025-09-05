@@ -6069,8 +6069,7 @@ Questions? Just reply to this message. Welcome aboard!
           .where(and(
             gte(events.date, now),
             lte(events.date, sixWeeksFromNow),
-            gt(events.organizerId, 0), // ONLY USER-CREATED EVENTS
-            eq(events.isAiGenerated, false) // EXCLUDE AI-GENERATED EVENTS
+            gt(events.organizerId, 0) // ONLY USER-CREATED EVENTS
           ));
         
         // PRIORITY SORTING: User-created events first, then by date
