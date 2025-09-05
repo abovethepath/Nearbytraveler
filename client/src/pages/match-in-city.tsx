@@ -38,43 +38,80 @@ const consolidateToMetroArea = (city: string, state?: string): string => {
 
 // Universal activities that apply to ALL cities worldwide for fast loading
 const UNIVERSAL_ACTIVITIES = [
-  // Social & Meeting
+  // Social & Meeting People
   { name: "Meet Locals", description: "Connect with people who live here" },
   { name: "Meet Travelers", description: "Find other people visiting" },
   { name: "Get Drinks", description: "Grab drinks at local spots" },
   { name: "Happy Hours", description: "Find the best happy hour deals" },
   { name: "Coffee Meetups", description: "Meet over coffee" },
   { name: "Language Exchange", description: "Practice languages with locals" },
+  { name: "Social Events", description: "Group activities and gatherings" },
+  { name: "Networking Events", description: "Professional and business connections" },
+  { name: "Coworking Spaces", description: "Work alongside other professionals" },
+  { name: "Study Groups", description: "Learn with others" },
   
   // Families & Dating
   { name: "Meet Other Families", description: "Connect with families with kids" },
   { name: "Single and Looking", description: "Meet other singles" },
   { name: "Date Night Ideas", description: "Romantic spots and activities" },
   { name: "Kid-Friendly Activities", description: "Fun things to do with children" },
+  { name: "Playground Hangouts", description: "Meet other parents at playgrounds" },
+  { name: "Family-Friendly Restaurants", description: "Dining with children" },
+  { name: "Baby/Toddler Groups", description: "Connect with new parents" },
+  { name: "Teen Activities", description: "Fun for teenagers" },
   
-  // Outdoor & Active
+  // Outdoor & Active Adventures
   { name: "Hiking", description: "Explore trails and nature" },
   { name: "Biking", description: "Cycling routes and bike tours" },
   { name: "Walking Tours", description: "Discover the city on foot" },
   { name: "Parks & Gardens", description: "Visit green spaces" },
   { name: "Beach Activities", description: "Ocean, lake, or river fun" },
   { name: "Running Groups", description: "Join local runners" },
+  { name: "Rock Climbing", description: "Indoor and outdoor climbing" },
+  { name: "Swimming", description: "Pools, lakes, and ocean swimming" },
+  { name: "Skateboarding", description: "Skate parks and street skating" },
+  { name: "Tennis", description: "Find courts and playing partners" },
+  { name: "Basketball", description: "Pickup games and courts" },
+  { name: "Soccer/Football", description: "Local games and teams" },
+  { name: "Fishing", description: "Local fishing spots" },
+  { name: "Kayaking/Canoeing", description: "Water adventures" },
+  { name: "Outdoor Fitness", description: "Boot camps and outdoor workouts" },
+  { name: "Camping", description: "Nearby camping spots" },
+  { name: "Nature Walks", description: "Peaceful walks in nature" },
   
-  // Food & Dining
+  // Food & Dining Experiences
   { name: "Local Food Scene", description: "Try authentic local cuisine" },
   { name: "Street Food", description: "Sample local street vendors" },
   { name: "Food Tours", description: "Guided culinary experiences" },
   { name: "Cooking Classes", description: "Learn local cooking" },
   { name: "Markets & Farmers Markets", description: "Fresh local produce" },
   { name: "Wine Tasting", description: "Local wines and vineyards" },
+  { name: "Beer Gardens", description: "Local brews and outdoor drinking" },
+  { name: "Food Trucks", description: "Mobile food experiences" },
+  { name: "Breakfast Spots", description: "Best morning meal locations" },
+  { name: "Late Night Eats", description: "Food after dark" },
+  { name: "Vegetarian/Vegan Food", description: "Plant-based dining options" },
+  { name: "Food Festivals", description: "Culinary celebrations" },
+  { name: "Coffee Culture", description: "Best cafes and coffee shops" },
+  { name: "Dessert Places", description: "Sweet treats and bakeries" },
+  { name: "Picnic Spots", description: "Great places for outdoor dining" },
   
-  // Arts & Culture
+  // Arts, Culture & Learning
   { name: "Museums & Galleries", description: "Art and cultural exhibits" },
   { name: "Live Music", description: "Concerts and local bands" },
   { name: "Theater & Shows", description: "Performances and entertainment" },
   { name: "Local Festivals", description: "Cultural celebrations" },
   { name: "Photography Walks", description: "Capture the city's beauty" },
   { name: "Art Classes", description: "Creative workshops" },
+  { name: "Historical Sites", description: "Learn about local history" },
+  { name: "Architecture Tours", description: "Explore unique buildings" },
+  { name: "Cultural Centers", description: "Community cultural spaces" },
+  { name: "Book Clubs", description: "Literary discussions" },
+  { name: "Film Screenings", description: "Movies and cinema culture" },
+  { name: "Poetry Readings", description: "Literary performances" },
+  { name: "Open Mic Nights", description: "Performance opportunities" },
+  { name: "Dance Classes", description: "Learn local dances" },
+  { name: "Music Lessons", description: "Learn instruments or singing" },
   
   // Nightlife & Entertainment
   { name: "Nightlife", description: "Bars, clubs, and evening fun" },
@@ -82,25 +119,87 @@ const UNIVERSAL_ACTIVITIES = [
   { name: "Live Entertainment", description: "Shows and performances" },
   { name: "Dancing", description: "Dance venues and classes" },
   { name: "Karaoke", description: "Sing your heart out" },
+  { name: "Comedy Shows", description: "Stand-up and improv comedy" },
+  { name: "Pub Crawls", description: "Explore multiple bars" },
+  { name: "Casino Gaming", description: "Gaming and gambling" },
+  { name: "Pool/Billiards", description: "Cue sports and competitions" },
+  { name: "Bowling", description: "Strike up some fun" },
+  { name: "Arcade Games", description: "Retro and modern gaming" },
+  { name: "Trivia Nights", description: "Test your knowledge" },
   
-  // Shopping & Local
+  // Shopping & Local Exploration
   { name: "Shopping Districts", description: "Local shops and markets" },
   { name: "Vintage & Thrift", description: "Unique finds and antiques" },
   { name: "Local Crafts", description: "Handmade items and artisans" },
   { name: "Bookstores & Cafes", description: "Literary spots" },
+  { name: "Flea Markets", description: "Treasure hunting and bargains" },
+  { name: "Souvenir Shopping", description: "Take home local memories" },
+  { name: "Local Markets", description: "Authentic shopping experiences" },
+  { name: "Record Stores", description: "Vinyl and music shopping" },
   
-  // Wellness & Relaxation
+  // Wellness & Self-Care
   { name: "Spa & Wellness", description: "Relaxation and self-care" },
   { name: "Yoga Classes", description: "Find inner peace" },
   { name: "Meditation Groups", description: "Mindfulness practice" },
   { name: "Hot Springs", description: "Natural relaxation" },
+  { name: "Massage Therapy", description: "Professional relaxation" },
+  { name: "Fitness Centers", description: "Gyms and workout facilities" },
+  { name: "Pilates Classes", description: "Core strengthening workouts" },
+  { name: "Martial Arts", description: "Self-defense and discipline" },
+  { name: "Therapy & Support Groups", description: "Mental health resources" },
   
-  // Adventure & Unique
+  // Adventure & Unique Experiences
   { name: "Local Tours", description: "Guided city experiences" },
   { name: "Ghost Tours", description: "Spooky historical walks" },
   { name: "Escape Rooms", description: "Puzzle-solving fun" },
   { name: "Local Sports", description: "Watch or play local games" },
-  { name: "Volunteer Opportunities", description: "Give back to the community" }
+  { name: "Volunteer Opportunities", description: "Give back to the community" },
+  { name: "Scavenger Hunts", description: "City exploration games" },
+  { name: "Segway Tours", description: "Modern city exploration" },
+  { name: "Boat Tours", description: "Water-based sightseeing" },
+  { name: "Helicopter Tours", description: "Aerial city views" },
+  { name: "Zip Lining", description: "Thrilling aerial adventures" },
+  { name: "Go-Kart Racing", description: "High-speed fun" },
+  { name: "Mini Golf", description: "Miniature golf courses" },
+  { name: "Laser Tag", description: "Strategic combat games" },
+  { name: "Paintball", description: "Team-based combat sport" },
+  
+  // Transportation & Getting Around
+  { name: "Public Transit", description: "Navigate local transportation" },
+  { name: "Bike Rentals", description: "Rent bikes for exploration" },
+  { name: "Car Sharing", description: "Share rides and costs" },
+  { name: "Walking Groups", description: "Explore the city on foot" },
+  { name: "Ride Sharing", description: "Share transportation" },
+  
+  // Seasonal & Weather Activities
+  { name: "Winter Sports", description: "Cold weather activities" },
+  { name: "Summer Activities", description: "Warm weather fun" },
+  { name: "Rainy Day Activities", description: "Indoor options for bad weather" },
+  { name: "Outdoor Concerts", description: "Music in open air venues" },
+  { name: "Seasonal Markets", description: "Holiday and seasonal shopping" },
+  
+  // Work & Business
+  { name: "Business Meetings", description: "Professional meetup spaces" },
+  { name: "Conference Venues", description: "Large gathering spaces" },
+  { name: "Startup Events", description: "Entrepreneurship and innovation" },
+  { name: "Trade Shows", description: "Industry exhibitions" },
+  { name: "Professional Development", description: "Career growth opportunities" },
+  
+  // Special Interests
+  { name: "LGBTQ+ Friendly", description: "Inclusive spaces and events" },
+  { name: "Pet-Friendly Activities", description: "Fun with your furry friends" },
+  { name: "Religious Services", description: "Places of worship and community" },
+  { name: "Senior Activities", description: "Activities for older adults" },
+  { name: "Accessibility Friendly", description: "Activities for people with disabilities" },
+  { name: "Budget-Friendly", description: "Free and low-cost activities" },
+  { name: "Luxury Experiences", description: "High-end activities and venues" },
+  
+  // Technology & Modern Life
+  { name: "Tech Meetups", description: "Technology and innovation gatherings" },
+  { name: "Gaming Communities", description: "Video and board game groups" },
+  { name: "Cryptocurrency Events", description: "Digital currency discussions" },
+  { name: "VR Experiences", description: "Virtual reality activities" },
+  { name: "Maker Spaces", description: "DIY and creation workshops" }
 ];
 
 interface MatchInCityProps {
