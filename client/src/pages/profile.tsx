@@ -6170,7 +6170,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   )}
                 </CardContent>
               </Card>
-              </div>
             )}
 
             {/* Contacts Panel - Lazy Loaded */}
@@ -6548,8 +6547,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </Card>
               )}
             </div>
-
-
+            )}
 
             {/* Reference Widget - Only show for other users' profiles */}
             {!isOwnProfile && userConnections.some((conn: any) => conn.status === 'accepted') && (
