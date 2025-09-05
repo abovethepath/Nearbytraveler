@@ -623,7 +623,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [showTravelPlanDetails, setShowTravelPlanDetails] = useState(false);
   const [showDestinationSuggestions, setShowDestinationSuggestions] = useState(false);
   const [showChatroomList, setShowChatroomList] = useState(false);
-  const [activeTab, setActiveTab] = React.useState<TabKey>('contacts');
+  const [activeTab, setActiveTab] = React.useState<TabKey | ''>('');
   console.log('🎯 CURRENT ACTIVE TAB:', activeTab);
   
   const tabRefs = {
@@ -635,9 +635,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   };
 
   function openTab(key: TabKey) {
+    console.log('🔥 OPENING TAB:', key);
     setActiveTab(key);
     // Wait for the panel to render, then scroll it into view
     requestAnimationFrame(() => {
+      console.log('📍 SCROLLING TO TAB:', key);
       tabRefs[key].current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   }
@@ -5785,8 +5787,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               {user?.userType !== 'business' && (
                 <div>
                 <TravelPlansWidget 
-                  userId={effectiveUserId || 0} 
-                  isOwnProfile={isOwnProfile}
+                  userId={effectiveUserId || 0}
                 />
                 </div>
               )}
@@ -6844,7 +6845,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <VouchWidget 
                   userId={user.id} 
                   isOwnProfile={isOwnProfile}
-                  currentUserId={currentUser?.id}
+                  currentUserId={currentUser?.id || 0}
                 />
                 </div>
               )}
