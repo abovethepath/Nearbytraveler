@@ -322,6 +322,9 @@ const CITY_ALWAYS_ACTIVITIES = {
     { name: "One World Trade Center", description: "Memorial and observation deck" },
     { name: "High Line", description: "Elevated park built on old railway" },
     { name: "Top of the Rock", description: "Observation deck with Empire State views" },
+    { name: "Manhattan Bridge", description: "Classic views of Brooklyn Bridge" },
+    { name: "Flatiron Building", description: "Iconic triangular skyscraper" },
+    { name: "Chrysler Building", description: "Art Deco architectural masterpiece" },
     
     // Museums & Culture
     { name: "Metropolitan Museum", description: "World-class art from ancient to modern" },
@@ -329,12 +332,17 @@ const CITY_ALWAYS_ACTIVITIES = {
     { name: "Guggenheim Museum", description: "Spiral architecture and modern art" },
     { name: "9/11 Memorial", description: "Moving tribute to September 11 victims" },
     { name: "American Museum of Natural History", description: "Dinosaurs and planetarium" },
+    { name: "Brooklyn Museum", description: "Contemporary and ancient art collections" },
+    { name: "Tenement Museum", description: "Immigrant history on Lower East Side" },
+    { name: "Frick Collection", description: "Gilded Age mansion with fine art" },
     
     // Broadway & Entertainment
     { name: "Broadway Shows", description: "World-famous theater district" },
     { name: "Lincoln Center", description: "Opera, ballet, and classical music" },
     { name: "Madison Square Garden", description: "Concerts and sports venue" },
     { name: "Apollo Theater", description: "Historic Harlem music venue" },
+    { name: "Radio City Music Hall", description: "Art Deco venue and Rockettes" },
+    { name: "Comedy Cellar", description: "Famous comedy club in Greenwich Village" },
     
     // Neighborhoods
     { name: "Chinatown", description: "Authentic Chinese culture and food" },
@@ -342,12 +350,31 @@ const CITY_ALWAYS_ACTIVITIES = {
     { name: "SoHo Shopping", description: "Trendy boutiques and art galleries" },
     { name: "Greenwich Village", description: "Bohemian neighborhood with cafes" },
     { name: "Wall Street", description: "Financial district and Stock Exchange" },
+    { name: "Williamsburg", description: "Hip Brooklyn area with artisanal everything" },
+    { name: "DUMBO", description: "Brooklyn waterfront with Manhattan views" },
+    { name: "East Village", description: "Eclectic nightlife and dining scene" },
+    { name: "Meatpacking District", description: "Trendy area with High Line entrance" },
     
     // Food & Markets
     { name: "Chelsea Market", description: "Indoor food hall and shopping" },
     { name: "Smorgasburg", description: "Weekend food market in Brooklyn" },
     { name: "Katz's Delicatessen", description: "Famous pastrami sandwiches since 1888" },
-    { name: "Pizza Tours", description: "Authentic NYC pizza experiences" }
+    { name: "Pizza Tours", description: "Authentic NYC pizza experiences" },
+    { name: "Russ & Daughters", description: "Century-old appetizing shop" },
+    { name: "Union Square Market", description: "Farmers market and local vendors" },
+    
+    // Sports & Entertainment
+    { name: "Yankees Games", description: "Baseball at iconic Yankee Stadium" },
+    { name: "Mets Games", description: "Baseball at Citi Field in Queens" },
+    { name: "Knicks Games", description: "NBA basketball at Madison Square Garden" },
+    { name: "Brooklyn Nets", description: "NBA basketball at Barclays Center" },
+    { name: "Rangers Games", description: "NHL hockey at Madison Square Garden" },
+    
+    // Unique NYC Experiences
+    { name: "Staten Island Ferry", description: "Free ferry with Statue of Liberty views" },
+    { name: "Coney Island", description: "Historic boardwalk and amusement park" },
+    { name: "Roosevelt Island Tram", description: "Aerial views of Manhattan" },
+    { name: "New York Public Library", description: "Iconic library with reading rooms" }
   ],
   
   "Miami": [
@@ -356,28 +383,51 @@ const CITY_ALWAYS_ACTIVITIES = {
     { name: "Miami Beach", description: "White sand beaches and turquoise water" },
     { name: "Ocean Drive", description: "Iconic strip with hotels and restaurants" },
     { name: "Key Biscayne", description: "Tropical island with pristine beaches" },
+    { name: "Bayside Marketplace", description: "Waterfront shopping and dining" },
+    { name: "Bal Harbour Shops", description: "Luxury shopping by the beach" },
+    { name: "Crandon Park Beach", description: "Family-friendly beach on Key Biscayne" },
+    { name: "Haulover Beach", description: "Clothing-optional beach and sandbar" },
     
     // Arts & Culture
     { name: "Art Basel Miami", description: "World-renowned art fair (seasonal)" },
     { name: "Wynwood Walls", description: "Outdoor street art museum" },
     { name: "Vizcaya Museum", description: "European-style mansion and gardens" },
     { name: "Pérez Art Museum", description: "Contemporary art with bay views" },
+    { name: "Bass Museum", description: "Contemporary art in Miami Beach" },
+    { name: "Frost Museum", description: "Science museum with planetarium and aquarium" },
+    { name: "Little Haiti", description: "Vibrant Haitian culture and art" },
     
     // Neighborhoods
     { name: "Little Havana", description: "Cuban culture, cigars, and cafés" },
     { name: "Design District", description: "Luxury shopping and modern art" },
     { name: "Brickell", description: "Modern skyline and rooftop bars" },
     { name: "Coconut Grove", description: "Bohemian village with waterfront dining" },
+    { name: "Coral Gables", description: "Mediterranean architecture and upscale dining" },
+    { name: "Aventura", description: "Shopping and high-end residential area" },
+    { name: "Midtown Miami", description: "Art galleries and trendy restaurants" },
     
     // Nightlife & Entertainment
     { name: "LIV Nightclub", description: "World-famous club at Fontainebleau" },
     { name: "Rooftop Bars", description: "Sky-high views of the city and ocean" },
     { name: "Lincoln Road", description: "Pedestrian mall with dining and shopping" },
+    { name: "Story Nightclub", description: "High-energy dance club in South Beach" },
+    { name: "Ball & Chain", description: "Historic Little Havana bar with live music" },
+    { name: "Mango's Tropical Cafe", description: "South Beach entertainment and dancing" },
+    
+    // Sports & Activities
+    { name: "Miami Heat Games", description: "NBA basketball at FTX Arena" },
+    { name: "Miami Dolphins Games", description: "NFL football at Hard Rock Stadium" },
+    { name: "Inter Miami CF", description: "MLS soccer with Lionel Messi" },
+    { name: "Jet Ski Rentals", description: "Explore Biscayne Bay by jet ski" },
+    { name: "Deep Sea Fishing", description: "Charter boats for sport fishing" },
     
     // Unique Experiences
     { name: "Everglades Tours", description: "Airboat rides through unique ecosystem" },
     { name: "Cuban Coffee", description: "Authentic cafecito in Little Havana" },
-    { name: "Art Deco Tours", description: "Guided tours of architectural gems" }
+    { name: "Art Deco Tours", description: "Guided tours of architectural gems" },
+    { name: "Boat Tours", description: "See celebrity homes from the water" },
+    { name: "Zoo Miami", description: "Large zoo with tropical animals" },
+    { name: "Jungle Island", description: "Interactive zoo and adventure park" }
   ],
   
   "Chicago": [
@@ -387,29 +437,52 @@ const CITY_ALWAYS_ACTIVITIES = {
     { name: "Willis Tower Skydeck", description: "Glass boxes 103 floors up" },
     { name: "Architecture Boat Tour", description: "See skyline from Chicago River" },
     { name: "The Bean", description: "Iconic Cloud Gate sculpture" },
+    { name: "Tribune Tower", description: "Gothic Revival skyscraper with artifacts" },
+    { name: "Wrigley Building", description: "Iconic white terra cotta towers" },
+    { name: "Marina City", description: "Unique corncob-shaped towers" },
+    { name: "Chicago Riverwalk", description: "Waterfront promenade with dining" },
     
     // Museums & Culture
     { name: "Art Institute of Chicago", description: "World-class art collection" },
     { name: "Field Museum", description: "Natural history and Sue the T-Rex" },
     { name: "Shedd Aquarium", description: "Aquatic life from around the world" },
     { name: "Museum of Science and Industry", description: "Interactive science exhibits" },
+    { name: "Chicago History Museum", description: "City's past from Great Fire to present" },
+    { name: "National Museum of Mexican Art", description: "Largest Mexican art collection in US" },
+    { name: "Contemporary Art Museum", description: "Cutting-edge contemporary works" },
     
     // Food Scene
     { name: "Deep Dish Pizza", description: "Chicago's famous thick-crust pizza" },
     { name: "Italian Beef", description: "Iconic Chicago sandwich" },
     { name: "Hot Dogs", description: "Chicago-style with all the fixings" },
     { name: "Garrett Popcorn", description: "Gourmet popcorn shop" },
+    { name: "Polish Boy", description: "Polish sausage with all the toppings" },
+    { name: "Portillo's", description: "Chicago-style fast food chain" },
+    { name: "Alinea", description: "Molecular gastronomy fine dining" },
+    { name: "Chicago Food Tours", description: "Guided culinary neighborhood tours" },
     
     // Sports
     { name: "Cubs Games", description: "Baseball at historic Wrigley Field" },
     { name: "White Sox Games", description: "Baseball on the South Side" },
     { name: "Bulls Games", description: "NBA basketball at United Center" },
     { name: "Blackhawks Games", description: "NHL hockey at United Center" },
+    { name: "Bears Games", description: "NFL football at Soldier Field" },
+    { name: "Chicago Fire", description: "MLS soccer at Soldier Field" },
     
-    // Neighborhoods
+    // Neighborhoods & Areas
     { name: "Lincoln Park Zoo", description: "Free zoo in beautiful park" },
     { name: "Wicker Park", description: "Hip neighborhood with vintage shops" },
-    { name: "The Loop", description: "Downtown area with elevated trains" }
+    { name: "The Loop", description: "Downtown area with elevated trains" },
+    { name: "Magnificent Mile", description: "Premier shopping on Michigan Avenue" },
+    { name: "Old Town", description: "Historic area with comedy clubs" },
+    { name: "River North", description: "Gallery district and nightlife" },
+    { name: "Chinatown", description: "Authentic Chinese culture and dim sum" },
+    
+    // Entertainment & Nightlife
+    { name: "Second City", description: "Famous improv comedy theater" },
+    { name: "Chicago Theatre", description: "Historic venue with iconic marquee" },
+    { name: "Green Mill Cocktail Lounge", description: "Historic jazz club Al Capone frequented" },
+    { name: "House of Blues", description: "Live music venue and restaurant" }
   ],
   
   "Las Vegas": [
@@ -418,29 +491,51 @@ const CITY_ALWAYS_ACTIVITIES = {
     { name: "Fremont Street", description: "LED canopy and street performers" },
     { name: "High Roller", description: "World's largest observation wheel" },
     { name: "Vegas Strip Walk", description: "Iconic boulevard with themed hotels" },
+    { name: "Venetian Gondola Rides", description: "Indoor gondola rides with singing gondoliers" },
+    { name: "Mirage Volcano", description: "Erupting volcano show nightly" },
+    { name: "Caesars Palace Forum Shops", description: "Luxury shopping with moving statues" },
+    { name: "Paris Las Vegas Eiffel Tower", description: "Half-scale replica with observation deck" },
     
     // Shows & Entertainment
     { name: "Cirque du Soleil", description: "Acrobatic performances at multiple venues" },
     { name: "Magic Shows", description: "World-class magicians and illusionists" },
     { name: "Headliner Concerts", description: "A-list performers in residency" },
     { name: "Comedy Shows", description: "Stand-up comedy at various venues" },
+    { name: "Blue Man Group", description: "Multimedia theatrical experience" },
+    { name: "Le Rêve", description: "Aquatic show at Wynn Las Vegas" },
+    { name: "Tournament of Kings", description: "Medieval dinner show at Excalibur" },
     
     // Casinos & Gaming
     { name: "Casino Gaming", description: "Slot machines, poker, and table games" },
     { name: "Poker Tournaments", description: "World Series of Poker events" },
     { name: "Sports Betting", description: "Bet on games at sportsbooks" },
+    { name: "Baccarat", description: "High-stakes card game for VIPs" },
+    { name: "Craps Tables", description: "Exciting dice game with crowds" },
     
     // Unique Experiences
     { name: "Grand Canyon Tours", description: "Day trips to natural wonder" },
     { name: "Hoover Dam", description: "Engineering marvel and tours" },
     { name: "Red Rock Canyon", description: "Scenic drive and hiking trails" },
     { name: "Neon Museum", description: "Vintage Vegas signs and history" },
+    { name: "Valley of Fire", description: "Ancient red rock formations" },
+    { name: "Lake Mead", description: "Largest reservoir in the US" },
+    { name: "Area 51 Tours", description: "UFO and alien-themed experiences" },
+    { name: "Helicopter Tours", description: "Aerial views of Strip and Grand Canyon" },
     
     // Dining & Nightlife
     { name: "Celebrity Chef Restaurants", description: "Gordon Ramsay, Wolfgang Puck, etc." },
     { name: "Buffets", description: "All-you-can-eat dining experiences" },
     { name: "Rooftop Pools", description: "Dayclub pool parties with DJs" },
-    { name: "Nightclubs", description: "World-famous DJs and dancing" }
+    { name: "Nightclubs", description: "World-famous DJs and dancing" },
+    { name: "XS Nightclub", description: "Poolside nightclub at Encore" },
+    { name: "Omnia", description: "Multi-level club at Caesars Palace" },
+    { name: "Hakkasan", description: "Upscale nightclub and restaurant" },
+    
+    // Sports & Activities
+    { name: "Golden Knights Games", description: "NHL hockey at T-Mobile Arena" },
+    { name: "Raiders Games", description: "NFL football at Allegiant Stadium" },
+    { name: "Golf Courses", description: "Championship courses in the desert" },
+    { name: "Race Car Driving", description: "Drive supercars at Las Vegas Motor Speedway" }
   ],
   
   "Austin": [
@@ -450,29 +545,52 @@ const CITY_ALWAYS_ACTIVITIES = {
     { name: "Austin City Limits", description: "Music festival in Zilker Park (October)" },
     { name: "Red River District", description: "Dive bars and indie music venues" },
     { name: "The Continental Club", description: "Historic music venue since 1955" },
+    { name: "Antone's", description: "Home of the Blues since 1975" },
+    { name: "Stubb's Bar-B-Q", description: "BBQ and outdoor concerts" },
+    { name: "The Saxon Pub", description: "Intimate songwriters' venue" },
+    { name: "Moody Theater", description: "Austin City Limits TV show tapings" },
     
     // Food Scene
     { name: "Food Trucks", description: "Gourmet food from mobile vendors" },
     { name: "BBQ Joints", description: "Franklin Barbecue and other pitmasters" },
     { name: "Breakfast Tacos", description: "Austin's morning staple" },
     { name: "Craft Breweries", description: "Local beer scene and tours" },
+    { name: "Salt Lick BBQ", description: "Legendary BBQ pit in Driftwood" },
+    { name: "Amy's Ice Cream", description: "Local ice cream with trick scooping" },
+    { name: "Torchy's Tacos", description: "Damn good tacos born in Austin" },
+    { name: "South Lamar Food Scene", description: "Trendy restaurants and food trailers" },
     
     // Outdoor Activities
     { name: "Zilker Park", description: "Large park with trails and festivals" },
     { name: "Lady Bird Lake", description: "Kayaking and paddleboarding" },
     { name: "Barton Springs Pool", description: "Natural spring-fed swimming pool" },
     { name: "Austin Bat Bridge", description: "Largest urban bat colony" },
+    { name: "Mount Bonnell", description: "Highest point with city views" },
+    { name: "Hamilton Pool", description: "Natural swimming hole with waterfall" },
+    { name: "Jacob's Well", description: "Natural spring and swimming hole" },
+    { name: "Kayak Rentals", description: "Paddle the Colorado River" },
     
     // Neighborhoods
     { name: "Sixth Street", description: "Historic entertainment district" },
     { name: "Rainey Street", description: "Historic homes turned into bars" },
     { name: "East Austin", description: "Hip area with galleries and restaurants" },
     { name: "The Domain", description: "Upscale shopping and dining" },
+    { name: "South Congress", description: "SoCo shopping and dining strip" },
+    { name: "West Lake Hills", description: "Upscale area with lake views" },
+    { name: "Mueller", description: "Sustainable neighborhood development" },
+    
+    // Arts & Culture
+    { name: "Blanton Museum", description: "Contemporary art at UT campus" },
+    { name: "Bullock History Museum", description: "Story of Texas history" },
+    { name: "Austin Murals", description: "Iconic street art and photo spots" },
+    { name: "LBJ Presidential Library", description: "36th president's archives" },
     
     // Unique Austin
     { name: "Keep Austin Weird", description: "Embrace the city's quirky culture" },
     { name: "Texas State Capitol", description: "Free tours of government building" },
-    { name: "University of Texas", description: "Campus tours and Longhorn sports" }
+    { name: "University of Texas", description: "Campus tours and Longhorn sports" },
+    { name: "Eeyore's Birthday Party", description: "Annual spring festival in Pease Park" },
+    { name: "Austin Ghost Tours", description: "Haunted history walking tours" }
   ]
 };
 
