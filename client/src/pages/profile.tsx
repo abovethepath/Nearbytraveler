@@ -57,6 +57,93 @@ function areInSameMetroArea(city1: string, city2: string): boolean {
   return false;
 }
 
+// Things in Common Component for compatibility assessment
+interface ThingsInCommonSectionProps {
+  currentUser: any;
+  profileUser: any;
+}
+
+function ThingsInCommonSection({ currentUser, profileUser }: ThingsInCommonSectionProps) {
+  // Calculate shared interests
+  const currentUserInterests = currentUser?.interests || [];
+  const profileUserInterests = profileUser?.interests || [];
+  const sharedInterests = currentUserInterests.filter((interest: string) => 
+    profileUserInterests.includes(interest)
+  );
+
+  // Calculate shared activities 
+  const currentUserActivities = currentUser?.activities || [];
+  const profileUserActivities = profileUser?.activities || [];
+  const sharedActivities = currentUserActivities.filter((activity: string) => 
+    profileUserActivities.includes(activity)
+  );
+
+  // Calculate shared events (simplified - could be enhanced with actual event data)
+  const sharedEventsCount = 0; // This would need to be calculated from actual event participation
+
+  const totalThingsInCommon = sharedInterests.length + sharedActivities.length + sharedEventsCount;
+
+  if (totalThingsInCommon === 0) {
+    return null; // Don't show if no common things
+  }
+
+  return (
+    <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm w-full overflow-hidden">
+      <CardContent className="p-4">
+        <div className="p-3 bg-gradient-to-br from-green-50 to-blue-50 border-l-4 border-green-200 rounded-r-lg">
+          <h5 className="font-medium text-black mb-3 flex items-center gap-2">
+            <Users className="w-4 h-4 text-green-600" />
+            Things We Have in Common ({totalThingsInCommon})
+          </h5>
+          
+          <div className="space-y-3">
+            {sharedInterests.length > 0 && (
+              <div>
+                <h6 className="text-sm font-medium text-black mb-2">Shared Interests ({sharedInterests.length})</h6>
+                <div className="flex flex-wrap gap-1">
+                  {sharedInterests.map((interest: string, index: number) => (
+                    <div key={index} className="pill-interests bg-green-100 text-green-800 border-green-200">
+                      {interest}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {sharedActivities.length > 0 && (
+              <div>
+                <h6 className="text-sm font-medium text-black mb-2">Shared Activities ({sharedActivities.length})</h6>
+                <div className="flex flex-wrap gap-1">
+                  {sharedActivities.map((activity: string, index: number) => (
+                    <div key={index} className="pill-interests bg-blue-100 text-blue-800 border-blue-200">
+                      {activity}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {sharedEventsCount > 0 && (
+              <div>
+                <h6 className="text-sm font-medium text-black mb-2">Shared Events ({sharedEventsCount})</h6>
+                <p className="text-sm text-black">
+                  You both participated in {sharedEventsCount} similar events
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="mt-3 pt-3 border-t border-green-200">
+            <p className="text-xs text-black italic">
+              This compatibility assessment helps you find meaningful connections based on shared interests and activities.
+            </p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 // Helper function to get metro area name for a city
 function getMetroAreaName(cityName: string): string {
   for (const [metroKey, metroArea] of Object.entries(METRO_AREAS)) {
@@ -4020,6 +4107,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
                 </CardContent>
               </Card>
+            )}
+
+            {/* Things in Common Section - For compatibility assessment */}
+            {!isOwnProfile && currentUser && user?.userType !== 'business' && (
+              <ThingsInCommonSection 
+                currentUser={currentUser} 
+                profileUser={user} 
+              />
             )}
 
             {/* Travel Plans and Business Information Card */}
