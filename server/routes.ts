@@ -12048,6 +12048,38 @@ Questions? Just reply to this message. Welcome aboard!
     try {
       if (process.env.NODE_ENV === 'development') console.log('🏙️ CITIES API: Fetching all cities...');
 
+      // Major cities with "ALWAYS" activity lists that must be available
+      const MAJOR_CITIES = [
+        { city: 'Los Angeles', state: 'California', country: 'United States' },
+        { city: 'Los Angeles Metro', state: 'California', country: 'United States' },
+        { city: 'New York City', state: 'New York', country: 'United States' },
+        { city: 'Miami', state: 'Florida', country: 'United States' },
+        { city: 'Chicago', state: 'Illinois', country: 'United States' },
+        { city: 'Las Vegas', state: 'Nevada', country: 'United States' },
+        { city: 'Austin', state: 'Texas', country: 'United States' }
+      ];
+
+      // Ensure major cities exist in cityPages table
+      for (const majorCity of MAJOR_CITIES) {
+        try {
+          await db
+            .insert(cityPages)
+            .values({
+              city: majorCity.city,
+              state: majorCity.state,
+              country: majorCity.country,
+              createdById: 1, // System user ID
+              title: `${majorCity.city} Travel Guide`,
+              description: `Discover the best of ${majorCity.city} with curated local experiences and activities.`,
+              isPublished: true,
+              isDeletionProtected: true
+            })
+            .onConflictDoNothing(); // Don't duplicate if already exists
+        } catch (insertError) {
+          // Continue if insert fails (likely already exists)
+        }
+      }
+
       // Get actual counts for each city (excluding test cities)
       const citiesFromPages = await db
         .select({
@@ -12070,10 +12102,20 @@ Questions? Just reply to this message. Welcome aboard!
         .orderBy(sql<number>`(SELECT COUNT(*) FROM users WHERE hometown_city = ${cityPages.city}) + (SELECT COUNT(*) FROM users WHERE is_currently_traveling = true AND travel_destination LIKE '%' || ${cityPages.city} || '%') DESC`)
         .limit(50);
 
-      if (process.env.NODE_ENV === 'development') console.log(`🏙️ CITIES API: Found ${citiesFromPages.length} cities`);
-      if (process.env.NODE_ENV === 'development') console.log('🏙️ CITIES API: First 3 cities:', citiesFromPages.slice(0, 3));
+      // Ensure major cities appear at the top if they have no users yet
+      const majorCityResults = citiesFromPages.filter(city => 
+        MAJOR_CITIES.some(major => major.city === city.city)
+      );
+      const otherCityResults = citiesFromPages.filter(city => 
+        !MAJOR_CITIES.some(major => major.city === city.city)
+      );
 
-      res.json(citiesFromPages);
+      const finalResults = [...majorCityResults, ...otherCityResults];
+
+      if (process.env.NODE_ENV === 'development') console.log(`🏙️ CITIES API: Found ${finalResults.length} cities (${majorCityResults.length} major cities guaranteed)`);
+      if (process.env.NODE_ENV === 'development') console.log('🏙️ CITIES API: Major cities included:', majorCityResults.map(c => c.city));
+
+      res.json(finalResults);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error('CITIES API ERROR:', error);
       res.status(500).json({ error: 'Failed to fetch cities' });
