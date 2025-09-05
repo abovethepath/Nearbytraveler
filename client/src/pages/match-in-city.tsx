@@ -82,23 +82,45 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
   const [citiesLoading, setCitiesLoading] = useState(true);
   const [searchingCity, setSearchingCity] = useState(false);
   const [searchError, setSearchError] = useState('');
+  
+  // Lazy loading state management for heavy sections
+  const [loadedSections, setLoadedSections] = useState(new Set<string>());
+
+  // Handle loading specific sections on demand
+  const handleSectionView = async (sectionName: string) => {
+    if (loadedSections.has(sectionName)) return; // Already loaded
+    
+    setLoadedSections(prev => new Set(prev).add(sectionName));
+    
+    // Load the appropriate data based on section
+    switch (sectionName) {
+      case 'activities':
+        await fetchCityActivities();
+        await fetchUserActivities();
+        break;
+      case 'events':
+        await fetchCityEvents();
+        await fetchUserEvents();
+        break;
+      case 'people':
+        await fetchMatchingUsers();
+        break;
+    }
+  };
 
   // Fetch all cities on component mount
   useEffect(() => {
     fetchAllCities();
   }, []);
 
-  // Fetch city activities and events when a city is selected
+  // Fetch only essential data immediately, use previews for the rest
   useEffect(() => {
     if (selectedCity) {
       console.log('🎯 CITY SELECTED:', selectedCity);
-      console.log('🎯 FETCHING DATA FOR CITY:', selectedCity);
-      fetchCityActivities();
-      fetchUserActivities();
-      fetchCityEvents();
-      fetchUserEvents();
-      fetchMatchingUsers();
+      console.log('🎯 FETCHING ESSENTIAL DATA FOR CITY:', selectedCity);
+      // Only load connections immediately (small data)
       fetchConnections();
+      // All other heavy data will be loaded on-demand with preview sections
     }
   }, [selectedCity]);
 
