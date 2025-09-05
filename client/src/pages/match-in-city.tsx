@@ -132,6 +132,54 @@ const UNIVERSAL_ACTIVITIES = [
   { name: "LGBTQ+ Friendly", description: "Inclusive spaces and events" }
 ];
 
+// City-specific "ALWAYS" activities for popular destinations
+const CITY_ALWAYS_ACTIVITIES = {
+  "Los Angeles": [
+    { name: "Hollywood Sign Hike", description: "Iconic hike to the famous Hollywood sign" },
+    { name: "Universal Studios", description: "Movie theme park and studio tours" },
+    { name: "Getty Villa", description: "Art museum with ancient Greek & Roman artifacts" },
+    { name: "Getty Center", description: "Art museum with city views and gardens" },
+    { name: "Lakers Games", description: "NBA basketball at Crypto.com Arena" },
+    { name: "Kings Games", description: "NHL hockey at Crypto.com Arena" },
+    { name: "Venice Beach Boardwalk", description: "Famous beach boardwalk with street performers" },
+    { name: "Santa Monica Pier", description: "Amusement park pier with ferris wheel" },
+    { name: "Griffith Observatory", description: "Planetarium with Hollywood views" },
+    { name: "Rodeo Drive", description: "Luxury shopping in Beverly Hills" },
+    { name: "Walk of Fame", description: "Celebrity stars on Hollywood Boulevard" },
+    { name: "Melrose Avenue", description: "Trendy shopping and vintage stores" },
+    { name: "The Grove", description: "Outdoor shopping and entertainment complex" },
+    { name: "Malibu Beach", description: "Scenic coastal beach and surfing" },
+    { name: "Dodgers Games", description: "MLB baseball at Dodger Stadium" },
+    { name: "LA Live", description: "Entertainment district downtown" },
+    { name: "Beverly Hills", description: "Upscale area with luxury shopping" },
+    { name: "Manhattan Beach", description: "Beautiful beach town with volleyball" },
+    { name: "Third Street Promenade", description: "Shopping and dining in Santa Monica" },
+    { name: "Hollywood Bowl", description: "Outdoor amphitheater for concerts" }
+  ],
+  "Los Angeles Metro": [
+    { name: "Hollywood Sign Hike", description: "Iconic hike to the famous Hollywood sign" },
+    { name: "Universal Studios", description: "Movie theme park and studio tours" },
+    { name: "Getty Villa", description: "Art museum with ancient Greek & Roman artifacts" },
+    { name: "Getty Center", description: "Art museum with city views and gardens" },
+    { name: "Lakers Games", description: "NBA basketball at Crypto.com Arena" },
+    { name: "Kings Games", description: "NHL hockey at Crypto.com Arena" },
+    { name: "Venice Beach Boardwalk", description: "Famous beach boardwalk with street performers" },
+    { name: "Santa Monica Pier", description: "Amusement park pier with ferris wheel" },
+    { name: "Griffith Observatory", description: "Planetarium with Hollywood views" },
+    { name: "Rodeo Drive", description: "Luxury shopping in Beverly Hills" },
+    { name: "Walk of Fame", description: "Celebrity stars on Hollywood Boulevard" },
+    { name: "Melrose Avenue", description: "Trendy shopping and vintage stores" },
+    { name: "The Grove", description: "Outdoor shopping and entertainment complex" },
+    { name: "Malibu Beach", description: "Scenic coastal beach and surfing" },
+    { name: "Dodgers Games", description: "MLB baseball at Dodger Stadium" },
+    { name: "LA Live", description: "Entertainment district downtown" },
+    { name: "Beverly Hills", description: "Upscale area with luxury shopping" },
+    { name: "Manhattan Beach", description: "Beautiful beach town with volleyball" },
+    { name: "Third Street Promenade", description: "Shopping and dining in Santa Monica" },
+    { name: "Hollywood Bowl", description: "Outdoor amphitheater for concerts" }
+  ]
+};
+
 interface MatchInCityProps {
   cityName?: string;
 }
@@ -359,28 +407,47 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
         isUniversal: true
       }));
       
-      setCityActivities(universalActivitiesFormatted);
+      // Add city-specific "always" activities if they exist
+      const cityAlwaysActivities = CITY_ALWAYS_ACTIVITIES[selectedCity as keyof typeof CITY_ALWAYS_ACTIVITIES] || [];
+      const cityAlwaysFormatted = cityAlwaysActivities.map((activity, index) => ({
+        id: `always-${selectedCity}-${index}`,
+        name: activity.name,
+        description: activity.description,
+        cityName: selectedCity,
+        isCityAlways: true
+      }));
       
-      // Then fetch city-specific activities and merge
+      // Combine universal + city always activities for immediate display
+      const immediateActivities = [...universalActivitiesFormatted, ...cityAlwaysFormatted];
+      setCityActivities(immediateActivities);
+      
+      // Then fetch AI-generated city-specific activities and merge
       const response = await fetch(`/api/city-activities/${encodeURIComponent(selectedCity)}`);
       if (response.ok) {
-        const citySpecificActivities = await response.json();
+        const aiCityActivities = await response.json();
         
-        // Combine universal + city-specific, avoiding duplicates
+        // Combine all activities, avoiding duplicates
         const allActivities = [
           ...universalActivitiesFormatted,
-          ...citySpecificActivities.filter((cityActivity: any) => 
-            !UNIVERSAL_ACTIVITIES.some(universal => 
-              universal.name.toLowerCase() === cityActivity.name.toLowerCase()
-            )
-          )
+          ...cityAlwaysFormatted,
+          ...aiCityActivities.filter((aiActivity: any) => {
+            // Check against universal activities
+            const isDuplicateUniversal = UNIVERSAL_ACTIVITIES.some(universal => 
+              universal.name.toLowerCase() === aiActivity.name.toLowerCase()
+            );
+            // Check against city always activities
+            const isDuplicateAlways = cityAlwaysActivities.some(always => 
+              always.name.toLowerCase() === aiActivity.name.toLowerCase()
+            );
+            return !isDuplicateUniversal && !isDuplicateAlways;
+          })
         ];
         
         setCityActivities(allActivities);
       }
     } catch (error) {
       console.error('Error fetching city activities:', error);
-      // If API fails, at least show universal activities
+      // If API fails, at least show universal + city always activities
       const universalActivitiesFormatted = UNIVERSAL_ACTIVITIES.map((activity, index) => ({
         id: `universal-${index}`,
         name: activity.name,
@@ -388,7 +455,17 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
         cityName: selectedCity,
         isUniversal: true
       }));
-      setCityActivities(universalActivitiesFormatted);
+      
+      const cityAlwaysActivities = CITY_ALWAYS_ACTIVITIES[selectedCity as keyof typeof CITY_ALWAYS_ACTIVITIES] || [];
+      const cityAlwaysFormatted = cityAlwaysActivities.map((activity, index) => ({
+        id: `always-${selectedCity}-${index}`,
+        name: activity.name,
+        description: activity.description,
+        cityName: selectedCity,
+        isCityAlways: true
+      }));
+      
+      setCityActivities([...universalActivitiesFormatted, ...cityAlwaysFormatted]);
     }
   };
 
@@ -1255,7 +1332,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
           <div className="text-gray-700 dark:text-gray-300 text-xs md:text-sm mb-3">
             ✅ Click activities to add them to your personal list below<br className="sm:hidden" />
             <span className="hidden sm:inline"> • </span>🌍 Universal activities (available in all cities)<br className="sm:hidden" />
-            <span className="hidden sm:inline"> • </span>✏️ City-specific activities (edit/delete to change for EVERYONE)
+            <span className="hidden sm:inline"> • </span>⭐ {selectedCity} iconic activities (must-do attractions)<br className="sm:hidden" />
+            <span className="hidden sm:inline"> • </span>🤖 AI-generated activities (edit/delete to change for EVERYONE)
           </div>
 
           {/* Add Activity Section - MOBILE RESPONSIVE */}
@@ -1314,10 +1392,13 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                           ? 'bg-green-500 hover:bg-green-600 border-green-600 text-white' 
                           : activity.isUniversal
                             ? 'bg-white hover:bg-gray-50 border-gray-300 text-black'
-                            : 'bg-blue-500 hover:bg-blue-600 border-blue-600 text-white'
+                            : activity.isCityAlways
+                              ? 'bg-orange-500 hover:bg-orange-600 border-orange-600 text-white'
+                              : 'bg-blue-500 hover:bg-blue-600 border-blue-600 text-white'
                       }`}
                     >
                       {activity.isUniversal && <span className="text-xs mr-1">🌍</span>}
+                      {activity.isCityAlways && <span className="text-xs mr-1">⭐</span>}
                       {activity.name || activity.activityName}
                       {activity.description && (
                         <Info className="w-3 h-3 ml-1 opacity-60" />
