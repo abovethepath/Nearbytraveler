@@ -99,9 +99,9 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
                   } hover:border-orange-200 dark:hover:border-orange-600/50 hover:shadow-lg`}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-col">
                       {isYourTurn && (
-                        <span className="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">
+                        <span className="text-xs font-bold text-orange-600 dark:text-orange-400 mb-1">
                           YOUR TURN
                         </span>
                       )}
