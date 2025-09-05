@@ -89,7 +89,7 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
                   onClick={(e) => {
                     e.stopPropagation();
                     if (otherUser) {
-                      openFloatingChat(otherUser);
+                      setLocation(`/messages?user=${otherUser.id}`);
                     }
                   }}
                   className={`cursor-pointer hover:bg-gradient-to-r hover:from-blue-50 hover:to-orange-50 dark:hover:from-blue-900/30 dark:hover:to-orange-900/30 rounded-xl p-4 transition-all duration-300 border-2 ${
