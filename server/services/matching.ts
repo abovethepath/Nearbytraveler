@@ -121,7 +121,7 @@ export class TravelMatchingService {
     reasons.push(...activityScore.reasons);
 
     // Event compatibility (10 points max)
-    const eventScore = this.calculateEventCompatibility(user1, user2);
+    const eventScore = await this.calculateEventCompatibility(user1, user2);
     totalScore += eventScore.score;
     reasons.push(...eventScore.reasons);
 
@@ -195,7 +195,7 @@ export class TravelMatchingService {
       compatibilityLevel: this.getCompatibilityLevel(normalizedScore),
       sharedInterests: this.getSharedInterests(user1, user2),
       sharedActivities: this.getSharedActivities(user1, user2),
-      sharedEvents: this.getSharedEvents(user1, user2),
+      sharedEvents: await this.getSharedEvents(user1, user2),
       sharedTravelIntent: this.getSharedTravelIntent(user1, user2),
       sharedSexualPreferences: this.getSharedSexualPreferences(user1, user2),
       locationOverlap: locationScore.hasOverlap,
@@ -318,16 +318,38 @@ export class TravelMatchingService {
   /**
    * Calculate event-based compatibility
    */
-  private calculateEventCompatibility(user1: User, user2: User) {
+  private async calculateEventCompatibility(user1: User, user2: User) {
+    // Get events they're actually attending from the database
+    const user1Participations = await storage.getUserEventParticipations(user1.id);
+    const user2Participations = await storage.getUserEventParticipations(user2.id);
+    
+    // Extract event titles/names from their actual event participations
+    const user1AttendingEvents = await Promise.all(
+      user1Participations.map(async (participation) => {
+        const event = await storage.getEvent(participation.eventId);
+        return event?.title || '';
+      })
+    );
+    
+    const user2AttendingEvents = await Promise.all(
+      user2Participations.map(async (participation) => {
+        const event = await storage.getEvent(participation.eventId);
+        return event?.title || '';
+      })
+    );
+    
+    // Combine profile event interests with actual events they're attending
     const user1Events = [
       ...this.parseInterests(user1.events), // Use the actual 'events' field
       ...this.parseInterests(user1.localEvents),
-      ...this.parseInterests(user1.plannedEvents)
+      ...this.parseInterests(user1.plannedEvents),
+      ...user1AttendingEvents.filter(title => title.length > 0) // Add actual events they're attending
     ];
     const user2Events = [
       ...this.parseInterests(user2.events), // Use the actual 'events' field
       ...this.parseInterests(user2.localEvents),
-      ...this.parseInterests(user2.plannedEvents)
+      ...this.parseInterests(user2.plannedEvents),
+      ...user2AttendingEvents.filter(title => title.length > 0) // Add actual events they're attending
     ];
     
     const sharedEvents = user1Events.filter(event => 
@@ -814,8 +836,15 @@ export class TravelMatchingService {
   }
 
   private getSharedInterests(user1: User, user2: User): string[] {
-    const user1Interests = this.parseInterests(user1.interests);
-    const user2Interests = this.parseInterests(user2.interests);
+    // Combine regular and private interests for comprehensive matching (same as calculateInterestCompatibility)
+    const user1Interests = [
+      ...this.parseInterests(user1.interests),
+      ...this.parseInterests(user1.privateInterests)
+    ];
+    const user2Interests = [
+      ...this.parseInterests(user2.interests),
+      ...this.parseInterests(user2.privateInterests)
+    ];
     
     return user1Interests.filter(interest => 
       user2Interests.some(otherInterest => 
@@ -841,16 +870,38 @@ export class TravelMatchingService {
     );
   }
 
-  private getSharedEvents(user1: User, user2: User): string[] {
+  private async getSharedEvents(user1: User, user2: User): Promise<string[]> {
+    // Get events they're actually attending from the database
+    const user1Participations = await storage.getUserEventParticipations(user1.id);
+    const user2Participations = await storage.getUserEventParticipations(user2.id);
+    
+    // Extract event titles/names from their actual event participations
+    const user1AttendingEvents = await Promise.all(
+      user1Participations.map(async (participation) => {
+        const event = await storage.getEvent(participation.eventId);
+        return event?.title || '';
+      })
+    );
+    
+    const user2AttendingEvents = await Promise.all(
+      user2Participations.map(async (participation) => {
+        const event = await storage.getEvent(participation.eventId);
+        return event?.title || '';
+      })
+    );
+    
+    // Combine profile event interests with actual events they're attending
     const user1Events = [
       ...this.parseInterests(user1.events), // Use the actual 'events' field
       ...this.parseInterests(user1.localEvents),
-      ...this.parseInterests(user1.plannedEvents)
+      ...this.parseInterests(user1.plannedEvents),
+      ...user1AttendingEvents.filter(title => title.length > 0) // Add actual events they're attending
     ];
     const user2Events = [
       ...this.parseInterests(user2.events), // Use the actual 'events' field
       ...this.parseInterests(user2.localEvents), 
-      ...this.parseInterests(user2.plannedEvents)
+      ...this.parseInterests(user2.plannedEvents),
+      ...user2AttendingEvents.filter(title => title.length > 0) // Add actual events they're attending
     ];
     
     return user1Events.filter(event => 
