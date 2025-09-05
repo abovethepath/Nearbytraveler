@@ -217,11 +217,31 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
             )}
             
             {/* Things in Common Badge - Ultra Compact */}
-            {compatibilityData && (compatibilityData.sharedInterests?.length > 0 || compatibilityData.sharedActivities?.length > 0 || compatibilityData.sharedEvents?.length > 0) && (
-              <div className="bg-blue-100 text-blue-800 text-xs px-1 py-0.5 rounded-full dark:bg-blue-900/30 dark:text-blue-400 inline-block">
-                {(compatibilityData.sharedInterests?.length || 0) + (compatibilityData.sharedActivities?.length || 0) + (compatibilityData.sharedEvents?.length || 0)} Things in Common
-              </div>
-            )}
+            {compatibilityData && (() => {
+              const totalCommon = 
+                (compatibilityData.sharedInterests?.length || 0) +
+                (compatibilityData.sharedActivities?.length || 0) +
+                (compatibilityData.sharedEvents?.length || 0) +
+                (compatibilityData.sharedTravelIntent?.length || 0) +
+                (compatibilityData.sharedSexualPreferences?.length || 0) +
+                (compatibilityData.sharedLanguages?.length || 0) +
+                (compatibilityData.sharedCountries?.length || 0) +
+                (compatibilityData.locationOverlap ? 1 : 0) +
+                (compatibilityData.dateOverlap ? 1 : 0) +
+                (compatibilityData.userTypeCompatibility ? 1 : 0) +
+                (compatibilityData.travelIntentCompatibility ? 1 : 0) +
+                (compatibilityData.bothVeterans ? 1 : 0) +
+                (compatibilityData.bothActiveDuty ? 1 : 0) +
+                (compatibilityData.sameFamilyStatus ? 1 : 0) +
+                (compatibilityData.sameAge ? 1 : 0) +
+                (compatibilityData.sameGender ? 1 : 0);
+              
+              return totalCommon > 0 ? (
+                <div className="bg-blue-100 text-blue-800 text-xs px-1 py-0.5 rounded-full dark:bg-blue-900/30 dark:text-blue-400 inline-block">
+                  {totalCommon} Things in Common
+                </div>
+              ) : null;
+            })()}
             
             {/* Ultra Compact Interests - Only show 1 on mobile */}
             {(user.interests?.length || 0) > 0 && (
