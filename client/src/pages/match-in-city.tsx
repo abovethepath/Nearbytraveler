@@ -50,10 +50,6 @@ const UNIVERSAL_ACTIVITIES = [
   // Families & Dating
   { name: "Meet Other Families", description: "Connect with families with kids" },
   { name: "Single and Looking", description: "Meet other singles" },
-  { name: "Date Night Ideas", description: "Romantic spots and activities" },
-  { name: "Kid-Friendly Activities", description: "Fun things to do with children" },
-  { name: "Family-Friendly Restaurants", description: "Dining with children" },
-  { name: "Teen Activities", description: "Fun for teenagers" },
   
   // Outdoor & Active Adventures
   { name: "Hiking", description: "Explore trails and nature" },
@@ -75,13 +71,10 @@ const UNIVERSAL_ACTIVITIES = [
   
   // Food & Dining Experiences
   { name: "Local Food Scene", description: "Try authentic local cuisine" },
-  { name: "Street Food", description: "Sample local street vendors" },
   { name: "Food Tours", description: "Guided culinary experiences" },
   { name: "Cooking Classes", description: "Learn local cooking" },
-  { name: "Markets & Farmers Markets", description: "Fresh local produce" },
   { name: "Wine Tasting", description: "Local wines and vineyards" },
   { name: "Beer Gardens", description: "Local brews and outdoor drinking" },
-  { name: "Food Trucks", description: "Mobile food experiences" },
   { name: "Breakfast Spots", description: "Best morning meal locations" },
   { name: "Late Night Eats", description: "Food after dark" },
   { name: "Vegetarian/Vegan Food", description: "Plant-based dining options" },
@@ -154,11 +147,7 @@ const UNIVERSAL_ACTIVITIES = [
   { name: "Seasonal Markets", description: "Holiday and seasonal shopping" },
   
   // Special Interests
-  { name: "LGBTQ+ Friendly", description: "Inclusive spaces and events" },
-  { name: "Accessibility Friendly", description: "Activities for people with disabilities" },
-  
-  // Technology & Modern Life
-  { name: "VR Experiences", description: "Virtual reality activities" }
+  { name: "LGBTQ+ Friendly", description: "Inclusive spaces and events" }
 ];
 
 interface MatchInCityProps {
