@@ -32,7 +32,16 @@ export default function CityPage({ cityName }: CityPageProps) {
   const [filter, setFilter] = useState("all");
   const [eventTab, setEventTab] = useState<"current" | "past">("current");
   const [showAllUsers, setShowAllUsers] = useState(false);
+  const [showAllEvents, setShowAllEvents] = useState(false);
   const [sortBy, setSortBy] = useState("recent");
+  
+  // Lazy loading state for heavy widgets
+  const [loadedWidgets, setLoadedWidgets] = useState(new Set<string>());
+  
+  // Handle loading heavy widgets on demand
+  const handleWidgetLoad = (widgetName: string) => {
+    setLoadedWidgets(prev => new Set(prev).add(widgetName));
+  };
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
   
@@ -202,12 +211,16 @@ export default function CityPage({ cityName }: CityPageProps) {
       }
     });
 
-  // Paginate users - show top 9 by default, all when expanded
-  const displayedUsers = showAllUsers ? filteredUsers : filteredUsers.slice(0, 9);
+  // Paginate users - show top 3 for preview, 9 when expanded, all when fully expanded
+  const displayedUsers = showAllUsers ? filteredUsers : filteredUsers.slice(0, 3);
 
-  // Separate current and past events
-  const currentEvents = events.filter((event: Event) => new Date(event.date) >= new Date());
-  const pastEvents = events.filter((event: Event) => new Date(event.date) < new Date());
+  // Separate current and past events - with preview limits
+  const allCurrentEvents = events.filter((event: Event) => new Date(event.date) >= new Date());
+  const allPastEvents = events.filter((event: Event) => new Date(event.date) < new Date());
+  
+  // Show events based on preview mode
+  const currentEvents = showAllEvents ? allCurrentEvents : allCurrentEvents.slice(0, 3);
+  const pastEvents = showAllEvents ? allPastEvents : allPastEvents.slice(0, 3);
 
   if (!decodedCityName) {
     return (
@@ -369,8 +382,8 @@ export default function CityPage({ cityName }: CityPageProps) {
                       ))}
                     </div>
                     
-                    {/* Load More/Less Controls */}
-                    {filteredUsers.length > 9 && (
+                    {/* View All Controls - Preview Mode */}
+                    {filteredUsers.length > 3 && (
                       <div className="flex justify-center mt-6">
                         {!showAllUsers ? (
                           <Button
@@ -378,7 +391,8 @@ export default function CityPage({ cityName }: CityPageProps) {
                             variant="outline"
                             className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600"
                           >
-                            Load More ({filteredUsers.length - 9} more people)
+                            <Users className="w-4 h-4 mr-2" />
+                            View All {filteredUsers.length} People
                           </Button>
                         ) : (
                           <Button
@@ -386,7 +400,7 @@ export default function CityPage({ cityName }: CityPageProps) {
                             variant="outline"
                             className="bg-gray-500 hover:bg-gray-600 text-white border-0"
                           >
-                            Show Less (Top 9)
+                            Show Preview (Top 3)
                           </Button>
                         )}
                       </div>
@@ -546,6 +560,30 @@ export default function CityPage({ cityName }: CityPageProps) {
                     </Card>
                   )
                 )}
+                
+                {/* View All Events Controls - Preview Mode */}
+                {((eventTab === "current" && allCurrentEvents.length > 3) || (eventTab === "past" && allPastEvents.length > 3)) && (
+                  <div className="flex justify-center mt-6">
+                    {!showAllEvents ? (
+                      <Button
+                        onClick={() => setShowAllEvents(true)}
+                        variant="outline"
+                        className="bg-gradient-to-r from-green-500 to-blue-500 text-white border-0 hover:from-green-600 hover:to-blue-600"
+                      >
+                        <Calendar className="w-4 h-4 mr-2" />
+                        View All {eventTab === "current" ? allCurrentEvents.length : allPastEvents.length} {eventTab === "current" ? "Current" : "Past"} Events
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() => setShowAllEvents(false)}
+                        variant="outline"
+                        className="bg-gray-500 hover:bg-gray-600 text-white border-0"
+                      >
+                        Show Preview (Top 3)
+                      </Button>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -561,20 +599,84 @@ export default function CityPage({ cityName }: CityPageProps) {
                     country={parsedCountryName} 
                   />
                 </div>
+                {/* City Stats Widget - Lazy Loaded */}
                 <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
-                  <CityStatsWidget city={parsedCityName} country={parsedCountryName} />
+                  {!loadedWidgets.has('stats') ? (
+                    <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                      <CardContent className="p-6 text-center">
+                        <h3 className="text-lg font-semibold mb-3">City Statistics</h3>
+                        <Button
+                          onClick={() => handleWidgetLoad('stats')}
+                          className="bg-gradient-to-r from-blue-500 to-green-500 text-white hover:from-blue-600 hover:to-green-600"
+                        >
+                          <Globe className="w-4 h-4 mr-2" />
+                          View Stats
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <CityStatsWidget city={parsedCityName} country={parsedCountryName} />
+                  )}
                 </div>
+                {/* Secret Experiences Widget - Lazy Loaded */}
                 <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
-                  <SecretExperiencesWidget city={parsedCityName} state={parsedStateName} country={parsedCountryName} />
+                  {!loadedWidgets.has('secrets') ? (
+                    <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                      <CardContent className="p-6 text-center">
+                        <h3 className="text-lg font-semibold mb-3">Secret Experiences</h3>
+                        <Button
+                          onClick={() => handleWidgetLoad('secrets')}
+                          className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600"
+                        >
+                          <Star className="w-4 h-4 mr-2" />
+                          Discover Secrets
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <SecretExperiencesWidget city={parsedCityName} state={parsedStateName} country={parsedCountryName} />
+                  )}
                 </div>
+                {/* Travel Tips Widget - Lazy Loaded */}
                 <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
-                  <CityTravelTipsWidget city={parsedCityName} country={parsedCountryName} />
+                  {!loadedWidgets.has('tips') ? (
+                    <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                      <CardContent className="p-6 text-center">
+                        <h3 className="text-lg font-semibold mb-3">Travel Tips</h3>
+                        <Button
+                          onClick={() => handleWidgetLoad('tips')}
+                          className="bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600"
+                        >
+                          <Zap className="w-4 h-4 mr-2" />
+                          Get Tips
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <CityTravelTipsWidget city={parsedCityName} country={parsedCountryName} />
+                  )}
                 </div>
                 <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
                   <CityChatlroomsWidget city={parsedCityName} country={parsedCountryName} />
                 </div>
+                {/* City Map Widget - Lazy Loaded */}
                 <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
-                  <CityMap city={parsedCityName} country={parsedCountryName} />
+                  {!loadedWidgets.has('map') ? (
+                    <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                      <CardContent className="p-6 text-center">
+                        <h3 className="text-lg font-semibold mb-3">Interactive Map</h3>
+                        <Button
+                          onClick={() => handleWidgetLoad('map')}
+                          className="bg-gradient-to-r from-teal-500 to-blue-500 text-white hover:from-teal-600 hover:to-blue-600"
+                        >
+                          <MapPin className="w-4 h-4 mr-2" />
+                          View Map
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <CityMap city={parsedCityName} country={parsedCountryName} />
+                  )}
                 </div>
                 {isLAArea && (
                   <div className="bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20 border-2 border-orange-200 dark:border-orange-800 rounded-xl p-4">
