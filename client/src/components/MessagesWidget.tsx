@@ -21,8 +21,6 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
     refetchOnWindowFocus: true,
   });
 
-
-
   const { data: users = [] } = useQuery<User[]>({
     queryKey: ["/api/users"],
   });
@@ -50,50 +48,96 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
           </Button>
         </div>
         <div className="space-y-3 max-h-64 overflow-y-auto">
-          {messages
-            .filter(message => message.senderId !== message.receiverId) // Filter out self-messages
-            .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()) // Sort by newest first
-            .slice(0, 3) // Show top 3 recent messages
-            .map((message, index) => {
+          {(() => {
+            // Group messages by conversation (other user)
+            const conversationMap = new Map();
+            messages
+              .filter(message => message.senderId !== message.receiverId)
+              .forEach(message => {
+                const otherUserId = message.senderId === userId ? message.receiverId : message.senderId;
+                if (!conversationMap.has(otherUserId) || 
+                    new Date(message.createdAt || 0) > new Date(conversationMap.get(otherUserId).createdAt || 0)) {
+                  conversationMap.set(otherUserId, message);
+                }
+              });
+
+            // Get "Your Turn" conversations (where last message was from the other person)
+            const yourTurnConversations = Array.from(conversationMap.values())
+              .filter(message => message.senderId !== userId)
+              .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+
+            // Get other recent conversations  
+            const otherConversations = Array.from(conversationMap.values())
+              .filter(message => message.senderId === userId)
+              .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+
+            // Show "Your Turn" messages first, then other recent messages
+            const displayMessages = [
+              ...yourTurnConversations.slice(0, 2), // Up to 2 "Your Turn" messages
+              ...otherConversations.slice(0, 3 - yourTurnConversations.slice(0, 2).length) // Fill remaining with other messages
+            ];
+
+            return displayMessages.map((message, index) => {
               const otherUserId = message.senderId === userId ? message.receiverId : message.senderId;
               const otherUser = users.find(u => u.id === otherUserId);
               const isFromMe = message.senderId === userId;
+              const isYourTurn = !isFromMe;
             
-            return (
-              <div
-                key={message.id || index} 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (otherUser) {
-                    openFloatingChat(otherUser);
-                  }
-                }}
-                className="cursor-pointer hover:bg-gradient-to-r hover:from-blue-50 hover:to-orange-50 dark:hover:from-blue-900/30 dark:hover:to-orange-900/30 rounded-xl p-4 transition-all duration-300 border-2 border-blue-100 dark:border-blue-700/50 hover:border-orange-200 dark:hover:border-orange-600/50 hover:shadow-lg bg-gradient-to-r from-white via-blue-50/30 to-orange-50/30 dark:from-gray-800/50 dark:via-blue-900/10 dark:to-orange-900/10"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-bold text-blue-700 dark:text-blue-300">
-                    {isFromMe ? `To: ${otherUser?.username || "Unknown"}` : `From: ${otherUser?.username || "Unknown"}`}
-                  </span>
-                  {message.createdAt && (
-                    <span className="text-xs font-medium text-orange-600 dark:text-orange-400">
-                      {new Date(message.createdAt).toLocaleDateString('en-US', { 
-                        month: 'short', 
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </span>
-                  )}
+              return (
+                <div
+                  key={message.id || index} 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (otherUser) {
+                      openFloatingChat(otherUser);
+                    }
+                  }}
+                  className={`cursor-pointer hover:bg-gradient-to-r hover:from-blue-50 hover:to-orange-50 dark:hover:from-blue-900/30 dark:hover:to-orange-900/30 rounded-xl p-4 transition-all duration-300 border-2 ${
+                    isYourTurn 
+                      ? 'border-orange-300 dark:border-orange-500/50 bg-gradient-to-r from-orange-50 via-white to-orange-50 dark:from-orange-900/20 dark:via-gray-800 dark:to-orange-900/20' 
+                      : 'border-blue-100 dark:border-blue-700/50 bg-gradient-to-r from-white via-blue-50/30 to-orange-50/30 dark:from-gray-800/50 dark:via-blue-900/10 dark:to-orange-900/10'
+                  } hover:border-orange-200 dark:hover:border-orange-600/50 hover:shadow-lg`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      {isYourTurn && (
+                        <span className="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse">
+                          YOUR TURN
+                        </span>
+                      )}
+                      <span className="text-sm font-bold text-blue-700 dark:text-blue-300">
+                        {isFromMe ? `To: ${otherUser?.username || "Unknown"}` : `From: ${otherUser?.username || "Unknown"}`}
+                      </span>
+                    </div>
+                    {message.createdAt && (
+                      <span className="text-xs font-medium text-orange-600 dark:text-orange-400">
+                        {new Date(message.createdAt).toLocaleDateString('en-US', { 
+                          month: 'short', 
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-800 dark:text-gray-200 line-clamp-2 font-medium">
+                    {message.content && message.content.length > 100 
+                      ? `${message.content.substring(0, 100)}...` 
+                      : message.content}
+                  </p>
                 </div>
-                <p className="text-sm text-gray-800 dark:text-gray-200 line-clamp-2 font-medium">
-                  {message.content && message.content.length > 100 
-                    ? `${message.content.substring(0, 100)}...` 
-                    : message.content}
-                </p>
-              </div>
-            );
-            })}
-          {messages.filter(message => message.senderId !== message.receiverId).length === 0 && (
+              );
+            });
+          })()}
+          
+          {(() => {
+            const conversationCount = new Set(
+              messages
+                .filter(message => message.senderId !== message.receiverId)
+                .map(message => message.senderId === userId ? message.receiverId : message.senderId)
+            ).size;
+            return conversationCount === 0;
+          })() && (
             <div className="text-center py-4">
               <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 font-medium">No recent messages</p>
               <Button 
