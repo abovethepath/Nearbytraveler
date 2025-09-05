@@ -108,9 +108,9 @@ export default function Messages() {
       if (connectedUser) {
         conversationMap.set(connectedUser.id, {
           userId: connectedUser.id,
-          username: connectedUser.username,
-          profileImage: connectedUser.profileImage,
-          location: connectedUser.hometownCity || connectedUser.location,
+          username: connectedUser?.username || `User ${connectedUser.id}`,
+          profileImage: connectedUser?.profileImage,
+          location: connectedUser?.hometownCity || connectedUser?.location || 'Unknown',
           lastMessage: '', // Don't show message preview in connections list
           lastMessageTime: connection.createdAt,
           unreadCount: 0, // Initialize unread count
@@ -124,9 +124,9 @@ export default function Messages() {
       if (targetUser) {
         conversationMap.set(parseInt(targetUserId), {
           userId: parseInt(targetUserId),
-          username: targetUser.username,
-          profileImage: targetUser.profileImage,
-          location: targetUser.hometownCity || targetUser.location,
+          username: targetUser?.username || `User ${targetUserId}`,
+          profileImage: targetUser?.profileImage,
+          location: targetUser?.hometownCity || targetUser?.location || 'Unknown',
           lastMessage: 'Start a conversation...',
           lastMessageTime: new Date().toISOString(),
         });
