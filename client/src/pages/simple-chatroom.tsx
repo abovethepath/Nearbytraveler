@@ -366,7 +366,7 @@ export default function SimpleChatroomPage() {
                     {chatroom?.name?.charAt(0).toUpperCase() || "C"}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <CardTitle className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white leading-tight">
+                    <CardTitle className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white leading-tight break-words">
                       {chatroom?.name || "Loading chatroom..."}
                     </CardTitle>
                   </div>
