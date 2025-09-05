@@ -1188,6 +1188,35 @@ export class DatabaseStorage implements IStorage {
       }
     }
 
+    // Check custom restriction tags (e.g., "Taylor Swift fans only", "Dog lovers only")
+    if (event.customRestriction) {
+      const restrictionTag = event.customRestriction.toLowerCase().replace(' only', '').trim();
+      
+      // Check if user's interests, activities, or custom interests contain the restriction keyword
+      const userInterests = (user.interests || []).map(i => i.toLowerCase());
+      const userActivities = (user.activities || []).map(a => a.toLowerCase());
+      const userCustomInterests = user.customInterests ? user.customInterests.toLowerCase().split(',').map(i => i.trim()) : [];
+      const userBio = user.bio ? user.bio.toLowerCase() : '';
+      
+      // Combined search pool: interests, activities, custom interests, and bio
+      const searchFields = [...userInterests, ...userActivities, ...userCustomInterests, userBio];
+      
+      // Check if any user field contains the restriction keyword
+      const matchesRestriction = searchFields.some(field => {
+        if (typeof field === 'string') {
+          return field.includes(restrictionTag) || restrictionTag.includes(field);
+        }
+        return false;
+      });
+      
+      if (!matchesRestriction) {
+        console.log(`🏷️ CUSTOM TAG FILTER: User ${user.username} excluded from "${event.title}" (requires: ${event.customRestriction})`);
+        return false;
+      } else {
+        console.log(`✅ CUSTOM TAG MATCH: User ${user.username} matches "${event.customRestriction}" for event "${event.title}"`);
+      }
+    }
+
     return true;
   }
 
