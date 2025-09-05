@@ -318,10 +318,11 @@ function Router() {
     // Robust authentication check that accounts for timing issues
     const hasUserInState = !!user;
     const hasUserInStorage = !!localStorage.getItem('user');
+    const hasTravelConnectUser = !!localStorage.getItem('travelconnect_user');
     const hasAuthToken = !!localStorage.getItem('auth_token'); // Also check for token
-    const actualAuth = hasUserInState || hasUserInStorage || hasAuthToken;
+    const actualAuth = hasUserInState || hasUserInStorage || hasTravelConnectUser || hasAuthToken;
 
-    console.log('🔍 AUTH CHECK: user in state:', hasUserInState, 'user in storage:', hasUserInStorage, 'has auth token:', hasAuthToken, 'final auth:', actualAuth);
+    console.log('🔍 AUTH CHECK: user in state:', hasUserInState, 'user in storage:', hasUserInStorage, 'travelconnect user:', hasTravelConnectUser, 'has auth token:', hasAuthToken, 'final auth:', actualAuth);
 
     return {
       user: user,
