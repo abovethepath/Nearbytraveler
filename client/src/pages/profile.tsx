@@ -624,6 +624,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [showDestinationSuggestions, setShowDestinationSuggestions] = useState(false);
   const [showChatroomList, setShowChatroomList] = useState(false);
   const [activeTab, setActiveTab] = React.useState<TabKey | ''>('');
+  const [loadedTabs, setLoadedTabs] = React.useState<Set<TabKey>>(new Set());
   console.log('🎯 CURRENT ACTIVE TAB:', activeTab);
   
   const tabRefs = {
@@ -637,6 +638,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   function openTab(key: TabKey) {
     console.log('🔥 OPENING TAB:', key);
     setActiveTab(key);
+    // Mark this tab as loaded for lazy loading
+    setLoadedTabs(prev => new Set([...prev, key]));
     // Wait for the panel to render, then scroll it into view
     requestAnimationFrame(() => {
       console.log('📍 SCROLLING TO TAB:', key);
@@ -5774,24 +5777,25 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             )}
 
             {/* Travel Plans - Hidden for business profiles */}
-            {/* Travel Panel */}
-            <div 
-              role="tabpanel"
-              id="panel-travel"
-              aria-labelledby="tab-travel"
-              hidden={activeTab !== 'travel'}
-              ref={tabRefs.travel}
-              className="mt-6"
-              data-testid="travel-content"
-            >
-              {user?.userType !== 'business' && (
-                <div>
-                <TravelPlansWidget 
-                  userId={effectiveUserId || 0}
-                />
-                </div>
-              )}
-            </div>
+            {/* Travel Panel - Lazy Loaded */}
+            {activeTab === 'travel' && loadedTabs.has('travel') && (
+              <div 
+                role="tabpanel"
+                id="panel-travel"
+                aria-labelledby="tab-travel"
+                ref={tabRefs.travel}
+                className="mt-6"
+                data-testid="travel-content"
+              >
+                {user?.userType !== 'business' && (
+                  <div>
+                  <TravelPlansWidget 
+                    userId={effectiveUserId || 0}
+                  />
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Photo Albums Widget - Separate from Travel Memories */}
             {user?.userType !== 'business' && (
@@ -5808,17 +5812,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
 
             {/* Photo Gallery */}
-            {/* Photos Panel */}
-            <div 
-              role="tabpanel"
-              id="panel-photos"
-              aria-labelledby="tab-photos"
-              hidden={activeTab !== 'photos'}
-              ref={tabRefs.photos}
-              className="space-y-4 mt-6" 
-              style={{zIndex: 10, position: 'relative'}} 
-              data-testid="photos-content"
-            >
+            {/* Photos Panel - Lazy Loaded */}
+            {activeTab === 'photos' && loadedTabs.has('photos') && (
+              <div 
+                role="tabpanel"
+                id="panel-photos"
+                aria-labelledby="tab-photos"
+                ref={tabRefs.photos}
+                className="space-y-4 mt-6" 
+                style={{zIndex: 10, position: 'relative'}} 
+                data-testid="photos-content"
+              >
               <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700">
                 <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white dark:bg-gray-900">
                   <CardTitle className="flex items-center gap-2 text-black dark:text-white">
@@ -5939,20 +5943,21 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </CardContent>
                 </Card>
               )}
-            </div>
+              </div>
+            )}
 
             {/* Countries Tab */}
-            {/* Countries Panel */}
-            <div 
-              role="tabpanel"
-              id="panel-countries"
-              aria-labelledby="tab-countries"
-              hidden={activeTab !== 'countries'}
-              ref={tabRefs.countries}
-              className="space-y-4 mt-6" 
-              style={{zIndex: 10, position: 'relative'}} 
-              data-testid="countries-content"
-            >
+            {/* Countries Panel - Lazy Loaded */}
+            {activeTab === 'countries' && loadedTabs.has('countries') && (
+              <div 
+                role="tabpanel"
+                id="panel-countries"
+                aria-labelledby="tab-countries"
+                ref={tabRefs.countries}
+                className="space-y-4 mt-6" 
+                style={{zIndex: 10, position: 'relative'}} 
+                data-testid="countries-content"
+              >
                 <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
                   <CardHeader className="bg-white dark:bg-gray-900">
                     <div className="flex items-center justify-between">
@@ -6074,7 +6079,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     )}
                   </CardContent>
                 </Card>
-            </div>
+              </div>
+            )}
 
             {/* Event Organizer Hub - for ALL users who want to organize events */}
             {isOwnProfile && (
@@ -6164,18 +6170,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   )}
                 </CardContent>
               </Card>
+              </div>
             )}
 
-
-
-            {/* Contacts Panel */}
-            <div 
-              role="tabpanel"
-              id="panel-contacts"
-              aria-labelledby="tab-contacts"
-              hidden={activeTab !== 'contacts'}
-              ref={tabRefs.contacts}
-              className="space-y-4 mt-6" 
+            {/* Contacts Panel - Lazy Loaded */}
+            {activeTab === 'contacts' && loadedTabs.has('contacts') && (
+              <div 
+                role="tabpanel"
+                id="panel-contacts"
+                aria-labelledby="tab-contacts"
+                ref={tabRefs.contacts}
+                className="space-y-4 mt-6" 
               style={{zIndex: 10, position: 'relative'}} 
               data-testid="contacts-content"
             >
@@ -6830,14 +6835,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             )}
 
             {/* Vouch Widget */}
-            {/* References Panel */}
-            <div 
-              role="tabpanel"
-              id="panel-references"
-              aria-labelledby="tab-references"
-              hidden={activeTab !== 'references'}
-              ref={tabRefs.references}
-              className="mt-6"
+            {/* References Panel - Lazy Loaded */}
+            {activeTab === 'references' && loadedTabs.has('references') && (
+              <div 
+                role="tabpanel"
+                id="panel-references"
+                aria-labelledby="tab-references"
+                ref={tabRefs.references}
+                className="mt-6"
               data-testid="references-content"
             >
               {user?.id && (
