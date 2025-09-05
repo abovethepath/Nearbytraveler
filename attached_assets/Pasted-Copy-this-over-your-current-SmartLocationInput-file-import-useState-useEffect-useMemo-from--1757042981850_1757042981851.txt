@@ -1,3 +1,5 @@
+Copy this over your current SmartLocationInput file.
+
 import { useState, useEffect, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -251,4 +253,12 @@ export function SmartLocationInput({
   );
 }
 
-export default SmartLocationInput;
+Why this succeeds where the previous attempt didn’t
+
+No Radix/Portal/Popover → no z-index, transform, or overflow issues in tight iframes (Replit preview).
+
+Pure HTML controls work on every browser and mobile keyboard, and they’re easy to style.
+
+We still auto-fill the state/region from the city via getRegionForCity, and we call your existing onLocationChange/onLocationSelect events so the rest of your app keeps working.
+
+If you want the shadcn look later, you can re-enable it once you’re out of the preview constraints—but this native version will get you unblocked immediate
