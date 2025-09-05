@@ -6853,7 +6853,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
               )}
             </div>
-
+            )}
 
             {/* Travel Intent Widget - TangoTrips-inspired */}
             {user?.userType !== 'business' && (
