@@ -3788,7 +3788,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       </section>
 
       {/* Navigation Tabs - Card Style with Border */}
-      <div className="w-full bg-white border border-black dark:bg-gray-900 dark:border-gray-700 px-3 sm:px-6 lg:px-10 py-4 mx-3 sm:mx-6 lg:mx-8 rounded-lg mt-4">
+      <div className="w-auto bg-white border border-black dark:bg-gray-900 dark:border-gray-700 px-3 sm:px-6 lg:px-10 py-4 mx-4 sm:mx-6 lg:mx-8 rounded-lg mt-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between">
             <div className="flex flex-wrap gap-3 sm:gap-4">
