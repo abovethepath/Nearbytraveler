@@ -151,6 +151,7 @@ const CITY_ALWAYS_ACTIVITIES = {
     { name: "TCL Chinese Theatre", description: "Historic movie palace with handprints" },
     { name: "Hollywood Bowl", description: "Outdoor amphitheater for concerts" },
     { name: "Walt Disney Concert Hall", description: "Stunning modern concert venue downtown" },
+    { name: "Magic Castle", description: "Private club for magicians and magic shows" },
     
     // Beaches & Coastal Areas
     { name: "Santa Monica Pier", description: "Amusement park pier with ferris wheel" },
@@ -209,6 +210,8 @@ const CITY_ALWAYS_ACTIVITIES = {
     { name: "Runyon Canyon", description: "Popular hiking trail with city views" },
     { name: "Mulholland Drive", description: "Scenic drive with panoramic views" },
     { name: "Bronson Canyon", description: "Hiking trail near Hollywood Sign" },
+    { name: "Santa Monica Steps", description: "Famous outdoor staircase workout" },
+    { name: "Calabasas Steps", description: "Challenging stair climb with valley views" },
     { name: "Will Rogers State Beach", description: "Beach with volleyball and surfing" },
     { name: "Zuma Beach", description: "Wide sandy beach in Malibu" },
     
@@ -295,6 +298,8 @@ const CITY_ALWAYS_ACTIVITIES = {
     { name: "Runyon Canyon", description: "Popular hiking trail with city views" },
     { name: "Mulholland Drive", description: "Scenic drive with panoramic views" },
     { name: "Bronson Canyon", description: "Hiking trail near Hollywood Sign" },
+    { name: "Santa Monica Steps", description: "Famous outdoor staircase workout" },
+    { name: "Calabasas Steps", description: "Challenging stair climb with valley views" },
     { name: "Will Rogers State Beach", description: "Beach with volleyball and surfing" },
     { name: "Zuma Beach", description: "Wide sandy beach in Malibu" },
     
