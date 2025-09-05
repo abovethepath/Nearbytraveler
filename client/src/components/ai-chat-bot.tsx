@@ -18,7 +18,7 @@ export default function AIChatBot() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "welcome",
-      content: "Hi! I'm your NearbyTraveler AI assistant. I can help you plan trips, find events, connect with locals, and answer travel questions. How can I help you today?",
+      content: "Hi! I'm your NearbyTraveler assistant. I can help you with:\n• Planning trips and travel\n• Finding people, events, and businesses\n• Using search and editing your profile\n• Connecting and messaging\n\nTry asking: \"How do I plan a trip?\" or \"How do I search for people?\"",
       isBot: true,
       timestamp: new Date()
     }
@@ -34,10 +34,47 @@ export default function AIChatBot() {
     scrollToBottom();
   }, [messages]);
 
+  // Canned responses for common questions
+  const getCannedResponse = (message: string): string => {
+    const lowerMessage = message.toLowerCase();
+    
+    if (lowerMessage.includes('plan') && (lowerMessage.includes('trip') || lowerMessage.includes('travel'))) {
+      return "To plan a trip:\n1. Click your profile icon and select 'Create Trip'\n2. Enter your destination, dates, and interests\n3. Browse suggested events and activities\n4. Connect with locals and fellow travelers\n5. Use the search feature to find specific activities or people in your destination";
+    }
+    
+    if (lowerMessage.includes('search') || lowerMessage.includes('find')) {
+      return "To search on NearbyTraveler:\n• Click the Search icon in the bottom navigation\n• Use filters for location, age, interests, and activities\n• Switch between 'People', 'Events', and 'Businesses' tabs\n• Use the map view to see nearby results\n• Save interesting profiles and events for later";
+    }
+    
+    if (lowerMessage.includes('edit') && lowerMessage.includes('profile')) {
+      return "To edit your profile:\n1. Click your profile icon in the navigation\n2. Click 'Edit Profile' button\n3. Update your bio, interests, activities, and photos\n4. Save changes\n\nA complete profile helps you connect with like-minded travelers and locals!";
+    }
+    
+    if (lowerMessage.includes('message') || lowerMessage.includes('chat')) {
+      return "To message someone:\n1. Go to their profile and click 'Message'\n2. Or use the Messages tab in bottom navigation\n3. Send connection requests to people you'd like to meet\n4. Join city-specific chat rooms to connect with locals and travelers";
+    }
+    
+    if (lowerMessage.includes('event') || lowerMessage.includes('meetup')) {
+      return "For events and meetups:\n• Browse events on the home page or Events tab\n• RSVP to events you're interested in\n• Create your own events using the '+' button\n• Use Quick Meetup for spontaneous gatherings\n• Filter events by interests, date, and location";
+    }
+    
+    if (lowerMessage.includes('connect') || lowerMessage.includes('friend') || lowerMessage.includes('meet')) {
+      return "To connect with people:\n• Use the Search feature to find travelers and locals\n• Send connection requests to interesting profiles\n• Join events and meetups in your area\n• Use city chat rooms to meet people\n• Check compatibility scores to find like-minded people";
+    }
+    
+    if (lowerMessage.includes('help') || lowerMessage.includes('how') || lowerMessage.includes('start')) {
+      return "Getting started with NearbyTraveler:\n1. Complete your profile with bio, interests, and photo\n2. Create a trip if you're traveling\n3. Search for people, events, and businesses\n4. Join local chat rooms\n5. RSVP to events or create your own\n6. Connect with fellow travelers and locals";
+    }
+    
+    // Default response
+    return "I'm here to help you with NearbyTraveler! I can assist with:\n• Planning trips and travel\n• Finding people, events, and businesses\n• Using search and filters\n• Editing your profile\n• Messaging and connecting\n• Creating events and meetups\n\nWhat would you like to know more about?";
+  };
+
   const chatMutation = useMutation({
     mutationFn: async (message: string) => {
-      const response = await apiRequest("POST", "/api/ai/chat", { message });
-      return response.json();
+      // Simulate a brief delay for better UX
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return { message: getCannedResponse(message) };
     },
     onSuccess: (data) => {
       const botMessage: ChatMessage = {
@@ -51,7 +88,7 @@ export default function AIChatBot() {
     onError: (error) => {
       const errorMessage: ChatMessage = {
         id: Date.now().toString(),
-        content: "Sorry, I'm having trouble connecting right now. Please try again later.",
+        content: "Sorry, I'm having trouble right now. Please try again later.",
         isBot: true,
         timestamp: new Date()
       };
