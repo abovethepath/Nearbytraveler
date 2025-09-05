@@ -4112,13 +4112,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </Card>
             )}
 
-            {/* Things in Common Section - For compatibility assessment */}
-            {!isOwnProfile && currentUser && user?.userType !== 'business' && (
-              <ThingsInCommonSection 
-                currentUser={currentUser} 
-                profileUser={user} 
-              />
-            )}
 
             {/* Travel Plans and Business Information Card */}
             <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm w-full overflow-hidden">
