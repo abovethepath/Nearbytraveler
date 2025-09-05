@@ -77,7 +77,7 @@ export default function AIChatBot() {
 
   if (!isOpen) {
     return (
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-6 right-6" style={{ zIndex: 10000 }}>
         <Button
           onClick={() => setIsOpen(true)}
           className="h-14 w-14 rounded-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 shadow-lg"
@@ -90,7 +90,7 @@ export default function AIChatBot() {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 w-80 h-96">
+    <div className="fixed bottom-6 right-6 w-80 h-96" style={{ zIndex: 10000 }}>
       <Card className="h-full flex flex-col shadow-xl border-2">
         <CardHeader className="bg-white text-black rounded-t-lg py-3 border-b">
           <div className="flex items-center justify-between">
