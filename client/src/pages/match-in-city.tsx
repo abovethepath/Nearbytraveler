@@ -36,6 +36,73 @@ const consolidateToMetroArea = (city: string, state?: string): string => {
   return city; // No consolidation
 };
 
+// Universal activities that apply to ALL cities worldwide for fast loading
+const UNIVERSAL_ACTIVITIES = [
+  // Social & Meeting
+  { name: "Meet Locals", description: "Connect with people who live here" },
+  { name: "Meet Travelers", description: "Find other people visiting" },
+  { name: "Get Drinks", description: "Grab drinks at local spots" },
+  { name: "Happy Hours", description: "Find the best happy hour deals" },
+  { name: "Coffee Meetups", description: "Meet over coffee" },
+  { name: "Language Exchange", description: "Practice languages with locals" },
+  
+  // Families & Dating
+  { name: "Meet Other Families", description: "Connect with families with kids" },
+  { name: "Single and Looking", description: "Meet other singles" },
+  { name: "Date Night Ideas", description: "Romantic spots and activities" },
+  { name: "Kid-Friendly Activities", description: "Fun things to do with children" },
+  
+  // Outdoor & Active
+  { name: "Hiking", description: "Explore trails and nature" },
+  { name: "Biking", description: "Cycling routes and bike tours" },
+  { name: "Walking Tours", description: "Discover the city on foot" },
+  { name: "Parks & Gardens", description: "Visit green spaces" },
+  { name: "Beach Activities", description: "Ocean, lake, or river fun" },
+  { name: "Running Groups", description: "Join local runners" },
+  
+  // Food & Dining
+  { name: "Local Food Scene", description: "Try authentic local cuisine" },
+  { name: "Street Food", description: "Sample local street vendors" },
+  { name: "Food Tours", description: "Guided culinary experiences" },
+  { name: "Cooking Classes", description: "Learn local cooking" },
+  { name: "Markets & Farmers Markets", description: "Fresh local produce" },
+  { name: "Wine Tasting", description: "Local wines and vineyards" },
+  
+  // Arts & Culture
+  { name: "Museums & Galleries", description: "Art and cultural exhibits" },
+  { name: "Live Music", description: "Concerts and local bands" },
+  { name: "Theater & Shows", description: "Performances and entertainment" },
+  { name: "Local Festivals", description: "Cultural celebrations" },
+  { name: "Photography Walks", description: "Capture the city's beauty" },
+  { name: "Art Classes", description: "Creative workshops" },
+  
+  // Nightlife & Entertainment
+  { name: "Nightlife", description: "Bars, clubs, and evening fun" },
+  { name: "Rooftop Bars", description: "Drinks with a view" },
+  { name: "Live Entertainment", description: "Shows and performances" },
+  { name: "Dancing", description: "Dance venues and classes" },
+  { name: "Karaoke", description: "Sing your heart out" },
+  
+  // Shopping & Local
+  { name: "Shopping Districts", description: "Local shops and markets" },
+  { name: "Vintage & Thrift", description: "Unique finds and antiques" },
+  { name: "Local Crafts", description: "Handmade items and artisans" },
+  { name: "Bookstores & Cafes", description: "Literary spots" },
+  
+  // Wellness & Relaxation
+  { name: "Spa & Wellness", description: "Relaxation and self-care" },
+  { name: "Yoga Classes", description: "Find inner peace" },
+  { name: "Meditation Groups", description: "Mindfulness practice" },
+  { name: "Hot Springs", description: "Natural relaxation" },
+  
+  // Adventure & Unique
+  { name: "Local Tours", description: "Guided city experiences" },
+  { name: "Ghost Tours", description: "Spooky historical walks" },
+  { name: "Escape Rooms", description: "Puzzle-solving fun" },
+  { name: "Local Sports", description: "Watch or play local games" },
+  { name: "Volunteer Opportunities", description: "Give back to the community" }
+];
+
 interface MatchInCityProps {
   cityName?: string;
 }
@@ -254,14 +321,45 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
 
   const fetchCityActivities = async () => {
     try {
+      // Start with universal activities for instant loading
+      const universalActivitiesFormatted = UNIVERSAL_ACTIVITIES.map((activity, index) => ({
+        id: `universal-${index}`,
+        name: activity.name,
+        description: activity.description,
+        cityName: selectedCity,
+        isUniversal: true
+      }));
+      
+      setCityActivities(universalActivitiesFormatted);
+      
+      // Then fetch city-specific activities and merge
       const response = await fetch(`/api/city-activities/${encodeURIComponent(selectedCity)}`);
       if (response.ok) {
-        const activities = await response.json();
-
-        setCityActivities(activities);
+        const citySpecificActivities = await response.json();
+        
+        // Combine universal + city-specific, avoiding duplicates
+        const allActivities = [
+          ...universalActivitiesFormatted,
+          ...citySpecificActivities.filter((cityActivity: any) => 
+            !UNIVERSAL_ACTIVITIES.some(universal => 
+              universal.name.toLowerCase() === cityActivity.name.toLowerCase()
+            )
+          )
+        ];
+        
+        setCityActivities(allActivities);
       }
     } catch (error) {
       console.error('Error fetching city activities:', error);
+      // If API fails, at least show universal activities
+      const universalActivitiesFormatted = UNIVERSAL_ACTIVITIES.map((activity, index) => ({
+        id: `universal-${index}`,
+        name: activity.name,
+        description: activity.description,
+        cityName: selectedCity,
+        isUniversal: true
+      }));
+      setCityActivities(universalActivitiesFormatted);
     }
   };
 
@@ -1127,7 +1225,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
           </h3>
           <div className="text-gray-700 dark:text-gray-300 text-xs md:text-sm mb-3">
             ✅ Click activities to add them to your personal list below<br className="sm:hidden" />
-            <span className="hidden sm:inline"> • </span>✏️ Edit/delete to change for EVERYONE
+            <span className="hidden sm:inline"> • </span>🌍 Universal activities (available in all cities)<br className="sm:hidden" />
+            <span className="hidden sm:inline"> • </span>✏️ City-specific activities (edit/delete to change for EVERYONE)
           </div>
 
           {/* Add Activity Section - MOBILE RESPONSIVE */}
@@ -1178,16 +1277,19 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        console.log('🔴 BUTTON CLICKED!', activity.activityName);
+                        console.log('🔴 BUTTON CLICKED!', activity.name || activity.activityName);
                         toggleActivity(activity);
                       }}
                       className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1 shadow-sm hover:shadow-md border ${
                         isActive 
-                          ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 border-green-400/20 text-gray-900 dark:text-white' 
-                          : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 border-blue-400/20 text-gray-900 dark:text-white'
+                          ? 'bg-green-500 hover:bg-green-600 border-green-600 text-white' 
+                          : activity.isUniversal
+                            ? 'bg-white hover:bg-gray-50 border-gray-300 text-black'
+                            : 'bg-blue-500 hover:bg-blue-600 border-blue-600 text-white'
                       }`}
                     >
-                      {activity.activityName}
+                      {activity.isUniversal && <span className="text-xs mr-1">🌍</span>}
+                      {activity.name || activity.activityName}
                       {activity.description && (
                         <Info className="w-3 h-3 ml-1 opacity-60" />
                       )}
@@ -1203,31 +1305,33 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                       </Tooltip>
                     )}
 
-                    {/* Edit/Delete on hover */}
-                    <div className="absolute -top-2 -right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setEditingActivity(activity);
-                          setEditActivityName(activity.activityName);
-                          setEditActivityDescription(activity.description || '');
-                        }}
-                        className="w-5 h-5 bg-blue-600 hover:bg-blue-700 rounded-full text-gray-900 dark:text-white text-xs flex items-center justify-center"
-                        title="Edit"
-                      >
-                        ✏️
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deleteActivity(activity.id);
-                        }}
-                        className="w-5 h-5 bg-red-600 hover:bg-red-700 rounded-full text-gray-900 dark:text-white text-xs flex items-center justify-center"
-                        title="Delete"
-                      >
-                        🗑️
-                      </button>
-                    </div>
+                    {/* Edit/Delete on hover - only for city-specific activities */}
+                    {!activity.isUniversal && (
+                      <div className="absolute -top-2 -right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingActivity(activity);
+                            setEditActivityName(activity.name || activity.activityName);
+                            setEditActivityDescription(activity.description || '');
+                          }}
+                          className="w-5 h-5 bg-blue-600 hover:bg-blue-700 rounded-full text-white text-xs flex items-center justify-center"
+                          title="Edit"
+                        >
+                          ✏️
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteActivity(activity.id);
+                          }}
+                          className="w-5 h-5 bg-red-600 hover:bg-red-700 rounded-full text-white text-xs flex items-center justify-center"
+                          title="Delete"
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    )}
                   </div>
                 );
               })}
