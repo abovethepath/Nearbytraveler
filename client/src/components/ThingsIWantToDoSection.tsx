@@ -325,7 +325,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                   {/* Activity Pills */}
                   {cityData.activities.map((activity) => (
                     <div key={`act-${activity.id}`} className="relative group">
-                      <div className={`inline-flex items-center justify-center rounded-full px-3 text-xs font-medium bg-green-500 text-white border-0 appearance-none select-none gap-1.5 ${
+                      <div className={`inline-flex items-center justify-center rounded-full px-3 text-xs font-medium bg-white text-black border border-black appearance-none select-none gap-1.5 ${
                         isMobile 
                           ? 'min-h-[44px] py-2 px-4 text-sm whitespace-normal text-center break-words max-w-[calc(100vw-3rem)]' 
                           : 'h-6 min-w-[4rem] leading-none whitespace-nowrap'
@@ -351,7 +351,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                   {/* Event Pills */}
                   {cityData.events.map((event) => (
                     <div key={`evt-${event.id}`} className="relative group">
-                      <div className={`inline-flex items-center justify-center rounded-full px-3 text-xs font-medium bg-purple-500 text-white border-0 appearance-none select-none gap-1.5 ${
+                      <div className={`inline-flex items-center justify-center rounded-full px-3 text-xs font-medium bg-white text-black border border-black appearance-none select-none gap-1.5 ${
                         isMobile 
                           ? 'min-h-[44px] py-2 px-4 text-sm whitespace-normal text-center break-words max-w-[calc(100vw-3rem)]' 
                           : 'h-6 min-w-[4rem] leading-none whitespace-nowrap'
