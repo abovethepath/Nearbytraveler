@@ -3978,6 +3978,7 @@ Questions? Just reply to this message. Welcome aboard!
         sexualPreference,
         minAge,
         maxAge,
+        topChoices,
         interests,
         activities,
         events: eventsFilter,
@@ -4170,6 +4171,20 @@ Questions? Just reply to this message. Welcome aboard!
           whereConditions.push(or(
             ...statusList.map(status => 
               ilike(users.militaryStatus, `%${status}%`)
+            )
+          ));
+        }
+      }
+
+      // Top Choices filter (searches in interests field)
+      if (topChoices && typeof topChoices === 'string') {
+        const topChoicesList = topChoices.split(',').map(i => i.trim()).filter(Boolean);
+        if (topChoicesList.length > 0) {
+          if (process.env.NODE_ENV === 'development') console.log('⭐ TOP CHOICES FILTER: Searching for users with top choices:', topChoicesList);
+          
+          whereConditions.push(or(
+            ...topChoicesList.map(choice => 
+              sql`array_to_string(${users.interests}, ',') ILIKE ${`%${choice}%`}`
             )
           ));
         }

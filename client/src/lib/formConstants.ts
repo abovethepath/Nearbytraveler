@@ -63,7 +63,6 @@ export const TRAVELER_TYPE_OPTIONS = [
 export const MILITARY_STATUS_OPTIONS = [
   "Active Duty",
   "Veteran",
-  "Civilian",
   "Military Family",
   "Prefer not to say"
 ];
