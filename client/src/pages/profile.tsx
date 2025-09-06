@@ -742,8 +742,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [selectedState, setSelectedState] = useState("");
   
-  // State for expanded interests in travel plans
-  const [expandedPlanInterests, setExpandedPlanInterests] = useState<Set<number>>(new Set());
 
   
   // Edit mode states for individual widgets

@@ -102,7 +102,6 @@ export const ADDITIONAL_INTERESTS = [
   "Adventure Tours",
   "Wildlife & Nature",
   "Biking / Cycling",
-  "Nudist Beach",
   
   // Cannabis/Substance Culture (Adults Only)
   "Marijuana/Cannabis User",
@@ -234,6 +233,9 @@ export const PRIVATE_INTERESTS = [
   "Cam Shows & Online Adult",
   "Adult Content Creation",
   "Sexual Wellness Workshops",
+  
+  // Outdoor/Adult
+  "Nudist Beach",
   
   // Cannabis/Substance
   "Marijuana/Cannabis User"
