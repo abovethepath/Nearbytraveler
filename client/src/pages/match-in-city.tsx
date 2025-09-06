@@ -591,6 +591,57 @@ const CITY_ALWAYS_ACTIVITIES = {
     { name: "University of Texas", description: "Campus tours and Longhorn sports" },
     { name: "Eeyore's Birthday Party", description: "Annual spring festival in Pease Park" },
     { name: "Austin Ghost Tours", description: "Haunted history walking tours" }
+  ],
+
+  "Dublin": [
+    // Historic & Cultural
+    { name: "Trinity College & Book of Kells", description: "Medieval manuscript in historic library" },
+    { name: "Dublin Castle", description: "13th-century castle and government buildings" },
+    { name: "Guinness Storehouse", description: "Seven floors of Guinness history and tastings" },
+    { name: "Jameson Distillery Bow St.", description: "Irish whiskey distillery tour and tasting" },
+    { name: "Kilmainham Gaol", description: "Historic prison with Irish revolutionary history" },
+    { name: "Christ Church Cathedral", description: "Medieval cathedral with crypt and exhibitions" },
+    { name: "St. Patrick's Cathedral", description: "National cathedral of Ireland" },
+    { name: "National Gallery of Ireland", description: "Irish and European art collections" },
+    
+    // Neighborhoods
+    { name: "Temple Bar", description: "Cultural quarter with pubs and cobblestone streets" },
+    { name: "Grafton Street", description: "Premier shopping street with street performers" },
+    { name: "O'Connell Street", description: "Main thoroughfare with monuments and shops" },
+    { name: "Smithfield", description: "Historic market area with modern developments" },
+    { name: "Georgian Dublin", description: "18th-century architecture around squares" },
+    { name: "Docklands", description: "Modern riverside development with tech companies" },
+    
+    // Pubs & Nightlife
+    { name: "Traditional Irish Pubs", description: "Authentic pubs with live music" },
+    { name: "Brazen Head", description: "Ireland's oldest pub since 1198" },
+    { name: "The Long Hall", description: "Victorian pub with ornate interior" },
+    { name: "Kehoe's", description: "Traditional pub with original features" },
+    { name: "The Cobblestone", description: "Traditional music sessions" },
+    { name: "Live Music Sessions", description: "Spontaneous traditional Irish music" },
+    
+    // Parks & Outdoors
+    { name: "Phoenix Park", description: "One of Europe's largest enclosed parks" },
+    { name: "St. Stephen's Green", description: "Victorian park in city center" },
+    { name: "Dublin Bay", description: "Coastal walks and swimming" },
+    { name: "Howth Cliff Walk", description: "Scenic coastal hiking trail" },
+    { name: "Wicklow Mountains", description: "Day trip to 'Garden of Ireland'" },
+    { name: "Bull Island", description: "UNESCO biosphere reserve" },
+    
+    // Food & Drink
+    { name: "Irish Breakfast", description: "Full traditional Irish breakfast experience" },
+    { name: "Fish & Chips", description: "Classic Irish comfort food" },
+    { name: "Irish Stew", description: "Traditional lamb and vegetable stew" },
+    { name: "Coddle", description: "Dublin's traditional sausage and bacon dish" },
+    { name: "Boxty", description: "Traditional Irish potato pancake" },
+    { name: "Dublin Food Tours", description: "Guided culinary experiences" },
+    
+    // Day Trips
+    { name: "Cliffs of Moher", description: "Dramatic Atlantic coast cliffs (day trip)" },
+    { name: "Glendalough", description: "Ancient monastic site in Wicklow" },
+    { name: "Newgrange", description: "5,000-year-old passage tomb" },
+    { name: "Powerscourt Estate", description: "Historic house and gardens" },
+    { name: "Malahide Castle", description: "Medieval castle with gardens" }
   ]
 };
 
