@@ -12913,7 +12913,7 @@ Questions? Just reply to this message. Welcome aboard!
           .from(cityActivities)
           .where(
             and(
-              eq(cityActivities.activityName, activityName),
+              sql`LOWER(${cityActivities.activityName}) = LOWER(${activityName})`,
               eq(cityActivities.cityName, cityName)
             )
           );
