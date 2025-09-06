@@ -1080,9 +1080,15 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
     }
     const userId = currentUser.id;
 
-    const isCurrentlyActive = userActivities.some(ua => ua.activityId === activity.id);
+    // For universal activities, match by activity name since IDs are different
+    const activityName = activity.name || activity.activityName;
+    const isCurrentlyActive = userActivities.some(ua => 
+      ua.activityName === activityName || 
+      (activity.id && ua.activityId === activity.id)
+    );
     console.log('🎯 Activity state check:', { 
       activityId: activity.id, 
+      activityName,
       isCurrentlyActive,
       userActivitiesCount: userActivities.length,
       userActivities: userActivities.map(ua => ({ id: ua.id, activityId: ua.activityId, activityName: ua.activityName }))
@@ -1090,8 +1096,11 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
 
     try {
       if (isCurrentlyActive) {
-        // Find the correct user activity interest record ID
-        const userActivityRecord = userActivities.find(ua => ua.activityId === activity.id);
+        // Find the correct user activity interest record ID by name
+        const userActivityRecord = userActivities.find(ua => 
+          ua.activityName === activityName || 
+          (activity.id && ua.activityId === activity.id)
+        );
         if (!userActivityRecord) {
           toast({ title: 'Error', description: 'Could not find activity record', variant: 'destructive' });
           return;
@@ -1109,8 +1118,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
             title: "Interest Removed",
             description: `Removed interest in ${activity.activityName}`,
           });
-          // Immediately update local state
-          setUserActivities(prev => prev.filter(ua => ua.activityId !== activity.id));
+          // Immediately update local state - remove by name match
+          setUserActivities(prev => prev.filter(ua => 
+            ua.activityName !== activityName && ua.activityId !== activity.id
+          ));
           // Invalidate profile queries to refresh "Things I Want to Do"
           queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
           queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
@@ -1144,10 +1155,12 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
             title: "Interest Added",
             description: `Added interest in ${activity.activityName}`,
           });
-          // Immediately update local state - check if already exists first
+          // Immediately update local state - check if already exists first by name
           setUserActivities(prev => {
-            const alreadyExists = prev.some(ua => ua.activityId === activity.id);
-            console.log('🔄 Adding to state:', { alreadyExists, newInterest, activityId: activity.id });
+            const alreadyExists = prev.some(ua => 
+              ua.activityName === activityName || ua.activityId === activity.id
+            );
+            console.log('🔄 Adding to state:', { alreadyExists, newInterest, activityId: activity.id, activityName });
             if (alreadyExists) {
               console.log('⚠️ Activity already exists, not adding to state');
               return prev; // No need to add again
