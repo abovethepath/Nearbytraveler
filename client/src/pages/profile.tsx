@@ -4910,11 +4910,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {/* FULL VIEW: Show ALL interests (except private) for matching purposes */}
+                      {/* FULL VIEW: Show filtered interests (excluding top choices AND private) for matching purposes */}
                       {(() => {
-                        // Get all interests and filter out private ones for display
-                        const allInterests = user?.interests || [];
-                        const publicInterests = allInterests.filter(interest => !getPrivateInterests().includes(interest));
+                        // Use the filtering function to exclude top choices and private interests
+                        const filteredInterests = getFilteredInterestsForProfile(user!, isOwnProfile);
+                        const publicInterests = filteredInterests.filter(interest => !getPrivateInterests().includes(interest));
                         
                         if (publicInterests.length === 0) {
                           return <p className="text-gray-500 text-sm">No interests selected yet</p>;
