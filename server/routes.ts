@@ -12998,8 +12998,16 @@ Questions? Just reply to this message. Welcome aboard!
   // Create a new itinerary
   app.post("/api/itineraries", async (req, res) => {
     try {
+      const userId = getUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+      
       console.log("Creating itinerary:", req.body);
-      const itinerary = await storage.createItinerary(req.body);
+      const itinerary = await storage.createItinerary({
+        ...req.body,
+        userId: userId
+      });
       res.json(itinerary);
     } catch (error: any) {
       console.error("Error creating itinerary:", error);
