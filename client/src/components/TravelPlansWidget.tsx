@@ -72,29 +72,13 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
       <CardContent className="p-6">
         <div className="flex items-center gap-2 mb-4">
           <Globe className="w-5 h-5 text-travel-blue" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Travel Plans</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Current & Past Travel Plans ({uniquePlans.length})</h3>
         </div>
         <div className="space-y-3 max-h-48 overflow-y-auto">
           {(() => {
             const today = new Date();
-            // Show current trips (started but not ended) and future trips
-            const relevantPlans = uniquePlans.filter((plan: any) => {
-              if (!plan.endDate) return true; // Include plans without end dates
-              // FIXED: Timezone-safe date parsing for ALL users' travel dates
-              const endDate = (() => {
-                let dateString = plan.endDate instanceof Date ? plan.endDate.toISOString() : plan.endDate;
-                const parts = dateString.split('T')[0].split('-');
-                if (parts.length === 3) {
-                  const year = parseInt(parts[0]);
-                  const month = parseInt(parts[1]) - 1;
-                  const day = parseInt(parts[2]);
-                  return new Date(year, month, day);
-                }
-                return null;
-              })();
-              if (!endDate) return true;
-              return endDate >= today; // Show trips that haven't ended yet
-            });
+            // Show ALL trips (current and past) - no date filtering
+            const relevantPlans = uniquePlans;
             
             return relevantPlans.slice(0, 6).map((plan: any, index: number) => (
               <div 
