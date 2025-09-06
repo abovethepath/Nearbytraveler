@@ -43,8 +43,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
     location: "",
     userType: [] as string[],
     travelerTypes: [] as string[],
-    militaryStatus: [] as string[],
-    familyStatus: [] as string[]
+    militaryStatus: [] as string[]
   });
 
   // Location filter state for SmartLocationInput
@@ -59,7 +58,6 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
     topChoices: false,
     gender: false,
     sexualPreference: false,
-    familyStatus: false,
     userType: false,
     travelerTypes: false,
     interests: false,
@@ -123,7 +121,6 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
       if (advancedFilters.userType.length > 0) params.append('userType', advancedFilters.userType.join(','));
       if (advancedFilters.travelerTypes.length > 0) params.append('travelerTypes', advancedFilters.travelerTypes.join(','));
       if (advancedFilters.militaryStatus.length > 0) params.append('militaryStatus', advancedFilters.militaryStatus.join(','));
-      if (advancedFilters.familyStatus.length > 0) params.append('familyStatus', advancedFilters.familyStatus.join(','));
       if (currentUser?.id) params.append('currentUserId', currentUser.id.toString());
 
       console.log('🔍 Search params:', params.toString());
@@ -175,8 +172,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
       location: "",
       userType: [],
       travelerTypes: [],
-      militaryStatus: [],
-      familyStatus: []
+      militaryStatus: []
     });
     setLocationFilter({
       country: "",
@@ -200,7 +196,6 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
   const userTypeOptions = ["Local", "Traveler", "Business"];
   const travelerTypeOptions = ["Solo", "Couple", "Group", "Family", "Business"];
   const militaryStatusOptions = MILITARY_STATUS_OPTIONS;
-  const familyStatusOptions = ["Single", "Married", "Divorced", "Widowed", "In a Relationship", "It's Complicated"];
 
   // Use proper lists from base-options
   const topChoicesOptions = TOP_CHOICES;
@@ -373,34 +368,6 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
               </CollapsibleContent>
             </Collapsible>
 
-            {/* Family Status Filter */}
-            <Collapsible open={expandedSections.familyStatus} onOpenChange={() => toggleSection('familyStatus')}>
-              <CollapsibleTrigger asChild>
-                <Button variant="outline" className="w-full justify-between">
-                  <span>Family Status {advancedFilters.familyStatus.length > 0 && `(${advancedFilters.familyStatus.length})`}</span>
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="space-y-2 pt-2">
-                {familyStatusOptions.map((option) => (
-                  <div key={option} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`family-${option}`}
-                      checked={advancedFilters.familyStatus.includes(option)}
-                      onCheckedChange={(checked) => {
-                        setAdvancedFilters(prev => ({
-                          ...prev,
-                          familyStatus: checked 
-                            ? [...prev.familyStatus, option]
-                            : prev.familyStatus.filter(f => f !== option)
-                        }));
-                      }}
-                    />
-                    <Label htmlFor={`family-${option}`} className="text-sm">{option}</Label>
-                  </div>
-                ))}
-              </CollapsibleContent>
-            </Collapsible>
 
             {/* Military Status Filter */}
             <Collapsible open={expandedSections.militaryStatus} onOpenChange={() => toggleSection('militaryStatus')}>
