@@ -7210,7 +7210,112 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     )}
                   </CardHeader>
                   <CardContent>
-                    <TravelPlansWidget userId={effectiveUserId} />
+                    {(travelPlans || []).filter(plan => plan.status === 'planned' || plan.status === 'active').length > 0 ? (
+                      <div className="space-y-4">
+                        {(travelPlans || []).filter(plan => plan.status === 'planned' || plan.status === 'active').map((plan) => (
+                          <div key={plan.id} className="border rounded-lg p-4 hover:border-gray-300 dark:hover:border-gray-500 transition-colors bg-white dark:bg-gray-800">
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h4 className="font-medium text-lg">{plan.destinationCity}, {plan.destinationCountry}</h4>
+                                  <span className={`px-3 py-1 text-xs font-medium rounded-full ${
+                                    plan.status === 'active' ? 'bg-green-500 text-white' : 'bg-blue-500 text-white'
+                                  }`}>
+                                    {plan.status === 'active' ? 'Active' : 'Planned'}
+                                  </span>
+                                </div>
+                                <p className="text-gray-600 dark:text-gray-400 text-sm mb-2 font-medium">
+                                  {plan.startDate ? formatDateForDisplay(plan.startDate, user?.hometownCity || 'UTC') : 'Start date TBD'} - {plan.endDate ? formatDateForDisplay(plan.endDate, user?.hometownCity || 'UTC') : 'End date TBD'}
+                                </p>
+                                {plan.destinationCity && (
+                                  <p className="text-green-600 dark:text-green-400 font-medium text-sm mb-3">
+                                    ✓ Matching travelers in {plan.destinationCity}
+                                  </p>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {isOwnProfile && (
+                                  <>
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setLocation(`/plan-trip?edit=${plan.id}`);
+                                      }}
+                                      className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 px-3 py-1 h-auto"
+                                    >
+                                      Edit
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setLocation(`/itinerary/${plan.id}`);
+                                      }}
+                                      className="text-gray-600 hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700/20 px-3 py-1 h-auto"
+                                    >
+                                      Itinerary
+                                    </Button>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                            
+                            {/* Trip interests */}
+                            {plan.interests && plan.interests.length > 0 && (
+                              <div className="mb-3">
+                                <div className="flex flex-wrap gap-2">
+                                  {plan.interests.slice(0, 6).map((interest: string) => (
+                                    <div key={interest} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+                                      {interest}
+                                    </div>
+                                  ))}
+                                  {plan.interests.length > 6 && (
+                                    <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+                                      +{plan.interests.length - 6} more
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* City match explanation text */}
+                            <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
+                              <p className="text-sm text-gray-600 dark:text-gray-400">
+                                💡 <strong>Want to find specific events and activities in {plan.destinationCity}?</strong> 
+                                <br />
+                                Use the City Match button above to discover local events, activities, and connect with other travelers and locals in {plan.destinationCity}!
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                        <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                        <p>No travel plans yet</p>
+                        {isOwnProfile && (
+                          <>
+                            <Button
+                              onClick={() => setLocation('/plan-trip')}
+                              size="sm"
+                              className="mt-3 bg-blue-600 text-white hover:bg-blue-700"
+                            >
+                              Plan Your First Trip
+                            </Button>
+                            <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-600">
+                              <p className="text-sm text-gray-600 dark:text-gray-400">
+                                💡 <strong>After planning your trip:</strong> 
+                                <br />
+                                Use City Match to find specific events and activities in your destination city!
+                              </p>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </div>
