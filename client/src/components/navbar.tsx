@@ -16,27 +16,37 @@ import Logo from "@/components/logo";
 import ConnectModal from "@/components/connect-modal";
 import NotificationBell from "@/components/notification-bell";
 import { useTheme } from "@/components/theme-provider";
+import { AdaptiveThemeToggle } from "@/components/adaptive-theme-toggle";
 import { authStorage } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
 
 
 // Theme Toggle as Dropdown Menu Item
 function ThemeToggleMenuItem() {
-  const { theme, setTheme } = useTheme();
-  const isDark = theme === "dark";
+  const { theme, setTheme, resolvedTheme, isSystemTheme, toggleTheme } = useTheme();
 
-  const toggleTheme = () => {
-    setTheme(isDark ? "light" : "dark");
+  const getThemeDisplay = () => {
+    if (isSystemTheme) {
+      return {
+        icon: resolvedTheme === "dark" ? <Moon className="mr-2 h-4 w-4" /> : <Sun className="mr-2 h-4 w-4" />,
+        text: `Auto (${resolvedTheme === "dark" ? "Dark" : "Light"})`
+      };
+    }
+    return {
+      icon: theme === "dark" ? <Sun className="mr-2 h-4 w-4" /> : <Moon className="mr-2 h-4 w-4" />,
+      text: theme === "dark" ? "Switch to Light" : "Switch to Dark"
+    };
   };
+
+  const { icon, text } = getThemeDisplay();
 
   return (
     <DropdownMenuItem onClick={toggleTheme}>
-      {isDark ? (
-        <Sun className="mr-2 h-4 w-4" />
-      ) : (
-        <Moon className="mr-2 h-4 w-4" />
+      {icon}
+      <span>{text}</span>
+      {isSystemTheme && (
+        <div className="ml-auto h-2 w-2 rounded-full bg-blue-500 dark:bg-blue-400" />
       )}
-      <span>{isDark ? "Light Mode" : "Dark Mode"}</span>
     </DropdownMenuItem>
   );
 }
@@ -48,8 +58,22 @@ function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { toggleTheme } = useTheme();
   const headerRef = React.useRef<HTMLDivElement>(null);
   const [menuTop, setMenuTop] = useState(0);
+
+  // Keyboard shortcut for theme toggle
+  useEffect(() => {
+    const handleKeydown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === 't') {
+        event.preventDefault();
+        toggleTheme();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeydown);
+    return () => window.removeEventListener('keydown', handleKeydown);
+  }, [toggleTheme]);
 
   // Bulletproof user data access - get from multiple sources
   const [directUser, setDirectUser] = useState<any>(null);
@@ -414,7 +438,11 @@ function Navbar() {
 
               <div className="flex items-center space-x-2 md:space-x-3">
                 {directUser?.id && <NotificationBell userId={directUser.id} />}
-
+                
+                {/* Desktop Theme Toggle */}
+                <div className="hidden md:block">
+                  <AdaptiveThemeToggle />
+                </div>
 
                 {/* Mobile Menu Button */}
                 <Button

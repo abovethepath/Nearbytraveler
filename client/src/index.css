@@ -73,6 +73,71 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ADAPTIVE DARK/LIGHT MODE SMOOTH TRANSITIONS */
+:root {
+  --theme-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Smooth transitions for theme switching */
+.theme-transitioning,
+.theme-transitioning *,
+.theme-transitioning *::before,
+.theme-transitioning *::after {
+  transition: var(--theme-transition) !important;
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform !important;
+}
+
+/* Prevent layout shifts during transitions */
+.theme-transitioning {
+  overflow-x: hidden;
+}
+
+/* Enhanced color transitions for specific elements */
+body,
+.bg-background,
+.bg-card,
+.bg-popover,
+.text-foreground,
+.text-card-foreground,
+.text-popover-foreground,
+/* Additional elements for smooth transitions */
+nav,
+header,
+aside,
+main,
+footer,
+[data-radix-navigation-menu-content],
+[data-radix-dropdown-menu-content],
+[data-radix-popover-content],
+[data-radix-dialog-content] {
+  transition: var(--theme-transition);
+}
+
+/* Smooth transition for theme-aware components */
+.card,
+.button,
+.input,
+.select,
+.avatar,
+.badge,
+.pill {
+  transition: var(--theme-transition);
+}
+
+/* Prevent flash during initial theme load */
+html.theme-loading * {
+  transition: none !important;
+}
+
+/* Enhanced theme transition for mobile elements */
+@media (max-width: 768px) {
+  .mobile-bottom-nav,
+  .mobile-nav,
+  [style*="position: fixed"] {
+    transition: var(--theme-transition);
+  }
+}
+
 /* Improve image rendering quality on mobile devices */
 img,
 .avatar img,
