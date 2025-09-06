@@ -280,19 +280,63 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
                       </div>
                     </div>
 
-                    {/* Itinerary Section */}
+                    {/* Clean Itinerary Overview */}
                     <div className="border-t border-gray-200 dark:border-gray-600 pt-3 mt-3">
-                      <h5 className="font-medium text-gray-900 dark:text-white mb-2">Full Itinerary</h5>
-                      <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                        <p><strong>Destination:</strong> {plan.destination}</p>
-                        <p><strong>Duration:</strong> {plan.startDate && formatDateForDisplay(plan.startDate, "PLAYA DEL REY")} - {plan.endDate && formatDateForDisplay(plan.endDate, "PLAYA DEL REY")}</p>
-                        {plan.accommodation && <p><strong>Stay:</strong> {plan.accommodation}</p>}
-                        {plan.transportation && <p><strong>Transport:</strong> {plan.transportation}</p>}
-                        <div className="mt-3 pt-2 border-t border-gray-200 dark:border-gray-600">
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            💡 <strong>Tip:</strong> Click the Itinerary button above to plan and share your detailed trip itinerary!
+                      <div className="flex items-center justify-between mb-3">
+                        <h5 className="font-medium text-gray-900 dark:text-white">Trip Overview</h5>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setLocation(`/plan-trip?edit=${plan.id}`)}
+                          className="text-xs"
+                        >
+                          Edit Details
+                        </Button>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 gap-3 text-sm">
+                        <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                          <p className="font-medium text-gray-900 dark:text-white mb-1">📍 Destination</p>
+                          <p className="text-gray-600 dark:text-gray-400">{plan.destination}</p>
+                        </div>
+                        
+                        <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                          <p className="font-medium text-gray-900 dark:text-white mb-1">📅 Duration</p>
+                          <p className="text-gray-600 dark:text-gray-400">
+                            {plan.startDate && formatDateForDisplay(plan.startDate, "PLAYA DEL REY")} - {plan.endDate && formatDateForDisplay(plan.endDate, "PLAYA DEL REY")}
                           </p>
                         </div>
+
+                        {plan.accommodation && (
+                          <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                            <p className="font-medium text-gray-900 dark:text-white mb-1">🏨 Accommodation</p>
+                            <p className="text-gray-600 dark:text-gray-400">{plan.accommodation}</p>
+                          </div>
+                        )}
+
+                        {plan.transportation && (
+                          <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                            <p className="font-medium text-gray-900 dark:text-white mb-1">🚗 Transportation</p>
+                            <p className="text-gray-600 dark:text-gray-400">{plan.transportation}</p>
+                          </div>
+                        )}
+
+                        {plan.notes && (
+                          <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                            <p className="font-medium text-gray-900 dark:text-white mb-1">📝 Notes</p>
+                            <p className="text-gray-600 dark:text-gray-400">{plan.notes}</p>
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-600 text-center">
+                        <Button
+                          onClick={() => setLocation(`/city/${plan.destinationCity?.toLowerCase()}`)}
+                          className="bg-gradient-to-r from-blue-600 to-orange-500 text-white hover:from-blue-700 hover:to-orange-600"
+                          size="sm"
+                        >
+                          🎯 Discover {plan.destinationCity} Events
+                        </Button>
                       </div>
                     </div>
                   </div>
