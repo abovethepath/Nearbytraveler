@@ -3718,13 +3718,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               <Button
                                 onClick={() => {
                                   openTab('travel');
-                                  // Scroll to travel plans section after a short delay
+                                  // Scroll directly to the travel plans widget after a short delay
                                   setTimeout(() => {
-                                    const travelSection = document.querySelector('#panel-travel');
-                                    if (travelSection) {
-                                      travelSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                    const travelPlansSection = document.querySelector('[data-testid="travel-plans-widget"]');
+                                    if (travelPlansSection) {
+                                      travelPlansSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                    } else {
+                                      // Fallback: scroll to the tab panel
+                                      const travelSection = document.querySelector('#panel-travel');
+                                      if (travelSection) {
+                                        travelSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                      }
                                     }
-                                  }, 100);
+                                  }, 150);
                                 }}
                                 className="bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 text-white border-0 px-4 py-2 text-sm rounded-lg shadow-md transition-all"
                                 data-testid="button-connect-travel-plans"
@@ -6010,7 +6016,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {user?.userType !== 'business' && (
               <>
                 {/* Current & Upcoming Travel Plans */}
-                <Card>
+                <Card data-testid="travel-plans-widget">
                   <CardHeader className="flex flex-col items-start gap-3">
                     <CardTitle className="flex items-center gap-2">
                       <Calendar className="w-5 h-5" />
