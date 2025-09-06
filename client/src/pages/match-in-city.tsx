@@ -1792,6 +1792,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
               onClick={() => enhanceCityWithMoreActivities()}
               className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-gray-900 dark:text-white font-semibold px-3 py-2 md:px-4 rounded-lg shadow-lg text-sm md:text-base w-full sm:w-auto"
               disabled={isLoading}
+              data-testid="button-enhance-ai-activities"
             >
               🤖 Get More AI Activities
             </Button>
@@ -1870,6 +1871,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                               ? 'bg-orange-500 hover:bg-orange-600 border-orange-600 text-white'
                               : 'bg-blue-500 hover:bg-blue-600 border-blue-600 text-white'
                       }`}
+                      data-testid="activity-pill"
                     >
                       {activity.isUniversal && <span className="text-xs mr-1">🌍</span>}
                       {activity.isCityAlways && <span className="text-xs mr-1">⭐</span>}

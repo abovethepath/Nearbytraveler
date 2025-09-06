@@ -12733,6 +12733,37 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // POST enhance city with AI-generated activities
+  app.post("/api/city-activities/:cityName/enhance", async (req, res) => {
+    try {
+      const { cityName } = req.params;
+      const userId = req.headers['x-user-id'];
+      
+      if (!cityName) {
+        return res.status(400).json({ error: 'City name is required' });
+      }
+      
+      if (process.env.NODE_ENV === 'development') console.log(`🤖 AI ENHANCE: Generating AI activities for ${cityName}`);
+      
+      // Call the AI enhancement function
+      const result = await enhanceExistingCityWithMoreActivities(cityName);
+      
+      if (result.success) {
+        if (process.env.NODE_ENV === 'development') console.log(`✅ AI ENHANCE: Generated ${result.activitiesAdded} new activities for ${cityName}`);
+        res.json({ 
+          message: `Generated ${result.activitiesAdded} new AI activities for ${cityName}!`,
+          activitiesAdded: result.activitiesAdded,
+          success: true 
+        });
+      } else {
+        throw new Error(result.error || 'Failed to enhance city activities');
+      }
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error('Error enhancing city with AI activities:', error);
+      res.status(500).json({ error: 'Failed to enhance city activities' });
+    }
+  });
+
   // GET user city interests for a specific user and city
   app.get("/api/user-city-interests/:userId/:cityName", async (req, res) => {
     try {
