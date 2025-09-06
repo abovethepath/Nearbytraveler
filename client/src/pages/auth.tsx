@@ -65,29 +65,49 @@ export default function Auth() {
 
       console.log('Login response status:', response.status);
       if (response.ok) {
-        const user = await response.json();
-        console.log('Login successful, user:', user);
+        const data = await response.json();
+        console.log('Login response data:', data);
         
-        // Store auth data
-        authStorage.setUser(user);
-        localStorage.setItem('auth_token', 'authenticated');
-        
-        // Invalidate auth queries to refresh user state
-        queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-        
-        toast({
-          title: "Welcome back!",
-          description: "Successfully logged in.",
-        });
-        
-        // Redirect to home
-        setLocation('/');
+        // Check if login was successful (backend returns {ok: true, user: {...}})
+        if (data.ok && data.user) {
+          // Store auth data
+          authStorage.setUser(data.user);
+          localStorage.setItem('auth_token', 'authenticated');
+          localStorage.setItem('current_user', JSON.stringify(data.user));
+          
+          // Invalidate auth queries to refresh user state
+          queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+          
+          toast({
+            title: "Welcome back!",
+            description: "Successfully logged in.",
+          });
+          
+          // Redirect to home
+          setLocation('/');
+        } else {
+          // Backend returned an error in JSON format
+          console.log('Login failed with response:', data);
+          toast({
+            title: "Login failed",
+            description: data.message || "Invalid credentials. Please try again.",
+            variant: "destructive",
+          });
+        }
       } else {
-        const error = await response.text();
-        console.log('Login failed with error:', error);
+        // Non-200 response
+        let errorMessage = "Invalid credentials";
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch {
+          // If not JSON, try text
+          errorMessage = await response.text() || errorMessage;
+        }
+        console.log('Login failed with error:', errorMessage);
         toast({
           title: "Login failed",
-          description: error || "Invalid credentials. Please try again.",
+          description: errorMessage,
           variant: "destructive",
         });
       }
