@@ -1188,8 +1188,6 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
       if (process.env.NODE_ENV === 'development') {
         console.log('🌍 METRO CONSOLIDATION: Consolidated city mapping:');
-        console.log(`🔍 RAW CITIES FROM SQL:`, rawCities);
-        console.log(`🔍 CONSOLIDATED CITY NAMES:`, [...consolidatedCityNames]);
         for (const [metro, cities] of consolidatedCityMap.entries()) {
           if (cities.length > 1) {
             console.log(`  ${metro}: ${cities.join(', ')}`);
@@ -1268,11 +1266,6 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             const travelerCount = (travelPlansResult[0]?.count || 0) + (currentTravelersResult[0]?.count || 0);
             const eventCount = eventsResult[0]?.count || 0;
 
-            if (process.env.NODE_ENV === 'development' && cityName === 'Dublin') {
-              console.log(`🔍 DUBLIN DEBUG: localCount=${localCount}, businessCount=${businessCount}, travelerCount=${travelerCount}, eventCount=${eventCount}`);
-              console.log(`🔍 DUBLIN TRAVEL PLANS: ${travelPlansResult[0]?.count || 0}`);
-              console.log(`🔍 DUBLIN CURRENT TRAVELERS: ${currentTravelersResult[0]?.count || 0}`);
-            }
 
             const cityLocation = getCityCountry(cityName);
             
