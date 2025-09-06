@@ -1089,7 +1089,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           'Athens': { state: '', country: 'Greece' },
           'Brussels': { state: '', country: 'Belgium' },
           'Birmingham': { state: '', country: 'United Kingdom' },
-          'Marseille': { state: '', country: 'France' }
+          'Marseille': { state: '', country: 'France' },
+          'Montpellier': { state: '', country: 'France' }
         };
 
         // Check if it's an international city
