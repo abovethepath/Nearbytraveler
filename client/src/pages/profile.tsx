@@ -8252,43 +8252,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </div>
           </DialogHeader>
           
-          {/* Moving/Hometown Change CTA */}
-          <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-4 mb-4">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-orange-800 dark:text-orange-200">
-                  📍 Are you moving or want to change your hometown location?
-                </p>
-                <p className="text-xs text-orange-600 dark:text-orange-300 mt-1">
-                  Update where you're a local to connect with the right community
-                </p>
-              </div>
-              <Button
-                type="button"
-                size="sm"
-                onClick={() => {
-                  // Close the edit profile modal
-                  setIsEditMode(false);
-                  
-                  // Open the location widget (which was hidden)
-                  setShowLocationWidget(true);
-                  
-                  // Scroll to the location widget after it opens and renders
-                  setTimeout(() => {
-                    const locationWidget = document.querySelector('[data-testid="location-widget"]');
-                    if (locationWidget) {
-                      locationWidget.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                  }, 300); // Longer delay to ensure widget is rendered
-                }}
-                className="bg-orange-600 hover:bg-orange-700 text-white ml-3 flex-shrink-0"
-                data-testid="button-change-hometown"
-              >
-                <MapPin className="w-4 h-4 mr-1" />
-                Change Location
-              </Button>
-            </div>
-          </div>
+          {/* REMOVED: Moving section moved to bottom of form */}
           
           <Form {...profileForm}>
             <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-6">
@@ -8938,6 +8902,44 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             )}
 
               {/* Location Section - REMOVED FROM DIALOG - NOW SEPARATE */}
+
+              {/* Moving/Hometown Change CTA - Moved to bottom as requested */}
+              <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-4 mb-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-orange-800 dark:text-orange-200">
+                      📍 Are you moving or want to change your hometown location?
+                    </p>
+                    <p className="text-xs text-orange-600 dark:text-orange-300 mt-1">
+                      Update where you're a local to connect with the right community
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => {
+                      // Close the edit profile modal
+                      setIsEditMode(false);
+                      
+                      // Open the location widget (which was hidden)
+                      setShowLocationWidget(true);
+                      
+                      // Scroll to the location widget after it opens and renders
+                      setTimeout(() => {
+                        const locationWidget = document.querySelector('[data-testid="location-widget"]');
+                        if (locationWidget) {
+                          locationWidget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                      }, 300); // Longer delay to ensure widget is rendered
+                    }}
+                    className="bg-orange-600 hover:bg-orange-700 text-white ml-3 flex-shrink-0"
+                    data-testid="button-change-hometown"
+                  >
+                    <MapPin className="w-4 h-4 mr-1" />
+                    Change Location
+                  </Button>
+                </div>
+              </div>
 
               <div className="flex gap-2 pt-4">
                 <Button 
