@@ -5369,6 +5369,87 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // CRITICAL: Delete travel plan and update user travel status
+  app.delete("/api/travel-plans/:id", async (req, res) => {
+    try {
+      if (process.env.NODE_ENV === 'development') console.log('=== DELETE TRAVEL PLAN API ===');
+      if (process.env.NODE_ENV === 'development') console.log('Plan ID:', req.params.id);
+      
+      const planId = parseInt(req.params.id || '0');
+      
+      // Get the travel plan first to get user ID
+      const travelPlan = await storage.getTravelPlan(planId);
+      if (!travelPlan) {
+        return res.status(404).json({ message: "Travel plan not found" });
+      }
+      
+      const userId = travelPlan.userId;
+      if (process.env.NODE_ENV === 'development') console.log('=== DELETING TRAVEL PLAN FOR USER ===', userId);
+      
+      // Delete the travel plan
+      const deleted = await storage.deleteTravelPlan(planId);
+      if (!deleted) {
+        return res.status(500).json({ message: "Failed to delete travel plan" });
+      }
+      
+      // Get remaining travel plans for this user
+      const remainingTravelPlans = await storage.getTravelPlansForUser(userId);
+      if (process.env.NODE_ENV === 'development') console.log('=== REMAINING TRAVEL PLANS ===', remainingTravelPlans?.length || 0);
+      
+      // If user has no remaining travel plans, clear their travel status
+      if (!remainingTravelPlans || remainingTravelPlans.length === 0) {
+        if (process.env.NODE_ENV === 'development') console.log('=== CLEARING TRAVEL STATUS ===', 'User has no remaining travel plans');
+        await storage.updateUser(userId, {
+          isCurrentlyTraveling: false,
+          travelDestination: null,
+          currentCity: null,
+          destinationCity: null,
+          destinationState: null,
+          destinationCountry: null
+        });
+        if (process.env.NODE_ENV === 'development') console.log('=== TRAVEL STATUS CLEARED ===');
+      } else {
+        // User still has travel plans - check if they should still be marked as currently traveling
+        // Simple check for active travel plans (replicate core logic here)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        let hasActiveTravelPlan = false;
+        
+        for (const plan of remainingTravelPlans) {
+          if (plan.startDate && plan.endDate) {
+            const startDate = new Date(plan.startDate);
+            const endDate = new Date(plan.endDate);
+            startDate.setHours(0, 0, 0, 0);
+            endDate.setHours(23, 59, 59, 999);
+            
+            if (today >= startDate && today <= endDate) {
+              hasActiveTravelPlan = true;
+              break;
+            }
+          }
+        }
+        
+        const currentDestination = hasActiveTravelPlan;
+        if (!currentDestination) {
+          // No current travel - clear current travel status but keep future plans
+          if (process.env.NODE_ENV === 'development') console.log('=== CLEARING CURRENT TRAVEL STATUS ===', 'No active trips remaining');
+          await storage.updateUser(userId, {
+            isCurrentlyTraveling: false,
+            travelDestination: null,
+            currentCity: null
+          });
+        }
+      }
+      
+      if (process.env.NODE_ENV === 'development') console.log('=== TRAVEL PLAN DELETION COMPLETE ===');
+      return res.json({ message: "Travel plan deleted successfully" });
+      
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error deleting travel plan:", error);
+      return res.status(500).json({ message: "Failed to delete travel plan", error: error.message });
+    }
+  });
+
   // Enhanced: Get conversation data with IM notification support
   app.get("/api/conversations/:userId", async (req, res) => {
     try {
