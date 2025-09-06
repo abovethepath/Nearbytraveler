@@ -5127,7 +5127,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           ))}
                         </div>
                       </div>
-                    )}
+                      )}
+                    </div>
                   )}
                 </div>
 
