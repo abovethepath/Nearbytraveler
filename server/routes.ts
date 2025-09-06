@@ -5289,6 +5289,27 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
       
+      // CRITICAL FIX: Update user travel status immediately if trip is active now
+      const now = new Date();
+      const isCurrentlyTraveling = new Date(travelPlanData.startDate) <= now && new Date(travelPlanData.endDate) >= now;
+      
+      if (isCurrentlyTraveling) {
+        console.log(`🧳 TRAVEL STATUS: User ${travelPlanData.userId} is now currently traveling to ${travelPlanData.destinationCity}`);
+        await storage.updateUser(travelPlanData.userId, {
+          userType: 'traveler',
+          isCurrentlyTraveling: true,
+          destinationCity: travelPlanData.destinationCity,
+          destinationState: travelPlanData.destinationState || null,
+          destinationCountry: travelPlanData.destinationCountry
+        });
+        console.log(`✅ TRAVEL STATUS: Updated user ${travelPlanData.userId} to show as currently traveling`);
+      } else {
+        console.log(`📅 TRAVEL STATUS: Trip is future/past - user ${travelPlanData.userId} remains as planned traveler`);
+        await storage.updateUser(travelPlanData.userId, {
+          userType: 'traveler'
+        });
+      }
+      
       // Award 4 aura points for planning a trip
       await awardAuraPoints(travelPlanData.userId, 4, 'planning a trip');
       
@@ -5361,6 +5382,45 @@ Questions? Just reply to this message. Welcome aboard!
       
       if (process.env.NODE_ENV === 'development') console.log('=== TRAVEL PLAN UPDATED ===');
       if (process.env.NODE_ENV === 'development') console.log('Updated travel plan:', updatedTravelPlan);
+      
+      // CRITICAL FIX: Update user travel status after modifying travel plan
+      if (updatedTravelPlan && (updateData.startDate || updateData.endDate || updateData.destinationCity)) {
+        const now = new Date();
+        const startDate = updatedTravelPlan.startDate;
+        const endDate = updatedTravelPlan.endDate;
+        const isCurrentlyTraveling = startDate <= now && endDate >= now;
+        
+        if (isCurrentlyTraveling) {
+          console.log(`🧳 TRAVEL STATUS UPDATE: User ${updatedTravelPlan.userId} is now currently traveling to ${updatedTravelPlan.destinationCity}`);
+          await storage.updateUser(updatedTravelPlan.userId, {
+            userType: 'traveler',
+            isCurrentlyTraveling: true,
+            destinationCity: updatedTravelPlan.destinationCity,
+            destinationState: updatedTravelPlan.destinationState || null,
+            destinationCountry: updatedTravelPlan.destinationCountry
+          });
+          console.log(`✅ TRAVEL STATUS UPDATE: Updated user ${updatedTravelPlan.userId} to show as currently traveling`);
+        } else {
+          // Check if user has any OTHER active travel plans
+          const activePlans = await db.select().from(travelPlans)
+            .where(and(
+              eq(travelPlans.userId, updatedTravelPlan.userId),
+              lte(travelPlans.startDate, now),
+              gte(travelPlans.endDate, now),
+              ne(travelPlans.id, updatedTravelPlan.id) // Exclude this plan
+            ));
+            
+          if (activePlans.length === 0) {
+            console.log(`🏠 TRAVEL STATUS UPDATE: User ${updatedTravelPlan.userId} no longer currently traveling`);
+            await storage.updateUser(updatedTravelPlan.userId, {
+              isCurrentlyTraveling: false,
+              destinationCity: null,
+              destinationState: null,
+              destinationCountry: null
+            });
+          }
+        }
+      }
       
       return res.json(updatedTravelPlan);
     } catch (error: any) {
