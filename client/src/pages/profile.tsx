@@ -1481,8 +1481,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         hometownCountry: user.hometownCountry
       });
       
-      // Initialize temp values for editing
-      setTempInterests(user.interests || []);
+      // Initialize temp values for editing - EXCLUDE top choices from interests to prevent duplication
+      setTempInterests((user.interests || []).filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)));
       setTempActivities(user.activities || []);
       setTempEvents(user.events || []);
       
