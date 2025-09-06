@@ -6116,297 +6116,34 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </Card>
             )}
 
-            {/* Travel Plans - Hidden for business profiles */}
-            {user?.userType !== 'business' && (
-              <>
-                {/* Current & Upcoming Travel Plans */}
-                <Card data-testid="travel-plans-widget">
-                  <CardHeader className="flex flex-col items-start gap-3">
-                    <CardTitle className="flex items-center gap-2">
-                      <Calendar className="w-5 h-5" />
-                      Current & Upcoming Travel Plans ({travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length})
-                    </CardTitle>
+            {/* Interests Widget */}
+            <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700">
+              <CardHeader className="bg-white dark:bg-gray-900">
+                <CardTitle className="flex items-center justify-between text-black dark:text-white">
+                  <div className="flex items-center gap-2">
+                    <Heart className="w-5 h-5 text-red-500" />
+                    Interests & Activities
+                  </div>
                   {isOwnProfile && (
-                    <div className="flex flex-col gap-3">
-                      <div className="flex gap-2">
-                        <Button
-                          onClick={() => {
-                            setLocation('/plan-trip');
-                            // Scroll to top after navigation
-                            setTimeout(() => {
-                              window.scrollTo({ top: 0, behavior: 'smooth' });
-                            }, 100);
-                          }}
-                          size="sm"
-                          className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white font-semibold shadow-lg"
-                        >
-                          ✈️ Add New Trip
-                        </Button>
-                        <Button
-                          onClick={() => {
-                            setLocation('/match-in-city');
-                            setTimeout(() => {
-                              window.scrollTo({ top: 0, behavior: 'smooth' });
-                            }, 100);
-                          }}
-                          size="sm"
-                          className="bg-gradient-to-r from-blue-600 to-green-600 text-white hover:from-blue-700 hover:to-green-700"
-                        >
-                          🏙️ City Match
-                        </Button>
-                      </div>
-                      {/* City Activities Call-to-Action */}
-                      <div className="bg-gradient-to-r from-blue-600 to-green-600 p-4 rounded-lg border-2 border-blue-400">
-                        <p className="text-lg font-bold text-white text-center mb-2">
-                          🎯 Want to Find People Doing Specific Activities ON THIS TRIP?
-                        </p>
-                        <p className="text-xs text-white/80 text-center">
-                          After completing your trip plan, visit the City Match page to add and check off specific activities, events, and plans to THIS CITY. Find others who want to do the exact same things!
-                        </p>
-                      </div>
-                    </div>
+                    <Button
+                      onClick={() => setLocation('/profile-edit')}
+                      size="sm"
+                      className="h-8 text-xs bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600"
+                    >
+                      <Edit className="w-3 h-3 mr-1" />
+                      Edit
+                    </Button>
                   )}
-                  </CardHeader>
-                  <CardContent>
-                    {travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length > 0 ? (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').map((plan) => (
-                        <div 
-                          key={plan.id} 
-                          className="border rounded-lg p-3 transition-colors hover:border-blue-300 dark:hover:border-blue-500 cursor-pointer border-gray-200 dark:border-gray-700"
-                          title={isOwnProfile ? "Click to view details" : "Click to view travel details, dates, and destinations"}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setSelectedTravelPlan(plan);
-                            setShowTravelPlanDetails(true);
-                            setTimeout(() => {
-                              window.scrollTo({ top: 0, behavior: 'smooth' });
-                            }, 100);
-                          }}
-                        >
-                          <div className="flex items-start justify-between mb-2 sm:flex-row flex-col gap-2 sm:gap-0">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <h4 className="font-medium text-sm">{plan.destination}</h4>
-                                {plan.status === 'active' && (
-                                  <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
-                                    ✈️ Currently Traveling
-                                  </div>
-                                )}
-                                {plan.status === 'planned' && (
-                                  <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-orange-500 text-white border-0 appearance-none select-none gap-1">
-                                    📅 Upcoming
-                                  </div>
-                                )}
-                              </div>
-                              <p className="text-black dark:text-white text-xs mb-1 font-medium">
-                                {plan.startDate ? formatDateForDisplay(plan.startDate, user?.hometownCity || 'UTC') : 'Start date TBD'} - {plan.endDate ? formatDateForDisplay(plan.endDate, user?.hometownCity || 'UTC') : 'End date TBD'}
-                              </p>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              {isOwnProfile && (
-                                <div className="flex gap-1 sm:flex-row flex-col sm:items-center">
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setLocation(`/plan-trip?edit=${plan.id}`);
-                                    }}
-                                    className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600 h-6 w-6 p-0 sm:w-6 w-full sm:mb-0 mb-1"
-                                  >
-                                    <Edit className="w-3 h-3" />
-                                    <span className="ml-1 text-xs sm:hidden">Edit</span>
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setLocation(`/itinerary/${plan.id}`);
-                                    }}
-                                    className="bg-gradient-to-r from-blue-600 to-orange-600 text-white hover:opacity-90 h-6 text-xs px-2 sm:mb-0 mb-1 whitespace-nowrap"
-                                  >
-                                    <Calendar className="w-3 h-3 mr-1" />
-                                    Itinerary
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setDeletingTravelPlan(plan);
-                                    }}
-                                    className="text-red-600 hover:text-red-700 hover:bg-red-50 h-6 w-6 p-0 sm:w-6 w-full"
-                                  >
-                                    <Trash2 className="w-3 h-3" />
-                                    <span className="ml-1 text-xs sm:hidden">Delete</span>
-                                  </Button>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          {plan.interests && plan.interests.length > 0 && (
-                            <div className="mb-2">
-                              <div className="flex flex-wrap gap-2">
-                                {(expandedPlanInterests.has(plan.id) ? plan.interests : plan.interests.slice(0, 2)).map((interest: string) => (
-                                  <div key={interest} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
-                                    {interest}
-                                  </div>
-                                ))}
-                                {plan.interests.length > 2 && (
-                                  <div 
-                                    className="pill-interests cursor-pointer"
-                                    onClick={() => {
-                                      const newExpanded = new Set(expandedPlanInterests);
-                                      if (expandedPlanInterests.has(plan.id)) {
-                                        newExpanded.delete(plan.id);
-                                      } else {
-                                        newExpanded.add(plan.id);
-                                      }
-                                      setExpandedPlanInterests(newExpanded);
-                                    }}
-                                  >
-                                    {expandedPlanInterests.has(plan.id) ? 'Show less' : `+${plan.interests.length - 2} more`}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          )}
-                          {plan.travelStyle && plan.travelStyle.length > 0 && (
-                            <div>
-                              <div className="flex flex-wrap gap-2">
-                                {plan.travelStyle.slice(0, 2).map((style: string) => (
-                                  <div key={style} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
-                                    {style}
-                                  </div>
-                                ))}
-                                {plan.travelStyle.length > 2 && (
-                                  <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
-                                    +{plan.travelStyle.length - 2} more
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                      ) : (
-                      <div className="text-center py-8 text-gray-500">
-                        <Calendar className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                        <p>No current or upcoming travel plans</p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-
-                {/* Past Travel Plans */}
-                {travelPlans.filter(plan => plan.status === 'completed').length > 0 && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <History className="w-5 h-5" />
-                        Past Trips ({travelPlans.filter(plan => plan.status === 'completed').length})
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {travelPlans.filter(plan => plan.status === 'completed').map((plan) => (
-                          <div 
-                            key={plan.id} 
-                            className="border rounded-lg p-3 hover:border-gray-300 dark:hover:border-gray-500 transition-colors cursor-pointer opacity-75"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              setSelectedTravelPlan(plan);
-                              setShowTravelPlanDetails(true);
-                              setTimeout(() => {
-                                window.scrollTo({ top: 0, behavior: 'smooth' });
-                              }, 100);
-                            }}
-                          >
-                            <div className="flex items-start justify-between mb-2">
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <h4 className="font-medium text-sm text-gray-600 dark:text-gray-300">{plan.destination}</h4>
-                                  <div className="inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium leading-none whitespace-nowrap bg-gray-500 text-white border-0 appearance-none select-none gap-1.5">
-                                    ✓ Completed
-                                  </div>
-                                </div>
-                                <p className="text-gray-500 dark:text-gray-400 text-xs mb-1 font-medium">
-                                  {plan.startDate ? formatDateForDisplay(plan.startDate, user?.hometownCity || 'UTC') : 'Start date TBD'} - {plan.endDate ? formatDateForDisplay(plan.endDate, user?.hometownCity || 'UTC') : 'End date TBD'}
-                                </p>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                {isOwnProfile && (
-                                  <div className="flex gap-1">
-                                    <Button
-                                      size="sm"
-                                      variant="outline"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setDeletingTravelPlan(plan);
-                                      }}
-                                      className="text-red-600 hover:text-red-700 hover:bg-red-50 h-6 w-6 p-0"
-                                    >
-                                      <Trash2 className="w-3 h-3" />
-                                    </Button>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                            {plan.interests && plan.interests.length > 0 && (
-                              <div className="mb-2">
-                                <div className="flex flex-wrap gap-2">
-                                  {(expandedPlanInterests.has(plan.id) ? plan.interests : plan.interests.slice(0, 2)).map((interest: string) => (
-                                    <div key={interest} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
-                                      {interest}
-                                    </div>
-                                  ))}
-                                  {plan.interests.length > 2 && (
-                                    <div 
-                                      className="pill-interests cursor-pointer"
-                                      onClick={() => {
-                                        const newExpanded = new Set(expandedPlanInterests);
-                                        if (expandedPlanInterests.has(plan.id)) {
-                                          newExpanded.delete(plan.id);
-                                        } else {
-                                          newExpanded.add(plan.id);
-                                        }
-                                        setExpandedPlanInterests(newExpanded);
-                                      }}
-                                    >
-                                      {expandedPlanInterests.has(plan.id) ? 'Show less' : `+${plan.interests.length - 2} more`}
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            )}
-                            {plan.travelStyle && plan.travelStyle.length > 0 && (
-                              <div>
-                                <div className="flex flex-wrap gap-2">
-                                  {plan.travelStyle.slice(0, 2).map((style: string) => (
-                                    <div key={style} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
-                                      {style}
-                                    </div>
-                                  ))}
-                                  {plan.travelStyle.length > 2 && (
-                                    <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
-                                      +{plan.travelStyle.length - 2} more
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-              </>
-            )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="bg-white dark:bg-gray-900">
+                <InterestsWidget 
+                  userId={effectiveUserId || 0} 
+                  isOwnProfile={isOwnProfile}
+                  currentUserId={currentUser?.id || 0}
+                />
+              </CardContent>
+            </Card>
 
             {/* Photo Albums Widget - Separate from Travel Memories */}
             {user?.userType !== 'business' && (
@@ -7450,6 +7187,97 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
               )}
             </div>
+            )}
+
+            {/* Travel Panel - Lazy Loaded */}
+            {activeTab === 'travel' && loadedTabs.has('travel') && user?.userType !== 'business' && (
+              <div 
+                role="tabpanel"
+                id="panel-travel"
+                aria-labelledby="tab-travel"
+                ref={tabRefs.travel}
+                className="mt-6"
+                data-testid="travel-content"
+              >
+                {/* Current & Upcoming Travel Plans */}
+                <Card data-testid="travel-plans-widget">
+                  <CardHeader className="flex flex-col items-start gap-3">
+                    <CardTitle className="flex items-center gap-2">
+                      <Calendar className="w-5 h-5" />
+                      Current & Upcoming Travel Plans ({travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length})
+                    </CardTitle>
+                    {isOwnProfile && (
+                      <div className="flex flex-col gap-3">
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={() => {
+                              setLocation('/plan-trip');
+                              setTimeout(() => {
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                              }, 100);
+                            }}
+                            size="sm"
+                            className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white font-semibold shadow-lg"
+                          >
+                            ✈️ Add New Trip
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              setLocation('/match-in-city');
+                              setTimeout(() => {
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                              }, 100);
+                            }}
+                            size="sm"
+                            className="bg-gradient-to-r from-blue-600 to-green-600 text-white hover:from-blue-700 hover:to-green-700"
+                          >
+                            🏙️ City Match
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </CardHeader>
+                  <CardContent>
+                    {travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length > 0 ? (
+                      <div className="space-y-3">
+                        {travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').map((plan) => (
+                          <div key={plan.id} className="p-3 border rounded-lg bg-blue-50 dark:bg-blue-900/20">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h4 className="font-medium">{plan.destinationCity}, {plan.destinationCountry}</h4>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                  {new Date(plan.startDate).toLocaleDateString()} - {new Date(plan.endDate).toLocaleDateString()}
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <span className={`px-2 py-1 text-xs rounded ${
+                                  plan.status === 'active' ? 'bg-green-500 text-white' : 'bg-blue-500 text-white'
+                                }`}>
+                                  {plan.status === 'active' ? 'Active' : 'Planned'}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                        <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                        <p>No travel plans yet</p>
+                        {isOwnProfile && (
+                          <Button
+                            onClick={() => setLocation('/plan-trip')}
+                            size="sm"
+                            className="mt-3 bg-blue-600 text-white hover:bg-blue-700"
+                          >
+                            Plan Your First Trip
+                          </Button>
+                        )}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
             )}
 
             {/* Travel Intent Widget - TangoTrips-inspired */}
