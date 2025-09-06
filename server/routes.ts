@@ -12813,6 +12813,14 @@ Questions? Just reply to this message. Welcome aboard!
       
       if (process.env.NODE_ENV === 'development') console.log(`💡 USER INTERESTS POST: Adding interest for user ${userId} in activity ${activityId}`);
       
+      // Ensure city has basic activities before trying to find them
+      try {
+        await ensureCityHasActivities(cityName);
+        if (process.env.NODE_ENV === 'development') console.log(`✅ ENSURED ACTIVITIES: ${cityName} has universal activities`);
+      } catch (error) {
+        console.log(`⚠️ ACTIVITIES SETUP WARNING for ${cityName}:`, error);
+      }
+      
       // Map universal activity codes to database activity names - COMPLETE MAPPING
       const universalActivityMap: Record<string, string> = {
         'universal-0': 'Meet Locals',
