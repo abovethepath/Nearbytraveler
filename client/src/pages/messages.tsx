@@ -593,18 +593,18 @@ export default function Messages() {
                       <Avatar className="w-10 h-10">
                         <AvatarImage src={connection.connectedUser?.profileImage} />
                         <AvatarFallback className="bg-green-600 text-white">
-                          {connection.connectedUser.username?.charAt(0)?.toUpperCase() || '?'}
+                          {connection.connectedUser?.username?.charAt(0)?.toUpperCase() || '?'}
                         </AvatarFallback>
                       </Avatar>
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="font-medium text-gray-900 dark:text-white truncate">
-                        {connection.connectedUser.username}
+                        {connection.connectedUser?.username || 'Unknown User'}
                       </h4>
                       <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
-                        📍 {connection.connectedUser.hometownCity || connection.connectedUser.location} • 
-                        {connection.connectedUser.userType === 'traveler' ? ' ✈️ Traveling' : 
-                         connection.connectedUser.userType === 'business' ? ' 🏢 Business' : ' 🏠 Local'}
+                        📍 {connection.connectedUser?.hometownCity || connection.connectedUser?.location || 'Unknown'} • 
+                        {connection.connectedUser?.userType === 'traveler' ? ' ✈️ Traveling' : 
+                         connection.connectedUser?.userType === 'business' ? ' 🏢 Business' : ' 🏠 Local'}
                       </p>
 
                     </div>
@@ -614,8 +614,9 @@ export default function Messages() {
                   <div className="flex gap-2">
                     <Button
                       size="sm"
-                      onClick={() => setSelectedConversation(connection.connectedUser.id)}
+                      onClick={() => connection.connectedUser?.id && setSelectedConversation(connection.connectedUser.id)}
                       className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium"
+                      disabled={!connection.connectedUser?.id}
                     >
                       Open Chat
                     </Button>
@@ -623,9 +624,12 @@ export default function Messages() {
                       size="sm"
                       onClick={() => {
                         // Open floating chat box
-                        openFloatingChat(connection.connectedUser);
+                        if (connection.connectedUser) {
+                          openFloatingChat(connection.connectedUser);
+                        }
                       }}
                       className="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-medium"
+                      disabled={!connection.connectedUser}
                     >
                       Instantly Message
                     </Button>
