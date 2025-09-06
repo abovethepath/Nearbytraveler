@@ -32,13 +32,13 @@ export default function AccountSuccess() {
       }
     }, 10000);
 
-    // Timeout after 15 seconds - something went wrong
+    // Timeout after 3 minutes - something went wrong
     const timeout = setTimeout(() => {
       if (!accountReady && !isAuthenticated) {
         setError("Account creation is taking longer than expected. This might be due to an email that's already registered or a network issue.");
         clearInterval(checker);
       }
-    }, 15000);
+    }, 180000);
 
     return () => {
       clearInterval(timer);
@@ -122,9 +122,15 @@ export default function AccountSuccess() {
                   <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                     <div 
                       className="bg-gradient-to-r from-orange-500 to-blue-500 h-2 rounded-full transition-all duration-1000"
-                      style={{ width: `${Math.min((secondsElapsed / 15) * 100, 90)}%` }}
+                      style={{ width: `${Math.min((secondsElapsed / 120) * 100, 90)}%` }}
                     ></div>
                   </div>
+                  
+                  {secondsElapsed > 30 && (
+                    <p className="text-sm text-blue-600 dark:text-blue-400 mt-2">
+                      Still working... We're setting up your personalized city content and recommendations.
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-3 text-sm text-gray-600 dark:text-gray-400">
@@ -168,7 +174,7 @@ export default function AccountSuccess() {
               </div>
             )}
 
-            {!accountReady && !error && secondsElapsed > 20 && (
+            {!accountReady && !error && secondsElapsed > 60 && (
               <div className="mt-6">
                 <Button
                   onClick={handleContinue}
