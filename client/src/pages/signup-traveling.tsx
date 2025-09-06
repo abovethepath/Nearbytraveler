@@ -504,7 +504,7 @@ export default function SignupTraveling() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white">Top Choices * (Choose at least 3)</h3>
-                  <div className="text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
+                  <div className="text-sm text-gray-600 dark:text-gray-300 font-medium">
                     {formData.interests.length} selected
                   </div>
                 </div>
@@ -543,7 +543,7 @@ export default function SignupTraveling() {
                       className={`p-3 rounded-lg border-2 text-sm font-medium text-center transition-all ${
                         formData.interests.includes(interest)
                           ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 dark:border-blue-400'
-                          : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400 dark:border-gray-400 dark:bg-gray-700 dark:text-white dark:hover:border-gray-300 dark:hover:bg-gray-600'
+                          : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400 dark:border-gray-500 dark:bg-gray-600 dark:text-gray-100 dark:hover:border-gray-400 dark:hover:bg-gray-500'
                       }`}
                     >
                       {interest}
