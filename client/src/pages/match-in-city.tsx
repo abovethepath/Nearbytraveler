@@ -1876,9 +1876,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                       {activity.isUniversal && <span className="text-xs mr-1">🌍</span>}
                       {activity.isCityAlways && <span className="text-xs mr-1">⭐</span>}
                       {activity.name || activity.activityName}
-                      {activity.description && (
-                        <Info className="w-3 h-3 ml-1 opacity-60" />
-                      )}
                     </button>
                     {activity.description && (
                       <Tooltip>
