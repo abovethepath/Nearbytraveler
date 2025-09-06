@@ -542,8 +542,8 @@ export default function SignupTraveling() {
                       onClick={() => toggleInterest(interest)}
                       className={`p-3 rounded-lg border-2 text-sm font-medium text-center transition-all ${
                         formData.interests.includes(interest)
-                          ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300'
-                          : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:border-gray-500'
+                          ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 dark:border-blue-400'
+                          : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400 dark:border-gray-400 dark:bg-gray-700 dark:text-white dark:hover:border-gray-300 dark:hover:bg-gray-600'
                       }`}
                     >
                       {interest}
