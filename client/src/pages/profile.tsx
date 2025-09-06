@@ -4440,7 +4440,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <div>
                         <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
                           <Heart className="w-5 h-5 text-blue-500" />
-                          General Interests
+                          Your Interests
                         </h4>
                         
                         <div className="flex flex-wrap gap-2 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border">

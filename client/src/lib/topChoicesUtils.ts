@@ -1,37 +1,10 @@
 // Utility function to identify "Top Choices for Most Locals and Travelers" interests
 // These popular interests should receive blue-orange gradient styling across the entire platform
 
+import { MOST_POPULAR_INTERESTS } from "../../../shared/base-options";
+
 export const getTopChoicesInterests = (): string[] => {
-  return [
-    "Single and Looking",
-    "Craft Beer & Breweries", 
-    "Coffee Culture",
-    "Cocktails & Bars",
-    "Nightlife & Dancing",
-    "Photography",
-    "Street Art",
-    "Food Trucks",
-    "Rooftop Bars",
-    "Pub Crawls & Bar Tours",
-    "Local Food Specialties",
-    "Walking Tours",
-    "Happy Hour Deals",
-    "Discounts For Travelers",
-    "Boat & Water Tours",
-    "Food Tours",
-    "Adventure Tours",
-    "City Tours & Sightseeing",
-    "Hiking & Nature",
-    "Museums",
-    "Local Unknown Hotspots",
-    "Meet Locals/Travelers",
-    "Yoga & Wellness",
-    "Beach Activities",
-    "Fine Dining",
-    "Historical Tours",
-    "Festivals & Events",
-    "Live Music & Concerts"
-  ];
+  return MOST_POPULAR_INTERESTS;
 };
 
 export const isTopChoiceInterest = (interest: string): boolean => {
