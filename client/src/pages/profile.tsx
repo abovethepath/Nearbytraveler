@@ -3701,7 +3701,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <>
                         <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold text-black break-all">@{user.username}</h1>
                         
-                        {/* Show current status - traveler if active trip, otherwise local */}
+                        {/* ALWAYS show hometown - NEVER remove */}
+                        <div className="flex items-center gap-2 text-lg font-medium text-black">
+                          <MapPin className="w-5 h-5 text-blue-600" />
+                          <span>Nearby Local • {hometown}</span>
+                        </div>
+                        
+                        {/* ADDITIONAL travel status if currently traveling - shows BELOW hometown */}
                         {(() => {
                           const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
                           if (currentTravelPlan) {
@@ -3711,14 +3717,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 <span>Nearby Traveler • {currentTravelPlan}</span>
                               </div>
                             );
-                          } else {
-                            return (
-                              <div className="flex items-center gap-2 text-lg font-medium text-black">
-                                <MapPin className="w-5 h-5 text-blue-600" />
-                                <span>Nearby Local • {hometown}</span>
-                              </div>
-                            );
                           }
+                          return null;
                         })()}
                         
                         {/* Show travel plan actions if currently traveling */}
