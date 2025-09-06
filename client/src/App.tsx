@@ -1146,24 +1146,17 @@ function Router() {
           {console.log('🔍 APP ROUTING: User IS authenticated, showing authenticated app for location:', location)}
           <div className="min-h-screen w-full max-w-full flex flex-col bg-background text-foreground overflow-x-hidden">
             {/* Navigation - ALWAYS show for authenticated users regardless of user state timing */}
-            {(user || localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || authValue.isAuthenticated) ? (
-              <>
-                {/* Desktop Navigation */}
-                <div className="hidden md:block">
-                  <Navbar />
-                </div>
+            <>
+              {/* Desktop Navigation */}
+              <div className="hidden md:block">
+                <Navbar />
+              </div>
 
-                {/* Mobile Navigation */}
-                <div className="md:hidden">
-                  <MobileTopNav />
-                </div>
-              </>
-            ) : (
-              // This part is technically unreachable if !authValue.isAuthenticated is false,
-              // but keeping it for structural completeness if logic were to change.
-              // A dedicated LandingNavbar component would be used here if needed.
-              null
-            )}
+              {/* Mobile Navigation */}
+              <div className="md:hidden">
+                <MobileTopNav />
+              </div>
+            </>
 
             <main className="flex-1 w-full max-w-full pt-16 pb-24 md:pt-0 md:pb-20 overflow-x-hidden main-with-bottom-nav">
               <div className="w-full max-w-full overflow-x-hidden">
