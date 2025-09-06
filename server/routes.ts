@@ -12906,6 +12906,8 @@ Questions? Just reply to this message. Welcome aboard!
         }
         
         // Find the activity in the database by name and city
+        if (process.env.NODE_ENV === 'development') console.log(`🔍 ACTIVITY LOOKUP: Searching for "${activityName}" in ${cityName}`);
+        
         const [dbActivity] = await db
           .select({ id: cityActivities.id, activityName: cityActivities.activityName })
           .from(cityActivities)
@@ -12917,6 +12919,17 @@ Questions? Just reply to this message. Welcome aboard!
           );
           
         if (!dbActivity) {
+          // Try to find any activities in this city to debug
+          const allActivitiesInCity = await db
+            .select({ activityName: cityActivities.activityName })
+            .from(cityActivities)
+            .where(eq(cityActivities.cityName, cityName));
+          
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`❌ ACTIVITY LOOKUP FAILED: "${activityName}" not found in ${cityName}`);
+            console.log(`🗂️ Available activities in ${cityName}:`, allActivitiesInCity.map(a => a.activityName));
+          }
+          
           return res.status(404).json({ error: 'Activity not found in city' });
         }
         
