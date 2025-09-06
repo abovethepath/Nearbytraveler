@@ -5951,10 +5951,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 data-testid="travel-content"
               >
                 {user?.userType !== 'business' && (
-                  <div>
-                  <TravelPlansWidget 
-                    userId={effectiveUserId || 0}
-                  />
+                  <div className="space-y-6">
+                    {/* Comprehensive Travel Plans Widget */}
+                    <TravelPlansWidget 
+                      userId={effectiveUserId || 0}
+                    />
+                    
+                    {/* Full Travel Itinerary Component - The comprehensive travel functionality */}
+                    <TravelItinerary
+                      userId={effectiveUserId || 0}
+                      destination={user?.travelDestination || ""}
+                      startDate={user?.travelStartDate}
+                      endDate={user?.travelEndDate}
+                    />
                   </div>
                 )}
               </div>
