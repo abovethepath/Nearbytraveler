@@ -5402,10 +5402,7 @@ Questions? Just reply to this message. Welcome aboard!
         await storage.updateUser(userId, {
           isCurrentlyTraveling: false,
           travelDestination: null,
-          currentCity: null,
-          destinationCity: null,
-          destinationState: null,
-          destinationCountry: null
+          currentCity: null
         });
         if (process.env.NODE_ENV === 'development') console.log('=== TRAVEL STATUS CLEARED ===');
       } else {
