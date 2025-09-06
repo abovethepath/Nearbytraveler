@@ -369,25 +369,25 @@ export default function SignupTraveling() {
   const today = new Date().toISOString().split('T')[0];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+    <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-2xl mx-auto">
-        <Card className="shadow-2xl border-2 border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md">
-          <CardHeader className="text-center bg-gray-50 dark:bg-gray-800 rounded-t-lg pb-8">
+        <Card className="shadow-2xl border-2 border-gray-200 bg-white backdrop-blur-md">
+          <CardHeader className="text-center bg-gray-50 rounded-t-lg pb-8">
             <div className="flex justify-start mb-4">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setLocation('/join')}
-                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 border-blue-300 hover:border-blue-500 font-medium"
+                className="text-blue-600 hover:text-blue-800 border-blue-300 hover:border-blue-500 font-medium"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
               </Button>
             </div>
-            <CardTitle className="text-4xl font-bold text-gray-900 dark:text-white mb-3">
+            <CardTitle className="text-4xl font-bold text-gray-900 mb-3">
               Complete Your Traveler Profile ✈️
             </CardTitle>
-            <CardDescription className="text-xl text-gray-700 dark:text-gray-300 font-medium">
+            <CardDescription className="text-xl text-gray-700 font-medium">
               Just a few quick details to get you started. You can add more to your profile after joining!
             </CardDescription>
           </CardHeader>
@@ -397,11 +397,11 @@ export default function SignupTraveling() {
 
               {/* Personal Information */}
               <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Personal Information</h3>
+                <h3 className="text-2xl font-bold text-gray-900">Personal Information</h3>
 
                 <div>
-                  <Label className="text-gray-900 dark:text-white">Date of Birth *</Label>
-                  <div className="text-sm text-blue-600 dark:text-blue-400 mb-2">
+                  <Label className="text-gray-900">Date of Birth *</Label>
+                  <div className="text-sm text-blue-600 mb-2">
                     Can be hidden from public view later while still being used for matching
                   </div>
                   <Input
@@ -417,10 +417,10 @@ export default function SignupTraveling() {
 
               {/* Hometown Information */}
               <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Hometown Information</h3>
+                <h3 className="text-2xl font-bold text-gray-900">Hometown Information</h3>
 
                 <div>
-                  <Label className="text-gray-900 dark:text-white">Hometown (Where you live) *</Label>
+                  <Label className="text-gray-900">Hometown (Where you live) *</Label>
                   <SmartLocationInput
                     country={formData.hometownCountry}
                     city={formData.hometownCity}
@@ -437,8 +437,8 @@ export default function SignupTraveling() {
                     required
                   />
                   {formData.hometownCity && (
-                    <div className="mt-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                      <p className="text-sm text-green-800 dark:text-green-200">
+                    <div className="mt-2 p-3 bg-green-50 rounded-lg border border-green-200">
+                      <p className="text-sm text-green-800">
                         <strong>Hometown:</strong> {formData.hometownCity}
                         {formData.hometownState && `, ${formData.hometownState}`}
                         {formData.hometownCountry && `, ${formData.hometownCountry}`}
@@ -449,14 +449,14 @@ export default function SignupTraveling() {
               </div>
 
               {/* TRAVELING SECTION */}
-              <div className="space-y-4 bg-blue-50 dark:bg-blue-900/20 p-4 sm:p-6 rounded-lg border border-blue-200 dark:border-blue-800">
-                <h3 className="text-2xl font-bold text-blue-900 dark:text-blue-100">Current Trip Information</h3>
-                <p className="text-blue-800 dark:text-blue-200">
+              <div className="space-y-4 bg-blue-50 p-4 sm:p-6 rounded-lg border border-blue-200">
+                <h3 className="text-2xl font-bold text-blue-900">Current Trip Information</h3>
+                <p className="text-blue-800">
                   Tell us about your current trip so we can connect you with locals and other travelers!
                 </p>
 
                 <div>
-                  <Label className="text-blue-900 dark:text-blue-100">Where are you currently traveling? *</Label>
+                  <Label className="text-blue-900">Where are you currently traveling? *</Label>
                   <SmartLocationInput
                     country={formData.currentTripDestinationCountry}
                     city={formData.currentTripDestinationCity}
@@ -473,8 +473,8 @@ export default function SignupTraveling() {
                     required
                   />
                   {formData.currentTripDestinationCity && (
-                    <div className="mt-2 p-3 bg-blue-100 dark:bg-blue-800/30 rounded-lg border border-blue-300 dark:border-blue-700">
-                      <p className="text-sm text-blue-900 dark:text-blue-100">
+                    <div className="mt-2 p-3 bg-blue-100 rounded-lg border border-blue-300">
+                      <p className="text-sm text-blue-900">
                         <strong>Current Destination:</strong> {formData.currentTripDestinationCity}
                         {formData.currentTripDestinationState && `, ${formData.currentTripDestinationState}`}
                         {formData.currentTripDestinationCountry && `, ${formData.currentTripDestinationCountry}`}
@@ -484,8 +484,8 @@ export default function SignupTraveling() {
                 </div>
 
                 <div>
-                  <Label className="text-blue-900 dark:text-blue-100">When do you plan to return? *</Label>
-                  <div className="text-sm text-blue-700 dark:text-blue-300 mb-2">
+                  <Label className="text-blue-900">When do you plan to return? *</Label>
+                  <div className="text-sm text-blue-700 mb-2">
                     This helps us show you relevant events and connections for your trip duration
                   </div>
                   <Input
@@ -495,7 +495,7 @@ export default function SignupTraveling() {
                     min={today}
                     max="9999-12-31"
                     required
-                    className="bg-white dark:bg-gray-700"
+                    className="bg-white"
                   />
                 </div>
               </div>
@@ -503,12 +503,12 @@ export default function SignupTraveling() {
               {/* Top Choices - Same as local signup */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">Top Choices * (Choose at least 3)</h3>
-                  <div className="text-sm text-gray-600 dark:text-gray-300 font-medium">
+                  <h3 className="text-xl font-bold text-gray-900">Top Choices * (Choose at least 3)</h3>
+                  <div className="text-sm text-gray-600 font-medium">
                     {formData.interests.length} selected
                   </div>
                 </div>
-                <p className="text-gray-700 dark:text-gray-300 mb-4">
+                <p className="text-gray-700 mb-4">
                   We ask you to choose at least 3 (much more if possible) from the list below, so we can start matching you with other Travelers and Locals. Once inside you can add more city specific interests and activities.
                 </p>
 
@@ -519,7 +519,7 @@ export default function SignupTraveling() {
                     variant="outline"
                     size="sm"
                     onClick={selectAllTopChoices}
-                    className="text-sm font-semibold bg-green-50 hover:bg-green-100 border-green-300 text-green-700 dark:bg-green-900/20 dark:hover:bg-green-900/40 dark:border-green-600 dark:text-green-300"
+                    className="text-sm font-semibold bg-green-50 hover:bg-green-100 border-green-300 text-green-700"
                   >
                     Select All
                   </Button>
@@ -528,7 +528,7 @@ export default function SignupTraveling() {
                     variant="outline"
                     size="sm"
                     onClick={clearAllTopChoices}
-                    className="text-sm font-semibold bg-red-50 hover:bg-red-100 border-red-300 text-red-700 dark:bg-red-900/20 dark:hover:bg-red-900/40 dark:border-red-600 dark:text-red-300"
+                    className="text-sm font-semibold bg-red-50 hover:bg-red-100 border-red-300 text-red-700"
                   >
                     Clear All
                   </Button>
@@ -542,8 +542,8 @@ export default function SignupTraveling() {
                       onClick={() => toggleInterest(interest)}
                       className={`p-3 rounded-lg border-2 text-sm font-medium text-center transition-all ${
                         formData.interests.includes(interest)
-                          ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 dark:border-blue-400'
-                          : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400 dark:border-gray-500 dark:bg-gray-600 dark:text-gray-100 dark:hover:border-gray-400 dark:hover:bg-gray-500'
+                          ? 'border-blue-500 bg-blue-50 text-blue-700'
+                          : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400 hover:bg-gray-50'
                       }`}
                     >
                       {interest}
