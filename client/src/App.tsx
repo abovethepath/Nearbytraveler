@@ -8,7 +8,6 @@ import { QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
-import { AdaptiveThemeNotification } from "@/components/adaptive-theme-notification";
 import GlobalHotfixes from "@/GlobalHotfixes";
 import Home from "@/pages/home";
 import Discover from "@/pages/discover";
@@ -1220,8 +1219,6 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <Router />
-          {/* Adaptive Theme Features */}
-          <AdaptiveThemeNotification />
           {/* Global Floating Chat Manager */}
           <FloatingChatManager />
         </TooltipProvider>
