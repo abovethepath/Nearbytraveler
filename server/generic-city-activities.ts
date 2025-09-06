@@ -184,5 +184,215 @@ export const GENERIC_CITY_ACTIVITIES = [
     name: "COOKING CLASSES",
     description: "Learn to cook local and international cuisine",
     category: "food"
+  },
+  {
+    name: "WINE TASTING",
+    description: "Wine tours and tasting events",
+    category: "food"
+  },
+  {
+    name: "BEER GARDENS",
+    description: "Local breweries and beer gardens",
+    category: "food"
+  },
+  {
+    name: "BREAKFAST SPOTS",
+    description: "Best breakfast and brunch locations",
+    category: "food"
+  },
+  {
+    name: "LATE NIGHT EATS",
+    description: "Late night dining and food trucks",
+    category: "food"
+  },
+  {
+    name: "VEGETARIAN/VEGAN FOOD",
+    description: "Plant-based dining options",
+    category: "food"
+  },
+  {
+    name: "FOOD FESTIVALS",
+    description: "Food festivals and culinary events",
+    category: "food"
+  },
+  {
+    name: "COFFEE CULTURE",
+    description: "Specialty coffee shops and cafes",
+    category: "food"
+  },
+  {
+    name: "DESSERT PLACES",
+    description: "Sweet treats and dessert spots",
+    category: "food"
+  },
+  {
+    name: "PICNIC SPOTS",
+    description: "Perfect locations for outdoor dining",
+    category: "outdoors"
+  },
+  {
+    name: "MUSEUMS & GALLERIES",
+    description: "Art galleries and museums",
+    category: "culture"
+  },
+  {
+    name: "LIVE MUSIC",
+    description: "Live music venues and concerts",
+    category: "entertainment"
+  },
+  {
+    name: "THEATER & SHOWS",
+    description: "Theater performances and shows",
+    category: "entertainment"
+  },
+  {
+    name: "LOCAL FESTIVALS",
+    description: "Community festivals and celebrations",
+    category: "culture"
+  },
+  {
+    name: "PHOTOGRAPHY WALKS",
+    description: "Photography meetups and photo walks",
+    category: "creative"
+  },
+  {
+    name: "HISTORICAL SITES",
+    description: "Historical landmarks and heritage sites",
+    category: "culture"
+  },
+  {
+    name: "ARCHITECTURE TOURS",
+    description: "Architectural tours and building heritage",
+    category: "culture"
+  },
+  {
+    name: "OPEN MIC NIGHTS",
+    description: "Open mic nights and amateur performances",
+    category: "entertainment"
+  },
+  {
+    name: "NIGHTLIFE",
+    description: "Bars, clubs, and nighttime entertainment",
+    category: "entertainment"
+  },
+  {
+    name: "ROOFTOP BARS",
+    description: "Rooftop venues with city views",
+    category: "entertainment"
+  },
+  {
+    name: "LIVE ENTERTAINMENT",
+    description: "Live shows and entertainment venues",
+    category: "entertainment"
+  },
+  {
+    name: "DANCING",
+    description: "Dance classes and dancing venues",
+    category: "entertainment"
+  },
+  {
+    name: "KARAOKE",
+    description: "Karaoke bars and singing venues",
+    category: "entertainment"
+  },
+  {
+    name: "COMEDY SHOWS",
+    description: "Stand-up comedy and humor events",
+    category: "entertainment"
+  },
+  {
+    name: "PUB CRAWLS",
+    description: "Bar hopping and pub crawl events",
+    category: "entertainment"
+  },
+  {
+    name: "TRIVIA NIGHTS",
+    description: "Quiz nights and trivia competitions",
+    category: "entertainment"
+  },
+  {
+    name: "VINTAGE & THRIFT",
+    description: "Vintage shops and thrift stores",
+    category: "shopping"
+  },
+  {
+    name: "FLEA MARKETS",
+    description: "Flea markets and antique fairs",
+    category: "shopping"
+  },
+  {
+    name: "SPA & WELLNESS",
+    description: "Spas and wellness centers",
+    category: "wellness"
+  },
+  {
+    name: "YOGA CLASSES",
+    description: "Yoga studios and classes",
+    category: "wellness"
+  },
+  {
+    name: "MEDITATION GROUPS",
+    description: "Meditation sessions and mindfulness groups",
+    category: "wellness"
+  },
+  {
+    name: "MASSAGE THERAPY",
+    description: "Massage parlors and therapeutic treatments",
+    category: "wellness"
+  },
+  {
+    name: "FITNESS CENTERS",
+    description: "Gyms and fitness facilities",
+    category: "fitness"
+  },
+  {
+    name: "PILATES CLASSES",
+    description: "Pilates studios and classes",
+    category: "wellness"
+  },
+  {
+    name: "LOCAL TOURS",
+    description: "Guided tours and city exploration",
+    category: "sightseeing"
+  },
+  {
+    name: "GHOST TOURS",
+    description: "Haunted tours and spooky experiences",
+    category: "sightseeing"
+  },
+  {
+    name: "ESCAPE ROOMS",
+    description: "Escape rooms and puzzle games",
+    category: "entertainment"
+  },
+  {
+    name: "LOCAL SPORTS",
+    description: "Local sports teams and games",
+    category: "fitness"
+  },
+  {
+    name: "SCAVENGER HUNTS",
+    description: "Scavenger hunts and treasure hunts",
+    category: "entertainment"
+  },
+  {
+    name: "BOAT TOURS",
+    description: "Boat tours and water activities",
+    category: "sightseeing"
+  },
+  {
+    name: "BIKE RENTALS",
+    description: "Bike rentals and cycling tours",
+    category: "transportation"
+  },
+  {
+    name: "WALKING GROUPS",
+    description: "Walking clubs and group walks",
+    category: "fitness"
+  },
+  {
+    name: "LGBTQ+ FRIENDLY",
+    description: "LGBTQ+ friendly venues and events",
+    category: "community"
   }
 ];
