@@ -6137,11 +6137,21 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </CardTitle>
               </CardHeader>
               <CardContent className="bg-white dark:bg-gray-900">
-                <InterestsWidget 
-                  userId={effectiveUserId || 0} 
-                  isOwnProfile={isOwnProfile}
-                  currentUserId={currentUser?.id || 0}
-                />
+                <div className="space-y-4">
+                  {user?.interests && user.interests.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.interests.map((interest: string) => (
+                        <div key={interest} className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm">
+                          {interest}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 dark:text-gray-400 text-center py-4">
+                      {isOwnProfile ? "Add your interests to help people find common ground with you." : "No interests added yet."}
+                    </p>
+                  )}
+                </div>
               </CardContent>
             </Card>
 
