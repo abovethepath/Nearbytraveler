@@ -4518,6 +4518,45 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             <Plus className="w-4 h-4" />
                           </Button>
                         </div>
+
+                        {/* SHOW ALL CUSTOM INTERESTS WITH DELETE BUTTONS */}
+                        {(() => {
+                          const allCustomInterests = editFormData.interests.filter(interest => 
+                            !MOST_POPULAR_INTERESTS.includes(interest) && 
+                            !getFilteredInterestsForProfile(user!, isOwnProfile).filter(i => MOST_POPULAR_INTERESTS.includes(i)).includes(interest)
+                          );
+                          
+                          if (allCustomInterests.length === 0) return null;
+                          
+                          return (
+                            <div className="mt-4 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-600">
+                              <p className="text-sm font-medium text-orange-700 dark:text-orange-300 mb-2">
+                                ✨ Your Custom Interests (Click X to delete):
+                              </p>
+                              <div className="flex flex-wrap gap-2">
+                                {allCustomInterests.map((interest, index) => (
+                                  <span
+                                    key={`all-custom-${index}`}
+                                    className="inline-flex items-center justify-center h-7 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-orange-600 text-white"
+                                  >
+                                    {interest}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        console.log('🗑️ DELETING CUSTOM INTEREST:', interest);
+                                        const newInterests = editFormData.interests.filter(i => i !== interest);
+                                        setEditFormData({ ...editFormData, interests: newInterests });
+                                      }}
+                                      className="ml-2 text-orange-200 hover:text-white text-sm font-bold"
+                                    >
+                                      ×
+                                    </button>
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        })()}
                       </div>
 
                       {/* ACTIVITIES SECTION */}
@@ -4727,6 +4766,44 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             </Button>
                           </div>
                         </div>
+
+                        {/* SHOW CUSTOM PRIVATE INTERESTS WITH DELETE BUTTONS */}
+                        {(() => {
+                          const customPrivateInterests = editFormData.privateInterests.filter(interest => 
+                            !getPrivateInterests().includes(interest) // Only show custom ones, not predefined
+                          );
+                          
+                          if (customPrivateInterests.length === 0) return null;
+                          
+                          return (
+                            <div className="mt-4 p-3 bg-red-100 dark:bg-red-900/30 rounded-lg border border-red-300 dark:border-red-600">
+                              <p className="text-sm font-medium text-red-700 dark:text-red-300 mb-2">
+                                🔒 Your Custom Private Interests (Click X to delete):
+                              </p>
+                              <div className="flex flex-wrap gap-2">
+                                {customPrivateInterests.map((interest, index) => (
+                                  <span
+                                    key={`custom-private-${index}`}
+                                    className="inline-flex items-center justify-center h-7 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-red-600 text-white"
+                                  >
+                                    🔒 {interest}
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        console.log('🗑️ DELETING CUSTOM PRIVATE INTEREST:', interest);
+                                        const newPrivateInterests = editFormData.privateInterests.filter(i => i !== interest);
+                                        setEditFormData({ ...editFormData, privateInterests: newPrivateInterests });
+                                      }}
+                                      className="ml-2 text-red-200 hover:text-white text-sm font-bold"
+                                    >
+                                      ×
+                                    </button>
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        })()}
                         
                         {/* Save Button with Privacy Notice */}
                         <div className="mt-6 pt-4 border-t border-red-200 dark:border-red-600">
@@ -5025,10 +5102,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           </div>
                         );
                       })()}
-                    </div>
 
-                    {/* PRIVATE INTERESTS VIEW (Only visible to own profile) */}
-                    {isOwnProfile && user?.privateInterests && user.privateInterests.length > 0 && (
+                      {/* PRIVATE INTERESTS VIEW (Only visible to own profile) */}
+                      {isOwnProfile && user?.privateInterests && user.privateInterests.length > 0 && (
                       <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-600">
                         <div className="flex items-center gap-2 mb-3">
                           <Eye className="w-4 h-4 text-red-500" />
