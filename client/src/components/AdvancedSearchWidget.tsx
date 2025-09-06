@@ -15,7 +15,7 @@ import EventCard from "@/components/event-card";
 import { Calendar, UserPlus } from "lucide-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { authStorage } from "@/lib/auth";
-import { TOP_CHOICES, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, getAllActivities, getAllEvents } from "@shared/base-options";
+import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, getAllActivities, getAllEvents } from "@shared/base-options";
 import { GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS, MILITARY_STATUS_OPTIONS } from "@/lib/formConstants";
 
 interface AdvancedSearchWidgetProps {
@@ -198,7 +198,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
   const militaryStatusOptions = MILITARY_STATUS_OPTIONS;
 
   // Use proper lists from base-options
-  const topChoicesOptions = TOP_CHOICES;
+  const topChoicesOptions = MOST_POPULAR_INTERESTS;
   const interestOptions = ADDITIONAL_INTERESTS;
   const activityOptions = getAllActivities();
   const eventOptions = getAllEvents();
