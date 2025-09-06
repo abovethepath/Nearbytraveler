@@ -85,17 +85,45 @@ export class UserTransitionService {
     currentLocation: string | null;
   }): Promise<void> {
     try {
+      // Get current user data including existing countries visited
+      const currentUser = await db.select().from(users).where(eq(users.id, traveler.userId)).limit(1);
+      if (currentUser.length === 0) return;
+
+      const userData = currentUser[0];
+      
+      // Get all completed travel plans to extract visited countries
+      const completedPlans = await db
+        .select()
+        .from(travelPlans)
+        .where(
+          and(
+            eq(travelPlans.userId, traveler.userId),
+            lte(travelPlans.endDate, new Date())
+          )
+        );
+
+      // Extract countries from completed travel plans
+      const visitedCountries = new Set(userData.countriesVisited || []);
+      
+      for (const plan of completedPlans) {
+        if (plan.destinationCountry) {
+          visitedCountries.add(plan.destinationCountry);
+          console.log(`🌍 COUNTRY ADDED: ${plan.destinationCountry} added to ${traveler.username}'s countries visited`);
+        }
+      }
+
       // Determine new location (hometown)
       const newLocation = traveler.hometownCity && traveler.hometownState 
         ? `${traveler.hometownCity}, ${traveler.hometownState}`
         : traveler.hometownCity || traveler.currentLocation || 'Unknown';
 
-      // Update user to local status
+      // Update user to local status with updated countries visited
       await db
         .update(users)
         .set({
           userType: 'local',
           location: newLocation,
+          countriesVisited: Array.from(visitedCountries), // Update with all visited countries
           // Clear travel-specific fields
           travelDestination: null,
           travelStartDate: null,

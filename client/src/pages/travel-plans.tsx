@@ -4,7 +4,7 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Globe, Plus, Edit, Trash2, MapPin, Calendar, Users, ArrowLeft } from "lucide-react";
+import { Globe, Plus, Edit, Trash2, MapPin, Calendar, Users, ArrowLeft, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { TripPlan } from "@shared/schema";
@@ -71,9 +71,35 @@ export default function TravelPlans() {
     },
   });
 
+  const completeTripMutation = useMutation({
+    mutationFn: async (tripId: number) => {
+      const response = await apiRequest('POST', `/api/travel-plans/${tripId}/complete`);
+      if (!response.ok) throw new Error('Failed to complete trip');
+      return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: [`/api/travel-plans/${currentUser.id}`] });
+      toast({
+        title: "Trip Completed!",
+        description: data.message,
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to complete travel plan. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleDeleteTrip = (tripId: number) => {
     setDeletingId(tripId);
     deleteTripMutation.mutate(tripId);
+  };
+
+  const handleCompleteTrip = (tripId: number) => {
+    completeTripMutation.mutate(tripId);
   };
 
   // Sort plans: Current trips first, then upcoming, then completed
@@ -248,7 +274,7 @@ export default function TravelPlans() {
                         </div>
                       )}
 
-                      <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
+                      <div className="pt-3 border-t border-gray-200 dark:border-gray-700 space-y-2">
                         <Button
                           variant="outline"
                           size="sm"
@@ -258,6 +284,21 @@ export default function TravelPlans() {
                           <MapPin className="w-4 h-4 mr-2" />
                           Explore Destination
                         </Button>
+                        
+                        {/* Show Complete Trip button for completed trips that haven't been marked complete */}
+                        {tripStatus.status === "Completed" && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleCompleteTrip(plan.id)}
+                            disabled={completeTripMutation.isPending}
+                            className="w-full bg-green-50 hover:bg-green-100 text-green-700 border-green-300 dark:bg-green-900 dark:hover:bg-green-800 dark:text-green-200 dark:border-green-700"
+                            data-testid={`button-complete-trip-${plan.id}`}
+                          >
+                            <CheckCircle className="w-4 h-4 mr-2" />
+                            {completeTripMutation.isPending ? "Adding Country..." : "Add Country to Visited List"}
+                          </Button>
+                        )}
                       </div>
                     </div>
                   </CardContent>

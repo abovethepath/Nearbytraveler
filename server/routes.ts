@@ -5626,6 +5626,65 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // CRITICAL: Mark travel plan as completed and add country to user's visited list
+  app.post("/api/travel-plans/:id/complete", async (req, res) => {
+    try {
+      if (process.env.NODE_ENV === 'development') console.log('=== COMPLETE TRAVEL PLAN API ===');
+      
+      const planId = parseInt(req.params.id || '0');
+      
+      // Get the travel plan
+      const travelPlan = await storage.getTravelPlan(planId);
+      if (!travelPlan) {
+        return res.status(404).json({ message: "Travel plan not found" });
+      }
+      
+      const userId = travelPlan.userId;
+      
+      // Get current user data
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Add destination country to countries visited if not already there
+      const currentCountries = new Set(user.countriesVisited || []);
+      let addedCountry = false;
+      
+      if (travelPlan.destinationCountry && !currentCountries.has(travelPlan.destinationCountry)) {
+        currentCountries.add(travelPlan.destinationCountry);
+        addedCountry = true;
+        console.log(`🌍 COUNTRY COMPLETED: ${travelPlan.destinationCountry} added to ${user.username}'s countries visited`);
+        
+        // Update user's countries visited
+        await storage.updateUser(userId, {
+          countriesVisited: Array.from(currentCountries)
+        });
+      }
+      
+      // Mark plan as inactive/completed
+      await storage.updateTravelPlan(planId, {
+        isActive: false,
+        updatedAt: new Date()
+      });
+      
+      const responseMessage = addedCountry 
+        ? `Trip completed! ${travelPlan.destinationCountry} has been added to your countries visited.`
+        : `Trip completed! ${travelPlan.destinationCountry} was already in your countries visited.`;
+      
+      return res.json({ 
+        message: responseMessage,
+        countryAdded: addedCountry,
+        country: travelPlan.destinationCountry,
+        totalCountries: Array.from(currentCountries).length
+      });
+      
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error completing travel plan:", error);
+      return res.status(500).json({ message: "Failed to complete travel plan", error: error.message });
+    }
+  });
+
   // Enhanced: Get conversation data with IM notification support
   app.get("/api/conversations/:userId", async (req, res) => {
     try {
