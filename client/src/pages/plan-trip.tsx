@@ -1242,7 +1242,7 @@ export default function PlanTrip() {
                   value={tripPlan.notes}
                   onChange={(e) => setTripPlan(prev => ({ ...prev, notes: e.target.value }))}
                   placeholder="e.g., Staying at Virgin Hotel, attending Taylor Swift concert Aug 10th, want to check out Gordon Ramsay Hell's Kitchen, looking for hiking buddies to Red Rock Canyon..."
-                  className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 text-sm sm:text-base"
+                  className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 text-sm sm:text-base placeholder:text-gray-400 dark:placeholder:text-gray-500"
                   rows={4}
                 />
               </div>
