@@ -309,9 +309,49 @@ export default function SignupBusinessSimple() {
     // Redirect immediately
     setLocation('/account-success');
     
-    // Start background registration
-    setTimeout(() => {
-      signupMutation.mutate(data);
+    // Start background registration with profile completion
+    setTimeout(async () => {
+      try {
+        const response = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...data,
+            userType: "business",
+            businessName: accountData?.businessName || "",
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.user) {
+          console.log('✅ Fast business registration completed - starting profile completion');
+          
+          // Store authentication data
+          localStorage.setItem('user', JSON.stringify(result.user));
+          
+          // Start profile completion in background
+          try {
+            const profileResponse = await fetch('/api/auth/complete-profile', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ userId: result.user.id })
+            });
+            
+            if (profileResponse.ok) {
+              console.log('✅ Business profile completion successful');
+            } else {
+              console.log('⚠️ Business profile completion had issues, but registration succeeded');
+            }
+          } catch (profileError) {
+            console.log('⚠️ Business profile completion error, but registration succeeded:', profileError);
+          }
+        } else {
+          console.error('❌ Business registration failed:', result.message);
+        }
+      } catch (error) {
+        console.error('Business background registration error:', error);
+      }
     }, 100);
     
     setIsLoading(false);

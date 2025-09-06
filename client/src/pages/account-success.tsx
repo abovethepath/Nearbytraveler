@@ -17,13 +17,13 @@ export default function AccountSuccess() {
       setSecondsElapsed(prev => prev + 1);
     }, 1000);
 
-    // Check if account is ready every 2 seconds
+    // Check if account is ready every 0.5 seconds (faster for streamlined registration)
     const checker = setInterval(async () => {
       if (isAuthenticated && user) {
         setAccountReady(true);
         clearInterval(checker);
       }
-    }, 2000);
+    }, 500);
 
     // Early error detection - check after 10 seconds if still not authenticated
     const earlyCheck = setTimeout(() => {

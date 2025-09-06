@@ -2625,6 +2625,115 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
+  // Profile completion endpoint - handles heavy operations after fast registration
+  app.post("/api/auth/complete-profile", async (req, res) => {
+    try {
+      const userId = req.body.userId;
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      // Get user data for operations
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`🔄 Starting profile completion for user ${user.username} (${userId})`);
+
+      // CRITICAL: Set proper travel status for new user based on their travel plans
+      await TravelStatusService.setNewUserTravelStatus(user.id);
+
+      // After creating a user, ensure "Meet Locals" chatrooms exist for both hometown and travel destinations
+      await storage.ensureMeetLocalsChatrooms();
+
+      // CRITICAL: Create chatrooms for user's hometown (all users have hometowns)
+      if (user.hometownCity && user.hometownCountry) {
+        try {
+          await storage.ensureMeetLocalsChatrooms(user.hometownCity, user.hometownState, user.hometownCountry);
+          if (process.env.NODE_ENV === 'development') console.log(`✓ Created/verified hometown chatroom for ${user.hometownCity}, ${user.hometownCountry}`);
+          
+          // AUTO-JOIN: Add new user to Los Angeles Metro chatrooms (Welcome Newcomers and Let's Meet Up)
+          await storage.autoJoinWelcomeChatroom(user.id, user.hometownCity, user.hometownCountry);
+          if (process.env.NODE_ENV === 'development') console.log(`✓ Auto-joined user ${user.id} to Los Angeles Metro chatrooms`);
+        } catch (error: any) {
+          if (process.env.NODE_ENV === 'development') console.error('Error creating hometown chatroom:', error);
+        }
+      }
+
+      // AUTO-JOIN NEW USERS: Add to hometown and travel city chatrooms
+      try {
+        const travelCity = user.isCurrentlyTraveling && user.travelDestination ? user.travelDestination.split(', ')[0] : undefined;
+        const travelCountry = user.isCurrentlyTraveling && user.travelDestination ? user.travelDestination.split(', ')[2] || user.travelDestination.split(', ')[1] : undefined;
+        
+        await storage.autoJoinUserCityChatrooms(
+          user.id, 
+          user.hometownCity, 
+          user.hometownCountry,
+          travelCity,
+          travelCountry
+        );
+        if (process.env.NODE_ENV === 'development') console.log(`✅ Auto-joined user ${user.id} to their city chatrooms`);
+      } catch (error: any) {
+        if (process.env.NODE_ENV === 'development') console.error('Error auto-joining city chatrooms:', error);
+      }
+
+      // CRITICAL: Create chatrooms for travel destination if user is currently traveling
+      if (user.isCurrentlyTraveling && user.travelDestination) {
+        try {
+          // Parse travel destination to get city, state, country
+          const destinationParts = user.travelDestination.split(', ');
+          const travelCity = destinationParts[0];
+          const travelState = destinationParts[1];
+          const travelCountry = destinationParts[2] || destinationParts[1]; // Handle cases where state might be country
+
+          await storage.ensureMeetLocalsChatrooms(travelCity, travelState, travelCountry);
+          if (process.env.NODE_ENV === 'development') console.log(`✓ Created/verified travel destination chatroom for ${user.travelDestination}`);
+        } catch (error: any) {
+          if (process.env.NODE_ENV === 'development') console.error('Error creating travel destination chatroom:', error);
+        }
+      }
+
+      // Auto-create city for ALL user types (locals, travelers, businesses) to ensure discover page completeness
+      if (user.hometownCity && user.hometownCountry) {
+        try {
+          if (process.env.NODE_ENV === 'development') console.log(`Creating city for new user: ${user.hometownCity}, ${user.hometownState}, ${user.hometownCountry}`);
+
+          // Ensure city exists in discover page
+          await storage.ensureCityExists(
+            user.hometownCity,
+            user.hometownState || '',
+            user.hometownCountry
+          );
+
+          // For locals only, also create city page with secret activities
+          if (user.userType === 'local') {
+            const cityPage = await storage.ensureCityPageExists(
+              user.hometownCity,
+              user.hometownState || '',
+              user.hometownCountry,
+              user.id
+            );
+            if (process.env.NODE_ENV === 'development') console.log(`✓ Created city page for ${user.hometownCity}`);
+          }
+        } catch (error: any) {
+          if (process.env.NODE_ENV === 'development') console.error('Error creating city for user:', error);
+        }
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`✅ Profile completion finished for user ${user.username} (${userId})`);
+
+      return res.status(200).json({ 
+        message: "Profile completion successful",
+        status: "completed" 
+      });
+
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error('Profile completion error:', error);
+      return res.status(500).json({ message: "Profile completion failed", error: error.message });
+    }
+  });
+
   // Username validation endpoint (POST version for body params)
   app.post("/api/auth/check-username", async (req, res) => {
     try {
@@ -2647,7 +2756,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
-  // Shared registration handler
+  // Streamlined registration handler - just create user, defer heavy operations
   const handleRegistration = async (req: any, res: any) => {
     try {
       if (process.env.NODE_ENV === 'development') console.log("🔍 FULL REGISTRATION DATA RECEIVED:", JSON.stringify(req.body, null, 2));
@@ -3234,8 +3343,75 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         // Don't fail registration if aura update fails
       }
 
-      // CRITICAL: Set proper travel status for new user based on their travel plans
-      await TravelStatusService.setNewUserTravelStatus(user.id);
+      // ESSENTIAL: Create travel plans for travelers to get proper status
+      // Check ALL possible field variations from different signup forms
+      const hasCurrentTravel = (originalData.currentTravelCity || originalData.currentCity) && (originalData.currentTravelCountry || originalData.currentCountry);
+      const hasTravelDestination = originalData.travelDestination || (originalData.travelDestinationCity && originalData.travelDestinationCountry) || (originalData.currentTripDestinationCity && originalData.currentTripDestinationCountry);
+      const hasTravelDates = originalData.travelStartDate && originalData.travelEndDate;
+      const hasReturnDateOnly = originalData.travelReturnDate || originalData.currentTripReturnDate; // For simplified signup
+      const isTraveingUser = originalData.userType === 'traveler' || originalData.userType === 'currently_traveling' || originalData.isCurrentlyTraveling;
+
+      // Support both full travel dates and simplified return-date-only signup
+      if ((hasCurrentTravel || hasTravelDestination) && (hasTravelDates || hasReturnDateOnly) && isTraveingUser) {
+        try {
+          // Build destination from all possible field variations
+          const tripLocation = originalData.travelDestination || [
+            originalData.currentTravelCity || originalData.travelDestinationCity || originalData.currentCity || originalData.currentTripDestinationCity,
+            originalData.currentTravelState || originalData.travelDestinationState || originalData.currentState || originalData.currentTripDestinationState,
+            originalData.currentTravelCountry || originalData.travelDestinationCountry || originalData.currentCountry || originalData.currentTripDestinationCountry
+          ].filter(Boolean).join(", ");
+
+          if (process.env.NODE_ENV === 'development') console.log("CREATING TRAVEL PLAN:", { tripLocation, userId: user.id });
+
+          // Handle both full travel dates and simplified return-date-only signup
+          let startDate, endDate;
+          if (originalData.travelStartDate && originalData.travelEndDate) {
+            startDate = new Date(originalData.travelStartDate);
+            endDate = new Date(originalData.travelEndDate);
+          } else if (originalData.travelReturnDate || originalData.currentTripReturnDate) {
+            startDate = new Date(); // Today
+            endDate = new Date(originalData.travelReturnDate || originalData.currentTripReturnDate);
+          }
+
+          const travelPlan = await storage.createTravelPlan({
+            userId: user.id,
+            tripLocation,
+            startDate,
+            endDate,
+            activities: [],
+            accommodation: null,
+            budget: null,
+            notes: null
+          });
+
+          if (process.env.NODE_ENV === 'development') console.log("TRAVEL PLAN CREATED SUCCESSFULLY:", travelPlan.id);
+
+          // Update user travel status to traveler
+          await storage.updateUser(user.id, { userType: 'traveler' });
+          if (process.env.NODE_ENV === 'development') console.log(`User ${user.username} (${user.id}) is now a traveler`);
+
+        } catch (error: any) {
+          if (process.env.NODE_ENV === 'development') console.error('Error creating travel plan during signup:', error);
+          // Don't fail registration if travel plan creation fails
+        }
+      }
+
+      // FAST REGISTRATION SUCCESS - Return user immediately for profile completion
+      // Heavy operations (chatrooms, AI content, city setup) happen during profile completion
+      if (process.env.NODE_ENV === 'development') console.log("✅ FAST REGISTRATION SUCCESS - Returning user for profile completion");
+      
+      return res.status(201).json({ 
+        user,
+        message: "Account created successfully",
+        nextStep: "profile_completion"
+      });
+
+      // ====== HEAVY OPERATIONS MOVED TO PROFILE COMPLETION ======
+      // The following operations now happen after profile completion to speed up registration
+      // These are handled by the /api/auth/complete-profile endpoint
+
+      // UNUSED - MOVED TO COMPLETE-PROFILE ENDPOINT:
+      // await TravelStatusService.setNewUserTravelStatus(user.id);
 
       // After creating a user, ensure "Meet Locals" chatrooms exist for both hometown and travel destinations
       await storage.ensureMeetLocalsChatrooms();
@@ -3406,25 +3582,11 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         }
       }
 
-      if (process.env.NODE_ENV === 'development') console.log("CHECKING TRAVEL PLAN CREATION:", {
-        userType: originalData.userType,
-        currentTravelCity: originalData.currentTravelCity,
-        travelDestination: originalData.travelDestination,
-        currentTravelCountry: originalData.currentTravelCountry,
-        travelStartDate: originalData.travelStartDate,
-        travelEndDate: originalData.travelEndDate,
-        isCurrentlyTraveling: originalData.isCurrentlyTraveling
-      });
-
-      // Check ALL possible field variations from different signup forms
-      const hasCurrentTravel = (originalData.currentTravelCity || originalData.currentCity) && (originalData.currentTravelCountry || originalData.currentCountry);
-      const hasTravelDestination = originalData.travelDestination || (originalData.travelDestinationCity && originalData.travelDestinationCountry) || (originalData.currentTripDestinationCity && originalData.currentTripDestinationCountry);
-      const hasTravelDates = originalData.travelStartDate && originalData.travelEndDate;
-      const hasReturnDateOnly = originalData.travelReturnDate || originalData.currentTripReturnDate; // For simplified signup
-      const isTraveingUser = originalData.userType === 'traveler' || originalData.userType === 'currently_traveling' || originalData.isCurrentlyTraveling;
-
-      // Support both full travel dates and simplified return-date-only signup
-      if ((hasCurrentTravel || hasTravelDestination) && (hasTravelDates || hasReturnDateOnly) && isTraveingUser) {
+      // MOVED: Travel plan creation logic moved to fast registration section above
+      // This eliminates duplicate variable declarations and ensures travelers get proper status immediately
+      if (process.env.NODE_ENV === 'development') console.log("Travel plan creation moved to fast registration - this section is now disabled");
+      
+      if (false) { // This block is now disabled - travel plans are created during fast registration
 
         // CRITICAL: Date validation ONLY applies during signup for current travelers
         // Regular trip planning from Plan Trip page should allow future dates

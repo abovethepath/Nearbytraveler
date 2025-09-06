@@ -317,26 +317,40 @@ export default function SignupTraveling() {
           const data = await response.json();
 
           if (response.ok && data.user) {
-            console.log('✅ Background registration successful:', data.user.username);
+            console.log('✅ Fast registration successful:', data.user.username);
             
             // Store authentication data (consistent single keys)
-            if (data.token) {
-              localStorage.setItem('auth_token', data.token);
-            }
             localStorage.setItem('user', JSON.stringify(data.user));
             
             // Set user in auth context
             authStorage.setUser(data.user);
             setUser(data.user);
-            login(data.user, data.token);
+            login(data.user);
             
             // Clear stored account and registration data
             sessionStorage.removeItem('accountData');
             sessionStorage.removeItem('registrationData');
             
-            console.log('✅ Background registration completed successfully');
+            console.log('✅ Fast registration completed - starting profile completion');
+            
+            // Start profile completion in background
+            try {
+              const profileResponse = await fetch('/api/auth/complete-profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: data.user.id })
+              });
+              
+              if (profileResponse.ok) {
+                console.log('✅ Profile completion successful');
+              } else {
+                console.log('⚠️ Profile completion had issues, but registration succeeded');
+              }
+            } catch (profileError) {
+              console.log('⚠️ Profile completion error, but registration succeeded:', profileError);
+            }
           } else {
-            console.error('❌ Background registration failed:', data.message);
+            console.error('❌ Registration failed:', data.message);
           }
         } catch (error) {
           console.error('Background registration error:', error);
