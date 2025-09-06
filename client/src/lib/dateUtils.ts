@@ -193,6 +193,65 @@ export function parseInputDate(dateString: string): Date {
 }
 
 /**
+ * Get the current or next upcoming travel destination for user card display
+ * Returns both destination and date info for clean user card display
+ */
+export function getCurrentOrNextTrip(travelPlans: any[]): { destination: string; dateRange: string; isCurrent: boolean } | null {
+  if (!travelPlans || !Array.isArray(travelPlans) || travelPlans.length === 0) {
+    return null;
+  }
+  
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  // Parse date helper
+  const parseDate = (dateString: string | Date): Date => {
+    if (!dateString) return new Date();
+    const date = new Date(dateString);
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  };
+  
+  // Check for current trips first
+  for (const plan of travelPlans) {
+    if (plan.startDate && plan.endDate && plan.destination) {
+      const startDate = parseDate(plan.startDate);
+      const endDate = parseDate(plan.endDate);
+      startDate.setHours(0, 0, 0, 0);
+      endDate.setHours(23, 59, 59, 999);
+      
+      if (today >= startDate && today <= endDate) {
+        return {
+          destination: plan.destination,
+          dateRange: formatDateRange(plan.startDate, plan.endDate),
+          isCurrent: true
+        };
+      }
+    }
+  }
+  
+  // If no current trips, find next upcoming trip
+  const futureTrips = travelPlans
+    .filter(plan => plan.startDate && plan.destination)
+    .map(plan => ({
+      ...plan,
+      parsedStartDate: parseDate(plan.startDate)
+    }))
+    .filter(plan => plan.parsedStartDate > today)
+    .sort((a, b) => a.parsedStartDate.getTime() - b.parsedStartDate.getTime());
+  
+  if (futureTrips.length > 0) {
+    const nextTrip = futureTrips[0];
+    return {
+      destination: nextTrip.destination,
+      dateRange: nextTrip.endDate ? formatDateRange(nextTrip.startDate, nextTrip.endDate) : formatDateForDisplay(nextTrip.startDate),
+      isCurrent: false
+    };
+  }
+  
+  return null;
+}
+
+/**
  * Check if a user is currently traveling based on their travel plans
  * CRITICAL: Users only become NEARBY TRAVELERS when trip dates are active
  * Returns destination string for display, null if not traveling

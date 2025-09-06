@@ -12,7 +12,7 @@ import { UserPlus, MessageCircle, Handshake, Info, FileText, Clock, Star, Users 
 import type { User, TravelPlan } from "@shared/schema";
 import ConnectionCelebration from "./connection-celebration";
 import { useConnectionCelebration } from "@/hooks/useConnectionCelebration";
-import { formatDateForDisplay, getCurrentTravelDestination } from "@/lib/dateUtils";
+import { formatDateForDisplay, getCurrentTravelDestination, getCurrentOrNextTrip } from "@/lib/dateUtils";
 import { getInterestStyle, getActivityStyle, getEventStyle } from "@/lib/topChoicesUtils";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import { parseLocalDate } from "@/lib/dateFixUtils";
@@ -199,11 +199,33 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
             </h3>
             
             <div className="text-xs text-gray-600 dark:text-gray-300 space-y-1">
-              {user.isCurrentlyTraveling && user.travelDestination && (
-                <div className="flex items-center gap-1 truncate">
-                  🧳 <span className="truncate">Traveling to {user.travelDestination.split(',')[0]}</span>
-                </div>
-              )}
+              {(() => {
+                // Check if user has travel plans data and use new logic
+                if (user.travelPlans && Array.isArray(user.travelPlans)) {
+                  const currentOrNextTrip = getCurrentOrNextTrip(user.travelPlans);
+                  if (currentOrNextTrip) {
+                    return (
+                      <div className="flex items-center gap-1 truncate">
+                        {currentOrNextTrip.isCurrent ? '🧳' : '✈️'} 
+                        <span className="truncate">
+                          {currentOrNextTrip.isCurrent ? 'Traveling to' : 'Next trip to'} {currentOrNextTrip.destination.split(',')[0]}
+                        </span>
+                      </div>
+                    );
+                  }
+                }
+                
+                // Fallback to existing logic for backward compatibility
+                if (user.isCurrentlyTraveling && user.travelDestination) {
+                  return (
+                    <div className="flex items-center gap-1 truncate">
+                      🧳 <span className="truncate">Traveling to {user.travelDestination.split(',')[0]}</span>
+                    </div>
+                  );
+                }
+                
+                return null;
+              })()}
               <div className="flex items-center gap-1 truncate">
                 🏠 <span className="truncate">Local {user.hometownCity ? user.hometownCity.split(',')[0] : getLocation()}</span>
               </div>
