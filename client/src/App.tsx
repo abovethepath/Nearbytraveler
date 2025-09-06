@@ -9,7 +9,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import GlobalHotfixes from "@/GlobalHotfixes";
-import { METRO_AREAS } from "@/../shared/constants";
+import { METRO_AREAS } from "@shared/constants";
 import Home from "@/pages/home";
 import Discover from "@/pages/discover";
 import Profile from "@/pages/profile";
