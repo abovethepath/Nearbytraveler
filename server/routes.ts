@@ -3207,33 +3207,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const user = await storage.createUser(userData);
       const { password, ...userWithoutPassword } = user;
 
-      // CRITICAL: Create travel plan record for travelers during signup
-      if ((userData.userType === 'traveler' || userData.userType === 'currently_traveling') && userData.isCurrentlyTraveling) {
-        try {
-          if (userData.travelStartDate && userData.travelEndDate && userData.travelDestination) {
-            const travelPlanData = {
-              userId: user.id,
-              destination: userData.travelDestination,
-              destinationCity: userData.currentCity || userData.travelDestination.split(', ')[0],
-              destinationState: userData.currentState || userData.travelDestination.split(', ')[1] || '',
-              destinationCountry: userData.currentCountry || userData.travelDestination.split(', ')[2] || userData.travelDestination.split(', ')[1],
-              startDate: userData.travelStartDate,
-              endDate: userData.travelEndDate,
-              status: 'active',
-              notes: `Current trip to ${userData.travelDestination}`,
-              isPublic: true
-            };
-
-            const travelPlan = await storage.createTravelPlan(travelPlanData);
-            if (process.env.NODE_ENV === 'development') console.log(`✅ TRAVELER SIGNUP: Created travel plan ID ${travelPlan.id} for user ${user.username}`);
-          } else {
-            if (process.env.NODE_ENV === 'development') console.log("⚠️ TRAVELER SIGNUP: Missing travel data - no travel plan created");
-          }
-        } catch (travelPlanError) {
-          if (process.env.NODE_ENV === 'development') console.error("❌ TRAVELER SIGNUP: Failed to create travel plan:", travelPlanError);
-          // Don't fail registration if travel plan creation fails
-        }
-      }
+      // REMOVED: Travel plan creation moved to fast registration section to prevent duplicates
 
       // Send welcome email to new user and location notifications to existing users
       setImmediate(async () => {
@@ -3654,11 +3628,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             status: 'active' // Set to 'active' since they're currently traveling
           };
 
-          const createdTripPlan = await storage.createTravelPlan(tripPlanData);
-          if (process.env.NODE_ENV === 'development') console.log("TRAVEL PLAN CREATED SUCCESSFULLY:", createdTripPlan?.id);
-
-          // CRITICAL: Update user travel status immediately after creating travel plan
-          await TravelStatusService.updateUserTravelStatus(user.id);
+          // REMOVED: Duplicate travel plan creation - already handled in fast registration
+          // Travel plan creation and status updates are handled in the fast registration section above
 
           // CRITICAL: Generate AI content for travel destination (only if needed)
           // Use existing destinationParts from travel plan creation above
