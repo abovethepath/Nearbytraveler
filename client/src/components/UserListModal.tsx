@@ -122,8 +122,8 @@ export function UserListModal({ isOpen, onClose, city, state, country, userType,
 
   const getUserTypeDisplay = (userType: string) => {
     switch (userType) {
-      case 'local': return 'Nearby Local';
-      case 'current_traveler': return 'Nearby Traveler';
+      case 'local': return 'Local';
+      case 'current_traveler': return 'Traveler';
       case 'business': return 'Nearby Business';
       default: return userType;
     }

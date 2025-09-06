@@ -24,6 +24,7 @@ User fix: Date of birth now properly carries over from signup forms to user prof
 User requirement: ALWAYS use local timezone for ALL time displays - events, meetups, travel planning, quick meetups, chat timestamps, everything. Never use UTC or destination timezones, even for international trips. All times must display in user's local timezone for consistency and ease of understanding (January 2025).
 CRITICAL USER TYPE CONSISTENCY (January 2025): Fixed all user type naming confusion. Only 2 user types exist: NEARBY LOCAL (userType: 'local') and NEARBY TRAVELER (userType: 'traveler'). Users are NEARBY TRAVELERS only when actively traveling with trip dates that are current. Fixed signup form mapping, destination field naming (destinationCity/State/Country), and temporal travel logic where users become travelers only during active trip periods.
 NAVIGATION RELIABILITY FIX (January 2025): Fixed navbar visibility issue for direct URL navigation - navbar now always shows for authenticated users regardless of authentication state timing. Removed conditional navbar rendering that was causing missing navigation on direct URL access when users were already logged in.
+USER TYPE SIMPLIFICATION (January 2025): Standardized all user type display names across the platform. Removed "Nearby" prefix for simplicity and consistency. User types now display as simply "Local" and "Traveler" throughout the interface, making the platform more intuitive and less verbose.
 
 ## System Architecture
 

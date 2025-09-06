@@ -355,7 +355,7 @@ export function CustomerUploadedPhotos({ businessId, isOwnProfile }: CustomerUpl
                     </Avatar>
                     <span className="text-sm font-medium">{photo.uploaderName || 'Business Owner'}</span>
                     <Badge variant="outline" className="text-xs">
-                      {photo.uploaderType === 'local' ? 'Nearby Local' : photo.uploaderType === 'business' ? 'Business' : 'Nearby Traveler'}
+                      {photo.uploaderType === 'local' ? 'Local' : photo.uploaderType === 'business' ? 'Business' : 'Traveler'}
                     </Badge>
                   </div>
                   

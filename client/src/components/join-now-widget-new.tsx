@@ -36,7 +36,7 @@ export default function JoinNowWidgetNew() {
       <div className="space-y-2">
         <Label className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">I am a...</Label>
         <div className="space-y-2">
-          {/* Nearby Local */}
+          {/* Local */}
           <div
             onClick={() => setUserType("local")}
             className={`cursor-pointer border-2 rounded-lg p-3 text-center transition-all ${
@@ -46,14 +46,14 @@ export default function JoinNowWidgetNew() {
             }`}
           >
             <div className="text-sm font-medium text-gray-900 dark:text-white">
-              Nearby Local
+              Local
             </div>
             <div className="text-xs text-gray-600 dark:text-gray-400">
               Not Traveling Now
             </div>
           </div>
 
-          {/* Nearby Traveler */}
+          {/* Traveler */}
           <div
             onClick={() => setUserType("traveler")}
             className={`cursor-pointer border-2 rounded-lg p-3 text-center transition-all ${
@@ -63,10 +63,10 @@ export default function JoinNowWidgetNew() {
             }`}
           >
             <div className="text-sm font-medium text-gray-900 dark:text-white">
-              Nearby Traveler
+              Traveler
             </div>
             <div className="text-xs text-gray-600 dark:text-gray-400">
-              Planning or Taking Trips
+              Currently Traveling
             </div>
           </div>
         </div>
