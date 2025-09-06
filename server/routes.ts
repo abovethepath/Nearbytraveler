@@ -12398,11 +12398,63 @@ Questions? Just reply to this message. Welcome aboard!
       
       if (process.env.NODE_ENV === 'development') console.log(`💡 USER INTERESTS POST: Adding interest for user ${userId} in activity ${activityId}`);
       
-      // Get the activity name from the city activities table
-      const [activity] = await db
-        .select({ activityName: cityActivities.activityName })
-        .from(cityActivities)
-        .where(eq(cityActivities.id, parseInt(activityId)));
+      // Map universal activity codes to database activity names
+      const universalActivityMap: Record<string, string> = {
+        'universal-0': 'MEET LOCALS HERE',
+        'universal-1': 'MEET OTHER TRAVELERS HERE', 
+        'universal-2': 'BARS & PUBS',
+        'universal-3': 'NIGHTLIFE & DANCING',
+        'universal-4': 'COFFEE SHOPS',
+        'universal-5': 'LANGUAGE EXCHANGE',
+        'universal-6': 'SOCIAL EVENTS',
+        'universal-7': 'MEET OTHER FAMILIES',
+        'universal-8': 'Single and Looking',
+        'universal-9': 'HIKING',
+        'universal-10': 'BIKING',
+        'universal-11': 'WALKING TOURS'
+      };
+
+      let activity;
+      let dbActivityId: number;
+      
+      // Check if it's a universal activity code
+      if (activityId.startsWith('universal-')) {
+        const activityName = universalActivityMap[activityId];
+        if (!activityName) {
+          return res.status(404).json({ error: 'Universal activity not found' });
+        }
+        
+        // Find the activity in the database by name and city
+        const [dbActivity] = await db
+          .select({ id: cityActivities.id, activityName: cityActivities.activityName })
+          .from(cityActivities)
+          .where(
+            and(
+              eq(cityActivities.activityName, activityName),
+              eq(cityActivities.cityName, cityName)
+            )
+          );
+          
+        if (!dbActivity) {
+          return res.status(404).json({ error: 'Activity not found in city' });
+        }
+        
+        activity = dbActivity;
+        dbActivityId = dbActivity.id;
+      } else {
+        // Handle regular numeric activity IDs
+        const [dbActivity] = await db
+          .select({ id: cityActivities.id, activityName: cityActivities.activityName })
+          .from(cityActivities)
+          .where(eq(cityActivities.id, parseInt(activityId)));
+          
+        if (!dbActivity) {
+          return res.status(404).json({ error: 'Activity not found' });
+        }
+        
+        activity = dbActivity;
+        dbActivityId = dbActivity.id;
+      }
       
       if (!activity) {
         return res.status(404).json({ error: 'Activity not found' });
@@ -12412,7 +12464,7 @@ Questions? Just reply to this message. Welcome aboard!
         .insert(userCityInterests)
         .values({
           userId: parseInt(userId as string),
-          activityId: parseInt(activityId),
+          activityId: dbActivityId,
           activityName: activity.activityName,
           cityName,
           isActive: true
@@ -12434,7 +12486,7 @@ Questions? Just reply to this message. Welcome aboard!
             .where(
               and(
                 eq(userCityInterests.userId, parseInt(userId as string)),
-                eq(userCityInterests.activityId, parseInt(activityId))
+                eq(userCityInterests.activityId, dbActivityId)
               )
             );
           
