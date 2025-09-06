@@ -651,7 +651,9 @@ interface MatchInCityProps {
 
 export default function MatchInCity({ cityName }: MatchInCityProps) {
   const [location, setLocation] = useLocation();
-  const [selectedCity, setSelectedCity] = useState<string>(cityName || '');
+  // Properly capitalize city name (e.g., "dublin" -> "Dublin")
+  const normalizedCityName = cityName ? cityName.charAt(0).toUpperCase() + cityName.slice(1).toLowerCase() : '';
+  const [selectedCity, setSelectedCity] = useState<string>(normalizedCityName || '');
   const [newActivityName, setNewActivityName] = useState('');
   const [newActivityDescription, setNewActivityDescription] = useState('');
   const [editActivityName, setEditActivityName] = useState('');
@@ -665,6 +667,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
   const [matchingUsers, setMatchingUsers] = useState<any[]>([]);
   const [connections, setConnections] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [forceShowCity, setForceShowCity] = useState<boolean>(!!cityName); // Force show specific city when passed as prop
   const { toast } = useToast();
   const { user: authUser, isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
@@ -1486,7 +1489,13 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
 
   console.log('🎯 RENDERING - selectedCity:', selectedCity);
   
-  if (!selectedCity) {
+  // Force show specific city (like Dublin) when passed as prop, even if not in city stats
+  if (forceShowCity && selectedCity && (CITY_ALWAYS_ACTIVITIES[selectedCity as keyof typeof CITY_ALWAYS_ACTIVITIES] || selectedCity.toLowerCase() === 'dublin')) {
+    console.log('🎯 RENDERING: Forcing display of specific city:', selectedCity);
+    // Skip to city-specific content below
+  }
+  // Otherwise show city selection if no city is selected
+  else if (!selectedCity) {
     console.log('🎯 RENDERING: Showing city selection interface');
     return (
       <div className="min-h-screen bg-white dark:bg-gray-900">
