@@ -363,7 +363,7 @@ interface ExtendedUser extends User {
 }
 
 // Add missing constants
-const INTERESTS_OPTIONS = getAllInterests();
+const INTERESTS_OPTIONS = ADDITIONAL_INTERESTS;
 const ACTIVITIES_OPTIONS = getAllActivities();
 const EVENTS_OPTIONS = getAllEvents();
 
@@ -1497,7 +1497,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       if (user.userType === 'business') {
         // Extract custom entries from the arrays (entries not in predefined lists)
         const customInterests = (user.interests || [])
-          .filter((item: string) => !getAllInterests().includes(item))
+          .filter((item: string) => !MOST_POPULAR_INTERESTS.includes(item) && !ADDITIONAL_INTERESTS.includes(item))
           .join(', ');
         const customActivities = (user.activities || [])
           .filter((item: string) => !getAllActivities().includes(item))
@@ -1508,7 +1508,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         
         // Only include predefined entries in the checkbox arrays
         const predefinedInterests = (user.interests || [])
-          .filter((item: string) => getAllInterests().includes(item));
+          .filter((item: string) => MOST_POPULAR_INTERESTS.includes(item) || ADDITIONAL_INTERESTS.includes(item));
         const predefinedActivities = (user.activities || [])
           .filter((item: string) => getAllActivities().includes(item));
         const predefinedEvents = (user.events || [])
@@ -1590,7 +1590,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       // For business users, extract and set custom fields
       if (user.userType === 'business') {
         const customInterests = (user.interests || [])
-          .filter((item: string) => !getAllInterests().includes(item))
+          .filter((item: string) => !MOST_POPULAR_INTERESTS.includes(item) && !ADDITIONAL_INTERESTS.includes(item))
           .join(', ');
         const customActivities = (user.activities || [])
           .filter((item: string) => !getAllActivities().includes(item))
@@ -1600,7 +1600,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           .join(', ');
         
         const predefinedInterests = (user.interests || [])
-          .filter((item: string) => getAllInterests().includes(item));
+          .filter((item: string) => MOST_POPULAR_INTERESTS.includes(item) || ADDITIONAL_INTERESTS.includes(item));
         const predefinedActivities = (user.activities || [])
           .filter((item: string) => getAllActivities().includes(item));
         const predefinedEvents = (user.events || [])
@@ -3299,7 +3299,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       // Process custom interests
       if (formData.customInterests) {
         const customInterestsList = formData.customInterests.split(',').map((item: string) => item.trim()).filter((item: string) => item);
-        formData.interests = [...(formData.interests || []).filter((item: string) => getAllInterests().includes(item)), ...customInterestsList];
+        formData.interests = [...(formData.interests || []).filter((item: string) => (MOST_POPULAR_INTERESTS.includes(item) || ADDITIONAL_INTERESTS.includes(item))), ...customInterestsList];
       }
       
       // Process custom activities
@@ -4320,7 +4320,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               console.log('🔧 SAVING DATA:', editFormData);
                               
                               // Separate predefined vs custom entries
-                              const allInterests = getAllInterests();
+                              const allInterests = [...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS];
                               const allActivities = getAllActivities();
                               const allEvents = getAllEvents();
                               
@@ -4752,7 +4752,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       {/* All Interests */}
                       <div>
                         <div className="flex flex-wrap gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border">
-                          {getAllInterests().filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)).map((interest) => {
+                          {ADDITIONAL_INTERESTS.map((interest) => {
                             const displayText = interest.startsWith("**") && interest.endsWith("**") ? 
                               interest.slice(2, -2) : interest;
                             const isSelected = tempInterests.includes(interest);
@@ -5438,11 +5438,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               console.log('🔧 BUSINESS SAVING DATA:', editFormData);
                               
                               // Separate predefined vs custom entries for proper database storage
-                              const predefinedInterests = getAllInterests().filter(opt => editFormData.interests.includes(opt));
+                              const predefinedInterests = [...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS].filter(opt => editFormData.interests.includes(opt));
                               const predefinedActivities = getAllActivities().filter(opt => editFormData.activities.includes(opt));
                               const predefinedEvents = getAllEvents().filter(opt => editFormData.events.includes(opt));
                               
-                              const customInterests = editFormData.interests.filter(int => !getAllInterests().includes(int));
+                              const customInterests = editFormData.interests.filter(int => !MOST_POPULAR_INTERESTS.includes(int) && !ADDITIONAL_INTERESTS.includes(int));
                               const customActivities = editFormData.activities.filter(act => !getAllActivities().includes(act));
                               const customEvents = editFormData.events.filter(evt => !getAllEvents().includes(evt));
                               
@@ -5531,7 +5531,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           Business Interests
                         </h4>
                         <div className="flex flex-wrap gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                          {getAllInterests().map((interest, index) => {
+                          {[...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS].map((interest, index) => {
                             const isSelected = editFormData.interests.includes(interest);
                             console.log(`🔍 Interest "${interest}" is ${isSelected ? 'SELECTED' : 'not selected'} in:`, editFormData.interests);
                             return (
@@ -5596,11 +5596,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           </div>
 
                           {/* Display Custom Interests with Delete Option */}
-                          {editFormData.interests.filter(interest => !getAllInterests().includes(interest)).length > 0 && (
+                          {editFormData.interests.filter(interest => !MOST_POPULAR_INTERESTS.includes(interest) && !ADDITIONAL_INTERESTS.includes(interest)).length > 0 && (
                             <div className="mt-2">
                               <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Your Custom Interests (click X to remove):</p>
                               <div className="flex flex-wrap gap-2">
-                                {editFormData.interests.filter(interest => !getAllInterests().includes(interest)).map((interest, index) => (
+                                {editFormData.interests.filter(interest => !MOST_POPULAR_INTERESTS.includes(interest) && !ADDITIONAL_INTERESTS.includes(interest)).map((interest, index) => (
                                   <span
                                     key={`custom-interest-${index}`}
                                     className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white text-black border border-black appearance-none select-none gap-1.5"
@@ -5835,11 +5835,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             console.log('🔧 BUSINESS SAVING DATA (Bottom Button):', editFormData);
                             
                             // Separate predefined vs custom entries for proper database storage
-                            const predefinedInterests = getAllInterests().filter(opt => editFormData.interests.includes(opt));
+                            const predefinedInterests = [...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS].filter(opt => editFormData.interests.includes(opt));
                             const predefinedActivities = getAllActivities().filter(opt => editFormData.activities.includes(opt));
                             const predefinedEvents = getAllEvents().filter(opt => editFormData.events.includes(opt));
                             
-                            const customInterests = editFormData.interests.filter(int => !getAllInterests().includes(int));
+                            const customInterests = editFormData.interests.filter(int => !MOST_POPULAR_INTERESTS.includes(int) && !ADDITIONAL_INTERESTS.includes(int));
                             const customActivities = editFormData.activities.filter(act => !getAllActivities().includes(act));
                             const customEvents = editFormData.events.filter(evt => !getAllEvents().includes(evt));
                             
@@ -7879,7 +7879,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
                 
                 <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-orange-50">
-                  {getAllInterests().map((interest, index) => (
+                  {[...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS].map((interest, index) => (
                     <div key={`interest-edit-${index}`} className="flex items-center space-x-1">
                       <FormField
                         control={form.control}
