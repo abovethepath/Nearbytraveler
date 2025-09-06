@@ -119,5 +119,70 @@ export const GENERIC_CITY_ACTIVITIES = [
     name: "RUNNING GROUPS",
     description: "Join running clubs and fitness groups",
     category: "fitness"
+  },
+  {
+    name: "ROCK CLIMBING",
+    description: "Indoor and outdoor climbing activities",
+    category: "fitness"
+  },
+  {
+    name: "SWIMMING",
+    description: "Swimming pools and water activities",
+    category: "fitness"
+  },
+  {
+    name: "SKATEBOARDING",
+    description: "Skateparks and skating communities",
+    category: "fitness"
+  },
+  {
+    name: "TENNIS",
+    description: "Tennis courts and tennis partners",
+    category: "fitness"
+  },
+  {
+    name: "BASKETBALL",
+    description: "Basketball courts and pickup games",
+    category: "fitness"
+  },
+  {
+    name: "SOCCER/FOOTBALL",
+    description: "Football/soccer fields and teams",
+    category: "fitness"
+  },
+  {
+    name: "FISHING",
+    description: "Fishing spots and angling communities",
+    category: "outdoors"
+  },
+  {
+    name: "OUTDOOR FITNESS",
+    description: "Outdoor workout groups and boot camps",
+    category: "fitness"
+  },
+  {
+    name: "CAMPING",
+    description: "Camping sites and outdoor adventures",
+    category: "outdoors"
+  },
+  {
+    name: "NATURE WALKS",
+    description: "Nature trails and hiking paths",
+    category: "outdoors"
+  },
+  {
+    name: "LOCAL FOOD SCENE",
+    description: "Explore local restaurants and food culture",
+    category: "food"
+  },
+  {
+    name: "FOOD TOURS",
+    description: "Guided food tours and culinary experiences",
+    category: "food"
+  },
+  {
+    name: "COOKING CLASSES",
+    description: "Learn to cook local and international cuisine",
+    category: "food"
   }
 ];

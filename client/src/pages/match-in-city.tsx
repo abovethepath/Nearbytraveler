@@ -1877,16 +1877,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                       {activity.isCityAlways && <span className="text-xs mr-1">⭐</span>}
                       {activity.name || activity.activityName}
                     </button>
-                    {activity.description && (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Info className="w-3 h-3 ml-1 opacity-60 absolute top-1 right-1" />
-                        </TooltipTrigger>
-                        <TooltipContent className="max-w-xs bg-gray-900 text-gray-900 dark:text-white border-gray-700 shadow-xl">
-                          <p className="text-sm">{activity.description}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    )}
 
                     {/* Edit/Delete on hover - only for city-specific activities */}
                     {!activity.isUniversal && (
