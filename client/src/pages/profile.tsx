@@ -3701,20 +3701,30 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <>
                         <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold text-black break-all">@{user.username}</h1>
                         
-                        {/* Always show hometown */}
-                        <div className="flex items-center gap-2 text-lg font-medium text-black">
-                          <MapPin className="w-5 h-5 text-blue-600" />
-                          <span>Nearby Local {hometown}</span>
-                        </div>
+                        {/* Show current status - traveler if active trip, otherwise local */}
+                        {(() => {
+                          const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
+                          if (currentTravelPlan) {
+                            return (
+                              <div className="flex items-center gap-2 text-lg font-medium text-black">
+                                <Plane className="w-5 h-5 text-orange-600" />
+                                <span>Nearby Traveler • {currentTravelPlan}</span>
+                              </div>
+                            );
+                          } else {
+                            return (
+                              <div className="flex items-center gap-2 text-lg font-medium text-black">
+                                <MapPin className="w-5 h-5 text-blue-600" />
+                                <span>Nearby Local • {hometown}</span>
+                              </div>
+                            );
+                          }
+                        })()}
                         
-                        {/* Show travel status if currently traveling, using database fields */}
-                        {user.isCurrentlyTraveling && user.travelDestination && (
-                          <div className="space-y-3">
-                            <div className="flex items-center gap-2 text-lg font-medium text-black">
-                              <Plane className="w-5 h-5 text-orange-600" />
-                              <span>Nearby Traveler {user.travelDestination}</span>
-                            </div>
-                            {isOwnProfile && (
+                        {/* Show travel plan actions if currently traveling */}
+                        {(() => {
+                          const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
+                          return currentTravelPlan && isOwnProfile && (
                               <Button
                                 onClick={() => {
                                   openTab('travel');
@@ -3738,9 +3748,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 <Calendar className="w-4 h-4 mr-2" />
                                 View Travel Plans
                               </Button>
-                            )}
-                          </div>
-                        )}
+                          );
+                        })()}
                       </>
                     );
                   })()}
