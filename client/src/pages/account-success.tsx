@@ -25,17 +25,25 @@ export default function AccountSuccess() {
       }
     }, 2000);
 
-    // Timeout after 30 seconds - something went wrong
+    // Early error detection - check after 10 seconds if still not authenticated
+    const earlyCheck = setTimeout(() => {
+      if (!accountReady && !isAuthenticated) {
+        console.log("⚠️ Account creation taking longer than expected...");
+      }
+    }, 10000);
+
+    // Timeout after 15 seconds - something went wrong
     const timeout = setTimeout(() => {
       if (!accountReady && !isAuthenticated) {
         setError("Account creation is taking longer than expected. This might be due to an email that's already registered or a network issue.");
         clearInterval(checker);
       }
-    }, 30000);
+    }, 15000);
 
     return () => {
       clearInterval(timer);
       clearInterval(checker);
+      clearTimeout(earlyCheck);
       clearTimeout(timeout);
     };
   }, [isAuthenticated, user, accountReady]);
