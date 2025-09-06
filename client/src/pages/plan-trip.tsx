@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar, MapPin, Users, Building2, Heart, MessageCircle, Star, ArrowLeft, Home, User, Plus, X, Compass, Sparkles, Camera, Coffee, Utensils, Palette, Music, TreePine, ChevronDown } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS } from "../../../shared/base-options";
+import { getPublicInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, PRIVATE_INTERESTS } from "../../../shared/base-options";
 import { BASE_TRAVELER_TYPES } from "../../../shared/base-options";
 import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/locationData";
 import { US_CITIES_BY_STATE } from "@shared/locationData";
@@ -980,7 +980,8 @@ export default function PlanTrip() {
                           variant="outline" 
                           size="sm" 
                           onClick={() => {
-                            const newInterests = [...new Set([...tripPlan.interests, ...MOST_POPULAR_INTERESTS])];
+                            const publicMostPopular = MOST_POPULAR_INTERESTS.filter(interest => !PRIVATE_INTERESTS.includes(interest));
+                            const newInterests = [...new Set([...tripPlan.interests, ...publicMostPopular])];
                             setTripPlan(prev => ({ ...prev, interests: newInterests }));
                           }}
                           className="text-xs h-7 px-2 text-blue-600 border-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 bg-white dark:bg-gray-700"
@@ -992,7 +993,8 @@ export default function PlanTrip() {
                           variant="outline" 
                           size="sm" 
                           onClick={() => {
-                            const filteredInterests = tripPlan.interests.filter(interest => !MOST_POPULAR_INTERESTS.includes(interest));
+                            const publicMostPopular = MOST_POPULAR_INTERESTS.filter(interest => !PRIVATE_INTERESTS.includes(interest));
+                            const filteredInterests = tripPlan.interests.filter(interest => !publicMostPopular.includes(interest));
                             setTripPlan(prev => ({ ...prev, interests: filteredInterests }));
                           }}
                           className="text-xs h-7 px-2 text-red-600 border-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 bg-white dark:bg-gray-700"
@@ -1003,7 +1005,7 @@ export default function PlanTrip() {
                     </div>
                     {/* AI-Companion Responsive Grid */}
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 overflow-hidden break-words">
-                      {MOST_POPULAR_INTERESTS.map((interest: string) => (
+                      {MOST_POPULAR_INTERESTS.filter(interest => !PRIVATE_INTERESTS.includes(interest)).map((interest: string) => (
                         <button
                           key={interest}
                           type="button"
@@ -1035,7 +1037,7 @@ export default function PlanTrip() {
                   <details className="group" open>
                   <summary className="flex items-center justify-between cursor-pointer list-none mb-3 sm:mb-4 overflow-hidden break-words">
                     <h4 className="text-xs sm:text-sm font-bold text-blue-800 dark:text-blue-300 flex items-center gap-2 break-words overflow-hidden">
-                      <span className="text-sm sm:text-base">✨</span> More Options ({ADDITIONAL_INTERESTS.length} available)
+                      <span className="text-sm sm:text-base">✨</span> More Options ({ADDITIONAL_INTERESTS.filter(interest => !PRIVATE_INTERESTS.includes(interest)).length} available)
                     </h4>
                     <div className="text-blue-400 group-open:rotate-180 transition-transform shrink-0">
                       <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -1043,7 +1045,7 @@ export default function PlanTrip() {
                   </summary>
                   {/* AI-Companion Responsive Grid */}
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-blue-200 dark:border-blue-600 overflow-hidden break-words">
-                    {ADDITIONAL_INTERESTS.map((interest: string) => (
+                    {ADDITIONAL_INTERESTS.filter(interest => !PRIVATE_INTERESTS.includes(interest)).map((interest: string) => (
                       <Button
                         key={interest}
                         type="button"
