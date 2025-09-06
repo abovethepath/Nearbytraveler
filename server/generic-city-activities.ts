@@ -74,5 +74,50 @@ export const GENERIC_CITY_ACTIVITIES = [
     name: "LUXURY EXPERIENCES",
     description: "Enjoy premium activities and upscale venues",
     category: "luxury"
+  },
+  {
+    name: "SOCIAL EVENTS",
+    description: "Join social gatherings and community events",
+    category: "social"
+  },
+  {
+    name: "HAPPY HOUR DEALS",
+    description: "Find the best happy hour specials in town",
+    category: "food"
+  },
+  {
+    name: "COFFEE MEETUPS",
+    description: "Meet over coffee at local cafes",
+    category: "social"
+  },
+  {
+    name: "HIKING GROUPS",
+    description: "Join hiking groups and outdoor adventures",
+    category: "fitness"
+  },
+  {
+    name: "BIKING GROUPS",
+    description: "Cycle with local biking enthusiasts",
+    category: "fitness"
+  },
+  {
+    name: "WALKING TOURS",
+    description: "Explore the city on guided walking tours",
+    category: "sightseeing"
+  },
+  {
+    name: "PARKS & GARDENS",
+    description: "Enjoy green spaces and botanical gardens",
+    category: "nature"
+  },
+  {
+    name: "BEACH ACTIVITIES",
+    description: "Beach sports, swimming, and coastal fun",
+    category: "outdoors"
+  },
+  {
+    name: "RUNNING GROUPS",
+    description: "Join running clubs and fitness groups",
+    category: "fitness"
   }
 ];
