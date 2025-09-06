@@ -3325,8 +3325,15 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const hasReturnDateOnly = originalData.travelReturnDate || originalData.currentTripReturnDate; // For simplified signup
       const isTraveingUser = originalData.userType === 'traveler' || originalData.userType === 'currently_traveling' || originalData.isCurrentlyTraveling;
 
+      // CRITICAL FIX: Check if user already has travel plans to prevent duplicates
+      const existingTravelPlans = await storage.getUserTravelPlans(user.id);
+      const hasExistingTravelPlan = existingTravelPlans.length > 0;
+      
+      if (process.env.NODE_ENV === 'development') console.log(`🔍 DUPLICATE CHECK: User ${user.id} has ${existingTravelPlans.length} existing travel plans`);
+
       // Support both full travel dates and simplified return-date-only signup
-      if ((hasCurrentTravel || hasTravelDestination) && (hasTravelDates || hasReturnDateOnly) && isTraveingUser) {
+      // BUT ONLY if user doesn't already have travel plans
+      if ((hasCurrentTravel || hasTravelDestination) && (hasTravelDates || hasReturnDateOnly) && isTraveingUser && !hasExistingTravelPlan) {
         try {
           // Build destination from all possible field variations
           const tripLocation = originalData.travelDestination || [
@@ -3368,6 +3375,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           if (process.env.NODE_ENV === 'development') console.error('Error creating travel plan during signup:', error);
           // Don't fail registration if travel plan creation fails
         }
+      } else if (hasExistingTravelPlan) {
+        if (process.env.NODE_ENV === 'development') console.log(`🚫 SKIPPING TRAVEL PLAN CREATION: User ${user.id} already has ${existingTravelPlans.length} travel plans - preventing duplicates`);
       }
 
       // FAST REGISTRATION SUCCESS - Return user immediately for profile completion
