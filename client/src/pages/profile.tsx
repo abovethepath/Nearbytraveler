@@ -1486,9 +1486,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       setTempActivities(user.activities || []);
       setTempEvents(user.events || []);
       
-      // Initialize editFormData with current user preferences
+      // Initialize editFormData with current user preferences - EXCLUDE top choices from interests
       setEditFormData({
-        interests: user.interests || [],
+        interests: (user.interests || []).filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)),
         activities: user.activities || [],
         events: user.events || []
       });
