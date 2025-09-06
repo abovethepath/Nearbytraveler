@@ -9,6 +9,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import GlobalHotfixes from "@/GlobalHotfixes";
+import { METRO_AREAS } from "@/../shared/constants";
 import Home from "@/pages/home";
 import Discover from "@/pages/discover";
 import Profile from "@/pages/profile";
@@ -887,16 +888,9 @@ function Router() {
         return <NotFound />;
       }
       
-      // METROPOLITAN AREA CONSOLIDATION - Only redirect if user is explicitly accessing a city page
-      // This prevents business users from being forced to city pages when they want to stay on profile
-      const LA_METRO_CITIES = [
-        'Santa Monica', 'Venice', 'Venice Beach', 'El Segundo', 'Manhattan Beach', 
-        'Beverly Hills', 'West Hollywood', 'Pasadena', 'Burbank', 'Glendale', 
-        'Long Beach', 'Torrance', 'Inglewood', 'Culver City', 'Marina del Rey',
-        'Hermosa Beach', 'Redondo Beach', 'Hawthorne', 'Hollywood', 'Studio City',
-        'Sherman Oaks', 'Encino', 'Van Nuys', 'Northridge', 'Malibu',
-        'Pacific Palisades', 'Brentwood', 'Westwood', 'Century City'
-      ];
+      // METROPOLITAN AREA CONSOLIDATION - Use the proper shared constants
+      // Use the complete LA metro cities list to ensure consistency
+      const LA_METRO_CITIES = METRO_AREAS['Los Angeles'].cities;
       
       // Check if this is a LA metro city that should be consolidated
       const isLAMetroCity = LA_METRO_CITIES.some(metroCity => 
