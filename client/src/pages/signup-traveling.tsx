@@ -509,7 +509,7 @@ export default function SignupTraveling() {
                   </div>
                 </div>
                 <p className="text-gray-700 dark:text-gray-300 mb-4">
-                  Please choose 3 from the list below to better match with other locals and travelers. Once inside you can add more city specific events and activities.
+                  We ask you to choose at least 3 (much more if possible) from the list below, so we can start matching you with other Travelers and Locals. Once inside you can add more city specific interests and activities.
                 </p>
 
                 {/* Quick action buttons */}
