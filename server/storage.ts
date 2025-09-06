@@ -675,22 +675,22 @@ export class DatabaseStorage implements IStorage {
     }
     
     if (hometownCity) {
-      // Hometown "Let's meet up in [city]" chatroom
+      // Hometown "Let's Meet Up [city]" chatroom - STANDARDIZED FORMAT
       await this.ensureAndJoinChatroom(user, {
-        name: `Let's meet up in ${hometownCity}`,
+        name: `Let's Meet Up ${hometownCity}`,
         city: hometownCity || 'Unknown',
         state: hometownState,
         country: hometownCountry || 'United States',
-        description: `Meet fellow travelers and locals in ${hometownCity}!`
+        description: `Plan meetups and events with locals and travelers in ${hometownCity}`
       });
       
-      // Hometown "Welcome newcomers in [city]" chatroom
+      // Hometown "Welcome Newcomers [city]" chatroom - STANDARDIZED FORMAT
       await this.ensureAndJoinChatroom(user, {
-        name: `Welcome newcomers in ${hometownCity}`,
+        name: `Welcome Newcomers ${hometownCity}`,
         city: hometownCity || 'Unknown',
         state: hometownState,
         country: hometownCountry || 'United States',
-        description: `Welcome new travelers and residents to ${hometownCity}!`
+        description: `Welcome new visitors and locals to ${hometownCity}`
       });
     }
     
@@ -706,22 +706,22 @@ export class DatabaseStorage implements IStorage {
         destinationState = 'California';
       }
       
-      // Destination "Let's meet up in [city]" chatroom
+      // Destination "Let's Meet Up [city]" chatroom - STANDARDIZED FORMAT
       await this.ensureAndJoinChatroom(user, {
-        name: `Let's meet up in ${destinationCity}`,
+        name: `Let's Meet Up ${destinationCity}`,
         city: destinationCity || 'Unknown',
         state: destinationState,
         country: destinationCountry || 'United States',
-        description: `Meet fellow travelers and locals in ${destinationCity}!`
+        description: `Plan meetups and events with locals and travelers in ${destinationCity}`
       });
       
-      // Destination "Welcome newcomers in [city]" chatroom
+      // Destination "Welcome Newcomers [city]" chatroom - STANDARDIZED FORMAT
       await this.ensureAndJoinChatroom(user, {
-        name: `Welcome newcomers in ${destinationCity}`,
+        name: `Welcome Newcomers ${destinationCity}`,
         city: destinationCity || 'Unknown',
         state: destinationState,
         country: destinationCountry || 'United States',
-        description: `Welcome new travelers and residents to ${destinationCity}!`
+        description: `Welcome new visitors and locals to ${destinationCity}`
       });
     }
     
