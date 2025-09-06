@@ -6473,11 +6473,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600 dark:text-gray-300">Active Travel Plans</span>
-                    <span className="font-semibold dark:text-white">{travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length}</span>
+                    <span className="font-semibold dark:text-white">{(travelPlans || []).filter(plan => plan.status === 'planned' || plan.status === 'active').length}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600 dark:text-gray-300">Cumulative Trips Taken</span>
-                    <span className="font-semibold dark:text-white">{travelPlans.filter(plan => plan.status === 'completed').length}</span>
+                    <span className="font-semibold dark:text-white">{(travelPlans || []).filter(plan => plan.status === 'completed').length}</span>
                   </div>
                   <div 
                     className="flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 -m-2 transition-colors"
@@ -7204,7 +7204,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <CardHeader className="flex flex-col items-start gap-3">
                     <CardTitle className="flex items-center gap-2">
                       <Calendar className="w-5 h-5" />
-                      Current & Upcoming Travel Plans ({travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length})
+                      Current & Upcoming Travel Plans ({(travelPlans || []).filter(plan => plan.status === 'planned' || plan.status === 'active').length})
                     </CardTitle>
                     {isOwnProfile && (
                       <div className="flex flex-col gap-3">
@@ -7238,9 +7238,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     )}
                   </CardHeader>
                   <CardContent>
-                    {travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').length > 0 ? (
+                    {(travelPlans || []).filter(plan => plan.status === 'planned' || plan.status === 'active').length > 0 ? (
                       <div className="space-y-3">
-                        {travelPlans.filter(plan => plan.status === 'planned' || plan.status === 'active').map((plan) => (
+                        {(travelPlans || []).filter(plan => plan.status === 'planned' || plan.status === 'active').map((plan) => (
                           <div key={plan.id} className="p-3 border rounded-lg bg-blue-50 dark:bg-blue-900/20">
                             <div className="flex items-center justify-between">
                               <div>
