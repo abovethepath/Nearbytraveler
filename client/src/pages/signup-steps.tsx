@@ -14,7 +14,7 @@ import { apiRequest } from "@/lib/queryClient";
 import SmartLocationInput from "@/components/SmartLocationInput";
 import { User, Plane, Building, ArrowRight, ArrowLeft, Check } from "lucide-react";
 import Logo from "@/components/logo";
-import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections } from "../../../shared/base-options";
+import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, getAllActivities, getAllEvents, getAllLanguages, validateSelections } from "../../../shared/base-options";
 import { BASE_TRAVELER_TYPES } from "../../../shared/base-options";
 
 interface SignupData {
@@ -716,9 +716,9 @@ export default function SignupSteps() {
                 </div>
 
                 <div>
-                  <h4 className="text-lg font-medium mb-3 text-gray-900">All Available Interests</h4>
+                  <h4 className="text-lg font-medium mb-3 text-gray-900">Additional Interests</h4>
                   <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-blue-50 mb-4">
-                    {getAllInterests().filter(interest => !interest.startsWith("**")).map((interest) => (
+                    {ADDITIONAL_INTERESTS.filter(interest => !interest.startsWith("**")).map((interest) => (
                       <div key={interest} className="flex items-center space-x-1">
                         <Checkbox
                           id={`interest-${interest}`}

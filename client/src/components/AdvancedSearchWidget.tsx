@@ -15,7 +15,7 @@ import EventCard from "@/components/event-card";
 import { Calendar, UserPlus } from "lucide-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { authStorage } from "@/lib/auth";
-import { ALL_INTERESTS } from "@shared/base-options";
+import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS } from "@shared/base-options";
 
 interface AdvancedSearchWidgetProps {
   open: boolean;
@@ -224,8 +224,8 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
   const travelerTypeOptions = ["Solo", "Couple", "Group", "Family", "Business"];
   const militaryStatusOptions = ["Active Duty", "Veteran", "Civilian"];
 
-  // All interests from base-options including private/adult interests
-  const interestOptions = ALL_INTERESTS;
+  // Only additional interests - top choices are displayed separately
+  const interestOptions = ADDITIONAL_INTERESTS;
 
   const activityOptions = [
     "Local Connections", "Experience Sharing", "Travel Buddy", "Language Exchange", 
