@@ -337,6 +337,7 @@ import { BlockUserButton } from "@/components/block-user-button";
 import type { User, UserPhoto, PassportStamp, TravelPlan } from "@shared/schema";
 import { insertUserReferenceSchema } from "@shared/schema";
 import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, getPublicInterests, getPrivateInterests } from "../../../shared/base-options";
+import { getTopChoicesInterests } from "../lib/topChoicesUtils";
 
 // Extended user interface for additional properties
 interface ExtendedUser extends User {
@@ -4424,28 +4425,37 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </h4>
                         
                         <div className="flex flex-wrap gap-2 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border">
-                          {getPublicInterests().map((interest) => {
-                            const isSelected = editFormData.interests.includes(interest);
+                          {(() => {
+                            // Get all interests and filter out top choices and private interests
+                            const topChoices = getTopChoicesInterests();
+                            const privateInterests = getPrivateInterests();
                             
-                            return (
-                              <button
-                                key={interest}
-                                type="button"
-                                onClick={() => {
-                                  toggleArrayValue(editFormData.interests, interest, (newInterests) => 
-                                    setEditFormData({ ...editFormData, interests: newInterests })
-                                  );
-                                }}
-                                className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
-                                  isSelected
-                                    ? 'bg-green-600 text-white font-bold transform scale-105'
-                                    : 'bg-white text-black border border-black'
-                                }`}
-                              >
-                                {interest}
-                              </button>
-                            );
-                          })}
+                            return getAllInterests()
+                              .filter(interest => !topChoices.includes(interest)) // Remove top choices
+                              .filter(interest => !privateInterests.includes(interest)) // Remove private interests
+                              .map((interest) => {
+                                const isSelected = editFormData.interests.includes(interest);
+                            
+                                return (
+                                  <button
+                                    key={interest}
+                                    type="button"
+                                    onClick={() => {
+                                      toggleArrayValue(editFormData.interests, interest, (newInterests) => 
+                                        setEditFormData({ ...editFormData, interests: newInterests })
+                                      );
+                                    }}
+                                    className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
+                                      isSelected
+                                        ? 'bg-green-600 text-white font-bold transform scale-105'
+                                        : 'bg-white text-black border border-black'
+                                    }`}
+                                  >
+                                    {interest}
+                                  </button>
+                                );
+                              });
+                          })()}
                         </div>
                       </div>
 
