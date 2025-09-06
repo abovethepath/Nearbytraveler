@@ -12,12 +12,12 @@ interface TravelPlansWidgetProps {
 }
 
 // FIXED: Timezone-safe date formatting function for ALL users' travel dates
-function formatDateForDisplay(dateString: string, timezone: string): string {
+function formatDateForDisplay(dateString: string | Date | null | undefined, timezone: string): string {
   // Manual date parsing to prevent timezone conversion issues SITE-WIDE
   if (!dateString) return 'Date TBD';
   
   let inputString: string;
-  if (typeof dateString === 'object' && dateString instanceof Date) {
+  if (dateString instanceof Date) {
     inputString = dateString.toISOString();
   } else {
     inputString = String(dateString);
@@ -47,22 +47,23 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
     enabled: !!userId,
   });
 
-  // Debug logging
-  console.log('TravelPlansWidget - Raw data:', travelPlans);
-  travelPlans.forEach((plan: any) => {
-    console.log(`Plan ${plan.id} (${plan.destination}):`, {
-      notes: plan.notes,
-      hasNotes: !!plan.notes,
-      notesType: typeof plan.notes,
-      notesLength: plan.notes?.length,
-      notesTrimmed: plan.notes?.trim()
-    });
-  });
-
   const { data: user } = useQuery({
     queryKey: [`/api/users/${userId}`],
     enabled: !!userId,
   });
+
+  // Remove duplicate trips to the same destination and time
+  const uniquePlans = travelPlans.reduce((acc: TripPlan[], plan: TripPlan) => {
+    const isDuplicate = acc.some(p => 
+      p.destination === plan.destination && 
+      p.startDate === plan.startDate && 
+      p.endDate === plan.endDate
+    );
+    if (!isDuplicate) {
+      acc.push(plan);
+    }
+    return acc;
+  }, []);
 
   return (
     <Card 
@@ -77,7 +78,7 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
           {(() => {
             const today = new Date();
             // Show current trips (started but not ended) and future trips
-            const relevantPlans = travelPlans.filter((plan: any) => {
+            const relevantPlans = uniquePlans.filter((plan: any) => {
               if (!plan.endDate) return true; // Include plans without end dates
               // FIXED: Timezone-safe date parsing for ALL users' travel dates
               const endDate = (() => {
@@ -108,24 +109,37 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <h4 className="font-medium text-gray-900 dark:text-white">{plan.destination}</h4>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setExpandedTravelPlan(expandedTravelPlan === plan.id ? null : plan.id)}
-                      className="text-gray-600 hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700/20 p-1 h-auto"
-                    >
-                      {expandedTravelPlan === plan.id ? (
-                        <>
-                          <ChevronUp className="w-4 h-4 mr-1" />
-                          Hide Details
-                        </>
-                      ) : (
-                        <>
-                          <ChevronDown className="w-4 h-4 mr-1" />
-                          View Details
-                        </>
-                      )}
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setLocation(`/plan-trip?edit=${plan.id}`);
+                        }}
+                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 p-1 h-auto"
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setExpandedTravelPlan(expandedTravelPlan === plan.id ? null : plan.id)}
+                        className="text-gray-600 hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700/20 p-1 h-auto"
+                      >
+                        {expandedTravelPlan === plan.id ? (
+                          <>
+                            <ChevronUp className="w-4 h-4 mr-1" />
+                            Itinerary
+                          </>
+                        ) : (
+                          <>
+                            <ChevronDown className="w-4 h-4 mr-1" />
+                            Itinerary
+                          </>
+                        )}
+                      </Button>
+                    </div>
                   </div>
                   
                   <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -133,9 +147,10 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
                       <strong>Dates:</strong> <span className="text-black dark:text-white font-medium">{plan.startDate && formatDateForDisplay(plan.startDate, "PLAYA DEL REY")}
                       {plan.endDate && ` - ${formatDateForDisplay(plan.endDate, "PLAYA DEL REY")}`}</span>
                     </p>
-                    <p><strong>Travel Style:</strong> {plan.travelStyle || 'Not specified'}</p>
-                    {plan.accommodation && (
-                      <p><strong>Accommodation:</strong> {plan.accommodation}</p>
+                    {plan.destinationCity && (
+                      <p className="text-green-600 dark:text-green-400 font-medium">
+                        ✓ Matching travelers in {plan.destinationCity}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -269,18 +284,15 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
                       ) : null;
                     })()}
 
-                    {/* Edit Button */}
-                    <div className="flex justify-end pt-2">
-                      <Button
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setLocation(`/plan-trip?edit=${plan.id}`);
-                        }}
-                        className="bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600 border-0"
-                      >
-                        Edit Trip
-                      </Button>
+                    {/* Itinerary Section */}
+                    <div className="border-t border-gray-200 dark:border-gray-600 pt-3 mt-3">
+                      <h5 className="font-medium text-gray-900 dark:text-white mb-2">Full Itinerary</h5>
+                      <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                        <p><strong>Destination:</strong> {plan.destination}</p>
+                        <p><strong>Duration:</strong> {plan.startDate && formatDateForDisplay(plan.startDate, "PLAYA DEL REY")} - {plan.endDate && formatDateForDisplay(plan.endDate, "PLAYA DEL REY")}</p>
+                        {plan.accommodation && <p><strong>Stay:</strong> {plan.accommodation}</p>}
+                        {plan.transportation && <p><strong>Transport:</strong> {plan.transportation}</p>}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -289,7 +301,7 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
           })()}
           
           {(user as any)?.travelDestination && (user as any)?.travelStartDate && (user as any)?.travelEndDate && 
-           !travelPlans.some((plan: any) => plan.destination === (user as any).travelDestination) && (
+           !uniquePlans.some((plan: any) => plan.destination === (user as any).travelDestination) && (
             <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-3">
               <div className="flex items-center justify-between">
                 <div>
@@ -316,7 +328,7 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
 
           {(() => {
             const today = new Date();
-            const relevantPlans = travelPlans.filter((plan: any) => {
+            const relevantPlans = uniquePlans.filter((plan: any) => {
               if (!plan.endDate) return true;
               const endDate = (() => {
                 let dateString = plan.endDate instanceof Date ? plan.endDate.toISOString() : plan.endDate;
