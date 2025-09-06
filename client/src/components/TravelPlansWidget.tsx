@@ -268,6 +268,19 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
                       ) : null;
                     })()}
 
+                    {/* City Match Information */}
+                    <div className="border-t border-gray-200 dark:border-gray-600 pt-3 mt-3">
+                      <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
+                        <h5 className="font-medium text-blue-800 dark:text-blue-300 mb-2 flex items-center gap-1">
+                          🎯 Want specific events and activities in {plan.destinationCity}?
+                        </h5>
+                        <p className="text-sm text-blue-700 dark:text-blue-400">
+                          Use the <strong>City Match</strong> feature to discover local events, activities, and connect with other travelers and locals in {plan.destinationCity}! 
+                          This helps you find exactly what you're looking for in your destination.
+                        </p>
+                      </div>
+                    </div>
+
                     {/* Itinerary Section */}
                     <div className="border-t border-gray-200 dark:border-gray-600 pt-3 mt-3">
                       <h5 className="font-medium text-gray-900 dark:text-white mb-2">Full Itinerary</h5>
@@ -276,6 +289,11 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
                         <p><strong>Duration:</strong> {plan.startDate && formatDateForDisplay(plan.startDate, "PLAYA DEL REY")} - {plan.endDate && formatDateForDisplay(plan.endDate, "PLAYA DEL REY")}</p>
                         {plan.accommodation && <p><strong>Stay:</strong> {plan.accommodation}</p>}
                         {plan.transportation && <p><strong>Transport:</strong> {plan.transportation}</p>}
+                        <div className="mt-3 pt-2 border-t border-gray-200 dark:border-gray-600">
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            💡 <strong>Tip:</strong> Click the Itinerary button above to plan and share your detailed trip itinerary!
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>

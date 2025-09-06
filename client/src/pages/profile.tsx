@@ -7210,74 +7210,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     )}
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2 mb-4">
-                        <Globe className="w-5 h-5 text-blue-600" />
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Travel Plans</h3>
-                      </div>
-                      
-                      {(travelPlans || []).length > 0 ? (
-                        <div className="space-y-3">
-                          {(travelPlans || []).map((plan) => (
-                            <div key={plan.id} className="border border-gray-200 dark:border-gray-600 rounded-lg p-3 bg-gray-50 dark:bg-gray-800">
-                              <div className="flex items-center justify-between mb-2">
-                                <h4 className="font-medium text-gray-900 dark:text-white">{plan.destinationCity}, {plan.destinationCountry}</h4>
-                                <div className="flex gap-2">
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setLocation(`/plan-trip?edit=${plan.id}`);
-                                    }}
-                                    className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 p-1 h-auto"
-                                  >
-                                    Edit
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setLocation(`/itinerary/${plan.id}`);
-                                    }}
-                                    className="text-gray-600 hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700/20 p-1 h-auto"
-                                  >
-                                    Itinerary
-                                  </Button>
-                                </div>
-                              </div>
-                              
-                              <div className="text-sm text-gray-600 dark:text-gray-400">
-                                <p>
-                                  <strong>Dates:</strong> <span className="text-black dark:text-white font-medium">{plan.startDate && formatDateForDisplay(plan.startDate, user?.hometownCity || 'UTC')} - {plan.endDate && formatDateForDisplay(plan.endDate, user?.hometownCity || 'UTC')}</span>
-                                </p>
-                                {plan.destinationCity && (
-                                  <p className="text-green-600 dark:text-green-400 font-medium">
-                                    ✓ Matching travelers in {plan.destinationCity}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-center py-4">
-                          <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">No travel plans</p>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setLocation("/plan-trip");
-                            }}
-                            className="bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600 border-0"
-                          >
-                            Add Your First Plan
-                          </Button>
-                        </div>
-                      )}
-                    </div>
+                    <TravelPlansWidget userId={effectiveUserId} />
                   </CardContent>
                 </Card>
               </div>
