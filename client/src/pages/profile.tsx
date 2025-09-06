@@ -3709,9 +3709,30 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         
                         {/* Show travel status if currently traveling, using database fields */}
                         {user.isCurrentlyTraveling && user.travelDestination && (
-                          <div className="flex items-center gap-2 text-lg font-medium text-black">
-                            <Plane className="w-5 h-5 text-orange-600" />
-                            <span>Nearby Traveler {user.travelDestination}</span>
+                          <div className="space-y-3">
+                            <div className="flex items-center gap-2 text-lg font-medium text-black">
+                              <Plane className="w-5 h-5 text-orange-600" />
+                              <span>Nearby Traveler {user.travelDestination}</span>
+                            </div>
+                            {isOwnProfile && (
+                              <Button
+                                onClick={() => {
+                                  openTab('travel');
+                                  // Scroll to travel plans section after a short delay
+                                  setTimeout(() => {
+                                    const travelSection = document.querySelector('#panel-travel');
+                                    if (travelSection) {
+                                      travelSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                    }
+                                  }, 100);
+                                }}
+                                className="bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 text-white border-0 px-4 py-2 text-sm rounded-lg shadow-md transition-all"
+                                data-testid="button-connect-travel-plans"
+                              >
+                                <Calendar className="w-4 h-4 mr-2" />
+                                View Travel Plans
+                              </Button>
+                            )}
                           </div>
                         )}
                       </>
