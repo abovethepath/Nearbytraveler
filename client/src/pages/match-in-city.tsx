@@ -1859,14 +1859,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
                         e.preventDefault();
                         e.stopPropagation();
                         console.log('🔴 BUTTON CLICKED!', activity.name || activity.activityName);
-                        // Navigate to "Things I want to do in [City]" section
-                        const activitiesSection = document.getElementById('city-activities-section');
-                        if (activitiesSection) {
-                          activitiesSection.scrollIntoView({ behavior: 'smooth' });
-                        } else {
-                          // Fallback: navigate to bottom of page where activities usually are
-                          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-                        }
+                        toggleActivity(activity);
                       }}
                       className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1 shadow-sm hover:shadow-md border ${
                         isActive 
