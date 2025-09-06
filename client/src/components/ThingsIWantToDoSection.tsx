@@ -301,8 +301,8 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
             return (
               <div key={cityName}>
                 {/* City Header */}
-                <div className={`flex items-center justify-between mb-3 ${isMobile ? 'flex-col gap-2 items-start' : ''}`}>
-                  <h3 className={`font-semibold text-red-600 dark:text-red-500 ${isMobile ? 'text-base' : 'text-lg'}`}>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-semibold text-red-600 dark:text-red-500 text-xl">
                     {cityName}
                   </h3>
                   {isOwnProfile && (
@@ -310,11 +310,11 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                       variant="ghost"
                       size={isMobile ? "sm" : "sm"}
                       onClick={() => deleteCity(cityName)}
-                      className={`text-red-400 hover:text-red-300 hover:bg-red-900/20 ${isMobile ? 'min-h-[44px] px-3' : ''}`}
+                      className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
                       title={`Remove all from ${cityName}`}
                     >
-                      <Trash2 className={`${isMobile ? 'w-4 h-4' : 'w-4 h-4'} mr-1`} />
-                      <span className={isMobile ? 'text-xs' : 'text-sm'}>Remove City</span>
+                      <Trash2 className="w-4 h-4 mr-1" />
+                      <span className="text-sm">Remove City</span>
                     </Button>
                   )}
                 </div>
@@ -325,24 +325,16 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                   {/* Activity Pills */}
                   {cityData.activities.map((activity) => (
                     <div key={`act-${activity.id}`} className="relative group">
-                      <div className={`inline-flex items-center justify-center rounded-full px-3 text-xs font-medium bg-white text-black border border-black appearance-none select-none gap-1.5 ${
-                        isMobile 
-                          ? 'min-h-[44px] py-2 px-4 text-sm whitespace-normal text-center break-words max-w-[calc(100vw-3rem)]' 
-                          : 'h-6 min-w-[4rem] leading-none whitespace-nowrap'
-                      }`}>
+                      <div className="inline-flex items-center justify-center rounded-full px-3 py-1 text-xs font-medium bg-white text-black border border-black h-6 min-w-[4rem] leading-none whitespace-nowrap">
                         {activity.activityName}
                       </div>
                       {isOwnProfile && (
                         <button
                           onClick={() => deleteActivity.mutate(activity.id)}
-                          className={`absolute bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center transition-opacity ${
-                            isMobile 
-                              ? '-top-1 -right-1 w-6 h-6 opacity-100' 
-                              : '-top-1 -right-1 w-5 h-5 opacity-0 group-hover:opacity-100'
-                          }`}
+                          className="absolute bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center transition-opacity -top-1 -right-1 w-5 h-5 opacity-0 group-hover:opacity-100"
                           title="Remove activity"
                         >
-                          <X className={isMobile ? 'w-3 h-3' : 'w-3 h-3'} />
+                          <X className="w-3 h-3" />
                         </button>
                       )}
                     </div>
@@ -351,24 +343,16 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                   {/* Event Pills */}
                   {cityData.events.map((event) => (
                     <div key={`evt-${event.id}`} className="relative group">
-                      <div className={`inline-flex items-center justify-center rounded-full px-3 text-xs font-medium bg-white text-black border border-black appearance-none select-none gap-1.5 ${
-                        isMobile 
-                          ? 'min-h-[44px] py-2 px-4 text-sm whitespace-normal text-center break-words max-w-[calc(100vw-3rem)]' 
-                          : 'h-6 min-w-[4rem] leading-none whitespace-nowrap'
-                      }`}>
+                      <div className="inline-flex items-center justify-center rounded-full px-3 py-1 text-xs font-medium bg-white text-black border border-black h-6 min-w-[4rem] leading-none whitespace-nowrap">
                         📅 {event.eventTitle || (event as any).title}
                       </div>
                       {isOwnProfile && (
                         <button
                           onClick={() => deleteEvent.mutate(event)}
-                          className={`absolute bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center transition-opacity ${
-                            isMobile 
-                              ? '-top-1 -right-1 w-6 h-6 opacity-100' 
-                              : '-top-1 -right-1 w-5 h-5 opacity-0 group-hover:opacity-100'
-                          }`}
+                          className="absolute bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center transition-opacity -top-1 -right-1 w-5 h-5 opacity-0 group-hover:opacity-100"
                           title="Remove event"
                         >
-                          <X className={isMobile ? 'w-3 h-3' : 'w-3 h-3'} />
+                          <X className="w-3 h-3" />
                         </button>
                       )}
                     </div>
