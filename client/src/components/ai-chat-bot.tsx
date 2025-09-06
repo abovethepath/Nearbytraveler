@@ -127,7 +127,7 @@ export default function AIChatBot() {
   }
 
   return (
-    <div className="fixed bottom-6 right-4 w-80 max-w-[calc(100vw-2rem)] h-96 max-h-[80vh] md:w-80 sm:w-72" style={{ zIndex: 10000 }}>
+    <div className="fixed bottom-6 right-4 w-80 max-w-[calc(100vw-2rem)] h-96 max-h-[80vh] md:w-80 sm:w-72 hidden md:block" style={{ zIndex: 10000 }}>
       <Card className="h-full flex flex-col shadow-xl border-2 bg-white">
         <CardHeader className="bg-white text-black rounded-t-lg py-3 border-b">
           <div className="flex items-center justify-between">
