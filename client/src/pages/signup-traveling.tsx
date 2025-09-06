@@ -543,7 +543,7 @@ export default function SignupTraveling() {
                       className={`p-3 rounded-lg border-2 text-sm font-medium text-center transition-all ${
                         formData.interests.includes(interest)
                           ? 'border-blue-500 bg-blue-50 text-blue-700'
-                          : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400 hover:bg-gray-50'
+                          : 'border-gray-300 bg-white text-gray-900 hover:border-gray-400 hover:bg-gray-50'
                       }`}
                     >
                       {interest}
