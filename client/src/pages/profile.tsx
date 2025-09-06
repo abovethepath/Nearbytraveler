@@ -4662,6 +4662,43 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             );
                           })}
                         </div>
+
+                        {/* CUSTOM PRIVATE INTERESTS INPUT */}
+                        <div className="mt-4">
+                          <h5 className="text-sm font-medium text-red-700 dark:text-red-300 mb-2">Add Your Own Private Interest</h5>
+                          <div className="flex gap-2">
+                            <Input
+                              placeholder="Add custom private interest..."
+                              value={privateInterestInput}
+                              onChange={(e) => setPrivateInterestInput(e.target.value)}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  const trimmed = privateInterestInput.trim();
+                                  if (trimmed && !editFormData.interests.includes(trimmed)) {
+                                    setEditFormData(prev => ({ ...prev, interests: [...prev.interests, trimmed] }));
+                                    setPrivateInterestInput('');
+                                  }
+                                }
+                              }}
+                              className="bg-white dark:bg-gray-800 border-red-300 dark:border-red-600"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const trimmed = privateInterestInput.trim();
+                                if (trimmed && !editFormData.interests.includes(trimmed)) {
+                                  setEditFormData(prev => ({ ...prev, interests: [...prev.interests, trimmed] }));
+                                  setPrivateInterestInput('');
+                                }
+                              }}
+                              className="bg-red-500 hover:bg-red-600 text-white border-red-500"
+                            >
+                              <Plus className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
                         
                         {/* Save Button with Privacy Notice */}
                         <div className="mt-6 pt-4 border-t border-red-200 dark:border-red-600">
