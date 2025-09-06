@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useLocation } from 'wouter';
-import { CheckCircle, Loader2, Clock, Mail, User, Settings } from 'lucide-react';
+import { CheckCircle, Loader2, Clock, Mail, User, Settings, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/App';
 
 export default function AccountSuccess() {
   const [, setLocation] = useLocation();
   const [secondsElapsed, setSecondsElapsed] = useState(0);
   const [accountReady, setAccountReady] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
@@ -24,11 +25,20 @@ export default function AccountSuccess() {
       }
     }, 2000);
 
+    // Timeout after 30 seconds - something went wrong
+    const timeout = setTimeout(() => {
+      if (!accountReady && !isAuthenticated) {
+        setError("Account creation is taking longer than expected. This might be due to an email that's already registered or a network issue.");
+        clearInterval(checker);
+      }
+    }, 30000);
+
     return () => {
       clearInterval(timer);
       clearInterval(checker);
+      clearTimeout(timeout);
     };
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, accountReady]);
 
   const handleContinue = () => {
     if (user?.userType === 'business') {
@@ -46,6 +56,8 @@ export default function AccountSuccess() {
             <div className="flex justify-center mb-4">
               {accountReady ? (
                 <CheckCircle className="w-16 h-16 text-green-600 dark:text-green-400" />
+              ) : error ? (
+                <AlertCircle className="w-16 h-16 text-red-600 dark:text-red-400" />
               ) : (
                 <div className="relative">
                   <Clock className="w-16 h-16 text-orange-600 dark:text-orange-400" />
@@ -55,12 +67,14 @@ export default function AccountSuccess() {
             </div>
             
             <CardTitle className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
-              {accountReady ? 'Account Created!' : 'Setting Up Your Account...'}
+              {accountReady ? 'Account Created!' : error ? 'Account Creation Issue' : 'Setting Up Your Account...'}
             </CardTitle>
             
             <div className="text-lg text-gray-700 dark:text-gray-300">
               {accountReady ? (
                 "Your Nearby account is ready to go!"
+              ) : error ? (
+                "There was an issue creating your account."
               ) : (
                 "We're creating your personalized profile and setting up your account."
               )}
@@ -68,7 +82,32 @@ export default function AccountSuccess() {
           </CardHeader>
 
           <CardContent className="p-6 space-y-6">
-            {!accountReady && (
+            {error && (
+              <div className="space-y-4">
+                <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-700">
+                  <p className="text-sm text-red-800 dark:text-red-200 mb-4">
+                    {error}
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => setLocation('/signin')}
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      Try Signing In
+                    </Button>
+                    <Button
+                      onClick={() => setLocation('/join')}
+                      variant="outline"
+                      className="border-gray-300"
+                    >
+                      Use Different Email
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {!accountReady && !error && (
               <div className="space-y-4">
                 <div className="text-center text-gray-600 dark:text-gray-400">
                   <p className="mb-2">Creating your account... ({secondsElapsed}s)</p>
@@ -121,7 +160,7 @@ export default function AccountSuccess() {
               </div>
             )}
 
-            {!accountReady && secondsElapsed > 20 && (
+            {!accountReady && !error && secondsElapsed > 20 && (
               <div className="mt-6">
                 <Button
                   onClick={handleContinue}
