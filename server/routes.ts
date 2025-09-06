@@ -1089,8 +1089,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           'Athens': { state: '', country: 'Greece' },
           'Brussels': { state: '', country: 'Belgium' },
           'Birmingham': { state: '', country: 'United Kingdom' },
-          'Marseille': { state: '', country: 'France' },
-          'New Orleans': { state: 'Louisiana', country: 'United States' }
+          'Marseille': { state: '', country: 'France' }
         };
 
         // Check if it's an international city
@@ -1216,7 +1215,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           'View Park': { state: 'California', country: 'United States' },
           'Watts': { state: 'California', country: 'United States' },
           'North Hollywood': { state: 'California', country: 'United States' },
-          'South Pasadena': { state: 'California', country: 'United States' }
+          'South Pasadena': { state: 'California', country: 'United States' },
+          'New Orleans': { state: 'Louisiana', country: 'United States' }
         };
 
         // Check if it's a known US city
