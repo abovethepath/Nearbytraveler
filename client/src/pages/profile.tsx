@@ -4700,9 +4700,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               onChange={(e) => setPrivateInterestInput(e.target.value)}
                               onKeyPress={(e) => {
                                 if (e.key === 'Enter') {
+                                  e.preventDefault();
                                   const trimmed = privateInterestInput.trim();
-                                  if (trimmed && !editFormData.interests.includes(trimmed)) {
-                                    setEditFormData(prev => ({ ...prev, interests: [...prev.interests, trimmed] }));
+                                  if (trimmed && !editFormData.privateInterests.includes(trimmed)) {
+                                    setEditFormData(prev => ({ ...prev, privateInterests: [...prev.privateInterests, trimmed] }));
                                     setPrivateInterestInput('');
                                   }
                                 }
@@ -4715,8 +4716,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               size="sm"
                               onClick={() => {
                                 const trimmed = privateInterestInput.trim();
-                                if (trimmed && !editFormData.interests.includes(trimmed)) {
-                                  setEditFormData(prev => ({ ...prev, interests: [...prev.interests, trimmed] }));
+                                if (trimmed && !editFormData.privateInterests.includes(trimmed)) {
+                                  setEditFormData(prev => ({ ...prev, privateInterests: [...prev.privateInterests, trimmed] }));
                                   setPrivateInterestInput('');
                                 }
                               }}
