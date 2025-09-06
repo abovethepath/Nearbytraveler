@@ -174,7 +174,7 @@ export default function SignupAccount() {
     // Redirect to profile completion based on user type
     if (userType === 'local') {
       setLocation('/signup/local');
-    } else if (userType === 'currently_traveling') {
+    } else if (userType === 'traveler') {
       setLocation('/signup/traveling');
     } else if (userType === 'business') {
       setLocation('/signup/business');
@@ -186,7 +186,7 @@ export default function SignupAccount() {
   const getUserTypeDisplayName = () => {
     switch(userType) {
       case 'local': return 'Nearby Local';
-      case 'currently_traveling': return 'Nearby Traveler';
+      case 'traveler': return 'Nearby Traveler';
       case 'business': return 'Nearby Business';
       default: return 'User';
     }
