@@ -126,8 +126,17 @@ export function SmartLocationInput({
     "Alberta","British Columbia","Manitoba","New Brunswick","Newfoundland and Labrador","Northwest Territories","Nova Scotia","Nunavut","Ontario","Prince Edward Island","Quebec","Saskatchewan","Yukon"
   ];
 
+  const selectStyles = {
+    backgroundColor: "white",
+    backgroundImage: "url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQgNkw4IDEwTDEyIDYiIHN0cm9rZT0iIzk5OTk5OSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+Cg==')",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "right 12px center",
+    backgroundSize: "16px 16px",
+    appearance: "none" as const
+  };
+
   return (
-    <div className={`space-y-4 ${className}`} data-testid={dataTestId}>
+    <div className={`space-y-3 sm:space-y-4 ${className}`} data-testid={dataTestId}>
       {label && <h3 className="text-lg font-semibold">{label}</h3>}
 
       {/* Country (native select) */}
@@ -140,7 +149,8 @@ export function SmartLocationInput({
           value={country}
           onChange={handleCountryChange}
           className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700
-                     text-gray-900 dark:text-white px-3 py-2 text-sm"
+                     text-gray-900 dark:text-white px-3 py-3 pr-10 text-base sm:text-sm"
+          style={selectStyles}
         >
           <option value="" disabled>
             {phCountry}
@@ -166,7 +176,8 @@ export function SmartLocationInput({
               value={city}
               onChange={handleCityChange}
               className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700
-                         text-gray-900 dark:text-white px-3 py-2 text-sm"
+                         text-gray-900 dark:text-white px-3 py-3 pr-10 text-base sm:text-sm"
+              style={selectStyles}
             >
               <option value="" disabled>
                 {phCity}
@@ -183,7 +194,7 @@ export function SmartLocationInput({
               value={city}
               onChange={handleCityChange}
               placeholder="Type your city"
-              className="text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600 mt-1"
+              className="text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600 mt-1 py-3 text-base sm:text-sm"
               autoCapitalize="words"
               autoComplete="address-level2"
               inputMode="text"
@@ -205,7 +216,8 @@ export function SmartLocationInput({
               value={state}
               onChange={handleStateChange}
               className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700
-                         text-gray-900 dark:text-white px-3 py-2 text-sm"
+                         text-gray-900 dark:text-white px-3 py-3 pr-10 text-base sm:text-sm"
+              style={selectStyles}
             >
               <option value="" disabled>
                 {phState}
@@ -222,7 +234,8 @@ export function SmartLocationInput({
               value={state}
               onChange={handleStateChange}
               className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700
-                         text-gray-900 dark:text-white px-3 py-2 text-sm"
+                         text-gray-900 dark:text-white px-3 py-3 pr-10 text-base sm:text-sm"
+              style={selectStyles}
             >
               <option value="" disabled>
                 {phState}
@@ -239,7 +252,7 @@ export function SmartLocationInput({
               value={state}
               onChange={handleStateChange}
               placeholder={isStateOptional ? "Region (optional)" : "Region"}
-              className="text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600 mt-1"
+              className="text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600 mt-1 py-3 text-base sm:text-sm"
               autoCapitalize="words"
               autoComplete="address-level1"
               inputMode="text"

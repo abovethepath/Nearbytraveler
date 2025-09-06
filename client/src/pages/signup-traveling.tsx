@@ -392,8 +392,8 @@ export default function SignupTraveling() {
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="p-8 space-y-8">
-            <form onSubmit={handleSubmit} className="space-y-8">
+          <CardContent className="p-4 sm:p-8 space-y-6 sm:space-y-8">
+            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
 
               {/* Personal Information */}
               <div className="space-y-4">
@@ -449,7 +449,7 @@ export default function SignupTraveling() {
               </div>
 
               {/* TRAVELING SECTION */}
-              <div className="space-y-4 bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg border border-blue-200 dark:border-blue-800">
+              <div className="space-y-4 bg-blue-50 dark:bg-blue-900/20 p-4 sm:p-6 rounded-lg border border-blue-200 dark:border-blue-800">
                 <h3 className="text-2xl font-bold text-blue-900 dark:text-blue-100">Current Trip Information</h3>
                 <p className="text-blue-800 dark:text-blue-200">
                   Tell us about your current trip so we can connect you with locals and other travelers!
