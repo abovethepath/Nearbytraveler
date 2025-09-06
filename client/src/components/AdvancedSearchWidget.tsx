@@ -15,7 +15,7 @@ import EventCard from "@/components/event-card";
 import { Calendar, UserPlus } from "lucide-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { authStorage } from "@/lib/auth";
-import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, getAllActivities, getAllEvents } from "@shared/base-options";
+import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, getAllActivities, getAllEvents, getPrivateInterests } from "@shared/base-options";
 import { GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS, MILITARY_STATUS_OPTIONS } from "@/lib/formConstants";
 
 interface AdvancedSearchWidgetProps {
@@ -38,6 +38,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
     maxAge: undefined as number | undefined,
     topChoices: [] as string[],
     interests: [] as string[],
+    privateInterests: [] as string[],
     activities: [] as string[],
     events: [] as string[],
     location: "",
@@ -61,10 +62,14 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
     userType: false,
     travelerTypes: false,
     interests: false,
+    privateInterests: false,
     activities: false,
     events: false,
     militaryStatus: false
   });
+
+  // Check if current user has any private interests (for showing private search option)
+  const userHasPrivateInterests = currentUser && currentUser.privateInterests && currentUser.privateInterests.length > 0;
 
   // State for search results
   const [advancedSearchResults, setAdvancedSearchResults] = useState<User[]>([]);
@@ -81,7 +86,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
     mutationFn: async (userId: number) => {
       return await apiRequest(`/api/connections/connect`, {
         method: "POST",
-        body: JSON.stringify({ targetUserId: userId })
+        body: { targetUserId: userId }
       });
     },
     onSuccess: () => {
@@ -115,6 +120,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
       if (advancedFilters.maxAge) params.append('maxAge', advancedFilters.maxAge.toString());
       if (advancedFilters.topChoices.length > 0) params.append('topChoices', advancedFilters.topChoices.join(','));
       if (advancedFilters.interests.length > 0) params.append('interests', advancedFilters.interests.join(','));
+      if (advancedFilters.privateInterests.length > 0) params.append('privateInterests', advancedFilters.privateInterests.join(','));
       if (advancedFilters.activities.length > 0) params.append('activities', advancedFilters.activities.join(','));
       if (advancedFilters.events.length > 0) params.append('events', advancedFilters.events.join(','));
       if (advancedFilters.location) params.append('location', advancedFilters.location);
@@ -167,6 +173,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
       maxAge: undefined,
       topChoices: [],
       interests: [],
+      privateInterests: [],
       activities: [],
       events: [],
       location: "",
@@ -200,6 +207,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
   // Use proper lists from base-options
   const topChoicesOptions = MOST_POPULAR_INTERESTS;
   const interestOptions = ADDITIONAL_INTERESTS;
+  const privateInterestOptions = getPrivateInterests();
   const activityOptions = getAllActivities();
   const eventOptions = getAllEvents();
 
@@ -430,6 +438,44 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                 </div>
               </CollapsibleContent>
             </Collapsible>
+
+            {/* Private Interests Filter - Only show if user has private interests */}
+            {userHasPrivateInterests && (
+              <Collapsible open={expandedSections.privateInterests} onOpenChange={() => toggleSection('privateInterests')}>
+                <CollapsibleTrigger asChild>
+                  <Button variant="outline" className="w-full justify-between bg-red-50 border-red-200 hover:bg-red-100 text-red-700">
+                    <span>🔒 Private Interests {advancedFilters.privateInterests.length > 0 && `(${advancedFilters.privateInterests.length})`}</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="space-y-2 pt-2">
+                  <div className="text-xs text-red-600 mb-2 p-2 bg-red-50 rounded border border-red-200">
+                    🔒 <strong>Adult Content:</strong> Search for people with matching private interests. Results are discreet and never shown publicly.
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-60 overflow-y-auto">
+                    {privateInterestOptions.map((option) => (
+                      <div key={option} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`private-interest-${option}`}
+                          checked={advancedFilters.privateInterests.includes(option)}
+                          onCheckedChange={(checked) => {
+                            setAdvancedFilters(prev => ({
+                              ...prev,
+                              privateInterests: checked 
+                                ? [...prev.privateInterests, option]
+                                : prev.privateInterests.filter(i => i !== option)
+                            }));
+                          }}
+                        />
+                        <Label htmlFor={`private-interest-${option}`} className="text-sm cursor-pointer text-red-700">
+                          {option}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            )}
 
             {/* Activities Filter */}
             <Collapsible open={expandedSections.activities} onOpenChange={() => toggleSection('activities')}>

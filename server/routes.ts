@@ -3980,6 +3980,7 @@ Questions? Just reply to this message. Welcome aboard!
         maxAge,
         topChoices,
         interests,
+        privateInterests,
         activities,
         events: eventsFilter,
         location,
@@ -4002,7 +4003,7 @@ Questions? Just reply to this message. Welcome aboard!
 
       if (process.env.NODE_ENV === 'development') {
         console.log('🔍 ADVANCED SEARCH: Performing search with filters:', {
-          search, gender, sexualPreference, minAge, maxAge, interests, activities, events: eventsFilter, location, userType, travelerTypes, militaryStatus, currentUserId
+          search, gender, sexualPreference, minAge, maxAge, interests, privateInterests, activities, events: eventsFilter, location, userType, travelerTypes, militaryStatus, currentUserId
         });
         console.log('🔍 SEARCH QUERY TYPE:', typeof search, 'value:', search);
       }
@@ -4199,6 +4200,20 @@ Questions? Just reply to this message. Welcome aboard!
           whereConditions.push(or(
             ...interestsList.map(interest => 
               sql`array_to_string(${users.interests}, ',') ILIKE ${`%${interest}%`}`
+            )
+          ));
+        }
+      }
+
+      // Private Interests filter - searching in privateInterests field
+      if (privateInterests && typeof privateInterests === 'string') {
+        const privateInterestsList = privateInterests.split(',').map(i => i.trim()).filter(Boolean);
+        if (privateInterestsList.length > 0) {
+          if (process.env.NODE_ENV === 'development') console.log('🔒 PRIVATE INTERESTS FILTER: Searching for users with private interests:', privateInterestsList);
+          
+          whereConditions.push(or(
+            ...privateInterestsList.map(privateInterest => 
+              sql`array_to_string(${users.privateInterests}, ',') ILIKE ${`%${privateInterest}%`}`
             )
           ));
         }
