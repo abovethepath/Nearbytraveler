@@ -3335,8 +3335,10 @@ export default function Home() {
         defaultLocationMode={connectModalMode}
       />
 
-      {/* AI Chat Bot */}
-      <AIChatBot />
+      {/* AI Chat Bot - Hidden on mobile to prevent blocking profile page */}
+      <div className="hidden md:block">
+        <AIChatBot />
+      </div>
     </div>
   );
 }
