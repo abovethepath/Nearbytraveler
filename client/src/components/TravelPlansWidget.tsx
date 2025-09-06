@@ -272,11 +272,10 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
                     <div className="border-t border-gray-200 dark:border-gray-600 pt-3 mt-3">
                       <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
                         <h5 className="font-medium text-blue-800 dark:text-blue-300 mb-2 flex items-center gap-1">
-                          🎯 Want specific events and activities in {plan.destinationCity}?
+                          💡 Want to find specific events and activities?
                         </h5>
                         <p className="text-sm text-blue-700 dark:text-blue-400">
-                          Use the <strong>City Match</strong> feature to discover local events, activities, and connect with other travelers and locals in {plan.destinationCity}! 
-                          This helps you find exactly what you're looking for in your destination.
+                          Use the <strong>City Match</strong> button above to discover local events, activities, and connect with other travelers and locals in your destination cities!
                         </p>
                       </div>
                     </div>
