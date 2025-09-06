@@ -331,11 +331,11 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
                       
                       <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-600 text-center">
                         <Button
-                          onClick={() => setLocation(`/city/${plan.destinationCity?.toLowerCase()}`)}
+                          onClick={() => setLocation(`/city/${plan.destinationCity?.toLowerCase()}/match`)}
                           className="bg-gradient-to-r from-blue-600 to-orange-500 text-white hover:from-blue-700 hover:to-orange-600"
                           size="sm"
                         >
-                          🎯 Discover {plan.destinationCity} Events
+                          🎯 City Match: Find {plan.destinationCity} Events
                         </Button>
                       </div>
                     </div>
