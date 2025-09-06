@@ -70,9 +70,29 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
       className="travel-plans-widget bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
     >
       <CardContent className="p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Globe className="w-5 h-5 text-travel-blue" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Current & Past Travel Plans ({uniquePlans.length})</h3>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Globe className="w-5 h-5 text-travel-blue" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Current & Past Travel Plans ({uniquePlans.length})</h3>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setLocation("/plan-trip")}
+              className="bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600 border-0 text-xs"
+            >
+              Add New Trip
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setLocation("/match-in-city")}
+              className="bg-gradient-to-r from-green-500 to-teal-500 text-white hover:from-green-600 hover:to-teal-600 border-0 text-xs"
+            >
+              City Match
+            </Button>
+          </div>
         </div>
         <div className="space-y-3 max-h-48 overflow-y-auto">
           {(() => {
