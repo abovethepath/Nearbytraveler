@@ -185,9 +185,9 @@ export default function SignupAccount() {
 
   const getUserTypeDisplayName = () => {
     switch(userType) {
-      case 'local': return 'Local';
-      case 'traveler': return 'Traveler';
-      case 'business': return 'Business';
+      case 'local': return 'Nearby Local';
+      case 'traveler': return 'Nearby Traveler';
+      case 'business': return 'Nearby Business';
       default: return 'User';
     }
   };

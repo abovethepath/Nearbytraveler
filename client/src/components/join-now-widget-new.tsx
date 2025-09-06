@@ -46,7 +46,7 @@ export default function JoinNowWidgetNew() {
             }`}
           >
             <div className="text-sm font-medium text-gray-900 dark:text-white">
-              Local
+              Nearby Local
             </div>
             <div className="text-xs text-gray-600 dark:text-gray-400">
               Not Traveling Now
@@ -63,7 +63,7 @@ export default function JoinNowWidgetNew() {
             }`}
           >
             <div className="text-sm font-medium text-gray-900 dark:text-white">
-              Traveler
+              Nearby Traveler
             </div>
             <div className="text-xs text-gray-600 dark:text-gray-400">
               Currently Traveling
