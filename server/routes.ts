@@ -6202,6 +6202,74 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // TRAVEL PLANS SEARCH - Search travel plans by notes content
+  app.get("/api/search-travel-plans", async (req, res) => {
+    try {
+      const { search, city } = req.query;
+      console.log(`🔍 TRAVEL PLANS SEARCH: Searching for "${search}" in city "${city}"`);
+      
+      if (!search || typeof search !== 'string' || search.trim() === '') {
+        return res.json([]);
+      }
+      
+      const searchTerm = search.trim().toLowerCase();
+      
+      // Build search conditions for travel plans
+      let searchConditions = [
+        and(
+          isNotNull(travelPlans.notes),
+          ne(travelPlans.notes, ''),
+          ilike(travelPlans.notes, `%${searchTerm}%`)
+        )
+      ];
+      
+      // Add city filter if provided
+      if (city && typeof city === 'string' && city.trim() !== '') {
+        searchConditions.push(
+          or(
+            ilike(travelPlans.destination, `%${city}%`),
+            ilike(travelPlans.destinationCity, `%${city}%`)
+          )
+        );
+      }
+      
+      // Get travel plans with user info
+      const searchResults = await db
+        .select({
+          id: travelPlans.id,
+          userId: travelPlans.userId,
+          destination: travelPlans.destination,
+          destinationCity: travelPlans.destinationCity,
+          destinationState: travelPlans.destinationState,
+          destinationCountry: travelPlans.destinationCountry,
+          startDate: travelPlans.startDate,
+          endDate: travelPlans.endDate,
+          notes: travelPlans.notes,
+          interests: travelPlans.interests,
+          activities: travelPlans.activities,
+          events: travelPlans.events,
+          createdAt: travelPlans.createdAt,
+          // User info
+          username: users.username,
+          name: users.name,
+          profileImage: users.profileImage,
+          userType: users.userType
+        })
+        .from(travelPlans)
+        .innerJoin(users, eq(travelPlans.userId, users.id))
+        .where(and(...searchConditions))
+        .orderBy(desc(travelPlans.createdAt))
+        .limit(50);
+      
+      console.log(`🔍 TRAVEL PLANS SEARCH: Found ${searchResults.length} travel plans matching "${searchTerm}"`);
+      res.json(searchResults);
+      
+    } catch (error: any) {
+      console.error("🔍 TRAVEL PLANS SEARCH ERROR:", error);
+      res.status(500).json({ error: "Failed to search travel plans" });
+    }
+  });
+
   // FIXED: Get events filtered by city with proper location filtering - NO CROSS-CITY BLEEDING
   app.get("/api/events", async (req, res) => {
     console.log("🟢 EVENTS ENDPOINT HIT! Query:", req.query, "URL:", req.url);
