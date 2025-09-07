@@ -5075,7 +5075,7 @@ Questions? Just reply to this message. Welcome aboard!
   app.get("/api/travel-plans/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId || '0');
-      const travelPlans = await storage.getTravelPlansByUserId(userId);
+      const travelPlans = await storage.getUserTravelPlans(userId);
       return res.json(travelPlans);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching travel plans:", error);
@@ -5088,7 +5088,7 @@ Questions? Just reply to this message. Welcome aboard!
     try {
       const userId = parseInt(req.params.userId || '0');
       if (process.env.NODE_ENV === 'development') console.log(`🧭 TRAVEL PLANS API: Getting travel plans for user ${userId}`);
-      const travelPlans = await storage.getTravelPlansByUserId(userId);
+      const travelPlans = await storage.getUserTravelPlans(userId);
       if (process.env.NODE_ENV === 'development') console.log(`🧭 TRAVEL PLANS API: Found ${travelPlans?.length || 0} travel plans:`, travelPlans);
       return res.json(travelPlans);
     } catch (error: any) {
