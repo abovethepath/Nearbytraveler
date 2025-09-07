@@ -82,7 +82,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
     } else if (diffDays === 1) {
       return `Tomorrow, ${eventDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
     } else if (diffDays < 7) {
-      return eventDate.toLocaleDateString([], { weekday: 'short', hour: 'numeric', minute: '2-digit' });
+      return eventDate.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
     } else {
       return eventDate.toLocaleDateString();
     }
@@ -179,7 +179,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
             <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
               <MapPin className="h-4 w-4 shrink-0 text-travel-blue" />
               <span className="truncate break-words [overflow-wrap:anywhere]">
-                {event.venueName && `${event.venueName}, `}{event.street || event.location}
+                {event.venueName && `${event.venueName}, `}{event.street || event.location}{event.city && `, ${event.city}`}{event.state && `, ${event.state}`}
               </span>
             </div>
             <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
