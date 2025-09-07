@@ -683,33 +683,37 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
             </div>
           </div>
 
-          {/* Cities Grid */}
+          {/* Cities Grid - RESTORED BEAUTIFUL DESIGN */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredCities.slice(0, 20).map((city, index) => (
-              <Card key={index} className="bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all duration-300 cursor-pointer">
-                <CardContent className="p-4">
-                  {/* Clean City Header */}
-                  <div className="aspect-video rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center">
-                    <MapPin className="w-8 h-8 text-white" />
-                  </div>
+              <div 
+                key={index}
+                className="relative overflow-hidden rounded-xl cursor-pointer transition-transform hover:scale-105 shadow-lg group"
+                onClick={() => setSelectedCity(city.city)}
+              >
+                {/* Beautiful city photo background like original */}
+                <div 
+                  className="w-full h-48 bg-cover bg-center relative"
+                  style={{ backgroundImage: `url(${city.photo})` }}
+                >
+                  {/* Gradient overlay for text readability */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${city.gradient} backdrop-blur-[1px]`}></div>
                   
-                  <h3 className="font-bold text-white text-lg mb-2">{city.city}</h3>
-                  <p className="text-white/70 text-sm mb-4">{city.state}, {city.country}</p>
-                  
-                  <div className="space-y-3">
-                    <Button 
-                      className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedCity(city.city);
-                      }}
-                    >
-                      ⚡ Start City Matching
-                    </Button>
+                  {/* Content - EXACTLY like original screenshots */}
+                  <div className="absolute inset-0 p-6 flex flex-col justify-end text-white">
+                    <h3 className="text-xl font-bold mb-2 drop-shadow-lg">{city.city}</h3>
+                    <p className="text-sm opacity-90 drop-shadow-lg">{city.state}, {city.country}</p>
+                    <p className="text-sm opacity-90 mt-2 drop-shadow-lg">Collaborative travel guide</p>
                     
+                    {/* Match button like in screenshots */}
+                    <div className="mt-3">
+                      <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-md">
+                        ⚡ Start City Matching
+                      </button>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         </div>
