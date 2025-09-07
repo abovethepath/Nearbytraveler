@@ -21,21 +21,69 @@ export const STATIC_CITY_ACTIVITIES: Record<string, Array<{name: string, descrip
   ],
 
   "Los Angeles": [
-    { name: "Getty Villa", description: "Ancient art in a stunning recreated Roman villa", category: "culture" },
-    { name: "Griffith Observatory", description: "Iconic observatory with city and space views", category: "landmarks" },
-    { name: "Venice Beach", description: "Bohemian beach with street performers and muscle beach", category: "beach" },
-    { name: "Santa Monica Pier", description: "Classic amusement park on the Pacific", category: "entertainment" },
-    { name: "Hollywood Bowl", description: "Outdoor amphitheater for concerts under the stars", category: "entertainment" },
-    { name: "Getty Center", description: "World-class art museum with architecture and gardens", category: "culture" },
-    { name: "Sunset Strip", description: "Legendary music venues and nightlife", category: "nightlife" },
-    { name: "Beverly Hills Shopping", description: "Luxury shopping on Rodeo Drive", category: "shopping" },
+    // MAJOR THEME PARKS & TOURIST ATTRACTIONS
+    { name: "Disneyland Resort", description: "The original Magic Kingdom with Disney California Adventure", category: "theme_park" },
+    { name: "Universal Studios Hollywood", description: "Movie studio tours and thrilling theme park rides", category: "theme_park" },
+    { name: "Knott's Berry Farm", description: "America's first theme park with roller coasters and boysenberry treats", category: "theme_park" },
+    { name: "Six Flags Magic Mountain", description: "Thrill capital with world-class roller coasters", category: "theme_park" },
+    
+    // HOLLYWOOD & ENTERTAINMENT
+    { name: "Hollywood Walk of Fame", description: "Celebrity stars embedded in sidewalk along Hollywood Boulevard", category: "landmarks" },
+    { name: "TCL Chinese Theatre", description: "Historic movie palace with celebrity handprints and premieres", category: "landmarks" },
     { name: "Hollywood Sign Hike", description: "Hike to views of the famous sign", category: "outdoor" },
-    { name: "Malibu Beach", description: "Scenic coastal drive and pristine beaches", category: "beach" },
-    { name: "Walt Disney Concert Hall", description: "Frank Gehry's architectural masterpiece", category: "culture" },
-    { name: "La Brea Tar Pits", description: "Active paleontological research site", category: "science" },
-    { name: "Melrose Avenue Shopping", description: "Trendy boutiques and vintage finds", category: "shopping" },
-    { name: "Manhattan Beach Volleyball", description: "Beach volleyball and ocean activities", category: "sports" },
-    { name: "Food Truck Adventures", description: "Explore LA's diverse mobile food scene", category: "food" }
+    { name: "Hollywood Boulevard", description: "Historic entertainment district with shops, theaters, and street performers", category: "entertainment" },
+    { name: "Celebrity Home Tours", description: "Bus tours through Beverly Hills and Hollywood Hills celebrity neighborhoods", category: "entertainment" },
+    { name: "Warner Bros Studio Tour", description: "Behind-the-scenes look at active movie and TV production", category: "entertainment" },
+    { name: "Paramount Pictures Studio Tour", description: "Explore the historic movie studio with working soundstages", category: "entertainment" },
+    { name: "Hollywood Bowl", description: "Outdoor amphitheater for concerts under the stars", category: "entertainment" },
+    
+    // BEACHES & COASTAL
+    { name: "Santa Monica Pier", description: "Classic amusement park on the Pacific with Ferris wheel", category: "entertainment" },
+    { name: "Venice Beach", description: "Bohemian beach with street performers, muscle beach, and boardwalk", category: "beach" },
+    { name: "Malibu Beaches", description: "Scenic coastal drive with pristine beaches and celebrity homes", category: "beach" },
+    { name: "Manhattan Beach", description: "Upscale beach town perfect for volleyball and surfing", category: "beach" },
+    { name: "Redondo Beach Pier", description: "Family-friendly pier with restaurants, arcade, and fishing", category: "beach" },
+    { name: "Hermosa Beach", description: "Lively beach town known for nightlife and beach volleyball", category: "beach" },
+    
+    // CULTURAL ATTRACTIONS
+    { name: "Getty Center", description: "World-class art museum with architecture and stunning city views", category: "culture" },
+    { name: "Getty Villa", description: "Ancient art in a stunning recreated Roman villa", category: "culture" },
+    { name: "Los Angeles County Museum of Art", description: "Largest art museum in the western United States", category: "culture" },
+    { name: "Griffith Observatory", description: "Iconic observatory with planetarium and Hollywood Sign views", category: "landmarks" },
+    { name: "Walt Disney Concert Hall", description: "Frank Gehry's architectural masterpiece and home to LA Phil", category: "culture" },
+    
+    // SHOPPING & LUXURY
+    { name: "Rodeo Drive", description: "World-famous luxury shopping street in Beverly Hills", category: "shopping" },
+    { name: "The Grove", description: "Popular outdoor shopping and entertainment complex", category: "shopping" },
+    { name: "Beverly Center", description: "Luxury shopping mall with designer boutiques", category: "shopping" },
+    { name: "Melrose Avenue", description: "Trendy street with vintage shops, boutiques, and restaurants", category: "shopping" },
+    { name: "Third Street Promenade", description: "Pedestrian mall with shopping, dining, and street performers", category: "shopping" },
+    
+    // DOWNTOWN LA
+    { name: "Downtown LA Arts District", description: "Hip neighborhood with galleries, breweries, and industrial-chic venues", category: "culture" },
+    { name: "Grand Central Market", description: "Historic food hall with diverse vendors and cuisines", category: "food" },
+    { name: "Little Tokyo", description: "Cultural district with authentic Japanese restaurants, shops, and gardens", category: "culture" },
+    { name: "Olvera Street", description: "Historic Mexican marketplace and birthplace of Los Angeles", category: "history" },
+    { name: "LA Live", description: "Entertainment complex with venues, restaurants, and nightlife", category: "entertainment" },
+    
+    // UNIQUE LA EXPERIENCES
+    { name: "La Brea Tar Pits", description: "Active paleontological site with Ice Age fossils and museum", category: "science" },
+    { name: "Farmers Market", description: "Historic market with food vendors and specialty shops since 1934", category: "food" },
+    { name: "Sunset Strip", description: "Legendary nightlife district with iconic music venues and clubs", category: "nightlife" },
+    { name: "Food Truck Culture", description: "Diverse mobile food scene with gourmet trucks citywide", category: "food" },
+    { name: "In-N-Out Burger", description: "California's beloved burger chain - a must-try local institution", category: "food" },
+    
+    // OUTDOOR & NATURE
+    { name: "Runyon Canyon", description: "Popular hiking spot with Hollywood Sign views and celebrity sightings", category: "outdoor" },
+    { name: "Mulholland Drive", description: "Scenic mountain road with panoramic city and valley views", category: "outdoor" },
+    { name: "Topanga Canyon", description: "Bohemian mountain community with hiking trails and vintage shops", category: "outdoor" },
+    { name: "Malibu Wine Safari", description: "Wine tasting with exotic animals in Malibu mountains", category: "outdoor" },
+    
+    // FAMILY ATTRACTIONS
+    { name: "California Science Center", description: "Interactive science museum with Space Shuttle Endeavour", category: "family" },
+    { name: "Los Angeles Zoo", description: "Home to over 1,400 animals including rare and endangered species", category: "family" },
+    { name: "Aquarium of the Pacific", description: "Ocean exhibits featuring Pacific marine life (in Long Beach)", category: "family" },
+    { name: "Madame Tussauds Hollywood", description: "Wax museum with celebrity figures and interactive experiences", category: "family" }
   ],
 
   "San Francisco": [
