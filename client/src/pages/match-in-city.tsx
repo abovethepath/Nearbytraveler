@@ -1177,9 +1177,14 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
             
             return [...prev, formattedNewInterest];
           });
-          // Invalidate profile queries to refresh "Things I Want to Do"
+          // Invalidate profile queries to refresh "Things I Want to Do"  
+          console.log('🔄 INVALIDATING QUERIES for user:', userId);
           queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
           queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+          queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/all-events`] });
+          queryClient.invalidateQueries({ queryKey: [`/api/user-event-interests/${userId}`] });
+          // Force refetch to ensure fresh data
+          queryClient.refetchQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
         } else {
           // Handle error case
           const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));

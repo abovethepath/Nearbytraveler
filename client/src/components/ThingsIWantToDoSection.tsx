@@ -36,11 +36,11 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
 
-  // Fetch city-specific activities
+  // Fetch city-specific activities - AGGRESSIVE REFRESH FOR TESTING
   const { data: cityActivities = [], isLoading: loadingCityActivities } = useQuery({
     queryKey: [`/api/user-city-interests/${userId}`],
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 10, // 10 minutes
+    staleTime: 0, // Always fetch fresh data for testing
+    gcTime: 0, // Don't cache for testing
   });
 
   // Fetch user profile with general interests/activities/events
@@ -66,6 +66,17 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
 
   // Only use city-specific activities (no general profile interests)
   const allActivities = useMemo(() => {
+    console.log('🔍 ThingsIWantToDoSection - cityActivities:', {
+      userId,
+      cityActivities,
+      isArray: Array.isArray(cityActivities),
+      length: Array.isArray(cityActivities) ? cityActivities.length : 'not array',
+      sample: Array.isArray(cityActivities) && cityActivities[0] ? {
+        id: cityActivities[0].id,
+        activityName: cityActivities[0].activityName,
+        cityName: cityActivities[0].cityName
+      } : 'no sample'
+    });
     return Array.isArray(cityActivities) ? cityActivities : [];
   }, [cityActivities]);
   const allEvents = useMemo(() => {
