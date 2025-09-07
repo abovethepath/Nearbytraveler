@@ -724,13 +724,13 @@ export default function PlanTrip() {
                 </h1>
                 
                 <div className="max-w-2xl space-y-4">
-                  <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
+                  <p className="text-xl text-white/90 leading-relaxed font-medium drop-shadow-md">
                     {isEditMode 
-                      ? <>Perfect your journey — <em className="text-blue-600 dark:text-blue-400 font-semibold">every detail matters.</em></>
-                      : <>Adventures begin with a plan — <em className="text-orange-600 dark:text-orange-400 font-semibold">connections make them unforgettable.</em></>
+                      ? <>Perfect your journey — <em className="text-yellow-300 font-semibold">every detail matters.</em></>
+                      : <>Adventures begin with a plan — <em className="text-yellow-300 font-semibold">connections make them unforgettable.</em></>
                     }
                   </p>
-                  <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed">
+                  <p className="text-base text-white/80 leading-relaxed">
                     {isEditMode
                       ? "Fine-tune your travel plan, update your interests, and enhance your adventure preferences to get even better matches and recommendations."
                       : "Create detailed travel plans that connect you with locals, fellow travelers, and authentic experiences. Share your style, interests, and planned activities to discover perfect connections."
@@ -746,8 +746,8 @@ export default function PlanTrip() {
                     <Users className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Smart Connections</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Match with locals and travelers based on your travel plan</p>
+                    <h3 className="font-semibold text-white">Smart Connections</h3>
+                    <p className="text-sm text-white/80">Match with locals and travelers based on your travel plan</p>
                   </div>
                 </div>
                 
@@ -756,8 +756,8 @@ export default function PlanTrip() {
                     <Sparkles className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Personalized Experiences</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">AI-curated recommendations based on your preferences</p>
+                    <h3 className="font-semibold text-white">Personalized Experiences</h3>
+                    <p className="text-sm text-white/80">AI-curated recommendations based on your preferences</p>
                   </div>
                 </div>
                 
@@ -766,75 +766,53 @@ export default function PlanTrip() {
                     <Building2 className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Local Business Access</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Connect with authentic local businesses and services</p>
+                    <h3 className="font-semibold text-white">Local Business Access</h3>
+                    <p className="text-sm text-white/80">Connect with authentic local businesses and services</p>
                   </div>
                 </div>
               </div>
             </div>
           
-            {/* Right image side - more prominent and engaging */}
-            <div className="md:col-span-2 flex justify-center items-center relative">
-              {/* Decorative background blur effects */}
-              <div className="absolute inset-0 opacity-30 pointer-events-none">
-                <div className="absolute top-4 -left-8 w-24 h-24 bg-blue-400/20 rounded-full blur-2xl"></div>
-                <div className="absolute bottom-4 -right-8 w-32 h-32 bg-orange-400/20 rounded-full blur-2xl"></div>
-              </div>
-              
-              {/* Enhanced trip planning visualization */}
-              <div className="relative group">
-                {/* Inspiring trip planning display */}
-                <div className="relative">
-                  {/* Background glow */}
-                  <div className="absolute -inset-4 bg-gradient-to-r from-blue-200/40 via-purple-200/40 to-orange-200/40 dark:from-blue-900/30 dark:via-purple-900/30 dark:to-orange-900/30 rounded-3xl blur-xl"></div>
-                  
-                  {/* Main planning interface mockup */}
-                  <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 p-8 transform group-hover:scale-[1.02] transition-all duration-500">
-                    {/* Planning header */}
-                    <div className="text-center mb-6">
-                      <Compass className="w-16 h-16 text-blue-600 dark:text-blue-400 mx-auto mb-4 transform group-hover:rotate-12 transition-transform duration-500" />
-                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                        {isEditMode ? "Perfect Your Journey" : "Start Planning"}
-                      </h3>
-                      <div className="flex justify-center gap-2 mb-4">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                        <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                        <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+            {/* Right visual side - premium travel card */}
+            <div className="relative flex items-center justify-center">
+              <div className="relative w-full max-w-md">
+                {/* Premium glass card */}
+                <div className="bg-white/15 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
+                  <div className="space-y-6">
+                    {/* Header with gradient icon */}
+                    <div className="text-center">
+                      <div className="inline-flex items-center justify-center w-16 h-16 mb-4 bg-gradient-to-br from-white/20 to-white/10 rounded-full backdrop-blur-sm">
+                        <Compass className="w-8 h-8 text-white" />
                       </div>
+                      <h3 className="text-white font-bold text-lg">Your Adventure Awaits</h3>
+                      <p className="text-white/80 text-sm mt-1">Plan, connect, and explore</p>
                     </div>
                     
-                    {/* Planning elements preview */}
-                    <div className="space-y-3 text-left">
-                      <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
-                        <MapPin className="w-4 h-4 text-blue-500" />
-                        <span>Choose destination</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
-                        <Calendar className="w-4 h-4 text-purple-500" />
-                        <span>Set travel dates</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
-                        <Heart className="w-4 h-4 text-orange-500" />
-                        <span>Share your interests</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Floating stats badges */}
-                  <div className="absolute -top-3 -right-3 bg-white dark:bg-gray-800 rounded-xl px-3 py-2 shadow-xl border border-gray-200 dark:border-gray-600 transform rotate-3 group-hover:rotate-6 transition-transform duration-300">
-                    <div className="text-center">
-                      <div className="text-xl font-bold text-blue-600 dark:text-blue-400">AI</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Smart</div>
-                    </div>
-                  </div>
-                  
-                  <div className="absolute -bottom-3 -left-3 bg-white dark:bg-gray-800 rounded-xl px-3 py-2 shadow-xl border border-gray-200 dark:border-gray-600 transform -rotate-3 group-hover:-rotate-6 transition-transform duration-300">
-                    <div className="text-center">
-                      <div className="text-xl font-bold text-orange-600 dark:text-orange-400">∞</div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">Matches</div>
+                    {/* Travel features grid */}
+                    <div className="grid grid-cols-3 gap-3">
+                      {[
+                        { Icon: MapPin, label: "Destinations", color: "from-red-400 to-pink-500" },
+                        { Icon: Camera, label: "Memories", color: "from-blue-400 to-cyan-500" },
+                        { Icon: Users, label: "Connections", color: "from-green-400 to-emerald-500" },
+                        { Icon: Coffee, label: "Experiences", color: "from-orange-400 to-yellow-500" },
+                        { Icon: Heart, label: "Favorites", color: "from-pink-400 to-rose-500" },
+                        { Icon: Sparkles, label: "Discover", color: "from-purple-400 to-violet-500" },
+                      ].map(({ Icon, label, color }, i) => (
+                        <div key={i} className="text-center group cursor-pointer">
+                          <div className={`w-12 h-12 mx-auto mb-2 bg-gradient-to-br ${color} rounded-xl flex items-center justify-center group-hover:scale-110 transition-all duration-300 shadow-lg`}>
+                            <Icon className="w-5 h-5 text-white" />
+                          </div>
+                          <span className="text-xs text-white/80 font-medium">{label}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
+                
+                {/* Animated floating elements */}
+                <div className="absolute -top-3 -right-3 w-6 h-6 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full animate-bounce shadow-lg"></div>
+                <div className="absolute -bottom-3 -left-3 w-4 h-4 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full animate-pulse shadow-lg"></div>
+                <div className="absolute top-1/2 -right-2 w-3 h-3 bg-gradient-to-br from-pink-400 to-red-500 rounded-full animate-ping shadow-lg"></div>
               </div>
             </div>
           </div>
