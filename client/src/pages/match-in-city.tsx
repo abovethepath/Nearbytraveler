@@ -133,9 +133,11 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   };
 
   const fetchUserActivities = async () => {
-    // Force user ID to 1 for now to fix authentication issue
-    const userId = user?.id || 1;
-    console.log('🔧 FETCH USER ACTIVITIES: using userId =', userId, 'user object:', user);
+    // Get user from localStorage if not in context
+    const storedUser = localStorage.getItem('travelConnectUser');
+    const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
+    const userId = actualUser?.id || 51; // Use actual user ID
+    console.log('🔧 FETCH USER ACTIVITIES: using userId =', userId, 'user object:', actualUser);
     
     try {
       const response = await fetch(`/api/user-city-interests/${userId}/${encodeURIComponent(selectedCity)}`);
@@ -438,7 +440,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
   // Toggle activity function for the simple interface
   const handleToggleActivity = async (activityId: number, activityName: string) => {
-    const userId = user?.id || 1;
+    // Get user from localStorage if not in context
+    const storedUser = localStorage.getItem('travelConnectUser');
+    const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
+    const userId = actualUser?.id || 51; // Use actual user ID
     const isCurrentlySelected = userActivities.some(ua => ua.activityId === activityId);
     
     console.log('🔄 TOGGLE ACTIVITY:', activityId, activityName, 'currently selected:', isCurrentlySelected);
@@ -468,9 +473,21 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           const newUserActivity = await response.json();
           setUserActivities(prev => [...prev, newUserActivity]);
           
+          // Force re-fetch to ensure UI is in sync
+          setTimeout(() => {
+            fetchUserActivities();
+          }, 100);
+          
           toast({
             title: "Activity Selected",
             description: `Added "${activityName}" to your interests`,
+          });
+        } else {
+          const error = await response.json();
+          toast({
+            title: "Error",
+            description: error.error || "Failed to add activity",
+            variant: "destructive",
           });
         }
       }
@@ -486,7 +503,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
   // Delete user activity function
   const handleDeleteActivity = async (userActivityId: number) => {
-    const userId = user?.id || 1;
+    // Get user from localStorage if not in context  
+    const storedUser = localStorage.getItem('travelConnectUser');
+    const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
+    const userId = actualUser?.id || 51; // Use actual user ID
     
     try {
       const response = await fetch(`/api/user-city-interests/${userActivityId}`, {
@@ -498,6 +518,11 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
       if (response.ok) {
         setUserActivities(prev => prev.filter(ua => ua.id !== userActivityId));
+        
+        // Force re-fetch to ensure UI is in sync
+        setTimeout(() => {
+          fetchUserActivities();
+        }, 100);
         
         toast({
           title: "Activity Removed",
