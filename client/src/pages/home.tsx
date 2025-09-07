@@ -1603,7 +1603,7 @@ export default function Home() {
       <p className="text-base text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl mx-auto px-4">
         {effectiveUser?.userType === "business"
           ? "Reach customers through interest-based matching, business notifications, and location-targeted discovery."
-          : "Discover amazing experiences & make meaningful connections based on demographics, activities, interests, and events."}
+          : "Discover amazing people & make meaningful connections based on demographics, activities, interests, and events."}
       </p>
       
       {effectiveUser?.userType === "business" && (
