@@ -707,7 +707,7 @@ export default function Home() {
       }
     };
 
-    if (showAdvancedFilters) {
+    if (showAdvancedSearchWidget) {
       // Use capture phase to catch scroll events early
       document.addEventListener('scroll', handleScroll, { capture: true, passive: true });
       window.addEventListener('scroll', handleScroll, { passive: true });
@@ -744,9 +744,9 @@ export default function Home() {
       };
     }
 
-    // Return cleanup function for the case where showAdvancedFilters is false
+    // Return cleanup function for the case where showAdvancedSearchWidget is false
     return () => {};
-  }, [showAdvancedFilters]);
+  }, [showAdvancedSearchWidget]);
 
 
 
