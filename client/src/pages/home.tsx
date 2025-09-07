@@ -1361,21 +1361,21 @@ export default function Home() {
         otherUser.hometownCountry?.toLowerCase().includes(searchTerm) ||
         otherUser.gender?.toLowerCase().includes(searchTerm) ||
         otherUser.travelDestination?.toLowerCase().includes(searchTerm) ||
-        otherUser.interests?.some(interest => interest.toLowerCase().includes(searchTerm)) ||
-        otherUser.travelInterests?.some(interest => interest.toLowerCase().includes(searchTerm)) ||
-        otherUser.localActivities?.some(activity => activity.toLowerCase().includes(searchTerm)) ||
-        otherUser.preferredActivities?.some(activity => activity.toLowerCase().includes(searchTerm)) ||
-        otherUser.travelStyle?.some(style => style.toLowerCase().includes(searchTerm)) ||
-        otherUser.localExpertise?.some(expertise => expertise.toLowerCase().includes(searchTerm)) ||
-        otherUser.languagesSpoken?.some(language => language.toLowerCase().includes(searchTerm)) ||
-        otherUser.sexualPreference?.some(pref => pref.toLowerCase().includes(searchTerm));
+        otherUser.interests?.some((interest: string) => interest.toLowerCase().includes(searchTerm)) ||
+        otherUser.travelInterests?.some((interest: string) => interest.toLowerCase().includes(searchTerm)) ||
+        otherUser.localActivities?.some((activity: string) => activity.toLowerCase().includes(searchTerm)) ||
+        otherUser.preferredActivities?.some((activity: string) => activity.toLowerCase().includes(searchTerm)) ||
+        otherUser.travelStyle?.some((style: string) => style.toLowerCase().includes(searchTerm)) ||
+        otherUser.localExpertise?.some((expertise: string) => expertise.toLowerCase().includes(searchTerm)) ||
+        otherUser.languagesSpoken?.some((language: string) => language.toLowerCase().includes(searchTerm)) ||
+        otherUser.sexualPreference?.some((pref: string) => pref.toLowerCase().includes(searchTerm));
       if (!matchesSearch) return false;
     }
 
     if (filters.interests.length > 0) {
       const userInterests = otherUser.interests || [];
-      const hasMatchingInterest = filters.interests.some(interest => 
-        userInterests.some(userInterest => 
+      const hasMatchingInterest = filters.interests.some((interest: string) => 
+        userInterests.some((userInterest: string) => 
           userInterest.toLowerCase().includes(interest.toLowerCase())
         )
       );
@@ -2045,7 +2045,6 @@ export default function Home() {
                         <Card key={event.id} className="hover:shadow-md transition-shadow bg-white dark:bg-gray-800 border-blue-100 dark:border-blue-800">
                           <EventCard 
                             event={event} 
-                            showFullLocation={true}
                             currentUser={effectiveUser}
                           />
                         </Card>
@@ -2123,13 +2122,13 @@ export default function Home() {
       <DestinationModal 
         isOpen={showDestinationModal}
         onClose={() => setShowDestinationModal(false)}
-        onDestinationSelected={handleDestinationSelected}
+        onSelect={handleDestinationSelected}
       />
 
       <ConnectModal
         isOpen={showConnectModal}
         onClose={() => setShowConnectModal(false)}
-        targetUserId={connectTargetUser?.id}
+        userId={connectTargetUser?.id}
         defaultLocationMode={connectModalMode}
       />
     </div>
