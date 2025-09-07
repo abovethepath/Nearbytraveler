@@ -101,7 +101,7 @@ export default function Home() {
     enabled: !!currentUserId,
   });
 
-  const { data: travelPlans, isLoading: isLoadingTravelPlans } = useQuery({
+  const { data: travelPlans = [], isLoading: isLoadingTravelPlans } = useQuery({
     queryKey: [`/api/travel-plans/${currentUserId}`],
     enabled: !!currentUserId,
   });
@@ -117,7 +117,7 @@ export default function Home() {
     }
     
     // Get the best available user data
-    const userData = currentUserProfile || user || JSON.parse(localStorage.getItem('travelconnect_user') || '{}');
+    const userData = currentUserProfile || user || JSON.parse(localStorage.getItem('travelconnect_user') || 'null');
     
     if (!userData?.id) {
       return null;
@@ -647,6 +647,12 @@ export default function Home() {
     }
   };
 
+  // Add missing handleCloseFilters function
+  const handleCloseFilters = () => {
+    console.log('🔄 Closing filters');
+    setShowAdvancedSearchWidget(false);
+  };
+
   // AdvancedSearchWidget handles its own state - no manual population needed
   const { toast } = useToast();
   const [, setLocation] = useLocation();
@@ -769,7 +775,7 @@ export default function Home() {
     // Additional logic for handling destination selection can be added here
   };
 
-  // Query for matched users data
+  // Query for matched users data  
   const { data: matchedUsers = [], isLoading: matchedUsersLoading, refetch: refetchMatchedUsers } = useQuery<User[]>({
     queryKey: ["/api/users", "matched", matchedUsersUserId],
     queryFn: async () => {
@@ -1842,7 +1848,7 @@ export default function Home() {
         {/* FIXED: Using the SAME comprehensive AdvancedSearchWidget everywhere */}
         {showAdvancedSearchWidget && (
           <AdvancedSearchWidget
-            isOpen={showAdvancedSearchWidget}
+            open={showAdvancedSearchWidget}
             onClose={handleCloseSearchWidget}
           />
         )}
