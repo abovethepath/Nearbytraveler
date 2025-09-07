@@ -259,7 +259,7 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
 
   return (
     <Dialog open={true} onOpenChange={(open) => !open && onClose?.()}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
             <div className="flex items-center gap-3">
