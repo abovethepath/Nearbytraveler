@@ -1348,7 +1348,15 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
     }
   };
 
-  const isActivityActive = (activityId: number) => {
+  const isActivityActive = (activityId: number | string) => {
+    // Handle universal activities by matching activity name since IDs are temporary frontend IDs
+    const activity = cityActivities.find(ca => ca.id === activityId);
+    if (activity && activity.isUniversal) {
+      const activityName = activity.name || activity.activityName;
+      return userActivities.some(ua => ua.activityName === activityName);
+    }
+    
+    // For regular activities, match by ID
     return userActivities.some(ua => ua.activityId === activityId);
   };
 
