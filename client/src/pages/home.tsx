@@ -2101,6 +2101,3 @@ export default function Home() {
     </div>
   );
 }
-
-                  {/* Top Choices for Most Travelers Section */}
-                  <Collapsible open={expandedSections.topChoices} onOpenChange={() => toggleSection('topChoices')}>
