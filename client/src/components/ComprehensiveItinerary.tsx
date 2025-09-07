@@ -64,9 +64,10 @@ interface ComprehensiveItineraryProps {
   travelPlan: TravelPlan;
   onShare?: () => void;
   isSharing?: boolean;
+  onClose?: () => void;
 }
 
-export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing }: ComprehensiveItineraryProps) {
+export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing, onClose }: ComprehensiveItineraryProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [selectedDate, setSelectedDate] = useState<string>('');
@@ -257,7 +258,7 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing 
   };
 
   return (
-    <Dialog open={true}>
+    <Dialog open={true} onOpenChange={(open) => !open && onClose?.()}>
       <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">

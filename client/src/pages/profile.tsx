@@ -7180,48 +7180,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 className="mt-6"
                 data-testid="travel-content"
               >
-                {/* Current & Upcoming Travel Plans */}
-                <Card data-testid="travel-plans-widget">
-                  <CardHeader className="flex flex-col items-start gap-3">
-                    <CardTitle className="flex items-center gap-2">
-                      <Calendar className="w-5 h-5" />
-                      Current & Past Travel Plans ({(travelPlans || []).filter(plan => plan.status === 'planned' || plan.status === 'active').length})
-                    </CardTitle>
-                    {isOwnProfile && (
-                      <div className="flex flex-col gap-3">
-                        <div className="flex gap-2">
-                          <Button
-                            onClick={() => {
-                              setLocation('/plan-trip');
-                              setTimeout(() => {
-                                window.scrollTo({ top: 0, behavior: 'smooth' });
-                              }, 100);
-                            }}
-                            size="sm"
-                            className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white font-semibold shadow-lg"
-                          >
-                            ✈️ Add New Trip
-                          </Button>
-                          <Button
-                            onClick={() => {
-                              setLocation('/match-in-city');
-                              setTimeout(() => {
-                                window.scrollTo({ top: 0, behavior: 'smooth' });
-                              }, 100);
-                            }}
-                            size="sm"
-                            className="bg-gradient-to-r from-blue-600 to-green-600 text-white hover:from-blue-700 hover:to-green-700"
-                          >
-                            🏙️ City Match
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-                  </CardHeader>
-                  <CardContent>
-                    <TravelPlansWidget userId={effectiveUserId} />
-                  </CardContent>
-                </Card>
+                {/* Travel Plans Widget - No wrapper needed, widget has its own styling */}
+                <TravelPlansWidget userId={effectiveUserId} />
               </div>
             )}
 
