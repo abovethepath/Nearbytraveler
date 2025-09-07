@@ -452,7 +452,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         }
       } else {
         // Add to user activities
-        const response = await fetch('/api/user-city-activities', {
+        const response = await fetch('/api/user-city-interests', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -489,7 +489,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     const userId = user?.id || 1;
     
     try {
-      const response = await fetch(`/api/user-city-activities/${userActivityId}`, {
+      const response = await fetch(`/api/user-city-interests/${userActivityId}`, {
         method: 'DELETE',
         headers: {
           'x-user-id': userId.toString()
@@ -521,7 +521,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     const userId = user?.id || 1;
     
     try {
-      const response = await fetch(`/api/user-city-activities/${editingActivity.id}`, {
+      const response = await fetch(`/api/user-city-interests/${editingActivity.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
