@@ -3350,7 +3350,10 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
           const travelPlan = await storage.createTravelPlan({
             userId: user.id,
-            tripLocation,
+            destination: tripLocation, // FIXED: Use correct field name for travel plan
+            destinationCity: originalData.currentCity || originalData.currentTravelCity || originalData.travelDestinationCity,
+            destinationState: originalData.currentState || originalData.currentTravelState || originalData.travelDestinationState,  
+            destinationCountry: originalData.currentCountry || originalData.currentTravelCountry || originalData.travelDestinationCountry,
             startDate,
             endDate,
             activities: [],
@@ -3364,7 +3367,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           // CRITICAL: Update user to show as BOTH traveler AND local (dual status)
           // They remain a local in their hometown AND become a traveler in destination
           await storage.updateUser(user.id, { 
-            user_type: 'traveler',  // FIXED: Use correct database column name
+            userType: 'traveler',  // FIXED: Use correct database column name
             isCurrentlyTraveling: true,
             aura: 1  // Award initial 1 aura point
           });
