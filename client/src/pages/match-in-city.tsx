@@ -91,17 +91,71 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
   const fetchAllCities = async () => {
     try {
-      // Override with all 9 launch cities instead of limited API response
+      // Restore original beautiful city photos like in the screenshots
       const launchCities = [
-        { city: "Los Angeles Metro", state: "California", country: "United States", gradient: "from-orange-400 to-red-600" },
-        { city: "New York City", state: "New York", country: "United States", gradient: "from-blue-400 to-purple-600" },
-        { city: "Las Vegas", state: "Nevada", country: "United States", gradient: "from-yellow-400 to-red-600" },
-        { city: "Miami", state: "Florida", country: "United States", gradient: "from-pink-400 to-orange-600" },
-        { city: "New Orleans", state: "Louisiana", country: "United States", gradient: "from-purple-400 to-green-600" },
-        { city: "Chicago", state: "Illinois", country: "United States", gradient: "from-blue-400 to-indigo-600" },
-        { city: "Austin", state: "Texas", country: "United States", gradient: "from-green-400 to-blue-600" },
-        { city: "Boston", state: "Massachusetts", country: "United States", gradient: "from-red-400 to-blue-600" },
-        { city: "Nashville", state: "Tennessee", country: "United States", gradient: "from-yellow-400 to-pink-600" }
+        { 
+          city: "Los Angeles Metro", 
+          state: "California", 
+          country: "United States", 
+          photo: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80",
+          gradient: "from-orange-400/20 to-red-600/20" 
+        },
+        { 
+          city: "New York City", 
+          state: "New York", 
+          country: "United States", 
+          photo: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=800&q=80",
+          gradient: "from-blue-400/20 to-purple-600/20" 
+        },
+        { 
+          city: "Las Vegas", 
+          state: "Nevada", 
+          country: "United States", 
+          photo: "https://images.unsplash.com/photo-1605833556294-ea5c7a74f57d?w=800&q=80",
+          gradient: "from-yellow-400/20 to-red-600/20" 
+        },
+        { 
+          city: "Miami", 
+          state: "Florida", 
+          country: "United States", 
+          photo: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+          gradient: "from-pink-400/20 to-orange-600/20" 
+        },
+        { 
+          city: "New Orleans", 
+          state: "Louisiana", 
+          country: "United States", 
+          photo: "https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=800&q=80",
+          gradient: "from-purple-400/20 to-green-600/20" 
+        },
+        { 
+          city: "Chicago", 
+          state: "Illinois", 
+          country: "United States", 
+          photo: "https://images.unsplash.com/photo-1494522855154-9297ac14b55f?w=800&q=80",
+          gradient: "from-blue-400/20 to-indigo-600/20" 
+        },
+        { 
+          city: "Austin", 
+          state: "Texas", 
+          country: "United States", 
+          photo: "https://images.unsplash.com/photo-1531218150217-54595bc2b934?w=800&q=80",
+          gradient: "from-green-400/20 to-blue-600/20" 
+        },
+        { 
+          city: "Boston", 
+          state: "Massachusetts", 
+          country: "United States", 
+          photo: "https://images.unsplash.com/photo-1516577206467-302436c5d36b?w=800&q=80",
+          gradient: "from-red-400/20 to-blue-600/20" 
+        },
+        { 
+          city: "Nashville", 
+          state: "Tennessee", 
+          country: "United States", 
+          photo: "https://images.unsplash.com/photo-1555631936-c0ec6b634e5c?w=800&q=80",
+          gradient: "from-yellow-400/20 to-pink-600/20" 
+        }
       ];
       
       console.log('🏙️ LAUNCH CITIES LOADED:', launchCities.length);
@@ -719,13 +773,29 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         const isSelected = userActivities.some(ua => ua.activityId === activity.id);
                         const userActivity = userActivities.find(ua => ua.activityId === activity.id);
                         
+                        // Generate varied colors like the original beautiful design
+                        const colorVariants = [
+                          'bg-blue-500 hover:bg-blue-600',
+                          'bg-orange-500 hover:bg-orange-600', 
+                          'bg-green-500 hover:bg-green-600',
+                          'bg-purple-500 hover:bg-purple-600',
+                          'bg-pink-500 hover:bg-pink-600',
+                          'bg-indigo-500 hover:bg-indigo-600',
+                          'bg-yellow-500 hover:bg-yellow-600',
+                          'bg-red-500 hover:bg-red-600',
+                          'bg-teal-500 hover:bg-teal-600',
+                          'bg-cyan-500 hover:bg-cyan-600'
+                        ];
+                        const colorIndex = activity.id % colorVariants.length;
+                        const colorClass = colorVariants[colorIndex];
+                        
                         return (
                           <div key={activity.id} className="group relative">
                             <button
-                              className={`px-4 py-2 rounded-full text-sm transition-colors ${
+                              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 text-white shadow-md hover:shadow-lg transform hover:scale-105 ${
                                 isSelected 
-                                  ? 'bg-green-500 text-white' 
-                                  : 'bg-blue-500 text-white hover:bg-green-500'
+                                  ? 'bg-emerald-600 hover:bg-emerald-700 ring-2 ring-emerald-300' 
+                                  : colorClass
                               }`}
                               onClick={() => handleToggleActivity(activity.id, activity.activityName)}
                             >
