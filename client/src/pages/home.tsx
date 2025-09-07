@@ -76,8 +76,8 @@ export default function Home() {
   const [showAllUsers, setShowAllUsers] = useState(false);
   const [sortBy, setSortBy] = useState<'recent' | 'active' | 'compatibility' | 'travel_experience' | 'closest_nearby' | 'aura' | 'references' | 'alphabetical'>('recent');
   
-  // Lazy loading state - track which sections have been loaded
-  const [loadedSections, setLoadedSections] = useState<Set<string>>(new Set(['hero'])); // Only hero loads immediately
+  // Lazy loading state - track which sections have been loaded - LOAD ALL IMMEDIATELY FOR DEMO
+  const [loadedSections, setLoadedSections] = useState<Set<string>>(new Set(['hero', 'users', 'events', 'deals', 'messages'])); // Load all sections immediately
   const [activeSection, setActiveSection] = useState<string>('hero');
 
   const { user, setUser } = useContext(AuthContext);
