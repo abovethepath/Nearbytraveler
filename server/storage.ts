@@ -586,9 +586,30 @@ export class DatabaseStorage implements IStorage {
       travelDestination: insertUser.travelDestination,
       dateOfBirth: insertUser.dateOfBirth,
       username: insertUser.username,
-      email: insertUser.email
+      email: insertUser.email,
+      hometownCity: insertUser.hometownCity
     });
     
+    // LA Metro cities that should consolidate to "Los Angeles Metro"
+    const laMetroCities = [
+      'Los Angeles', 'Playa del Rey', 'Santa Monica', 'Venice', 'Culver City',
+      'Marina del Rey', 'Manhattan Beach', 'Hermosa Beach', 'Redondo Beach',
+      'El Segundo', 'Torrance', 'Hawthorne', 'Inglewood', 'West Hollywood',
+      'Beverly Hills', 'Century City', 'Brentwood', 'Westwood', 'Pacific Palisades',
+      'Malibu', 'Pasadena', 'Glendale', 'Burbank', 'North Hollywood', 'Studio City',
+      'Sherman Oaks', 'Encino', 'Tarzana', 'Woodland Hills', 'Calabasas',
+      'Agoura Hills', 'Thousand Oaks', 'Simi Valley', 'Northridge', 'Van Nuys',
+      'Reseda', 'Canoga Park', 'Chatsworth', 'Granada Hills', 'Sylmar',
+      'San Fernando', 'Pacoima', 'Sun Valley', 'La Crescenta', 'La Canada',
+      'Montrose', 'Eagle Rock', 'Highland Park', 'Silver Lake', 'Los Feliz',
+      'Echo Park', 'Downtown Los Angeles', 'Chinatown', 'Little Tokyo', 'Koreatown',
+      'Mid-Wilshire', 'Hancock Park', 'Fairfax', 'West LA', 'Sawtelle',
+      'Mar Vista', 'Del Rey', 'Palms', 'Cheviot Hills', 'Pico-Robertson',
+      'Baldwin Hills', 'Leimert Park', 'Hyde Park', 'Watts', 'Compton',
+      'Lynwood', 'South Gate', 'Downey', 'Norwalk', 'Whittier',
+      'Long Beach', 'Venice Beach'
+    ];
+
     // Clean the user data to ensure we only include defined values and handle dates properly
     const cleanUserData: any = {};
     
@@ -596,6 +617,17 @@ export class DatabaseStorage implements IStorage {
     for (const [key, value] of Object.entries(insertUser)) {
       if (value !== undefined && value !== null) {
         cleanUserData[key] = value;
+      }
+    }
+
+    // LA METRO CONSOLIDATION AT SIGNUP: Consolidate all LA Metro cities to "Los Angeles Metro"
+    if (cleanUserData.hometownCity && laMetroCities.includes(cleanUserData.hometownCity)) {
+      console.log(`🏙️ LA METRO SIGNUP CONSOLIDATION: ${cleanUserData.hometownCity} → Los Angeles Metro`);
+      cleanUserData.hometownCity = 'Los Angeles Metro';
+      
+      // Also update location field if it exists
+      if (cleanUserData.location && cleanUserData.location.includes(insertUser.hometownCity!)) {
+        cleanUserData.location = cleanUserData.location.replace(insertUser.hometownCity!, 'Los Angeles Metro');
       }
     }
     
