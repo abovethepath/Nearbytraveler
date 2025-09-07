@@ -1,78 +1,65 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/App";
-import griffithSkylineImg from "@assets/griffith-observatory-skyline_1757211515328.jpg";
+import { apiRequest } from "@/lib/queryClient";
 import { 
   MapPin, 
+  Plus, 
   Users, 
   Heart, 
+  Edit, 
+  Trash2, 
   Search,
   Target,
   Zap,
-  ArrowRight,
-  Globe,
-  Calendar,
-  Star,
-  Sparkles,
-  TrendingUp,
-  Coffee,
+  ArrowLeft,
   Camera,
-  Music,
-  Utensils,
-  Plane,
-  Clock
+  X,
+  Star,
+  Check
 } from "lucide-react";
-
-// City stats interface
-interface CityStats {
-  city: string;
-  state: string;
-  country: string;
-  localCount: number;
-  travelerCount: number;
-  businessCount: number;
-  eventCount: number;
-  description: string;
-  highlights: string[];
-}
 
 export default function MatchInCity() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const { user } = useAuth();
-  const [selectedCity, setSelectedCity] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [showSearch, setShowSearch] = useState(false);
+  const queryClient = useQueryClient();
+  
+  const [selectedCity, setSelectedCity] = useState<string>('');
+  const [citySearchTerm, setCitySearchTerm] = useState('');
+  const [newActivityName, setNewActivityName] = useState('');
+  const [showAddForm, setShowAddForm] = useState(false);
 
   // Fetch available cities
-  const { data: cities = [], isLoading: citiesLoading } = useQuery<CityStats[]>({
+  const { data: allCities = [], isLoading: citiesLoading } = useQuery({
     queryKey: ['/api/city-stats'],
   });
 
-  const filteredCities = cities.filter(city =>
-    city.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    city.state.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    city.country.toLowerCase().includes(searchQuery.toLowerCase())
+  // Filter cities based on search
+  const filteredCities = allCities.filter((city: any) =>
+    city.city.toLowerCase().includes(citySearchTerm.toLowerCase()) ||
+    city.state.toLowerCase().includes(citySearchTerm.toLowerCase()) ||
+    city.country.toLowerCase().includes(citySearchTerm.toLowerCase())
   );
 
-  const handleCitySelect = (cityName: string) => {
-    setSelectedCity(cityName);
-    const encodedCityName = encodeURIComponent(cityName);
-    setLocation(`/city/${encodedCityName}`);
-  };
+  // Fetch activities for selected city
+  const { data: cityActivities = [], isLoading: activitiesLoading } = useQuery({
+    queryKey: [`/api/city-activities/${selectedCity}`],
+    enabled: !!selectedCity,
+  });
 
-  const handleSearchCity = () => {
-    if (searchQuery.trim()) {
-      const encodedQuery = encodeURIComponent(searchQuery.trim());
-      setLocation(`/city/${encodedQuery}`);
-    }
+  // Fetch user's selected activities for this city
+  const { data: userActivities = [], isLoading: userActivitiesLoading } = useQuery({
+    queryKey: [`/api/user-city-interests/${user?.id}/${selectedCity}`],
+    enabled: !!(selectedCity && user?.id),
+  });
   };
 
   const totalUsers = cities.reduce((sum, city) => sum + city.localCount + city.travelerCount, 0);
