@@ -2011,7 +2011,7 @@ export default function Home() {
 
             {/* Local Events Section - UNDER Discover People */}
             <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-sm" data-testid="local-events-section">
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center">
                     <Calendar className="w-6 h-6 mr-3 text-blue-500" />
@@ -2025,17 +2025,17 @@ export default function Home() {
                     <Users className="w-5 h-5 mr-2 text-green-500" />
                     Created by Community Members
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-3 sm:gap-4">
                     {userPriorityEvents
                       ?.filter((event: any) => !event.isAIGenerated && !event.source && event.organizer)
                       ?.slice(0, 4)
                       ?.map((event: any) => (
-                        <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] bg-white dark:bg-gray-800 border-green-100 dark:border-green-800">
+                        <div key={event.id} className="w-full">
                           <EventCard 
                             event={event} 
                             currentUser={effectiveUser}
                           />
-                        </Card>
+                        </div>
                       )) || (
                         <div className="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">
                           <Users className="w-12 h-12 mx-auto mb-4 text-gray-300" />
@@ -2051,17 +2051,17 @@ export default function Home() {
                     <Globe className="w-5 h-5 mr-2 text-blue-500" />
                     Local Area Events
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-3 sm:gap-4">
                     {userPriorityEvents
                       ?.filter((event: any) => event.source && !event.isAIGenerated)
                       ?.slice(0, 4)
                       ?.map((event: any) => (
-                        <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] bg-white dark:bg-gray-800 border-blue-100 dark:border-blue-800">
+                        <div key={event.id} className="w-full">
                           <EventCard 
                             event={event} 
                             currentUser={effectiveUser}
                           />
-                        </Card>
+                        </div>
                       )) || (
                         <div className="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">
                           <Globe className="w-12 h-12 mx-auto mb-4 text-gray-300" />
