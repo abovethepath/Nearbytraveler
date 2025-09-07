@@ -1281,8 +1281,9 @@ export default function Home() {
         // For users with new travel plans system, check their current travel destination
         const userTravelPlans = otherUser.id === effectiveUser?.id ? travelPlans : [];
         const userCurrentTravelDestination = getCurrentTravelDestination(userTravelPlans || []);
-        const currentDestinationString = userCurrentTravelDestination ? 
-          `${userCurrentTravelDestination.destinationCity}${userCurrentTravelDestination.destinationState ? `, ${userCurrentTravelDestination.destinationState}` : ''}, ${userCurrentTravelDestination.destinationCountry}` : '';
+        const currentDestinationString = userCurrentTravelDestination && typeof userCurrentTravelDestination === 'object' ? 
+          `${userCurrentTravelDestination.destinationCity || ''}${userCurrentTravelDestination.destinationState ? `, ${userCurrentTravelDestination.destinationState}` : ''}${userCurrentTravelDestination.destinationCountry ? `, ${userCurrentTravelDestination.destinationCountry}` : ''}`.replace(/^,\s*/, '') : 
+          (typeof userCurrentTravelDestination === 'string' ? userCurrentTravelDestination : '');
         const isCurrentlyTravelingToKeyword = currentDestinationString.toLowerCase().includes(keyword);
 
         // Special debugging for location filtering
@@ -1966,7 +1967,7 @@ export default function Home() {
                 filteredUsers.slice(0, showAllUsers ? filteredUsers.length : 8).map((otherUser) => (
                   <div key={otherUser.id} className="transform hover:scale-[1.02] transition-transform">\n                    <UserCard 
                       user={otherUser} 
-                      currentUser={effectiveUser}
+                      currentUserId={effectiveUser?.id}
                       isCurrentUser={otherUser.id === effectiveUser?.id}
                     />
                   </div>
