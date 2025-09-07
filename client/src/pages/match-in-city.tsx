@@ -761,19 +761,25 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           </div>
         </div>
 
-        {/* Activity Selection Interface */}
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-            <div className="p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-8">⭐ Things I Want to Do</h2>
+        {/* Activity Selection Interface - GORGEOUS RESTORED DESIGN */}
+        <div className="max-w-6xl mx-auto">
+          <div className="bg-gradient-to-br from-white via-blue-50 to-purple-50 border border-blue-200/50 rounded-2xl shadow-2xl backdrop-blur-sm">
+            <div className="p-8">
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">⭐ Discover Your Perfect {selectedCity} Experience</h2>
+                <p className="text-lg text-gray-600">Select activities that inspire you and connect with fellow adventurers</p>
+              </div>
               
               {/* Dynamic City Activities - Universal + City-Specific + AI */}
               <div className="space-y-8">
                 {/* Show activities for selected city */}
                 {cityActivities.length > 0 ? (
                   <div>
-                    <h3 className="text-lg font-semibold text-red-600 mb-4">{selectedCity}</h3>
-                    <div className="flex flex-wrap gap-3">
+                    <div className="text-center mb-6">
+                      <h3 className="text-2xl font-bold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent mb-2">{selectedCity}</h3>
+                      <div className="w-24 h-1 bg-gradient-to-r from-red-500 to-orange-500 mx-auto rounded-full"></div>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                       {cityActivities.map((activity) => {
                         const isSelected = userActivities.some(ua => ua.activityId === activity.id);
                         const userActivity = userActivities.find(ua => ua.activityId === activity.id);
@@ -781,14 +787,18 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         return (
                           <div key={activity.id} className="group relative">
                             <button
-                              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg ${
+                              className={`w-full px-5 py-4 rounded-2xl text-sm font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl border-2 ${
                                 isSelected 
-                                  ? 'bg-green-500 hover:bg-green-600 text-white' 
-                                  : 'bg-blue-500 hover:bg-blue-600 text-white'
+                                  ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white border-emerald-300 shadow-emerald-200' 
+                                  : 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white border-blue-300 shadow-blue-200 hover:from-blue-600 hover:to-indigo-700'
                               }`}
                               onClick={() => handleToggleActivity(activity.id, activity.activityName)}
+                              data-testid="activity-pill"
                             >
-                              {activity.activityName}
+                              <span className="relative z-10">{activity.activityName}</span>
+                              {isSelected && (
+                                <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 to-green-500/20 rounded-2xl animate-pulse"></div>
+                              )}
                             </button>
                             
                             {/* Edit/Delete on hover */}
