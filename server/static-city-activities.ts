@@ -256,6 +256,60 @@ export const STATIC_CITY_ACTIVITIES: Record<string, Array<{name: string, descrip
     { name: "Chinatown", description: "Vibrant Asian culture and authentic cuisine", category: "culture" },
     { name: "Taronga Zoo", description: "World-class zoo with harbour views", category: "family" },
     { name: "Surry Hills", description: "Trendy neighborhood with cafés and boutiques", category: "culture" }
+  ],
+
+  "New Orleans": [
+    { name: "French Quarter Walking Tour", description: "Historic Creole architecture and vibrant street life", category: "culture" },
+    { name: "Bourbon Street Nightlife", description: "Legendary entertainment district with live music", category: "nightlife" },
+    { name: "Jazz Clubs on Frenchmen Street", description: "Authentic local music venues and street performers", category: "entertainment" },
+    { name: "Garden District Mansions", description: "Antebellum homes and oak-lined streets", category: "history" },
+    { name: "St. Louis Cathedral", description: "Historic Catholic cathedral in Jackson Square", category: "landmarks" },
+    { name: "Cafe du Monde Beignets", description: "Famous coffee and beignets since 1862", category: "food" },
+    { name: "Mississippi River Steamboat", description: "Historic paddle wheel riverboat cruises", category: "transport" },
+    { name: "Mardi Gras World", description: "Behind-the-scenes look at float construction", category: "culture" },
+    { name: "Cemetery Tours", description: "Above-ground tombs and voodoo history", category: "history" },
+    { name: "Streetcar Rides", description: "Historic streetcar lines through the city", category: "transport" },
+    { name: "Creole & Cajun Food Tours", description: "Authentic Louisiana cuisine experiences", category: "food" },
+    { name: "Audubon Aquarium", description: "Gulf Coast marine life and IMAX theater", category: "family" },
+    { name: "Preservation Hall Jazz", description: "Intimate traditional jazz performances", category: "entertainment" },
+    { name: "Jackson Square Artists", description: "Local artists and street performers", category: "culture" },
+    { name: "Swamp Tours", description: "Airboat tours through Louisiana bayous", category: "nature" }
+  ],
+
+  "Austin": [
+    { name: "South by Southwest (SXSW)", description: "World-famous music, film, and interactive festival", category: "entertainment" },
+    { name: "Live Music on 6th Street", description: "Legendary music venues and honky-tonks", category: "entertainment" },
+    { name: "Austin City Limits Music Festival", description: "Annual outdoor music festival in Zilker Park", category: "entertainment" },
+    { name: "State Capitol Building", description: "Tour Texas's pink granite capitol building", category: "history" },
+    { name: "Zilker Park Activities", description: "Large urban park with trails and events", category: "outdoor" },
+    { name: "Barton Springs Pool", description: "Natural spring-fed pool maintains 70°F year-round", category: "outdoor" },
+    { name: "BBQ Trail", description: "Sample Austin's legendary barbecue joints", category: "food" },
+    { name: "Food Truck Culture", description: "Diverse mobile food scene throughout the city", category: "food" },
+    { name: "Lady Bird Lake Kayaking", description: "Paddle boarding and kayaking in downtown", category: "outdoor" },
+    { name: "Congress Avenue Bridge Bats", description: "Watch largest urban bat colony emerge at sunset", category: "nature" },
+    { name: "Rainey Street Historic District", description: "Converted homes turned into bars and restaurants", category: "nightlife" },
+    { name: "UT Campus Tour", description: "Explore University of Texas campus and tower", category: "education" },
+    { name: "East Austin Art Scene", description: "Galleries, studios, and street art in trendy district", category: "culture" },
+    { name: "Keep Austin Weird", description: "Explore the city's quirky culture and local businesses", category: "culture" },
+    { name: "Hill Country Day Trips", description: "Wine tours and scenic drives in Texas Hill Country", category: "daytrip" }
+  ],
+
+  "Nashville": [
+    { name: "Grand Ole Opry", description: "World's longest-running radio show and country music shrine", category: "entertainment" },
+    { name: "Country Music Hall of Fame", description: "Museum celebrating country music history", category: "culture" },
+    { name: "Broadway Honky Tonks", description: "Live country music venues on historic Broadway", category: "entertainment" },
+    { name: "Ryman Auditorium", description: "Mother Church of Country Music historic venue", category: "landmarks" },
+    { name: "Music City Walk of Fame", description: "Celebrate Nashville's musical legends", category: "culture" },
+    { name: "Johnny Cash Museum", description: "Comprehensive collection of Man in Black memorabilia", category: "culture" },
+    { name: "RCA Studio B Tours", description: "Historic recording studio where Elvis recorded", category: "history" },
+    { name: "Opryland Resort", description: "Massive resort complex with gardens and entertainment", category: "entertainment" },
+    { name: "The Gulch District", description: "Modern downtown neighborhood with dining and shopping", category: "culture" },
+    { name: "Music Row Studios", description: "Heart of country music recording industry", category: "culture" },
+    { name: "Centennial Park & Parthenon", description: "Full-scale replica of Athens Parthenon", category: "landmarks" },
+    { name: "Belle Meade Plantation", description: "Historic mansion and thoroughbred horse farm", category: "history" },
+    { name: "Whiskey Distillery Tours", description: "Sample Tennessee whiskey at local distilleries", category: "food" },
+    { name: "Cheekwood Estate & Gardens", description: "Art museum in historic mansion with botanical gardens", category: "culture" },
+    { name: "Hatch Show Print", description: "Historic letterpress poster shop", category: "culture" }
   ]
 };
 
@@ -280,7 +334,9 @@ export function getStaticActivitiesForCity(cityName: string): Array<{name: strin
     "Vegas": "Las Vegas",
     "LV": "Las Vegas",
     "DC": "Washington DC",
-    "Washington": "Washington DC"
+    "Washington": "Washington DC",
+    "NOLA": "New Orleans",
+    "The Big Easy": "New Orleans"
   };
   
   const mappedCity = cityVariations[normalizedCity];
