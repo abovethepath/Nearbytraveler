@@ -659,62 +659,64 @@ export default function PlanTrip() {
           <X className="w-4 h-4 sm:w-6 sm:h-6" />
         </button>
 
-        {/* Mobile: Centered layout */}
-        <div 
-          className="block md:hidden relative h-48 sm:h-56 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: `linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(147, 51, 234, 0.3) 50%, rgba(249, 115, 22, 0.3) 100%), url('/trip%20planning_1750857535371.webp')`
-          }}
-        >
+        {/* Mobile: Modern gradient layout */}
+        <div className="block md:hidden relative h-48 sm:h-56 bg-gradient-to-br from-blue-600 via-purple-600 to-orange-500">
           <div className="relative z-10 h-full flex items-center justify-center px-2 sm:px-4">
             <div className="text-center text-white overflow-hidden break-words">
-              <Compass className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-2 sm:mb-4" />
-              <h1 className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 break-words drop-shadow-lg">
+              <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-2 sm:mb-4 bg-white/20 rounded-full backdrop-blur-sm">
+                <Compass className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 break-words">
                 {isEditMode ? "Edit Your Trip" : "Plan Your Next Adventure"}
               </h1>
-              <p className="text-sm sm:text-lg opacity-90 break-words drop-shadow-md">
+              <p className="text-sm sm:text-lg opacity-95 break-words font-medium">
                 {isEditMode ? "Update your travel plan details" : "Connect with locals, fellow travelers, and businesses"}
               </p>
             </div>
           </div>
         </div>
 
-        {/* Desktop: Enhanced engaging layout */}
-        <div className="hidden md:block relative py-12 overflow-hidden">
-          {/* Background decorative elements */}
-          <div className="absolute inset-0 opacity-5 pointer-events-none">
-            <div className="absolute top-16 left-8 w-28 h-28 bg-blue-500 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-16 right-8 w-36 h-36 bg-orange-500 rounded-full blur-3xl"></div>
+        {/* Desktop: Modern professional layout */}
+        <div className="hidden md:block relative py-16 overflow-hidden">
+          {/* Modern gradient background elements */}
+          <div className="absolute inset-0 opacity-10 pointer-events-none">
+            <div className="absolute top-20 left-12 w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-20 right-12 w-40 h-40 bg-gradient-to-br from-orange-500 to-red-500 rounded-full blur-3xl"></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full blur-3xl opacity-50"></div>
           </div>
           
-          <div className="max-w-7xl mx-auto px-8 grid gap-8 md:gap-12 md:grid-cols-5 items-center relative z-10">
-            {/* Left text side - wider and enhanced */}
-            <div className="md:col-span-3">
-              {/* Premium badge */}
-              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100/80 to-orange-100/80 dark:from-blue-900/20 dark:to-orange-900/20 border border-blue-200 dark:border-blue-700/50 rounded-full px-4 py-2 mb-6">
-                <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Plan • Connect • Explore</span>
+          <div className="max-w-7xl mx-auto px-8 grid gap-12 md:grid-cols-2 items-center relative z-10">
+            {/* Left text side - modern and compelling */}
+            <div className="space-y-8">
+              {/* Modern status badge */}
+              <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-6 py-3">
+                <div className="flex gap-1">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+                  <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+                </div>
+                <span className="text-sm font-semibold text-white/90">Plan • Connect • Explore</span>
               </div>
 
               <div className="space-y-6">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight leading-tight">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
                   {isEditMode ? (
                     <>
-                      <span className="bg-gradient-to-r from-gray-900 via-purple-700 to-gray-900 dark:from-white dark:via-purple-200 dark:to-white bg-clip-text text-transparent">
+                      <span className="text-white drop-shadow-lg">
                         Edit Your
                       </span>
                       <br />
-                      <span className="bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-600 bg-clip-text text-transparent">
+                      <span className="bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400 bg-clip-text text-transparent drop-shadow-lg">
                         Adventure
                       </span>
                     </>
                   ) : (
                     <>
-                      <span className="bg-gradient-to-r from-gray-900 via-blue-700 to-gray-900 dark:from-white dark:via-blue-200 dark:to-white bg-clip-text text-transparent">
+                      <span className="text-white drop-shadow-lg">
                         Plan Your Next
                       </span>
                       <br />
-                      <span className="bg-gradient-to-r from-orange-600 via-red-600 to-orange-600 bg-clip-text text-transparent">
+                      <span className="bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400 bg-clip-text text-transparent drop-shadow-lg">
                         Adventure
                       </span>
                     </>
