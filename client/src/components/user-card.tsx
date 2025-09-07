@@ -232,7 +232,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                 }
                 
                 return null;
-              })()}
+              })() as React.ReactNode}
               <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                 🏠 <span className="truncate">Local in {user.hometownCity ? user.hometownCity.split(',')[0] : getLocation()}</span>
               </div>
