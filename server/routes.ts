@@ -3889,37 +3889,48 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             senderId: nearbytravelerUser.id,
             receiverId: user.id,
             content: user.userType === 'business' 
-              ? `Welcome to Nearby Traveler! 🏢
+              ? `Welcome to Nearby Traveler Business, @${user.username}! 🏢
 
-Hi ${user.name || user.username}! We're excited to have your business join our platform. Nearby Traveler connects local businesses with travelers and locals who are genuinely interested in authentic experiences.
+Key features for your business:
 
-Getting Started:
-• Complete your business profile with photos and details
-• Create special offers for travelers visiting your area  
-• Post events to attract customers
-• Use our analytics to track engagement
+**📊 Business Dashboard**: Track offer analytics, views, and customer redemptions
 
-Your business is now visible to travelers searching for experiences in ${user.hometownCity}.
+**🎯 Smart Offers**: Create deals with multiple discount types (%, fixed, BOGO, free items with purchase, combos)
 
-Questions? Just reply to this message. Welcome aboard!
+**⚡ Instant Deals**: Flash sales that expire in 1-24 hours for immediate foot traffic
 
-- Aaron (your fellow nearby traveler)`
-              : `Welcome to Nearby Traveler! ✈️
+**🔔 Customer Matching**: Get notified when travelers/locals with interests matching your business are nearby
 
-Hi ${user.name || user.username}! We're thrilled you've joined our community of travelers and locals in ${user.hometownCity}.
+**🗺️ Map Presence**: Appear on our interactive map for location-based discovery
 
-Here's how to get the most out of your experience:
-• Complete your profile to find better matches
-• Join your local chatrooms (Welcome Newcomers & Let's Meet Up)
-• Browse events and meetups happening near you
-• Connect with people who share your interests
-• Create travel plans when you're visiting new places
+**🎪 Event Hosting**: Create business events to showcase your offerings
 
-Your hometown is ${user.hometownCity} - we've automatically added you to the local community chatrooms where you can meet other travelers and locals.
+**🔍 Target Marketing**: Search specifically for locals and nearby travelers coming to or already in your location to market your offers and deals directly to them
 
-Ready to start connecting? Questions? Just reply anytime!
+Start by creating your first offer and setting up location notifications!
 
-- Aaron (your fellow nearby traveler)`
+Aaron`
+              : `Hey @${user.username}! Welcome to Nearby Traveler! 🌍
+
+Here are the key features to explore:
+
+**🏙️ City Match**: Visit your city page for location-specific activities, interests, and local recommendations
+
+**📸 Travel Memories**: Create photo albums of your adventures with tags and privacy settings
+
+**🔍 Advanced Search**: Filter people by everything from sexual preferences to specific events you are in town for to family-friendly activities to just about anything you want based on YOUR interests, activities and planned events - find exactly who you're looking for
+
+**💬 Instant Messaging**: Real-time chat with typing indicators, read receipts, and instant notifications
+
+**🗺️ Interactive Map**: Discover users, events, and businesses around you
+
+**⚡ Quick Meetups**: Join or create spontaneous hangouts happening right now
+
+**✈️ Travel Planning**: Build detailed itineraries and connect with people at your destinations
+
+Start by completing your profile and exploring your city page!
+
+Aaron`
           });
 
           if (process.env.NODE_ENV === 'development') console.log(`✓ Auto-connected new user ${user.username} (ID: ${user.id}) to nearbytraveler with welcome message`);
