@@ -2008,71 +2008,71 @@ export default function Home() {
                 </Button>
               </div>
             )}
+
+            {/* Local Events Section - UNDER Discover People */}
+            <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-sm" data-testid="local-events-section">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center">
+                    <Calendar className="w-6 h-6 mr-3 text-blue-500" />
+                    Local Events
+                  </h2>
+                </div>
+                
+                {/* User-Created Events */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
+                    <Users className="w-5 h-5 mr-2 text-green-500" />
+                    Created by Community Members
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {userPriorityEvents
+                      ?.filter((event: any) => !event.isAIGenerated && !event.source && event.organizer)
+                      ?.slice(0, 4)
+                      ?.map((event: any) => (
+                        <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] bg-white dark:bg-gray-800 border-green-100 dark:border-green-800">
+                          <EventCard 
+                            event={event} 
+                            currentUser={effectiveUser}
+                          />
+                        </Card>
+                      )) || (
+                        <div className="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">
+                          <Users className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                          <p>No community events yet. Be the first to create one!</p>
+                        </div>
+                      )}
+                  </div>
+                </div>
+
+                {/* API-Pulled Events */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
+                    <Globe className="w-5 h-5 mr-2 text-blue-500" />
+                    Local Area Events
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {userPriorityEvents
+                      ?.filter((event: any) => event.source && !event.isAIGenerated)
+                      ?.slice(0, 4)
+                      ?.map((event: any) => (
+                        <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] bg-white dark:bg-gray-800 border-blue-100 dark:border-blue-800">
+                          <EventCard 
+                            event={event} 
+                            currentUser={effectiveUser}
+                          />
+                        </Card>
+                      )) || (
+                        <div className="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">
+                          <Globe className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                          <p>No local area events found at the moment.</p>
+                        </div>
+                      )}
+                  </div>
+                </div>
+              </div>
+            </Card>
           </div>
-
-          {/* Local Events Section */}
-          <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-sm" data-testid="local-events-section">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center">
-                  <Calendar className="w-6 h-6 mr-3 text-blue-500" />
-                  Local Events
-                </h2>
-              </div>
-              
-              {/* User-Created Events */}
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
-                  <Users className="w-5 h-5 mr-2 text-green-500" />
-                  Created by Community Members
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {userPriorityEvents
-                    ?.filter((event: any) => !event.isAIGenerated && !event.source && event.organizer)
-                    ?.slice(0, 4)
-                    ?.map((event: any) => (
-                      <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] bg-white dark:bg-gray-800 border-green-100 dark:border-green-800">
-                        <EventCard 
-                          event={event} 
-                          currentUser={effectiveUser}
-                        />
-                      </Card>
-                    )) || (
-                      <div className="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">
-                        <Users className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                        <p>No community events yet. Be the first to create one!</p>
-                      </div>
-                    )}
-                </div>
-              </div>
-
-              {/* API-Pulled Events */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
-                  <Globe className="w-5 h-5 mr-2 text-blue-500" />
-                  Local Area Events
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {userPriorityEvents
-                    ?.filter((event: any) => event.source && !event.isAIGenerated)
-                    ?.slice(0, 4)
-                    ?.map((event: any) => (
-                      <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] bg-white dark:bg-gray-800 border-blue-100 dark:border-blue-800">
-                        <EventCard 
-                          event={event} 
-                          currentUser={effectiveUser}
-                        />
-                      </Card>
-                    )) || (
-                      <div className="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">
-                        <Globe className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                        <p>No local area events found at the moment.</p>
-                      </div>
-                    )}
-                </div>
-              </div>
-            </div>
-          </Card>
 
           {/* Right Sidebar - Weather, Messages, Quick Meetups, Events */}
           <div className="col-span-1 space-y-3 sm:space-y-4 md:space-y-8">
