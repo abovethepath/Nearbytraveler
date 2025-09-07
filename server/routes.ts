@@ -1027,12 +1027,16 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
-  // FIXED: City stats endpoint based on actual user data
+  // FIXED: City stats endpoint - LA METRO CITIES ONLY
   app.get("/api/city-stats", async (req, res) => {
     try {
-      if (process.env.NODE_ENV === 'development') console.log("🏙️ FIXED CITY SYSTEM: Loading cities based on actual user data");
+      if (process.env.NODE_ENV === 'development') console.log("🏙️ LA METRO ONLY: Loading LA Metro cities");
 
-      // Get unique cities where users actually live or are traveling to
+      // Only return LA Metro cities
+      const { METRO_AREAS } = await import('../shared/constants');
+      const laMetroCities = METRO_AREAS['Los Angeles'].cities;
+      
+      // Get unique cities where users actually live or are traveling to, filtered to LA Metro only
       const uniqueCitiesQuery = await db.execute(sql`
         SELECT DISTINCT city_name as city FROM (
           SELECT DISTINCT hometown_city as city_name FROM users WHERE hometown_city IS NOT NULL AND hometown_city != ''
@@ -1043,249 +1047,14 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         ) cities
         WHERE city_name IS NOT NULL AND city_name != '' 
         AND city_name NOT IN ('Test City', 'Global', 'test city', 'global')
+        AND city_name = ANY(${laMetroCities})
         ORDER BY city_name
       `);
 
-      // COMPREHENSIVE CITY LOCATION MAPPING FUNCTION
-      // This function prevents "Unknown State, United States" errors
-      // by mapping cities to their correct countries for ALL 10,000+ users
-      // Function to determine country based on city name
+      // LA METRO ONLY - All cities are in California, United States
       const getCityCountry = (cityName: string): { state: string, country: string } => {
-        // International cities
-        const internationalCities: Record<string, { state: string, country: string }> = {
-          'Barcelona': { state: 'Catalonia', country: 'Spain' },
-          'Madrid': { state: '', country: 'Spain' },
-          'London': { state: '', country: 'United Kingdom' },
-          'Edinburgh': { state: 'Scotland', country: 'United Kingdom' },
-          'Paris': { state: '', country: 'France' },
-          'Rome': { state: '', country: 'Italy' },
-          'Milan': { state: '', country: 'Italy' },
-          'Berlin': { state: '', country: 'Germany' },
-          'Munich': { state: '', country: 'Germany' },
-          'Hamburg': { state: '', country: 'Germany' },
-          'Amsterdam': { state: '', country: 'Netherlands' },
-          'Prague': { state: '', country: 'Czech Republic' },
-          'Vienna': { state: '', country: 'Austria' },
-          'Lisbon': { state: '', country: 'Portugal' },
-          'Dublin': { state: '', country: 'Ireland' },
-          'Stockholm': { state: '', country: 'Sweden' },
-          'Tokyo': { state: '', country: 'Japan' },
-          'Seoul': { state: '', country: 'South Korea' },
-          'Bangkok': { state: '', country: 'Thailand' },
-          'Singapore': { state: '', country: 'Singapore' },
-          'Hong Kong': { state: '', country: 'Hong Kong' },
-          'Sydney': { state: 'New South Wales', country: 'Australia' },
-          'Melbourne': { state: 'Victoria', country: 'Australia' },
-          'Toronto': { state: 'Ontario', country: 'Canada' },
-          'Vancouver': { state: 'British Columbia', country: 'Canada' },
-          'Mexico City': { state: '', country: 'Mexico' },
-          'São Paulo': { state: '', country: 'Brazil' },
-          'Buenos Aires': { state: '', country: 'Argentina' },
-          'Cairo': { state: '', country: 'Egypt' },
-          'Cape Town': { state: '', country: 'South Africa' },
-          'Dubai': { state: '', country: 'United Arab Emirates' },
-          'Tel Aviv': { state: '', country: 'Israel' },
-          'Mumbai': { state: '', country: 'India' },
-          'Delhi': { state: '', country: 'India' },
-          'Bangalore': { state: '', country: 'India' },
-          'Budapest': { state: '', country: 'Hungary' },
-          'Cannes': { state: '', country: 'France' },
-          'Athens': { state: '', country: 'Greece' },
-          'Brussels': { state: '', country: 'Belgium' },
-          'Birmingham': { state: '', country: 'United Kingdom' },
-          'Marseille': { state: '', country: 'France' },
-          'Montpellier': { state: '', country: 'France' },
-          'Lyon': { state: '', country: 'France' },
-          'Nice': { state: '', country: 'France' },
-          'Toulouse': { state: '', country: 'France' },
-          'Strasbourg': { state: '', country: 'France' },
-          'Bordeaux': { state: '', country: 'France' },
-          'Nantes': { state: '', country: 'France' },
-          'Lille': { state: '', country: 'France' },
-          'Copenhagen': { state: '', country: 'Denmark' },
-          'Oslo': { state: '', country: 'Norway' },
-          'Helsinki': { state: '', country: 'Finland' },
-          'Warsaw': { state: '', country: 'Poland' },
-          'Zurich': { state: '', country: 'Switzerland' },
-          'Geneva': { state: '', country: 'Switzerland' },
-          'Florence': { state: '', country: 'Italy' },
-          'Venice': { state: '', country: 'Italy' },
-          'Naples': { state: '', country: 'Italy' },
-          'Bologna': { state: '', country: 'Italy' },
-          'Istanbul': { state: '', country: 'Turkey' },
-          'Ankara': { state: '', country: 'Turkey' },
-          'Moscow': { state: '', country: 'Russia' },
-          'St Petersburg': { state: '', country: 'Russia' },
-          'Kiev': { state: '', country: 'Ukraine' },
-          'Bucharest': { state: '', country: 'Romania' },
-          'Sofia': { state: '', country: 'Bulgaria' },
-          'Zagreb': { state: '', country: 'Croatia' },
-          'Ljubljana': { state: '', country: 'Slovenia' },
-          'Bratislava': { state: '', country: 'Slovakia' },
-          'Reykjavik': { state: '', country: 'Iceland' },
-          'Lisbon': { state: '', country: 'Portugal' },
-          'Porto': { state: '', country: 'Portugal' },
-          'Santiago': { state: '', country: 'Chile' },
-          'Lima': { state: '', country: 'Peru' },
-          'Bogota': { state: '', country: 'Colombia' },
-          'Quito': { state: '', country: 'Ecuador' },
-          'Montevideo': { state: '', country: 'Uruguay' },
-          'Caracas': { state: '', country: 'Venezuela' },
-          'La Paz': { state: '', country: 'Bolivia' },
-          'Asuncion': { state: '', country: 'Paraguay' },
-          'Georgetown': { state: '', country: 'Guyana' },
-          'Paramaribo': { state: '', country: 'Suriname' }
-        };
-
-        // Check if it's an international city
-        if (internationalCities[cityName]) {
-          return internationalCities[cityName];
-        }
-
-        // US cities mapping
-        const usCities: Record<string, { state: string, country: string }> = {
-          'Los Angeles Metro': { state: 'California', country: 'United States' },
-          'Los Angeles': { state: 'California', country: 'United States' },
-          'Nashville Metro': { state: 'Tennessee', country: 'United States' },
-          'Nashville': { state: 'Tennessee', country: 'United States' },
-          'San Francisco': { state: 'California', country: 'United States' },
-          'San Diego': { state: 'California', country: 'United States' },
-          'Sacramento': { state: 'California', country: 'United States' },
-          'Oakland': { state: 'California', country: 'United States' },
-          'San Jose': { state: 'California', country: 'United States' },
-          'New York City': { state: 'New York', country: 'United States' },
-          'New York': { state: 'New York', country: 'United States' },
-          'Manhattan': { state: 'New York', country: 'United States' },
-          'Brooklyn': { state: 'New York', country: 'United States' },
-          'Queens': { state: 'New York', country: 'United States' },
-          'Bronx': { state: 'New York', country: 'United States' },
-          'Chicago': { state: 'Illinois', country: 'United States' },
-          'Houston': { state: 'Texas', country: 'United States' },
-          'Phoenix': { state: 'Arizona', country: 'United States' },
-          'Philadelphia': { state: 'Pennsylvania', country: 'United States' },
-          'San Antonio': { state: 'Texas', country: 'United States' },
-          'Dallas': { state: 'Texas', country: 'United States' },
-          'Austin': { state: 'Texas', country: 'United States' },
-          'Jacksonville': { state: 'Florida', country: 'United States' },
-          'Fort Worth': { state: 'Texas', country: 'United States' },
-          'Columbus': { state: 'Ohio', country: 'United States' },
-          'Charlotte': { state: 'North Carolina', country: 'United States' },
-          'Indianapolis': { state: 'Indiana', country: 'United States' },
-          'Seattle': { state: 'Washington', country: 'United States' },
-          'Denver': { state: 'Colorado', country: 'United States' },
-          'Washington': { state: 'District of Columbia', country: 'United States' },
-          'Boston': { state: 'Massachusetts', country: 'United States' },
-          'El Paso': { state: 'Texas', country: 'United States' },
-          'Detroit': { state: 'Michigan', country: 'United States' },
-          'Oklahoma City': { state: 'Oklahoma', country: 'United States' },
-          'Portland': { state: 'Oregon', country: 'United States' },
-          'Las Vegas': { state: 'Nevada', country: 'United States' },
-          'Memphis': { state: 'Tennessee', country: 'United States' },
-          'Louisville': { state: 'Kentucky', country: 'United States' },
-          'Baltimore': { state: 'Maryland', country: 'United States' },
-          'Milwaukee': { state: 'Wisconsin', country: 'United States' },
-          'Albuquerque': { state: 'New Mexico', country: 'United States' },
-          'Tucson': { state: 'Arizona', country: 'United States' },
-          'Fresno': { state: 'California', country: 'United States' },
-          'Mesa': { state: 'Arizona', country: 'United States' },
-          'Kansas City': { state: 'Missouri', country: 'United States' },
-          'Atlanta': { state: 'Georgia', country: 'United States' },
-          'Colorado Springs': { state: 'Colorado', country: 'United States' },
-          'Omaha': { state: 'Nebraska', country: 'United States' },
-          'Raleigh': { state: 'North Carolina', country: 'United States' },
-          'Miami': { state: 'Florida', country: 'United States' },
-          'Long Beach': { state: 'California', country: 'United States' },
-          'Virginia Beach': { state: 'Virginia', country: 'United States' },
-          'Redondo Beach': { state: 'California', country: 'United States' },
-          'Manhattan Beach': { state: 'California', country: 'United States' },
-          'Santa Monica': { state: 'California', country: 'United States' },
-          'Venice': { state: 'California', country: 'United States' },
-          'Venice Beach': { state: 'California', country: 'United States' },
-          'Beverly Hills': { state: 'California', country: 'United States' },
-          'West Hollywood': { state: 'California', country: 'United States' },
-          'Hollywood': { state: 'California', country: 'United States' },
-          'Pasadena': { state: 'California', country: 'United States' },
-          'Burbank': { state: 'California', country: 'United States' },
-          'Glendale': { state: 'California', country: 'United States' },
-          'Playa del Rey': { state: 'California', country: 'United States' },
-          'Marina del Rey': { state: 'California', country: 'United States' },
-          'El Segundo': { state: 'California', country: 'United States' },
-          'Culver City': { state: 'California', country: 'United States' },
-          'Hermosa Beach': { state: 'California', country: 'United States' },
-          'Torrance': { state: 'California', country: 'United States' },
-          'Inglewood': { state: 'California', country: 'United States' },
-          'Hawthorne': { state: 'California', country: 'United States' },
-          'Gardena': { state: 'California', country: 'United States' },
-          'Carson': { state: 'California', country: 'United States' },
-          'Compton': { state: 'California', country: 'United States' },
-          'Downey': { state: 'California', country: 'United States' },
-          'Norwalk': { state: 'California', country: 'United States' },
-          'Whittier': { state: 'California', country: 'United States' },
-          'Pomona': { state: 'California', country: 'United States' },
-          'West LA': { state: 'California', country: 'United States' },
-          'Westwood': { state: 'California', country: 'United States' },
-          'Brentwood': { state: 'California', country: 'United States' },
-          'Pacific Palisades': { state: 'California', country: 'United States' },
-          'Malibu': { state: 'California', country: 'United States' },
-          'Studio City': { state: 'California', country: 'United States' },
-          'Sherman Oaks': { state: 'California', country: 'United States' },
-          'Encino': { state: 'California', country: 'United States' },
-          'Tarzana': { state: 'California', country: 'United States' },
-          'Woodland Hills': { state: 'California', country: 'United States' },
-          'Canoga Park': { state: 'California', country: 'United States' },
-          'Chatsworth': { state: 'California', country: 'United States' },
-          'Northridge': { state: 'California', country: 'United States' },
-          'Granada Hills': { state: 'California', country: 'United States' },
-          'Van Nuys': { state: 'California', country: 'United States' },
-          'Reseda': { state: 'California', country: 'United States' },
-          'Panorama City': { state: 'California', country: 'United States' },
-          'Sun Valley': { state: 'California', country: 'United States' },
-          'Pacoima': { state: 'California', country: 'United States' },
-          'Sylmar': { state: 'California', country: 'United States' },
-          'Mission Hills': { state: 'California', country: 'United States' },
-          'Eagle Rock': { state: 'California', country: 'United States' },
-          'Highland Park': { state: 'California', country: 'United States' },
-          'Silver Lake': { state: 'California', country: 'United States' },
-          'Echo Park': { state: 'California', country: 'United States' },
-          'Los Feliz': { state: 'California', country: 'United States' },
-          'Atwater Village': { state: 'California', country: 'United States' },
-          'Downtown LA': { state: 'California', country: 'United States' },
-          'Koreatown': { state: 'California', country: 'United States' },
-          'Mid-City': { state: 'California', country: 'United States' },
-          'Miracle Mile': { state: 'California', country: 'United States' },
-          'Crenshaw': { state: 'California', country: 'United States' },
-          'Leimert Park': { state: 'California', country: 'United States' },
-          'Baldwin Hills': { state: 'California', country: 'United States' },
-          'Ladera Heights': { state: 'California', country: 'United States' },
-          'View Park': { state: 'California', country: 'United States' },
-          'Watts': { state: 'California', country: 'United States' },
-          'North Hollywood': { state: 'California', country: 'United States' },
-          'South Pasadena': { state: 'California', country: 'United States' },
-          'New Orleans': { state: 'Louisiana', country: 'United States' }
-        };
-
-        // Check if it's a known US city
-        if (usCities[cityName]) {
-          return usCities[cityName];
-        }
-
-        // IMPROVED: Better default fallback - check for known patterns first
-        // Common international city patterns to avoid defaulting to US
-        if (cityName.includes('burg') && !cityName.includes('Pittsburgh') && !cityName.includes('Harrisburg')) {
-          return { state: '', country: 'Germany' }; // Hamburg, Freiburg, etc.
-        }
-        if (cityName.endsWith('grad') || cityName.endsWith('sk')) {
-          return { state: '', country: 'Russia' }; // Volgograd, Irkutsk, etc.
-        }
-        if (cityName.includes('abad') || cityName.includes('pur')) {
-          return { state: '', country: 'India' }; // Hyderabad, Jaipur, etc.
-        }
-        if (cityName.endsWith('heim') || cityName.endsWith('baden')) {
-          return { state: '', country: 'Germany' }; // Mannheim, Baden-Baden
-        }
-        
-        // Default fallback for unknown cities - assume US (safer for US-focused app)
-        return { state: '', country: 'United States' };
+        // All LA Metro cities are in California, United States
+        return { state: 'California', country: 'United States' };
       };
 
       // DISABLED: Metro consolidation per user request - show original cities
