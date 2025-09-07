@@ -35,9 +35,9 @@ import {
 interface TravelPlan {
   id: number;
   destination: string;
-  destinationCity: string;
-  destinationState?: string;
-  destinationCountry: string;
+  destinationCity: string | null;
+  destinationState?: string | null;
+  destinationCountry: string | null;
   startDate: string;
   endDate: string;
   accommodation?: string;
