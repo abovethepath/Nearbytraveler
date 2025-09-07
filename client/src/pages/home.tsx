@@ -2011,7 +2011,7 @@ export default function Home() {
           <div className="col-span-1 space-y-3 sm:space-y-4 md:space-y-8">
             {/* Priority Events Section */}
             {loadedSections.has('events') && (
-              <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-sm">
+              <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-sm" data-testid="events-section">
                 <div className="p-4">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
@@ -2021,12 +2021,18 @@ export default function Home() {
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => setLocation('/events')}
+                      onClick={() => {
+                        // Stay on home page and show expanded local events
+                        const eventsSection = document.querySelector('[data-testid="events-section"]');
+                        if (eventsSection) {
+                          eventsSection.scrollIntoView({ behavior: 'smooth' });
+                        }
+                      }}
                       className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
                       data-testid="button-view-all-events"
                     >
                       <Sparkles className="w-4 h-4 mr-1" />
-                      View All
+                      Show Local Events
                     </Button>
                   </div>
                   
