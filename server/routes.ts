@@ -4012,7 +4012,7 @@ Aaron`
         return res.status(400).json({ message: "This endpoint is only for business users" });
       }
 
-      const nearbytravelerUser = await storage.getUserByUsername('nearbytravlr');
+      const nearbytravelerUser = await storage.getUserByUsername('nearbytrav');
       if (!nearbytravelerUser) {
         return res.status(404).json({ message: "Nearbytraveler user not found" });
       }
@@ -4668,7 +4668,7 @@ Questions? Just reply to this message. Welcome aboard!
         // CRITICAL: Check if business user needs welcome message from @nearbytraveler
         if (updatedUser.userType === 'business') {
           try {
-            const nearbytravelerUser = await storage.getUserByUsername('nearbytravlr');
+            const nearbytravelerUser = await storage.getUserByUsername('nearbytrav');
             if (nearbytravelerUser) {
               // Check if connection already exists
               const existingConnection = await db
