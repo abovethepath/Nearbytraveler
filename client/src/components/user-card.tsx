@@ -177,35 +177,42 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
   return (
     <>
       <Card 
-        className="user-card card-hover border-gray-200 dark:border-gray-700 shadow-sm bg-white dark:bg-gray-800 overflow-hidden cursor-pointer h-fit"
+        className="user-card border-gray-200 dark:border-gray-700 shadow-md bg-white dark:bg-gray-800 overflow-hidden cursor-pointer transition-shadow hover:shadow-lg"
         onClick={handleCardClick}
+        data-testid={`user-card-${user.id}`}
       >
-        {/* Ultra Compact Header for Mobile */}
-        <div className="relative h-8 sm:h-12 bg-gradient-to-r from-blue-500 to-purple-600">
-          <div className="absolute -bottom-3 sm:-bottom-4 left-2 sm:left-3">
+        {/* Header with gradient background */}
+        <div className="relative h-24 bg-gradient-to-r from-blue-500 to-purple-600">
+          <div className="absolute -bottom-6 left-4">
             <SimpleAvatar 
               user={user} 
-              size="sm" 
-              className="border-2 border-white shadow-sm w-6 h-6 sm:w-8 sm:h-8"
+              size="lg" 
+              className="border-4 border-white shadow-lg w-12 h-12"
             />
           </div>
         </div>
       
-        <CardContent className="p-2 sm:p-3 pt-4 sm:pt-6">
-          {/* Ultra Compact User Info */}
-          <div className="space-y-1">
-            <h3 className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white truncate">
-              @{user.username}
-            </h3>
+        <CardContent className="p-4 pt-8">
+          {/* User Info */}
+          <div className="space-y-3">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
+                {user.name || `@${user.username}`}
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                @{user.username}
+              </p>
+            </div>
             
-            <div className="text-xs text-gray-600 dark:text-gray-300 space-y-1">
+            {/* Location and Travel Info */}
+            <div className="space-y-2">
               {(() => {
                 // Check if user has travel plans data and use new logic
                 if ((user as any).travelPlans && Array.isArray((user as any).travelPlans)) {
                   const currentOrNextTrip = getCurrentOrNextTrip((user as any).travelPlans);
                   if (currentOrNextTrip) {
                     return (
-                      <div className="flex items-center gap-1 truncate">
+                      <div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
                         {currentOrNextTrip.isCurrent ? '🧳' : '✈️'} 
                         <span className="truncate">
                           {currentOrNextTrip.isCurrent ? 'Traveling to' : 'Next trip to'} {currentOrNextTrip.destination.split(',')[0]}
@@ -218,7 +225,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                 // Fallback to existing logic for backward compatibility
                 if (user.isCurrentlyTraveling && user.travelDestination) {
                   return (
-                    <div className="flex items-center gap-1 truncate">
+                    <div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
                       🧳 <span className="truncate">Traveling to {user.travelDestination.split(',')[0]}</span>
                     </div>
                   );
@@ -226,19 +233,19 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                 
                 return null;
               })()}
-              <div className="flex items-center gap-1 truncate">
-                🏠 <span className="truncate">Local {user.hometownCity ? user.hometownCity.split(',')[0] : getLocation()}</span>
+              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                🏠 <span className="truncate">Local in {user.hometownCity ? user.hometownCity.split(',')[0] : getLocation()}</span>
               </div>
             </div>
             
-            {/* Compact Bio - Hidden on mobile for space */}
+            {/* Bio */}
             {user.bio && (
-              <p className="hidden sm:block text-xs text-gray-700 dark:text-gray-300 line-clamp-1 leading-tight">
+              <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2 leading-relaxed">
                 {String(user.bio)}
               </p>
             )}
             
-            {/* Things in Common Badge - Ultra Compact */}
+            {/* Things in Common Badge */}
             {compatibilityData && (() => {
               const data = compatibilityData as any;
               const totalCommon = 
@@ -260,64 +267,84 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                 (data.sameGender ? 1 : 0);
               
               return totalCommon > 0 ? (
-                <div className="bg-blue-100 text-blue-800 text-xs px-1 py-0.5 rounded-full dark:bg-blue-900/30 dark:text-blue-400 inline-block">
+                <div className="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full dark:bg-blue-900/30 dark:text-blue-400 inline-block">
                   {totalCommon} Things in Common
                 </div>
               ) : null;
             })()}
             
-            {/* Ultra Compact Interests - Only show 1 on mobile */}
+            {/* Interests */}
             {(user.interests?.length || 0) > 0 && (
-              <div className="flex flex-wrap gap-1 mt-1">
-                {user.interests?.slice(0, 1).map((interest) => (
+              <div className="flex flex-wrap gap-2">
+                {user.interests?.slice(0, 3).map((interest) => (
                   <span 
                     key={interest} 
-                    className="inline-flex items-center justify-center h-3 sm:h-4 rounded-full px-1 sm:px-2 text-xs font-medium leading-none whitespace-nowrap bg-blue-500 text-white truncate max-w-16 sm:max-w-none"
+                    className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
                   >
                     {interest}
                   </span>
                 ))}
+                {(user.interests?.length || 0) > 3 && (
+                  <span className="text-sm text-gray-500">+{(user.interests?.length || 0) - 3} more</span>
+                )}
               </div>
             )}
             
-            {/* Ultra Compact Buttons */}
-            <div className="flex gap-1 mt-2 sm:mt-3">
+            {/* Action Buttons */}
+            <div className="flex gap-3 pt-2">
               {(() => {
                 if (String(user.username) === 'nearbytraveler' || String(connectionStatus?.status) === 'accepted') {
                   return (
                     <Button 
-                      className="flex-1 bg-green-600 hover:bg-green-700 text-white text-xs px-1 sm:px-2 py-1 h-6 sm:h-7 min-w-0"
+                      className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium"
                       disabled
+                      data-testid={`button-connected-${user.id}`}
                     >
-                      ✓
+                      <Users className="w-4 h-4 mr-2" />
+                      Connected
                     </Button>
                   );
                 } else if (String(connectionStatus?.status) === 'pending') {
                   return (
                     <Button 
-                      className="flex-1 bg-gray-500 text-white cursor-not-allowed text-xs px-1 sm:px-2 py-1 h-6 sm:h-7 min-w-0"
+                      className="flex-1 bg-gray-500 text-white cursor-not-allowed font-medium"
                       disabled
+                      data-testid={`button-pending-${user.id}`}
                     >
-                      ⏳
+                      <Clock className="w-4 h-4 mr-2" />
+                      Pending
                     </Button>
                   );
                 } else {
                   return (
                     <Button 
-                      className="flex-1 bg-travel-blue hover:bg-blue-700 text-white text-xs px-1 sm:px-2 py-1 h-6 sm:h-7 min-w-0"
+                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium"
                       onClick={handleConnect}
                       disabled={connectMutation.isPending}
+                      data-testid={`button-connect-${user.id}`}
                     >
-                      {connectMutation.isPending ? "..." : "+"}
+                      {connectMutation.isPending ? (
+                        <>
+                          <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                          Connecting...
+                        </>
+                      ) : (
+                        <>
+                          <UserPlus className="w-4 h-4 mr-2" />
+                          Connect
+                        </>
+                      )}
                     </Button>
                   );
                 }
               })()}
               <Button 
-                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white text-xs px-1 sm:px-2 py-1 h-6 sm:h-7 min-w-0"
+                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-medium"
                 onClick={() => setLocation(`/messages?userId=${user.id}`)}
+                data-testid={`button-message-${user.id}`}
               >
-                💬
+                <MessageCircle className="w-4 h-4 mr-2" />
+                Message
               </Button>
             </div>
           </div>
