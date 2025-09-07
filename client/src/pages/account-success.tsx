@@ -19,9 +19,30 @@ export default function AccountSuccess() {
 
     // Check if account is ready every 0.5 seconds (faster for streamlined registration)
     const checker = setInterval(async () => {
-      if (isAuthenticated && user) {
+      // Check ALL possible storage locations for user data
+      const storageKeys = ['travelconnect_user', 'user', 'currentUser', 'authUser'];
+      let foundUser = null;
+      
+      for (const key of storageKeys) {
+        const stored = localStorage.getItem(key);
+        if (stored && stored !== 'null' && stored !== 'undefined') {
+          try {
+            const parsed = JSON.parse(stored);
+            if (parsed && parsed.id && parsed.username) {
+              foundUser = parsed;
+              break;
+            }
+          } catch (e) {}
+        }
+      }
+      
+      if (foundUser || (isAuthenticated && user)) {
+        console.log('✅ Account ready - redirecting to home');
         setAccountReady(true);
         clearInterval(checker);
+        console.log('✅ Account ready - forcing page refresh to home');
+        // Force complete page refresh to ensure authentication state is loaded
+        window.location.href = '/';
       }
     }, 500);
 
@@ -49,11 +70,8 @@ export default function AccountSuccess() {
   }, [isAuthenticated, user, accountReady]);
 
   const handleContinue = () => {
-    if (user?.userType === 'business') {
-      setLocation('/welcome-business');
-    } else {
-      setLocation('/welcome');
-    }
+    // Force reload authentication state before redirect
+    window.location.href = '/';
   };
 
   return (

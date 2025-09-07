@@ -319,13 +319,18 @@ export default function SignupTraveling() {
           if (response.ok && data.user) {
             console.log('✅ Fast registration successful:', data.user.username);
             
-            // Store authentication data (consistent single keys)
+            // CRITICAL: Store user data in ALL storage locations for maximum compatibility
             localStorage.setItem('user', JSON.stringify(data.user));
+            localStorage.setItem('travelconnect_user', JSON.stringify(data.user));
+            localStorage.setItem('currentUser', JSON.stringify(data.user));
+            localStorage.setItem('authUser', JSON.stringify(data.user));
             
-            // Set user in auth context
+            // Set user in auth context immediately
             authStorage.setUser(data.user);
             setUser(data.user);
             login(data.user);
+            
+            console.log('🔧 Setting user in all storage keys:', { id: data.user.id, username: data.user.username });
             
             // Clear stored account and registration data
             sessionStorage.removeItem('accountData');
