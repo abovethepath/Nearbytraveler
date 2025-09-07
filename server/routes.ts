@@ -3263,21 +3263,71 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
       // ESSENTIAL: Create travel plans for travelers to get proper status
       // Check ALL possible field variations from different signup forms
+      
+      // CRITICAL DEBUG: Log all travel-related fields received
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔍 TRAVEL PLAN DEBUG - ALL RECEIVED FIELDS:');
+        console.log('  userData.currentTravelCity:', userData.currentTravelCity);
+        console.log('  userData.currentCity:', userData.currentCity);
+        console.log('  userData.currentTravelCountry:', userData.currentTravelCountry);
+        console.log('  userData.currentCountry:', userData.currentCountry);
+        console.log('  userData.travelDestination:', userData.travelDestination);
+        console.log('  userData.travelDestinationCity:', userData.travelDestinationCity);
+        console.log('  userData.travelDestinationCountry:', userData.travelDestinationCountry);
+        console.log('  userData.currentTripDestinationCity:', userData.currentTripDestinationCity);
+        console.log('  userData.currentTripDestinationState:', userData.currentTripDestinationState);
+        console.log('  userData.currentTripDestinationCountry:', userData.currentTripDestinationCountry);
+        console.log('  userData.travelStartDate:', userData.travelStartDate);
+        console.log('  userData.travelEndDate:', userData.travelEndDate);
+        console.log('  userData.travelReturnDate:', userData.travelReturnDate);
+        console.log('  userData.currentTripReturnDate:', userData.currentTripReturnDate);
+        console.log('  userData.userType:', userData.userType);
+        console.log('  userData.isCurrentlyTraveling:', userData.isCurrentlyTraveling);
+      }
+      
       const hasCurrentTravel = (userData.currentTravelCity || userData.currentCity) && (userData.currentTravelCountry || userData.currentCountry);
       const hasTravelDestination = userData.travelDestination || (userData.travelDestinationCity && userData.travelDestinationCountry) || (userData.currentTripDestinationCity && userData.currentTripDestinationCountry);
       const hasTravelDates = userData.travelStartDate && userData.travelEndDate;
       const hasReturnDateOnly = userData.travelReturnDate || userData.currentTripReturnDate; // For simplified signup
       const isTraveingUser = userData.userType === 'traveler' || userData.userType === 'currently_traveling' || userData.isCurrentlyTraveling;
+      
+      // DEBUG CONDITIONS
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔍 TRAVEL PLAN CONDITIONS:');
+        console.log('  hasCurrentTravel:', hasCurrentTravel);
+        console.log('  hasTravelDestination:', hasTravelDestination);
+        console.log('  hasTravelDates:', hasTravelDates);
+        console.log('  hasReturnDateOnly:', hasReturnDateOnly);
+        console.log('  isTraveingUser:', isTraveingUser);
+      }
 
       // CRITICAL FIX: Check if user already has travel plans to prevent duplicates
       const existingTravelPlans = await storage.getUserTravelPlans(user.id);
       const hasExistingTravelPlan = existingTravelPlans.length > 0;
       
+      // FORCE DEBUG: Always log this section during development
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔍 REACHED TRAVEL PLAN SECTION - About to check conditions');
+        console.log('  existingTravelPlans.length:', existingTravelPlans.length);
+        console.log('  hasExistingTravelPlan:', hasExistingTravelPlan);
+      }
+      
       if (process.env.NODE_ENV === 'development') console.log(`🔍 DUPLICATE CHECK: User ${user.id} has ${existingTravelPlans.length} existing travel plans`);
 
       // Support both full travel dates and simplified return-date-only signup
       // BUT ONLY if user doesn't already have travel plans
-      if ((hasCurrentTravel || hasTravelDestination) && (hasTravelDates || hasReturnDateOnly) && isTraveingUser && !hasExistingTravelPlan) {
+      const shouldCreateTravelPlan = (hasCurrentTravel || hasTravelDestination) && (hasTravelDates || hasReturnDateOnly) && isTraveingUser && !hasExistingTravelPlan;
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🎯 SHOULD CREATE TRAVEL PLAN:', shouldCreateTravelPlan);
+        console.log('  Condition breakdown:');
+        console.log('    (hasCurrentTravel || hasTravelDestination):', (hasCurrentTravel || hasTravelDestination));
+        console.log('    (hasTravelDates || hasReturnDateOnly):', (hasTravelDates || hasReturnDateOnly));
+        console.log('    isTraveingUser:', isTraveingUser);
+        console.log('    !hasExistingTravelPlan:', !hasExistingTravelPlan);
+      }
+      
+      if (shouldCreateTravelPlan) {
         try {
           // Build destination from all possible field variations
           const tripLocation = originalData.travelDestination || [
@@ -3314,7 +3364,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           // CRITICAL: Update user to show as BOTH traveler AND local (dual status)
           // They remain a local in their hometown AND become a traveler in destination
           await storage.updateUser(user.id, { 
-            userType: 'traveler',
+            user_type: 'traveler',  // FIXED: Use correct database column name
             isCurrentlyTraveling: true,
             aura: 1  // Award initial 1 aura point
           });
