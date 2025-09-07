@@ -3463,11 +3463,11 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
       // ESSENTIAL: Create travel plans for travelers to get proper status
       // Check ALL possible field variations from different signup forms
-      const hasCurrentTravel = (originalData.currentTravelCity || originalData.currentCity) && (originalData.currentTravelCountry || originalData.currentCountry);
-      const hasTravelDestination = originalData.travelDestination || (originalData.travelDestinationCity && originalData.travelDestinationCountry) || (originalData.currentTripDestinationCity && originalData.currentTripDestinationCountry);
-      const hasTravelDates = originalData.travelStartDate && originalData.travelEndDate;
-      const hasReturnDateOnly = originalData.travelReturnDate || originalData.currentTripReturnDate; // For simplified signup
-      const isTraveingUser = originalData.userType === 'traveler' || originalData.userType === 'currently_traveling' || originalData.isCurrentlyTraveling;
+      const hasCurrentTravel = (userData.currentTravelCity || userData.currentCity) && (userData.currentTravelCountry || userData.currentCountry);
+      const hasTravelDestination = userData.travelDestination || (userData.travelDestinationCity && userData.travelDestinationCountry) || (userData.currentTripDestinationCity && userData.currentTripDestinationCountry);
+      const hasTravelDates = userData.travelStartDate && userData.travelEndDate;
+      const hasReturnDateOnly = userData.travelReturnDate || userData.currentTripReturnDate; // For simplified signup
+      const isTraveingUser = userData.userType === 'traveler' || userData.userType === 'currently_traveling' || userData.isCurrentlyTraveling;
 
       // CRITICAL FIX: Check if user already has travel plans to prevent duplicates
       const existingTravelPlans = await storage.getUserTravelPlans(user.id);
