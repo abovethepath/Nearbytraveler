@@ -3888,29 +3888,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           await storage.createMessage({
             senderId: nearbytravelerUser.id,
             receiverId: user.id,
-            content: user.userType === 'business' 
-              ? `Welcome to Nearby Traveler Business, @${user.username}! 🏢
-
-Key features for your business:
-
-**📊 Business Dashboard**: Track offer analytics, views, and customer redemptions
-
-**🎯 Smart Offers**: Create deals with multiple discount types (%, fixed, BOGO, free items with purchase, combos)
-
-**⚡ Instant Deals**: Flash sales that expire in 1-24 hours for immediate foot traffic
-
-**🔔 Customer Matching**: Get notified when travelers/locals with interests matching your business are nearby
-
-**🗺️ Map Presence**: Appear on our interactive map for location-based discovery
-
-**🎪 Event Hosting**: Create business events to showcase your offerings
-
-**🔍 Target Marketing**: Search specifically for locals and nearby travelers coming to or already in your location to market your offers and deals directly to them
-
-Start by creating your first offer and setting up location notifications!
-
-Aaron`
-              : `Hey @${user.username}! Welcome to Nearby Traveler! 🌍
+            content: `Hey @${user.username}! Welcome to Nearby Traveler! 🌍
 
 Here are the key features to explore:
 
@@ -4665,8 +4643,8 @@ Questions? Just reply to this message. Welcome aboard!
         await awardAuraPoints(userId, 1, 'completing profile');
         if (process.env.NODE_ENV === 'development') console.log(`✨ AURA: Awarded 1 point to user ${userId} for completing profile`);
 
-        // CRITICAL: Check if business user needs welcome message from @nearbytraveler
-        if (updatedUser.userType === 'business') {
+        // BUSINESS WELCOME MESSAGES DISABLED - Business signup is closed
+        if (false && updatedUser.userType === 'business') {
           try {
             const nearbytravelerUser = await storage.getUserByUsername('nearbytrav');
             if (nearbytravelerUser) {
@@ -12960,7 +12938,7 @@ Questions? Just reply to this message. Welcome aboard!
             .where(
               and(
                 eq(userCityInterests.userId, parseInt(req.header('x-user-id') as string)),
-                eq(userCityInterests.activityId, dbActivityId)
+                eq(userCityInterests.activityId, parseInt(activityId.toString()))
               )
             );
           
