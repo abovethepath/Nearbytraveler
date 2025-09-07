@@ -390,7 +390,16 @@ const GLOBAL_METROPOLITAN_AREAS: MetropolitanArea[] = [
 
 // ENABLED: Metro consolidation functions - consolidate all major cities worldwide
 function consolidateToMetropolitanArea(city: string, state?: string, country?: string): string {
-  // DISABLED: No forced consolidation - return original city
+  // Import LA Metro cities
+  const { METRO_AREAS } = require('../shared/constants');
+  const laMetroCities = METRO_AREAS['Los Angeles'].cities;
+  
+  // Consolidate ALL LA Metro cities to "Los Angeles Metro"
+  if (laMetroCities.includes(city)) {
+    return 'Los Angeles Metro';
+  }
+  
+  // Return original city for non-LA Metro cities (shouldn't happen since we filter)
   return city;
 }
 
@@ -1056,13 +1065,13 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         return { state: 'California', country: 'United States' };
       };
 
-      // Filter to only LA Metro cities and ensure Los Angeles Metro is included
+      // Filter to only LA Metro cities
       const rawCities = uniqueCitiesQuery.rows
         .map((row: any) => row.city)
         .filter((city: string) => laMetroCities.includes(city));
       
-      // Always include Los Angeles Metro in the list
-      if (!rawCities.includes('Los Angeles')) {
+      // Always ensure we have at least Los Angeles for consolidation
+      if (rawCities.length === 0 || !rawCities.includes('Los Angeles')) {
         rawCities.push('Los Angeles');
       }
       // ENABLED: Metro consolidation for all cities
