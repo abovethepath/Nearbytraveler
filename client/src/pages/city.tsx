@@ -281,7 +281,25 @@ export default function CityPage({ cityName }: CityPageProps) {
         </div>
       </div>
 
-      {/* City Photo Gallery section completely removed per user request */}
+      {/* Hero Image Section - Griffith Observatory */}
+      <div className="mx-4 mb-8">
+        <div className="relative h-64 sm:h-80 lg:h-96 rounded-2xl overflow-hidden shadow-xl">
+          <img 
+            src="@assets/griffith-observatory-skyline_1757211515328.jpg"
+            alt={`${decodedCityName} - Griffith Observatory Skyline`}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-6">
+            <h2 className="text-white text-xl sm:text-2xl lg:text-3xl font-bold mb-2 drop-shadow-lg">
+              Explore {decodedCityName}
+            </h2>
+            <p className="text-white/90 text-sm sm:text-base drop-shadow-md">
+              Discover amazing experiences and connect with fellow travelers
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* Content */}
       <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">
