@@ -12928,26 +12928,26 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error('Error creating user city interest:', error);
       
-      // Handle duplicate key constraint (user already has this interest)
+      // Handle duplicate key constraint (user already has this interest) - TOGGLE OFF
       if (error.code === '23505' && error.constraint === 'user_city_interests_user_id_activity_id_unique') {
-        // Find existing interest and return it instead of error
+        // If interest already exists, remove it (toggle off)
         try {
-          const [existingInterest] = await db
-            .select()
-            .from(userCityInterests)
+          const deletedInterest = await db
+            .delete(userCityInterests)
             .where(
               and(
-                eq(userCityInterests.userId, parseInt(req.header('x-user-id') as string)),
-                eq(userCityInterests.activityId, parseInt(activityId.toString()))
+                eq(userCityInterests.userId, parseInt(userId as string)),
+                eq(userCityInterests.activityId, dbActivityId)
               )
-            );
+            )
+            .returning();
           
-          if (existingInterest) {
-            if (process.env.NODE_ENV === 'development') console.log(`✅ USER INTERESTS POST: Interest already exists, returning existing interest ${existingInterest.id}`);
-            return res.json(existingInterest);
+          if (deletedInterest.length > 0) {
+            if (process.env.NODE_ENV === 'development') console.log(`🔄 USER INTERESTS TOGGLE: Removed interest ${deletedInterest[0].id} for user ${userId}`);
+            return res.json({ removed: true, interest: deletedInterest[0] });
           }
-        } catch (lookupError) {
-          if (process.env.NODE_ENV === 'development') console.error('Error looking up existing interest:', lookupError);
+        } catch (deleteError) {
+          if (process.env.NODE_ENV === 'development') console.error('Error removing existing interest:', deleteError);
         }
         
         return res.status(409).json({ error: 'Interest already exists' });
