@@ -3335,6 +3335,18 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         travelEndDate: userData.travelEndDate
       });
 
+      // COMPREHENSIVE TRAVELER ONBOARDING: Map DOB to bio section as requested
+      if (userData.dateOfBirth && userData.userType === 'traveler') {
+        const dobString = new Date(userData.dateOfBirth).toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+        // Add DOB to bio section as requested
+        userData.bio = userData.bio ? `${userData.bio}\n\nBorn: ${dobString}` : `Born: ${dobString}`;
+        if (process.env.NODE_ENV === 'development') console.log(`✓ Added DOB to bio section: ${dobString}`);
+      }
+
       if (process.env.NODE_ENV === 'development') console.log("Creating new user:", userData.email);
       const user = await storage.createUser(userData);
       const { password, ...userWithoutPassword } = user;
