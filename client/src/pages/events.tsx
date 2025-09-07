@@ -463,6 +463,16 @@ export default function Events() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-start justify-between mb-6">
             <BackButton fallbackRoute="/events-landing" />
+            {isDesktop && (
+              <Button 
+                onClick={() => setShowCreateEvent(true)}
+                className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white px-6 py-3 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg text-base font-semibold"
+                data-testid="create-event-hero-button"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Create Event
+              </Button>
+            )}
           </div>
           
           {isMobile ? (
@@ -693,15 +703,16 @@ export default function Events() {
             Local {userCity}
           </Button>
 
-
-
-          <Button 
-            onClick={() => setShowCreateEvent(true)}
-            className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg text-sm sm:text-base"
-          >
-            <Plus className="w-4 sm:w-5 h-4 sm:h-5 mr-1 sm:mr-2" />
-            Create Event
-          </Button>
+          {/* Mobile-only Create Event Button */}
+          {isMobile && (
+            <Button 
+              onClick={() => setShowCreateEvent(true)}
+              className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg text-sm sm:text-base"
+            >
+              <Plus className="w-4 sm:w-5 h-4 sm:h-5 mr-1 sm:mr-2" />
+              Create Event
+            </Button>
+          )}
         </div>
 
 
