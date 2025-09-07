@@ -71,6 +71,7 @@ export default function Home() {
   const [showConnectModal, setShowConnectModal] = useState(false);
   const [activeLocationFilter, setActiveLocationFilter] = useState<string>("");
   const [connectModalMode, setConnectModalMode] = useState<'current' | 'hometown'>('current');
+  const [connectTargetUser, setConnectTargetUser] = useState<any>(null);
   const [showAdvancedSearchWidget, setShowAdvancedSearchWidget] = useState(false);
   const [sortBy, setSortBy] = useState<'recent' | 'active' | 'compatibility' | 'travel_experience' | 'closest_nearby' | 'aura' | 'references' | 'alphabetical'>('recent');
   
