@@ -1114,10 +1114,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
           }
         });
         if (response.ok) {
-          toast({
-            title: "Interest Removed",
-            description: `Removed interest in ${activity.activityName}`,
-          });
           // Immediately update local state - remove by name match
           setUserActivities(prev => prev.filter(ua => 
             ua.activityName !== activityName && ua.activityId !== activity.id
@@ -1151,10 +1147,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
         if (response.ok || response.status === 409) {
           // Handle both successful creation (200) and already exists (409) cases
           const newInterest = await response.json();
-          toast({
-            title: "Interest Added",
-            description: `Added interest in ${activity.activityName}`,
-          });
           // Immediately update local state - check if already exists first by name
           setUserActivities(prev => {
             const alreadyExists = prev.some(ua => 
