@@ -77,7 +77,7 @@ export default function Home() {
   const [sortBy, setSortBy] = useState<'recent' | 'active' | 'compatibility' | 'travel_experience' | 'closest_nearby' | 'aura' | 'references' | 'alphabetical'>('recent');
   
   // Lazy loading state - track which sections have been loaded - LOAD ALL IMMEDIATELY FOR DEMO
-  const [loadedSections, setLoadedSections] = useState<Set<string>>(new Set(['hero', 'users', 'events', 'deals', 'messages'])); // Load all sections immediately
+  const [loadedSections, setLoadedSections] = useState<Set<string>>(new Set(['hero', 'users', 'events', 'deals', 'messages', 'weather', 'meetups'])); // Load all sections immediately
   const [activeSection, setActiveSection] = useState<string>('hero');
 
   const { user, setUser } = useContext(AuthContext);
@@ -2008,8 +2008,24 @@ export default function Home() {
             )}
           </div>
 
-          {/* Right Sidebar - Events and Quick Meetups */}
+          {/* Right Sidebar - Weather, Messages, Quick Meetups, Events */}
           <div className="col-span-1 space-y-3 sm:space-y-4 md:space-y-8">
+            
+            {/* Weather Widget */}
+            {loadedSections.has('weather') && (
+              <CurrentLocationWeatherWidget currentUser={effectiveUser} />
+            )}
+            
+            {/* Messages Widget */}
+            {loadedSections.has('messages') && (
+              <MessagesWidget userId={currentUserId} />
+            )}
+            
+            {/* Quick Meetup Widget - "Let's Meet Now" */}
+            {loadedSections.has('meetups') && (
+              <QuickMeetupWidget currentUser={effectiveUser} />
+            )}
+            
             {/* Priority Events Section */}
             {loadedSections.has('events') && (
               <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-sm" data-testid="events-section">
