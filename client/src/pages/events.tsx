@@ -634,10 +634,27 @@ export default function Events() {
         </div>
       </section>
       
-      {/* SPACE ADDED BETWEEN HEADER AND CTA BUTTONS AS REQUESTED */}
-      <div className="py-6"></div>
+      {/* PROMINENT CREATE EVENT CTA - FIRST THING AFTER HERO */}
+      <div className="bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-950/30 dark:to-orange-950/30 py-8 sm:py-12">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            Ready to Create Something Amazing?
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
+            Turn your ideas into unforgettable experiences. Start planning your event today.
+          </p>
+          <Button 
+            onClick={() => setShowCreateEvent(true)}
+            className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white px-10 py-4 rounded-2xl transition-all duration-300 hover:scale-105 shadow-xl text-xl font-bold transform hover:rotate-1"
+            data-testid="create-event-main-cta"
+          >
+            <Plus className="w-6 h-6 mr-3" />
+            Create Your Event
+          </Button>
+        </div>
+      </div>
       
-      <div className="container mx-auto px-2 sm:px-6">
+      <div className="container mx-auto px-2 sm:px-6 py-8">
 
         {/* Navigation Tabs - Removed "My Events" */}
         <div className="flex flex-wrap justify-center gap-2 mb-6 px-2">
