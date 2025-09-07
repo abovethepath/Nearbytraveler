@@ -12867,8 +12867,8 @@ Questions? Just reply to this message. Welcome aboard!
       let activity;
       let dbActivityId: number;
       
-      // Check if it's a universal activity code
-      if (activityId.startsWith('universal-')) {
+      // Check if it's a universal activity code (only for string IDs)
+      if (typeof activityId === 'string' && activityId.startsWith('universal-')) {
         const activityName = universalActivityMap[activityId];
         if (!activityName) {
           return res.status(404).json({ error: 'Universal activity not found' });

@@ -777,29 +777,13 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         const isSelected = userActivities.some(ua => ua.activityId === activity.id);
                         const userActivity = userActivities.find(ua => ua.activityId === activity.id);
                         
-                        // Generate varied colors like the original beautiful design
-                        const colorVariants = [
-                          'bg-blue-500 hover:bg-blue-600',
-                          'bg-orange-500 hover:bg-orange-600', 
-                          'bg-green-500 hover:bg-green-600',
-                          'bg-purple-500 hover:bg-purple-600',
-                          'bg-pink-500 hover:bg-pink-600',
-                          'bg-indigo-500 hover:bg-indigo-600',
-                          'bg-yellow-500 hover:bg-yellow-600',
-                          'bg-red-500 hover:bg-red-600',
-                          'bg-teal-500 hover:bg-teal-600',
-                          'bg-cyan-500 hover:bg-cyan-600'
-                        ];
-                        const colorIndex = activity.id % colorVariants.length;
-                        const colorClass = colorVariants[colorIndex];
-                        
                         return (
                           <div key={activity.id} className="group relative">
                             <button
-                              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 text-white shadow-md hover:shadow-lg transform hover:scale-105 ${
+                              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 text-white shadow-md hover:shadow-lg ${
                                 isSelected 
-                                  ? 'bg-emerald-600 hover:bg-emerald-700 ring-2 ring-emerald-300' 
-                                  : colorClass
+                                  ? 'bg-green-500 hover:bg-green-600' 
+                                  : 'bg-blue-500 hover:bg-blue-600'
                               }`}
                               onClick={() => handleToggleActivity(activity.id, activity.activityName)}
                             >
