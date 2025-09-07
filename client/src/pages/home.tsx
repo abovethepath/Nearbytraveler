@@ -1861,7 +1861,7 @@ export default function Home() {
         {showAdvancedSearchWidget && (
           <AdvancedSearchWidget
             open={showAdvancedSearchWidget}
-            onClose={handleCloseSearchWidget}
+            onOpenChange={(open) => !open && handleCloseSearchWidget()}
           />
         )}
 
