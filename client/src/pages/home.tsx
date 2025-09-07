@@ -1384,8 +1384,8 @@ export default function Home() {
 
     if (filters.activities.length > 0) {
       const userActivities = [...(otherUser.localActivities || []), ...(otherUser.preferredActivities || [])];
-      const hasMatchingActivity = filters.activities.some(activity => 
-        userActivities.some(userActivity => 
+      const hasMatchingActivity = filters.activities.some((activity: string) => 
+        userActivities.some((userActivity: string) => 
           userActivity.toLowerCase().includes(activity.toLowerCase())
         )
       );
@@ -1396,8 +1396,8 @@ export default function Home() {
       // For event filtering, we could check if user is attending certain event categories
       // or has shown interest in specific event types through their travel plans
       const userEventInterests = [...(otherUser.interests || []), ...(otherUser.travelInterests || [])];
-      const hasMatchingEventInterest = filters.events.some(eventType => 
-        userEventInterests.some(interest => 
+      const hasMatchingEventInterest = filters.events.some((eventType: string) => 
+        userEventInterests.some((interest: string) => 
           interest.toLowerCase().includes(eventType.toLowerCase())
         )
       );
