@@ -773,47 +773,35 @@ export default function PlanTrip() {
               </div>
             </div>
           
-            {/* Right visual side - premium travel card */}
-            <div className="relative flex items-center justify-center">
-              <div className="relative w-full max-w-md">
-                {/* Premium glass card */}
-                <div className="bg-white/15 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
-                  <div className="space-y-6">
-                    {/* Header with gradient icon */}
-                    <div className="text-center">
-                      <div className="inline-flex items-center justify-center w-16 h-16 mb-4 bg-gradient-to-br from-white/20 to-white/10 rounded-full backdrop-blur-sm">
-                        <Compass className="w-8 h-8 text-white" />
-                      </div>
-                      <h3 className="text-white font-bold text-lg">Your Adventure Awaits</h3>
-                      <p className="text-white/80 text-sm mt-1">Plan, connect, and explore</p>
-                    </div>
-                    
-                    {/* Travel features grid */}
-                    <div className="grid grid-cols-3 gap-3">
-                      {[
-                        { Icon: MapPin, label: "Destinations", color: "from-red-400 to-pink-500" },
-                        { Icon: Camera, label: "Memories", color: "from-blue-400 to-cyan-500" },
-                        { Icon: Users, label: "Connections", color: "from-green-400 to-emerald-500" },
-                        { Icon: Coffee, label: "Experiences", color: "from-orange-400 to-yellow-500" },
-                        { Icon: Heart, label: "Favorites", color: "from-pink-400 to-rose-500" },
-                        { Icon: Sparkles, label: "Discover", color: "from-purple-400 to-violet-500" },
-                      ].map(({ Icon, label, color }, i) => (
-                        <div key={i} className="text-center group cursor-pointer">
-                          <div className={`w-12 h-12 mx-auto mb-2 bg-gradient-to-br ${color} rounded-xl flex items-center justify-center group-hover:scale-110 transition-all duration-300 shadow-lg`}>
-                            <Icon className="w-5 h-5 text-white" />
-                          </div>
-                          <span className="text-xs text-white/80 font-medium">{label}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Animated floating elements */}
-                <div className="absolute -top-3 -right-3 w-6 h-6 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full animate-bounce shadow-lg"></div>
-                <div className="absolute -bottom-3 -left-3 w-4 h-4 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full animate-pulse shadow-lg"></div>
-                <div className="absolute top-1/2 -right-2 w-3 h-3 bg-gradient-to-br from-pink-400 to-red-500 rounded-full animate-ping shadow-lg"></div>
+            {/* Right image side - matching other pages layout */}
+            <div className="flex flex-col items-center order-first md:order-last">
+              {/* Rotating wisdom sayings above static quote */}
+              <div className="mb-1 text-center w-full overflow-hidden relative h-[40px] sm:h-[48px] md:h-[56px]">
+                <p className="absolute top-0 left-0 w-full text-xs md:text-sm font-medium text-white/90 italic px-2">
+                  <span className="sm:hidden">Every journey begins with a single step</span>
+                  <span className="hidden sm:inline">Every great adventure begins with careful planning</span>
+                </p>
               </div>
+              
+              {/* Static powerful quote */}
+              <div className="mb-2 text-center w-full">
+                <p className="text-sm md:text-lg lg:text-xl font-bold text-white italic px-2">
+                  <span className="sm:hidden">Planning today, exploring tomorrow</span>
+                  <span className="hidden sm:inline">Planning today creates the connections of tomorrow</span>
+                </p>
+              </div>
+              
+              <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[200px] sm:h-[250px] md:h-[350px] rounded-2xl">
+                <img
+                  src="/travelers_1756778615408.jpg"
+                  alt="Travelers planning their next adventure together"
+                  className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl shadow-lg"
+                />
+              </div>
+              
+              <p className="mt-2 text-xs md:text-sm italic text-yellow-300 text-center">
+                Where Great Adventures Begin
+              </p>
             </div>
           </div>
         </div>
