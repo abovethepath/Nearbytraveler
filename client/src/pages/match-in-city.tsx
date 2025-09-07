@@ -23,7 +23,11 @@ import {
 } from "lucide-react";
 import { CityPhotoUploadWidget } from "@/components/CityPhotoUploadWidget";
 
-export default function MatchInCity() {
+interface MatchInCityProps {
+  cityName?: string;
+}
+
+export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [location, setLocation] = useLocation();
   const [selectedCity, setSelectedCity] = useState<string>('');
   
