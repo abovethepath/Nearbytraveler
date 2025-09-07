@@ -3865,8 +3865,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
       // AUTOMATICALLY CONNECT ALL NEW USERS TO NEARBYTRAVELER
       try {
-        const nearbytravelerUser = await storage.getUserByUsername('nearbytravlr');
-        if (nearbytravelerUser && user.username !== 'nearbytravlr') {
+        const nearbytravelerUser = await storage.getUserByUsername('nearbytrav');
+        if (nearbytravelerUser && user.username !== 'nearbytrav') {
           // Create automatic connection between new user and nearbytraveler
           const connectionData = {
             requesterId: nearbytravelerUser.id,
