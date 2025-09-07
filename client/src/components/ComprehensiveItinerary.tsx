@@ -88,15 +88,20 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing 
     return dates;
   }, [travelPlan.startDate, travelPlan.endDate]);
 
-  // Fetch itinerary items
-  const { data: itineraryItems = [], isLoading } = useQuery<ItineraryItem[]>({
-    queryKey: [`/api/itinerary/${travelPlan.id}`],
+  // Fetch travel plan itineraries
+  const { data: itineraries = [], isLoading } = useQuery({
+    queryKey: [`/api/travel-plans/${travelPlan.id}/itineraries`],
     queryFn: async () => {
-      const response = await fetch(`/api/itinerary/${travelPlan.id}`);
+      const response = await fetch(`/api/travel-plans/${travelPlan.id}/itineraries`);
       if (!response.ok) return [];
       return response.json();
     },
   });
+
+  // Get all itinerary items from all itineraries for this travel plan
+  const itineraryItems = useMemo(() => {
+    return itineraries.flatMap((itinerary: any) => itinerary.items || []);
+  }, [itineraries]);
 
   // Fetch weather for the destination
   const { data: weather } = useQuery({
@@ -127,7 +132,25 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing 
   // Add itinerary item mutation
   const addItem = useMutation({
     mutationFn: async (item: Partial<ItineraryItem>) => {
-      const response = await fetch(`/api/itinerary/${travelPlan.id}/items`, {
+      // First, ensure we have an itinerary for this travel plan
+      let itineraryId = itineraries[0]?.id;
+      if (!itineraryId) {
+        // Create a default itinerary if none exists
+        const itineraryResponse = await fetch('/api/itineraries', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            travelPlanId: travelPlan.id,
+            title: `${travelPlan.destination} Itinerary`,
+            description: 'Main travel itinerary'
+          }),
+        });
+        if (!itineraryResponse.ok) throw new Error('Failed to create itinerary');
+        const newItinerary = await itineraryResponse.json();
+        itineraryId = newItinerary.id;
+      }
+
+      const response = await fetch(`/api/itineraries/${itineraryId}/items`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(item),
@@ -136,7 +159,7 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing 
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/itinerary/${travelPlan.id}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/travel-plans/${travelPlan.id}/itineraries`] });
       setNewItem({});
       setShowAddItem(false);
       toast({ title: 'Success', description: 'Item added to itinerary' });
@@ -146,7 +169,7 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing 
   // Update itinerary item mutation
   const updateItem = useMutation({
     mutationFn: async (item: ItineraryItem) => {
-      const response = await fetch(`/api/itinerary/${travelPlan.id}/items/${item.id}`, {
+      const response = await fetch(`/api/itinerary-items/${item.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(item),
@@ -155,7 +178,7 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing 
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/itinerary/${travelPlan.id}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/travel-plans/${travelPlan.id}/itineraries`] });
       setEditingItem(null);
       toast({ title: 'Success', description: 'Item updated' });
     },
@@ -164,13 +187,13 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing 
   // Delete itinerary item mutation
   const deleteItem = useMutation({
     mutationFn: async (itemId: number) => {
-      const response = await fetch(`/api/itinerary/${travelPlan.id}/items/${itemId}`, {
+      const response = await fetch(`/api/itinerary-items/${itemId}`, {
         method: 'DELETE',
       });
       if (!response.ok) throw new Error('Failed to delete item');
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/itinerary/${travelPlan.id}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/travel-plans/${travelPlan.id}/itineraries`] });
       toast({ title: 'Success', description: 'Item deleted' });
     },
   });
