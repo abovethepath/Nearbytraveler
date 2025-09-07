@@ -583,13 +583,19 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
           </TabsContent>
         </Tabs>
 
-        {/* Add Item Dialog */}
+        {/* Add Item Form - INLINE (no nested dialog) */}
         {showAddItem && (
-          <Dialog open={showAddItem} onOpenChange={setShowAddItem}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add Itinerary Item</DialogTitle>
-              </DialogHeader>
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Add Itinerary Item</h3>
+                <button 
+                  onClick={() => setShowAddItem(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  ✕
+                </button>
+              </div>
               <div className="space-y-4">
                 <div>
                   <label className="text-sm font-medium">Type</label>
@@ -675,8 +681,8 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
                   </Button>
                 </div>
               </div>
-            </DialogContent>
-          </Dialog>
+            </div>
+          </div>
         )}
       </DialogContent>
     </Dialog>
