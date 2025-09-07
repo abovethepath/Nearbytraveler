@@ -1575,10 +1575,14 @@ export default function Home() {
       <h1 className="text-2xl sm:text-3xl font-bold text-black dark:text-white leading-tight mb-6 px-2">
         {effectiveUser?.userType === "business" ? (
           <>
+            <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Nearby Traveler</span>
+            <br />
             Connect Your Business with Travelers & Locals
           </>
         ) : (
           <>
+            <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Nearby Traveler</span>
+            <br />
             Connect with Travelers & Locals Worldwide
           </>
         )}
@@ -1648,6 +1652,10 @@ export default function Home() {
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight leading-tight">
               {effectiveUser?.userType === "business" ? (
                 <>
+                  <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl">
+                    Nearby Traveler
+                  </span>
+                  <br />
                   <span className="bg-gradient-to-r from-gray-900 via-blue-800 to-gray-900 dark:from-white dark:via-blue-200 dark:to-white bg-clip-text text-transparent">
                     Connect Your Business
                   </span>
@@ -1658,6 +1666,10 @@ export default function Home() {
                 </>
               ) : (
                 <>
+                  <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl">
+                    Nearby Traveler
+                  </span>
+                  <br />
                   <span className="bg-gradient-to-r from-gray-900 via-blue-800 to-gray-900 dark:from-white dark:via-blue-200 dark:to-white bg-clip-text text-transparent">
                     Connect with Travelers
                   </span>
