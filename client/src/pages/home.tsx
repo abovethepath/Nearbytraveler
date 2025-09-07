@@ -73,6 +73,7 @@ export default function Home() {
   const [connectModalMode, setConnectModalMode] = useState<'current' | 'hometown'>('current');
   const [connectTargetUser, setConnectTargetUser] = useState<any>(null);
   const [showAdvancedSearchWidget, setShowAdvancedSearchWidget] = useState(false);
+  const [showAllUsers, setShowAllUsers] = useState(false);
   const [sortBy, setSortBy] = useState<'recent' | 'active' | 'compatibility' | 'travel_experience' | 'closest_nearby' | 'aura' | 'references' | 'alphabetical'>('recent');
   
   // Lazy loading state - track which sections have been loaded
