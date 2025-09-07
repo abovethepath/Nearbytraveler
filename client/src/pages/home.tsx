@@ -52,7 +52,6 @@ import EnhancedDiscovery from "@/components/EnhancedDiscovery";
 import BusinessesGrid from "@/components/BusinessesGrid";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
 import { ContextualEventRecommendations } from "@/components/ContextualEventRecommendations";
-import QuickDealsDiscovery from "@/components/QuickDealsDiscovery";
 import CityMap from "@/components/CityMap";
 import PeopleDiscoveryWidget from "@/components/PeopleDiscoveryWidget";
 import LocationSortedEvents from "@/components/LocationSortedEvents";
@@ -77,7 +76,7 @@ export default function Home() {
   const [sortBy, setSortBy] = useState<'recent' | 'active' | 'compatibility' | 'travel_experience' | 'closest_nearby' | 'aura' | 'references' | 'alphabetical'>('recent');
   
   // Lazy loading state - track which sections have been loaded - LOAD ALL IMMEDIATELY FOR DEMO
-  const [loadedSections, setLoadedSections] = useState<Set<string>>(new Set(['hero', 'users', 'events', 'deals', 'messages', 'weather', 'meetups'])); // Load all sections immediately
+  const [loadedSections, setLoadedSections] = useState<Set<string>>(new Set(['hero', 'users', 'events', 'messages', 'weather', 'meetups'])); // Load all sections immediately
   const [activeSection, setActiveSection] = useState<string>('hero');
 
   const { user, setUser } = useContext(AuthContext);
@@ -1001,50 +1000,7 @@ export default function Home() {
     enabled: !!currentUserId && loadedSections.has('messages'), // Only load when messages section is viewed
   });
 
-  // Fetch business offers from ALL locations (hometown + all travel destinations) - LAZY LOADED
-  const { data: allBusinessOffers = [], isLoading: businessOffersLoading } = useQuery<any[]>({
-    queryKey: [`/api/business-deals/all-locations`, discoveryLocations.allCities.map(loc => loc.city)],
-    queryFn: async () => {
-      if (!discoveryLocations.allCities.length) return [];
-
-      console.log('Fetching business deals from ALL locations:', discoveryLocations.allCities);
-
-      // Fetch business deals from all cities in parallel
-      const offerPromises = discoveryLocations.allCities.map(async (location) => {
-        const cityName = location.city.split(',')[0].trim();
-        console.log(`Fetching business deals for ${location.type}:`, cityName);
-
-        try {
-          const response = await fetch(`/api/business-deals?city=${encodeURIComponent(cityName)}`);
-          if (!response.ok) throw new Error(`Failed to fetch business deals for ${cityName}`);
-          const data = await response.json();
-          console.log(`${location.type} Business Deals API response:`, data.length, 'deals for', cityName);
-          return data.map((offer: any) => ({ ...offer, sourceLocation: location }));
-        } catch (error) {
-          console.error(`Error fetching business deals for ${cityName}:`, error);
-          return [];
-        }
-      });
-
-      const allOffersArrays = await Promise.all(offerPromises);
-      const combined = allOffersArrays.flat();
-
-      // Remove duplicates by offer ID
-      const unique = combined.filter((offer, index, self) => 
-        index === self.findIndex((o) => o.id === offer.id)
-      );
-
-      console.log('Combined business deals:', unique.length, 'deals from ALL', discoveryLocations.allCities.length, 'locations');
-      return unique;
-    },
-    staleTime: 0,
-    gcTime: 0,
-  });
-
-  const businessOffers = allBusinessOffers;
-  const businessDeals = allBusinessOffers; // Use business deals data for Local Businesses section
-
-  // businessOffersLoading is now defined in the query above
+  // Business deals functionality removed - focusing on travelers and locals
 
   // Fetch active quick meetups from ALL locations (hometown + all travel destinations) - LAZY LOADED
   const { data: allMeetups = [], isLoading: meetupsLoading } = useQuery<any[]>({
@@ -2141,58 +2097,7 @@ export default function Home() {
               </Card>
             )}
 
-            {/* Business Deals Section */}
-            {loadedSections.has('deals') && (
-              <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-sm">
-                <div className="p-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                      <Store className="w-5 h-5 mr-2 text-orange-500" />
-                      Business Deals
-                    </h3>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => setLocation('/business-deals')}
-                      className="text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300"
-                      data-testid="button-view-all-deals"
-                    >
-                      <Store className="w-4 h-4 mr-1" />
-                      View All
-                    </Button>
-                  </div>
-                  
-                  {/* Business Deals Display - TOP 3 */}
-                  {businessDeals && businessDeals.length > 0 ? (
-                    <div className="grid grid-cols-1 gap-4">
-                      {businessDeals.slice(0, 3).map((deal: any) => (
-                        <Card 
-                          key={deal.id} 
-                          className="h-full flex flex-col cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] bg-white dark:bg-gray-800"
-                          onClick={() => setLocation(`/profile/${deal.businessId}`)}
-                        >
-                          <div className="p-4">
-                            <div className="flex items-center justify-between mb-2">
-                              <h4 className="font-semibold text-gray-900 dark:text-white text-sm">{deal.businessName}</h4>
-                              <Badge variant="secondary" className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 text-xs">
-                                {deal.dealType}
-                              </Badge>
-                            </div>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">{deal.title}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-500">{deal.location}</p>
-                          </div>
-                        </Card>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                      <Store className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                      <p>No business deals available.</p>
-                    </div>
-                  )}
-                </div>
-              </Card>
-            )}
+            {/* Business Deals Section - REMOVED: Focusing on travelers and locals */}
           </div>
         </div>
 

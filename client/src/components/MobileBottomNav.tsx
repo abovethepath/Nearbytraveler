@@ -3,14 +3,12 @@ import { useLocation } from "wouter";
 import { Home, Plus, MessageCircle, User, Calendar, Search, X } from "lucide-react";
 import { AuthContext } from "@/App";
 import { AdvancedSearchWidget } from "@/components/AdvancedSearchWidget";
-import QuickDealModal from "@/components/QuickDealModal";
 import { useQuery } from "@tanstack/react-query";
 
 export function MobileBottomNav() {
   const [location, setLocation] = useLocation();
   const [showActionMenu, setShowActionMenu] = useState(false);
   const [showSearchWidget, setShowSearchWidget] = useState(false);
-  const [showQuickDealCreator, setShowQuickDealCreator] = useState(false);
   const authContext = React.useContext(AuthContext);
   let user = authContext?.user;
   
@@ -58,11 +56,7 @@ export function MobileBottomNav() {
   const isBusinessUser = user?.userType === 'business';
   console.log('🚨 BUSINESS USER CHECK:', { username: user?.username, userType: user?.userType, isBusinessUser });
   
-  const actionMenuItems = isBusinessUser ? [
-    { label: "Create Deal", path: "/business-dashboard?action=create-deal", icon: Calendar },
-    { label: "Create Quick Deal", action: "quick-deal", icon: MessageCircle },
-    { label: "Create Event", path: "/create-event", icon: Calendar },
-  ] : [
+  const actionMenuItems = [
     { label: "Create Event", path: "/create-event", icon: Calendar },
     { label: "Create Trip", path: "/plan-trip", icon: Calendar },
     { label: "Create Quick Meetup", path: "/quick-meetups", icon: MessageCircle },
@@ -94,10 +88,7 @@ export function MobileBottomNav() {
                     key={index}
                     onClick={() => {
                       console.log('🎯 MOBILE ACTION MENU: Clicked', action.label);
-                      if (action.action === 'quick-deal') {
-                        setShowQuickDealCreator(true);
-                        setShowActionMenu(false);
-                      } else if (action.path) {
+                      if (action.path) {
                         setLocation(action.path);
                         setShowActionMenu(false);
                       }
@@ -202,19 +193,7 @@ export function MobileBottomNav() {
         onOpenChange={setShowSearchWidget}
       />
 
-      {/* Quick Deal Creator Modal */}
-      {showQuickDealCreator && (
-        <QuickDealModal
-          onClose={() => setShowQuickDealCreator(false)}
-          businessId={user?.id || 0}
-          businessLocation={{
-            city: user?.hometownCity || user?.city || 'Los Angeles',
-            state: user?.hometownState || user?.state || 'California',
-            country: user?.hometownCountry || user?.country || 'United States',
-            street: user?.streetAddress || user?.location || ''
-          }}
-        />
-      )}
+      {/* Business functionality removed - focusing on travelers and locals */}
     </>
   );
 }
