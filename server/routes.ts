@@ -3659,9 +3659,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
       // MOVED: Travel plan creation logic moved to fast registration section above
       // This eliminates duplicate variable declarations and ensures travelers get proper status immediately
-      if (process.env.NODE_ENV === 'development') console.log("Travel plan creation moved to fast registration - this section is now disabled");
+      if (process.env.NODE_ENV === 'development') console.log("Travel plan creation re-enabled for nearby traveler signup");
       
-      if (false) { // This block is now disabled - travel plans are created during fast registration
+      if (isTraveingUser && hasReturnDateOnly) { // Re-enabled travel plan creation for nearby traveler signup
 
         // CRITICAL: Date validation ONLY applies during signup for current travelers
         // Regular trip planning from Plan Trip page should allow future dates
