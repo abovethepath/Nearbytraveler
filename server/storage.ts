@@ -40,6 +40,13 @@ export interface IStorage {
   getAllEventsWithParticipants(): Promise<any[]>;
   isUserInterestedInEvent(userId: number, eventId?: number, externalEventId?: string, eventSource?: string): Promise<boolean>;
   
+  // Event chatroom methods
+  getEventChatroom(eventId: number): Promise<any>;
+  createEventChatroom(data: any): Promise<any>;
+  getEventChatroomMessages(chatroomId: number): Promise<any[]>;
+  createEventChatroomMessage(chatroomId: number, senderId: number, content: string): Promise<any>;
+  joinEventChatroom(chatroomId: number, userId: number): Promise<any>;
+  
   // Connection methods
   getConnection(userId: number, connectedUserId: number): Promise<Connection | undefined>;
   createConnection(connection: InsertConnection): Promise<Connection>;
@@ -9602,6 +9609,17 @@ export class DatabaseStorage implements IStorage {
       return await this.createChatroomMessage(chatroomId, senderId, content);
     } catch (error) {
       console.error('Error creating event chatroom message:', error);
+      throw error;
+    }
+  }
+
+  async joinEventChatroom(chatroomId: number, userId: number): Promise<any> {
+    try {
+      // Since event chatrooms use the city chatroom infrastructure,
+      // we can use the existing city chatroom join method
+      return await this.joinChatroom(chatroomId, userId);
+    } catch (error) {
+      console.error('Error joining event chatroom:', error);
       throw error;
     }
   }
