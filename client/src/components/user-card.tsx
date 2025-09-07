@@ -82,12 +82,12 @@ export default function UserCard({
       <CardContent className="p-4 pt-4">
         {/* User Info */}
         <div className="space-y-3">
-          {/* Large Avatar */}
+          {/* Responsive Avatar - Large on mobile, normal on desktop */}
           <div className="flex justify-center">
             <SimpleAvatar 
               user={user} 
-              size="xl" 
-              className="border-4 border-gray-200 dark:border-gray-600 shadow-lg w-20 h-20"
+              size="lg" 
+              className="border-2 sm:border-4 border-gray-200 dark:border-gray-600 shadow-lg w-16 h-16 sm:w-12 sm:h-12"
             />
           </div>
           
