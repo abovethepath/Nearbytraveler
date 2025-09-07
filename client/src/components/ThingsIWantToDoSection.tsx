@@ -302,7 +302,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
               <div key={cityName}>
                 {/* City Header */}
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-semibold text-red-600 dark:text-red-500 text-xl">
+                  <h3 className="font-semibold text-blue-600 dark:text-blue-400 text-xl">
                     {cityName}
                   </h3>
                   {isOwnProfile && (
