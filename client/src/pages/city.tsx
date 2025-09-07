@@ -90,7 +90,7 @@ export default function CityPage({ cityName }: CityPageProps) {
       
       // Apply filter on frontend since backend returns all users
       if (filter === 'all') return allUsers;
-      return allUsers.filter(user => user.user_type === filter);
+      return allUsers.filter((user: any) => user.user_type === filter);
     },
     enabled: !!decodedCityName,
   });
@@ -188,8 +188,8 @@ export default function CityPage({ cityName }: CityPageProps) {
         
         case 'references':
           // Sort by number of references (most first)
-          const referencesA = a.references?.length || 0;
-          const referencesB = b.references?.length || 0;
+          const referencesA = (a as any).references?.length || 0;
+          const referencesB = (b as any).references?.length || 0;
           return referencesB - referencesA;
         
         case 'active':
