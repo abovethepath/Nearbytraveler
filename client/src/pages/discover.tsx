@@ -115,14 +115,31 @@ export default function DiscoverPage() {
 
   const pageContent = (
     <div className="min-h-screen bg-white dark:bg-gray-900">
-      {/* Hero Section - Consistent Layout */}
-      <section className="bg-white dark:bg-gray-900 py-8 sm:py-12 lg:py-16">
-        {isMobile ? (
-          // Mobile: Keep vertical layout
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-2xl sm:text-3xl font-bold text-black dark:text-white leading-tight mb-6 px-2">
+      {/* Hero Image Section - Griffith Observatory */}
+      <div className="mx-4 mb-8 mt-4">
+        <div className="relative h-64 sm:h-80 lg:h-96 rounded-2xl overflow-hidden shadow-xl">
+          <img 
+            src="@assets/griffith-observatory-skyline_1757211515328.jpg"
+            alt="Los Angeles - Griffith Observatory Skyline"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-6">
+            <h1 className="text-white text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 drop-shadow-lg">
               Discover Amazing Destinations
             </h1>
+            <p className="text-white/90 text-base sm:text-lg drop-shadow-md">
+              Connect with travelers and locals worldwide
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Hero Section - Consistent Layout */}
+      <section className="bg-white dark:bg-gray-900 py-4 sm:py-8 lg:py-12">
+        {isMobile ? (
+          // Mobile: Keep vertical layout (reduced since we have hero image above)
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             
             <div className="mb-6 flex justify-center px-4">
               <div className="relative w-full max-w-sm rounded-xl overflow-hidden shadow-xl">
