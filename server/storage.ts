@@ -366,6 +366,9 @@ export interface IStorage {
   getChatroomsCreatedByUser(userId: number): Promise<any[]>;
   autoJoinWelcomeChatroom(userId: number, city: string, country: string): Promise<void>;
   autoJoinUserCityChatrooms(userId: number, hometownCity: string, hometownCountry: string, travelCity?: string, travelCountry?: string): Promise<void>;
+  ensureSecondaryChatrooms(city: string, state?: string | null, country?: string): Promise<void>;
+  sendSystemMessage(fromUserId: number, toUserId: number, messageText: string): Promise<void>;
+  registerUserInCity(userId: number, city: string, state?: string | null, country?: string, userStatus?: string): Promise<void>;
 
   // Secret Local Experiences methods
   createSecretLocalExperience(experience: any): Promise<any>;
@@ -7737,6 +7740,85 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error('Error auto-joining user city chatrooms:', error);
       // Don't fail user creation if chatroom joining fails
+    }
+  }
+
+  // Create secondary chatrooms for each city (2 chatrooms total per city)
+  async ensureSecondaryChatrooms(city: string, state?: string | null, country?: string): Promise<void> {
+    try {
+      if (!city || !country) return;
+      
+      console.log(`🏠 SECONDARY CHATROOMS: Creating second chatroom for ${city}, ${state}, ${country}`);
+      
+      // Check if secondary chatroom already exists (looking for "Travel Tips & Local Secrets")
+      const existingSecondary = await db
+        .select()
+        .from(citychatrooms)
+        .where(
+          and(
+            eq(citychatrooms.city, city),
+            eq(citychatrooms.country, country),
+            ilike(citychatrooms.name, '%Travel Tips%')
+          )
+        )
+        .limit(1);
+      
+      if (existingSecondary.length === 0) {
+        // Create secondary chatroom
+        await db.insert(citychatrooms).values({
+          name: `${city} - Travel Tips & Local Secrets`,
+          description: `Share insider tips, local secrets, and travel advice for ${city}`,
+          city: city,
+          state: state,
+          country: country,
+          createdBy: 1, // NearbyTraveler system account
+          isActive: true
+        });
+        console.log(`✅ Created secondary chatroom: ${city} - Travel Tips & Local Secrets`);
+      } else {
+        console.log(`⚠️ Secondary chatroom already exists for ${city}`);
+      }
+    } catch (error) {
+      console.error('Error creating secondary chatrooms:', error);
+    }
+  }
+
+  // Send system message from NearbyTraveler account
+  async sendSystemMessage(fromUserId: number, toUserId: number, messageText: string): Promise<void> {
+    try {
+      console.log(`📨 SYSTEM MESSAGE: Sending welcome message from user ${fromUserId} to user ${toUserId}`);
+      
+      // Create a message in the messages table
+      await db.insert(messages).values({
+        senderId: fromUserId,
+        receiverId: toUserId,
+        content: messageText,
+        sentAt: new Date(),
+        isRead: false
+      });
+      
+      console.log(`✅ System message sent successfully`);
+    } catch (error) {
+      console.error('Error sending system message:', error);
+    }
+  }
+
+  // Register user in a city with specific status (local or traveler)
+  async registerUserInCity(userId: number, city: string, state?: string | null, country?: string, userStatus?: string): Promise<void> {
+    try {
+      if (!city || !country) return;
+      
+      console.log(`🏙️ CITY REGISTRATION: Registering user ${userId} as ${userStatus} in ${city}, ${state}, ${country}`);
+      
+      // For now, this is handled by the user's profile data (hometown vs travel destination)
+      // Future enhancement: Could create a separate user_city_registrations table
+      // But the current system tracks this through:
+      // - hometownCity/State/Country for locals
+      // - travelDestination for travelers (via travel plans)
+      
+      console.log(`✅ User ${userId} registered as ${userStatus} in ${city}`);
+    } catch (error) {
+      console.error('Error registering user in city:', error);
     }
   }
 
