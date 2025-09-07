@@ -1032,11 +1032,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     try {
       if (process.env.NODE_ENV === 'development') console.log("🏙️ LA METRO ONLY: Loading LA Metro cities");
 
-      // Only return LA Metro cities
-      const { METRO_AREAS } = await import('../shared/constants');
-      const laMetroCities = METRO_AREAS['Los Angeles'].cities;
-      
-      // Get unique cities where users actually live or are traveling to, filtered to LA Metro only
+      // Get unique cities where users actually live or are traveling to
       const uniqueCitiesQuery = await db.execute(sql`
         SELECT DISTINCT city_name as city FROM (
           SELECT DISTINCT hometown_city as city_name FROM users WHERE hometown_city IS NOT NULL AND hometown_city != ''
@@ -1047,18 +1043,28 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         ) cities
         WHERE city_name IS NOT NULL AND city_name != '' 
         AND city_name NOT IN ('Test City', 'Global', 'test city', 'global')
-        AND city_name = ANY(${laMetroCities})
         ORDER BY city_name
       `);
 
+      // Import LA Metro cities
+      const { METRO_AREAS } = await import('../shared/constants');
+      const laMetroCities = METRO_AREAS['Los Angeles'].cities;
+      
       // LA METRO ONLY - All cities are in California, United States
       const getCityCountry = (cityName: string): { state: string, country: string } => {
         // All LA Metro cities are in California, United States
         return { state: 'California', country: 'United States' };
       };
 
-      // DISABLED: Metro consolidation per user request - show original cities
-      const rawCities = uniqueCitiesQuery.rows.map((row: any) => row.city);
+      // Filter to only LA Metro cities and ensure Los Angeles Metro is included
+      const rawCities = uniqueCitiesQuery.rows
+        .map((row: any) => row.city)
+        .filter((city: string) => laMetroCities.includes(city));
+      
+      // Always include Los Angeles Metro in the list
+      if (!rawCities.includes('Los Angeles')) {
+        rawCities.push('Los Angeles');
+      }
       // ENABLED: Metro consolidation for all cities
       const consolidatedCityMap = new Map<string, string[]>();
       const consolidatedCityNames = new Set<string>();

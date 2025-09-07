@@ -10,6 +10,7 @@ import { ArrowLeft } from "lucide-react";
 import { AuthContext } from "@/App";
 import { MobilePreview } from "@/components/MobilePreview";
 import { useIsMobile, useIsDesktop } from "@/hooks/useDeviceType";
+import griffithObservatory from "@assets/griffith-observatory-skyline_1757211515328.jpg";
 // MobileNav removed - using global mobile navigation
 
 
@@ -119,7 +120,7 @@ export default function DiscoverPage() {
       <div className="mx-4 mb-8 mt-4">
         <div className="relative h-64 sm:h-80 lg:h-96 rounded-2xl overflow-hidden shadow-xl">
           <img 
-            src="/griffith-observatory-skyline_1757211515328.jpg"
+            src={griffithObservatory}
             alt="Los Angeles - Griffith Observatory Skyline"
             className="w-full h-full object-cover"
           />
