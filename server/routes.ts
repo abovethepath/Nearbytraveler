@@ -851,9 +851,12 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       }
       
       console.log("🔍 Found user:", user.username, "with password set:", !!user.password);
+      console.log("🔍 Password comparison - received:", JSON.stringify(password), "length:", password.length);
+      console.log("🔍 Password comparison - stored:", JSON.stringify(user.password), "length:", user.password?.length);
 
       // Simple password check (in production, use bcrypt)
       const isValidPassword = password === user.password;
+      console.log("🔍 Password match result:", isValidPassword);
       if (!isValidPassword) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
