@@ -2,13 +2,19 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
-import ThemeToggle from "@/components/ThemeToggle";
 import Footer from "@/components/footer";
+import { useTheme } from "@/components/theme-provider";
 import { trackEvent } from "@/lib/analytics";
 import NetworkingHero from "@/components/NetworkingHero";
 
 export default function NetworkingLanding() {
   const [, setLocation] = useLocation();
+  const { setTheme } = useTheme();
+  
+  // FORCE LIGHT MODE for landing page - user requirement
+  useEffect(() => {
+    setTheme('light');
+  }, [setTheme]);
   
   // Check URL for layout parameter - default to Airbnb style
   const urlParams = new URLSearchParams(window.location.search);

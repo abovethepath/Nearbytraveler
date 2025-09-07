@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
-import ThemeToggle from "@/components/ThemeToggle";
 import Footer from "@/components/footer";
+import { useTheme } from "@/components/theme-provider";
 import { trackEvent } from "@/lib/analytics";
 import backgroundImage from "@assets/image_1755178154302.png";
 import travelersHeaderImage from "../../assets/travelers_1756778615408.jpg";
@@ -11,6 +11,12 @@ import travelersHeaderImage from "../../assets/travelers_1756778615408.jpg";
 export default function TravelersLanding() {
   const [, setLocation] = useLocation();
   const [isMobile, setIsMobile] = useState(false);
+  const { setTheme } = useTheme();
+  
+  // FORCE LIGHT MODE for landing page - user requirement
+  useEffect(() => {
+    setTheme('light');
+  }, [setTheme]);
   
   // Rotating wisdom sayings above the photo
   const [currentWisdom, setCurrentWisdom] = useState(0);

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
-import ThemeToggle from "@/components/ThemeToggle";
+import { useTheme } from "@/components/theme-provider";
 import { trackEvent } from "@/lib/analytics";
 import { 
   DollarSign, 
@@ -30,6 +30,12 @@ import businessHeaderPhoto from "@assets/image_1756765621788.png";
 export default function BusinessLanding() {
   const [, setLocation] = useLocation();
   const [isMobile, setIsMobile] = useState(false);
+  const { setTheme } = useTheme();
+  
+  // FORCE LIGHT MODE for landing page - user requirement
+  useEffect(() => {
+    setTheme('light');
+  }, [setTheme]);
   
   // Rotating wisdom sayings above the photo
   const [currentWisdom, setCurrentWisdom] = useState(0);

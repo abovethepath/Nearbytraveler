@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
-import ThemeToggle from "@/components/ThemeToggle";
+import { useTheme } from "@/components/theme-provider";
 
 
 
@@ -59,6 +59,12 @@ const CustomIcon = ({ iconName, className }: { iconName: string; className?: str
 export default function Landing() {
   const [, setLocation] = useLocation();
   const [isMobile, setIsMobile] = useState(false);
+  const { setTheme } = useTheme();
+  
+  // FORCE LIGHT MODE for landing page - user requirement
+  useEffect(() => {
+    setTheme('light');
+  }, [setTheme]);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -87,7 +93,6 @@ export default function Landing() {
         </Button>
       </div>
       
-      <ThemeToggle />
       <LandingHeader />
       <LandingHeaderSpacer />
       
