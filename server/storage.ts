@@ -4043,10 +4043,25 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log('getCityChatrooms called with:', { city, state, country, userId });
       
-      // If no userId provided, use basic city filtering with proper member counts
+      // If no userId provided, use city filtering with LA METRO DUAL VISIBILITY
       if (!userId) {
         const conditions = [eq(citychatrooms.isActive, true)];
-        if (city) conditions.push(eq(citychatrooms.city, city));
+        
+        // LA METRO DUAL VISIBILITY: Apply same pattern as events
+        if (city) {
+          const { isLAMetroCity, getMetroCities } = await import('../shared/constants');
+          
+          if (isLAMetroCity(city) || city === 'Los Angeles Metro') {
+            // Show chatrooms from ALL LA Metro cities  
+            const allMetroCities = getMetroCities('Los Angeles');
+            console.log(`🌍 LA METRO CHATROOMS: Searching for chatrooms in ALL LA metro cities:`, allMetroCities.length, 'cities');
+            conditions.push(inArray(citychatrooms.city, allMetroCities));
+          } else {
+            // Regular city search
+            conditions.push(eq(citychatrooms.city, city));
+          }
+        }
+        
         if (state) conditions.push(eq(citychatrooms.state, state));
         if (country) conditions.push(eq(citychatrooms.country, country));
         
