@@ -17,7 +17,8 @@ import {
   Search,
   Target,
   Zap,
-  ArrowLeft
+  ArrowLeft,
+  X
 } from "lucide-react";
 
 interface MatchInCityProps {

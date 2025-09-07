@@ -146,7 +146,6 @@ import ResetPassword from "@/pages/reset-password";
 import Donate from "@/pages/donate";
 import NotFound from "@/pages/not-found";
 import Itinerary from "@/pages/itinerary";
-import UploadCityPhoto from "@/pages/upload-city-photo";
 import TravelBlog from "@/pages/travel-blog";
 import QuickLogin from "@/pages/quick-login";
 import MatchInCity from "@/pages/match-in-city";
@@ -1036,8 +1035,6 @@ function Router() {
         return <CityPage />;
       case '/users':
         return <UsersPage />;
-      case '/upload-city-photo':
-        return <UploadCityPhoto />;
       case '/settings':
         return <Settings />;
       case '/admin-settings':
