@@ -1,0 +1,48 @@
+> rest-express@1.0.0 dev
+> tsx server/index.ts
+
+The `fetchConnectionCache` option is deprecated (now always `true`)
+Environment check: { BREVO_API_KEY: 'LOADED', NODE_ENV: undefined }
+🚀 REGISTERING CRITICAL API ROUTES FIRST TO BYPASS VITE INTERCEPTION
+✅ CRITICAL API ROUTES REGISTERED BEFORE OTHER MIDDLEWARE
+Starting server initialization...
+Basic routes added, starting lazy route registration...
+Loading minimal routes for startup...
+Quick login fix temporarily disabled for deployment stability
+Minimal routes registered successfully
+Loading main API routes from routes.ts...
+📱 SMS Service: Twilio credentials not configured - SMS notifications disabled
+✅ Main API routes registered successfully
+🚀 REGISTERING CRITICAL API ROUTES TO BYPASS VITE INTERCEPTION
+🔧 Development: Setting up Vite development server...
+✅ Vite development setup successful
+3:58:45 AM [express] serving on port 5000
+🚀 Server successfully started on http://0.0.0.0:5000
+⚠️  Background services temporarily disabled during startup debugging
+✅ Server started successfully (background services disabled)
+Origin: undefined
+Origin: undefined
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Browserslist: browsers data (caniuse-lite) is 11 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+3:58:51 AM [vite] (client) Pre-transform error: /home/runner/workspace/client/src/pages/home.tsx: Expected corresponding JSX closing tag for <div>. (2085:6)
+
+  2083 |
+  2084 |         {/* End of main content */}
+> 2085 |       </main>
+       |       ^
+  2086 |       
+  2087 |       {/* Connect and Destination Modals */}
+  2088 |       <DestinationModal 
+  Plugin: vite:react-babel
+  File: /home/runner/workspace/client/src/pages/home.tsx:2085:6
+  2083|  
+  2084|          {/* End of main content */}
+  2085|        </main>
+     |        ^
+  2086|        
+  2087|        {/* Connect and Destination Modals */}
