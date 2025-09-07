@@ -1592,7 +1592,7 @@ export default function Home() {
       <div className="mb-6 flex justify-center px-4">
         <div className="relative w-full max-w-sm rounded-xl overflow-hidden shadow-xl">
           <img 
-            src="/travelers coffee_1750995178947.png"
+            src={staticHeroImage}
             alt="Travelers connecting at coffee shop"
             className="w-full h-auto object-cover"
           />
