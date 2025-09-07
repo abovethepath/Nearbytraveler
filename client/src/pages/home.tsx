@@ -1970,6 +1970,7 @@ export default function Home() {
                       user={otherUser} 
                       currentUserId={effectiveUser?.id}
                       isCurrentUser={otherUser.id === effectiveUser?.id}
+                      compatibilityData={compatibilityData?.find((match: any) => match.userId === otherUser.id)}
                     />
                   </div>
                 ))
