@@ -716,72 +716,12 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
             <div className="p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-8">⭐ Things I Want to Do</h2>
               
-              {/* City Sections with RED names and BLUE pills that turn GREEN when selected */}
+              {/* Dynamic City Activities - Universal + City-Specific + AI */}
               <div className="space-y-8">
-                {/* New York City, New York */}
-                <div>
-                  <h3 className="text-lg font-semibold text-red-600 mb-4">New York City, New York</h3>
-                  <div className="flex flex-wrap gap-3">
-                    <button className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-green-500 transition-colors">
-                      Harlem culture tours
-                    </button>
-                    <button className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-green-500 transition-colors">
-                      Lower East Side history
-                    </button>
-                    <button className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-green-500 transition-colors">
-                      One World Observatory
-                    </button>
-                  </div>
-                </div>
-
-                {/* Boston, Massachusetts */}
-                <div>
-                  <h3 className="text-lg font-semibold text-red-600 mb-4">Boston, Massachusetts</h3>
-                  <div className="flex flex-wrap gap-3">
-                    <button className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-green-500 transition-colors">
-                      Harvard University campus
-                    </button>
-                    <button className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-green-500 transition-colors">
-                      Boston Symphony concerts
-                    </button>
-                    <button className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-green-500 transition-colors">
-                      New England clams
-                    </button>
-                  </div>
-                </div>
-
-                {/* Los Angeles, California */}
-                <div>
-                  <h3 className="text-lg font-semibold text-red-600 mb-4">Los Angeles, California</h3>
-                  <div className="flex flex-wrap gap-3">
-                    <button className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-green-500 transition-colors">
-                      SoFi Stadium T5
-                    </button>
-                    <button className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-green-500 transition-colors">
-                      Disney Concert Hall performances
-                    </button>
-                    <button className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-green-500 transition-colors">
-                      Food hall adventures
-                    </button>
-                    <button className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-green-500 transition-colors">
-                      Griffith Observatory
-                    </button>
-                    <button className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-green-500 transition-colors">
-                      Santa Monica Pier
-                    </button>
-                    <button className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-green-500 transition-colors">
-                      Santa Monica Beach
-                    </button>
-                    <button className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-green-500 transition-colors">
-                      Getty Museum tours
-                    </button>
-                  </div>
-                </div>
-
-                {/* SELECTED CITY with ALL ACTIVITIES - 30+ choices */}
-                {cityActivities.length > 0 && (
+                {/* Show activities for selected city */}
+                {cityActivities.length > 0 ? (
                   <div>
-                    <h3 className="text-lg font-semibold text-red-600 mb-4">{selectedCity} (Dynamic Activities - {cityActivities.length} total)</h3>
+                    <h3 className="text-lg font-semibold text-red-600 mb-4">{selectedCity}</h3>
                     <div className="flex flex-wrap gap-3">
                       {cityActivities.map((activity) => {
                         const isSelected = userActivities.some(ua => ua.activityId === activity.id);
@@ -828,6 +768,11 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         );
                       })}
                     </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <h3 className="text-lg font-semibold text-red-600 mb-4">{selectedCity}</h3>
+                    <p className="text-gray-600">Loading activities... 🎯</p>
                   </div>
                 )}
 
