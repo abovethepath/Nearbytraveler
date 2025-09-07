@@ -753,10 +753,9 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-blue-900 mb-2">🎯 How City Matching Works</h3>
             <div className="text-sm text-blue-800 space-y-1">
-              <p>• <strong>Choose activities you want to do</strong> → these will transfer to your profile page "Things I want to do in {selectedCity}"</p>
-              <p>• <strong>Add your own activities</strong> → Help others discover new experiences (Taylor Swift November 8th, Pickleball Saturday Mornings Club, etc)</p>
-              <p>• <strong>Edit or delete other experiences</strong> that have expired</p>
-              <p>• <strong>Connect with locals & travelers</strong> who choose the same interests → Plan, meet and explore together</p>
+              <p>• <strong>Choose activities you want to do</strong> → Get matched with others who share your interests</p>
+              <p>• <strong>Add your own activities</strong> → Help others discover new experiences</p>
+              <p>• <strong>Connect with locals & travelers</strong> → Plan meetups and explore together</p>
             </div>
           </div>
         </div>

@@ -12948,7 +12948,7 @@ Questions? Just reply to this message. Welcome aboard!
             .from(userCityInterests)
             .where(
               and(
-                eq(userCityInterests.userId, parseInt(userId as string)),
+                eq(userCityInterests.userId, parseInt(req.header('x-user-id') as string)),
                 eq(userCityInterests.activityId, dbActivityId)
               )
             );
