@@ -87,21 +87,23 @@ export default function ChatroomPage() {
     queryFn: async () => {
       if (!currentUser?.id) throw new Error("User not authenticated");
       
-      const response = await fetch(`/api/chatrooms/${chatroomId}/messages`, {
-        headers: {
-          'x-user-id': currentUser.id.toString()
+      try {
+        const response = await fetch(`/api/chatrooms/${chatroomId}/messages`, {
+          headers: {
+            'x-user-id': currentUser.id.toString()
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch messages: ${response.status} ${response.statusText}`);
         }
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch messages: ${response.status} ${response.statusText}`);
+        
+        const data = await response.json();
+        return data;
+      } catch (error: any) {
+        console.error('Failed to load messages:', error);
+        throw error;
       }
-      
-      const data = await response.json();
-      return data;
-    },
-    onError: (error) => {
-      console.error('Failed to load messages:', error);
     }
   });
 
@@ -210,13 +212,13 @@ export default function ChatroomPage() {
                   <Loader2 className="w-6 h-6 animate-spin" />
                   <span className="ml-2">Loading messages...</span>
                 </div>
-              ) : messages.length === 0 ? (
+              ) : (messages as ChatMessage[]).length === 0 ? (
                 <div className="flex items-center justify-center h-full text-gray-500">
                   <MessageCircle className="w-8 h-8 mr-2" />
                   No messages yet. Start the conversation!
                 </div>
               ) : (
-                messages.map((message) => (
+                (messages as ChatMessage[]).map((message: ChatMessage) => (
                   <div
                     key={message.id}
                     className={`flex ${message.sender_id === currentUser?.id ? 'justify-end' : 'justify-start'}`}
