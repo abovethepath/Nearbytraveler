@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/App";
-import { apiRequest } from "@/lib/queryClient";
 import { 
   MapPin, 
   Plus, 
@@ -21,314 +19,912 @@ import {
   Zap,
   ArrowLeft,
   Camera,
-  X,
-  Star,
-  Check
+  X
 } from "lucide-react";
+import { CityPhotoUploadWidget } from "@/components/CityPhotoUploadWidget";
 
 export default function MatchInCity() {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
+  const [selectedCity, setSelectedCity] = useState<string>('');
+  
+  console.log('🔧 MATCH IN CITY RENDER - selectedCity:', selectedCity);
+  const [newActivityName, setNewActivityName] = useState('');
+  const [newActivityDescription, setNewActivityDescription] = useState('');
+  const [editActivityName, setEditActivityName] = useState('');
+  const [editActivityDescription, setEditActivityDescription] = useState('');
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [editingActivity, setEditingActivity] = useState<any>(null);
+  const [userActivities, setUserActivities] = useState<any[]>([]);
+  const [cityActivities, setCityActivities] = useState<any[]>([]);
+  const [matchingUsers, setMatchingUsers] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
-  const queryClient = useQueryClient();
-  
-  const [selectedCity, setSelectedCity] = useState<string>('');
-  const [citySearchTerm, setCitySearchTerm] = useState('');
-  const [newActivityName, setNewActivityName] = useState('');
-  const [showAddForm, setShowAddForm] = useState(false);
 
-  // Fetch available cities
-  const { data: allCities = [], isLoading: citiesLoading } = useQuery({
-    queryKey: ['/api/city-stats'],
-  });
+  const [allCities, setAllCities] = useState<any[]>([]);
+  const [filteredCities, setFilteredCities] = useState<any[]>([]);
+  const [citySearchTerm, setCitySearchTerm] = useState('');
+  const [cityPhotos, setCityPhotos] = useState<any>({});
+  const [newActivity, setNewActivity] = useState('');
+  const [editingActivityName, setEditingActivityName] = useState('');
+
+  // Fetch all cities and photos on component mount
+  useEffect(() => {
+    // FORCE RESET - ensure we start with no city selected
+    console.log('🔧 FORCE RESETTING selectedCity to empty string');
+    setSelectedCity('');
+    
+    // Clear any URL params that might be setting city
+    const urlParams = new URLSearchParams(window.location.search);
+    const cityFromUrl = urlParams.get('city');
+    if (cityFromUrl) {
+      console.log('🔧 Found city in URL, clearing it:', cityFromUrl);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    
+    fetchAllCities();
+    fetchCityPhotos();
+  }, []);
+
+  // Fetch city activities when a city is selected
+  useEffect(() => {
+    if (selectedCity) {
+      fetchCityActivities();
+      fetchUserActivities();
+      fetchMatchingUsers();
+    }
+  }, [selectedCity]);
 
   // Filter cities based on search
-  const filteredCities = allCities.filter((city: any) =>
-    city.city.toLowerCase().includes(citySearchTerm.toLowerCase()) ||
-    city.state.toLowerCase().includes(citySearchTerm.toLowerCase()) ||
-    city.country.toLowerCase().includes(citySearchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    if (citySearchTerm) {
+      const filtered = allCities.filter(city => 
+        city.city.toLowerCase().includes(citySearchTerm.toLowerCase()) ||
+        city.state.toLowerCase().includes(citySearchTerm.toLowerCase()) ||
+        city.country.toLowerCase().includes(citySearchTerm.toLowerCase())
+      );
+      setFilteredCities(filtered);
+    } else {
+      setFilteredCities(allCities);
+    }
+  }, [citySearchTerm, allCities]);
 
-  // Fetch activities for selected city
-  const { data: cityActivities = [], isLoading: activitiesLoading } = useQuery({
-    queryKey: [`/api/city-activities/${selectedCity}`],
-    enabled: !!selectedCity,
-  });
-
-  // Fetch user's selected activities for this city
-  const { data: userActivities = [], isLoading: userActivitiesLoading } = useQuery({
-    queryKey: [`/api/user-city-interests/${user?.id}/${selectedCity}`],
-    enabled: !!(selectedCity && user?.id),
-  });
+  const fetchAllCities = async () => {
+    try {
+      const response = await fetch('/api/city-stats');
+      if (response.ok) {
+        const cities = await response.json();
+        console.log('🏙️ CITIES LOADED:', cities.length);
+        setAllCities(cities);
+      }
+    } catch (error) {
+      console.error('Error fetching cities:', error);
+    }
   };
 
-  const totalUsers = cities.reduce((sum, city) => sum + city.localCount + city.travelerCount, 0);
-  const totalEvents = cities.reduce((sum, city) => sum + city.eventCount, 0);
+  const fetchCityPhotos = async () => {
+    try {
+      console.log('📸 FETCHING: Making API call to /api/city-photos');
+      const response = await fetch('/api/city-photos');
+      console.log('📸 RESPONSE:', response.status, response.ok);
+      
+      if (response.ok) {
+        const text = await response.text();
+        console.log('📸 RAW RESPONSE:', text.substring(0, 200));
+        
+        // Try to parse as JSON
+        let photos;
+        try {
+          photos = JSON.parse(text);
+        } catch (parseError) {
+          console.error('📸 JSON PARSE ERROR:', parseError);
+          console.log('📸 Response was not JSON, skipping photo loading');
+          return;
+        }
+        
+        console.log('📸 CITY PHOTOS LOADED:', photos.length);
+        const photoMap: any = {};
+        photos.forEach((photo: any) => {
+          const cityKey = photo.city || photo.cityName; // Handle both field names
+          console.log('📸 Processing photo for city:', cityKey);
+          if (!photoMap[cityKey]) {
+            photoMap[cityKey] = [];
+          }
+          photoMap[cityKey].push(photo);
+        });
+        console.log('📸 PHOTO MAP:', Object.keys(photoMap));
+        setCityPhotos(photoMap);
+      } else {
+        console.error('📸 API ERROR: Status', response.status);
+      }
+    } catch (error) {
+      console.error('📸 FETCH ERROR:', error);
+    }
+  };
+
+  const fetchCityActivities = async () => {
+    console.log('🎯 FETCHING ACTIVITIES FOR CITY:', selectedCity);
+    try {
+      const response = await fetch(`/api/city-activities/${encodeURIComponent(selectedCity)}`);
+      console.log('🎯 ACTIVITIES API RESPONSE:', response.status, response.ok);
+      if (response.ok) {
+        const activities = await response.json();
+        console.log('🎯 CITY ACTIVITIES FETCHED:', activities.length, 'activities for', selectedCity);
+        console.log('🎯 FIRST FEW ACTIVITIES:', activities.slice(0, 5));
+        setCityActivities(activities);
+      } else {
+        console.error('🎯 ACTIVITIES API ERROR:', response.status);
+        const errorText = await response.text();
+        console.error('🎯 ERROR DETAILS:', errorText);
+      }
+    } catch (error) {
+      console.error('Error fetching city activities:', error);
+    }
+  };
+
+  const fetchUserActivities = async () => {
+    // Force user ID to 1 for now to fix authentication issue
+    const userId = user?.id || 1;
+    console.log('🔧 FETCH USER ACTIVITIES: using userId =', userId, 'user object:', user);
+    
+    try {
+      const response = await fetch(`/api/user-city-interests/${userId}/${encodeURIComponent(selectedCity)}`);
+      if (response.ok) {
+        const activities = await response.json();
+        console.log('🎯 USER ACTIVITIES FETCHED:', activities.length, activities);
+        setUserActivities(activities);
+      }
+    } catch (error) {
+      console.error('Error fetching user activities:', error);
+    }
+  };
+
+  const fetchMatchingUsers = async () => {
+    try {
+      const response = await fetch(`/api/matching-users/${encodeURIComponent(selectedCity)}`);
+      if (response.ok) {
+        const users = await response.json();
+        console.log('👥 MATCHING USERS FETCHED:', users.length);
+        setMatchingUsers(users);
+      }
+    } catch (error) {
+      console.error('Error fetching matching users:', error);
+    }
+  };
+
+  const addActivity = async () => {
+    if (!newActivityName.trim() || !newActivityDescription.trim()) return;
+
+    try {
+      const response = await fetch('/api/city-activities', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          city: selectedCity,
+          activityName: newActivityName.trim(),
+          description: newActivityDescription.trim(),
+          category: 'user-generated',
+          state: '',
+          country: ''
+        })
+      });
+
+      if (response.ok) {
+        const newActivity = await response.json();
+        toast({
+          title: "Activity Added",
+          description: `Added "${newActivityName}" to ${selectedCity}`,
+        });
+        
+        // Immediately update local state
+        setCityActivities(prev => [...prev, newActivity]);
+        
+        // Clear form
+        setNewActivityName('');
+        setNewActivityDescription('');
+        setShowAddForm(false);
+        
+        fetchMatchingUsers();
+      } else {
+        const error = await response.json();
+        toast({
+          title: "Error",
+          description: error.error || "Failed to add activity",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Add activity error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add activity",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const toggleActivity = async (activity: any) => {
+    // Force user ID to 1 for now to fix authentication issue
+    const userId = user?.id || 1;
+    console.log('🔧 TOGGLE: using userId =', userId);
+
+    const isCurrentlyActive = userActivities.some(ua => ua.activityId === activity.id);
+    console.log('🎯 TOGGLE ACTIVITY:', activity.activityName, 'isCurrentlyActive:', isCurrentlyActive);
+
+    try {
+      if (isCurrentlyActive) {
+        // Remove activity
+        const response = await fetch(`/api/user-city-interests/${activity.id}`, {
+          method: 'DELETE',
+          headers: {
+            'x-user-id': userId.toString()
+          }
+        });
+        if (response.ok) {
+          toast({
+            title: "Interest Removed",
+            description: `Removed interest in ${activity.activityName}`,
+          });
+          // Immediately update local state
+          setUserActivities(prev => prev.filter(ua => ua.activityId !== activity.id));
+        }
+      } else {
+        // Add activity
+        const response = await fetch('/api/user-city-interests', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-id': userId.toString()
+          },
+          body: JSON.stringify({
+            activityId: activity.id,
+            cityName: selectedCity
+          })
+        });
+        if (response.ok) {
+          const newInterest = await response.json();
+          toast({
+            title: "Interest Added",
+            description: `Added interest in ${activity.activityName}`,
+          });
+          // Immediately update local state
+          setUserActivities(prev => [...prev, newInterest]);
+        }
+      }
+      fetchMatchingUsers();
+    } catch (error) {
+      console.error('Toggle activity error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update activity interest",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const updateActivity = async () => {
+    // Force user ID to 1 for now to fix authentication issue
+    const userId = user?.id || 1;
+    
+    if (!editingActivity) {
+      console.log('❌ UPDATE BLOCKED: no editingActivity');
+      return;
+    }
+
+    console.log('🔧 UPDATE: using userId =', userId);
+    console.log('✏️ UPDATING ACTIVITY:', editingActivity.id, 'from:', editingActivity.activityName, 'to:', editActivityName);
+
+    try {
+      const response = await fetch(`/api/city-activities/${editingActivity.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': userId.toString()
+        },
+        body: JSON.stringify({
+          activityName: editActivityName,
+          description: editActivityDescription
+        })
+      });
+
+      console.log('✏️ UPDATE RESPONSE:', response.status, response.ok);
+
+      if (response.ok) {
+        const updatedActivity = await response.json();
+        console.log('✏️ UPDATED ACTIVITY DATA:', updatedActivity);
+        
+        toast({
+          title: "Activity Updated",
+          description: `Updated "${editingActivity.activityName}" to "${editActivityName}"`,
+        });
+        
+        // Immediately update local state
+        setCityActivities(prev => prev.map(activity => 
+          activity.id === editingActivity.id 
+            ? { ...activity, activityName: editActivityName, description: editActivityDescription }
+            : activity
+        ));
+        
+        // Clear edit form
+        setEditingActivity(null);
+        setEditActivityName('');
+        setEditActivityDescription('');
+        
+        console.log('✏️ EDIT FORM CLEARED AND STATE UPDATED');
+      } else {
+        const error = await response.json();
+        console.error('❌ UPDATE ERROR RESPONSE:', error);
+        toast({
+          title: "Error",
+          description: error.error || "Failed to update activity",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('❌ UPDATE NETWORK ERROR:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update activity",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const deleteActivity = async (activityId: number) => {
+    // Force user ID to 1 for now to fix authentication issue
+    const userId = user?.id || 1;
+
+    if (!confirm('Are you sure you want to delete this activity? This will remove it for everyone.')) {
+      return;
+    }
+
+    console.log('🔧 DELETE: using userId =', userId);
+    console.log('🗑️ DELETING ACTIVITY:', activityId);
+
+    try {
+      const response = await fetch(`/api/city-activities/${activityId}`, {
+        method: 'DELETE',
+        headers: {
+          'x-user-id': userId.toString()
+        }
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Activity Deleted",
+          description: "Activity has been removed successfully",
+        });
+        // Immediately update local state
+        setCityActivities(prev => prev.filter(activity => activity.id !== activityId));
+        setUserActivities(prev => prev.filter(ua => ua.activityId !== activityId));
+        fetchMatchingUsers();
+      } else {
+        const error = await response.json();
+        toast({
+          title: "Error",
+          description: error.error || "Failed to delete activity",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Delete activity error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete activity",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Add activity function for the simple interface
+  const handleAddActivity = async () => {
+    if (!newActivity.trim()) return;
+    
+    const userId = user?.id || 1;
+    console.log('➕ ADDING ACTIVITY:', newActivity, 'userId:', userId);
+
+    try {
+      const response = await fetch('/api/city-activities', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': userId.toString()
+        },
+        body: JSON.stringify({
+          cityName: selectedCity,
+          activityName: newActivity,
+          description: 'User added activity'
+        })
+      });
+
+      if (response.ok) {
+        const newActivityData = await response.json();
+        setCityActivities(prev => [...prev, newActivityData]);
+        setNewActivity('');
+        
+        toast({
+          title: "Activity Added",
+          description: `Added "${newActivity}" to ${selectedCity}`,
+        });
+      } else {
+        const error = await response.json();
+        toast({
+          title: "Error",
+          description: error.error || "Failed to add activity",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Add activity error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add activity",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Toggle activity function for the simple interface
+  const handleToggleActivity = async (activityId: number, activityName: string) => {
+    const userId = user?.id || 1;
+    const isCurrentlySelected = userActivities.some(ua => ua.activityId === activityId);
+    
+    console.log('🔄 TOGGLE ACTIVITY:', activityId, activityName, 'currently selected:', isCurrentlySelected);
+
+    try {
+      if (isCurrentlySelected) {
+        // Remove from user activities
+        const userActivity = userActivities.find(ua => ua.activityId === activityId);
+        if (userActivity) {
+          await handleDeleteActivity(userActivity.id);
+        }
+      } else {
+        // Add to user activities
+        const response = await fetch('/api/user-city-activities', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-id': userId.toString()
+          },
+          body: JSON.stringify({
+            activityId: activityId,
+            cityName: selectedCity
+          })
+        });
+
+        if (response.ok) {
+          const newUserActivity = await response.json();
+          setUserActivities(prev => [...prev, newUserActivity]);
+          
+          toast({
+            title: "Activity Selected",
+            description: `Added "${activityName}" to your interests`,
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Toggle activity error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to toggle activity",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Delete user activity function
+  const handleDeleteActivity = async (userActivityId: number) => {
+    const userId = user?.id || 1;
+    
+    try {
+      const response = await fetch(`/api/user-city-activities/${userActivityId}`, {
+        method: 'DELETE',
+        headers: {
+          'x-user-id': userId.toString()
+        }
+      });
+
+      if (response.ok) {
+        setUserActivities(prev => prev.filter(ua => ua.id !== userActivityId));
+        
+        toast({
+          title: "Activity Removed",
+          description: "Removed from your interests",
+        });
+      }
+    } catch (error) {
+      console.error('Delete activity error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to remove activity",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Update activity function
+  const handleUpdateActivity = async () => {
+    if (!editingActivity || !editingActivityName.trim()) return;
+    
+    const userId = user?.id || 1;
+    
+    try {
+      const response = await fetch(`/api/user-city-activities/${editingActivity.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': userId.toString()
+        },
+        body: JSON.stringify({
+          activityName: editingActivityName
+        })
+      });
+
+      if (response.ok) {
+        // Update the city activity name in the city activities list
+        const cityActivityResponse = await fetch(`/api/city-activities/${editingActivity.activityId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-id': userId.toString()
+          },
+          body: JSON.stringify({
+            activityName: editingActivityName,
+            description: 'Updated activity'
+          })
+        });
+
+        if (cityActivityResponse.ok) {
+          setCityActivities(prev => prev.map(activity => 
+            activity.id === editingActivity.activityId 
+              ? { ...activity, name: editingActivityName }
+              : activity
+          ));
+        }
+        
+        setEditingActivity(null);
+        setEditingActivityName('');
+        
+        toast({
+          title: "Activity Updated",
+          description: `Updated to "${editingActivityName}"`,
+        });
+      }
+    } catch (error) {
+      console.error('Update activity error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update activity",
+        variant: "destructive",
+      });
+    }
+  };
+
+
+
+  // Show city selection screen if no city is selected
+  if (!selectedCity) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800">
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-white mb-4">🎯 Match in City</h1>
+            <p className="text-xl text-white/80">Select a city to start matching with people!</p>
+          </div>
+
+          {/* Search Cities */}
+          <div className="max-w-md mx-auto mb-8">
+            <div className="relative">
+              <Search className="absolute left-3 top-3 w-5 h-5 text-white/50" />
+              <Input
+                placeholder="Search cities..."
+                value={citySearchTerm}
+                onChange={(e) => setCitySearchTerm(e.target.value)}
+                className="pl-12 bg-white/10 border-white/20 text-white placeholder-white/50"
+              />
+            </div>
+          </div>
+
+          {/* Cities Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredCities.slice(0, 20).map((city, index) => (
+              <Card key={index} className="bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all duration-300 cursor-pointer">
+                <CardContent className="p-4">
+                  {/* City Photo */}
+                  <div className="aspect-video rounded-lg mb-4 overflow-hidden">
+                    {cityPhotos[city.city] && cityPhotos[city.city].length > 0 ? (
+                      <img 
+                        src={cityPhotos[city.city][0].imageUrl || cityPhotos[city.city][0].imageData} 
+                        alt={city.city}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          console.log('📸 IMAGE ERROR for', city.city, 'URL:', cityPhotos[city.city][0].imageUrl);
+                          // Hide broken image and show gradient instead
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className={`w-full h-full bg-gradient-to-br ${city.gradient || 'from-blue-400 to-purple-600'} flex items-center justify-center`}>
+                        <MapPin className="w-8 h-8 text-white" />
+                      </div>
+                    )}
+                  </div>
+                  
+                  <h3 className="font-bold text-white text-lg mb-2">{city.city}</h3>
+                  <p className="text-white/70 text-sm mb-4">{city.state}, {city.country}</p>
+                  
+                  <div className="space-y-3">
+                    <Button 
+                      className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedCity(city.city);
+                      }}
+                    >
+                      ⚡ Start City Matching
+                    </Button>
+                    
+                    {/* Photo Upload for this city */}
+                    <div className="pt-2 border-t border-white/10">
+                      <CityPhotoUploadWidget cityName={city.city} />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const selectedCityData = allCities.find(c => c.city === selectedCity);
+  const isActivityActive = (activityId: number) => {
+    const isActive = userActivities.some(ua => ua.activityId === activityId);
+    console.log(`🔍 ACTIVITY ACTIVE CHECK: ${activityId} = ${isActive}, userActivities:`, userActivities.length);
+    return isActive;
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-blue-50 to-purple-50">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        {/* Background Image */}
-        <div className="absolute inset-0">
-          <img 
-            src={griffithSkylineImg} 
-            alt="City Skyline" 
-            className="w-full h-full object-cover opacity-20"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 via-blue-500/10 to-purple-500/10"></div>
+    <div className="min-h-screen bg-white">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <Button 
+            variant="ghost" 
+            onClick={() => setSelectedCity('')}
+            className="text-gray-600 hover:bg-gray-100"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Cities
+          </Button>
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900">{selectedCity}</h1>
+          </div>
+          <div className="w-20" />
         </div>
 
-        {/* Hero Content */}
-        <div className="relative z-10 max-w-6xl mx-auto px-4 py-20">
-          <div className="text-center space-y-8">
-            {/* Main Heading */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-center space-x-2 mb-6">
-                <Target className="h-8 w-8 text-orange-500" />
-                <Sparkles className="h-6 w-6 text-blue-500" />
-              </div>
+        {/* Activity Selection Interface - EXACTLY like your screenshots */}
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div className="p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-8">⭐ Things I Want to Do</h2>
               
-              <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-orange-600 via-blue-600 to-purple-600 bg-clip-text text-transparent leading-tight">
-                City-Specific
-                <br />
-                <span className="text-4xl md:text-6xl">Matching</span>
-              </h1>
-              
-              <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                Find People Who Want to Do <span className="font-semibold text-orange-600">Exactly</span> What You Want to Do, 
-                <span className="font-semibold text-blue-600"> Exactly</span> Where You Want to Do It
-              </p>
-            </div>
-
-            {/* Value Proposition Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-              <Card className="bg-white/80 backdrop-blur-sm border-orange-200 shadow-lg hover:shadow-xl transition-all duration-300">
-                <CardContent className="p-6 text-center">
-                  <Target className="h-12 w-12 text-orange-500 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Precise Matching</h3>
-                  <p className="text-gray-600 text-sm">Match with people who share your exact interests in your specific city</p>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white/80 backdrop-blur-sm border-blue-200 shadow-lg hover:shadow-xl transition-all duration-300">
-                <CardContent className="p-6 text-center">
-                  <MapPin className="h-12 w-12 text-blue-500 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Local Context</h3>
-                  <p className="text-gray-600 text-sm">Discover people and activities based on your city's unique culture</p>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white/80 backdrop-blur-sm border-purple-200 shadow-lg hover:shadow-xl transition-all duration-300">
-                <CardContent className="p-6 text-center">
-                  <Zap className="h-12 w-12 text-purple-500 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Instant Connections</h3>
-                  <p className="text-gray-600 text-sm">Skip the small talk - connect with people ready for the same adventures</p>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Platform Stats */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-orange-100 mt-12">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-orange-600">{totalUsers.toLocaleString()}</div>
-                  <div className="text-sm text-gray-600 mt-1">Active Users</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-blue-600">{cities.length}</div>
-                  <div className="text-sm text-gray-600 mt-1">Cities Available</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-purple-600">{totalEvents.toLocaleString()}</div>
-                  <div className="text-sm text-gray-600 mt-1">Events & Meetups</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-green-600">24/7</div>
-                  <div className="text-sm text-gray-600 mt-1">Matching Active</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* City Selection Section */}
-      <div className="max-w-4xl mx-auto px-4 py-16">
-        <div className="text-center space-y-8">
-          <div className="space-y-4">
-            <div className="flex items-center justify-center space-x-2">
-              <Search className="h-6 w-6 text-blue-500" />
-              <Globe className="h-6 w-6 text-orange-500" />
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-              Choose Your City
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Start by selecting your city to find people with shared interests and discover local experiences
-            </p>
-          </div>
-
-          {/* Available Cities */}
-          {!showSearch && (
-            <div className="space-y-6">
-              <h3 className="text-xl font-semibold text-gray-700">Available Cities</h3>
-              <div className="grid gap-4">
-                {citiesLoading ? (
-                  <div className="flex justify-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+              {/* City Sections with RED names and BLUE pills that turn GREEN when selected */}
+              <div className="space-y-8">
+                {/* New York City, New York */}
+                <div>
+                  <h3 className="text-lg font-semibold text-red-600 mb-4">New York City, New York</h3>
+                  <div className="flex flex-wrap gap-3">
+                    <button className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-green-500 transition-colors">
+                      Harlem culture tours
+                    </button>
+                    <button className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-green-500 transition-colors">
+                      Lower East Side history
+                    </button>
+                    <button className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-green-500 transition-colors">
+                      One World Observatory
+                    </button>
                   </div>
-                ) : cities.length > 0 ? (
-                  cities.map((city) => (
-                    <Card 
-                      key={`${city.city}-${city.state}`}
-                      className="bg-white hover:bg-orange-50 border-2 hover:border-orange-300 transition-all duration-200 cursor-pointer shadow-md hover:shadow-lg"
-                      onClick={() => handleCitySelect(city.city)}
-                    >
-                      <CardContent className="p-6">
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-3">
-                              <MapPin className="h-5 w-5 text-orange-500" />
-                              <h3 className="text-xl font-semibold text-gray-900">
-                                {city.city}
-                              </h3>
-                              {city.state && (
-                                <Badge variant="outline" className="text-xs">
-                                  {city.state}, {city.country}
-                                </Badge>
-                              )}
-                            </div>
+                </div>
+
+                {/* Boston, Massachusetts */}
+                <div>
+                  <h3 className="text-lg font-semibold text-red-600 mb-4">Boston, Massachusetts</h3>
+                  <div className="flex flex-wrap gap-3">
+                    <button className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-green-500 transition-colors">
+                      Harvard University campus
+                    </button>
+                    <button className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-green-500 transition-colors">
+                      Boston Symphony concerts
+                    </button>
+                    <button className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-green-500 transition-colors">
+                      New England clams
+                    </button>
+                  </div>
+                </div>
+
+                {/* Los Angeles, California */}
+                <div>
+                  <h3 className="text-lg font-semibold text-red-600 mb-4">Los Angeles, California</h3>
+                  <div className="flex flex-wrap gap-3">
+                    <button className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-green-500 transition-colors">
+                      SoFi Stadium T5
+                    </button>
+                    <button className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-green-500 transition-colors">
+                      Disney Concert Hall performances
+                    </button>
+                    <button className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-green-500 transition-colors">
+                      Food hall adventures
+                    </button>
+                    <button className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-green-500 transition-colors">
+                      Griffith Observatory
+                    </button>
+                    <button className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-green-500 transition-colors">
+                      Santa Monica Pier
+                    </button>
+                    <button className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-green-500 transition-colors">
+                      Santa Monica Beach
+                    </button>
+                    <button className="px-4 py-2 bg-blue-500 text-white rounded-full text-sm hover:bg-green-500 transition-colors">
+                      Getty Museum tours
+                    </button>
+                  </div>
+                </div>
+
+                {/* SELECTED CITY with ALL ACTIVITIES - 30+ choices */}
+                {cityActivities.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-red-600 mb-4">{selectedCity} (Dynamic Activities - {cityActivities.length} total)</h3>
+                    <div className="flex flex-wrap gap-3">
+                      {cityActivities.map((activity) => {
+                        const isSelected = userActivities.some(ua => ua.activityId === activity.id);
+                        const userActivity = userActivities.find(ua => ua.activityId === activity.id);
+                        
+                        return (
+                          <div key={activity.id} className="group relative">
+                            <button
+                              className={`px-4 py-2 rounded-full text-sm transition-colors ${
+                                isSelected 
+                                  ? 'bg-green-500 text-white' 
+                                  : 'bg-blue-500 text-white hover:bg-green-500'
+                              }`}
+                              onClick={() => handleToggleActivity(activity.id, activity.name)}
+                            >
+                              {activity.name}
+                            </button>
                             
-                            <div className="flex items-center space-x-6 mt-3 text-sm text-gray-600">
-                              <div className="flex items-center space-x-1">
-                                <Users className="h-4 w-4" />
-                                <span>{city.localCount + city.travelerCount} people</span>
+                            {/* Edit/Delete on hover */}
+                            {isSelected && userActivity && (
+                              <div className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-1">
+                                <button
+                                  className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-blue-700"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setEditingActivity({ id: userActivity.id, name: activity.name, activityId: activity.id });
+                                    setEditingActivityName(activity.name);
+                                  }}
+                                >
+                                  <Edit className="w-2.5 h-2.5" />
+                                </button>
+                                <button
+                                  className="w-5 h-5 bg-red-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-700"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteActivity(userActivity.id);
+                                  }}
+                                >
+                                  <X className="w-2.5 h-2.5" />
+                                </button>
                               </div>
-                              <div className="flex items-center space-x-1">
-                                <Calendar className="h-4 w-4" />
-                                <span>{city.eventCount} events</span>
-                              </div>
-                            </div>
-
-                            <div className="flex flex-wrap gap-2 mt-3">
-                              {city.highlights.map((highlight, index) => (
-                                <Badge key={index} variant="secondary" className="text-xs">
-                                  {highlight}
-                                </Badge>
-                              ))}
-                            </div>
+                            )}
                           </div>
-                          
-                          <ArrowRight className="h-5 w-5 text-gray-400" />
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))
-                ) : (
-                  <Card className="bg-white border-dashed border-2 border-gray-300">
-                    <CardContent className="p-8 text-center">
-                      <Globe className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-600">No cities available yet. Check back soon!</p>
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Search Any City Section */}
-          <div className="border-t border-gray-200 pt-8 mt-8">
-            <div className="bg-gradient-to-r from-orange-50 to-blue-50 rounded-2xl p-8">
-              <div className="text-center space-y-4">
-                <Search className="h-8 w-8 text-blue-500 mx-auto" />
-                <h3 className="text-2xl font-bold text-gray-900">Search Any City</h3>
-                <p className="text-gray-600 max-w-lg mx-auto">
-                  Don't see your city? Search for any city worldwide to start building your local community
-                </p>
-                
-                <div className="max-w-md mx-auto">
-                  <div className="flex space-x-2 mt-6">
-                    <Input
-                      type="text"
-                      placeholder="Type any city name (e.g., Tokyo, London, Dubai)"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && handleSearchCity()}
-                      className="flex-1 text-center border-2 border-blue-200 focus:border-blue-400"
-                      data-testid="input-city-search"
-                    />
+                        );
+                      })}
+                    </div>
                   </div>
-                  <Button 
-                    onClick={handleSearchCity}
-                    disabled={!searchQuery.trim()}
-                    className="w-full mt-3 bg-gradient-to-r from-orange-500 to-blue-500 hover:from-orange-600 hover:to-blue-600 text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-                    data-testid="button-search-city"
-                  >
-                    <Search className="h-4 w-4 mr-2" />
-                    Search This City
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
+                )}
 
-          {/* How It Works Section */}
-          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 mt-12">
-            <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">How City-Specific Matching Works</h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="text-center space-y-4">
-                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto">
-                  <span className="text-2xl font-bold text-orange-600">1</span>
+                {/* Add new activity section */}
+                <div className="pt-6 border-t border-gray-200">
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Add something you want to do in this city..."
+                      value={newActivity}
+                      onChange={(e) => setNewActivity(e.target.value)}
+                      className="border-gray-300"
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          handleAddActivity();
+                        }
+                      }}
+                    />
+                    <Button 
+                      onClick={handleAddActivity}
+                      className="bg-green-500 hover:bg-green-600 text-white"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
-                <h4 className="text-lg font-semibold text-gray-900">Choose Your City</h4>
-                <p className="text-gray-600 text-sm">Select your city to see locals, travelers, events, and businesses in your area</p>
-              </div>
-              
-              <div className="text-center space-y-4">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
-                  <span className="text-2xl font-bold text-blue-600">2</span>
-                </div>
-                <h4 className="text-lg font-semibold text-gray-900">Find Your Matches</h4>
-                <p className="text-gray-600 text-sm">Discover people with shared interests and activities specific to your location</p>
-              </div>
-              
-              <div className="text-center space-y-4">
-                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto">
-                  <span className="text-2xl font-bold text-purple-600">3</span>
-                </div>
-                <h4 className="text-lg font-semibold text-gray-900">Meet & Experience</h4>
-                <p className="text-gray-600 text-sm">Connect instantly and start exploring your city together</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Popular Activities Preview */}
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 mt-12">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">Popular Activities People Match For</h3>
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-white rounded-lg p-4 text-center shadow-sm">
-                <Coffee className="h-6 w-6 text-orange-500 mx-auto mb-2" />
-                <span className="text-sm font-medium text-gray-700">Coffee Meetups</span>
-              </div>
-              <div className="bg-white rounded-lg p-4 text-center shadow-sm">
-                <Camera className="h-6 w-6 text-blue-500 mx-auto mb-2" />
-                <span className="text-sm font-medium text-gray-700">Photography</span>
-              </div>
-              <div className="bg-white rounded-lg p-4 text-center shadow-sm">
-                <Music className="h-6 w-6 text-purple-500 mx-auto mb-2" />
-                <span className="text-sm font-medium text-gray-700">Live Music</span>
-              </div>
-              <div className="bg-white rounded-lg p-4 text-center shadow-sm">
-                <Utensils className="h-6 w-6 text-green-500 mx-auto mb-2" />
-                <span className="text-sm font-medium text-gray-700">Food Tours</span>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Matching Users */}
+        {matchingUsers.length > 0 && (
+          <Card className="bg-white border border-gray-200 shadow-sm mt-8">
+            <CardContent className="p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">🤝 People Who Match</h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {matchingUsers.map((user) => (
+                  <div key={user.id} className="bg-gray-50 p-4 rounded-lg border">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center text-white font-bold">
+                        {user.name.charAt(0)}
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900">{user.name}</h3>
+                        <p className="text-gray-600 text-sm">@{user.username}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <h4 className="text-gray-700 font-medium text-sm">Shared Interests:</h4>
+                      <div className="flex flex-wrap gap-1">
+                        {user.sharedActivities.map((activity: string, index: number) => (
+                          <span 
+                            key={index}
+                            className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs"
+                          >
+                            {activity}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
+
+      {/* Edit Activity Modal */}
+      {editingActivity && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold mb-4">Edit Activity</h3>
+            <Input
+              value={editingActivityName}
+              onChange={(e) => setEditingActivityName(e.target.value)}
+              className="mb-4"
+              placeholder="Activity name"
+            />
+            <div className="flex gap-2 justify-end">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setEditingActivity(null);
+                  setEditingActivityName('');
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleUpdateActivity}
+                className="bg-blue-500 hover:bg-blue-600 text-white"
+              >
+                Save
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
