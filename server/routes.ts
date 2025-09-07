@@ -25,6 +25,7 @@ import { businessProximityEngine } from "./businessProximityNotificationEngine";
 import { smsService } from "./services/smsService";
 import QRCode from "qrcode";
 import { detectMetroArea, getMetroAreaName } from '../shared/metro-areas';
+import { getMetroArea } from '../shared/constants';
 
 import { 
   secretLocalExperienceLikes, 
@@ -2817,11 +2818,22 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       // Auto-create city for ALL user types (locals, travelers, businesses) to ensure discover page completeness
       if (user.hometownCity && user.hometownCountry) {
         try {
-          if (process.env.NODE_ENV === 'development') console.log(`Creating city for new user: ${user.hometownCity}, ${user.hometownState}, ${user.hometownCountry}`);
+          // METRO CONSOLIDATION AT SIGNUP: Check if hometown is LA Metro suburb
+          let cityToCreate = user.hometownCity;
+          const metroArea = getMetroArea(user.hometownCity);
+          if (metroArea && metroArea !== user.hometownCity) {
+            cityToCreate = metroArea;
+            console.log(`🌍 SIGNUP METRO CONSOLIDATION: ${user.hometownCity} → ${metroArea}`);
+            // Update user's hometown to consolidated city
+            user.hometownCity = metroArea;
+            await storage.updateUser(user.id, { hometownCity: metroArea });
+          }
+          
+          if (process.env.NODE_ENV === 'development') console.log(`Creating city for new user: ${cityToCreate}, ${user.hometownState}, ${user.hometownCountry}`);
 
-          // Ensure city exists in discover page
+          // Ensure city exists in discover page (using consolidated city)
           await storage.ensureCityExists(
-            user.hometownCity,
+            cityToCreate,
             user.hometownState || '',
             user.hometownCountry
           );
@@ -2829,12 +2841,12 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           // For locals only, also create city page with secret activities
           if (user.userType === 'local') {
             const cityPage = await storage.ensureCityPageExists(
-              user.hometownCity,
+              cityToCreate,  // Use consolidated city
               user.hometownState || '',
               user.hometownCountry,
               user.id
             );
-            if (process.env.NODE_ENV === 'development') console.log(`✓ Created city page for ${user.hometownCity}`);
+            if (process.env.NODE_ENV === 'development') console.log(`✓ Created city page for ${cityToCreate}`);
           }
         } catch (error: any) {
           if (process.env.NODE_ENV === 'development') console.error('Error creating city for user:', error);
@@ -3574,19 +3586,31 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       // Auto-create city for ALL user types (locals, travelers, businesses) to ensure discover page completeness
       if (userData.hometownCity && userData.hometownCountry) {
         try {
-          if (process.env.NODE_ENV === 'development') console.log(`Creating city for new user: ${userData.hometownCity}, ${userData.hometownState}, ${userData.hometownCountry}`);
+          // METRO CONSOLIDATION AT SIGNUP: Check if hometown is LA Metro suburb
+          let cityToCreate = userData.hometownCity;
+          const metroArea = getMetroArea(userData.hometownCity);
+          if (metroArea && metroArea !== userData.hometownCity) {
+            cityToCreate = metroArea;
+            console.log(`🌍 SIGNUP METRO CONSOLIDATION: ${userData.hometownCity} → ${metroArea}`);
+            // Update user's hometown to consolidated city
+            userData.hometownCity = metroArea;
+            user.hometownCity = metroArea;
+            await storage.updateUser(user.id, { hometownCity: metroArea });
+          }
+          
+          if (process.env.NODE_ENV === 'development') console.log(`Creating city for new user: ${cityToCreate}, ${userData.hometownState}, ${userData.hometownCountry}`);
 
-          // Ensure city exists in discover page
+          // Ensure city exists in discover page (using consolidated city)
           await storage.ensureCityExists(
-            userData.hometownCity,
+            cityToCreate,
             userData.hometownState || '',
             userData.hometownCountry
           );
 
-          // For locals only, also create city page with secret activities
+          // For locals only, also create city page with secret activities  
           if (userData.userType === 'local') {
             const cityPage = await storage.ensureCityPageExists(
-              userData.hometownCity,
+              cityToCreate,  // Use consolidated city
               userData.hometownState || null,
               userData.hometownCountry,
               user.id

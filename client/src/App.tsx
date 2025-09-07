@@ -172,6 +172,7 @@ import { FloatingChatManager } from "@/components/instant-messaging/FloatingChat
 import IMNotificationManager from "@/components/instant-messaging/IMNotification";
 import type { User } from "@shared/schema";
 import { authStorage } from "@/lib/auth";
+import { getMetroArea } from "@shared/constants";
 import websocketService from "@/services/websocketService";
 
 // Simple auth context
@@ -983,7 +984,20 @@ function Router() {
       case '/cities':
         return <Discover />;
       case '/match-in-city':
-        return <MatchInCity />;
+        // REDIRECT to consolidated city route - prevent LA Metro suburb selection
+        const user = authStorage.getUser();
+        if (user) {
+          // Use their travel destination if traveling, otherwise hometown
+          const effectiveCity = (user as any)?.destinationCity || user.hometownCity || 'Los Angeles Metro';
+          const consolidatedCity = getMetroArea(effectiveCity) || effectiveCity;
+          console.log(`🌍 METRO CONSOLIDATION REDIRECT: /match-in-city → /city/${consolidatedCity}/match`);
+          setLocation(`/city/${encodeURIComponent(consolidatedCity)}/match`);
+          return null;
+        }
+        // Fallback to LA Metro for unauthenticated users
+        console.log(`🌍 METRO CONSOLIDATION REDIRECT: /match-in-city → /city/Los Angeles Metro/match (fallback)`);
+        setLocation('/city/Los Angeles Metro/match');
+        return null;
       case '/share-qr':
         return <ShareQR />;
 

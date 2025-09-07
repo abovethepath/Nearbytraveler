@@ -10,7 +10,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/App";
-import { getMetroArea } from "@shared/constants";
 import cityMatchingIllustration from "@assets/image_1756935226547.png";
 import { 
   MapPin, 
@@ -32,10 +31,9 @@ import {
 
 // Removed problematic city images and photo gallery functions
 
-// ENABLED: Metro consolidation to fix LA Metro activities
+// DISABLED: Metro consolidation per user request - return original city names
 const consolidateToMetroArea = (city: string, state?: string): string => {
-  const metroArea = getMetroArea(city);
-  return metroArea || city; // Return metro name if found, otherwise original city
+  return city; // No consolidation
 };
 
 // Universal activities that apply to ALL cities worldwide for fast loading - TRAVELER FOCUSED
@@ -1125,12 +1123,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
           queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
         }
       } else {
-        // Add activity - CONSOLIDATE CITY NAME TO METRO
-        const consolidatedCityName = consolidateToMetroArea(selectedCity);
+        // Add activity
         console.log('🚀 Making POST request with:', {
           activityId: activity.id,
-          originalCity: selectedCity,
-          consolidatedCity: consolidatedCityName,
+          cityName: selectedCity,
           userId: userId.toString()
         });
         
@@ -1142,7 +1138,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
           },
           body: JSON.stringify({
             activityId: activity.id,
-            cityName: consolidatedCityName  // Use consolidated name!
+            cityName: selectedCity
           })
         });
         
