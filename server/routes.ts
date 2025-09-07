@@ -3865,8 +3865,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
       // AUTOMATICALLY CONNECT ALL NEW USERS TO NEARBYTRAVELER
       try {
-        const nearbytravelerUser = await storage.getUserByUsername('nearbytrav');
-        if (nearbytravelerUser && user.username !== 'nearbytrav') {
+        const nearbytravelerUser = await storage.getUserByUsername('nearbytravlr');
+        if (nearbytravelerUser && user.username !== 'nearbytravlr') {
           // Create automatic connection between new user and nearbytraveler
           const connectionData = {
             requesterId: nearbytravelerUser.id,
@@ -4001,7 +4001,7 @@ Ready to start connecting? Questions? Just reply anytime!
         return res.status(400).json({ message: "This endpoint is only for business users" });
       }
 
-      const nearbytravelerUser = await storage.getUserByUsername('nearbytraveler');
+      const nearbytravelerUser = await storage.getUserByUsername('nearbytravlr');
       if (!nearbytravelerUser) {
         return res.status(404).json({ message: "Nearbytraveler user not found" });
       }
@@ -4657,7 +4657,7 @@ Questions? Just reply to this message. Welcome aboard!
         // CRITICAL: Check if business user needs welcome message from @nearbytraveler
         if (updatedUser.userType === 'business') {
           try {
-            const nearbytravelerUser = await storage.getUserByUsername('nearbytrav');
+            const nearbytravelerUser = await storage.getUserByUsername('nearbytravlr');
             if (nearbytravelerUser) {
               // Check if connection already exists
               const existingConnection = await db
