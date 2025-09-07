@@ -36,11 +36,11 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
 
-  // Fetch city-specific activities - AGGRESSIVE REFRESH FOR TESTING
+  // Fetch city-specific activities
   const { data: cityActivities = [], isLoading: loadingCityActivities } = useQuery({
     queryKey: [`/api/user-city-interests/${userId}`],
-    staleTime: 0, // Always fetch fresh data for testing
-    gcTime: 0, // Don't cache for testing
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 10, // 10 minutes
   });
 
   // Fetch user profile with general interests/activities/events
