@@ -79,27 +79,22 @@ export default function UserCard({
       onClick={handleCardClick}
       data-testid={`user-card-${user.id}`}
     >
-      {/* Header with gradient background */}
-      <div className="relative h-20 bg-gradient-to-r from-blue-500 to-purple-600">
-        <div className="absolute -bottom-4 left-4">
-          <SimpleAvatar 
-            user={user} 
-            size="lg" 
-            className="border-4 border-white shadow-lg w-10 h-10"
-          />
-        </div>
-      </div>
-    
-      <CardContent className="p-4 pt-6">
+      <CardContent className="p-4 pt-4">
         {/* User Info */}
         <div className="space-y-3">
-          <div>
+          {/* Large Avatar */}
+          <div className="flex justify-center">
+            <SimpleAvatar 
+              user={user} 
+              size="xl" 
+              className="border-4 border-gray-200 dark:border-gray-600 shadow-lg w-20 h-20"
+            />
+          </div>
+          
+          <div className="text-center">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
-              {user.name || `@${user.username}`}
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
               @{user.username}
-            </p>
+            </h3>
           </div>
           
           {/* Location and Travel Info */}
@@ -110,7 +105,7 @@ export default function UserCard({
                 const currentOrNextTrip = getCurrentOrNextTrip((user as any).travelPlans);
                 if (currentOrNextTrip) {
                   return (
-                    <div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
+                    <div className="flex items-center justify-center gap-2 text-sm text-blue-600 dark:text-blue-400">
                       {currentOrNextTrip.isCurrent ? '🧳' : '✈️'} 
                       <span className="truncate">
                         {currentOrNextTrip.isCurrent ? 'Traveling to' : 'Next trip to'} {currentOrNextTrip.destination.split(',')[0]}
@@ -123,7 +118,7 @@ export default function UserCard({
               // Fallback to existing logic for backward compatibility
               if (user.isCurrentlyTraveling && user.travelDestination) {
                 return (
-                  <div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
+                  <div className="flex items-center justify-center gap-2 text-sm text-blue-600 dark:text-blue-400">
                     🧳 <span className="truncate">Traveling to {user.travelDestination.split(',')[0]}</span>
                   </div>
                 );
@@ -131,14 +126,14 @@ export default function UserCard({
               
               return null;
             })() as React.ReactNode}
-            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+            <div className="flex items-center justify-center gap-2 text-sm text-gray-600 dark:text-gray-400">
               🏠 <span className="truncate">Local in {user.hometownCity ? user.hometownCity.split(',')[0] : getLocation()}</span>
             </div>
           </div>
           
           {/* Bio */}
           {user.bio && (
-            <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2 leading-relaxed">
+            <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2 leading-relaxed text-center">
               {String(user.bio)}
             </p>
           )}
@@ -165,15 +160,17 @@ export default function UserCard({
               (data.sameGender ? 1 : 0);
             
             return totalCommon > 0 ? (
-              <div className="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full dark:bg-blue-900/30 dark:text-blue-400 inline-block">
-                {totalCommon} Things in Common
+              <div className="flex justify-center">
+                <div className="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full dark:bg-blue-900/30 dark:text-blue-400 inline-block">
+                  {totalCommon} Things in Common
+                </div>
               </div>
             ) : null;
           })()}
           
           {/* Interests */}
           {(user.interests?.length || 0) > 0 && (
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 justify-center">
               {user.interests?.slice(0, 3).map((interest) => (
                 <span 
                   key={interest} 
