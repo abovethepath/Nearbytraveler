@@ -760,6 +760,13 @@ export default function Home() {
 
 
 
+  // Handle destination selection from DestinationModal
+  const handleDestinationSelected = (destination: any) => {
+    console.log('🎯 Destination selected:', destination);
+    setShowDestinationModal(false);
+    // Additional logic for handling destination selection can be added here
+  };
+
   // Query for matched users data
   const { data: matchedUsers = [], isLoading: matchedUsersLoading, refetch: refetchMatchedUsers } = useQuery<User[]>({
     queryKey: ["/api/users", "matched", matchedUsersUserId],
