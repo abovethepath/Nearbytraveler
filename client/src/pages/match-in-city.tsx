@@ -289,10 +289,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           }
         });
         if (response.ok) {
-          toast({
-            title: "Interest Removed",
-            description: `Removed interest in ${activity.activityName}`,
-          });
+          // Toast removed - silent toggle as requested
           // Immediately update local state
           setUserActivities(prev => prev.filter(ua => ua.activityId !== activity.id));
         }
@@ -311,10 +308,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         });
         if (response.ok) {
           const newInterest = await response.json();
-          toast({
-            title: "Interest Added",
-            description: `Added interest in ${activity.activityName}`,
-          });
+          // Toast removed - silent toggle as requested
           // Immediately update local state
           setUserActivities(prev => [...prev, newInterest]);
         }
