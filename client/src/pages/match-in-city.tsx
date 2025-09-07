@@ -17,11 +17,8 @@ import {
   Search,
   Target,
   Zap,
-  ArrowLeft,
-  Camera,
-  X
+  ArrowLeft
 } from "lucide-react";
-import { CityPhotoUploadWidget } from "@/components/CityPhotoUploadWidget";
 
 interface MatchInCityProps {
   cityName?: string;
@@ -48,11 +45,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [allCities, setAllCities] = useState<any[]>([]);
   const [filteredCities, setFilteredCities] = useState<any[]>([]);
   const [citySearchTerm, setCitySearchTerm] = useState('');
-  const [cityPhotos, setCityPhotos] = useState<any>({});
   const [newActivity, setNewActivity] = useState('');
   const [editingActivityName, setEditingActivityName] = useState('');
 
-  // Fetch all cities and photos on component mount
+  // Fetch all cities on component mount
   useEffect(() => {
     // FORCE RESET - ensure we start with no city selected
     console.log('🔧 FORCE RESETTING selectedCity to empty string');
@@ -67,7 +63,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     }
     
     fetchAllCities();
-    fetchCityPhotos();
   }, []);
 
   // Fetch city activities when a city is selected
@@ -106,45 +101,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     }
   };
 
-  const fetchCityPhotos = async () => {
-    try {
-      console.log('📸 FETCHING: Making API call to /api/city-photos');
-      const response = await fetch('/api/city-photos');
-      console.log('📸 RESPONSE:', response.status, response.ok);
-      
-      if (response.ok) {
-        const text = await response.text();
-        console.log('📸 RAW RESPONSE:', text.substring(0, 200));
-        
-        // Try to parse as JSON
-        let photos;
-        try {
-          photos = JSON.parse(text);
-        } catch (parseError) {
-          console.error('📸 JSON PARSE ERROR:', parseError);
-          console.log('📸 Response was not JSON, skipping photo loading');
-          return;
-        }
-        
-        console.log('📸 CITY PHOTOS LOADED:', photos.length);
-        const photoMap: any = {};
-        photos.forEach((photo: any) => {
-          const cityKey = photo.city || photo.cityName; // Handle both field names
-          console.log('📸 Processing photo for city:', cityKey);
-          if (!photoMap[cityKey]) {
-            photoMap[cityKey] = [];
-          }
-          photoMap[cityKey].push(photo);
-        });
-        console.log('📸 PHOTO MAP:', Object.keys(photoMap));
-        setCityPhotos(photoMap);
-      } else {
-        console.error('📸 API ERROR: Status', response.status);
-      }
-    } catch (error) {
-      console.error('📸 FETCH ERROR:', error);
-    }
-  };
 
   const fetchCityActivities = async () => {
     console.log('🎯 FETCHING ACTIVITIES FOR CITY:', selectedCity);
@@ -636,24 +592,9 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
             {filteredCities.slice(0, 20).map((city, index) => (
               <Card key={index} className="bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all duration-300 cursor-pointer">
                 <CardContent className="p-4">
-                  {/* City Photo */}
-                  <div className="aspect-video rounded-lg mb-4 overflow-hidden">
-                    {cityPhotos[city.city] && cityPhotos[city.city].length > 0 ? (
-                      <img 
-                        src={cityPhotos[city.city][0].imageUrl || cityPhotos[city.city][0].imageData} 
-                        alt={city.city}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          console.log('📸 IMAGE ERROR for', city.city, 'URL:', cityPhotos[city.city][0].imageUrl);
-                          // Hide broken image and show gradient instead
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
-                    ) : (
-                      <div className={`w-full h-full bg-gradient-to-br ${city.gradient || 'from-blue-400 to-purple-600'} flex items-center justify-center`}>
-                        <MapPin className="w-8 h-8 text-white" />
-                      </div>
-                    )}
+                  {/* Clean City Header */}
+                  <div className="aspect-video rounded-lg mb-4 overflow-hidden bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center">
+                    <MapPin className="w-8 h-8 text-white" />
                   </div>
                   
                   <h3 className="font-bold text-white text-lg mb-2">{city.city}</h3>
@@ -670,10 +611,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                       ⚡ Start City Matching
                     </Button>
                     
-                    {/* Photo Upload for this city */}
-                    <div className="pt-2 border-t border-white/10">
-                      <CityPhotoUploadWidget cityName={city.city} />
-                    </div>
                   </div>
                 </CardContent>
               </Card>
