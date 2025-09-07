@@ -1166,7 +1166,16 @@ export default function MatchInCity({ cityName }: MatchInCityProps) {
               return prev; // No need to add again
             }
             console.log('✅ Adding new activity to state');
-            return [...prev, newInterest];
+            
+            // Ensure the new interest has the correct structure for isActivityActive to find it
+            const formattedNewInterest = {
+              ...newInterest,
+              activityId: activity.id,
+              activityName: activityName
+            };
+            console.log('🎯 FORMATTED NEW INTEREST:', formattedNewInterest);
+            
+            return [...prev, formattedNewInterest];
           });
           // Invalidate profile queries to refresh "Things I Want to Do"
           queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
