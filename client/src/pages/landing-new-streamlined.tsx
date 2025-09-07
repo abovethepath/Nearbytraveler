@@ -123,7 +123,11 @@ export default function LandingStreamlined() {
     return () => clearTimeout(timeout);
   }, [currentWisdom, wisdomSayings.length]);
 
-  // Allow user to choose theme - don't force it
+  // FORCE LIGHT MODE for landing page - user requirement
+  useEffect(() => {
+    // Force light mode for unauthenticated landing page
+    setTheme('light');
+  }, [setTheme]);
 
   return (
     <div className="bg-white dark:bg-gray-900 font-sans">
