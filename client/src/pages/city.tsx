@@ -20,6 +20,7 @@ import { CityMap } from "@/components/CityMap";
 import { SecretExperiencesWidget } from "@/components/SecretExperiencesWidget";
 import { useAuth } from "@/App";
 import type { User, Event } from "@shared/schema";
+import griffithObservatory from "@assets/griffith-observatory-skyline_1757211515328.jpg";
 
 // Removed all city images and photo gallery functions per user request
 
@@ -35,13 +36,8 @@ export default function CityPage({ cityName }: CityPageProps) {
   const [showAllEvents, setShowAllEvents] = useState(false);
   const [sortBy, setSortBy] = useState("recent");
   
-  // Lazy loading state for heavy widgets
-  const [loadedWidgets, setLoadedWidgets] = useState(new Set<string>());
-  
-  // Handle loading heavy widgets on demand
-  const handleWidgetLoad = (widgetName: string) => {
-    setLoadedWidgets(prev => new Set(prev).add(widgetName));
-  };
+  // Remove lazy loading - load all widgets immediately
+  const loadedWidgets = new Set(['stats', 'secrets', 'tips', 'map']);
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
   
@@ -261,22 +257,34 @@ export default function CityPage({ cityName }: CityPageProps) {
         </button>
       </div>
       
-      {/* Compact City Header - Mobile Responsive */}
-      <div className="mx-4 mt-2 mb-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-          <div className="flex-1 min-w-0">
-            {isLAArea && (
-              <Badge className="bg-orange-500 text-white text-xs mb-2">
-                🌟 Beta Launch City
-              </Badge>
-            )}
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white leading-tight">
-              {decodedCityName}
-            </h1>
-          </div>
-          <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 flex-shrink-0">
-            <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span className="text-xs sm:text-sm truncate">{parsedCityName}</span>
+      {/* City Header with Griffith Observatory Background */}
+      <div 
+        className="relative mx-4 mt-2 mb-6 rounded-xl overflow-hidden"
+        style={{
+          backgroundImage: `url(${griffithObservatory})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
+        <div className="relative z-10 p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+            <div className="flex-1 min-w-0">
+              {isLAArea && (
+                <Badge className="bg-orange-500 text-white text-xs mb-2">
+                  🌟 Beta Launch City
+                </Badge>
+              )}
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight drop-shadow-lg">
+                {decodedCityName}
+              </h1>
+              <p className="text-white/90 mt-2">Discover everything happening in this amazing city</p>
+            </div>
+            <div className="flex items-center gap-2 text-white/90 flex-shrink-0">
+              <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="text-sm sm:text-base">{parsedCityName}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -597,84 +605,24 @@ export default function CityPage({ cityName }: CityPageProps) {
                     country={parsedCountryName} 
                   />
                 </div>
-                {/* City Stats Widget - Lazy Loaded */}
+                {/* City Stats Widget - Always Loaded */}
                 <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
-                  {!loadedWidgets.has('stats') ? (
-                    <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                      <CardContent className="p-6 text-center">
-                        <h3 className="text-lg font-semibold mb-3">City Statistics</h3>
-                        <Button
-                          onClick={() => handleWidgetLoad('stats')}
-                          className="bg-gradient-to-r from-blue-500 to-green-500 text-white hover:from-blue-600 hover:to-green-600"
-                        >
-                          <Globe className="w-4 h-4 mr-2" />
-                          View Stats
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <CityStatsWidget city={parsedCityName} country={parsedCountryName} />
-                  )}
+                  <CityStatsWidget city={parsedCityName} country={parsedCountryName} />
                 </div>
-                {/* Secret Experiences Widget - Lazy Loaded */}
+                {/* Secret Experiences Widget - Always Loaded */}
                 <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
-                  {!loadedWidgets.has('secrets') ? (
-                    <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                      <CardContent className="p-6 text-center">
-                        <h3 className="text-lg font-semibold mb-3">Secret Experiences</h3>
-                        <Button
-                          onClick={() => handleWidgetLoad('secrets')}
-                          className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600"
-                        >
-                          <Star className="w-4 h-4 mr-2" />
-                          Discover Secrets
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <SecretExperiencesWidget city={parsedCityName} state={parsedStateName} country={parsedCountryName} />
-                  )}
+                  <SecretExperiencesWidget city={parsedCityName} state={parsedStateName} country={parsedCountryName} />
                 </div>
-                {/* Travel Tips Widget - Lazy Loaded */}
+                {/* Travel Tips Widget - Always Loaded */}
                 <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
-                  {!loadedWidgets.has('tips') ? (
-                    <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                      <CardContent className="p-6 text-center">
-                        <h3 className="text-lg font-semibold mb-3">Travel Tips</h3>
-                        <Button
-                          onClick={() => handleWidgetLoad('tips')}
-                          className="bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600"
-                        >
-                          <Zap className="w-4 h-4 mr-2" />
-                          Get Tips
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <CityTravelTipsWidget city={parsedCityName} country={parsedCountryName} />
-                  )}
+                  <CityTravelTipsWidget city={parsedCityName} country={parsedCountryName} />
                 </div>
                 <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
                   <CityChatlroomsWidget city={parsedCityName} country={parsedCountryName} />
                 </div>
-                {/* City Map Widget - Lazy Loaded */}
+                {/* City Map Widget - Always Loaded */}
                 <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
-                  {!loadedWidgets.has('map') ? (
-                    <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                      <CardContent className="p-6 text-center">
-                        <h3 className="text-lg font-semibold mb-3">Interactive Map</h3>
-                        <Button
-                          onClick={() => handleWidgetLoad('map')}
-                          className="bg-gradient-to-r from-teal-500 to-blue-500 text-white hover:from-teal-600 hover:to-blue-600"
-                        >
-                          <MapPin className="w-4 h-4 mr-2" />
-                          View Map
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <CityMap city={parsedCityName} country={parsedCountryName} />
-                  )}
+                  <CityMap city={parsedCityName} country={parsedCountryName} />
                 </div>
                 {isLAArea && (
                   <div className="bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20 border-2 border-orange-200 dark:border-orange-800 rounded-xl p-4">
