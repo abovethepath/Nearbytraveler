@@ -3499,9 +3499,14 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
           if (process.env.NODE_ENV === 'development') console.log("TRAVEL PLAN CREATED SUCCESSFULLY:", travelPlan.id);
 
-          // Update user travel status to traveler
-          await storage.updateUser(user.id, { userType: 'traveler' });
-          if (process.env.NODE_ENV === 'development') console.log(`User ${user.username} (${user.id}) is now a traveler`);
+          // CRITICAL: Update user to show as BOTH traveler AND local (dual status)
+          // They remain a local in their hometown AND become a traveler in destination
+          await storage.updateUser(user.id, { 
+            userType: 'traveler',
+            isCurrentlyTraveling: true,
+            aura: 1  // Award initial 1 aura point
+          });
+          if (process.env.NODE_ENV === 'development') console.log(`User ${user.username} (${user.id}) is now a traveler with 1 aura point`);
 
         } catch (error: any) {
           if (process.env.NODE_ENV === 'development') console.error('Error creating travel plan during signup:', error);
@@ -3509,6 +3514,84 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         }
       } else if (hasExistingTravelPlan) {
         if (process.env.NODE_ENV === 'development') console.log(`🚫 SKIPPING TRAVEL PLAN CREATION: User ${user.id} already has ${existingTravelPlans.length} travel plans - preventing duplicates`);
+      }
+
+      // COMPREHENSIVE TRAVELER ONBOARDING - Execute all required steps
+      if (userData.userType === 'traveler' && userData.isCurrentlyTraveling) {
+        if (process.env.NODE_ENV === 'development') console.log("🚀 COMPREHENSIVE TRAVELER ONBOARDING - Executing all required steps");
+        
+        // 1. Create 2 chatrooms for hometown (if not exist)
+        if (userData.hometownCity && userData.hometownCountry) {
+          try {
+            await storage.ensureMeetLocalsChatrooms(userData.hometownCity, userData.hometownState, userData.hometownCountry);
+            // Create second chatroom for hometown
+            await storage.ensureSecondaryChatrooms(userData.hometownCity, userData.hometownState, userData.hometownCountry);
+            if (process.env.NODE_ENV === 'development') console.log(`✓ Created 2 chatrooms for hometown: ${userData.hometownCity}`);
+          } catch (error: any) {
+            if (process.env.NODE_ENV === 'development') console.error('Error creating hometown chatrooms:', error);
+          }
+        }
+
+        // 2. Create 2 chatrooms for travel destination (if not exist)
+        if (userData.travelDestination) {
+          try {
+            const destinationParts = userData.travelDestination.split(', ');
+            const travelCity = destinationParts[0];
+            const travelState = destinationParts[1];
+            const travelCountry = destinationParts[2] || destinationParts[1];
+            
+            await storage.ensureMeetLocalsChatrooms(travelCity, travelState, travelCountry);
+            // Create second chatroom for destination
+            await storage.ensureSecondaryChatrooms(travelCity, travelState, travelCountry);
+            if (process.env.NODE_ENV === 'development') console.log(`✓ Created 2 chatrooms for destination: ${travelCity}`);
+          } catch (error: any) {
+            if (process.env.NODE_ENV === 'development') console.error('Error creating destination chatrooms:', error);
+          }
+        }
+
+        // 3. Create city match pages for both cities
+        try {
+          // Hometown match page
+          if (userData.hometownCity) {
+            await storage.ensureCityPageExists(userData.hometownCity, userData.hometownState, userData.hometownCountry, user.id);
+          }
+          // Destination match page
+          if (userData.travelDestination) {
+            const destinationParts = userData.travelDestination.split(', ');
+            await storage.ensureCityPageExists(destinationParts[0], destinationParts[1], destinationParts[2] || destinationParts[1], user.id);
+          }
+          if (process.env.NODE_ENV === 'development') console.log(`✓ Created city match pages for both cities`);
+        } catch (error: any) {
+          if (process.env.NODE_ENV === 'development') console.error('Error creating city match pages:', error);
+        }
+
+        // 4. Send welcome message from NearbyTraveler account
+        try {
+          // Find the NearbyTraveler system account (ID 1)
+          const nearbyTravelerAccount = await storage.getUser(1);
+          if (nearbyTravelerAccount) {
+            await storage.sendSystemMessage(1, user.id, `Welcome to Nearby Traveler, ${user.name || user.username}! 🌟 You're now connected as both a Nearby Local in ${userData.hometownCity} and a Nearby Traveler in ${userData.travelDestination}. Start exploring and connecting with fellow travelers!`);
+            if (process.env.NODE_ENV === 'development') console.log(`✓ Sent welcome message from NearbyTraveler to ${user.username}`);
+          }
+        } catch (error: any) {
+          if (process.env.NODE_ENV === 'development') console.error('Error sending welcome message:', error);
+        }
+
+        // 5. Register user in both cities with proper status
+        try {
+          // Register as LOCAL in hometown
+          if (userData.hometownCity) {
+            await storage.registerUserInCity(user.id, userData.hometownCity, userData.hometownState, userData.hometownCountry, 'local');
+          }
+          // Register as TRAVELER in destination  
+          if (userData.travelDestination) {
+            const destinationParts = userData.travelDestination.split(', ');
+            await storage.registerUserInCity(user.id, destinationParts[0], destinationParts[1], destinationParts[2] || destinationParts[1], 'traveler');
+          }
+          if (process.env.NODE_ENV === 'development') console.log(`✓ Registered user as local in hometown and traveler in destination`);
+        } catch (error: any) {
+          if (process.env.NODE_ENV === 'development') console.error('Error registering user in cities:', error);
+        }
       }
 
       // FAST REGISTRATION SUCCESS - Return user immediately for profile completion
