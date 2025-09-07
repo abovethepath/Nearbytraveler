@@ -185,7 +185,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
           <div className="absolute -bottom-3 sm:-bottom-4 left-2 sm:left-3">
             <SimpleAvatar 
               user={user} 
-              size="xs" 
+              size="sm" 
               className="border-2 border-white shadow-sm w-6 h-6 sm:w-8 sm:h-8"
             />
           </div>
@@ -201,8 +201,8 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
             <div className="text-xs text-gray-600 dark:text-gray-300 space-y-1">
               {(() => {
                 // Check if user has travel plans data and use new logic
-                if (user.travelPlans && Array.isArray(user.travelPlans)) {
-                  const currentOrNextTrip = getCurrentOrNextTrip(user.travelPlans);
+                if ((user as any).travelPlans && Array.isArray((user as any).travelPlans)) {
+                  const currentOrNextTrip = getCurrentOrNextTrip((user as any).travelPlans);
                   if (currentOrNextTrip) {
                     return (
                       <div className="flex items-center gap-1 truncate">
@@ -240,23 +240,24 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
             
             {/* Things in Common Badge - Ultra Compact */}
             {compatibilityData && (() => {
+              const data = compatibilityData as any;
               const totalCommon = 
-                (compatibilityData.sharedInterests?.length || 0) +
-                (compatibilityData.sharedActivities?.length || 0) +
-                (compatibilityData.sharedEvents?.length || 0) +
-                (compatibilityData.sharedTravelIntent?.length || 0) +
-                (compatibilityData.sharedSexualPreferences?.length || 0) +
-                (compatibilityData.sharedLanguages?.length || 0) +
-                (compatibilityData.sharedCountries?.length || 0) +
-                (compatibilityData.locationOverlap ? 1 : 0) +
-                (compatibilityData.dateOverlap ? 1 : 0) +
-                (compatibilityData.userTypeCompatibility ? 1 : 0) +
-                (compatibilityData.travelIntentCompatibility ? 1 : 0) +
-                (compatibilityData.bothVeterans ? 1 : 0) +
-                (compatibilityData.bothActiveDuty ? 1 : 0) +
-                (compatibilityData.sameFamilyStatus ? 1 : 0) +
-                (compatibilityData.sameAge ? 1 : 0) +
-                (compatibilityData.sameGender ? 1 : 0);
+                (data.sharedInterests?.length || 0) +
+                (data.sharedActivities?.length || 0) +
+                (data.sharedEvents?.length || 0) +
+                (data.sharedTravelIntent?.length || 0) +
+                (data.sharedSexualPreferences?.length || 0) +
+                (data.sharedLanguages?.length || 0) +
+                (data.sharedCountries?.length || 0) +
+                (data.locationOverlap ? 1 : 0) +
+                (data.dateOverlap ? 1 : 0) +
+                (data.userTypeCompatibility ? 1 : 0) +
+                (data.travelIntentCompatibility ? 1 : 0) +
+                (data.bothVeterans ? 1 : 0) +
+                (data.bothActiveDuty ? 1 : 0) +
+                (data.sameFamilyStatus ? 1 : 0) +
+                (data.sameAge ? 1 : 0) +
+                (data.sameGender ? 1 : 0);
               
               return totalCommon > 0 ? (
                 <div className="bg-blue-100 text-blue-800 text-xs px-1 py-0.5 rounded-full dark:bg-blue-900/30 dark:text-blue-400 inline-block">
@@ -282,7 +283,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
             {/* Ultra Compact Buttons */}
             <div className="flex gap-1 mt-2 sm:mt-3">
               {(() => {
-                if (user.username === 'nearbytraveler' || connectionStatus?.status === 'accepted') {
+                if (String(user.username) === 'nearbytraveler' || connectionStatus?.status === 'accepted') {
                   return (
                     <Button 
                       className="flex-1 bg-green-600 hover:bg-green-700 text-white text-xs px-1 sm:px-2 py-1 h-6 sm:h-7 min-w-0"
@@ -291,7 +292,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
                       ✓
                     </Button>
                   );
-                } else if (connectionStatus?.status === 'pending') {
+                } else if (String(connectionStatus?.status) === 'pending') {
                   return (
                     <Button 
                       className="flex-1 bg-gray-500 text-white cursor-not-allowed text-xs px-1 sm:px-2 py-1 h-6 sm:h-7 min-w-0"
