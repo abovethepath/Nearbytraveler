@@ -12937,7 +12937,7 @@ Questions? Just reply to this message. Welcome aboard!
             .where(
               and(
                 eq(userCityInterests.userId, parseInt(userId as string)),
-                eq(userCityInterests.activityId, dbActivityId)
+                eq(userCityInterests.activityId, parseInt(activityId.toString()))
               )
             )
             .returning();
