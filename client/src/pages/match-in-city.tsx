@@ -91,14 +91,23 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
   const fetchAllCities = async () => {
     try {
-      const response = await fetch('/api/city-stats');
-      if (response.ok) {
-        const cities = await response.json();
-        console.log('🏙️ CITIES LOADED:', cities.length);
-        setAllCities(cities);
-      }
+      // Override with all 9 launch cities instead of limited API response
+      const launchCities = [
+        { city: "Los Angeles Metro", state: "California", country: "United States", gradient: "from-orange-400 to-red-600" },
+        { city: "New York City", state: "New York", country: "United States", gradient: "from-blue-400 to-purple-600" },
+        { city: "Las Vegas", state: "Nevada", country: "United States", gradient: "from-yellow-400 to-red-600" },
+        { city: "Miami", state: "Florida", country: "United States", gradient: "from-pink-400 to-orange-600" },
+        { city: "New Orleans", state: "Louisiana", country: "United States", gradient: "from-purple-400 to-green-600" },
+        { city: "Chicago", state: "Illinois", country: "United States", gradient: "from-blue-400 to-indigo-600" },
+        { city: "Austin", state: "Texas", country: "United States", gradient: "from-green-400 to-blue-600" },
+        { city: "Boston", state: "Massachusetts", country: "United States", gradient: "from-red-400 to-blue-600" },
+        { city: "Nashville", state: "Tennessee", country: "United States", gradient: "from-yellow-400 to-pink-600" }
+      ];
+      
+      console.log('🏙️ LAUNCH CITIES LOADED:', launchCities.length);
+      setAllCities(launchCities);
     } catch (error) {
-      console.error('Error fetching cities:', error);
+      console.error('Error loading launch cities:', error);
     }
   };
 
@@ -572,7 +581,14 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         <div className="container mx-auto px-4 py-8">
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-white mb-4">🎯 Match in City</h1>
-            <p className="text-xl text-white/80">Select a city to start matching with people!</p>
+            <p className="text-xl text-white/80 mb-4">Select a city to start matching with people!</p>
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 max-w-2xl mx-auto">
+              <p className="text-white/90 text-sm leading-relaxed">
+                🎯 <strong>Choose activities you want to do</strong> → Get matched with others who share your interests<br/>
+                ✏️ <strong>Add your own activities</strong> → Help others discover new experiences<br/>
+                💫 <strong>Connect with locals & travelers</strong> → Plan meetups and explore together
+              </p>
+            </div>
           </div>
 
           {/* Search Cities */}
@@ -648,7 +664,20 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           <div className="w-20" />
         </div>
 
-        {/* Activity Selection Interface - EXACTLY like your screenshots */}
+        {/* Instructions */}
+        <div className="max-w-4xl mx-auto mb-6">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-blue-900 mb-2">🎯 How City Matching Works</h3>
+            <div className="text-sm text-blue-800 space-y-1">
+              <p>• <strong>Select activities</strong> you want to do in {selectedCity}</p>
+              <p>• <strong>Get matched</strong> with locals and travelers who share your interests</p>
+              <p>• <strong>Add custom activities</strong> to help others discover new experiences</p>
+              <p>• <strong>Connect and plan meetups</strong> together based on shared interests</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Activity Selection Interface */}
         <div className="max-w-4xl mx-auto">
           <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
             <div className="p-6">
@@ -673,9 +702,9 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                   ? 'bg-green-500 text-white' 
                                   : 'bg-blue-500 text-white hover:bg-green-500'
                               }`}
-                              onClick={() => handleToggleActivity(activity.id, activity.name)}
+                              onClick={() => handleToggleActivity(activity.id, activity.activityName)}
                             >
-                              {activity.name}
+                              {activity.activityName}
                             </button>
                             
                             {/* Edit/Delete on hover */}
@@ -685,8 +714,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                   className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-blue-700"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    setEditingActivity({ id: userActivity.id, name: activity.name, activityId: activity.id });
-                                    setEditingActivityName(activity.name);
+                                    setEditingActivity({ id: userActivity.id, name: activity.activityName, activityId: activity.id });
+                                    setEditingActivityName(activity.activityName);
                                   }}
                                 >
                                   <Edit className="w-2.5 h-2.5" />
