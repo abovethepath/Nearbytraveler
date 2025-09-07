@@ -22,40 +22,32 @@ import { Badge } from "@/components/ui/badge";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { authStorage } from "@/lib/auth";
 
-// Predefined categories for events - Streamlined for travelers
+// UNIFIED event categories - matches events page exactly (no more duplicates!)
 const EVENT_CATEGORIES = [
   "Food & Dining",
-  "Social Networking",
-  "Culture & Arts",
-  "Music & Entertainment",
+  "Social & Networking", 
   "Health & Wellness",
-  "Outdoor Activities",
-  "Nightlife & Parties",
+  "Arts & Culture",
+  "Music & Entertainment",
   "Sports & Fitness",
-  "Family & Kids",
+  "Family Activities",
+  "Nightlife & Parties",
+  "Education & Learning",
+  "Business & Professional",
   "Custom" // This will allow for custom category input
 ];
 
-// Predefined tags for events - Streamlined for travelers
+// Clean tags - no overlap with categories, truly additional info only
 const PREDEFINED_TAGS = [
-  "Family Friendly",
-  "Pet Friendly", 
   "Free Event",
-  "Cultural",
-  "Sports",
-  "Food & Drink",
-  "Music",
-  "Art",
-  "Tech",
-  "Casual Meetup",
-  "Fitness",
-  "Wellness",
-  "Adventure",
-  "Social",
-  "Party",
+  "Pet Friendly", 
+  "LGBTQ+ Friendly",
+  "Solo Travelers Welcome",
   "Language Exchange",
-  "Solo Travelers",
-  "Celebration"
+  "Outdoor Event",
+  "Indoor Event", 
+  "Beginner Friendly",
+  "Advanced Level"
 ];
 
 interface CreateEventProps {

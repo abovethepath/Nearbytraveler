@@ -377,16 +377,18 @@ export default function Events() {
     return matchesSearch && matchesCategory;
   });
 
+  // Import unified categories to eliminate duplicates
   const categories = [
-    "Parties",
     "Food & Dining",
-    "Adventure & Sports", 
-    "Culture & Arts",
-    "Social & Networking",
-    "Music & Entertainment",
-    "Business & Professional",
+    "Social & Networking", 
     "Health & Wellness",
+    "Arts & Culture",
+    "Music & Entertainment",
+    "Sports & Fitness",
+    "Family Activities",
+    "Nightlife & Parties",
     "Education & Learning",
+    "Business & Professional"
   ];
 
   const handleJoinEvent = (event: Event) => {
