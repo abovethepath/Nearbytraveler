@@ -20,7 +20,6 @@ import { CityMap } from "@/components/CityMap";
 import { SecretExperiencesWidget } from "@/components/SecretExperiencesWidget";
 import { useAuth } from "@/App";
 import type { User, Event } from "@shared/schema";
-import griffithObservatory from "@assets/griffith-observatory-skyline_1757211515328.jpg";
 
 // Removed all city images and photo gallery functions per user request
 
@@ -261,9 +260,6 @@ export default function CityPage({ cityName }: CityPageProps) {
       <div 
         className="relative mx-4 mt-2 mb-6 rounded-xl overflow-hidden"
         style={{
-          backgroundImage: `url(${griffithObservatory})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'
         }}
       >

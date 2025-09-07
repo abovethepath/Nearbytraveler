@@ -119,7 +119,7 @@ export default function DiscoverPage() {
       <div className="mx-4 mb-8 mt-4">
         <div className="relative h-64 sm:h-80 lg:h-96 rounded-2xl overflow-hidden shadow-xl">
           <img 
-            src="@assets/griffith-observatory-skyline_1757211515328.jpg"
+            src="/griffith-observatory-skyline_1757211515328.jpg"
             alt="Los Angeles - Griffith Observatory Skyline"
             className="w-full h-full object-cover"
           />
@@ -140,43 +140,6 @@ export default function DiscoverPage() {
         {isMobile ? (
           // Mobile: Keep vertical layout (reduced since we have hero image above)
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            
-            <div className="mb-6 flex justify-center px-4">
-              <div className="relative w-full max-w-sm rounded-xl overflow-hidden shadow-xl">
-                <div className="relative h-64 bg-gradient-to-br from-orange-400 via-red-500 to-purple-600 overflow-hidden">
-                  {/* Dynamic LA Skyline Background */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-blue-400/30"></div>
-                  
-                  {/* Floating event icons */}
-                  <div className="absolute top-4 left-4 text-2xl animate-bounce" style={{animationDelay: '0s'}}>🎶</div>
-                  <div className="absolute top-8 right-6 text-2xl animate-bounce" style={{animationDelay: '1s'}}>🌮</div>
-                  <div className="absolute bottom-12 left-6 text-2xl animate-bounce" style={{animationDelay: '2s'}}>🔥</div>
-                  <div className="absolute bottom-8 right-4 text-2xl animate-bounce" style={{animationDelay: '3s'}}>🥾</div>
-                  
-                  {/* Floating profile avatars */}
-                  <div className="absolute top-1/4 left-1/4 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold animate-pulse" style={{animationDelay: '0.5s'}}>A</div>
-                  <div className="absolute top-1/3 right-1/4 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold animate-pulse" style={{animationDelay: '1.5s'}}>M</div>
-                  <div className="absolute bottom-1/4 left-1/3 w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-xs font-bold animate-pulse" style={{animationDelay: '2.5s'}}>J</div>
-                  <div className="absolute bottom-1/3 right-1/3 w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs font-bold animate-pulse" style={{animationDelay: '3.5s'}}>S</div>
-                  
-                  {/* Los Angeles Skyline Silhouette */}
-                  <div className="absolute bottom-0 left-0 right-0 h-20 bg-black/80 overflow-hidden">
-                    <div className="flex items-end justify-center h-full space-x-1">
-                      <div className="w-3 h-16 bg-gray-700"></div>
-                      <div className="w-2 h-12 bg-gray-600"></div>
-                      <div className="w-4 h-18 bg-gray-800"></div>
-                      <div className="w-2 h-10 bg-gray-600"></div>
-                      <div className="w-3 h-20 bg-gray-700"></div>
-                      <div className="w-5 h-16 bg-gray-800"></div>
-                      <div className="w-2 h-14 bg-gray-600"></div>
-                      <div className="w-4 h-12 bg-gray-700"></div>
-                      <div className="w-3 h-18 bg-gray-800"></div>
-                      <div className="w-2 h-8 bg-gray-600"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
             
             <p className="text-base text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl mx-auto px-4">
               Explore amazing cities, connect with locals and travelers, and find your next adventure
