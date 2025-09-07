@@ -1840,266 +1840,179 @@ export default function Home() {
 
         {/* Main Content - Responsive layout with animations */}
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-8 px-2 sm:px-4 lg:px-8 mt-2 sm:mt-0">
-          {/* Discover Feed - Full width on mobile, 2 columns on desktop */}
-          <div className="col-span-1 lg:col-span-2 space-y-3 sm:space-y-4 md:space-y-8 min-w-0">
-            <div className="flex items-center justify-between" data-testid="discover-people-section">
-              <div className="flex items-center gap-2 sm:gap-4">
-                <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
-                  {activeFilter === "travel-dates" 
-                    ? `Travel Connections to ${user?.travelDestination}` 
-                    : "Discover People"
-                  }
-                </h2>
-                
-                {/* Quick Clear All Button - Show when any filters are active */}
-                {(activeFilter !== "all" || 
-                  filters.location || 
-                  filters.search || 
-                  filters.gender.length > 0 || 
-                  filters.sexualPreference.length > 0 || 
-                  filters.interests.length > 0 || 
-                  filters.activities.length > 0 || 
-                  filters.userType.length > 0 ||
-                  filters.minAge ||
-                  filters.maxAge) && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      // Reset all filters
-                      setFilters({
-                        gender: [],
-                        sexualPreference: [],
-                        minAge: "",
-                        maxAge: "",
-                        interests: [],
-                        activities: [],
-                        location: "",
-                        search: "",
-                        userType: [],
-                        events: [],
-                        travelerTypes: [],
-                        militaryStatus: [],
-                        startDate: "",
-                        endDate: ""
-                      });
-                      // Reset active filter to show all users
-                      setActiveFilter("all");
-                      // Reset location filter
-                      setActiveLocationFilter("");
-                      // Reset location filter state
-                      setLocationFilter({
-                        country: "",
-                        state: "",
-                        city: ""
-                      });
-                    }}
-                    className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/30"
-                    data-testid="button-clear-all-filters"
-                  >
-                    <X className="w-4 h-4 mr-1" />
-                    Clear All
-                  </Button>
-                )}
-              </div>
-              
-              <div className="flex items-center gap-1 sm:gap-2">
-                {/* Advanced Search Button */}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowAdvancedSearchWidget(true)}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-none rounded-xl shadow-md"
-                  data-testid="button-advanced-search"
-                >
-                  <Search className="w-4 h-4 mr-2" />
-                  <span className="hidden sm:inline">Advanced Search</span>
-                  <span className="sm:hidden">Search</span>
-                </Button>
-              </div>
-            </div>
+                              if (filters.gender.includes(gender)) {
+                                setFilters({...filters, gender: filters.gender.filter(g => g !== gender)});
+                              } else {
+                                setFilters({...filters, gender: [...filters.gender, gender]});
+                              }
+                            }}
+                            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                              filters.gender.includes(gender)
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                            }`}
+                          >
+                            {gender}
+                          </button>
+                        ))}
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
 
-            {/* Filter Tabs */}
-            <div className="flex flex-wrap gap-2 mb-4">
-              {filters.location && (
-                <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                  📍 {filters.location}
-                </Badge>
-              )}
-              
-              {filters.search && (
-                <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
-                  🔍 "{filters.search}"
-                </Badge>
-              )}
-            </div>
-
-            {/* User Grid Display */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-3 sm:gap-4">{filteredUsers.length > 0 ? (
-                filteredUsers.slice(0, showAllUsers ? filteredUsers.length : 8).map((otherUser) => (
-                  <div key={otherUser.id} className="transform hover:scale-[1.02] transition-transform">\n                    <UserCard 
-                      user={otherUser} 
-                      currentUser={effectiveUser}
-                      isCurrentUser={otherUser.id === effectiveUser?.id}
-                    />
-                  </div>
-                ))
-              ) : (
-                <div className="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">
-                  {filters.location || filters.search || activeFilter !== "all" ? (
-                    <>No users found matching your current filters. Try adjusting your search criteria.</>
-                  ) : (
-                    <>No users available to discover right now.</>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Load More Button */}
-            {filteredUsers.length > 8 && (
-              <div className="flex justify-center mt-6">
-                <Button
-                  onClick={() => {
-                    setShowAllUsers(!showAllUsers);
-                    if (!showAllUsers) {
-                      // Scroll to top when showing all users
-                      setTimeout(() => {
-                        const discoverSection = document.querySelector('[data-testid="discover-people-section"]');
-                        if (discoverSection) {
-                          discoverSection.scrollIntoView({ behavior: 'smooth' });
-                        }
-                      }, 100);
-                    }
-                  }}
-                  className="bg-gray-50 hover:bg-gray-100 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white dark:border-gray-500"
-                  data-testid="button-load-more-users"
-                >
-                  {showAllUsers ? 'Load Less' : `Load More (${filteredUsers.length - 8} more)`}
-                </Button>
-              </div>
-            )}
-          </div>
-
-          {/* Right Sidebar - Events and Quick Meetups */}
-          <div className="col-span-1 space-y-3 sm:space-y-4 md:space-y-8">
-            {/* Priority Events Section */}
-            {loadedSections.has('events') && (
-              <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-sm">
-                <div className="p-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                      <Calendar className="w-5 h-5 mr-2 text-blue-500" />
-                      Upcoming Events
-                    </h3>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => setLocation('/events')}
-                      className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                      data-testid="button-view-all-events"
-                    >
-                      <Sparkles className="w-4 h-4 mr-1" />
-                      View All
-                    </Button>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 gap-4">
-                    {userPriorityEvents
-                      ?.filter((event: any) => event.isAIGenerated || event.source)
-                      ?.slice(0, 6)
-                      ?.map((event: any) => (
-                        <Card key={event.id} className="hover:shadow-md transition-shadow bg-white dark:bg-gray-800 border-blue-100 dark:border-blue-800">
-                          <EventCard 
-                            event={event} 
-                            showFullLocation={true}
-                            currentUser={effectiveUser}
-                          />
-                        </Card>
-                      )) || (
-                        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                          <Calendar className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                          <p>No upcoming events found.</p>
+                  {/* Sexual Preference Filter Section */}
+                  <Collapsible open={expandedSections.sexualPreference} onOpenChange={() => toggleSection('sexualPreference')}>
+                    <CollapsibleTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-between h-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                      >
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Sexual Preference Filter</span>
+                        <div className="flex items-center gap-2">
+                          {filters.sexualPreference.length > 0 && (
+                            <Badge variant="secondary" className="bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300">
+                              {filters.sexualPreference.length}
+                            </Badge>
+                          )}
+                          {expandedSections.sexualPreference ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                         </div>
-                      )}
-                  </div>
-                </div>
-              </Card>
-            )}
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="pt-3">
+                      <div className="flex flex-wrap gap-2">
+                        {SEXUAL_PREFERENCE_OPTIONS.map((preference) => (
+                          <button
+                            key={preference}
+                            onClick={() => {
+                              if (filters.sexualPreference.includes(preference)) {
+                                setFilters({...filters, sexualPreference: filters.sexualPreference.filter(p => p !== preference)});
+                              } else {
+                                setFilters({...filters, sexualPreference: [...filters.sexualPreference, preference]});
+                              }
+                            }}
+                            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                              filters.sexualPreference.includes(preference)
+                                ? 'bg-purple-500 text-white'
+                                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                            }`}
+                          >
+                            {preference}
+                          </button>
+                        ))}
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
 
-            {/* Business Deals Section */}
-            {loadedSections.has('deals') && (
-              <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-sm">
-                <div className="p-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                      <Store className="w-5 h-5 mr-2 text-orange-500" />
-                      Business Deals
-                    </h3>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => setLocation('/business-deals')}
-                      className="text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300"
-                      data-testid="button-view-all-deals"
-                    >
-                      <Store className="w-4 h-4 mr-1" />
-                      View All
-                    </Button>
-                  </div>
-                  
-                  {/* Business Deals Display - TOP 3 */}
-                  {businessDeals && businessDeals.length > 0 ? (
-                    <div className="grid grid-cols-1 gap-4">
-                      {businessDeals.slice(0, 3).map((deal: any) => (
-                        <Card 
-                          key={deal.id} 
-                          className="h-full flex flex-col cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] bg-white dark:bg-gray-800"
-                          onClick={() => setLocation(`/profile/${deal.businessId}`)}
-                        >
-                          <div className="p-4">
-                            <div className="flex items-center justify-between mb-2">
-                              <h4 className="font-semibold text-gray-900 dark:text-white text-sm">{deal.businessName}</h4>
-                              <Badge variant="secondary" className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 text-xs">
-                                {deal.dealType}
-                              </Badge>
-                            </div>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">{deal.title}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-500">{deal.location}</p>
-                          </div>
-                        </Card>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                      <Store className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                      <p>No business deals available.</p>
-                    </div>
-                  )}
-                </div>
-              </Card>
-            )}
-          </div>
-        </div>
+                  {/* User Type Filter Section */}
+                  <Collapsible open={expandedSections.userType} onOpenChange={() => toggleSection('userType')}>
+                    <CollapsibleTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-between h-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                      >
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">User Type Filter</span>
+                        <div className="flex items-center gap-2">
+                          {filters.userType.length > 0 && (
+                            <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
+                              {filters.userType.length}
+                            </Badge>
+                          )}
+                          {expandedSections.userType ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                        </div>
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="pt-3">
+                      <div className="flex flex-wrap gap-2">
+                        {USER_TYPE_OPTIONS.map((type) => (
+                          <button
+                            key={type}
+                            onClick={() => {
+                              if (filters.userType.includes(type)) {
+                                setFilters({...filters, userType: filters.userType.filter(t => t !== type)});
+                              } else {
+                                setFilters({...filters, userType: [...filters.userType, type]});
+                              }
+                            }}
+                            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors capitalize ${
+                              filters.userType.includes(type)
+                                ? 'bg-green-500 text-white'
+                                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                            }`}
+                          >
+                            {type}
+                          </button>
+                        ))}
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
 
-        {/* End of main content */}
-      </main>
-      
-      {/* Connect and Destination Modals */}
-      <DestinationModal 
-        isOpen={showDestinationModal}
-        onClose={() => setShowDestinationModal(false)}
-        onDestinationSelected={handleDestinationSelected}
-      />
+                  {/* Age Range Filter Section */}
+                  <Collapsible open={expandedSections.ageRange} onOpenChange={() => toggleSection('ageRange')}>
+                    <CollapsibleTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-between h-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                      >
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Age Range Filter</span>
+                        <div className="flex items-center gap-2">
+                          {(filters.minAge || filters.maxAge) && (
+                            <Badge variant="secondary" className="bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                              {filters.minAge || '?'}-{filters.maxAge || '?'}
+                            </Badge>
+                          )}
+                          {expandedSections.ageRange ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                        </div>
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="pt-3">
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input 
+                          type="number" 
+                          placeholder="Min Age"
+                          value={filters.minAge}
+                          onChange={(e) => setFilters({...filters, minAge: e.target.value})}
+                          className="w-full text-sm px-3 py-2 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                        />
+                        <Input 
+                          type="number" 
+                          placeholder="Max Age"
+                          value={filters.maxAge}
+                          onChange={(e) => setFilters({...filters, maxAge: e.target.value})}
+                          className="w-full text-sm px-3 py-2 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                        />
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
 
-      <ConnectModal
-        isOpen={showConnectModal}
-        onClose={() => setShowConnectModal(false)}
-        targetUserId={connectTargetUser?.id}
-        defaultLocationMode={connectModalMode}
-      />
-    </div>
-  );
-}
+                  {/* Traveler Type Filter Section */}
+                  <Collapsible open={expandedSections.travelerType} onOpenChange={() => toggleSection('travelerType')}>
+                    <CollapsibleTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-between h-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                      >
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Traveler Type Filter</span>
+                        <div className="flex items-center gap-2">
+                          {filters.travelerTypes.length > 0 && (
+                            <Badge variant="secondary" className="bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300">
+                              {filters.travelerTypes.length}
+                            </Badge>
+                          )}
+                          {expandedSections.travelerType ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                        </div>
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="pt-3">
+                      <div className="flex flex-wrap gap-2">
+                        {BASE_TRAVELER_TYPES.map((type) => (
+                          <button
+                            key={type}
+                            onClick={() => {
+                              if (filters.travelerTypes.includes(type)) {
+                                setFilters({...filters, travelerTypes: filters.travelerTypes.filter(t => t !== type)});
+                              } else {
+                                setFilters({...filters, travelerTypes: [...filters.travelerTypes, type]});
+                              }
+                            }}
                             className={`px-3 py-2 rounded-full text-xs md:text-sm font-medium transition-colors ${
                               filters.travelerTypes.includes(type)
                                 ? 'bg-orange-500 text-white'

@@ -1,0 +1,1 @@
+I need to remove everything from line 1843 to approximately line 2400 where the main content starts. The broken modal JSX is causing syntax errors.
