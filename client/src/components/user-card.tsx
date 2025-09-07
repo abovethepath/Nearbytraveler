@@ -131,12 +131,20 @@ export default function UserCard({
             </div>
           </div>
           
-          {/* Bio */}
-          {user.bio && (
-            <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2 leading-relaxed text-center">
-              {String(user.bio)}
-            </p>
-          )}
+          {/* Bio - Filter out birth date info */}
+          {user.bio && (() => {
+            // Remove "Born: [date]" information from bio display
+            const cleanBio = String(user.bio)
+              .replace(/Born:\s*[^\n]*/gi, '') // Remove "Born: ..." lines
+              .replace(/\n\n+/g, '\n') // Replace multiple newlines with single
+              .trim(); // Remove leading/trailing whitespace
+            
+            return cleanBio ? (
+              <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2 leading-relaxed text-center">
+                {cleanBio}
+              </p>
+            ) : null;
+          })()}
           
           {/* Things in Common Badge */}
           {compatibilityData && (() => {
