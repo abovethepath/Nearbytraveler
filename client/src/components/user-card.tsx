@@ -75,13 +75,13 @@ export default function UserCard({
 
   return (
     <Card 
-      className="user-card border-gray-200 dark:border-gray-700 shadow-md bg-white dark:bg-gray-800 overflow-hidden cursor-pointer transition-shadow hover:shadow-lg"
+      className="user-card border-gray-200 dark:border-gray-700 shadow-md bg-white dark:bg-gray-800 overflow-hidden cursor-pointer transition-shadow hover:shadow-lg h-80"
       onClick={handleCardClick}
       data-testid={`user-card-${user.id}`}
     >
-      <CardContent className="p-4 pt-4">
+      <CardContent className="p-4 pt-4 h-full flex flex-col">
         {/* User Info */}
-        <div className="space-y-3">
+        <div className="space-y-3 flex-1 flex flex-col justify-between">
           {/* Responsive Avatar - Large on mobile, normal on desktop */}
           <div className="flex justify-center">
             <SimpleAvatar 
