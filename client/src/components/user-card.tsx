@@ -143,7 +143,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
     }
     
     // Check if connection already exists or is pending
-    if (connectionStatus?.status === 'pending' || connectionStatus?.status === 'accepted') {
+    if (String(connectionStatus?.status) === 'pending' || String(connectionStatus?.status) === 'accepted') {
       return;
     }
     
@@ -234,7 +234,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
             {/* Compact Bio - Hidden on mobile for space */}
             {user.bio && (
               <p className="hidden sm:block text-xs text-gray-700 dark:text-gray-300 line-clamp-1 leading-tight">
-                {user.bio}
+                {String(user.bio)}
               </p>
             )}
             
@@ -283,7 +283,7 @@ export default function UserCard({ user, searchLocation, showCompatibilityScore 
             {/* Ultra Compact Buttons */}
             <div className="flex gap-1 mt-2 sm:mt-3">
               {(() => {
-                if (String(user.username) === 'nearbytraveler' || connectionStatus?.status === 'accepted') {
+                if (String(user.username) === 'nearbytraveler' || String(connectionStatus?.status) === 'accepted') {
                   return (
                     <Button 
                       className="flex-1 bg-green-600 hover:bg-green-700 text-white text-xs px-1 sm:px-2 py-1 h-6 sm:h-7 min-w-0"
