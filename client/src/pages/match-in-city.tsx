@@ -461,6 +461,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         body: JSON.stringify({
           cityName: selectedCity,
           activityName: newActivity,
+          createdByUserId: userId,
           description: 'User added activity'
         })
       });
