@@ -780,10 +780,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         return (
                           <div key={activity.id} className="group relative">
                             <button
-                              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 text-white shadow-md hover:shadow-lg ${
+                              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg ${
                                 isSelected 
-                                  ? 'bg-green-500 hover:bg-green-600' 
-                                  : 'bg-blue-500 hover:bg-blue-600'
+                                  ? 'bg-green-500 hover:bg-green-600 text-white' 
+                                  : 'bg-blue-500 hover:bg-blue-600 text-white'
                               }`}
                               onClick={() => handleToggleActivity(activity.id, activity.activityName)}
                             >
