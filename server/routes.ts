@@ -390,17 +390,33 @@ const GLOBAL_METROPOLITAN_AREAS: MetropolitanArea[] = [
 
 // ENABLED: Metro consolidation functions - consolidate all major cities worldwide
 function consolidateToMetropolitanArea(city: string, state?: string, country?: string): string {
-  // Import LA Metro cities
-  const { METRO_AREAS } = require('../shared/constants');
-  const laMetroCities = METRO_AREAS['Los Angeles'].cities;
+  // LA Metro cities list - consolidate ALL of these to "Los Angeles Metro"
+  const laMetroCities = [
+    'Los Angeles', 'Playa del Rey', 'Santa Monica', 'Venice', 'Culver City',
+    'Marina del Rey', 'Manhattan Beach', 'Hermosa Beach', 'Redondo Beach',
+    'El Segundo', 'Torrance', 'Hawthorne', 'Inglewood', 'West Hollywood',
+    'Beverly Hills', 'Century City', 'Brentwood', 'Westwood', 'Pacific Palisades',
+    'Malibu', 'Pasadena', 'Glendale', 'Burbank', 'North Hollywood', 'Studio City',
+    'Sherman Oaks', 'Encino', 'Tarzana', 'Woodland Hills', 'Calabasas',
+    'Agoura Hills', 'Thousand Oaks', 'Simi Valley', 'Northridge', 'Van Nuys',
+    'Reseda', 'Canoga Park', 'Chatsworth', 'Granada Hills', 'Sylmar',
+    'San Fernando', 'Pacoima', 'Sun Valley', 'La Crescenta', 'La Canada',
+    'Montrose', 'Eagle Rock', 'Highland Park', 'Silver Lake', 'Los Feliz',
+    'Echo Park', 'Downtown Los Angeles', 'Chinatown', 'Little Tokyo', 'Koreatown',
+    'Mid-Wilshire', 'Hancock Park', 'Fairfax', 'West LA', 'Sawtelle',
+    'Mar Vista', 'Del Rey', 'Palms', 'Cheviot Hills', 'Pico-Robertson',
+    'Baldwin Hills', 'Leimert Park', 'Hyde Park', 'Watts', 'Compton',
+    'Lynwood', 'South Gate', 'Downey', 'Norwalk', 'Whittier',
+    'Long Beach', 'Venice Beach'
+  ];
   
   // Consolidate ALL LA Metro cities to "Los Angeles Metro"
   if (laMetroCities.includes(city)) {
     return 'Los Angeles Metro';
   }
   
-  // Return original city for non-LA Metro cities (shouldn't happen since we filter)
-  return city;
+  // This shouldn't happen since we filter to only LA Metro cities
+  return 'Los Angeles Metro';
 }
 
 // Get all cities in a metropolitan area with LA Metro consolidation
