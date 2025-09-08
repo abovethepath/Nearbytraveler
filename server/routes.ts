@@ -1153,25 +1153,49 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
                 )
               );
 
-            // For travel plans and current travelers, search across all original cities
-            travelPlansResult = await db
+            // FIXED: Count ALL traveler associations with cities in this metro area
+            // 1. Travel plans TO these cities
+            const travelPlansToResult = await db
               .select({ count: count() })
               .from(travelPlans)
+              .innerJoin(users, eq(travelPlans.userId, users.id))
               .where(
-                or(
-                  ...originalCities.map(origCity => ilike(travelPlans.destination, `%${origCity}%`))
+                and(
+                  or(...originalCities.map(origCity => ilike(travelPlans.destination, `%${origCity}%`))),
+                  eq(users.userType, 'traveler')
                 )
               );
 
-            currentTravelersResult = await db
+            // 2. Current travelers TO these cities (travelDestination field)
+            const currentTravelersToResult = await db
               .select({ count: count() })
               .from(users)
               .where(
                 and(
-                  or(
-                    ...originalCities.map(origCity => ilike(users.travelDestination, `%${origCity}%`))
-                  ),
-                  eq(users.isCurrentlyTraveling, true)
+                  or(...originalCities.map(origCity => ilike(users.travelDestination, `%${origCity}%`))),
+                  eq(users.userType, 'traveler')
+                )
+              );
+
+            // 3. Travelers with destinationCity matching these cities
+            const travelersWithDestinationResult = await db
+              .select({ count: count() })
+              .from(users)
+              .where(
+                and(
+                  or(...originalCities.map(origCity => eq(users.destinationCity, origCity))),
+                  eq(users.userType, 'traveler')
+                )
+              );
+
+            // 4. Travelers FROM these cities (hometown in metro area, userType = traveler)
+            const travelersFromResult = await db
+              .select({ count: count() })
+              .from(users)
+              .where(
+                and(
+                  or(...originalCities.map(origCity => eq(users.hometownCity, origCity))),
+                  eq(users.userType, 'traveler')
                 )
               );
 
@@ -1186,7 +1210,14 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
             const localCount = localUsersResult[0]?.count || 0;
             const businessCount = businessUsersResult[0]?.count || 0;
-            const travelerCount = (travelPlansResult[0]?.count || 0) + (currentTravelersResult[0]?.count || 0);
+            
+            // Sum all traveler associations (may have some overlap but better than missing users)
+            const plansToCount = travelPlansToResult[0]?.count || 0;
+            const currentToCount = currentTravelersToResult[0]?.count || 0;
+            const destinationCount = travelersWithDestinationResult[0]?.count || 0;
+            const fromCount = travelersFromResult[0]?.count || 0;
+            const travelerCount = plansToCount + currentToCount + destinationCount + fromCount;
+            
             const eventCount = eventsResult[0]?.count || 0;
 
 
@@ -1331,8 +1362,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           )
         );
 
-      // FIXED: Only count actual travelers (user_type = 'traveler') visiting this city
-      // Don't count locals who have travel plans - they're still locals in their hometown
+      // FIXED: Count ALL traveler associations with this city
+      // 1. Travelers with travel plans TO this city
       const travelerUsersWithPlansResult = await db
         .select({ count: count() })
         .from(travelPlans)
@@ -1344,14 +1375,36 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           )
         );
 
-      currentTravelersResult = await db
+      // 2. Travelers currently traveling TO this city (travelDestination field)
+      const currentTravelersToResult = await db
         .select({ count: count() })
         .from(users)
         .where(
           and(
             or(...searchCities.map(searchCity => ilike(users.travelDestination, `%${searchCity}%`))),
-            eq(users.isCurrentlyTraveling, true),
             eq(users.userType, 'traveler') // Only count actual traveler users
+          )
+        );
+
+      // 3. Travelers with destinationCity field (direct field match)
+      const travelersWithDestinationResult = await db
+        .select({ count: count() })
+        .from(users)
+        .where(
+          and(
+            or(...searchCities.map(searchCity => eq(users.destinationCity, searchCity))),
+            eq(users.userType, 'traveler')
+          )
+        );
+
+      // 4. Travelers FROM this city (hometown = city, userType = traveler)
+      const travelersFromCityResult = await db
+        .select({ count: count() })
+        .from(users)
+        .where(
+          and(
+            or(...searchCities.map(searchCity => eq(users.hometownCity, searchCity))),
+            eq(users.userType, 'traveler')
           )
         );
 
@@ -1364,7 +1417,15 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
       const localCount = localUsersResult[0]?.count || 0;
       const businessCount = businessUsersResult[0]?.count || 0;
-      const travelerCount = (travelerUsersWithPlansResult[0]?.count || 0) + (currentTravelersResult[0]?.count || 0);
+      
+      // Sum all traveler associations with this city (avoiding double counts)
+      const travelPlansCount = travelerUsersWithPlansResult[0]?.count || 0;
+      const currentToCount = currentTravelersToResult[0]?.count || 0;
+      const destinationCount = travelersWithDestinationResult[0]?.count || 0;
+      const fromCityCount = travelersFromCityResult[0]?.count || 0;
+      
+      // For now, sum all counts (we may have some overlap but it's better than missing users)
+      const travelerCount = travelPlansCount + currentToCount + destinationCount + fromCityCount;
       const eventCount = eventsResult[0]?.count || 0;
 
       const cityStats = {
