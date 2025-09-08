@@ -291,7 +291,7 @@ export default function CityPage({ cityName }: CityPageProps) {
             {/* Main Content */}
             <div className="lg:col-span-2 xl:col-span-3">
               {/* Discover and Connect Section */}
-              <div className="mb-6 sm:mb-8">
+              <div id="people-section" className="mb-6 sm:mb-8">
                 <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row justify-between items-start sm:items-center mb-6">
                   <div>
                     <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">Discover and Connect with People</h2>
@@ -363,12 +363,24 @@ export default function CityPage({ cityName }: CityPageProps) {
                   </div>
                 </div>
 
-                {/* Meet People in City Button */}
+                {/* Meet People in City Button - Shows all content */}
                 <div className="mb-6">
                   <Button 
-                    onClick={() => setLocation(`/city/${encodeURIComponent(decodedCityName)}/match`)}
+                    onClick={() => {
+                      setShowAllUsers(true);
+                      setShowAllEvents(true);
+                      setFilter("all");
+                      // Scroll to content after state updates
+                      setTimeout(() => {
+                        const peopleSection = document.getElementById('people-section');
+                        if (peopleSection) {
+                          peopleSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                      }, 100);
+                    }}
                     className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                     size="lg"
+                    data-testid="button-meet-people-city"
                   >
                     <Users className="w-5 h-5 mr-2" />
                     Meet People in {parsedCityName}
