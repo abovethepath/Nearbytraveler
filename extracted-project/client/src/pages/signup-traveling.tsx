@@ -308,12 +308,25 @@ export default function SignupTraveling() {
         console.warn("Travel plan request error (continuing):", tpErr);
       }
 
-      // 8) (Optional but recommended) kick off post-signup side effects synchronously
+      // 8) kick off post-signup side effects synchronously
       //    so the hero/discovery/chatrooms have data on first render.
-      //    If you have endpoints like these, call them now (idempotent server-side):
+      
+      // Send welcome message from user2 (nearbytraveler)
+      try {
+        await fetch(`/api/messages/seed-welcome`, { 
+          method: "POST", 
+          body: JSON.stringify({ toUserId: user.id, fromUser: "user2" }), 
+          headers: { "Content-Type": "application/json" }, 
+          credentials: "include" 
+        });
+        console.log(`✅ Welcome message sent to user ${user.id}`);
+      } catch (welcomeError) {
+        console.warn("Welcome message failed (continuing):", welcomeError);
+      }
+
+      // Optional: seed city matches and chatrooms
       // await fetch(`/api/matching/seed-city-matches?userId=${user.id}`, { credentials: "include" });
       // await fetch(`/api/chatrooms/ensure-city-room`, { method: "POST", body: JSON.stringify({ city: travelPlanPayload.city, country: travelPlanPayload.country }), headers: { "Content-Type": "application/json" }, credentials: "include" });
-      // await fetch(`/api/messages/seed-welcome`, { method: "POST", body: JSON.stringify({ toUserId: user.id, fromUser: "user2" }), headers: { "Content-Type": "application/json" }, credentials: "include" });
 
       // 9) clean temp storage
       sessionStorage.removeItem("accountData");

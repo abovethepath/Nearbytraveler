@@ -4058,6 +4058,129 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // SEED WELCOME MESSAGE ENDPOINT - for new user signup flow
+  app.post("/api/messages/seed-welcome", async (req, res) => {
+    try {
+      const { toUserId, fromUser } = req.body;
+      
+      if (!toUserId) {
+        return res.status(400).json({ message: "toUserId is required" });
+      }
+
+      const userId = parseInt(toUserId);
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Get nearbytraveler user (user2)
+      const nearbytravelerUser = await storage.getUserByUsername('nearbytrav');
+      if (!nearbytravelerUser) {
+        return res.status(404).json({ message: "Nearbytraveler user not found" });
+      }
+
+      // Check if connection already exists
+      let hasConnection = false;
+      try {
+        const existingConnection = await storage.getConnection(nearbytravelerUser.id, user.id);
+        hasConnection = !!existingConnection;
+      } catch (error) {
+        console.log("No existing connection found");
+      }
+
+      // Create connection if it doesn't exist
+      if (!hasConnection) {
+        try {
+          await db
+            .insert(connections)
+            .values({
+              requesterId: parseInt(nearbytravelerUser.id.toString() || '0'),
+              receiverId: parseInt(user.id.toString() || '0'),
+              status: 'accepted'
+            })
+            .returning();
+          console.log(`✓ Created connection between nearbytraveler and ${user.username}`);
+        } catch (connectionError) {
+          console.error("Error creating connection:", connectionError);
+        }
+      }
+
+      // Create welcome message based on user type
+      let welcomeContent = '';
+      
+      if (user.userType === 'traveler' || user.isCurrentlyTraveling) {
+        welcomeContent = `Welcome to Nearby Traveler! ✈️
+
+Hi ${user.name || user.username}! I'm Aaron, and I'm excited to welcome you to our community of travelers and locals.
+
+Since you're currently traveling, here's how to get the most out of Nearby Traveler:
+
+🌍 **Connect with Locals**: Find people in your destination who share your interests
+🎉 **Discover Events**: Join meetups and activities happening around you
+💬 **Join City Chatrooms**: Connect with other travelers and locals in real-time
+📱 **Create Quick Meetups**: Organize spontaneous hangouts with fellow travelers
+
+Your travel destination has been added to your profile, so locals and other travelers in that area can find you easily.
+
+Questions? Just reply to this message. Safe travels!
+
+- Aaron (your fellow nearby traveler)`;
+      } else if (user.userType === 'business') {
+        welcomeContent = `Welcome to Nearby Traveler! 🏢
+
+Hi ${user.name || user.username}! We're excited to have your business join our platform.
+
+Getting Started:
+• Complete your business profile with photos and details
+• Create special offers for travelers visiting your area  
+• Post events to attract customers
+
+Your business is now visible to travelers in ${user.hometownCity || user.hometown || 'your area'}.
+
+Questions? Just reply to this message. Welcome aboard!
+
+- Aaron (your fellow nearby traveler)`;
+      } else {
+        // Local user
+        welcomeContent = `Welcome to Nearby Traveler! 🏘️
+
+Hi ${user.name || user.username}! I'm Aaron, and I'm excited to welcome you to our community.
+
+As a local in ${user.hometownCity || user.hometown || 'your area'}, you can:
+
+🤝 **Meet Travelers**: Connect with visitors who share your interests
+🎉 **Share Local Events**: Show travelers what's happening in your city
+💬 **Join City Chatrooms**: Help newcomers and fellow locals
+📍 **Be a Local Guide**: Share your favorite spots and experiences
+
+You'll get notified when travelers with similar interests visit your area.
+
+Questions? Just reply to this message. Welcome to the community!
+
+- Aaron (your fellow nearby traveler)`;
+      }
+
+      // Send the welcome message
+      const welcomeMessage = await storage.createMessage({
+        senderId: nearbytravelerUser.id,
+        receiverId: user.id,
+        content: welcomeContent
+      });
+
+      console.log(`✓ Welcome message sent to ${user.userType} user ${user.username} (ID: ${user.id})`);
+      
+      res.json({ 
+        success: true, 
+        message: "Welcome message sent successfully",
+        messageId: welcomeMessage.id 
+      });
+    } catch (error: any) {
+      console.error("Error sending seed welcome message:", error);
+      res.status(500).json({ message: "Failed to send welcome message", error: error.message });
+    }
+  });
+
   // Advanced search endpoint with comprehensive filtering - MUST COME BEFORE :id ROUTE
   // Advanced search endpoint - support both URL formats
   app.get('/api/search-users', async (req, res) => {
