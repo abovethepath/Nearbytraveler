@@ -2653,10 +2653,97 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         }
       }
 
+      // COMPREHENSIVE TRAVELER ONBOARDING - Execute all required steps (MISSING FROM ORIGINAL)
+      if (user.userType === 'traveler' && user.isCurrentlyTraveling) {
+        console.log("🚀 COMPREHENSIVE TRAVELER ONBOARDING - Executing all required steps for profile completion");
+        
+        // Create city match pages for both cities (with AI failure handling)
+        try {
+          // Hometown match page
+          if (user.hometownCity) {
+            try {
+              await storage.ensureCityPageExists(user.hometownCity, user.hometownState, user.hometownCountry, user.id);
+              console.log(`✓ PROFILE COMPLETION: Created hometown city page for ${user.hometownCity}`);
+            } catch (cityError: any) {
+              console.error(`PROFILE COMPLETION ERROR: Creating hometown city page for ${user.hometownCity}:`, cityError);
+              // Don't fail the entire process if AI image generation fails
+            }
+          }
+          // Destination match page
+          if (user.travelDestination) {
+            try {
+              const destinationParts = user.travelDestination.split(', ');
+              await storage.ensureCityPageExists(destinationParts[0], destinationParts[1], destinationParts[2] || destinationParts[1], user.id);
+              console.log(`✓ PROFILE COMPLETION: Created destination city page for ${destinationParts[0]}`);
+            } catch (cityError: any) {
+              console.error(`PROFILE COMPLETION ERROR: Creating destination city page:`, cityError);
+              // Don't fail the entire process if AI image generation fails
+            }
+          }
+        } catch (error: any) {
+          console.error('PROFILE COMPLETION ERROR: Creating city match pages:', error);
+        }
+
+        // Send welcome message from nearbytrav account (USER ID 2)
+        try {
+          // Find the nearbytrav system account (ID 2)
+          const nearbytravAccount = await storage.getUser(2);
+          if (nearbytravAccount) {
+            await storage.sendSystemMessage(2, user.id, `Welcome to Nearby Traveler, ${user.name || user.username}! ✈️
+
+I'm Aaron, and I'm excited to welcome you to our community of travelers, locals, and businesses who believe in authentic human connections.
+
+🌍 **What You Can Do:**
+• **Connect with Real People**: Find travelers and locals who share your interests
+• **Join Live Events & Meetups**: Discover what's happening in your area right now
+• **City Chat Rooms**: Jump into conversations with people in ${user.hometownCity}${user.travelDestination ? ` and ${user.travelDestination}` : ''}
+• **Quick Meetups**: Create spontaneous hangouts when you're feeling social
+• **AI-Powered Discovery**: Get personalized recommendations for activities and connections
+
+🎯 **Your Next Steps:**
+1. Complete your profile with interests and a photo
+2. Browse people and events in your areas
+3. Join your city chat rooms to start conversations
+4. Create your first meetup or RSVP to an event
+
+${user.travelDestination ? `Since you're traveling to ${user.travelDestination}, you'll get matched with locals and other travelers there who share your interests!` : `As a local in ${user.hometownCity}, you'll be notified when travelers with similar interests visit your area!`}
+
+Questions? Just reply to this message. Welcome to the community!
+
+- Aaron (your fellow nearby traveler)`);
+            console.log(`✓ PROFILE COMPLETION: Sent welcome message from nearbytrav to ${user.username}`);
+          } else {
+            console.error('PROFILE COMPLETION ERROR: nearbytrav account (ID 2) not found');
+          }
+        } catch (error: any) {
+          console.error('PROFILE COMPLETION ERROR: Sending welcome message:', error);
+        }
+
+        // Register user in both cities with proper status
+        try {
+          // Register as LOCAL in hometown
+          if (user.hometownCity) {
+            await storage.registerUserInCity(user.id, user.hometownCity, user.hometownState, user.hometownCountry, 'local');
+            console.log(`✓ PROFILE COMPLETION: Registered user as local in ${user.hometownCity}`);
+          }
+          // Register as TRAVELER in destination  
+          if (user.travelDestination) {
+            const destinationParts = user.travelDestination.split(', ');
+            await storage.registerUserInCity(user.id, destinationParts[0], destinationParts[1], destinationParts[2] || destinationParts[1], 'traveler');
+            console.log(`✓ PROFILE COMPLETION: Registered user as traveler in ${destinationParts[0]}`);
+          }
+        } catch (error: any) {
+          console.error('PROFILE COMPLETION ERROR: Registering user in cities:', error);
+        }
+      } else {
+        console.log(`🔄 PROFILE COMPLETION: User ${user.username} is not a currently traveling traveler - skipping comprehensive onboarding`);
+        console.log(`   User type: ${user.userType}, Currently traveling: ${user.isCurrentlyTraveling}`);
+      }
+
       if (process.env.NODE_ENV === 'development') console.log(`✅ Profile completion finished for user ${user.username} (${userId})`);
 
       return res.status(200).json({ 
-        message: "Profile completion successful",
+        message: "Profile completion successful with comprehensive onboarding",
         status: "completed" 
       });
 
