@@ -3435,7 +3435,28 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           // Find the nearbytrav system account (ID 2)
           const nearbytravAccount = await storage.getUser(2);
           if (nearbytravAccount) {
-            await storage.sendSystemMessage(2, user.id, `Welcome to Nearby Traveler, ${user.name || user.username}! 🌟 You're now connected as both a Nearby Local in ${userData.hometownCity} and a Nearby Traveler in ${userData.travelDestination}. Start exploring and connecting with fellow travelers!`);
+            await storage.sendSystemMessage(2, user.id, `Welcome to Nearby Traveler, ${user.name || user.username}! ✈️
+
+I'm Aaron, and I'm excited to welcome you to our community of travelers, locals, and businesses who believe in authentic human connections.
+
+🌍 **What You Can Do:**
+• **Connect with Real People**: Find travelers and locals who share your interests
+• **Join Live Events & Meetups**: Discover what's happening in your area right now
+• **City Chat Rooms**: Jump into conversations with people in ${userData.hometownCity}${userData.travelDestination ? ` and ${userData.travelDestination}` : ''}
+• **Quick Meetups**: Create spontaneous hangouts when you're feeling social
+• **AI-Powered Discovery**: Get personalized recommendations for activities and connections
+
+🎯 **Your Next Steps:**
+1. Complete your profile with interests and a photo
+2. Browse people and events in your areas
+3. Join your city chat rooms to start conversations
+4. Create your first meetup or RSVP to an event
+
+${userData.travelDestination ? `Since you're traveling to ${userData.travelDestination}, you'll get matched with locals and other travelers there who share your interests!` : `As a local in ${userData.hometownCity}, you'll be notified when travelers with similar interests visit your area!`}
+
+Questions? Just reply to this message. Welcome to the community!
+
+- Aaron (your fellow nearby traveler)`);
             if (process.env.NODE_ENV === 'development') console.log(`✓ Sent welcome message from nearbytrav to ${user.username}`);
           }
         } catch (error: any) {
