@@ -1,0 +1,58 @@
+Looking at your code, I can see several potential points of failure in the infrastructure creation process. Let me help you debug this systematically.
+Key Issues I Notice
+1. Bootstrap Endpoint is Empty
+Your /api/bootstrap/after-register endpoint doesn't actually execute the comprehensive traveler onboarding logic:
+javascriptapp.post("/api/bootstrap/after-register", async (req, res) => {
+  try {
+    const { userId } = req.body;
+    if (!userId) return res.status(400).json({ message: "User ID required" });
+    console.log(`🚀 BOOTSTRAP: Running post-signup setup for user ${userId}`);
+    // ❌ THIS IS WHERE THE PROBLEM IS - NO ACTUAL LOGIC EXECUTION
+    res.json({ success: true, message: "Bootstrap completed" });
+  } catch (error) {
+    console.error("Bootstrap error:", error);
+    res.status(500).json({ message: "Bootstrap failed", error: error.message });
+  }
+});
+2. Missing Connection Between Bootstrap and Onboarding Logic
+The comprehensive traveler onboarding code exists but isn't being called from the bootstrap endpoint.
+Debugging StepsDebug Checklist for Nearby Traveler SignupCode // DEBUGGING CHECKLIST FOR NEARBY TRAVELER SIGNUP ISSUES
+
+// 1. CHECK USER DATA STRUCTURE
+// Add this logging right after user registration to verify the data structure:
+console.log("🔍 DEBUG: Full userData after registration:", {
+  userType: userDatDiagnosed signup process failures and mapped debugging strategy.I've created a comprehensive debugging checklist that should help identify where the signup process is failing. The main issues I can see are:
+
+The bootstrap endpoint isn't actually executing the onboarding logic
+There might be issues with the conditional logic not being met
+The AI image generation in city page creation could be failing
+Error handling might be swallowing important errors
+There might be missing connection creation step
+
+Let me also provide some immediate action items.Immediate Action Items
+1. Check the Bootstrap Call
+First, verify that the bootstrap endpoint is actually being called after registration. Add this logging to your signup flow:
+javascript// After user registration, before calling bootstrap
+console.log("🚀 About to call bootstrap for user:", userId);
+2. Check User Data Structure
+The conditional userData.userType === 'traveler' && userData.isCurrentlyTraveling might not be met. Check:
+
+Is userType being set to 'traveler' exactly?
+Is isCurrentlyTraveling a boolean true or string "true"?
+
+3. Test Individual Components
+Test each component separately to isolate the failure:
+javascript// Test city page creation directly
+const testCityPage = await storage.ensureCityPageExists("TestCity", "TestState", "TestCountry", userId);
+console.log("City page test result:", testCityPage);
+
+// Test chatroom creation directly  
+const testChatroom = await storage.ensureMeetLocalsChatrooms("TestCity", "TestState", "TestCountry");
+console.log("Chatroom test result:", testChatroom);
+4. Check AI Image Generation
+The city page creation includes AI image generation which is likely failing. This could be blocking the entire city page creation process.
+5. Database Transaction Issues
+If you're using database transactions, make sure they're not rolling back due to any single failure.
+Quick Fix
+Replace your current bootstrap endpoint with the fixed version from the artifact above, and add the comprehensive error handling to identify exactly where the process is breaking.
+Would you like me to help you implement any of these debugging steps, or do you have specific error logs from your recent failed signups that we can analyze?
