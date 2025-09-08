@@ -2735,6 +2735,18 @@ Questions? Just reply to this message. Welcome to the community!
         } catch (error: any) {
           console.error('PROFILE COMPLETION ERROR: Registering user in cities:', error);
         }
+
+        // CRITICAL: Connect user to nearbytrav system account (USER ID 2)
+        try {
+          await storage.createConnection({
+            requesterId: 2,
+            receiverId: user.id,
+            status: 'accepted'
+          });
+          console.log(`✓ PROFILE COMPLETION: Connected user ${user.username} to nearbytrav system account`);
+        } catch (error: any) {
+          console.error('PROFILE COMPLETION ERROR: Creating connection to nearbytrav:', error);
+        }
       } else {
         console.log(`🔄 PROFILE COMPLETION: User ${user.username} is not a currently traveling traveler - skipping comprehensive onboarding`);
         console.log(`   User type: ${user.userType}, Currently traveling: ${user.isCurrentlyTraveling}`);
