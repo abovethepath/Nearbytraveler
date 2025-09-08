@@ -4079,6 +4079,137 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // BOOTSTRAP ENDPOINTS FOR SIGNUP FLOW COMPLETION
+  // Bootstrap: Overall post-signup setup
+  app.post("/api/bootstrap/after-register", async (req, res) => {
+    try {
+      const { userId } = req.body;
+      if (!userId) {
+        return res.status(400).json({ message: "User ID required" });
+      }
+      console.log(`🚀 BOOTSTRAP: Running post-signup setup for user ${userId}`);
+      // Could trigger additional setup here if needed
+      res.json({ success: true, message: "Bootstrap completed" });
+    } catch (error: any) {
+      console.error("Bootstrap error:", error);
+      res.status(500).json({ message: "Bootstrap failed", error: error.message });
+    }
+  });
+
+  // Bootstrap: Ensure city chatroom exists
+  app.post("/api/chatrooms/ensure-city-room", async (req, res) => {
+    try {
+      const { city, country, state } = req.body;
+      if (!city || !country) {
+        return res.status(400).json({ message: "City and country required" });
+      }
+      
+      console.log(`🏠 BOOTSTRAP: Ensuring city chatroom exists for ${city}, ${country}`);
+      
+      // Check if chatroom already exists
+      const existingChatroom = await db.select().from(citychatrooms)
+        .where(and(
+          eq(citychatrooms.city, city),
+          eq(citychatrooms.state, state || ''),
+          eq(citychatrooms.country, country)
+        )).limit(1);
+      
+      if (existingChatroom.length === 0) {
+        await db.insert(citychatrooms).values({
+          city: city,
+          state: state || '',
+          country: country,
+          name: `${city} Chat`,
+          description: `Connect with locals and travelers in ${city}`,
+          isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        });
+        console.log(`✅ BOOTSTRAP: Created city chatroom for ${city}`);
+      } else {
+        console.log(`✅ BOOTSTRAP: City chatroom already exists for ${city}`);
+      }
+      
+      res.json({ success: true, message: "City chatroom ensured" });
+    } catch (error: any) {
+      console.error("City chatroom creation error:", error);
+      res.status(500).json({ message: "Failed to ensure city chatroom", error: error.message });
+    }
+  });
+
+  // Bootstrap: Seed welcome message from user2
+  app.post("/api/messages/seed-welcome", async (req, res) => {
+    try {
+      const { toUserId, fromUser } = req.body;
+      if (!toUserId) {
+        return res.status(400).json({ message: "toUserId required" });
+      }
+      
+      const fromUserId = fromUser === "user2" ? 2 : 2; // Default to user 2 (nearbytrav)
+      console.log(`💬 BOOTSTRAP: Sending welcome message from user ${fromUserId} to user ${toUserId}`);
+      
+      // Check if welcome message already exists
+      const existingMessage = await db
+        .select()
+        .from(messages)
+        .where(
+          and(
+            eq(messages.senderId, fromUserId),
+            eq(messages.receiverId, toUserId)
+          )
+        )
+        .limit(1);
+      
+      if (existingMessage.length === 0) {
+        const user = await storage.getUser(toUserId);
+        if (user) {
+          await storage.sendSystemMessage(fromUserId, toUserId, `Welcome to Nearby Traveler, ${user.name || user.username}! ✈️
+
+I'm Aaron from the Nearby Traveler team. This platform connects travelers and locals through shared interests and authentic experiences.
+
+Here's how to get started:
+1. Browse people in your area and connect with those who share your interests
+2. Check out local events and meetups happening around you  
+3. Join your city chat rooms to start conversations
+4. Create your first meetup or RSVP to an event
+
+${user.isCurrentlyTraveling && user.travelDestination ? `Since you're traveling to ${user.travelDestination}, you'll get matched with locals and other travelers there who share your interests!` : `As a local in ${user.hometownCity}, you'll be notified when travelers with similar interests visit your area!`}
+
+Questions? Just reply here - I read every message!
+
+Welcome aboard! 🌍`);
+          console.log(`✅ BOOTSTRAP: Sent welcome message to user ${toUserId}`);
+        }
+      } else {
+        console.log(`✅ BOOTSTRAP: Welcome message already exists for user ${toUserId}`);
+      }
+      
+      res.json({ success: true, message: "Welcome message seeded" });
+    } catch (error: any) {
+      console.error("Welcome message seeding error:", error);
+      res.status(500).json({ message: "Failed to seed welcome message", error: error.message });
+    }
+  });
+
+  // Bootstrap: Seed city matches (placeholder for future matching system)
+  app.get("/api/matching/seed-city-matches", async (req, res) => {
+    try {
+      const { userId } = req.query;
+      if (!userId) {
+        return res.status(400).json({ message: "userId query parameter required" });
+      }
+      
+      console.log(`🎯 BOOTSTRAP: Seeding city matches for user ${userId}`);
+      // Placeholder for future city matching system
+      // This could trigger background job to generate user matches
+      
+      res.json({ success: true, message: "City matches seeded" });
+    } catch (error: any) {
+      console.error("City matches seeding error:", error);
+      res.status(500).json({ message: "Failed to seed city matches", error: error.message });
+    }
+  });
+
   // Advanced search endpoint with comprehensive filtering - MUST COME BEFORE :id ROUTE
   // Advanced search endpoint - support both URL formats
   app.get('/api/search-users', async (req, res) => {
