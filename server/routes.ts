@@ -388,7 +388,7 @@ const GLOBAL_METROPOLITAN_AREAS: MetropolitanArea[] = [
   }
 ];
 
-// ENABLED: Metro consolidation functions - consolidate all major cities worldwide
+// ENABLED: Metro consolidation functions - consolidate ONLY LA Metro cities
 function consolidateToMetropolitanArea(city: string, state?: string, country?: string): string {
   // LA Metro cities list - consolidate ALL of these to "Los Angeles Metro"
   const laMetroCities = [
@@ -410,13 +410,13 @@ function consolidateToMetropolitanArea(city: string, state?: string, country?: s
     'Long Beach', 'Venice Beach'
   ];
   
-  // Consolidate ALL LA Metro cities to "Los Angeles Metro"
+  // ONLY consolidate actual LA Metro cities to "Los Angeles Metro"
   if (laMetroCities.includes(city)) {
     return 'Los Angeles Metro';
   }
   
-  // This shouldn't happen since we filter to only LA Metro cities
-  return 'Los Angeles Metro';
+  // For all other cities, return the original city name unchanged
+  return city;
 }
 
 // Get all cities in a metropolitan area with LA Metro consolidation
@@ -1055,7 +1055,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   // FIXED: City stats endpoint - LA METRO CITIES ONLY
   app.get("/api/city-stats", async (req, res) => {
     try {
-      if (process.env.NODE_ENV === 'development') console.log("🏙️ LA METRO ONLY: Loading LA Metro cities");
+      if (process.env.NODE_ENV === 'development') console.log("🏙️ LOADING ALL CITIES: Getting city stats for all cities");
 
       // Get unique cities where users actually live or are traveling to
       const uniqueCitiesQuery = await db.execute(sql`
@@ -1071,20 +1071,23 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         ORDER BY city_name
       `);
 
-      // Import LA Metro cities
+      // Import LA Metro cities for consolidation
       const { METRO_AREAS } = await import('../shared/constants');
       const laMetroCities = METRO_AREAS['Los Angeles'].cities;
       
-      // LA METRO ONLY - All cities are in California, United States
+      // Get state/country for cities - LA Metro get California/US, others get from city_pages
       const getCityCountry = (cityName: string): { state: string, country: string } => {
-        // All LA Metro cities are in California, United States
-        return { state: 'California', country: 'United States' };
+        // LA Metro cities are in California, United States
+        if (laMetroCities.includes(cityName)) {
+          return { state: 'California', country: 'United States' };
+        }
+        
+        // For other cities, return generic values (will be looked up later if needed)
+        return { state: '', country: 'Unknown' };
       };
 
-      // Filter to only LA Metro cities
-      const rawCities = uniqueCitiesQuery.rows
-        .map((row: any) => row.city)
-        .filter((city: string) => laMetroCities.includes(city));
+      // SHOW ALL CITIES - No filtering
+      const rawCities = uniqueCitiesQuery.rows.map((row: any) => row.city);
       
       // Always ensure we have at least Los Angeles for consolidation
       if (rawCities.length === 0 || !rawCities.includes('Los Angeles')) {
