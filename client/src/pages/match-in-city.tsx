@@ -91,77 +91,67 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
   const fetchAllCities = async () => {
     try {
-      // Restore original beautiful city photos like in the screenshots
-      const launchCities = [
-        { 
-          city: "Los Angeles Metro", 
-          state: "California", 
-          country: "United States", 
-          photo: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80",
-          gradient: "from-orange-400/20 to-red-600/20" 
-        },
-        { 
-          city: "New York City", 
-          state: "New York", 
-          country: "United States", 
-          photo: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=800&q=80",
-          gradient: "from-blue-400/20 to-purple-600/20" 
-        },
-        { 
-          city: "Las Vegas", 
-          state: "Nevada", 
-          country: "United States", 
-          photo: "https://images.unsplash.com/photo-1605833556294-ea5c7a74f57d?w=800&q=80",
-          gradient: "from-yellow-400/20 to-red-600/20" 
-        },
-        { 
-          city: "Miami", 
-          state: "Florida", 
-          country: "United States", 
-          photo: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
-          gradient: "from-pink-400/20 to-orange-600/20" 
-        },
-        { 
-          city: "New Orleans", 
-          state: "Louisiana", 
-          country: "United States", 
-          photo: "https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=800&q=80",
-          gradient: "from-purple-400/20 to-green-600/20" 
-        },
-        { 
-          city: "Chicago", 
-          state: "Illinois", 
-          country: "United States", 
-          photo: "https://images.unsplash.com/photo-1494522855154-9297ac14b55f?w=800&q=80",
-          gradient: "from-blue-400/20 to-indigo-600/20" 
-        },
-        { 
-          city: "Austin", 
-          state: "Texas", 
-          country: "United States", 
-          photo: "https://images.unsplash.com/photo-1531218150217-54595bc2b934?w=800&q=80",
-          gradient: "from-green-400/20 to-blue-600/20" 
-        },
-        { 
-          city: "Boston", 
-          state: "Massachusetts", 
-          country: "United States", 
-          photo: "https://images.unsplash.com/photo-1516577206467-302436c5d36b?w=800&q=80",
-          gradient: "from-red-400/20 to-blue-600/20" 
-        },
-        { 
-          city: "Nashville", 
-          state: "Tennessee", 
-          country: "United States", 
-          photo: "https://images.unsplash.com/photo-1555631936-c0ec6b634e5c?w=800&q=80",
-          gradient: "from-yellow-400/20 to-pink-600/20" 
-        }
-      ];
-      
-      console.log('🏙️ LAUNCH CITIES LOADED:', launchCities.length);
-      setAllCities(launchCities);
+      // FIXED: Use dynamic city stats API instead of hardcoded cities
+      console.log('🏙️ MATCH: Fetching cities from city stats API...');
+      const response = await fetch('/api/city-stats');
+      if (response.ok) {
+        const citiesData = await response.json();
+        console.log('🏙️ MATCH: Loaded', citiesData.length, 'cities from API');
+        
+        // Add default photos and gradients to the dynamic cities
+        const citiesWithPhotos = citiesData.map((city: any, index: number) => {
+          const photoOptions = [
+            "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80",
+            "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=800&q=80", 
+            "https://images.unsplash.com/photo-1605833556294-ea5c7a74f57d?w=800&q=80",
+            "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+            "https://images.unsplash.com/photo-1520637836862-4d197d17c36a?w=800&q=80",
+            "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80",
+            "https://images.unsplash.com/photo-1486299267070-83823f5448dd?w=800&q=80",
+            "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800&q=80"
+          ];
+          
+          const gradientOptions = [
+            "from-orange-400/20 to-red-600/20",
+            "from-blue-400/20 to-purple-600/20",
+            "from-yellow-400/20 to-red-600/20", 
+            "from-pink-400/20 to-orange-600/20",
+            "from-green-400/20 to-blue-600/20",
+            "from-purple-400/20 to-pink-600/20",
+            "from-indigo-400/20 to-purple-600/20",
+            "from-teal-400/20 to-blue-600/20"
+          ];
+          
+          return {
+            ...city,
+            photo: photoOptions[index % photoOptions.length],
+            gradient: gradientOptions[index % gradientOptions.length]
+          };
+        });
+        
+        setAllCities(citiesWithPhotos);
+        console.log('🏙️ MATCH: Cities loaded successfully:', citiesWithPhotos.length);
+      } else {
+        console.error('🏙️ MATCH: Failed to fetch cities from API, falling back to hardcoded');
+        // Fallback to original cities if API fails
+        const launchCities = [
+          { 
+            city: "Los Angeles Metro", 
+            state: "California", 
+            country: "United States", 
+            photo: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80",
+            gradient: "from-orange-400/20 to-red-600/20",
+            localCount: 0,
+            travelerCount: 0,
+            businessCount: 0,
+            eventCount: 0
+          }
+        ];
+        setAllCities(launchCities);
+      }
     } catch (error) {
-      console.error('Error loading launch cities:', error);
+      console.error('🏙️ MATCH: Error loading cities:', error);
+      setAllCities([]);
     }
   };
 
