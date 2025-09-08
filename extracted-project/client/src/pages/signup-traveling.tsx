@@ -163,70 +163,127 @@ export default function SignupTraveling() {
     }
   }, []);
 
+  // COMPREHENSIVE SIGNUP FIX - Local dates, multiple endpoints, proper bootstrap
+  const getTodayLocal = () => {
+    // YYYY-MM-DD in local time (no UTC surprises)
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  };
+
+  const postJSON = async (url: string, body: any) => {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(body),
+    });
+    const text = await res.text();
+    let json: any = null;
+    try { json = text ? JSON.parse(text) : null; } catch {}
+    if (!res.ok) {
+      const msg = json?.message || json?.error || text || `HTTP ${res.status}`;
+      throw new Error(`[POST ${url}] ${msg}`);
+    }
+    return json ?? {};
+  };
+
+  const tryCreateTravelPlan = async (payload: any) => {
+    // Try common endpoint variants; tolerate servers that prefer different names
+    const candidates = [
+      "/api/travel-plans",
+      "/api/travelPlans",
+      `/api/users/${payload.userId}/travel-plans`,
+      `/api/users/${payload.userId}/travelPlans`,
+    ];
+    let lastErr: any = null;
+    for (const url of candidates) {
+      try {
+        const out = await postJSON(url, payload);
+        console.log(`✅ Travel plan created via: ${url}`);
+        return { url, out };
+      } catch (e) {
+        console.warn(`❌ Travel plan failed via ${url}:`, e);
+        lastErr = e;
+        // continue to next candidate
+      }
+    }
+    throw lastErr || new Error("No travel plan endpoint accepted the payload.");
+  };
+
+  const callIfExists = async (url: string, body?: any) => {
+    try {
+      const res = await fetch(url, {
+        method: body ? "POST" : "GET",
+        headers: body ? { "Content-Type": "application/json" } : undefined,
+        credentials: "include",
+        body: body ? JSON.stringify(body) : undefined,
+      });
+      if (!res.ok) throw new Error(`${url} -> ${res.status}`);
+      console.log(`✅ Bootstrap call succeeded: ${url}`);
+      return true;
+    } catch (e) {
+      console.warn(`⚠️ Bootstrap call failed (continuing): ${url}`, e);
+      return false;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      // 1) hydrate account data from session
-      const storedAccountData = sessionStorage.getItem("accountData");
-      let accountData: any = { email: "", password: "", username: "", name: "", phoneNumber: "" };
-      if (storedAccountData) accountData = JSON.parse(storedAccountData);
+      // Merge account data
+      const stored = sessionStorage.getItem("accountData");
+      let acct: any = { email: "", password: "", username: "", name: "", phoneNumber: "" };
+      if (stored) acct = JSON.parse(stored);
 
-      // 2) merge + normalize
-      const finalFormData = {
+      const final = {
         ...formData,
-        email: (accountData.email || formData.email || "").toLowerCase().trim(),
-        password: (accountData.password || formData.password || "").trim(),
-        username: (accountData.username || formData.username || "").toLowerCase().trim(),
-        name: (accountData.name || formData.name || "").trim(),
-        phoneNumber: (accountData.phoneNumber || formData.phoneNumber || "").trim(),
+        email: (acct.email || formData.email || "").toLowerCase().trim(),
+        password: (acct.password || formData.password || "").trim(),
+        username: (acct.username || formData.username || "").toLowerCase().trim(),
+        name: (acct.name || formData.name || "").trim(),
+        phoneNumber: (acct.phoneNumber || formData.phoneNumber || "").trim(),
       };
 
-      // 3) build payload (include multiple alias keys to satisfy differing backends)
-      const todayISO = new Date().toISOString().split("T")[0];
-
+      // Build payload – IMPORTANT: local dates
+      const today = getTodayLocal();
       const registrationData = {
         userType: "traveler",
         isCurrentlyTraveling: true,
-
-        email: finalFormData.email,
-        password: finalFormData.password,
-        username: finalFormData.username,
-        name: finalFormData.name,
-        phoneNumber: finalFormData.phoneNumber,
-
-        dateOfBirth: finalFormData.dateOfBirth,
+        email: final.email,
+        password: final.password,
+        username: final.username,
+        name: final.name,
+        phoneNumber: final.phoneNumber,
+        dateOfBirth: final.dateOfBirth,
         bio: "",
-
-        // hometown
-        hometownCity: finalFormData.hometownCity?.trim(),
-        hometownState: finalFormData.hometownState?.trim() || "",
-        hometownCountry: finalFormData.hometownCountry?.trim(),
-
-        // current trip (primary names)
-        currentTripDestinationCity: finalFormData.currentTripDestinationCity?.trim(),
-        currentTripDestinationState: finalFormData.currentTripDestinationState?.trim() || "",
-        currentTripDestinationCountry: finalFormData.currentTripDestinationCountry?.trim(),
-        currentTripReturnDate: finalFormData.currentTripReturnDate,
-
-        // aliases some backends expect
-        travelStartDate: todayISO,
-        travelEndDate: finalFormData.currentTripReturnDate,
-        currentCity: finalFormData.currentTripDestinationCity?.trim(),
-        currentState: finalFormData.currentTripDestinationState?.trim() || "",
-        currentCountry: finalFormData.currentTripDestinationCountry?.trim(),
-
-        interests: finalFormData.interests,
+        hometownCity: final.hometownCity?.trim(),
+        hometownState: final.hometownState?.trim() || "",
+        hometownCountry: final.hometownCountry?.trim(),
+        currentTripDestinationCity: final.currentTripDestinationCity?.trim(),
+        currentTripDestinationState: final.currentTripDestinationState?.trim() || "",
+        currentTripDestinationCountry: final.currentTripDestinationCountry?.trim(),
+        currentTripReturnDate: final.currentTripReturnDate,   // YYYY-MM-DD
+        // aliases some servers expect:
+        travelStartDate: today,
+        travelEndDate: final.currentTripReturnDate,
+        currentCity: final.currentTripDestinationCity?.trim(),
+        currentState: final.currentTripDestinationState?.trim() || "",
+        currentCountry: final.currentTripDestinationCountry?.trim(),
+        interests: final.interests,
       };
 
-      // 4) validate (front-end)
+      // Frontend validation (unchanged)
       const errs: string[] = [];
       if (!registrationData.name) errs.push("Name is required.");
       if (!registrationData.username) errs.push("Username is required.");
       if (!registrationData.email) errs.push("Email is required.");
       if (!registrationData.password) errs.push("Password is required.");
-      if (finalFormData.password !== finalFormData.confirmPassword) errs.push("Passwords do not match.");
+      if (final.password !== final.confirmPassword) errs.push("Passwords do not match.");
       if (!registrationData.dateOfBirth) errs.push("Date of birth is required.");
       if (!registrationData.hometownCity || !registrationData.hometownCountry)
         errs.push("Hometown city and country are required.");
@@ -244,25 +301,13 @@ export default function SignupTraveling() {
         return;
       }
 
-      // 5) CREATE ACCOUNT (await it)
-      const regRes = await fetch("/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(registrationData),
-        credentials: "include",
-      });
-      const regData = await regRes.json();
+      // 1) Register (must succeed)
+      const reg = await postJSON("/api/register", registrationData);
+      const user = reg?.user;
+      if (!user?.id) throw new Error("Register returned no user id.");
+      console.log(`✅ User registered successfully: ${user.username} (ID: ${user.id})`);
 
-      if (!regRes.ok || !regData?.user?.id) {
-        console.error("Register failed:", regData);
-        toast({ title: "Sign up failed", description: regData?.message || "Could not create your account.", variant: "destructive" });
-        setIsLoading(false);
-        return;
-      }
-
-      const user = regData.user;
-
-      // 6) persist auth state BEFORE we navigate
+      // 2) Persist auth locally before any follow-ups
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("travelconnect_user", JSON.stringify(user));
       localStorage.setItem("currentUser", JSON.stringify(user));
@@ -271,68 +316,53 @@ export default function SignupTraveling() {
       setUser(user);
       login(user);
 
-      // 7) ENSURE TRAVEL PLAN EXISTS (do this explicitly if your backend doesn't auto-create)
-      // Try a dedicated endpoint first; if your /api/register already creates a plan,
-      // this call should be idempotent or the backend should no-op on duplicates.
+      // 3) Ensure current travel plan exists (idempotent)
       const travelPlanPayload = {
         userId: user.id,
         isCurrent: true,
-        startDate: registrationData.travelStartDate,
+        startDate: today,
         endDate: registrationData.travelEndDate,
         city: registrationData.currentTripDestinationCity,
         state: registrationData.currentTripDestinationState,
         country: registrationData.currentTripDestinationCountry,
-
-        // helpful aliases (cover snake_case too)
-        travel_start_date: registrationData.travelStartDate,
+        // common snake_case aliases
+        travel_start_date: today,
         travel_end_date: registrationData.travelEndDate,
         current_city: registrationData.currentTripDestinationCity,
         current_state: registrationData.currentTripDestinationState,
         current_country: registrationData.currentTripDestinationCountry,
-
         interests: registrationData.interests,
       };
 
-      try {
-        const tpRes = await fetch("/api/travel-plans", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(travelPlanPayload),
-          credentials: "include",
-        });
-        // ignore body if not needed; log for debugging
-        if (!tpRes.ok) {
-          console.warn("Travel plan creation failed (continuing):", await tpRes.text());
-        }
-      } catch (tpErr) {
-        console.warn("Travel plan request error (continuing):", tpErr);
-      }
+      const createdTP = await tryCreateTravelPlan(travelPlanPayload);
+      console.log("✅ Travel plan created:", createdTP.out);
 
-      // 8) (Optional but recommended) kick off post-signup side effects synchronously
-      //    so the hero/discovery/chatrooms have data on first render.
-      //    If you have endpoints like these, call them now (idempotent server-side):
-      // await fetch(`/api/matching/seed-city-matches?userId=${user.id}`, { credentials: "include" });
-      // await fetch(`/api/chatrooms/ensure-city-room`, { method: "POST", body: JSON.stringify({ city: travelPlanPayload.city, country: travelPlanPayload.country }), headers: { "Content-Type": "application/json" }, credentials: "include" });
-      // await fetch(`/api/messages/seed-welcome`, { method: "POST", body: JSON.stringify({ toUserId: user.id, fromUser: "user2" }), headers: { "Content-Type": "application/json" }, credentials: "include" });
+      // 4) Best-effort bootstrap so hero/discovery/chatrooms exist on first render
+      console.log("🚀 Starting bootstrap calls...");
+      await callIfExists(`/api/bootstrap/after-register`, { userId: user.id });
+      await callIfExists(`/api/matching/seed-city-matches?userId=${user.id}`);
+      await callIfExists(`/api/chatrooms/ensure-city-room`, {
+        city: travelPlanPayload.city,
+        country: travelPlanPayload.country,
+      });
+      await callIfExists(`/api/messages/seed-welcome`, { toUserId: user.id, fromUser: "user2" });
 
-      // 9) clean temp storage
+      // 5) Cleanup + navigate
       sessionStorage.removeItem("accountData");
       sessionStorage.removeItem("registrationData");
-
-      // 10) show success and navigate
+      
       toast({
         title: "Account created!",
         description: "Welcome to Nearby Traveler!",
         variant: "default",
       });
-
-      // 11) NOW it's safe to navigate
+      
       setLocation("/account-success");
-    } catch (err) {
-      console.error("Signup error:", err);
+    } catch (err: any) {
+      console.error("🔥 SIGNUP CHAIN FAILED:", err);
       toast({
-        title: "Something went wrong",
-        description: "Please check your info and try again.",
+        title: "Sign up failed",
+        description: err?.message || "Could not complete your signup.",
         variant: "destructive",
       });
     } finally {

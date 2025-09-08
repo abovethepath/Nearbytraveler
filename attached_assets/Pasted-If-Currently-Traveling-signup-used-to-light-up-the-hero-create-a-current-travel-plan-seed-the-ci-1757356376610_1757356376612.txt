@@ -1,0 +1,302 @@
+If “Currently Traveling” signup used to light up the hero, create a current travel plan, seed the city chat + user2 message, and now none of that happens, the break is almost certainly in one of these three places:
+
+the register route stopped auto-creating the current travel plan,
+
+the client never actually creates it (wrong path / cookie / date format), or
+
+a post-signup bootstrap job (chatroom/seed message/hero flag) isn’t firing anymore (queue/job name/env var/proxy).
+
+Below is a drop-in client hotfix that:
+
+waits for register,
+
+tries multiple travel-plan endpoints (common path variants) until one works,
+
+uses local dates (not UTC split) so you don’t get filtered out as “not current,”
+
+forces the bootstrap (city chat, hero flag, user2 DM) via tolerant calls,
+
+throws/logs clearly if anything fails so you see where it’s breaking.
+
+Drop-in client hotfix (replace your handleSubmit)
+const getTodayLocal = () => {
+  // YYYY-MM-DD in local time (no UTC surprises)
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+};
+
+const postJSON = async (url: string, body: any) => {
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(body),
+  });
+  const text = await res.text();
+  let json: any = null;
+  try { json = text ? JSON.parse(text) : null; } catch {}
+  if (!res.ok) {
+    const msg = json?.message || json?.error || text || `HTTP ${res.status}`;
+    throw new Error(`[POST ${url}] ${msg}`);
+  }
+  return json ?? {};
+};
+
+const tryCreateTravelPlan = async (payload: any) => {
+  // Try common endpoint variants; tolerate servers that prefer different names
+  const candidates = [
+    "/api/travel-plans",
+    "/api/travelPlans",
+    `/api/users/${payload.userId}/travel-plans`,
+    `/api/users/${payload.userId}/travelPlans`,
+  ];
+  let lastErr: any = null;
+  for (const url of candidates) {
+    try {
+      const out = await postJSON(url, payload);
+      return { url, out };
+    } catch (e) {
+      lastErr = e;
+      // continue to next candidate
+    }
+  }
+  throw lastErr || new Error("No travel plan endpoint accepted the payload.");
+};
+
+const callIfExists = async (url: string, body?: any) => {
+  try {
+    const res = await fetch(url, {
+      method: body ? "POST" : "GET",
+      headers: body ? { "Content-Type": "application/json" } : undefined,
+      credentials: "include",
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    if (!res.ok) throw new Error(`${url} -> ${res.status}`);
+    return true;
+  } catch {
+    // swallow — this is a best-effort bootstrap
+    return false;
+  }
+};
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsLoading(true);
+
+  try {
+    // Merge account data
+    const stored = sessionStorage.getItem("accountData");
+    let acct: any = { email: "", password: "", username: "", name: "", phoneNumber: "" };
+    if (stored) acct = JSON.parse(stored);
+
+    const final = {
+      ...formData,
+      email: (acct.email || formData.email || "").toLowerCase().trim(),
+      password: (acct.password || formData.password || "").trim(),
+      username: (acct.username || formData.username || "").toLowerCase().trim(),
+      name: (acct.name || formData.name || "").trim(),
+      phoneNumber: (acct.phoneNumber || formData.phoneNumber || "").trim(),
+    };
+
+    // Build payload – IMPORTANT: local dates
+    const today = getTodayLocal();
+    const registrationData = {
+      userType: "traveler",
+      isCurrentlyTraveling: true,
+      email: final.email,
+      password: final.password,
+      username: final.username,
+      name: final.name,
+      phoneNumber: final.phoneNumber,
+      dateOfBirth: final.dateOfBirth,
+      bio: "",
+      hometownCity: final.hometownCity?.trim(),
+      hometownState: final.hometownState?.trim() || "",
+      hometownCountry: final.hometownCountry?.trim(),
+      currentTripDestinationCity: final.currentTripDestinationCity?.trim(),
+      currentTripDestinationState: final.currentTripDestinationState?.trim() || "",
+      currentTripDestinationCountry: final.currentTripDestinationCountry?.trim(),
+      currentTripReturnDate: final.currentTripReturnDate,   // YYYY-MM-DD
+      // aliases some servers expect:
+      travelStartDate: today,
+      travelEndDate: final.currentTripReturnDate,
+      currentCity: final.currentTripDestinationCity?.trim(),
+      currentState: final.currentTripDestinationState?.trim() || "",
+      currentCountry: final.currentTripDestinationCountry?.trim(),
+      interests: final.interests,
+    };
+
+    // Frontend validation (unchanged)
+    const errs: string[] = [];
+    if (!registrationData.name) errs.push("Name is required.");
+    if (!registrationData.username) errs.push("Username is required.");
+    if (!registrationData.email) errs.push("Email is required.");
+    if (!registrationData.password) errs.push("Password is required.");
+    if (!registrationData.dateOfBirth) errs.push("Date of birth is required.");
+    if (!registrationData.hometownCity || !registrationData.hometownCountry)
+      errs.push("Hometown city and country are required.");
+    if ((registrationData.interests?.length ?? 0) < 3)
+      errs.push("Please choose at least 3 interests.");
+    if (registrationData.isCurrentlyTraveling) {
+      if (!registrationData.currentTripDestinationCity || !registrationData.currentTripDestinationCountry)
+        errs.push("Please add your current trip destination city and country.");
+      if (!registrationData.currentTripReturnDate)
+        errs.push("Please add your trip end date.");
+    }
+    if (errs.length) {
+      toast({ title: "Check the form", description: errs.join(" "), variant: "destructive" });
+      setIsLoading(false);
+      return;
+    }
+
+    // 1) Register (must succeed)
+    const reg = await postJSON("/api/register", registrationData);
+    const user = reg?.user;
+    if (!user?.id) throw new Error("Register returned no user id.");
+
+    // 2) Persist auth locally before any follow-ups
+    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("travelconnect_user", JSON.stringify(user));
+    localStorage.setItem("currentUser", JSON.stringify(user));
+    localStorage.setItem("authUser", JSON.stringify(user));
+    authStorage.setUser(user);
+    setUser(user);
+    login(user);
+
+    // 3) Ensure current travel plan exists (idempotent)
+    const travelPlanPayload = {
+      userId: user.id,
+      isCurrent: true,
+      startDate: today,
+      endDate: registrationData.travelEndDate,
+      city: registrationData.currentTripDestinationCity,
+      state: registrationData.currentTripDestinationState,
+      country: registrationData.currentTripDestinationCountry,
+      // common snake_case aliases
+      travel_start_date: today,
+      travel_end_date: registrationData.travelEndDate,
+      current_city: registrationData.currentTripDestinationCity,
+      current_state: registrationData.currentTripDestinationState,
+      current_country: registrationData.currentTripDestinationCountry,
+      interests: registrationData.interests,
+    };
+
+    const createdTP = await tryCreateTravelPlan(travelPlanPayload);
+    console.log("Travel plan created via:", createdTP.url, createdTP.out);
+
+    // 4) Best-effort bootstrap so hero/discovery/chatrooms exist on first render
+    await callIfExists(`/api/bootstrap/after-register`, { userId: user.id });
+    await callIfExists(`/api/matching/seed-city-matches?userId=${user.id}`);
+    await callIfExists(`/api/chatrooms/ensure-city-room`, {
+      city: travelPlanPayload.city,
+      country: travelPlanPayload.country,
+    });
+    await callIfExists(`/api/messages/seed-welcome`, { toUserId: user.id, fromUser: "user2" });
+
+    // 5) Cleanup + navigate
+    sessionStorage.removeItem("accountData");
+    sessionStorage.removeItem("registrationData");
+    setLocation("/account-success");
+  } catch (err: any) {
+    console.error("Signup chain failed:", err);
+    toast({
+      title: "Sign up failed",
+      description: err?.message || "Could not complete your signup.",
+      variant: "destructive",
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+If it still doesn’t light up, do these 5 checks (takes 5–10 min)
+
+DevTools → Network
+
+Verify /api/register is 200/201 and returns { user: { id } }.
+
+Verify one of the travel-plan endpoints is 200/201 (or you’ll see which path fails).
+
+Check cookies: after register, there should be an auth cookie (SameSite=Lax works in dev).
+
+Server logs
+Add this at the very top of your server before routes:
+
+app.use(require("express").json({ limit: "1mb" }));
+app.use((req,res,next)=>{ console.log(req.method, req.path); next(); });
+
+
+In the /api/register handler, log the body and explicitly log any call that creates a travel plan. If nothing logs, the route isn’t running or body isn’t parsed.
+
+Travel plan query filter
+Many UIs compute “Nearby Traveler” as:
+isCurrent && startDate <= now && endDate >= now && citySlug != null.
+If your server switched to UTC or changed slugging, you’ll look “not current.” Make sure you:
+
+use local date for startDate (fixed above), and
+
+normalize city/state/country to the expected citySlug.
+
+Endpoint name drift
+Replit / proxy changes often break paths. If your backend creates the plan inside /api/auth/register or expects /api/users/:id/travel-plans, adjust the candidate list in the hotfix (already tries 4 variants).
+
+Queue / bootstrap job disabled
+If you previously relied on a post-register job to make the city chat + seed DM, confirm the worker is running and the env var for the queue/Redis URL didn’t change. The hotfix calls best-effort bootstrap endpoints so the UI doesn’t depend on the worker.
+
+(Recommended) Server-side safety net (1 file edit)
+
+Make registration idempotently ensure a current travel plan and bootstrap, so the client doesn’t need to orchestrate anything:
+
+// in /api/register route (Express/Drizzle/Prisma)
+app.post("/api/register", async (req, res) => {
+  const b = req.body;
+  // create user...
+  const user = await createUser(b); // returns { id, ... }
+
+  // normalize city (server owns canonicalization)
+  const norm = normalizeCity({
+    city: b.currentTripDestinationCity,
+    state: b.currentTripDestinationState,
+    country: b.currentTripDestinationCountry,
+  });
+
+  // upsert current travel plan
+  await upsertCurrentTravelPlan({
+    userId: user.id,
+    startDate: b.travelStartDate || todayLocal(),
+    endDate: b.travelEndDate,
+    city: norm.city,
+    state: norm.state,
+    country: norm.country,
+    citySlug: norm.slug,
+    interests: b.interests || [],
+  });
+
+  // bootstrap (tolerate failures; log)
+  try { await ensureCityRoom(norm.slug); } catch (e) { console.warn("ensureCityRoom", e); }
+  try { await seedWelcomeDM({ toUserId: user.id, fromUsername: "user2" }); } catch (e) { console.warn("seedWelcomeDM", e); }
+  try { await seedCityMatches(user.id); } catch (e) { console.warn("seedCityMatches", e); }
+
+  // return user (and optionally the plan)
+  return res.status(201).json({ user });
+});
+
+
+If this lives server-side, the client can go back to a simple /api/register and your “Currently Traveling” flow works even if Replit proxies or the frontend changes again.
+
+Why this likely broke after Replit changes
+
+Proxy path / middleware order (Vite intercepting /api/*): your register works, but the travel-plan or bootstrap routes are 404’ing.
+
+Body parsing disabled (missing express.json() or moved below middleware).
+
+Cookie/SameSite changed → follow-up calls aren’t authenticated.
+
+Date timezone mismatch → plan exists but filtered out by “current window.”
+
+City normalization/slugger changed → hero/discovery queries don’t match the new slug.
+
+If you paste the server route(s) for /api/register and the travel-plan creation, I’ll align the payload exactly and remove the guesswork (field names, paths, and any required flags).
