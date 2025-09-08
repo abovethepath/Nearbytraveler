@@ -10,7 +10,6 @@ import { ArrowLeft } from "lucide-react";
 import { AuthContext } from "@/App";
 import { MobilePreview } from "@/components/MobilePreview";
 import { useIsMobile, useIsDesktop } from "@/hooks/useDeviceType";
-import griffithObservatory from "@assets/griffith-observatory-skyline_1757211515328.jpg";
 // MobileNav removed - using global mobile navigation
 
 
@@ -116,30 +115,10 @@ export default function DiscoverPage() {
 
   const pageContent = (
     <div className="min-h-screen bg-white dark:bg-gray-900">
-      {/* Hero Image Section - Griffith Observatory */}
-      <div className="mx-4 mb-8 mt-4">
-        <div className="relative h-64 sm:h-80 lg:h-96 rounded-2xl overflow-hidden shadow-xl">
-          <img 
-            src={griffithObservatory}
-            alt="Los Angeles - Griffith Observatory Skyline"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 p-6">
-            <h1 className="text-white text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 drop-shadow-lg">
-              Discover Amazing Destinations
-            </h1>
-            <p className="text-white/90 text-base sm:text-lg drop-shadow-md">
-              Connect with travelers and locals worldwide
-            </p>
-          </div>
-        </div>
-      </div>
-
       {/* Hero Section - Consistent Layout */}
       <section className="bg-white dark:bg-gray-900 py-4 sm:py-8 lg:py-12">
         {isMobile ? (
-          // Mobile: Keep vertical layout (reduced since we have hero image above)
+          // Mobile: Keep vertical layout
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             
             <p className="text-base text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl mx-auto px-4">
