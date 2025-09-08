@@ -168,204 +168,171 @@ export default function SignupTraveling() {
     setIsLoading(true);
 
     try {
-      console.log('🚨 TRAVELER SIGNUP DEBUG - Form submission started');
+      // 1) hydrate account data from session
+      const storedAccountData = sessionStorage.getItem("accountData");
+      let accountData: any = { email: "", password: "", username: "", name: "", phoneNumber: "" };
+      if (storedAccountData) accountData = JSON.parse(storedAccountData);
 
-      // Get account data from sessionStorage (from Auth component)
-      const storedAccountData = sessionStorage.getItem('accountData');
-      let accountData: any = { email: '', password: '', username: '', name: '', phoneNumber: '' };
-
-      if (storedAccountData) {
-        try {
-          accountData = JSON.parse(storedAccountData);
-          console.log('✅ Retrieved account data from sessionStorage:', accountData);
-        } catch (error) {
-          console.error('❌ Error parsing stored account data:', error);
-        }
-      }
-
-      // CRITICAL: Merge account data INTO formData to ensure submission has complete data
+      // 2) merge + normalize
       const finalFormData = {
         ...formData,
-        email: accountData.email || formData.email,
-        password: accountData.password || formData.password,
-        confirmPassword: accountData.password || formData.confirmPassword, // Auto-fill confirm password
-        username: accountData.username || formData.username,
-        name: accountData.name || formData.name,
-        phoneNumber: accountData.phoneNumber || ''
+        email: (accountData.email || formData.email || "").toLowerCase().trim(),
+        password: (accountData.password || formData.password || "").trim(),
+        username: (accountData.username || formData.username || "").toLowerCase().trim(),
+        name: (accountData.name || formData.name || "").trim(),
+        phoneNumber: (accountData.phoneNumber || formData.phoneNumber || "").trim(),
       };
 
-      // Helper functions for clean data
-      const safeJoin = (parts: (string | undefined | null)[]) =>
-        parts.filter(Boolean).map(s => String(s).trim()).filter(s => s.length).join(", ");
+      // 3) build payload (include multiple alias keys to satisfy differing backends)
+      const todayISO = new Date().toISOString().split("T")[0];
 
-      const parseCustomCSV = (input: string) =>
-        input ? input.split(",").map(s => s.trim()).filter(Boolean) : [];
-
-
-      // Merge custom languages into languagesSpoken
-      const customLangs = parseCustomCSV(formData.customLanguages);
-      const languagesSpoken = Array.from(new Set([...customLangs]));
-
-      // Build normalized location strings (preserves LA Metro logic)
-      const hometown = safeJoin([formData.hometownCity, formData.hometownState, formData.hometownCountry]);
-      const location = hometown;
-
-      // Prepare registration data with clean field mapping
       const registrationData = {
-        // SIMPLE: Just set as traveler 
         userType: "traveler",
         isCurrentlyTraveling: true,
 
-        // account data
-        email: (finalFormData.email || "").toLowerCase().trim(),
-        password: (finalFormData.password || "").trim(),
-        username: (finalFormData.username || "").toLowerCase().trim(),
-        name: (finalFormData.name || "").trim(),
-        phoneNumber: (finalFormData.phoneNumber || "").trim(),
+        email: finalFormData.email,
+        password: finalFormData.password,
+        username: finalFormData.username,
+        name: finalFormData.name,
+        phoneNumber: finalFormData.phoneNumber,
 
-        // profile
-        dateOfBirth: formData.dateOfBirth,
-        bio: "", // no bio in simplified signup
-        
-        // hometown/location (preserves LA Metro mapping)
-        hometownCity: formData.hometownCity.trim(),
-        hometownState: formData.hometownState?.trim() || "",
-        hometownCountry: formData.hometownCountry.trim(),
-        hometown,
-        location,
+        dateOfBirth: finalFormData.dateOfBirth,
+        bio: "",
 
-        // current trip (backend will derive travelDestination from these fields)
-        currentTripDestinationCity: formData.currentTripDestinationCity?.trim() || "",
-        currentTripDestinationState: formData.currentTripDestinationState?.trim() || "",
-        currentTripDestinationCountry: formData.currentTripDestinationCountry?.trim() || "",
-        currentTripReturnDate: formData.currentTripReturnDate,
-        travelEndDate: formData.currentTripReturnDate, // Map to backend field
-        
-        // CRITICAL: Map to backend expected field names for travel plan creation
-        currentCity: formData.currentTripDestinationCity?.trim() || "",
-        currentState: formData.currentTripDestinationState?.trim() || "", 
-        currentCountry: formData.currentTripDestinationCountry?.trim() || "",
-        travelStartDate: new Date().toISOString().split('T')[0], // Today for current travelers
+        // hometown
+        hometownCity: finalFormData.hometownCity?.trim(),
+        hometownState: finalFormData.hometownState?.trim() || "",
+        hometownCountry: finalFormData.hometownCountry?.trim(),
 
-        // top choices (require at least 3)
-        interests: formData.interests,
-        
-        // languages
-        languagesSpoken
+        // current trip (primary names)
+        currentTripDestinationCity: finalFormData.currentTripDestinationCity?.trim(),
+        currentTripDestinationState: finalFormData.currentTripDestinationState?.trim() || "",
+        currentTripDestinationCountry: finalFormData.currentTripDestinationCountry?.trim(),
+        currentTripReturnDate: finalFormData.currentTripReturnDate,
+
+        // aliases some backends expect
+        travelStartDate: todayISO,
+        travelEndDate: finalFormData.currentTripReturnDate,
+        currentCity: finalFormData.currentTripDestinationCity?.trim(),
+        currentState: finalFormData.currentTripDestinationState?.trim() || "",
+        currentCountry: finalFormData.currentTripDestinationCountry?.trim(),
+
+        interests: finalFormData.interests,
       };
 
-      // Simple validation for required fields (after data is built)
-      const errors: string[] = [];
-
-      if (!registrationData.name) errors.push("Name is required.");
-      if (!registrationData.username) errors.push("Username is required.");
-      if (!registrationData.email) errors.push("Email is required.");
-      if (!registrationData.password) errors.push("Password is required.");
-      if (finalFormData.password !== finalFormData.confirmPassword) errors.push("Passwords do not match.");
-      if (!registrationData.dateOfBirth) errors.push("Date of birth is required.");
-      if (!registrationData.hometownCity || !registrationData.hometownCountry) {
-        errors.push("Hometown city and country are required.");
-      }
-
-      if ((registrationData.interests?.length ?? 0) < 3) {
-        errors.push("Please choose at least 3 interests.");
-      }
-
+      // 4) validate (front-end)
+      const errs: string[] = [];
+      if (!registrationData.name) errs.push("Name is required.");
+      if (!registrationData.username) errs.push("Username is required.");
+      if (!registrationData.email) errs.push("Email is required.");
+      if (!registrationData.password) errs.push("Password is required.");
+      if (finalFormData.password !== finalFormData.confirmPassword) errs.push("Passwords do not match.");
+      if (!registrationData.dateOfBirth) errs.push("Date of birth is required.");
+      if (!registrationData.hometownCity || !registrationData.hometownCountry)
+        errs.push("Hometown city and country are required.");
+      if ((registrationData.interests?.length ?? 0) < 3)
+        errs.push("Please choose at least 3 interests.");
       if (registrationData.isCurrentlyTraveling) {
-        if (!registrationData.currentTripDestinationCity || !registrationData.currentTripDestinationCountry) {
-          errors.push("Please add your current trip destination city and country.");
-        }
-        if (!registrationData.currentTripReturnDate) {
-          errors.push("Please add your trip end date.");
-        }
+        if (!registrationData.currentTripDestinationCity || !registrationData.currentTripDestinationCountry)
+          errs.push("Please add your current trip destination city and country.");
+        if (!registrationData.currentTripReturnDate)
+          errs.push("Please add your trip end date.");
       }
-
-      if (errors.length) {
-        toast({
-          title: "Check the form",
-          description: errors.join(" "),
-          variant: "destructive",
-        });
+      if (errs.length) {
+        toast({ title: "Check the form", description: errs.join(" "), variant: "destructive" });
         setIsLoading(false);
         return;
       }
 
-      console.log('✅ VALIDATION PASSED - Proceeding with traveler registration');
+      // 5) CREATE ACCOUNT (await it)
+      const regRes = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(registrationData),
+        credentials: "include",
+      });
+      const regData = await regRes.json();
 
-      // Store registration data for background processing
-      sessionStorage.setItem('registrationData', JSON.stringify(registrationData));
-      
-      // Show success message and redirect immediately  
+      if (!regRes.ok || !regData?.user?.id) {
+        console.error("Register failed:", regData);
+        toast({ title: "Sign up failed", description: regData?.message || "Could not create your account.", variant: "destructive" });
+        setIsLoading(false);
+        return;
+      }
+
+      const user = regData.user;
+
+      // 6) persist auth state BEFORE we navigate
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("travelconnect_user", JSON.stringify(user));
+      localStorage.setItem("currentUser", JSON.stringify(user));
+      localStorage.setItem("authUser", JSON.stringify(user));
+      authStorage.setUser(user);
+      setUser(user);
+      login(user);
+
+      // 7) ENSURE TRAVEL PLAN EXISTS (do this explicitly if your backend doesn't auto-create)
+      // Try a dedicated endpoint first; if your /api/register already creates a plan,
+      // this call should be idempotent or the backend should no-op on duplicates.
+      const travelPlanPayload = {
+        userId: user.id,
+        isCurrent: true,
+        startDate: registrationData.travelStartDate,
+        endDate: registrationData.travelEndDate,
+        city: registrationData.currentTripDestinationCity,
+        state: registrationData.currentTripDestinationState,
+        country: registrationData.currentTripDestinationCountry,
+
+        // helpful aliases (cover snake_case too)
+        travel_start_date: registrationData.travelStartDate,
+        travel_end_date: registrationData.travelEndDate,
+        current_city: registrationData.currentTripDestinationCity,
+        current_state: registrationData.currentTripDestinationState,
+        current_country: registrationData.currentTripDestinationCountry,
+
+        interests: registrationData.interests,
+      };
+
+      try {
+        const tpRes = await fetch("/api/travel-plans", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(travelPlanPayload),
+          credentials: "include",
+        });
+        // ignore body if not needed; log for debugging
+        if (!tpRes.ok) {
+          console.warn("Travel plan creation failed (continuing):", await tpRes.text());
+        }
+      } catch (tpErr) {
+        console.warn("Travel plan request error (continuing):", tpErr);
+      }
+
+      // 8) (Optional but recommended) kick off post-signup side effects synchronously
+      //    so the hero/discovery/chatrooms have data on first render.
+      //    If you have endpoints like these, call them now (idempotent server-side):
+      // await fetch(`/api/matching/seed-city-matches?userId=${user.id}`, { credentials: "include" });
+      // await fetch(`/api/chatrooms/ensure-city-room`, { method: "POST", body: JSON.stringify({ city: travelPlanPayload.city, country: travelPlanPayload.country }), headers: { "Content-Type": "application/json" }, credentials: "include" });
+      // await fetch(`/api/messages/seed-welcome`, { method: "POST", body: JSON.stringify({ toUserId: user.id, fromUser: "user2" }), headers: { "Content-Type": "application/json" }, credentials: "include" });
+
+      // 9) clean temp storage
+      sessionStorage.removeItem("accountData");
+      sessionStorage.removeItem("registrationData");
+
+      // 10) show success and navigate
       toast({
         title: "Account created!",
-        description: "Redirecting to your success page...",
+        description: "Welcome to Nearby Traveler!",
         variant: "default",
       });
 
-      // Redirect immediately to success page
-      setLocation('/account-success');
-
-      // Start account creation in background
-      setTimeout(async () => {
-        try {
-          const response = await fetch('/api/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(registrationData)
-          });
-
-          const data = await response.json();
-
-          if (response.ok && data.user) {
-            console.log('✅ Fast registration successful:', data.user.username);
-            
-            // CRITICAL: Store user data in ALL storage locations for maximum compatibility
-            localStorage.setItem('user', JSON.stringify(data.user));
-            localStorage.setItem('travelconnect_user', JSON.stringify(data.user));
-            localStorage.setItem('currentUser', JSON.stringify(data.user));
-            localStorage.setItem('authUser', JSON.stringify(data.user));
-            
-            // Set user in auth context immediately
-            authStorage.setUser(data.user);
-            setUser(data.user);
-            login(data.user);
-            
-            console.log('🔧 Setting user in all storage keys:', { id: data.user.id, username: data.user.username });
-            
-            // Clear stored account and registration data
-            sessionStorage.removeItem('accountData');
-            sessionStorage.removeItem('registrationData');
-            
-            console.log('✅ Fast registration completed - starting profile completion');
-            
-            // Start profile completion in background
-            try {
-              const profileResponse = await fetch('/api/auth/complete-profile', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: data.user.id })
-              });
-              
-              if (profileResponse.ok) {
-                console.log('✅ Profile completion successful');
-              } else {
-                console.log('⚠️ Profile completion had issues, but registration succeeded');
-              }
-            } catch (profileError) {
-              console.log('⚠️ Profile completion error, but registration succeeded:', profileError);
-            }
-          } else {
-            console.error('❌ Registration failed:', data.message);
-          }
-        } catch (error) {
-          console.error('Background registration error:', error);
-        }
-      }, 100); // Start background processing after 100ms
-    } catch (error) {
-      console.error('Validation error:', error);
+      // 11) NOW it's safe to navigate
+      setLocation("/account-success");
+    } catch (err) {
+      console.error("Signup error:", err);
       toast({
-        title: "Validation failed",
-        description: "Please check your information and try again.",
+        title: "Something went wrong",
+        description: "Please check your info and try again.",
         variant: "destructive",
       });
     } finally {

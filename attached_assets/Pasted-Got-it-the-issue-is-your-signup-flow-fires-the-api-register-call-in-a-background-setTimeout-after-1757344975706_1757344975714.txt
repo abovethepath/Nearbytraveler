@@ -1,0 +1,215 @@
+Got it — the issue is your signup flow fires the /api/register call in a background setTimeout after you already navigated away. If the backend is the piece that creates the travel plan (or you need a second API call to create it), doing it “later” means the profile/hero/chatroom logic loads before the plan exists, so nothing downstream lights up (no “Nearby Traveler” hero state, no city matches, no discovery/chatrooms, no user2 seed message).
+
+Here’s a safer, synchronous handleSubmit you can drop in. It:
+
+validates,
+
+awaits account creation,
+
+immediately creates/updates the travel plan (if your backend expects it separately),
+
+warms auth state/storage, and then navigates.
+
+It also double-writes common field aliases in case your API expects different names.
+
+// replace your current handleSubmit with this version
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsLoading(true);
+
+  try {
+    // 1) hydrate account data from session
+    const storedAccountData = sessionStorage.getItem("accountData");
+    let accountData: any = { email: "", password: "", username: "", name: "", phoneNumber: "" };
+    if (storedAccountData) accountData = JSON.parse(storedAccountData);
+
+    // 2) merge + normalize
+    const finalFormData = {
+      ...formData,
+      email: (accountData.email || formData.email || "").toLowerCase().trim(),
+      password: (accountData.password || formData.password || "").trim(),
+      username: (accountData.username || formData.username || "").toLowerCase().trim(),
+      name: (accountData.name || formData.name || "").trim(),
+      phoneNumber: (accountData.phoneNumber || formData.phoneNumber || "").trim(),
+    };
+
+    // 3) build payload (include multiple alias keys to satisfy differing backends)
+    const todayISO = new Date().toISOString().split("T")[0];
+
+    const registrationData = {
+      userType: "traveler",
+      isCurrentlyTraveling: true,
+
+      email: finalFormData.email,
+      password: finalFormData.password,
+      username: finalFormData.username,
+      name: finalFormData.name,
+      phoneNumber: finalFormData.phoneNumber,
+
+      dateOfBirth: finalFormData.dateOfBirth,
+      bio: "",
+
+      // hometown
+      hometownCity: finalFormData.hometownCity?.trim(),
+      hometownState: finalFormData.hometownState?.trim() || "",
+      hometownCountry: finalFormData.hometownCountry?.trim(),
+
+      // current trip (primary names)
+      currentTripDestinationCity: finalFormData.currentTripDestinationCity?.trim(),
+      currentTripDestinationState: finalFormData.currentTripDestinationState?.trim() || "",
+      currentTripDestinationCountry: finalFormData.currentTripDestinationCountry?.trim(),
+      currentTripReturnDate: finalFormData.currentTripReturnDate,
+
+      // aliases some backends expect
+      travelStartDate: todayISO,
+      travelEndDate: finalFormData.currentTripReturnDate,
+      currentCity: finalFormData.currentTripDestinationCity?.trim(),
+      currentState: finalFormData.currentTripDestinationState?.trim() || "",
+      currentCountry: finalFormData.currentTripDestinationCountry?.trim(),
+
+      interests: finalFormData.interests,
+    };
+
+    // 4) validate (front-end)
+    const errs: string[] = [];
+    if (!registrationData.name) errs.push("Name is required.");
+    if (!registrationData.username) errs.push("Username is required.");
+    if (!registrationData.email) errs.push("Email is required.");
+    if (!registrationData.password) errs.push("Password is required.");
+    if (!registrationData.dateOfBirth) errs.push("Date of birth is required.");
+    if (!registrationData.hometownCity || !registrationData.hometownCountry)
+      errs.push("Hometown city and country are required.");
+    if ((registrationData.interests?.length ?? 0) < 3)
+      errs.push("Please choose at least 3 interests.");
+    if (registrationData.isCurrentlyTraveling) {
+      if (!registrationData.currentTripDestinationCity || !registrationData.currentTripDestinationCountry)
+        errs.push("Please add your current trip destination city and country.");
+      if (!registrationData.currentTripReturnDate)
+        errs.push("Please add your trip end date.");
+    }
+    if (errs.length) {
+      toast({ title: "Check the form", description: errs.join(" "), variant: "destructive" });
+      setIsLoading(false);
+      return;
+    }
+
+    // 5) CREATE ACCOUNT (await it)
+    const regRes = await fetch("/api/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(registrationData),
+      credentials: "include",
+    });
+    const regData = await regRes.json();
+
+    if (!regRes.ok || !regData?.user?.id) {
+      console.error("Register failed:", regData);
+      toast({ title: "Sign up failed", description: regData?.message || "Could not create your account.", variant: "destructive" });
+      setIsLoading(false);
+      return;
+    }
+
+    const user = regData.user;
+
+    // 6) persist auth state BEFORE we navigate
+    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("travelconnect_user", JSON.stringify(user));
+    localStorage.setItem("currentUser", JSON.stringify(user));
+    localStorage.setItem("authUser", JSON.stringify(user));
+    authStorage.setUser(user);
+    setUser(user);
+    login(user);
+
+    // 7) ENSURE TRAVEL PLAN EXISTS (do this explicitly if your backend doesn't auto-create)
+    // Try a dedicated endpoint first; if your /api/register already creates a plan,
+    // this call should be idempotent or the backend should no-op on duplicates.
+    const travelPlanPayload = {
+      userId: user.id,
+      isCurrent: true,
+      startDate: registrationData.travelStartDate,
+      endDate: registrationData.travelEndDate,
+      city: registrationData.currentTripDestinationCity,
+      state: registrationData.currentTripDestinationState,
+      country: registrationData.currentTripDestinationCountry,
+
+      // helpful aliases (cover snake_case too)
+      travel_start_date: registrationData.travelStartDate,
+      travel_end_date: registrationData.travelEndDate,
+      current_city: registrationData.currentTripDestinationCity,
+      current_state: registrationData.currentTripDestinationState,
+      current_country: registrationData.currentTripDestinationCountry,
+
+      interests: registrationData.interests,
+    };
+
+    try {
+      const tpRes = await fetch("/api/travel-plans", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(travelPlanPayload),
+        credentials: "include",
+      });
+      // ignore body if not needed; log for debugging
+      if (!tpRes.ok) {
+        console.warn("Travel plan creation failed (continuing):", await tpRes.text());
+      }
+    } catch (tpErr) {
+      console.warn("Travel plan request error (continuing):", tpErr);
+    }
+
+    // 8) (Optional but recommended) kick off post-signup side effects synchronously
+    //    so the hero/discovery/chatrooms have data on first render.
+    //    If you have endpoints like these, call them now (idempotent server-side):
+    // await fetch(`/api/matching/seed-city-matches?userId=${user.id}`, { credentials: "include" });
+    // await fetch(`/api/chatrooms/ensure-city-room`, { method: "POST", body: JSON.stringify({ city: travelPlanPayload.city, country: travelPlanPayload.country }), headers: { "Content-Type": "application/json" }, credentials: "include" });
+    // await fetch(`/api/messages/seed-welcome`, { method: "POST", body: JSON.stringify({ toUserId: user.id, fromUser: "user2" }), headers: { "Content-Type": "application/json" }, credentials: "include" });
+
+    // 9) clean temp storage
+    sessionStorage.removeItem("accountData");
+    sessionStorage.removeItem("registrationData");
+
+    // 10) NOW it's safe to navigate
+    setLocation("/account-success");
+  } catch (err) {
+    console.error("Signup error:", err);
+    toast({
+      title: "Something went wrong",
+      description: "Please check your info and try again.",
+      variant: "destructive",
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+Why this fixes your symptoms
+
+No more background setTimeout: you weren’t guaranteed that the user page would see a travel plan in time. Now the plan is created (or confirmed) before navigating.
+
+Travel-plan creation is explicit: if your backend doesn’t auto-create on /api/register, this adds a dedicated call. If it does auto-create, the second call should no-op and won’t hurt (or you can remove it once confirmed).
+
+Alias keys included: many stacks disagree on field names; we send both camelCase and snake_case so your server mapper catches one.
+
+Auth is set first: hero/profile components reading from authStorage/localStorage will have a user immediately.
+
+Room/match/message seeding: do it right after registration so city discovery pages and chatrooms exist on first render. (Wire these to whatever your actual route names are.)
+
+Quick checklist (do these once)
+
+Confirm backend expectations
+Open your /api/register route and make sure it actually:
+
+accepts isCurrentlyTraveling and trip fields, and
+
+creates a current travel plan (status/flag) or returns one in the payload.
+
+Make travel-plan creation idempotent
+Server should “upsert” the current plan for (userId, isCurrent=true).
+
+Seed side effects on server (preferred)
+If possible, trigger: create/attach city chatroom, compute “Nearby Traveler” hero flag, create default DM from user2, and run city match indexing inside the register transaction (or a post-commit job/queue). That way the client doesn’t need to orchestrate multiple calls.
+
+Instrument
+Temporarily log the incoming payload on /api/register and /api/travel-plans and log what your ORM writes. You’ll see right away if fields are mismatched.
+
+If you paste your backend register/travel-plan routes (or the Prisma/Drizzle models), I’ll align the payload exactly and remove the guesswork.
