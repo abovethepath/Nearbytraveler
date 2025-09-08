@@ -1,0 +1,360 @@
+// Email Service for Nearby Traveler Platform
+import { 
+  welcomeEmail,
+  welcomeEmailBusiness, 
+  passwordResetEmail, 
+  referralEmail, 
+  connectionRequestEmail, 
+  eventInviteEmail, 
+  businessOfferEmail,
+  weeklyDigestEmail,
+  locationMatchEmail,
+  forgotPasswordEmail,
+  type WelcomeEmailData,
+  type PasswordResetData,
+  type ReferralEmailData,
+  type ConnectionRequestData,
+  type EventInviteData,
+  type BusinessOfferData,
+  type LocationMatchData
+} from '../templates/emailTemplates.js';
+import * as brevo from '@getbrevo/brevo';
+import fetch from 'node-fetch';
+
+export class EmailService {
+  private brevoApi: any;
+  private apiKey: string | undefined;
+  private isInitialized: boolean = false;
+
+  constructor() {
+    this.ensureInitialized();
+  }
+
+  private ensureInitialized() {
+    console.log('🔍 BREVO DEBUG: Checking initialization. Current state:', {
+      isInitialized: this.isInitialized,
+      hasApiKey: !!process.env.BREVO_API_KEY,
+      apiKeyPrefix: process.env.BREVO_API_KEY?.substring(0, 10)
+    });
+
+    if (this.isInitialized) {
+      console.log('✅ Brevo already initialized');
+      return;
+    }
+
+    if (process.env.BREVO_API_KEY) {
+      try {
+        console.log('🔧 Attempting Brevo initialization...');
+        // Store API key for direct use
+        this.apiKey = process.env.BREVO_API_KEY;
+        this.brevoApi = new brevo.TransactionalEmailsApi();
+        this.isInitialized = true;
+        console.log('✅ Brevo initialized successfully with key starting with:', process.env.BREVO_API_KEY.substring(0, 10));
+      } catch (error) {
+        console.error('❌ Brevo initialization failed:', error);
+      }
+    } else {
+      console.log('⚠️ BREVO_API_KEY not found - emails will not be sent');
+    }
+  }
+
+  private async sendEmail(to: string, subject: string, html: string, text?: string) {
+    // Ensure initialization before each send
+    this.ensureInitialized();
+    
+    if (!this.apiKey || !this.isInitialized) {
+      console.log('Brevo not properly initialized - email not sent');
+      console.log(`Email would be sent to: ${to}`);
+      console.log(`Subject: ${subject}`);
+      return false;
+    }
+
+    try {
+      const emailData = {
+        sender: { email: 'aaron@thenearbytraveler.com', name: 'Aaron from Nearby Traveler' },
+        to: [{ email: to }],
+        subject,
+        htmlContent: html,
+        textContent: text,
+        // Optimized headers for deliverability
+        headers: {
+          'Reply-To': 'aaron@thenearbytraveler.com',
+          'X-Entity-Ref-ID': `NT-${Date.now()}`,
+          'List-Unsubscribe': '<mailto:aaron@thenearbytraveler.com?subject=Unsubscribe>'
+        },
+        // Simple tags to avoid spam triggers
+        tags: ['transactional']
+      };
+
+      console.log('📧 Sending email via Brevo:', { to, from: emailData.sender.email, subject });
+
+      // Use direct API call for reliable authentication
+      console.log('📧 Using direct Brevo API call...');
+      const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+          'api-key': this.apiKey,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(emailData)
+      });
+      
+      console.log('📧 Brevo API Response status:', response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('🔍 Brevo API Error:', errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log(`✅ Email sent successfully via Brevo to ${to}: ${subject}`, result);
+      return true;
+    } catch (error: any) {
+      console.error('📧 Brevo Email sending failed:', error.message);
+      return false;
+    }
+  }
+
+  async sendWelcomeEmail(to: string, data: WelcomeEmailData) {
+    const template = data.userType === 'business' 
+      ? welcomeEmailBusiness(data) 
+      : welcomeEmail(data);
+    return this.sendEmail(to, template.subject, template.html, template.text);
+  }
+
+  async sendPasswordResetEmail(to: string, data: PasswordResetData) {
+    const template = passwordResetEmail(data);
+    return this.sendEmail(to, template.subject, template.html, template.text);
+  }
+
+  async sendForgotPasswordEmail(to: string, data: PasswordResetData) {
+    const template = forgotPasswordEmail(data);
+    
+    // Try multiple delivery methods for critical password reset emails
+    console.log('🔐 CRITICAL: Attempting password reset email delivery with multiple fallbacks');
+    
+    // Method 1: Standard Brevo delivery
+    const brevoResult = await this.sendEmail(to, template.subject, template.html, template.text);
+    
+    // Method 2: Direct SMTP-style delivery with different headers
+    if (brevoResult) {
+      console.log('🔐 BACKUP: Sending duplicate via alternate Brevo method for reliability');
+      await this.sendPasswordResetViaBackupMethod(to, template);
+    }
+    
+    return brevoResult;
+  }
+
+  private async sendPasswordResetViaBackupMethod(to: string, template: any) {
+    try {
+      const emailData = {
+        sender: { 
+          email: 'aaron@thenearbytraveler.com', 
+          name: 'Nearby Traveler Security' 
+        },
+        to: [{ email: to }],
+        subject: `🔐 URGENT: ${template.subject}`,
+        htmlContent: template.html,
+        textContent: template.text,
+        headers: {
+          'X-Priority': '1',
+          'X-MSMail-Priority': 'High',
+          'Importance': 'high',
+          'Message-ID': `<urgent-security-${Date.now()}-${Math.random().toString(36)}@thenearbytraveler.com>`,
+          'X-Mailer': 'Nearby Traveler Security System v2',
+          'Reply-To': 'aaron@thenearbytraveler.com'
+        },
+        tags: ['URGENT', 'SECURITY', 'PASSWORD-RESET']
+      };
+
+      const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+          'api-key': this.apiKey!,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(emailData)
+      });
+
+      if (response.ok) {
+        console.log('🔐 BACKUP: Password reset backup email sent successfully');
+      }
+      
+      return response.ok;
+    } catch (error) {
+      console.error('🔐 BACKUP: Backup email method failed:', error);
+      return false;
+    }
+  }
+
+  async sendLocationMatchEmail(to: string, data: LocationMatchData) {
+    const template = locationMatchEmail(data);
+    return this.sendEmail(to, template.subject, template.html, template.text);
+  }
+
+  async sendReferralEmail(to: string, data: ReferralEmailData) {
+    const template = referralEmail(data);
+    return this.sendEmail(to, template.subject, template.html, template.text);
+  }
+
+  async sendConnectionRequestEmail(to: string, data: ConnectionRequestData) {
+    const template = connectionRequestEmail(data);
+    return this.sendEmail(to, template.subject, template.html, template.text);
+  }
+
+  async sendEventInviteEmail(to: string, data: EventInviteData) {
+    const template = eventInviteEmail(data);
+    return this.sendEmail(to, template.subject, template.html, template.text);
+  }
+
+  async sendBusinessOfferEmail(to: string, data: BusinessOfferData) {
+    const template = businessOfferEmail(data);
+    return this.sendEmail(to, template.subject, template.html, template.text);
+  }
+
+  async sendWeeklyDigestEmail(to: string, data: {
+    name: string;
+    newConnections: number;
+    newEvents: number;
+    newOffers: number;
+    location: string;
+  }) {
+    const template = weeklyDigestEmail(data);
+    return this.sendEmail(to, template.subject, template.html, template.text);
+  }
+
+  async sendWeeklyNewUsersDigest(to: string, data: {
+    recipientName: string;
+    city: string;
+    newUsers: Array<{
+      username: string;
+      userType: string;
+      interests: string[];
+      joinDate: Date;
+    }>;
+    weekStart: Date;
+    weekEnd: Date;
+  }) {
+    const formatDate = (date: Date) => date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric' 
+    });
+
+    const subject = `New Update: ${data.newUsers.length} new people joined ${data.city} recently`;
+    
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="color: #3b82f6; margin: 0;">Nearby Traveler</h1>
+          <p style="color: #6b7280; margin: 5px 0;">Community Update</p>
+        </div>
+
+        <h2 style="color: #1f2937;">Hi ${data.recipientName}!</h2>
+        
+        <p style="color: #374151; line-height: 1.6;">
+          Here's who joined the ${data.city} community recently (${formatDate(data.weekStart)} - ${formatDate(data.weekEnd)}):
+        </p>
+
+        <div style="background-color: #f8fafc; border-radius: 8px; padding: 20px; margin: 20px 0;">
+          ${data.newUsers.map(user => `
+            <div style="border-bottom: 1px solid #e5e7eb; padding: 15px 0; margin-bottom: 15px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <strong style="color: #1f2937;">@${user.username}</strong>
+                <span style="background-color: #3b82f6; color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px; text-transform: capitalize;">
+                  ${user.userType}
+                </span>
+              </div>
+              ${user.interests.length > 0 ? `
+                <p style="color: #6b7280; margin: 5px 0; font-size: 14px;">
+                  Interested in: ${user.interests.slice(0, 3).join(', ')}${user.interests.length > 3 ? '...' : ''}
+                </p>
+              ` : ''}
+              <p style="color: #9ca3af; margin: 0; font-size: 12px;">
+                Joined ${formatDate(user.joinDate)}
+              </p>
+            </div>
+          `).join('')}
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="https://www.thenearbytraveler.com/discover" 
+             style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+            Discover & Connect
+          </a>
+        </div>
+
+        <p style="color: #6b7280; font-size: 14px; text-align: center;">
+          Want to reach out? Send them a message or plan a meetup!
+        </p>
+
+        <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+        
+        <p style="color: #9ca3af; font-size: 12px; text-align: center;">
+          You're receiving this because you're part of the ${data.city} community on Nearby Traveler.
+          <br>
+          <a href="#" style="color: #3b82f6;">Manage email preferences</a>
+        </p>
+      </div>
+    `;
+
+    const text = `Weekly Community Update for ${data.city}
+
+Hi ${data.recipientName}!
+
+Here's who joined the ${data.city} community this week (${formatDate(data.weekStart)} - ${formatDate(data.weekEnd)}):
+
+${data.newUsers.map(user => 
+  `• @${user.username} (${user.userType}) - ${user.interests.slice(0, 3).join(', ')} - Joined ${formatDate(user.joinDate)}`
+).join('\n')}
+
+Discover & Connect: https://www.thenearbytraveler.com/discover
+
+Want to reach out? Send them a message or plan a meetup!
+
+You're receiving this because you're part of the ${data.city} community on Nearby Traveler.`;
+
+    return this.sendEmail(to, subject, html, text);
+  }
+
+  async sendBusinessReferralInvitation(data: {
+    to: string;
+    referrerName: string;
+    referrerUsername: string;
+    message?: string;
+  }): Promise<boolean> {
+    const defaultMessage = `Hi! I'd like to invite you to join Nearby Traveler, a platform that helps businesses connect with travelers. When you sign up, please mention my username: ${data.referrerUsername}. You can register at: https://www.thenearbytraveler.com/signup-business`;
+    
+    const finalMessage = data.message || defaultMessage;
+    
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2 style="color: #3b82f6;">Business Invitation to Nearby Traveler</h2>
+        <p>Hello!</p>
+        <p>${data.referrerName} (${data.referrerUsername}) has invited you to join Nearby Traveler's business network.</p>
+        <div style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <p style="margin: 0;">${finalMessage}</p>
+        </div>
+        <p>Nearby Traveler connects businesses with travelers and locals to help grow your customer base.</p>
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="https://www.thenearbytraveler.com/signup-business" 
+             style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+            Join Nearby Traveler Business Network
+          </a>
+        </div>
+        <p style="color: #6b7280; font-size: 14px;">Remember to mention ${data.referrerUsername} when you sign up!</p>
+      </div>
+    `;
+    
+    const text = `Business Invitation to Nearby Traveler\n\n${data.referrerName} (${data.referrerUsername}) has invited you to join Nearby Traveler's business network.\n\n${finalMessage}\n\nJoin at: https://www.thenearbytraveler.com/signup-business\n\nRemember to mention ${data.referrerUsername} when you sign up!`;
+    
+    return this.sendEmail(
+      data.to,
+      `Business Invitation to Nearby Traveler from ${data.referrerName}`,
+      html,
+      text
+    );
+  }
+}
+
+export const emailService = new EmailService();

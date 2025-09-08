@@ -1,0 +1,176 @@
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import { Heart, MapPin, Star } from "lucide-react";
+import { useLocation } from "wouter";
+import { SimpleAvatar } from "@/components/simple-avatar";
+
+interface User {
+  id: number;
+  username: string;
+  profileImage?: string | null;
+  bio?: string | null;
+  hometownCity?: string | null;
+  hometownCountry?: string | null;
+  location?: string | null;
+  interests?: string[];
+  userType?: string;
+  aura?: number;
+}
+
+interface ResponsiveUserGridProps {
+  users: User[];
+  title?: string;
+  showViewAll?: boolean;
+  onViewAll?: () => void;
+  limit?: number;
+}
+
+export default function ResponsiveUserGrid({ 
+  users, 
+  title, 
+  showViewAll, 
+  onViewAll, 
+  limit = 6 
+}: ResponsiveUserGridProps) {
+  const [, setLocation] = useLocation();
+  const displayUsers = limit ? users.slice(0, limit) : users;
+
+  const getLocation = (user: User) => {
+    if (user.location) return user.location;
+    if (user.hometownCity && user.hometownCountry) {
+      return `${user.hometownCity}, ${user.hometownCountry}`;
+    }
+    return "Location not set";
+  };
+
+  const getInterestsBadge = (user: User) => {
+    if (!user.interests || user.interests.length === 0) return null;
+    const count = user.interests.length;
+    return (
+      <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-medium leading-none whitespace-nowrap bg-blue-500 text-white border-0 appearance-none select-none gap-1.5">
+        {count} interest{count !== 1 ? 's' : ''}
+      </div>
+    );
+  };
+
+  // Desktop Card Component - LARGER SIZE FOR BETTER DESKTOP EXPERIENCE
+  const DesktopUserCard = ({ user }: { user: User }) => (
+    <Card 
+      className="p-6 cursor-pointer hover:shadow-lg transition-shadow"
+      onClick={() => setLocation(`/profile/${user.id}`)}
+    >
+      <div className="flex items-start space-x-4">
+        <SimpleAvatar 
+          user={user} 
+          size="lg" 
+          className="flex-shrink-0"
+        />
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-lg truncate">@{user.username}</h3>
+          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-3">
+            <MapPin className="w-4 h-4" />
+            <span className="truncate">{getLocation(user)}</span>
+          </div>
+          {user.bio && (
+            <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3 mb-3">
+              {user.bio}
+            </p>
+          )}
+          <div className="flex items-center justify-between">
+            {getInterestsBadge(user)}
+            {user.aura && user.aura > 0 && (
+              <div className="flex items-center gap-1">
+                <Star className="w-4 h-4 text-yellow-500" />
+                <span className="text-sm text-gray-600 dark:text-gray-400">{user.aura}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+
+  // Mobile Card Component - COMPACT VERTICAL for 2-column grid
+  const MobileUserCard = ({ user }: { user: User }) => (
+    <Card 
+      className="p-3 cursor-pointer hover:shadow-lg transition-shadow h-full"
+      onClick={() => setLocation(`/profile/${user.id}`)}
+    >
+      <div className="flex flex-col items-center text-center space-y-2">
+        <SimpleAvatar 
+          user={user} 
+          size="xl" 
+          className="w-20 h-28 rounded-lg"
+        />
+        <div className="w-full">
+          <h3 className="font-semibold text-sm truncate">@{user.username}</h3>
+          <div className="flex items-center justify-center gap-1 text-xs text-gray-600 dark:text-gray-400 mb-1">
+            <MapPin className="w-3 h-3" />
+            <span className="truncate">{getLocation(user)}</span>
+          </div>
+          {getInterestsBadge(user)}
+          {user.aura && user.aura > 0 && (
+            <div className="flex items-center justify-center gap-1 mt-1">
+              <Star className="w-3 h-3 text-yellow-500" />
+              <span className="text-xs text-gray-600 dark:text-gray-400">{user.aura}</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </Card>
+  );
+
+  if (!users || users.length === 0) {
+    return (
+      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+        <Heart className="w-8 h-8 mx-auto mb-2 opacity-50" />
+        <p>No users found</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Header */}
+      {title && (
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold">{title}</h2>
+          {showViewAll && onViewAll && (
+            <button 
+              onClick={onViewAll}
+              className="text-blue-600 dark:text-blue-400 text-sm hover:underline"
+            >
+              View All ({users.length})
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Desktop Grid (hidden on mobile) */}
+      <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {displayUsers.map((user) => (
+          <DesktopUserCard key={user.id} user={user} />
+        ))}
+      </div>
+
+      {/* Mobile Grid (hidden on desktop) */}
+      <div className="md:hidden grid grid-cols-2 gap-3">
+        {displayUsers.map((user) => (
+          <MobileUserCard key={user.id} user={user} />
+        ))}
+      </div>
+
+      {/* Mobile View All Button */}
+      {showViewAll && onViewAll && users.length > limit && (
+        <div className="md:hidden text-center">
+          <button 
+            onClick={onViewAll}
+            className="text-blue-600 dark:text-blue-400 text-sm hover:underline"
+          >
+            View All {users.length} Users
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}

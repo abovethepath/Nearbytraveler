@@ -1,0 +1,904 @@
+/* Import modern mobile-optimized font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+.hero-clean h1 .hero-blue,
+.hero-clean h1 span.hero-blue,
+.hero-clean h1 span[class*="hero-blue"],
+.hero-clean span.hero-blue,
+.hero-clean .hero-blue,
+/* Also target any blue text spans in hero */
+.hero-clean h1 span[class*="text-blue"],
+.hero-clean h1 .text-blue-500,
+.hero-clean span.text-blue-500,
+.hero-clean .text-blue-500 {
+  /* Force pure blue text color */
+  color: rgb(59 130 246) !important; /* blue-500 */
+  
+  /* Kill all background/border/spacing styling */
+  background: transparent !important;
+  background-color: transparent !important;
+  border: 0 !important;
+  border-width: 0 !important;
+  border-style: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  
+  /* Reset all spacing */
+  padding: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin: 0 !important;
+  
+  /* Kill pill styling */
+  border-radius: 0 !important;
+  min-width: unset !important;
+  width: auto !important;
+  height: auto !important;
+  min-height: unset !important;
+  
+  /* Text styling only */
+  display: inline !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  line-height: inherit !important;
+  text-align: inherit !important;
+  vertical-align: baseline !important;
+  
+  /* Kill any flex styling */
+  align-items: unset !important;
+  justify-content: unset !important;
+  flex-direction: unset !important;
+}
+
+/* Hide any decorative pseudo-elements */
+.hero-clean h1 .hero-blue::before,
+.hero-clean h1 .hero-blue::after,
+.hero-clean .hero-blue::before,
+.hero-clean .hero-blue::after,
+.hero-clean h1 .text-blue-500::before,
+.hero-clean h1 .text-blue-500::after,
+.hero-clean .text-blue-500::before,
+.hero-clean .text-blue-500::after {
+  display: none !important;
+  content: none !important;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ADAPTIVE DARK/LIGHT MODE SMOOTH TRANSITIONS */
+:root {
+  --theme-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Smooth transitions for theme switching */
+.theme-transitioning,
+.theme-transitioning *,
+.theme-transitioning *::before,
+.theme-transitioning *::after {
+  transition: var(--theme-transition) !important;
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform !important;
+}
+
+/* Prevent layout shifts during transitions */
+.theme-transitioning {
+  overflow-x: hidden;
+}
+
+/* Enhanced color transitions for specific elements */
+body,
+.bg-background,
+.bg-card,
+.bg-popover,
+.text-foreground,
+.text-card-foreground,
+.text-popover-foreground,
+/* Additional elements for smooth transitions */
+nav,
+header,
+aside,
+main,
+footer,
+[data-radix-navigation-menu-content],
+[data-radix-dropdown-menu-content],
+[data-radix-popover-content],
+[data-radix-dialog-content] {
+  transition: var(--theme-transition);
+}
+
+/* Smooth transition for theme-aware components */
+.card,
+.button,
+.input,
+.select,
+.avatar,
+.badge,
+.pill {
+  transition: var(--theme-transition);
+}
+
+/* Prevent flash during initial theme load */
+html.theme-loading * {
+  transition: none !important;
+}
+
+/* Enhanced theme transition for mobile elements */
+@media (max-width: 768px) {
+  .mobile-bottom-nav,
+  .mobile-nav,
+  [style*="position: fixed"] {
+    transition: var(--theme-transition);
+  }
+}
+
+/* Improve image rendering quality on mobile devices */
+img,
+.avatar img,
+[data-radix-avatar-image] {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  image-rendering: optimizeQuality;
+  -ms-interpolation-mode: bicubic;
+}
+
+/* Ensure avatar images are sharp on high-DPI displays */
+.avatar,
+[data-radix-avatar] {
+  image-rendering: -webkit-optimize-contrast;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+/* Floating animation for dynamic elements */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Touch-friendly mobile interactions */
+.touch-target {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+@media (max-width: 640px) {
+  .touch-target {
+    min-width: 48px;
+    min-height: 48px;
+  }
+}
+
+/* LIGHT MODE ONLY PILL CONSISTENCY FIX - Force ALL pills to use standard white bg/black text styling */
+.pill, 
+[class*="pill"],
+[class*="pill-"],
+.inline-flex.items-center.justify-center.rounded-full[class*="bg-green"],
+.inline-flex[class*="bg-green"][class*="text-white"],
+.inline-flex.items-center.justify-center.rounded-full[class*="bg-blue"],
+.inline-flex[class*="bg-blue"][class*="text-white"],
+.inline-flex.items-center.justify-center.rounded-full[class*="bg-purple"],
+.inline-flex[class*="bg-purple"][class*="text-white"],
+div[class*="bg-green-500 text-white"],
+div[class*="bg-green-600 text-white"],
+div[class*="bg-blue-500 text-white"],
+div[class*="bg-blue-600 text-white"],
+div[class*="bg-purple-500 text-white"],
+div[class*="bg-purple-600 text-white"],
+button[class*="bg-green"][class*="text-white"][class*="rounded-full"],
+button[class*="bg-blue"][class*="text-white"][class*="rounded-full"],
+button[class*="bg-purple"][class*="text-white"][class*="rounded-full"],
+/* Activity pills from profile pages */
+div[class*="pill-activities"],
+div[class*="pill-interests"],
+div[class*="pill-events"] {
+  background-color: white !important;
+  background: white !important;
+  color: black !important;
+  border: 1px solid black !important;
+  border-color: black !important;
+  text-transform: none !important; /* Prevent uppercase transformation */
+}
+
+/* Dark mode - Let pills use their natural dark mode styling */
+.dark .pill,
+.dark [class*="pill"],
+.dark [class*="pill-"],
+.dark div[class*="pill-activities"],
+.dark div[class*="pill-interests"],
+.dark div[class*="pill-events"] {
+  /* Only prevent uppercase transformation in dark mode, let colors be natural */
+  text-transform: none !important;
+}
+
+/* Set Inter as the default font for the entire application */
+body, html {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+/* Ensure all headings use Inter with proper font weights and mobile optimization */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  letter-spacing: -0.02em;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Apply Inter to all text elements with mobile optimization */
+p, span, div, button, input, textarea, select {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Hero sections get extra sharp treatment */
+.hero-text, .hero-section h1, .hero-section h2, 
+[class*="hero"] h1, [class*="hero"] h2, [class*="hero"] p {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  letter-spacing: -0.025em;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Major text sections for landing pages */
+.landing-section, .landing-content, .feature-text,
+[class*="landing"] h1, [class*="landing"] h2, [class*="landing"] p {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* CTA Buttons and Pills - Extra Sharp Inter */
+.btn, button, [role="button"], .button,
+[class*="btn"], [class*="button"], [class*="cta"],
+.pill, [class*="pill"], .badge, [class*="badge"],
+.tag, [class*="tag"], .chip, [class*="chip"] {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  text-rendering: optimizeLegibility !important;
+}
+
+/* Specific targeting for common button classes */
+.bg-orange-500, .bg-blue-500, .bg-blue-600, .bg-orange-600,
+[class*="bg-orange"], [class*="bg-blue"], [class*="bg-primary"],
+.rounded-full, .rounded-lg, .rounded-md {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+
+:root {
+  color-scheme: light;
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --primary: 221.2 83.2% 53.3%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222.2 84% 4.9%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96%;
+  --accent-foreground: 222.2 84% 4.9%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 221.2 83.2% 53.3%;
+  --radius: 0.5rem;
+  --chart-1: 12 76% 61%;
+  --chart-2: 173 58% 39%;
+  --chart-3: 197 37% 24%;
+  --chart-4: 43 74% 66%;
+  --chart-5: 27 87% 67%;
+  
+  /* UNIVERSAL PILL SIZE STANDARDIZATION - Updated for compact h-6 sizing */
+  --pill-font-size: 0.875rem; /* matches text-sm */
+}
+
+.dark {
+  color-scheme: dark;
+  --background: 217 33% 12%;
+  --foreground: 210 40% 98%;
+  --card: 217 33% 15%;
+  --card-foreground: 210 40% 98%;
+  --popover: 217 33% 15%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 217.2 91.2% 59.8%;
+  --primary-foreground: 217 33% 12%;
+  --secondary: 217 33% 20%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217 33% 20%;
+  --muted-foreground: 215 20.2% 70%;
+  --accent: 217 33% 20%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 217 33% 25%;
+  --input: 217 33% 18%;
+  --ring: 224.3 76.3% 94.1%;
+  --chart-1: 220 70% 50%;
+  --chart-2: 160 60% 45%;
+  --chart-3: 30 80% 55%;
+  --chart-4: 280 65% 60%;
+  --chart-5: 340 75% 55%;
+}
+
+/* Global Dark Mode Fix - Ensures all text is visible in dark mode */
+.dark {
+  /* Force minimum contrast for all text elements */
+  color: rgb(243 244 246); /* gray-100 */
+}
+
+.dark *:not([class*="bg-"]):not([class*="text-"]) {
+  /* Ensure any element without explicit styling gets proper contrast */
+  color: rgb(243 244 246); /* gray-100 */
+}
+
+.dark input:not([class*="bg-"]):not([class*="text-"]) {
+  background-color: rgb(31 41 55); /* gray-800 */
+  color: rgb(243 244 246); /* gray-100 */
+  border-color: rgb(75 85 99); /* gray-600 */
+}
+
+.dark select:not([class*="bg-"]):not([class*="text-"]) {
+  background-color: rgb(31 41 55); /* gray-800 */
+  color: rgb(243 244 246); /* gray-100 */
+  border-color: rgb(75 85 99); /* gray-600 */
+}
+
+.dark textarea:not([class*="bg-"]):not([class*="text-"]) {
+  background-color: rgb(31 41 55); /* gray-800 */
+  color: rgb(243 244 246); /* gray-100 */
+  border-color: rgb(75 85 99); /* gray-600 */
+}
+
+/* Override problematic black text */
+.dark .text-gray-900 {
+  color: rgb(243 244 246) !important; /* gray-100 */
+}
+
+/* Ensure dropdown content has proper contrast */
+.dark [role="option"],
+.dark [role="menuitem"] {
+  color: rgb(243 244 246) !important; /* gray-100 */
+}
+
+/* Fix for any remaining invisible text */
+.dark [class*="text-gray-"]:not([class*="text-gray-1"]):not([class*="text-gray-2"]):not([class*="text-gray-3"]):not([class*="text-gray-4"]) {
+  color: rgb(156 163 175) !important; /* gray-400 */
+}
+
+/* COMPREHENSIVE DARK MODE FIXES - PRESERVE COLORFUL PILLS */
+
+/* Force dark mode colors globally */
+.dark body {
+  @apply bg-gray-900 text-gray-100;
+}
+
+.dark * {
+  border-color: theme('colors.gray.700');
+}
+
+/* Fix common dark mode text issues */
+.dark .text-gray-900 {
+  @apply text-gray-100 !important;
+}
+
+.dark .text-gray-800 {
+  @apply text-gray-200 !important;
+}
+
+.dark .text-gray-700 {
+  @apply text-gray-300 !important;
+}
+
+.dark .text-gray-600 {
+  @apply text-gray-400 !important;
+}
+
+
+/* Fix backgrounds that might be causing black on black */
+.dark .bg-gray-50 {
+  @apply bg-gray-800 !important;
+}
+
+.dark .bg-gray-100 {
+  @apply bg-gray-700 !important;
+}
+
+.dark .bg-gray-200 {
+  @apply bg-gray-700 !important;
+}
+
+/* COLORFUL PILL FIXES - Keep colors but ensure text visibility */
+
+/* Only fix WHITE pills - make them colorful or dark gray */
+.dark .bg-white.rounded-full,
+.dark .bg-white.rounded-lg,
+.dark .bg-white.rounded-md {
+  @apply bg-gray-700 text-gray-100 !important;
+}
+
+/* Fix white text on colored backgrounds in dark mode */
+.dark .bg-blue-500, .dark .bg-blue-600 {
+  color: white !important;
+}
+
+.dark .bg-green-500, .dark .bg-green-600 {
+  color: white !important;
+}
+
+.dark .bg-red-500, .dark .bg-red-600 {
+  color: white !important;
+}
+
+.dark .bg-yellow-500, .dark .bg-yellow-600 {
+  color: black !important;
+}
+
+.dark .bg-purple-500, .dark .bg-purple-600 {
+  color: white !important;
+}
+
+.dark .bg-pink-500, .dark .bg-pink-600 {
+  color: white !important;
+}
+
+.dark .bg-indigo-500, .dark .bg-indigo-600 {
+  color: white !important;
+}
+
+.dark .bg-orange-500, .dark .bg-orange-600 {
+  color: white !important;
+}
+
+.dark .bg-teal-500, .dark .bg-teal-600 {
+  color: white !important;
+}
+
+.dark .bg-cyan-500, .dark .bg-cyan-600 {
+  color: black !important;
+}
+
+/* LIGHT MODE: Ensure proper colors for pills/badges */
+.bg-blue-100 {
+  background-color: #dbeafe !important;
+  color: #1e40af !important;
+}
+
+.bg-blue-200 {
+  background-color: #bfdbfe !important;
+  color: #1d4ed8 !important;
+}
+
+.bg-green-100 {
+  background-color: #dcfce7 !important;
+  color: #166534 !important;
+}
+
+.bg-green-200 {
+  background-color: #bbf7d0 !important;
+  color: #15803d !important;
+}
+
+.bg-purple-100 {
+  background-color: #f3e8ff !important;
+  color: #7c3aed !important;
+}
+
+.bg-purple-200 {
+  background-color: #e9d5ff !important;
+  color: #8b5cf6 !important;
+}
+
+.bg-pink-100 {
+  background-color: #fce7f3 !important;
+  color: #be185d !important;
+}
+
+.bg-pink-200 {
+  background-color: #fbcfe8 !important;
+  color: #db2777 !important;
+}
+
+.bg-red-100 {
+  background-color: #fee2e2 !important;
+  color: #dc2626 !important;
+}
+
+.bg-red-200 {
+  background-color: #fecaca !important;
+  color: #ef4444 !important;
+}
+
+.bg-indigo-100 {
+  background-color: #e0e7ff !important;
+  color: #4f46e5 !important;
+}
+
+.bg-indigo-200 {
+  background-color: #c7d2fe !important;
+  color: #6366f1 !important;
+}
+
+.bg-yellow-100 {
+  background-color: #fef3c7 !important;
+  color: #92400e !important;
+}
+
+.bg-yellow-200 {
+  background-color: #fde68a !important;
+  color: #a16207 !important;
+}
+
+/* DARK MODE: Override for better contrast */
+.dark .bg-blue-100, .dark .bg-blue-200, .dark .bg-blue-300 {
+  background-color: #2563eb !important;
+  color: white !important;
+}
+
+.dark .bg-green-100, .dark .bg-green-200, .dark .bg-green-300 {
+  background-color: #059669 !important;
+  color: white !important;
+}
+
+.dark .bg-purple-100, .dark .bg-purple-200, .dark .bg-purple-300 {
+  background-color: #9333ea !important;
+  color: white !important;
+}
+
+.dark .bg-pink-100, .dark .bg-pink-200, .dark .bg-pink-300 {
+  background-color: #db2777 !important;
+  color: white !important;
+}
+
+.dark .bg-red-100, .dark .bg-red-200, .dark .bg-red-300 {
+  background-color: #dc2626 !important;
+  color: white !important;
+}
+
+.dark .bg-indigo-100, .dark .bg-indigo-200, .dark .bg-indigo-300 {
+  background-color: #4f46e5 !important;
+  color: white !important;
+}
+
+.dark .bg-yellow-100, .dark .bg-yellow-200, .dark .bg-yellow-300 {
+  background-color: #ca8a04 !important;
+  color: black !important;
+}
+
+/* Card and container fixes */
+.dark .bg-card {
+  @apply bg-gray-800 !important;
+}
+
+.dark .text-card-foreground {
+  @apply text-gray-100 !important;
+}
+
+/* Button text fixes */
+.dark button:not([class*="bg-blue"]):not([class*="bg-green"]):not([class*="bg-red"]):not([class*="bg-yellow"]):not([class*="bg-purple"]):not([class*="bg-pink"]):not([class*="bg-indigo"]) {
+  @apply text-gray-100 !important;
+}
+
+/* Input fixes */
+.dark input {
+  @apply bg-gray-700 text-gray-100 border-gray-600 !important;
+}
+
+.dark input::placeholder {
+  @apply text-gray-400 !important;
+}
+
+/* Ensure any custom components use proper dark colors */
+.dark .prose {
+  @apply text-gray-100 !important;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  
+  
+  /* PRESERVE HERO STYLING */
+  .hero-blue {
+    color: #60a5fa !important;
+  }
+  
+}
+
+/* Fix select dropdown visibility */
+[data-radix-select-content] {
+  background: hsl(var(--background)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: 6px !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  z-index: 9999 !important;
+  max-height: 24rem !important;
+  overflow-y: auto !important;
+}
+
+[data-radix-select-item] {
+  color: hsl(var(--foreground)) !important;
+  padding: 8px 12px !important;
+  cursor: pointer !important;
+}
+
+[data-radix-select-item]:hover {
+  background-color: hsl(var(--accent)) !important;
+  color: hsl(var(--accent-foreground)) !important;
+}
+
+/* Dark mode select fixes */
+.dark [data-radix-select-content] {
+  background: hsl(var(--background)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+.dark [data-radix-select-item] {
+  color: hsl(var(--foreground)) !important;
+}
+
+.dark [data-radix-select-item]:hover {
+  background-color: hsl(var(--accent)) !important;
+  color: hsl(var(--accent-foreground)) !important;
+}
+
+/* UNIVERSAL PILL SIZE STANDARDIZATION - 12pt for ALL pills site-wide */
+.pill, 
+.badge, 
+[class*="badge"], 
+[class*="pill"],
+.rounded-full[class*="text-"][class*="px-"],
+.rounded[class*="text-"][class*="px-"],
+.inline-flex[class*="text-"][class*="px-"][class*="rounded"],
+.inline-flex[class*="bg-"][class*="text-"][class*="rounded-full"],
+.inline-flex[class*="bg-"][class*="text-"][class*="rounded"],
+span[class*="bg-"][class*="text-"][class*="rounded-full"],
+span[class*="bg-"][class*="text-"][class*="rounded"],
+div[class*="bg-"][class*="text-"][class*="rounded-full"],
+div[class*="bg-"][class*="text-"][class*="rounded"] {
+  font-size: var(--pill-font-size) !important;
+}
+
+/* ALL PILLS WHITE BACKGROUND BLACK TEXT BLACK BORDER */
+.pill-interests,
+.pill-activities, 
+.pill-events,
+.pill,
+[class*="pill"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 1.5rem !important; /* h-6 */
+  border-radius: 9999px !important; /* rounded-full */
+  padding-left: 0.75rem !important; /* px-3 */
+  padding-right: 0.75rem !important;
+  font-size: 0.75rem !important; /* text-xs */
+  font-weight: 500 !important; /* font-medium */
+  white-space: nowrap !important;
+  line-height: 1 !important; /* leading-none */
+  background-color: #ffffff !important; /* white background */
+  color: #000000 !important; /* black text */
+  border: 1px solid #000000 !important; /* black border */
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  user-select: none !important;
+}
+
+/* Critical iPhone Mobile Fixes */
+@media screen and (max-width: 768px) {
+  /* Fix iOS viewport units */
+  html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+  }
+  
+  /* Prevent horizontal scrolling */
+  body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+  
+  /* Fix touch targets on iOS */
+  button, a, input, select, textarea {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  
+  /* Fix input zoom on iOS */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"],
+  textarea,
+  select {
+    font-size: 16px !important;
+    -webkit-appearance: none;
+    border-radius: 0;
+  }
+  
+  /* Fix Safari mobile positioning - CRITICAL */
+  .fixed {
+    position: fixed !important;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  
+  /* Force mobile navigation to show */
+  [style*="position: fixed"][style*="bottom: 0"] {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 9999 !important;
+    display: block !important;
+    width: 100% !important;
+  }
+  
+  /* Mobile container fixes */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    max-width: 100%;
+  }
+  
+  /* Grid responsive fixes */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  /* Mobile navigation fixes - CRITICAL */
+  nav {
+    z-index: 9999 !important;
+  }
+  
+  /* Ensure mobile top navigation shows */
+  .md\\:hidden {
+    display: block !important;
+  }
+  
+  @media (min-width: 768px) {
+    .md\\:hidden {
+      display: none !important;
+    }
+  }
+  
+  /* Force mobile layout elements to show on small screens */
+  @media screen and (max-width: 767px) {
+    .hidden.md\\:block {
+      display: none !important;
+    }
+    
+    .block.md\\:hidden {
+      display: block !important;
+    }
+  }
+  
+  /* Mobile modal fixes */
+  .modal,
+  [role="dialog"],
+  [data-radix-dialog-content] {
+    max-width: calc(100vw - 2rem);
+    max-height: calc(100vh - 4rem);
+    margin: 2rem 1rem;
+  }
+}
+
+/* iPhone specific fixes */
+@supports (-webkit-touch-callout: none) {
+  /* Safari mobile specific */
+  .min-h-screen {
+    min-height: -webkit-fill-available;
+  }
+  
+  /* Fix 100vh on mobile Safari */
+  .h-screen {
+    height: -webkit-fill-available;
+  }
+}
+
+@keyframes slideInFromLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-1 {
+  animation: slideInFromLeft 1.2s ease-out 0.5s both;
+}
+
+.animate-slide-in-2 {
+  animation: slideInFromLeft 1.2s ease-out 1.2s both;
+}
+
+.animate-slide-in-3 {
+  animation: slideInFromLeft 1.2s ease-out 1.9s both;
+}
+
+/* Energetic animations for LETS MEET NOW widget */
+@keyframes shine {
+  0% {
+    transform: translateX(-100%) skewX(-12deg);
+  }
+  100% {
+    transform: translateX(200%) skewX(-12deg);
+  }
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(255, 165, 0, 0.5), 0 0 10px rgba(255, 165, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 165, 0, 0.8), 0 0 30px rgba(255, 165, 0, 0.6);
+  }
+}
+
+.animate-shine {
+  animation: shine 2s infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}

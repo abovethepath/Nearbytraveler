@@ -1,0 +1,254 @@
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Link, useLocation } from "wouter";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import { useMutation } from "@tanstack/react-query";
+
+const resetPasswordSchema = z.object({
+  newPassword: z.string().min(8, "Password must be 8 characters or more"),
+  confirmPassword: z.string().min(8, "Password must be 8 characters or more"),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
+type ResetPasswordForm = z.infer<typeof resetPasswordSchema>;
+
+export default function ResetPassword() {
+  const [location] = useLocation();
+  const [token, setToken] = useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isValidToken, setIsValidToken] = useState<boolean | null>(null);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // EMERGENCY FIX: Multiple methods to get the reset token
+    let tokenParam: string | null = null;
+    
+    // Method 1: PRIORITY - Check if token was stored from server-side redirect
+    const storedToken = localStorage.getItem('reset_token');
+    if (storedToken) {
+      console.log('🔐 EMERGENCY SUCCESS: Found stored token from server redirect:', storedToken);
+      tokenParam = storedToken;
+      // Clear it after use for security
+      localStorage.removeItem('reset_token');
+    }
+    
+    // Method 2: Extract from current URL
+    if (!tokenParam) {
+      const currentURL = window.location.href;
+      console.log('🔐 RESET: Checking current URL:', currentURL);
+      
+      // Check search params
+      if (window.location.search) {
+        const params = new URLSearchParams(window.location.search);
+        tokenParam = params.get('token');
+        console.log('🔐 RESET: Found token in search:', tokenParam);
+      }
+      
+      // Parse full URL if search is empty
+      if (!tokenParam) {
+        try {
+          const url = new URL(currentURL);
+          tokenParam = url.searchParams.get('token');
+          console.log('🔐 RESET: Found token in full URL:', tokenParam);
+        } catch (e) {
+          console.log('🔐 RESET: URL parsing failed:', e);
+        }
+      }
+      
+      // Regex as final fallback
+      if (!tokenParam) {
+        const tokenMatch = currentURL.match(/[?&]token=([^&]+)/);
+        tokenParam = tokenMatch ? tokenMatch[1] : null;
+        console.log('🔐 RESET: Found token via regex:', tokenParam);
+      }
+    }
+    
+    setToken(tokenParam);
+    
+    // Verify token if it exists
+    if (tokenParam) {
+      console.log('🔐 RESET: Verifying token:', tokenParam);
+      fetch(`/api/auth/verify-reset-token?token=${tokenParam}`)
+        .then(async (response) => {
+          console.log('🔐 RESET: Verification response status:', response.status);
+          const data = await response.json();
+          console.log('🔐 RESET: Verification data:', data);
+          setIsValidToken(data.valid || false);
+        })
+        .catch((error) => {
+          console.log('🔐 RESET: Verification error:', error);
+          setIsValidToken(false);
+        });
+    } else {
+      console.log('🔐 RESET: No token in URL');
+      setIsValidToken(false);
+    }
+  }, [location]);
+
+  const form = useForm<ResetPasswordForm>({
+    resolver: zodResolver(resetPasswordSchema),
+    defaultValues: {
+      newPassword: "",
+      confirmPassword: "",
+    },
+  });
+
+  const resetPasswordMutation = useMutation({
+    mutationFn: async (data: ResetPasswordForm) => {
+      if (!token) throw new Error("Invalid reset token");
+      
+      const response = await apiRequest("POST", "/api/auth/reset-password", {
+        token,
+        newPassword: data.newPassword,
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      setIsSuccess(true);
+      toast({
+        title: "Password Reset Successful",
+        description: "Your password has been updated. You can now sign in with your new password.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Reset Failed",
+        description: error.message || "Failed to reset password. The link may be expired or invalid.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onSubmit = (data: ResetPasswordForm) => {
+    resetPasswordMutation.mutate(data);
+  };
+
+  // Show loading while verifying token
+  if (isValidToken === null) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-orange-50 px-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">Verifying Reset Link...</CardTitle>
+            <CardDescription>
+              Please wait while we verify your password reset link.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!token || isValidToken === false) {
+    // Auto-redirect to home page instead of showing error
+    console.log('🔄 AUTO-REDIRECT: No valid reset token, redirecting to home page');
+    window.location.href = '/';
+    return null;
+  }
+
+  if (isSuccess) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-orange-50 px-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl text-green-600">Password Reset Complete</CardTitle>
+            <CardDescription>
+              Your password has been successfully updated.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center space-y-4">
+              <p className="text-sm text-gray-600">
+                You can now sign in with your new password.
+              </p>
+              <Link href="/">
+                <Button className="w-full">
+                  Sign In Now
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-orange-50 px-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl">Reset Your Password</CardTitle>
+          <CardDescription>
+            Enter your new password below.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="newPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>New Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="Enter new password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confirm New Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="Confirm new password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={resetPasswordMutation.isPending}
+              >
+                {resetPasswordMutation.isPending ? "Updating..." : "Reset Password"}
+              </Button>
+            </form>
+          </Form>
+          
+          <div className="mt-6 text-center">
+            <Link href="/">
+              <Button variant="ghost" className="text-sm">
+                Back to Sign In
+              </Button>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
