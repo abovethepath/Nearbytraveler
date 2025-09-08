@@ -222,7 +222,7 @@ function EventsWidget({ userId }: EventsWidgetProps) {
             >
               {/* Event Photo Header */}
               {event.imageUrl && (
-                <div className="relative h-24 bg-cover bg-center">
+                <div className="relative h-12 bg-cover bg-center">
                   <img
                     src={event.imageUrl}
                     alt={event.title}
