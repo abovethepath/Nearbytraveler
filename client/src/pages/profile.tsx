@@ -29,7 +29,7 @@ import { AdaptiveCompressionIndicator } from "@/components/adaptive-compression-
 import { UniversalBackButton } from "@/components/UniversalBackButton";
 import FriendReferralWidget from "@/components/friend-referral-widget";
 
-import ReferencesWidgetNew from "@/components/references-widget-new";
+import { ReferenceSystem } from "@/components/ReferenceSystem";
 import { VouchWidget } from "@/components/vouch-widget";
 import { LocationSharingSection } from "@/components/LocationSharingSection";
 import TravelPlansWidget from "@/components/TravelPlansWidget";
@@ -7206,7 +7206,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="bg-white dark:bg-gray-900">
-                    <ReferencesWidgetNew userId={user.id} />
+                    <ReferenceSystem userId={user.id} isOwnProfile={isOwnProfile} />
                   </CardContent>
                 </Card>
               </div>
