@@ -12548,6 +12548,23 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(401).json({ message: "User ID required" });
       }
 
+      // 🔒 SECURITY CHECK: Verify user is a member of the chatroom before returning messages
+      const memberCheck = await db
+        .select()
+        .from(chatroomMembers)
+        .where(
+          and(
+            eq(chatroomMembers.chatroomId, roomId),
+            eq(chatroomMembers.userId, parseInt(userId as string)),
+            eq(chatroomMembers.isActive, true)
+          )
+        );
+
+      if (memberCheck.length === 0) {
+        if (process.env.NODE_ENV === 'development') console.log(`🚫 SECURITY: User ${userId} attempted to view messages for chatroom ${roomId} without membership`);
+        return res.status(403).json({ message: "You must join the chatroom to view messages" });
+      }
+
       if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM MESSAGES: Getting messages for chatroom ${roomId}`);
 
       const messages = await storage.getChatroomMessages(roomId);

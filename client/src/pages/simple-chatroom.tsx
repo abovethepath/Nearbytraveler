@@ -94,11 +94,11 @@ export default function SimpleChatroomPage() {
   const userIsMember = Array.isArray(members) ? members.some((member: ChatMember) => member.id === currentUserId) : false;
   
 
-  // Get messages - only fetch if user is joined
+  // Get messages - load immediately, server will handle membership check
   const { data: messages = [], isLoading: messagesLoading, isFetching: messagesFetching, refetch: refetchMessages } = useQuery<ChatMessage[]>({
     queryKey: [`/api/chatrooms/${chatroomId}/messages`],
-    enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId) && userIsMember),
-    refetchInterval: userIsMember ? 8000 : false, // Poll every 8 seconds if joined
+    enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
+    refetchInterval: 8000, // Poll every 8 seconds
     staleTime: 30000, // 30 seconds
     refetchOnWindowFocus: false,
   });
