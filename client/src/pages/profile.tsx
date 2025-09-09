@@ -5487,7 +5487,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Travel Plans Widget - RIGHT AFTER Things I Want To Do */}
             {user?.userType !== 'business' && (
-              <TravelPlansWidget userId={effectiveUserId} />
+              <TravelPlansWidget userId={effectiveUserId} isOwnProfile={isOwnProfile} />
             )}
 
             {/* Business Interests, Activities & Events Section - For business users only */}
@@ -7237,6 +7237,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 {user?.id && (
                   <TravelPlansWidget 
                     userId={user.id}
+                    isOwnProfile={isOwnProfile}
                   />
                 )}
               </div>

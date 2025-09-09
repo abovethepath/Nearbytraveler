@@ -11,6 +11,7 @@ import ComprehensiveItinerary from "@/components/ComprehensiveItinerary";
 
 interface TravelPlansWidgetProps {
   userId: number | undefined;
+  isOwnProfile?: boolean;
 }
 
 // FIXED: Timezone-safe date formatting function for ALL users' travel dates
@@ -40,7 +41,7 @@ function formatDateForDisplay(dateString: string | Date | null | undefined, time
   return 'Date TBD';
 }
 
-export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
+export default function TravelPlansWidget({ userId, isOwnProfile = false }: TravelPlansWidgetProps) {
   const [, setLocation] = useLocation();
   const [selectedTravelPlan, setSelectedTravelPlan] = useState<TripPlan | null>(null);
 
@@ -275,16 +276,20 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
         {uniquePlans.length === 0 && (
           <div className="text-center py-8 text-gray-500 dark:text-gray-400">
             <Plane className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-            <p className="mb-4">No travel plans yet!</p>
-            <Button 
-              size="sm" 
-              onClick={() => setLocation('/plan-trip')}
-              className="bg-blue-500 hover:bg-blue-600 text-white mb-4"
-              data-testid="button-create-travel-plan"
-            >
-              <Plane className="w-4 h-4 mr-1" />
-              Plan Your First Trip
-            </Button>
+            <p className="mb-4">
+              {isOwnProfile ? "No travel plans yet!" : "No travel plans shared"}
+            </p>
+            {isOwnProfile && (
+              <Button 
+                size="sm" 
+                onClick={() => setLocation('/plan-trip')}
+                className="bg-blue-500 hover:bg-blue-600 text-white mb-4"
+                data-testid="button-create-travel-plan"
+              >
+                <Plane className="w-4 h-4 mr-1" />
+                Plan Your First Trip
+              </Button>
+            )}
           </div>
         )}
 
@@ -301,27 +306,29 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
           </div>
         )}
 
-        {/* Action buttons */}
-        <div className="flex gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setLocation("/plan-trip")}
-            className="bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600 border-0 flex-1"
-          >
-            <Plane className="w-4 h-4 mr-1" />
-            Add New Trip
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setLocation("/match-in-city")}
-            className="bg-gradient-to-r from-green-500 to-teal-500 text-white hover:from-green-600 hover:to-teal-600 border-0 flex-1"
-          >
-            <Sparkles className="w-4 h-4 mr-1" />
-            City Match
-          </Button>
-        </div>
+        {/* Action buttons - Only show on own profile */}
+        {isOwnProfile && (
+          <div className="flex gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setLocation("/plan-trip")}
+              className="bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600 border-0 flex-1"
+            >
+              <Plane className="w-4 h-4 mr-1" />
+              Add New Trip
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setLocation("/match-in-city")}
+              className="bg-gradient-to-r from-green-500 to-teal-500 text-white hover:from-green-600 hover:to-teal-600 border-0 flex-1"
+            >
+              <Sparkles className="w-4 h-4 mr-1" />
+              City Match
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
 
