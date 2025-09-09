@@ -32,7 +32,6 @@ interface Chatroom {
 
 interface ChatMember {
   id: number;
-  user_id: number;
   username: string;
   name: string;
   role: string;
@@ -92,7 +91,7 @@ export default function SimpleChatroomPage() {
   });
 
   // Check membership when members data changes - SIMPLE CHECK ONLY
-  const userIsMember = Array.isArray(members) ? members.some((member: ChatMember) => member.user_id === currentUserId) : false;
+  const userIsMember = Array.isArray(members) ? members.some((member: ChatMember) => member.id === currentUserId) : false;
   
 
   // Get messages - only fetch if user is joined
@@ -358,7 +357,7 @@ export default function SimpleChatroomPage() {
                 title="Back to Chatrooms"
               >
                 <ArrowLeft className="w-4 h-4" />
-                <span className="hidden sm:inline ml-2">Back to Chatrooms</span>
+                <span className="hidden md:inline ml-2">Back to Chatrooms</span>
               </Button>
               
               <div className="flex-1 min-w-0">
@@ -440,8 +439,8 @@ export default function SimpleChatroomPage() {
                 <div className="flex flex-wrap gap-2">
                   {members.slice(0, 8).map((member) => (
                     <button
-                      key={member.user_id}
-                      onClick={() => navigate(`/profile/${member.user_id}`)}
+                      key={member.id}
+                      onClick={() => navigate(`/profile/${member.id}`)}
                       className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700 rounded-full px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                     >
                       <Avatar className="w-6 h-6">
@@ -457,7 +456,7 @@ export default function SimpleChatroomPage() {
                       {member.role === 'admin' && (
                         <span className="text-xs bg-blue-500 text-white rounded px-1.5 py-0.5">Admin</span>
                       )}
-                      {member.user_id === currentUserId && (
+                      {member.id === currentUserId && (
                         <span className="text-xs bg-green-500 text-white rounded px-1.5 py-0.5">You</span>
                       )}
                     </button>
@@ -659,8 +658,8 @@ export default function SimpleChatroomPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {members.map((member) => (
                   <button
-                    key={member.user_id}
-                    onClick={() => navigate(`/profile/${member.user_id}`)}
+                    key={member.id}
+                    onClick={() => navigate(`/profile/${member.id}`)}
                     className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-600/50 transition-colors text-left w-full"
                   >
                     <Avatar className="w-10 h-10 border-2 border-white dark:border-gray-600 shadow-sm">
@@ -682,7 +681,7 @@ export default function SimpleChatroomPage() {
                             Admin
                           </span>
                         )}
-                        {member.user_id === currentUserId && (
+                        {member.id === currentUserId && (
                           <span className="text-xs bg-green-500 text-white rounded px-2 py-1">
                             You
                           </span>
