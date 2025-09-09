@@ -4110,12 +4110,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </div>
                   )}
 
-                  {user.userType !== 'business' && user.ageVisible && user.dateOfBirth && (
-                    <div className="flex items-start">
-                      <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Age:</span>
-                      <span className="flex-1 break-words">{calculateAge(user.dateOfBirth)} years old</span>
-                    </div>
-                  )}
 
                   {/* Military Status for non-business users */}
                   {user.userType !== 'business' && (user.isVeteran || (user as any).is_veteran || user.isActiveDuty || (user as any).is_active_duty) && (
