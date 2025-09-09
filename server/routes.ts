@@ -3481,16 +3481,15 @@ The Nearby Traveler Team`);
         travelEndDate: userData.travelEndDate
       });
 
-      // COMPREHENSIVE TRAVELER ONBOARDING: Map DOB to bio section as requested
+      // DOB is stored separately in dateOfBirth field - don't add to bio
       if (userData.dateOfBirth && userData.userType === 'traveler') {
         const dobString = new Date(userData.dateOfBirth).toLocaleDateString('en-US', { 
           year: 'numeric', 
           month: 'long', 
           day: 'numeric' 
         });
-        // Add DOB to bio section as requested
-        userData.bio = userData.bio ? `${userData.bio}\n\nBorn: ${dobString}` : `Born: ${dobString}`;
-        if (process.env.NODE_ENV === 'development') console.log(`✓ Added DOB to bio section: ${dobString}`);
+        // DOB stored separately - not in bio
+        if (process.env.NODE_ENV === 'development') console.log(`✓ DOB stored in dateOfBirth field: ${dobString}`);
       }
 
       if (process.env.NODE_ENV === 'development') console.log("Creating new user:", userData.email);
