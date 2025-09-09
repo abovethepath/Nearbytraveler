@@ -4232,7 +4232,8 @@ The Nearby Traveler Team`);
               status: 'accepted'
             })
             .returning();
-      const type = result[0];
+          
+          if (process.env.NODE_ENV === 'development') console.log(`✓ Created connection between nearbytraveler (${nearbytravelerUser.id}) and ${user.username} (${user.id})`);
 
           // Create welcome message from nearbytraveler to the new user
           await storage.createMessage({
