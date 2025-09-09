@@ -5693,6 +5693,11 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(400).json({ error: "Cannot block yourself" });
       }
 
+      // Prevent blocking user2 (admin/system account)
+      if (blockedUserId === 2) {
+        return res.status(400).json({ error: "This user cannot be blocked" });
+      }
+
       // Check if user is already blocked
       const existingBlock = await db.select()
         .from(blockedUsers)

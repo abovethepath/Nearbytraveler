@@ -40,10 +40,13 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const { data: references = [] } = useQuery<Reference[]>({
+  const { data: referencesData } = useQuery({
     queryKey: [`/api/users/${userId}/references`],
     enabled: !!(userId)
   });
+
+  const references = referencesData?.references || [];
+  const referenceCounts = referencesData?.counts || { total: 0, positive: 0, negative: 0, neutral: 0 };
 
   // Check if user has already written a reference for this person
   const { data: existingReferenceData } = useQuery({
@@ -274,24 +277,24 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
         <CardContent>
           <div className="grid grid-cols-4 gap-4 mb-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{references.length}</div>
+              <div className="text-2xl font-bold text-blue-600">{referenceCounts.total}</div>
               <div className="text-sm text-gray-500">Total References</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600">
-                {references.filter((r: Reference) => r.experience === 'positive').length}
+                {referenceCounts.positive}
               </div>
               <div className="text-sm text-gray-500">Positive</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-yellow-600">
-                {references.filter((r: Reference) => r.experience === 'neutral').length}
+                {referenceCounts.neutral}
               </div>
               <div className="text-sm text-gray-500">Neutral</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-red-600">
-                {references.filter((r: Reference) => r.experience === 'negative').length}
+                {referenceCounts.negative}
               </div>
               <div className="text-sm text-gray-500">Negative</div>
             </div>
