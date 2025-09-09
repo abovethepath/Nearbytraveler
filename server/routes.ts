@@ -3657,31 +3657,32 @@ The Nearby Traveler Team`);
       
       if (shouldCreateTravelPlan) {
         try {
+          // CRITICAL FIX: Use userData instead of originalData to match condition checks
           // Build destination from all possible field variations
-          const tripLocation = originalData.travelDestination || [
-            originalData.currentTravelCity || originalData.travelDestinationCity || originalData.currentCity || originalData.currentTripDestinationCity,
-            originalData.currentTravelState || originalData.travelDestinationState || originalData.currentState || originalData.currentTripDestinationState,
-            originalData.currentTravelCountry || originalData.travelDestinationCountry || originalData.currentCountry || originalData.currentTripDestinationCountry
+          const tripLocation = userData.travelDestination || [
+            userData.currentTravelCity || userData.travelDestinationCity || userData.currentCity || userData.currentTripDestinationCity,
+            userData.currentTravelState || userData.travelDestinationState || userData.currentState || userData.currentTripDestinationState,
+            userData.currentTravelCountry || userData.travelDestinationCountry || userData.currentCountry || userData.currentTripDestinationCountry
           ].filter(Boolean).join(", ");
 
           if (process.env.NODE_ENV === 'development') console.log("CREATING TRAVEL PLAN:", { tripLocation, userId: user.id });
 
           // Handle both full travel dates and simplified return-date-only signup
           let startDate, endDate;
-          if (originalData.travelStartDate && originalData.travelEndDate) {
-            startDate = new Date(originalData.travelStartDate);
-            endDate = new Date(originalData.travelEndDate);
-          } else if (originalData.travelReturnDate || originalData.currentTripReturnDate) {
+          if (userData.travelStartDate && userData.travelEndDate) {
+            startDate = new Date(userData.travelStartDate);
+            endDate = new Date(userData.travelEndDate);
+          } else if (userData.travelReturnDate || userData.currentTripReturnDate) {
             startDate = new Date(); // Today
-            endDate = new Date(originalData.travelReturnDate || originalData.currentTripReturnDate);
+            endDate = new Date(userData.travelReturnDate || userData.currentTripReturnDate);
           }
 
           const travelPlan = await storage.createTravelPlan({
             userId: user.id,
             destination: tripLocation, // FIXED: Use correct field name for travel plan
-            destinationCity: originalData.currentCity || originalData.currentTravelCity || originalData.travelDestinationCity,
-            destinationState: originalData.currentState || originalData.currentTravelState || originalData.travelDestinationState,  
-            destinationCountry: originalData.currentCountry || originalData.currentTravelCountry || originalData.travelDestinationCountry,
+            destinationCity: userData.currentCity || userData.currentTravelCity || userData.travelDestinationCity,
+            destinationState: userData.currentState || userData.currentTravelState || userData.travelDestinationState,  
+            destinationCountry: userData.currentCountry || userData.currentTravelCountry || userData.travelDestinationCountry,
             startDate,
             endDate,
             activities: [],
