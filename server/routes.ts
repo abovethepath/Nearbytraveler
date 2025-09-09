@@ -1082,7 +1082,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           return { state: 'California', country: 'United States' };
         }
         
-        // For other cities, look up actual country from user data
+        // For other cities, look up actual country from BOTH hometown and travel destinations
         const cityCountryQuery = await db.execute(sql`
           SELECT hometown_country as country, hometown_state as state 
           FROM users 
@@ -1096,12 +1096,31 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           const row = cityCountryQuery.rows[0] as any;
           return { 
             state: row.state || '', 
-            country: row.country || (row.destination ? row.destination.split(',')[2]?.trim() : null) || 'International' 
+            country: row.country
+          };
+        }
+
+        // Also check travel destinations for this city
+        const travelDestinationQuery = await db.execute(sql`
+          SELECT destination_country as country, destination_state as state
+          FROM travel_plans 
+          WHERE destination_city = ${cityName}
+          AND destination_country IS NOT NULL 
+          AND destination_country != ''
+          LIMIT 1
+        `);
+        
+        if (travelDestinationQuery.rows.length > 0) {
+          const row = travelDestinationQuery.rows[0] as any;
+          return { 
+            state: row.state || '', 
+            country: row.country
           };
         }
         
-        // Fallback to unknown only if no data found
-        return { state: '', country: 'International' };
+        // If still no country found, this is a data quality issue
+        console.error(`🚨 MISSING COUNTRY DATA for city: ${cityName} - This should never happen!`);
+        throw new Error(`Missing country data for ${cityName}`);
       };
 
       // SHOW ALL CITIES - No filtering
