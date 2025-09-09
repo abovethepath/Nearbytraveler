@@ -354,7 +354,6 @@ export default function SimpleChatroomPage() {
                 size="sm"
                 onClick={() => navigate('/city-chatrooms')}
                 className="flex-shrink-0 hover:bg-white/20 dark:hover:bg-gray-600/20"
-                title="Back to Chatrooms"
               >
                 <ArrowLeft className="w-4 h-4" />
               </Button>
