@@ -4031,7 +4031,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <p className="text-gray-900 dark:text-white leading-relaxed whitespace-pre-wrap break-words text-left">
                     {user?.userType === 'business'
                       ? (user?.businessDescription || "No business description available yet.")
-                      : (user?.bio || "No bio available yet.")
+                      : (() => {
+                          const bio = user?.bio || "No bio available yet.";
+                          // Replace "Born: [date]" with "Age: [calculated age]"
+                          if (user?.dateOfBirth && bio.includes('Born:')) {
+                            const age = calculateAge(user.dateOfBirth);
+                            return bio.replace(/Born:.*?(\d{4})/, `Age: ${age}`);
+                          }
+                          return bio;
+                        })()
                     }
                   </p>
                 </div>
