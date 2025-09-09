@@ -100,16 +100,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         
         // Add default photos and gradients to the dynamic cities
         const citiesWithPhotos = citiesData.map((city: any, index: number) => {
-          const photoOptions = [
-            "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80",
-            "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=800&q=80", 
-            "https://images.unsplash.com/photo-1605833556294-ea5c7a74f57d?w=800&q=80",
-            "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
-            "https://images.unsplash.com/photo-1520637836862-4d197d17c36a?w=800&q=80",
-            "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80",
-            "https://images.unsplash.com/photo-1486299267070-83823f5448dd?w=800&q=80",
-            "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800&q=80"
-          ];
+          // Using colorful gradients instead of photos for easier management
           
           const gradientOptions = [
             "from-orange-400/20 to-red-600/20",
@@ -124,7 +115,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           
           return {
             ...city,
-            photo: photoOptions[index % photoOptions.length],
             gradient: gradientOptions[index % gradientOptions.length]
           };
         });
@@ -139,7 +129,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
             city: "Los Angeles Metro", 
             state: "California", 
             country: "United States", 
-            photo: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&q=80",
             gradient: "from-orange-400/20 to-red-600/20",
             localCount: 0,
             travelerCount: 0,
