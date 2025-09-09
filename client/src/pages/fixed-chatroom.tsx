@@ -7,11 +7,14 @@ import { Send, Users, ArrowLeft, Loader2, RefreshCw, AlertCircle } from "lucide-
 
 interface ChatMessage {
   id: number;
-  senderId: number;
+  sender_id: number; // Fixed: API returns sender_id, not senderId
+  senderId?: number; // Keep as fallback
   senderUsername: string;
+  username?: string; // API might return username instead
   content: string;
   created_at: string; // Fixed: API returns created_at, not timestamp
   senderProfileImage?: string;
+  profile_image?: string; // API might return profile_image
 }
 
 interface ChatMember {
@@ -681,12 +684,14 @@ export default function FixedChatroom() {
                       </div>
                     ) : (
                       messages.map((message, index) => {
-                        const isOwnMessage = message.senderId === currentUserId;
-                        const senderMember = members.find(m => m.user_id === message.senderId || m.id === message.senderId);
-                        const displayName = isOwnMessage ? 'You' : (senderMember?.username || message.senderUsername || 'Unknown User');
+                        // Fixed: Use correct field names from API
+                        const messageSenderId = message.sender_id || message.senderId;
+                        const isOwnMessage = messageSenderId === currentUserId;
+                        const senderMember = members.find(m => m.user_id === messageSenderId || m.id === messageSenderId);
+                        const displayName = isOwnMessage ? 'You' : (senderMember?.username || message.username || message.senderUsername || 'Unknown User');
                         
                         // Better avatar logic - always use member profile images
-                        let profileImage = senderMember?.profile_image || message.senderProfileImage;
+                        let profileImage = senderMember?.profile_image || message.profile_image || message.senderProfileImage;
                         
                         // If it's own message and no member found, try current user's profile
                         if (isOwnMessage && !profileImage) {
