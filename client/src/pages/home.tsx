@@ -203,7 +203,15 @@ export default function Home() {
     // Use exact same logic as weather widget
     const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
     if (currentTravelPlan) {
-      return `${currentTravelPlan.destinationCity}${currentTravelPlan.destinationState ? `, ${currentTravelPlan.destinationState}` : ''}, ${currentTravelPlan.destinationCountry}`; // This should be "Rome"
+      // Avoid duplication when state/prefecture contains city name (e.g. "Hiroshima Prefecture")
+      const city = currentTravelPlan.destinationCity;
+      const state = currentTravelPlan.destinationState;
+      const country = currentTravelPlan.destinationCountry;
+      
+      // Skip state if it already contains the city name to avoid duplication
+      const shouldShowState = state && !state.toLowerCase().includes(city?.toLowerCase() || '');
+      
+      return `${city}${shouldShowState ? `, ${state}` : ''}, ${country}`;
     }
 
     if (enrichedEffectiveUser?.isCurrentlyTraveling && enrichedEffectiveUser?.travelDestination) {
