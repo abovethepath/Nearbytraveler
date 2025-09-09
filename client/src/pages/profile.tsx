@@ -7170,8 +7170,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </div>
             )}
 
-            {/* Travel Panel - Lazy Loaded */}
-            {activeTab === 'travel' && loadedTabs.has('travel') && user?.userType !== 'business' && (
+            {/* Travel Panel - Always Load for Travel Widget */}
+            {activeTab === 'travel' && user?.userType !== 'business' && (
               <div 
                 role="tabpanel"
                 id="panel-travel"
