@@ -2829,6 +2829,171 @@ Questions? Just reply to this message. Welcome to the community!
     }
   });
 
+  // ✅ CRITICAL: Bootstrap endpoint for comprehensive traveler onboarding
+  app.post("/api/bootstrap/after-register", async (req, res) => {
+    try {
+      const { userId } = req.body;
+      if (!userId) return res.status(400).json({ message: "User ID required" });
+      
+      console.log(`🚀 BOOTSTRAP: Running post-signup setup for user ${userId}`);
+      
+      // ✅ CRITICAL: Actually fetch user data and execute onboarding
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      console.log(`👤 BOOTSTRAP: Found user ${user.username} (${user.id})`);
+      console.log(`   userType: ${user.userType}, isCurrentlyTraveling: ${user.isCurrentlyTraveling}`);
+      console.log(`   travelDestination: ${user.travelDestination}`);
+      
+      // ✅ CRITICAL: Execute comprehensive traveler onboarding
+      if (user.userType === 'traveler' && user.isCurrentlyTraveling) {
+        console.log("🚀 COMPREHENSIVE TRAVELER ONBOARDING - Executing all required steps");
+        
+        // ✅ Step 1: Create chatrooms for hometown
+        if (user.hometownCity && user.hometownCountry) {
+          console.log(`📍 Creating hometown chatrooms for: ${user.hometownCity}, ${user.hometownCountry}`);
+          try {
+            await storage.ensureMeetLocalsChatrooms(user.hometownCity, user.hometownState, user.hometownCountry);
+            await storage.ensureSecondaryChatrooms(user.hometownCity, user.hometownState, user.hometownCountry);
+            console.log(`✅ Created hometown chatrooms`);
+          } catch (error) {
+            console.error('❌ Error creating hometown chatrooms:', error);
+          }
+        }
+
+        // ✅ Step 2: Create chatrooms for travel destination
+        if (user.travelDestination) {
+          console.log(`📍 Creating destination chatrooms for: ${user.travelDestination}`);
+          try {
+            const destinationParts = user.travelDestination.split(', ');
+            const travelCity = destinationParts[0];
+            const travelState = destinationParts[1];
+            const travelCountry = destinationParts[2] || destinationParts[1];
+            
+            await storage.ensureMeetLocalsChatrooms(travelCity, travelState, travelCountry);
+            await storage.ensureSecondaryChatrooms(travelCity, travelState, travelCountry);
+            console.log(`✅ Created destination chatrooms`);
+          } catch (error) {
+            console.error('❌ Error creating destination chatrooms:', error);
+          }
+        }
+
+        // ✅ Step 3: Create city pages for both cities
+        console.log(`📄 Creating city match pages`);
+        try {
+          // Hometown city page
+          if (user.hometownCity) {
+            const hometownPage = await storage.ensureCityPageExists(
+              user.hometownCity, 
+              user.hometownState, 
+              user.hometownCountry, 
+              user.id
+            );
+            console.log(`✅ Hometown city page: ${hometownPage ? 'created/exists' : 'FAILED'}`);
+          }
+          
+          // Destination city page
+          if (user.travelDestination) {
+            const destinationParts = user.travelDestination.split(', ');
+            const destinationPage = await storage.ensureCityPageExists(
+              destinationParts[0], 
+              destinationParts[1], 
+              destinationParts[2] || destinationParts[1], 
+              user.id
+            );
+            console.log(`✅ Destination city page: ${destinationPage ? 'created/exists' : 'FAILED'}`);
+          }
+        } catch (error) {
+          console.error('❌ Error creating city pages:', error);
+        }
+
+        // ✅ Step 4: Send welcome message from nearbytrav account (USER ID 2)
+        console.log(`💬 Sending welcome message`);
+        try {
+          const nearbytravAccount = await storage.getUser(2);
+          if (nearbytravAccount) {
+            await storage.sendSystemMessage(2, user.id, 
+              `Welcome to Nearby Traveler, ${user.name || user.username}! ✈️
+
+We're excited to have you join our community of travelers and locals. Here's what you can do now:
+
+🌍 Connect with locals in ${user.travelDestination}
+🏠 Stay connected with your hometown community in ${user.hometownCity}
+💬 Join city chatrooms to meet people
+📅 Discover local events and activities
+🤝 Build meaningful connections wherever you go
+
+Your journey starts now - explore, connect, and make the most of your travels!
+
+Safe travels,
+The Nearby Traveler Team`);
+            console.log(`✅ Welcome message sent`);
+          } else {
+            console.error("❌ nearbytrav account (ID 2) not found");
+          }
+        } catch (error) {
+          console.error('❌ Error sending welcome message:', error);
+        }
+
+        // ✅ Step 5: Register user in both cities with proper status
+        console.log(`👤 Registering user in cities`);
+        try {
+          // Register as LOCAL in hometown
+          if (user.hometownCity) {
+            await storage.registerUserInCity(
+              user.id, 
+              user.hometownCity, 
+              user.hometownState, 
+              user.hometownCountry, 
+              'local'
+            );
+            console.log(`✅ Registered as local in hometown`);
+          }
+          
+          // Register as TRAVELER in destination  
+          if (user.travelDestination) {
+            const destinationParts = user.travelDestination.split(', ');
+            await storage.registerUserInCity(
+              user.id, 
+              destinationParts[0], 
+              destinationParts[1], 
+              destinationParts[2] || destinationParts[1], 
+              'traveler'
+            );
+            console.log(`✅ Registered as traveler in destination`);
+          }
+        } catch (error) {
+          console.error('❌ Error registering user in cities:', error);
+        }
+
+        // ✅ Step 6: Create connection to USER2 (nearbytrav account)
+        console.log(`🤝 Creating connection to nearbytrav account`);
+        try {
+          await storage.createConnection({
+            requesterId: 2,
+            receiverId: user.id,
+            status: 'accepted'
+          });
+          console.log(`✅ Connection created to nearbytrav account`);
+        } catch (error) {
+          console.error('❌ Error creating connection to nearbytrav:', error);
+        }
+
+        console.log("✅ COMPREHENSIVE TRAVELER ONBOARDING - Completed successfully");
+      } else {
+        console.log(`ℹ️ User ${user.username} is not a current traveler, skipping comprehensive onboarding`);
+        console.log(`   userType: ${user.userType}, isCurrentlyTraveling: ${user.isCurrentlyTraveling}`);
+      }
+      
+      res.json({ success: true, message: "Bootstrap completed successfully" });
+    } catch (error) {
+      console.error("Bootstrap error:", error);
+      res.status(500).json({ message: "Bootstrap failed", error: error.message });
+    }
+  });
+
   // Username validation endpoint (POST version for body params)
   app.post("/api/auth/check-username", async (req, res) => {
     try {
