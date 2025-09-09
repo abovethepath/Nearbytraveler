@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, MapPin, Users, Building2, Heart, MessageCircle, Star, ArrowLeft, Home, User, Plus, X, Compass, Sparkles, Camera, Coffee, Utensils, Palette, Music, TreePine, ChevronDown, Search } from "lucide-react";
+import { Calendar, MapPin, Users, Building2, Heart, MessageCircle, Star, ArrowLeft, Home, User, Plus, X, Compass, Sparkles, Camera, Coffee, Utensils, Palette, Music, TreePine, ChevronDown } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { getPublicInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, PRIVATE_INTERESTS } from "../../../shared/base-options";
@@ -1214,19 +1214,6 @@ export default function PlanTrip() {
                   rows={4}
                 />
                 
-                {/* Search Other Travelers' Notes */}
-                <div className="mt-4 pt-4 border-t border-amber-200 dark:border-amber-700">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Compass className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-                    <Label className="text-sm font-medium text-black dark:text-white">
-                      Find Similar Travelers
-                    </Label>
-                  </div>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
-                    Search other travelers' notes to find people with similar plans or interests
-                  </p>
-                  <TravelNotesSearch city={tripPlan.destinationCity} />
-                </div>
               </div>
 
               {/* Action Buttons - Mobile Responsive */}
@@ -1279,135 +1266,3 @@ export default function PlanTrip() {
   );
 }
 
-// Travel Notes Search Component
-interface TravelNotesSearchProps {
-  city?: string;
-}
-
-function TravelNotesSearch({ city }: TravelNotesSearchProps) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [showResults, setShowResults] = useState(false);
-
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) return;
-    
-    setIsSearching(true);
-    try {
-      const params = new URLSearchParams({
-        search: searchQuery.trim()
-      });
-      if (city) {
-        params.append('city', city);
-      }
-      
-      const response = await fetch(`/api/search-travel-plans?${params.toString()}`);
-      const results = await response.json();
-      setSearchResults(results);
-      setShowResults(true);
-    } catch (error) {
-      console.error("Search error:", error);
-    } finally {
-      setIsSearching(false);
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
-
-  return (
-    <div className="space-y-3">
-      <div className="flex gap-2">
-        <div className="flex-1">
-          <Input
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="e.g., Virgin Hotel, Taylor Swift, Gordon Ramsay..."
-            className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 text-sm placeholder:text-gray-400 dark:placeholder:text-gray-500"
-            data-testid="input-travel-notes-search"
-          />
-        </div>
-        <Button 
-          onClick={handleSearch}
-          disabled={isSearching || !searchQuery.trim()}
-          size="sm"
-          className="bg-amber-600 hover:bg-amber-700 text-white px-4"
-          data-testid="button-search-travel-notes"
-        >
-          {isSearching ? (
-            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-          ) : (
-            <Search className="w-4 h-4" />
-          )}
-        </Button>
-      </div>
-
-      {/* Search Results */}
-      {showResults && (
-        <div className="mt-4 space-y-2">
-          <div className="flex items-center justify-between">
-            <h4 className="text-sm font-medium text-gray-900 dark:text-white">
-              Found {searchResults.length} travelers {city && `in ${city}`}
-            </h4>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowResults(false)}
-              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 p-1 h-auto"
-            >
-              <X className="w-4 h-4" />
-            </Button>
-          </div>
-          
-          {searchResults.length === 0 ? (
-            <p className="text-sm text-gray-500 dark:text-gray-400 py-4 text-center bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-              No travelers found with notes matching "{searchQuery}"
-            </p>
-          ) : (
-            <div className="max-h-60 overflow-y-auto space-y-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3">
-              {searchResults.map((result) => (
-                <div 
-                  key={`${result.userId}-${result.id}`} 
-                  className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg p-3"
-                  data-testid={`search-result-${result.userId}`}
-                >
-                  <div className="flex items-center gap-2 mb-2">
-                    {result.profileImage ? (
-                      <img 
-                        src={result.profileImage} 
-                        alt={result.username}
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs font-medium">
-                          {result.username?.[0]?.toUpperCase() || '?'}
-                        </span>
-                      </div>
-                    )}
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        {result.name || result.username}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {result.destination} • {new Date(result.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-700 dark:text-gray-300 bg-blue-50 dark:bg-blue-900/20 p-2 rounded">
-                    "{result.notes}"
-                  </p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
