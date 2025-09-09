@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { Star, ThumbsUp, Shield, User, MessageCircle } from 'lucide-react';
+import { Star, ThumbsUp, Shield, User, MessageCircle, AlertTriangle } from 'lucide-react';
 import { useAuth } from '@/App';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
@@ -27,9 +27,14 @@ interface Reference {
 export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile?: boolean; userId?: number }) {
   const { user } = useAuth();
   const [showWriteReference, setShowWriteReference] = useState(false);
+  const [showPrivateReference, setShowPrivateReference] = useState(false);
   const [isEditingReference, setIsEditingReference] = useState(false);
   const [referenceData, setReferenceData] = useState({
     experience: 'positive' as const,
+    content: ''
+  });
+  const [privateReferenceData, setPrivateReferenceData] = useState({
+    category: 'feedback' as const,
     content: ''
   });
   const queryClient = useQueryClient();
@@ -111,6 +116,50 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
     }
   });
 
+  const submitPrivateReference = useMutation({
+    mutationFn: async (data: { category: string; content: string }) => {
+      if (!data.content || data.content.trim().length === 0) {
+        throw new Error('Message content is required');
+      }
+
+      if (!user?.id) {
+        throw new Error('User authentication required');
+      }
+
+      const response = await apiRequest('POST', '/api/support/private-reference', {
+        userId: user.id,
+        targetUserId: userId,
+        category: data.category,
+        content: data.content.trim(),
+        anonymous: true
+      });
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error('Private reference submission error:', errorData);
+        throw new Error(errorData || 'Failed to submit private message');
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      setShowPrivateReference(false);
+      setPrivateReferenceData({ category: 'feedback', content: '' });
+      toast({
+        title: 'Message Sent',
+        description: 'Your private message has been sent to our support team.',
+      });
+    },
+    onError: (error: any) => {
+      console.error('Private reference submission error:', error);
+      toast({
+        title: 'Error',
+        description: error?.message || 'Failed to send private message. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  });
+
   const getExperienceColor = (experience: string) => {
     switch (experience) {
       case 'positive':
@@ -157,6 +206,30 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
     setShowWriteReference(!showWriteReference);
   };
 
+  const handlePrivateReference = () => {
+    if (!user?.id) {
+      toast({
+        title: 'Authentication Required',
+        description: 'Please log in to send a private message.',
+        variant: 'destructive'
+      });
+      return;
+    }
+    setShowPrivateReference(!showPrivateReference);
+  };
+
+  const handleSubmitPrivateReference = () => {
+    if (!privateReferenceData.content.trim() || privateReferenceData.content.trim().length < 10) {
+      toast({
+        title: "Validation Error",
+        description: "Please write at least 10 characters for your message.",
+        variant: "destructive",
+      });
+      return;
+    }
+    submitPrivateReference.mutate(privateReferenceData);
+  };
+
   return (
     <div className="space-y-6">
       {/* References Summary Card */}
@@ -168,22 +241,33 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
               Community References
             </CardTitle>
             {!isOwnProfile && (
-              <Button
-                onClick={handleWriteReference}
-                size="sm"
-                className="bg-gradient-to-r from-orange-500 to-blue-500 hover:from-orange-600 hover:to-blue-600"
-              >
-                {(() => {
-                  const buttonText = showWriteReference ? 'Cancel' : (existingReferenceData?.exists ? 'Edit Reference' : 'Write Reference');
-                  console.log('🔧 BUTTON TEXT LOGIC:', { 
-                    showWriteReference, 
-                    existsValue: existingReferenceData?.exists, 
-                    existingData: existingReferenceData,
-                    buttonText 
-                  });
-                  return buttonText;
-                })()}
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleWriteReference}
+                  size="sm"
+                  className="bg-gradient-to-r from-orange-500 to-blue-500 hover:from-orange-600 hover:to-blue-600"
+                >
+                  {(() => {
+                    const buttonText = showWriteReference ? 'Cancel' : (existingReferenceData?.exists ? 'Edit Reference' : 'Write Reference');
+                    console.log('🔧 BUTTON TEXT LOGIC:', { 
+                      showWriteReference, 
+                      existsValue: existingReferenceData?.exists, 
+                      existingData: existingReferenceData,
+                      buttonText 
+                    });
+                    return buttonText;
+                  })()}
+                </Button>
+                <Button
+                  onClick={handlePrivateReference}
+                  size="sm"
+                  variant="outline"
+                  className="border-orange-300 hover:bg-orange-50"
+                >
+                  <AlertTriangle className="w-4 h-4 mr-1" />
+                  {showPrivateReference ? 'Cancel' : 'Private Message'}
+                </Button>
+              </div>
             )}
           </div>
         </CardHeader>
@@ -214,7 +298,7 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
           </div>
 
           {showWriteReference && (
-            <div className="space-y-4 p-4 border rounded-lg bg-gray-50 dark:bg-gray-800 mb-6">
+            <div className="space-y-4 p-6 border rounded-lg bg-white dark:bg-gray-900 shadow-lg mb-6">
               <h4 className="font-semibold text-lg">{isEditingReference ? 'Edit Your Reference' : 'Write a Reference'}</h4>
               {isEditingReference && (
                 <p className="text-sm text-blue-600 dark:text-blue-400 mb-4">
@@ -276,6 +360,77 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
                   type="button"
                 >
                   {submitReference.isPending ? 'Submitting...' : (isEditingReference ? 'Update Reference' : 'Submit Reference')}
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {showPrivateReference && (
+            <div className="space-y-4 p-6 border rounded-lg bg-white dark:bg-gray-900 shadow-lg mb-6 border-orange-200 dark:border-orange-800">
+              <h4 className="font-semibold text-lg text-orange-700 dark:text-orange-300 flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5" />
+                Private Message to Support Team
+              </h4>
+              <p className="text-sm text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 p-3 rounded-md">
+                This message will be sent privately to our support team. Your identity will remain anonymous to protect your privacy. 
+                Use this for reporting issues, providing feedback, or sharing concerns about this user.
+              </p>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block">
+                  Message Category *
+                </label>
+                <select
+                  value={privateReferenceData.category}
+                  onChange={(e) => setPrivateReferenceData(prev => ({ ...prev, category: e.target.value as any }))}
+                  className="w-full p-3 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white min-h-[48px]"
+                  required
+                >
+                  <option value="feedback">💬 General Feedback</option>
+                  <option value="safety">⚠️ Safety Concern</option>
+                  <option value="inappropriate">🚫 Inappropriate Behavior</option>
+                  <option value="spam">📧 Spam/Fake Profile</option>
+                  <option value="other">❓ Other Issue</option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block">
+                  Your Message *
+                </label>
+                <textarea
+                  value={privateReferenceData.content}
+                  onChange={(e) => setPrivateReferenceData(prev => ({ ...prev, content: e.target.value }))}
+                  className="w-full p-3 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white min-h-[120px] resize-none"
+                  placeholder="Please describe your concern or feedback... (minimum 10 characters)"
+                  required
+                  minLength={10}
+                  maxLength={1000}
+                />
+                <div className="text-xs text-gray-500 dark:text-gray-400 text-right">
+                  {privateReferenceData.content.length}/1000 characters
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                <Button
+                  onClick={() => {
+                    setShowPrivateReference(false);
+                    setPrivateReferenceData({ category: 'feedback', content: '' });
+                  }}
+                  variant="outline"
+                  className="w-full sm:w-auto min-h-[48px]"
+                  type="button"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleSubmitPrivateReference}
+                  disabled={submitPrivateReference.isPending || !privateReferenceData.content.trim() || privateReferenceData.content.trim().length < 10}
+                  className="w-full sm:w-auto min-h-[48px] bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+                  type="button"
+                >
+                  {submitPrivateReference.isPending ? 'Sending...' : 'Send Private Message'}
                 </Button>
               </div>
             </div>

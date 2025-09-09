@@ -5613,6 +5613,67 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // POST /api/support/private-reference - Submit a private message to support team
+  app.post("/api/support/private-reference", async (req, res) => {
+    try {
+      const { userId, targetUserId, category, content } = req.body;
+      
+      // Validate required fields
+      if (!userId || !targetUserId || !category || !content) {
+        return res.status(400).json({ 
+          error: "Missing required fields: userId, targetUserId, category, content" 
+        });
+      }
+
+      // Validate content length
+      if (content.trim().length < 10) {
+        return res.status(400).json({ 
+          error: "Message content must be at least 10 characters long" 
+        });
+      }
+
+      if (content.length > 1000) {
+        return res.status(400).json({ 
+          error: "Message content cannot exceed 1000 characters" 
+        });
+      }
+
+      // Get user details for context
+      const user = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+      const targetUser = await db.select().from(users).where(eq(users.id, targetUserId)).limit(1);
+      
+      if (user.length === 0) {
+        return res.status(404).json({ error: "Sender user not found" });
+      }
+      
+      if (targetUser.length === 0) {
+        return res.status(404).json({ error: "Target user not found" });
+      }
+
+      // Create a system message or log entry for support team review
+      // For now, we'll store it in the messages table with a special system user ID (0)
+      const supportMessage = await db.insert(messages).values({
+        senderId: userId,
+        receiverId: 1, // Send to admin user (ID 1) or create a support system user
+        content: `🚨 PRIVATE SUPPORT MESSAGE 🚨\n\nCategory: ${category}\nAbout User: @${targetUser[0].username} (ID: ${targetUserId})\nFrom: @${user[0].username} (ID: ${userId})\n\nMessage:\n${content.trim()}`,
+        createdAt: new Date(),
+        isRead: false
+      }).returning();
+
+      console.log(`📨 PRIVATE SUPPORT MESSAGE: User ${userId} (@${user[0].username}) sent ${category} message about user ${targetUserId} (@${targetUser[0].username})`);
+
+      res.json({ 
+        success: true, 
+        message: "Private message sent to support team successfully",
+        id: supportMessage[0].id
+      });
+
+    } catch (error) {
+      console.error("❌ Error creating private reference:", error);
+      res.status(500).json({ error: "Failed to send private message" });
+    }
+  });
+
   // Get detailed itinerary data for a specific completed trip
   app.get("/api/travel-plans/:id/itineraries", async (req, res) => {
     try {
