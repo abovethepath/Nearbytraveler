@@ -4265,8 +4265,10 @@ Aaron`
           if (process.env.NODE_ENV === 'development') console.log(`✓ Auto-connected new user ${user.username} (ID: ${user.id}) to nearbytraveler with welcome message`);
         }
       } catch (autoConnectError) {
-        if (process.env.NODE_ENV === 'development') console.error("Failed to auto-connect new user to nearbytraveler:", autoConnectError);
-        // Don't fail registration if auto-connection fails
+        console.error(`🚨 CRITICAL: Auto-connect FAILED for user ${user.username} (ID: ${user.id}):`, autoConnectError);
+        console.error(`🚨 DETAILS: Error type: ${autoConnectError.constructor.name}, Message: ${autoConnectError.message}`);
+        if (autoConnectError.stack) console.error(`🚨 STACK: ${autoConnectError.stack}`);
+        // Don't fail registration if auto-connection fails, but log heavily for debugging
       }
 
       res.status(201).json({

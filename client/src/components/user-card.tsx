@@ -62,8 +62,10 @@ export default function UserCard({
 }: UserCardProps) {
   
   const handleCardClick = (e: React.MouseEvent) => {
-    // Navigate to user profile
-    window.location.href = `/profile/${user.id}`;
+    e.preventDefault();
+    // Direct navigation without flash
+    window.history.pushState({}, '', `/profile/${user.id}`);
+    window.dispatchEvent(new PopStateEvent('popstate'));
   };
 
   const getLocation = () => {
