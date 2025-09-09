@@ -12,7 +12,7 @@ interface ChatMessage {
   senderId: number;
   senderUsername: string;
   content: string;
-  timestamp: string;
+  created_at: string; // Fixed: API returns created_at, not timestamp
   senderProfileImage?: string;
 }
 
@@ -414,7 +414,7 @@ export default function SimpleChatroomFixed() {
                         <div className="flex items-baseline gap-2">
                           <span className="font-medium text-sm">{message.senderUsername}</span>
                           <span className="text-xs text-gray-500">
-                            {new Date(message.timestamp).toLocaleTimeString()}
+                            {new Date(message.created_at).toLocaleTimeString()}
                           </span>
                         </div>
                         <p className="text-gray-900 dark:text-gray-100">{message.content}</p>

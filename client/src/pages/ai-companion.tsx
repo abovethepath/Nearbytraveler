@@ -421,7 +421,7 @@ function AICompanionPaused() {
                                   <p className={`text-xs mt-1 ${
                                     message.isUser ? 'text-blue-100' : 'text-gray-500 dark:text-gray-300'
                                   }`}>
-                                    {message.timestamp.toLocaleTimeString()}
+                                    {message.created_at ? new Date(message.created_at).toLocaleTimeString() : ''}
                                   </p>
                                 </div>
                               </div>

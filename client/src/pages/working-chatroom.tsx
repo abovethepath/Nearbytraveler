@@ -405,7 +405,7 @@ export default function WorkingChatroom() {
                       </p>
                       <p className="text-sm">{message.content}</p>
                       <p className="text-xs opacity-50 mt-1">
-                        {new Date(message.timestamp).toLocaleTimeString()}
+                        {new Date(message.created_at).toLocaleTimeString()}
                       </p>
                     </div>
                   </div>
