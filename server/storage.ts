@@ -2090,28 +2090,51 @@ export class DatabaseStorage implements IStorage {
       .values(travelPlan)
       .returning();
 
-    // ✈️ AUTO-JOIN: Add traveler to destination chatrooms
+    // ✈️ SMART AUTO-JOIN: Add traveler to destination chatrooms (with intelligent filtering)
     if (newPlan.destination && newPlan.userId) {
       try {
-        console.log(`🎯 TRAVEL PLAN: Auto-joining user ${newPlan.userId} to ${newPlan.destination} chatrooms`);
+        // Get user's hometown country for domestic travel detection
+        const user = await this.getUser(newPlan.userId);
+        const userHometown = user?.hometownCountry;
         
         // Parse destination to get city, state, country
         const destinationParts = newPlan.destination.split(',');
         const destinationCity = destinationParts[0]?.trim();
         const destinationState = destinationParts[1]?.trim() || null;
-        const destinationCountry = destinationParts[2]?.trim() || 'United States';
+        const destinationCountry = destinationParts[2]?.trim() || null;
         
-        if (destinationCity) {
-          // First, ensure chatrooms exist for the destination
+        // Check if this is currently an ACTIVE travel plan
+        const now = new Date();
+        const startDate = newPlan.startDate ? new Date(newPlan.startDate) : null;
+        const endDate = newPlan.endDate ? new Date(newPlan.endDate) : null;
+        const isActivePlan = startDate && endDate && startDate <= now && endDate >= now;
+        
+        // Smart filtering logic
+        const isDomesticTravel = destinationCountry && userHometown && 
+                                destinationCountry.toLowerCase() === userHometown.toLowerCase();
+        const isFutureTrip = startDate && startDate > now;
+        
+        console.log(`🎯 TRAVEL PLAN ANALYSIS for user ${newPlan.userId}:`, {
+          destination: newPlan.destination,
+          destinationCountry,
+          userHometown,
+          isDomesticTravel,
+          isFutureTrip,
+          isActivePlan,
+          autoJoin: !isDomesticTravel && !isFutureTrip
+        });
+        
+        if (destinationCity && destinationCountry && !isDomesticTravel && !isFutureTrip) {
+          // Only auto-join for INTERNATIONAL and ACTIVE/CURRENT travel
           await this.ensureMeetLocalsChatrooms(destinationCity, destinationState, destinationCountry);
-          
-          // Then auto-join the traveler to the destination chatrooms
           await this.autoJoinWelcomeChatroom(newPlan.userId, destinationCity, destinationCountry);
           
-          console.log(`✅ TRAVEL PLAN: Successfully joined user ${newPlan.userId} to ${destinationCity} chatrooms`);
+          console.log(`✅ SMART AUTO-JOIN: User ${newPlan.userId} joined ${destinationCity} chatrooms (international + active travel)`);
+        } else {
+          console.log(`⏭️ SKIPPED AUTO-JOIN: ${isDomesticTravel ? 'Domestic travel' : ''} ${isFutureTrip ? 'Future trip' : ''} - user can manually join later`);
         }
       } catch (error) {
-        console.error('Error auto-joining destination chatrooms for travel plan:', error);
+        console.error('Error in smart chatroom auto-join logic:', error);
         // Don't fail the travel plan creation if chatroom joining fails
       }
     }
