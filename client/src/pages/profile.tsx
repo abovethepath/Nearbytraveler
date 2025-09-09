@@ -5440,6 +5440,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               />
             )}
 
+            {/* Travel Plans Widget - RIGHT AFTER Things I Want To Do */}
+            {user?.userType !== 'business' && (
+              <TravelPlansWidget userId={effectiveUserId} />
+            )}
+
             {/* Business Interests, Activities & Events Section - For business users only */}
             {user?.userType === 'business' && (
             <Card>
@@ -6407,10 +6412,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
           {/* Right Sidebar - Mobile Responsive */}
           <div className="w-full lg:col-span-1 space-y-2 lg:space-y-4">
-            {/* Travel Plans Widget in sidebar */}
-            {user?.userType !== 'business' && (
-              <TravelPlansWidget userId={effectiveUserId} />
-            )}
             
             {/* Quick Meetup Widget - Only show for own profile (travelers/locals only, NOT business) */}
             {isOwnProfile && user && user.userType !== 'business' && (
