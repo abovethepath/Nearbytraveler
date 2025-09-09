@@ -508,24 +508,9 @@ export default function SimpleChatroomPage() {
                     const senderName = message.username || 'Unknown User';
                     const senderAvatar = message.profile_image;
                     
-                    // Enhanced timestamp parsing - handle multiple formats
+                    // Fixed timestamp parsing - use created_at field
                     let displayTime = 'Just now';
-                    if (message.timestamp) {
-                      try {
-                        const date = new Date(message.timestamp);
-                        if (!isNaN(date.getTime())) {
-                          displayTime = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                        }
-                      } catch (e) {
-                        // If timestamp parsing fails, try different formats
-                        if (message.created_at) {
-                          const date = new Date(message.created_at);
-                          if (!isNaN(date.getTime())) {
-                            displayTime = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                          }
-                        }
-                      }
-                    } else if (message.created_at) {
+                    if (message.created_at) {
                       try {
                         const date = new Date(message.created_at);
                         if (!isNaN(date.getTime())) {
