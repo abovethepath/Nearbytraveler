@@ -86,7 +86,7 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
   const pastPlans = uniquePlans.filter(plan => isPastTravel(plan));
 
   const handleCityMatch = (destinationCity: string) => {
-    setLocation(`/city-match/${encodeURIComponent(destinationCity)}`);
+    setLocation('/match-in-city');
   };
 
   return (
@@ -315,7 +315,7 @@ export default function TravelPlansWidget({ userId }: TravelPlansWidgetProps) {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setLocation("/city-match")}
+            onClick={() => setLocation("/match-in-city")}
             className="bg-gradient-to-r from-green-500 to-teal-500 text-white hover:from-green-600 hover:to-teal-600 border-0 flex-1"
           >
             <Sparkles className="w-4 h-4 mr-1" />
