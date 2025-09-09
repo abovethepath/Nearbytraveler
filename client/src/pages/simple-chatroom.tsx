@@ -439,7 +439,10 @@ export default function SimpleChatroomPage() {
                   {members.slice(0, 8).map((member) => (
                     <button
                       key={member.id}
-                      onClick={() => navigate(`/profile/${member.id}`)}
+                      onClick={() => {
+                        console.log('Navigating to profile:', member.id, 'for user:', member.username);
+                        navigate(`/profile/${member.id}`);
+                      }}
                       className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700 rounded-full px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                     >
                       <div className="w-6 h-6 rounded-full overflow-hidden bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
@@ -448,13 +451,9 @@ export default function SimpleChatroomPage() {
                             src={member.profileImage} 
                             alt={member.username}
                             className="w-full h-full object-cover"
-                            onError={(e) => {
-                              console.log('Avatar image failed to load for:', member.username);
-                              e.currentTarget.style.display = 'none';
-                            }}
+                            loading="lazy"
                           />
-                        ) : null}
-                        {!member.profileImage && (
+                        ) : (
                           <span className="text-xs text-white font-bold">
                             {member.username.slice(0, 1).toUpperCase()}
                           </span>
@@ -667,7 +666,10 @@ export default function SimpleChatroomPage() {
                 {members.map((member) => (
                   <button
                     key={member.id}
-                    onClick={() => navigate(`/profile/${member.id}`)}
+                    onClick={() => {
+                      console.log('Navigating to profile:', member.id, 'for user:', member.username);
+                      navigate(`/profile/${member.id}`);
+                    }}
                     className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-600/50 transition-colors text-left w-full"
                   >
                     <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center border-2 border-white dark:border-gray-600 shadow-sm">
@@ -676,13 +678,9 @@ export default function SimpleChatroomPage() {
                           src={member.profileImage} 
                           alt={member.username}
                           className="w-full h-full object-cover"
-                          onError={(e) => {
-                            console.log('Avatar image failed to load for:', member.username);
-                            e.currentTarget.style.display = 'none';
-                          }}
+                          loading="lazy"
                         />
-                      ) : null}
-                      {!member.profileImage && (
+                      ) : (
                         <span className="text-white font-bold">
                           {member.username.slice(0, 1).toUpperCase()}
                         </span>
