@@ -696,9 +696,9 @@ export default function FixedChatroom() {
                         // Better avatar logic - always use member profile images
                         let profileImage = senderMember?.profile_image || message.profile_image || message.senderProfileImage;
                         
-                        // If it's own message and no member found, try current user's profile
-                        if (isOwnMessage && !profileImage) {
-                          profileImage = currentUser?.profileImage;
+                        // If it's own message, prioritize current user's profile image
+                        if (isOwnMessage) {
+                          profileImage = currentUser?.profileImage || profileImage;
                         }
                         
                         return (

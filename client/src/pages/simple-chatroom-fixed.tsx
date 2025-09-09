@@ -402,13 +402,21 @@ export default function SimpleChatroomFixed() {
                   {messages.map((message) => (
                     <div key={message.id} className="flex gap-3">
                       <Avatar className="w-8 h-8">
-                        {message.senderProfileImage ? (
-                          <AvatarImage src={message.senderProfileImage} alt={message.senderUsername} />
-                        ) : (
-                          <AvatarFallback className="text-xs bg-blue-500 text-white">
-                            {message.senderUsername.slice(0, 2).toUpperCase()}
-                          </AvatarFallback>
-                        )}
+                        {(() => {
+                          // For own messages, prioritize current user's profile image
+                          const isOwnMessage = message.senderId === currentUserId;
+                          const profileImage = isOwnMessage 
+                            ? (currentUser?.profileImage || message.senderProfileImage)
+                            : message.senderProfileImage;
+                          
+                          return profileImage ? (
+                            <AvatarImage src={profileImage} alt={message.senderUsername} />
+                          ) : (
+                            <AvatarFallback className="text-xs bg-blue-500 text-white">
+                              {message.senderUsername.slice(0, 2).toUpperCase()}
+                            </AvatarFallback>
+                          );
+                        })()}
                       </Avatar>
                       <div className="flex-1">
                         <div className="flex items-baseline gap-2">
