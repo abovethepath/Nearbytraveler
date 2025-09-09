@@ -48,7 +48,6 @@ import EventsWidget from "@/components/EventsWidget";
 import EventsGrid from "@/components/EventsGrid";
 import CurrentLocationWeatherWidget from "@/components/CurrentLocationWeatherWidget";
 import EnhancedDiscovery from "@/components/EnhancedDiscovery";
-import TravelPlansWidget from "@/components/TravelPlansWidget";
 
 import BusinessesGrid from "@/components/BusinessesGrid";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
@@ -1823,14 +1822,9 @@ export default function Home() {
           />
         )}
 
-        {/* Main Content - Three-column layout with travel plans widget on left */}
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-2 sm:gap-4 lg:gap-6 px-2 sm:px-4 lg:px-8 mt-2 sm:mt-0">
+        {/* Main Content - Standard three-column layout */}
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-6 px-2 sm:px-4 lg:px-8 mt-2 sm:mt-0">
           
-          {/* Left Sidebar - Travel Plans Widget (hidden on mobile) */}
-          <div className="hidden lg:block lg:col-span-1 space-y-4">
-            <TravelPlansWidget userId={currentUserId} />
-          </div>
-
           {/* Main Content - Center column */}
           <div className="col-span-1 lg:col-span-2 space-y-3 sm:space-y-4 md:space-y-8 min-w-0">
             <div className="flex items-center justify-between" data-testid="discover-people-section">
