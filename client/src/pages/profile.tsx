@@ -21,7 +21,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight, AlertCircle, Phone, Plane, User as UserIcon } from "lucide-react";
+import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight, AlertCircle, Phone, Plane, User as UserIcon, UserX } from "lucide-react";
 
 type TabKey = 'contacts' | 'photos' | 'references' | 'travel' | 'countries';
 import { compressPhotoAdaptive } from "@/utils/photoCompression";
@@ -3401,6 +3401,43 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     setLocation(`/messages?userId=${user?.id}`);
   };
 
+  const handleBlockUser = async () => {
+    if (!currentUser?.id || !user?.id) {
+      toast({
+        title: "Error",
+        description: "Please log in to block this user",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (confirm(`Are you sure you want to block @${user.username}? They will no longer be able to message or connect with you.`)) {
+      try {
+        const response = await apiRequest('POST', '/api/users/block', {
+          blockedUserId: user.id
+        });
+
+        if (response.ok) {
+          toast({
+            title: "User Blocked",
+            description: `@${user.username} has been blocked successfully.`,
+          });
+          // Optionally redirect or refresh data
+          queryClient.invalidateQueries({ queryKey: [`/api/connections/${currentUser.id}/status`] });
+        } else {
+          throw new Error('Failed to block user');
+        }
+      } catch (error) {
+        console.error('Error blocking user:', error);
+        toast({
+          title: "Error",
+          description: "Failed to block user. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
   const handleWriteReference = () => {
     if (!currentUser?.id) {
       toast({
@@ -3778,6 +3815,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   data-testid="button-connect"
                 >
                   {getConnectButtonState().text}
+                </Button>
+                <Button 
+                  className="bg-red-500 hover:bg-red-600 text-white border-0 px-6 py-2 rounded-lg shadow-md transition-all"
+                  onClick={handleBlockUser}
+                  data-testid="button-block-user"
+                >
+                  <UserX className="w-4 h-4 mr-2" />
+                  Block
                 </Button>
               </div>
             ) : (

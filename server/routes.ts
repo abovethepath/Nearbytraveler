@@ -54,6 +54,7 @@ import {
   userReferences,
   userEventInterests,
   vouches,
+  blockedUsers,
   insertWaitlistLeadSchema
 } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
@@ -5671,6 +5672,120 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error) {
       console.error("❌ Error creating private reference:", error);
       res.status(500).json({ error: "Failed to send private message" });
+    }
+  });
+
+  // POST /api/users/block - Block a user
+  app.post("/api/users/block", async (req, res) => {
+    try {
+      const { blockedUserId } = req.body;
+      const blockerId = req.session?.user?.id; // Get from session or auth
+
+      if (!blockerId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      if (!blockedUserId) {
+        return res.status(400).json({ error: "Blocked user ID is required" });
+      }
+
+      if (blockerId === blockedUserId) {
+        return res.status(400).json({ error: "Cannot block yourself" });
+      }
+
+      // Check if user is already blocked
+      const existingBlock = await db.select()
+        .from(blockedUsers)
+        .where(and(
+          eq(blockedUsers.blockerId, blockerId),
+          eq(blockedUsers.blockedId, blockedUserId)
+        ))
+        .limit(1);
+
+      if (existingBlock.length > 0) {
+        return res.status(409).json({ error: "User is already blocked" });
+      }
+
+      // Block the user
+      await db.insert(blockedUsers).values({
+        blockerId,
+        blockedId: blockedUserId,
+        blockedAt: new Date()
+      });
+
+      console.log(`🚫 BLOCK: User ${blockerId} blocked user ${blockedUserId}`);
+
+      res.json({ 
+        success: true, 
+        message: "User blocked successfully" 
+      });
+
+    } catch (error) {
+      console.error("❌ Error blocking user:", error);
+      res.status(500).json({ error: "Failed to block user" });
+    }
+  });
+
+  // GET /api/users/blocked - Get list of blocked users for current user
+  app.get("/api/users/blocked", async (req, res) => {
+    try {
+      const blockerId = req.session?.user?.id;
+
+      if (!blockerId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const blocks = await db.select({
+        id: blockedUsers.id,
+        blockedId: blockedUsers.blockedId,
+        blockedAt: blockedUsers.blockedAt,
+        username: users.username,
+        name: users.name,
+        profileImage: users.profileImage
+      })
+      .from(blockedUsers)
+      .leftJoin(users, eq(users.id, blockedUsers.blockedId))
+      .where(eq(blockedUsers.blockerId, blockerId))
+      .orderBy(desc(blockedUsers.blockedAt));
+
+      res.json(blocks);
+
+    } catch (error) {
+      console.error("❌ Error fetching blocked users:", error);
+      res.status(500).json({ error: "Failed to fetch blocked users" });
+    }
+  });
+
+  // DELETE /api/users/block/:blockedUserId - Unblock a user
+  app.delete("/api/users/block/:blockedUserId", async (req, res) => {
+    try {
+      const blockedUserId = parseInt(req.params.blockedUserId);
+      const blockerId = req.session?.user?.id;
+
+      if (!blockerId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      if (!blockedUserId || isNaN(blockedUserId)) {
+        return res.status(400).json({ error: "Valid blocked user ID is required" });
+      }
+
+      const result = await db.delete(blockedUsers)
+        .where(and(
+          eq(blockedUsers.blockerId, blockerId),
+          eq(blockedUsers.blockedId, blockedUserId)
+        ));
+
+      console.log(`✅ UNBLOCK: User ${blockerId} unblocked user ${blockedUserId}`);
+
+      res.json({ 
+        success: true, 
+        message: "User unblocked successfully" 
+      });
+
+    } catch (error) {
+      console.error("❌ Error unblocking user:", error);
+      res.status(500).json({ error: "Failed to unblock user" });
     }
   });
 

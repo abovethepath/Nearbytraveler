@@ -146,15 +146,15 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
       setShowPrivateReference(false);
       setPrivateReferenceData({ category: 'feedback', content: '' });
       toast({
-        title: 'Message Sent',
-        description: 'Your private message has been sent to our support team.',
+        title: 'Anonymous Reference Sent',
+        description: 'Your anonymous reference has been sent to our support team.',
       });
     },
     onError: (error: any) => {
       console.error('Private reference submission error:', error);
       toast({
         title: 'Error',
-        description: error?.message || 'Failed to send private message. Please try again.',
+        description: error?.message || 'Failed to send anonymous reference. Please try again.',
         variant: 'destructive',
       });
     }
@@ -210,7 +210,7 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
     if (!user?.id) {
       toast({
         title: 'Authentication Required',
-        description: 'Please log in to send a private message.',
+        description: 'Please log in to send an anonymous reference.',
         variant: 'destructive'
       });
       return;
@@ -265,7 +265,7 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
                   className="border-orange-300 hover:bg-orange-50"
                 >
                   <AlertTriangle className="w-4 h-4 mr-1" />
-                  {showPrivateReference ? 'Cancel' : 'Private Message'}
+                  {showPrivateReference ? 'Cancel' : 'Anonymous Reference'}
                 </Button>
               </div>
             )}
@@ -369,11 +369,10 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
             <div className="space-y-4 p-6 border rounded-lg bg-white dark:bg-gray-900 shadow-lg mb-6 border-orange-200 dark:border-orange-800">
               <h4 className="font-semibold text-lg text-orange-700 dark:text-orange-300 flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5" />
-                Private Message to Support Team
+                Anonymous Reference to Support Team
               </h4>
               <p className="text-sm text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 p-3 rounded-md">
-                This message will be sent privately to our support team. Your identity will remain anonymous to protect your privacy. 
-                Use this for reporting issues, providing feedback, or sharing concerns about this user.
+                Only support sees this. If you have an issue with someone, use this button. Your message will be sent anonymously to our support team for review.
               </p>
 
               <div className="space-y-2">
@@ -430,7 +429,7 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
                   className="w-full sm:w-auto min-h-[48px] bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
                   type="button"
                 >
-                  {submitPrivateReference.isPending ? 'Sending...' : 'Send Private Message'}
+                  {submitPrivateReference.isPending ? 'Sending...' : 'Send Anonymous Reference'}
                 </Button>
               </div>
             </div>
