@@ -690,6 +690,9 @@ export default function FixedChatroom() {
                         const senderMember = members.find(m => m.user_id === messageSenderId || m.id === messageSenderId);
                         const displayName = isOwnMessage ? 'You' : (senderMember?.username || message.username || message.senderUsername || 'Unknown User');
                         
+                        // For avatar, always use actual username (not "You")
+                        const avatarName = isOwnMessage ? (currentUser?.username || 'User') : (senderMember?.username || message.username || message.senderUsername || 'Unknown User');
+                        
                         // Better avatar logic - always use member profile images
                         let profileImage = senderMember?.profile_image || message.profile_image || message.senderProfileImage;
                         
@@ -705,7 +708,7 @@ export default function FixedChatroom() {
                             <Avatar className="w-8 h-8 flex-shrink-0">
                               <AvatarImage src={profileImage} />
                               <AvatarFallback className="bg-gradient-to-br from-purple-400 to-blue-500 text-white text-xs font-bold">
-                                {displayName.slice(0, 2).toUpperCase()}
+                                {avatarName.slice(0, 2).toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
                             <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-lg shadow-sm ${
