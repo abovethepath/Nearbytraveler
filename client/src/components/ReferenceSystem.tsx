@@ -7,7 +7,7 @@ import { Star, ThumbsUp, Shield, User, MessageCircle, AlertTriangle } from 'luci
 import { useAuth } from '@/App';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
-import { apiRequest } from '@/lib/api';
+import { apiRequest } from '@/lib/queryClient';
 
 interface Reference {
   id: number;
