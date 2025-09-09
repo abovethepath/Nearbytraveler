@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { MessageCircle, Users, MapPin, UserPlus, Loader2, Plus, ArrowLeft } from "lucide-react";
 import { useLocation } from "wouter";
+import { SmartLocationInput } from "@/components/SmartLocationInput";
 
 interface CityChatroom {
   id: number;
@@ -32,7 +33,10 @@ export default function CityChatroomsPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [newChatroom, setNewChatroom] = useState({
     name: '',
-    description: ''
+    description: '',
+    city: '',
+    state: '',
+    country: ''
   });
   
   // Get current user
@@ -136,15 +140,15 @@ export default function CityChatroomsPage() {
 
   // Create chatroom mutation
   const createChatroomMutation = useMutation({
-    mutationFn: async (chatroomData: { name: string; description: string }) => {
+    mutationFn: async (chatroomData: { name: string; description: string; city: string; state: string; country: string }) => {
       if (!currentUser) throw new Error("User not found");
       
       const response = await apiRequest('POST', '/api/chatrooms', {
         ...chatroomData,
         createdById: currentUser.id,
-        city: currentUser.hometownCity || currentUser.location?.split(',')[0] || 'Unknown',
-        state: currentUser.hometownState || currentUser.location?.split(',')[1]?.trim() || 'Unknown',
-        country: currentUser.hometownCountry || 'United States'
+        city: chatroomData.city || 'Unknown',
+        state: chatroomData.state || 'Unknown', 
+        country: chatroomData.country || 'United States'
       });
       
       if (!response.ok) {
@@ -160,7 +164,7 @@ export default function CityChatroomsPage() {
         description: `Successfully created "${data.name}". You are now the organizer.`,
       });
       setIsCreateDialogOpen(false);
-      setNewChatroom({ name: '', description: '' });
+      setNewChatroom({ name: '', description: '', city: '', state: '', country: '' });
       queryClient.invalidateQueries({ queryKey: ['/api/chatrooms/my-locations'] });
     },
     onError: (error: any) => {
@@ -220,7 +224,7 @@ export default function CityChatroomsPage() {
                 Create New Chatroom
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg backdrop-blur-sm">
+            <DialogContent className="sm:max-w-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg backdrop-blur-sm">
               <DialogHeader>
                 <DialogTitle>Create New Chatroom</DialogTitle>
               </DialogHeader>
@@ -243,6 +247,31 @@ export default function CityChatroomsPage() {
                     onChange={(e) => setNewChatroom(prev => ({ ...prev, description: e.target.value }))}
                   />
                 </div>
+                
+                {/* Location Selection */}
+                <div>
+                  <SmartLocationInput
+                    label="Chatroom Location"
+                    city={newChatroom.city}
+                    state={newChatroom.state}
+                    country={newChatroom.country}
+                    onLocationChange={(loc) => {
+                      setNewChatroom(prev => ({
+                        ...prev,
+                        city: loc.city,
+                        state: loc.state,
+                        country: loc.country
+                      }));
+                    }}
+                    required
+                    placeholder={{
+                      country: "Select country",
+                      city: "Select city", 
+                      state: "Select state/region"
+                    }}
+                    data-testid="input-chatroom-location"
+                  />
+                </div>
                 <div className="flex gap-2 pt-4">
                   <Button
                     onClick={() => setIsCreateDialogOpen(false)}
@@ -253,7 +282,7 @@ export default function CityChatroomsPage() {
                   </Button>
                   <Button
                     onClick={() => createChatroomMutation.mutate(newChatroom)}
-                    disabled={!newChatroom.name.trim() || createChatroomMutation.isPending}
+                    disabled={!newChatroom.name.trim() || !newChatroom.city.trim() || !newChatroom.country.trim() || createChatroomMutation.isPending}
                     className="flex-1 bg-blue-600 hover:bg-blue-700"
                   >
                     {createChatroomMutation.isPending ? (
