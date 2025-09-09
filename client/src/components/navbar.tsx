@@ -83,7 +83,6 @@ function Navbar() {
     const getUserData = () => {
       // Try context first
       if (user && user.username) {
-        console.log('✅ Navbar: Got user from context:', user.username);
         setDirectUser(user);
         return;
       }
@@ -91,7 +90,6 @@ function Navbar() {
       // Try authStorage system (most reliable)
       const storedUser = authStorage.getUser();
       if (storedUser && storedUser.username) {
-        console.log('✅ Navbar: Got user from authStorage:', storedUser.username);
         setDirectUser(storedUser);
         // Also update context if it's empty
         if (!user && setUser) {
@@ -101,25 +99,13 @@ function Navbar() {
       }
 
       // No user data found
-      console.log('❌ Navbar: No user data found');
       setDirectUser(null);
     };
 
     getUserData();
   }, [user, location]); // Add location to trigger refresh on page changes
 
-  // Debug logging
-  console.log('Navbar user context:', user?.username || 'null');
-  console.log('Navbar directUser:', directUser?.username || 'null');
-  console.log('Navbar directUser profileImage:', directUser?.profileImage ? 'HAS IMAGE' : 'NO IMAGE');
-  
-  // Additional debug for avatar component
-  console.log('🎯 Avatar Debug: passing to SimpleAvatar:', {
-    hasUser: !!directUser,
-    username: directUser?.username,
-    hasProfileImage: !!directUser?.profileImage,
-    profileImageStart: directUser?.profileImage?.substring(0, 20)
-  });
+  // Removed debug logging to prevent performance issues
 
   // Force refresh user data and clear cached avatar
   useEffect(() => {

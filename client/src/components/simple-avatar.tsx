@@ -15,14 +15,8 @@ interface SimpleAvatarProps {
 }
 
 export function SimpleAvatar({ user, size = 'md', className = '', clickable = true, onClick }: SimpleAvatarProps) {
-  // Initialize with profile image immediately to prevent flicker
-  const [currentImage, setCurrentImage] = useState<string | null>(() => {
-    if (!user) return null;
-    if (user.profileImage && user.profileImage.trim() !== '' && user.profileImage.length > 10) {
-      return user.profileImage;
-    }
-    return null;
-  });
+  // Simple, stable image state management
+  const [currentImage, setCurrentImage] = useState<string | null>(null);
   const [forceRefresh, setForceRefresh] = useState(0);
 
   // Size mappings
@@ -35,9 +29,7 @@ export function SimpleAvatar({ user, size = 'md', className = '', clickable = tr
 
   // Generate colorful avatar based on username and user preferences
   const generateAvatar = (username: string | null | undefined, userColor?: string | null) => {
-    console.log('🎯 generateAvatar called with:', username, 'userColor:', userColor);
     if (!username || typeof username !== 'string' || username.length === 0) {
-      console.log('🎯 generateAvatar: Using fallback for invalid username');
       return `https://ui-avatars.com/api/?name=U&background=06b6d4&color=fff&size=150`;
     }
     
@@ -47,7 +39,6 @@ export function SimpleAvatar({ user, size = 'md', className = '', clickable = tr
     // Use user's custom color if available
     if (userColor && userColor.startsWith('#')) {
       backgroundColor = userColor.slice(1); // Remove # prefix for ui-avatars API
-      console.log('🎯 Using user custom color:', backgroundColor);
     } else {
       // Enhanced gradient color system based on username characteristics
       const gradientColors = [
@@ -70,7 +61,6 @@ export function SimpleAvatar({ user, size = 'md', className = '', clickable = tr
       const colorSeed = charCodes.reduce((acc, code) => acc + code, 0);
       const colorIndex = colorSeed % gradientColors.length;
       backgroundColor = gradientColors[colorIndex];
-      console.log('🎯 Generated color from username:', backgroundColor, 'seed:', colorSeed);
     }
     
     return `https://ui-avatars.com/api/?name=${firstLetter}&background=${backgroundColor}&color=fff&size=150`;
