@@ -935,6 +935,7 @@ export class DatabaseStorage implements IStorage {
 
       // Field name mapping from camelCase to snake_case for database columns
       const fieldNameMap: Record<string, string> = {
+        userType: 'user_type',  // CRITICAL FIX: Add missing userType mapping
         hometownCity: 'hometown_city',
         hometownState: 'hometown_state', 
         hometownCountry: 'hometown_country',
