@@ -1,0 +1,348 @@
+// FRONTEND FIX - Update the registrationData in SignupTraveling.tsx
+
+const registrationData = {
+  // SIMPLE: Just set as traveler 
+  userType: "traveler",
+  isCurrentlyTraveling: true,
+
+  // account data
+  email: (finalFormData.email || "").toLowerCase().trim(),
+  password: (finalFormData.password || "").trim(),
+  username: (finalFormData.username || "").toLowerCase().trim(),
+  name: (finalFormData.name || "").trim(),
+  phoneNumber: (finalFormData.phoneNumber || "").trim(),
+
+  // profile
+  dateOfBirth: formData.dateOfBirth,
+  bio: "", // no bio in simplified signup
+  
+  // hometown/location (preserves LA Metro mapping)
+  hometownCity: formData.hometownCity.trim(),
+  hometownState: formData.hometownState?.trim() || "",
+  hometownCountry: formData.hometownCountry.trim(),
+  hometown,
+  location,
+
+  // ✅ CRITICAL FIX: Map travel destination fields correctly
+  currentTripDestinationCity: formData.currentTripDestinationCity?.trim() || "",
+  currentTripDestinationState: formData.currentTripDestinationState?.trim() || "",
+  currentTripDestinationCountry: formData.currentTripDestinationCountry?.trim() || "",
+  currentTripReturnDate: formData.currentTripReturnDate,
+  
+  // ✅ CRITICAL: Add the travelDestination field that backend expects
+  travelDestination: safeJoin([
+    formData.currentTripDestinationCity?.trim(),
+    formData.currentTripDestinationState?.trim(),
+    formData.currentTripDestinationCountry?.trim()
+  ]),
+  
+  // Map to additional backend expected field names
+  travelEndDate: formData.currentTripReturnDate,
+  currentCity: formData.currentTripDestinationCity?.trim() || "",
+  currentState: formData.currentTripDestinationState?.trim() || "", 
+  currentCountry: formData.currentTripDestinationCountry?.trim() || "",
+  travelStartDate: new Date().toISOString().split('T')[0], // Today for current travelers
+
+  // top choices (require at least 3)
+  interests: formData.interests,
+  
+  // languages
+  languagesSpoken
+};
+
+// ✅ CRITICAL FIX: Update the background processing to call bootstrap
+setTimeout(async () => {
+  try {
+    console.log('🚀 Starting traveler registration with data:', registrationData);
+    
+    const response = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(registrationData)
+    });
+
+    const data = await response.json();
+
+    if (response.ok && data.user) {
+      console.log('✅ Registration successful, starting comprehensive onboarding');
+      
+      // Store user in auth context
+      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('travelconnect_user', JSON.stringify(data.user));
+      authStorage.setUser(data.user);
+      setUser(data.user);
+      login(data.user);
+      
+      // ✅ CRITICAL: Call bootstrap endpoint for comprehensive onboarding
+      try {
+        console.log('🚀 Calling bootstrap for comprehensive traveler onboarding');
+        const bootstrapResponse = await fetch('/api/bootstrap/after-register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: data.user.id })
+        });
+        
+        const bootstrapData = await bootstrapResponse.json();
+        
+        if (bootstrapResponse.ok) {
+          console.log('✅ Comprehensive traveler onboarding completed successfully');
+        } else {
+          console.error('❌ Bootstrap failed:', bootstrapData.message);
+        }
+      } catch (bootstrapError) {
+        console.error('❌ Bootstrap error:', bootstrapError);
+      }
+      
+      // Original profile completion call (if still needed)
+      try {
+        const profileResponse = await fetch('/api/auth/complete-profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: data.user.id })
+        });
+        
+        if (profileResponse.ok) {
+          console.log('✅ Profile completion successful');
+        }
+      } catch (profileError) {
+        console.log('⚠️ Profile completion error:', profileError);
+      }
+      
+      // Clear stored data
+      sessionStorage.removeItem('accountData');
+      sessionStorage.removeItem('registrationData');
+      
+    } else {
+      console.error('❌ Registration failed:', data.message);
+    }
+  } catch (error) {
+    console.error('Background registration error:', error);
+  }
+}, 100);
+
+// ======================================================
+// BACKEND FIX - Update the bootstrap endpoint in routes.ts
+// ======================================================
+
+app.post("/api/bootstrap/after-register", async (req, res) => {
+  try {
+    const { userId } = req.body;
+    if (!userId) return res.status(400).json({ message: "User ID required" });
+    
+    console.log(`🚀 BOOTSTRAP: Running post-signup setup for user ${userId}`);
+    
+    // ✅ CRITICAL: Actually fetch user data and execute onboarding
+    const user = await storage.getUser(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    
+    console.log(`👤 BOOTSTRAP: Found user ${user.username} (${user.id})`);
+    
+    // ✅ CRITICAL: Execute comprehensive traveler onboarding
+    if (user.userType === 'traveler' && user.isCurrentlyTraveling) {
+      console.log("🚀 COMPREHENSIVE TRAVELER ONBOARDING - Executing all required steps");
+      
+      await executeComprehensiveTravelerOnboarding(user);
+      
+      console.log("✅ COMPREHENSIVE TRAVELER ONBOARDING - Completed successfully");
+    } else {
+      console.log(`ℹ️ User ${user.username} is not a current traveler, skipping comprehensive onboarding`);
+      console.log(`   userType: ${user.userType}, isCurrentlyTraveling: ${user.isCurrentlyTraveling}`);
+    }
+    
+    res.json({ success: true, message: "Bootstrap completed successfully" });
+  } catch (error) {
+    console.error("Bootstrap error:", error);
+    res.status(500).json({ message: "Bootstrap failed", error: error.message });
+  }
+});
+
+// ✅ CRITICAL: Implement the comprehensive traveler onboarding function
+async function executeComprehensiveTravelerOnboarding(user) {
+  try {
+    console.log(`🚀 Starting comprehensive traveler onboarding for ${user.username}`);
+    
+    // ✅ Step 1: Create chatrooms for hometown
+    if (user.hometownCity && user.hometownCountry) {
+      console.log(`📍 Creating hometown chatrooms for: ${user.hometownCity}, ${user.hometownCountry}`);
+      try {
+        await storage.ensureMeetLocalsChatrooms(user.hometownCity, user.hometownState, user.hometownCountry);
+        await storage.ensureSecondaryChatrooms(user.hometownCity, user.hometownState, user.hometownCountry);
+        console.log(`✅ Created hometown chatrooms`);
+      } catch (error) {
+        console.error('❌ Error creating hometown chatrooms:', error);
+      }
+    }
+
+    // ✅ Step 2: Create chatrooms for travel destination
+    if (user.travelDestination) {
+      console.log(`📍 Creating destination chatrooms for: ${user.travelDestination}`);
+      try {
+        const destinationParts = user.travelDestination.split(', ');
+        const travelCity = destinationParts[0];
+        const travelState = destinationParts[1];
+        const travelCountry = destinationParts[2] || destinationParts[1];
+        
+        await storage.ensureMeetLocalsChatrooms(travelCity, travelState, travelCountry);
+        await storage.ensureSecondaryChatrooms(travelCity, travelState, travelCountry);
+        console.log(`✅ Created destination chatrooms`);
+      } catch (error) {
+        console.error('❌ Error creating destination chatrooms:', error);
+      }
+    }
+
+    // ✅ Step 3: Create city pages for both cities
+    console.log(`📄 Creating city match pages`);
+    try {
+      // Hometown city page
+      if (user.hometownCity) {
+        const hometownPage = await storage.ensureCityPageExists(
+          user.hometownCity, 
+          user.hometownState, 
+          user.hometownCountry, 
+          user.id
+        );
+        console.log(`✅ Hometown city page: ${hometownPage ? 'created/exists' : 'FAILED'}`);
+      }
+      
+      // Destination city page
+      if (user.travelDestination) {
+        const destinationParts = user.travelDestination.split(', ');
+        const destinationPage = await storage.ensureCityPageExists(
+          destinationParts[0], 
+          destinationParts[1], 
+          destinationParts[2] || destinationParts[1], 
+          user.id
+        );
+        console.log(`✅ Destination city page: ${destinationPage ? 'created/exists' : 'FAILED'}`);
+      }
+    } catch (error) {
+      console.error('❌ Error creating city pages:', error);
+    }
+
+    // ✅ Step 4: Send welcome message from nearbytrav account (USER ID 2)
+    console.log(`💬 Sending welcome message`);
+    try {
+      const nearbytravAccount = await storage.getUser(2);
+      if (nearbytravAccount) {
+        await storage.sendSystemMessage(2, user.id, 
+          `Welcome to Nearby Traveler, ${user.name || user.username}! ✈️
+
+We're excited to have you join our community of travelers and locals. Here's what you can do now:
+
+🌍 Connect with locals in ${user.travelDestination}
+🏠 Stay connected with your hometown community in ${user.hometownCity}
+💬 Join city chatrooms to meet people
+📅 Discover local events and activities
+🤝 Build meaningful connections wherever you go
+
+Your journey starts now - explore, connect, and make the most of your travels!
+
+Safe travels,
+The Nearby Traveler Team`);
+        console.log(`✅ Welcome message sent`);
+      } else {
+        console.error("❌ nearbytrav account (ID 2) not found");
+      }
+    } catch (error) {
+      console.error('❌ Error sending welcome message:', error);
+    }
+
+    // ✅ Step 5: Register user in both cities with proper status
+    console.log(`👤 Registering user in cities`);
+    try {
+      // Register as LOCAL in hometown
+      if (user.hometownCity) {
+        await storage.registerUserInCity(
+          user.id, 
+          user.hometownCity, 
+          user.hometownState, 
+          user.hometownCountry, 
+          'local'
+        );
+        console.log(`✅ Registered as local in hometown`);
+      }
+      
+      // Register as TRAVELER in destination  
+      if (user.travelDestination) {
+        const destinationParts = user.travelDestination.split(', ');
+        await storage.registerUserInCity(
+          user.id, 
+          destinationParts[0], 
+          destinationParts[1], 
+          destinationParts[2] || destinationParts[1], 
+          'traveler'
+        );
+        console.log(`✅ Registered as traveler in destination`);
+      }
+    } catch (error) {
+      console.error('❌ Error registering user in cities:', error);
+    }
+
+    // ✅ Step 6: Create connection to USER2 (nearbytrav account)
+    console.log(`🤝 Creating connection to nearbytrav account`);
+    try {
+      await storage.createConnection(user.id, 2); // Connect to nearbytrav account
+      console.log(`✅ Connection created to nearbytrav account`);
+    } catch (error) {
+      console.error('❌ Error creating connection to nearbytrav:', error);
+    }
+
+    // ✅ Step 7: Create travel plan for current trip
+    console.log(`✈️ Creating travel plan for current trip`);
+    try {
+      if (user.travelDestination && user.travelEndDate) {
+        const destinationParts = user.travelDestination.split(', ');
+        const travelPlanData = {
+          userId: user.id,
+          destinationCity: destinationParts[0],
+          destinationState: destinationParts[1] || '',
+          destinationCountry: destinationParts[2] || destinationParts[1],
+          startDate: new Date().toISOString().split('T')[0], // Today
+          endDate: user.travelEndDate,
+          title: `Trip to ${destinationParts[0]}`,
+          description: `Current trip to ${user.travelDestination}`,
+          status: 'active'
+        };
+        
+        // You'll need to implement this method or call the travel plan API
+        await storage.createTravelPlan(travelPlanData);
+        console.log(`✅ Travel plan created for current trip`);
+      }
+    } catch (error) {
+      console.error('❌ Error creating travel plan:', error);
+    }
+
+    console.log(`🎉 Comprehensive traveler onboarding completed for ${user.username}`);
+    
+  } catch (error) {
+    console.error("❌ Error in comprehensive traveler onboarding:", error);
+    throw error;
+  }
+}
+
+// ======================================================
+// DEBUGGING ADDITIONS
+// ======================================================
+
+// Add this logging to your registration endpoint to verify data structure
+console.log('🔍 REGISTRATION DEBUG - Received data:', {
+  userType: registrationData.userType,
+  isCurrentlyTraveling: registrationData.isCurrentlyTraveling,
+  hometownCity: registrationData.hometownCity,
+  hometownCountry: registrationData.hometownCountry,
+  travelDestination: registrationData.travelDestination,
+  currentTripDestinationCity: registrationData.currentTripDestinationCity,
+  currentTripDestinationCountry: registrationData.currentTripDestinationCountry
+});
+
+// Add this to verify the user was created with correct data
+console.log('🔍 USER CREATED DEBUG:', {
+  id: newUser.id,
+  username: newUser.username,
+  userType: newUser.userType,
+  isCurrentlyTraveling: newUser.isCurrentlyTraveling,
+  hometownCity: newUser.hometownCity,
+  travelDestination: newUser.travelDestination
+});

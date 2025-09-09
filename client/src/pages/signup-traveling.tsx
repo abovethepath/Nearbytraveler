@@ -241,6 +241,13 @@ export default function SignupTraveling() {
         currentTripReturnDate: formData.currentTripReturnDate,
         travelEndDate: formData.currentTripReturnDate, // Map to backend field
         
+        // ✅ CRITICAL FIX: Add the travelDestination field that backend expects
+        travelDestination: safeJoin([
+          formData.currentTripDestinationCity?.trim(),
+          formData.currentTripDestinationState?.trim(),
+          formData.currentTripDestinationCountry?.trim()
+        ]),
+        
         // CRITICAL: Map to backend expected field names for travel plan creation
         currentCity: formData.currentTripDestinationCity?.trim() || "",
         currentState: formData.currentTripDestinationState?.trim() || "", 
@@ -308,6 +315,8 @@ export default function SignupTraveling() {
       // Start account creation in background
       setTimeout(async () => {
         try {
+          console.log('🚀 Starting traveler registration with data:', registrationData);
+          
           const response = await fetch('/api/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -317,7 +326,7 @@ export default function SignupTraveling() {
           const data = await response.json();
 
           if (response.ok && data.user) {
-            console.log('✅ Fast registration successful:', data.user.username);
+            console.log('✅ Registration successful, starting comprehensive onboarding');
             
             // CRITICAL: Store user data in ALL storage locations for maximum compatibility
             localStorage.setItem('user', JSON.stringify(data.user));
@@ -332,13 +341,27 @@ export default function SignupTraveling() {
             
             console.log('🔧 Setting user in all storage keys:', { id: data.user.id, username: data.user.username });
             
-            // Clear stored account and registration data
-            sessionStorage.removeItem('accountData');
-            sessionStorage.removeItem('registrationData');
+            // ✅ CRITICAL: Call bootstrap endpoint for comprehensive traveler onboarding
+            try {
+              console.log('🚀 Calling bootstrap for comprehensive traveler onboarding');
+              const bootstrapResponse = await fetch('/api/bootstrap/after-register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: data.user.id })
+              });
+              
+              const bootstrapData = await bootstrapResponse.json();
+              
+              if (bootstrapResponse.ok) {
+                console.log('✅ Comprehensive traveler onboarding completed successfully');
+              } else {
+                console.error('❌ Bootstrap failed:', bootstrapData.message);
+              }
+            } catch (bootstrapError) {
+              console.error('❌ Bootstrap error:', bootstrapError);
+            }
             
-            console.log('✅ Fast registration completed - starting profile completion');
-            
-            // Start profile completion in background
+            // Original profile completion call (if still needed)
             try {
               const profileResponse = await fetch('/api/auth/complete-profile', {
                 method: 'POST',
@@ -348,12 +371,15 @@ export default function SignupTraveling() {
               
               if (profileResponse.ok) {
                 console.log('✅ Profile completion successful');
-              } else {
-                console.log('⚠️ Profile completion had issues, but registration succeeded');
               }
             } catch (profileError) {
-              console.log('⚠️ Profile completion error, but registration succeeded:', profileError);
+              console.log('⚠️ Profile completion error:', profileError);
             }
+            
+            // Clear stored account and registration data
+            sessionStorage.removeItem('accountData');
+            sessionStorage.removeItem('registrationData');
+            
           } else {
             console.error('❌ Registration failed:', data.message);
           }
