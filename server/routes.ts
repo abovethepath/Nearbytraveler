@@ -3499,6 +3499,19 @@ The Nearby Traveler Team`);
 
       // REMOVED: Travel plan creation moved to fast registration section to prevent duplicates
 
+      // CRITICAL: Create hometown city page with activities during signup
+      if (user.hometownCity && user.hometownState && user.hometownCountry) {
+        setImmediate(async () => {
+          try {
+            console.log(`🏠 HOMETOWN SETUP: Creating city page for ${user.hometownCity}, ${user.hometownState}, ${user.hometownCountry}`);
+            await ensureCityHasActivities(user.hometownCity, user.hometownState, user.hometownCountry, user.id);
+            console.log(`✅ HOMETOWN SETUP: Successfully created city page for ${user.hometownCity}`);
+          } catch (error) {
+            console.error(`❌ HOMETOWN SETUP: Failed to create city page for ${user.hometownCity}:`, error);
+          }
+        });
+      }
+
       // Send welcome email to new user and location notifications to existing users
       setImmediate(async () => {
         try {
