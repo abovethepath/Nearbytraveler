@@ -6713,34 +6713,24 @@ Questions? Just reply to this message. Welcome aboard!
       // Get all active chatrooms
       const allChatrooms = await db.select().from(citychatrooms).where(eq(citychatrooms.isActive, true));
       
-      // FILTER: Show chatrooms for user's relevant locations (with metro area consolidation)
-      const legitimateChatrooms = allChatrooms.filter(chatroom => {
-        // Check if chatroom city is directly in user locations
-        if (userLocations.has(chatroom.city)) {
-          return true;
-        }
-        
-        // METRO CONSOLIDATION: Check if chatroom city consolidates to any of user's locations
-        const consolidatedChatroomCity = consolidateToMetropolitanArea(chatroom.city, chatroom.state || '', chatroom.country || '');
-        if (userLocations.has(consolidatedChatroomCity)) {
-          return true;
-        }
-        
-        // Also check the reverse - if any user location consolidates to the chatroom's city
-        for (const userLocation of userLocations) {
-          const consolidatedUserLocation = consolidateToMetropolitanArea(userLocation, '', '');
-          if (consolidatedUserLocation === chatroom.city) {
-            return true;
-          }
-        }
-        
-        return false;
+      // Get user memberships first to include user's joined chatrooms
+      const userMembershipResults = await db.execute(sql`
+        SELECT chatroom_id as "chatroomId"
+        FROM chatroom_members 
+        WHERE user_id = ${userId} AND is_active = true
+      `);
+      
+      const userMembershipSet = new Set();
+      userMembershipResults.rows.forEach((row: any) => {
+        userMembershipSet.add(row.chatroomId);
       });
       
+      // SHOW ALL CHATROOMS: No filtering by location - everyone sees all chatrooms
+      const legitimateChatrooms = allChatrooms;
+      
       if (process.env.NODE_ENV === 'development') {
-        console.log(`🏠 MY-LOCATIONS: Found ${allChatrooms.length} total chatrooms, filtered to ${legitimateChatrooms.length} relevant ones`);
-        console.log(`🔍 RELEVANT: Showing chatrooms for user locations: ${Array.from(userLocations).join(', ')}`);
-        console.log(`🔍 FILTERED OUT: ${allChatrooms.length - legitimateChatrooms.length} non-relevant chatrooms removed`);
+        console.log(`🏠 MY-LOCATIONS: Showing all ${allChatrooms.length} active chatrooms`);
+        console.log(`🔍 USER MEMBERSHIPS: User is member of ${userMembershipSet.size} chatrooms`);
       }
       
       // Get member counts using raw query for reliability - FIXED COUNT
@@ -6751,22 +6741,10 @@ Questions? Just reply to this message. Welcome aboard!
         GROUP BY chatroom_id
       `);
       
-      // Get user memberships using raw query
-      const userMembershipResults = await db.execute(sql`
-        SELECT chatroom_id as "chatroomId"
-        FROM chatroom_members 
-        WHERE user_id = ${userId} AND is_active = true
-      `);
-      
-      // Build lookup maps
+      // Build lookup map for member counts
       const memberCountMap = new Map();
       memberCountResults.rows.forEach((row: any) => {
         memberCountMap.set(row.chatroomId, row.memberCount);
-      });
-      
-      const userMembershipSet = new Set();
-      userMembershipResults.rows.forEach((row: any) => {
-        userMembershipSet.add(row.chatroomId);
       });
       
       // Add member count and membership status to each chatroom
@@ -6776,40 +6754,23 @@ Questions? Just reply to this message. Welcome aboard!
         userIsMember: userMembershipSet.has(chatroom.id)
       }));
 
-      // Smart sorting: Prioritize city-specific Welcome rooms over global ones
+      // Smart sorting: User's chatrooms first, then by activity/popularity
       const sortedChatrooms = chatroomsWithCounts.sort((a, b) => {
-        // 1. User is member comes first
+        // 1. User is member comes first (most important)
         if (a.userIsMember && !b.userIsMember) return -1;
         if (!a.userIsMember && b.userIsMember) return 1;
         
-        // 2. User's relevant locations come next
-        const aIsRelevant = userLocations.has(a.city);
-        const bIsRelevant = userLocations.has(b.city);
-        if (aIsRelevant && !bIsRelevant) return -1;
-        if (!aIsRelevant && bIsRelevant) return 1;
-        
-        // 3. City-specific Welcome rooms before global Welcome rooms
-        const aIsWelcome = a.name.toLowerCase().includes('welcome newcomers');
-        const bIsWelcome = b.name.toLowerCase().includes('welcome newcomers');
-        const aIsGlobal = a.city === 'Global';
-        const bIsGlobal = b.city === 'Global';
-        
-        if (aIsWelcome && bIsWelcome) {
-          // Both are welcome rooms - prioritize non-global over global
-          if (!aIsGlobal && bIsGlobal) return -1;
-          if (aIsGlobal && !bIsGlobal) return 1;
+        // 2. For non-member chatrooms, sort by member count (more popular first)
+        if (!a.userIsMember && !b.userIsMember) {
+          return (b.memberCount || 0) - (a.memberCount || 0);
         }
         
-        // 4. Non-global rooms before global rooms
-        if (!aIsGlobal && bIsGlobal) return -1;
-        if (aIsGlobal && !bIsGlobal) return 1;
+        // 3. For member chatrooms, also sort by member count
+        if (a.userIsMember && b.userIsMember) {
+          return (b.memberCount || 0) - (a.memberCount || 0);
+        }
         
-        // 5. Welcome rooms come first overall
-        if (aIsWelcome && !bIsWelcome) return -1;
-        if (!aIsWelcome && bIsWelcome) return 1;
-        
-        // 6. Finally sort by member count (higher first)
-        return (b.memberCount || 0) - (a.memberCount || 0);
+        return 0;
       });
       
       if (process.env.NODE_ENV === 'development') {
