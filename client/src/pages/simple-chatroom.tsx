@@ -36,7 +36,7 @@ interface ChatMember {
   username: string;
   name: string;
   role: string;
-  profile_image?: string;
+  profileImage?: string;
 }
 
 export default function SimpleChatroomPage() {
@@ -354,10 +354,10 @@ export default function SimpleChatroomPage() {
                 variant="ghost" 
                 size="sm"
                 onClick={() => navigate('/city-chatrooms')}
-                className="flex-shrink-0 hover:bg-white/20 dark:hover:bg-gray-600/20"
+                className="flex-shrink-0 hover:bg-white/20 dark:hover:bg-gray-600/20 p-2"
+                title="Back to Chatrooms"
               >
-                <ArrowLeft className="w-4 h-4" />
-                <span className="hidden sm:inline ml-2">Back to Chatrooms</span>
+                <ArrowLeft className="w-5 h-5" />
               </Button>
               
               <div className="flex-1 min-w-0">
@@ -366,9 +366,14 @@ export default function SimpleChatroomPage() {
                     {chatroom?.name?.charAt(0).toUpperCase() || "C"}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <CardTitle className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white leading-tight break-words">
+                    <div className="space-y-1">
+                    <CardTitle className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white leading-tight break-words">
                       {chatroom?.name || "Loading chatroom..."}
                     </CardTitle>
+                    <div className="text-sm text-gray-600 dark:text-gray-300">
+                      {members.length} member{members.length !== 1 ? 's' : ''} • {chatroom?.city || 'Unknown location'}
+                    </div>
+                  </div>
                   </div>
                 </div>
                 
@@ -439,8 +444,8 @@ export default function SimpleChatroomPage() {
                       className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700 rounded-full px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                     >
                       <Avatar className="w-6 h-6">
-                        {member.profile_image ? (
-                          <AvatarImage src={member.profile_image} alt={member.username} />
+                        {member.profileImage ? (
+                          <AvatarImage src={member.profileImage} alt={member.username} />
                         ) : (
                           <AvatarFallback className="text-xs bg-gradient-to-br from-blue-400 to-purple-500 text-white">
                             {member.username.slice(0, 2).toUpperCase()}
@@ -658,8 +663,8 @@ export default function SimpleChatroomPage() {
                     className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-600/50 transition-colors text-left w-full"
                   >
                     <Avatar className="w-10 h-10 border-2 border-white dark:border-gray-600 shadow-sm">
-                      {member.profile_image ? (
-                        <AvatarImage src={member.profile_image} alt={member.username} />
+                      {member.profileImage ? (
+                        <AvatarImage src={member.profileImage} alt={member.username} />
                       ) : (
                         <AvatarFallback className="text-sm font-medium bg-gradient-to-br from-blue-400 to-purple-500 text-white">
                           {member.username.slice(0, 2).toUpperCase()}
