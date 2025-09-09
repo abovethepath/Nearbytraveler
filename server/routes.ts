@@ -3808,17 +3808,7 @@ The Nearby Traveler Team`);
           if (process.env.NODE_ENV === 'development') console.error('Error creating city match pages:', error);
         }
 
-        // 4. Send welcome message from nearbytrav account (USER ID 2)
-        try {
-          // Find the nearbytrav system account (ID 2)
-          const nearbytravAccount = await storage.getUser(2);
-          if (nearbytravAccount) {
-            await storage.sendSystemMessage(2, user.id, `Welcome to Nearby Traveler, ${user.name || user.username}! 🌟 You're now connected as both a Nearby Local in ${userData.hometownCity} and a Nearby Traveler in ${userData.travelDestination}. Start exploring and connecting with fellow travelers!`);
-            if (process.env.NODE_ENV === 'development') console.log(`✓ Sent welcome message from nearbytrav to ${user.username}`);
-          }
-        } catch (error: any) {
-          if (process.env.NODE_ENV === 'development') console.error('Error sending welcome message:', error);
-        }
+        // 4. Welcome message is sent by other code - removed duplicate shorter message here
 
         // 5. Register user in both cities with proper status
         try {
