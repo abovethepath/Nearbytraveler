@@ -1096,12 +1096,12 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           const row = cityCountryQuery.rows[0] as any;
           return { 
             state: row.state || '', 
-            country: row.country || 'Unknown' 
+            country: row.country || (row.destination ? row.destination.split(',')[2]?.trim() : null) || 'International' 
           };
         }
         
         // Fallback to unknown only if no data found
-        return { state: '', country: 'Unknown' };
+        return { state: '', country: 'International' };
       };
 
       // SHOW ALL CITIES - No filtering

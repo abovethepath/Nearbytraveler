@@ -815,7 +815,24 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 ) : (
                   <div className="text-center py-8">
                     <h3 className="text-lg font-semibold text-red-600 mb-4">{selectedCity}</h3>
-                    <p className="text-gray-600">Loading activities... 🎯</p>
+                    <div className="mb-6">
+                      <h4 className="text-lg font-semibold text-gray-800 mb-4">🎯 Popular Activities & Interests</h4>
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        {[
+                          "Single and Looking", "Meet Locals/Travelers", "Family Activities",
+                          "Nightlife & Dancing", "Local Food Specialties", "Museums",
+                          "Coffee Culture", "Craft Beer & Breweries", "City Tours & Sightseeing",
+                          "Photography", "Hiking & Nature", "Live Music Venues",
+                          "Local Hidden Gems", "Beach Activities", "Art Galleries",
+                          "Brunch Spots", "Historical Tours", "Festivals & Events"
+                        ].map((activity) => (
+                          <div key={activity} className="p-3 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+                            <span className="text-sm font-medium text-gray-700">{activity}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-gray-500 text-sm">💡 These are popular interests - start matching with people who share them!</p>
                   </div>
                 )}
 
