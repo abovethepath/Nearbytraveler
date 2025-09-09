@@ -6675,6 +6675,13 @@ Questions? Just reply to this message. Welcome aboard!
         // Add hometown
         if (user.hometownCity) {
           userLocations.add(user.hometownCity);
+          // METRO CONSOLIDATION: Also add consolidated metro area for hometown
+          const consolidatedHometown = consolidateToMetropolitanArea(user.hometownCity, user.hometownState || '', user.hometownCountry || '');
+          if (consolidatedHometown !== user.hometownCity) {
+            // Add all cities in the metro area
+            const metroAreaCities = getMetropolitanAreaCities(consolidatedHometown, user.hometownState || '', user.hometownCountry || '');
+            metroAreaCities.forEach(city => userLocations.add(city));
+          }
         }
         
         // Add travel destinations from active travel plans
@@ -6688,6 +6695,13 @@ Questions? Just reply to this message. Welcome aboard!
         userTravelPlans.forEach(plan => {
           if (plan.destinationCity) {
             userLocations.add(plan.destinationCity);
+            // METRO CONSOLIDATION: Also add consolidated metro area for travel destination
+            const consolidatedDestination = consolidateToMetropolitanArea(plan.destinationCity, plan.destinationState || '', plan.destinationCountry || '');
+            if (consolidatedDestination !== plan.destinationCity) {
+              // Add all cities in the metro area
+              const metroAreaCities = getMetropolitanAreaCities(consolidatedDestination, plan.destinationState || '', plan.destinationCountry || '');
+              metroAreaCities.forEach(city => userLocations.add(city));
+            }
           }
         });
         
@@ -6699,10 +6713,29 @@ Questions? Just reply to this message. Welcome aboard!
       // Get all active chatrooms
       const allChatrooms = await db.select().from(citychatrooms).where(eq(citychatrooms.isActive, true));
       
-      // FILTER: Show chatrooms for user's relevant locations
-      const legitimateChatrooms = allChatrooms.filter(chatroom => 
-        userLocations.has(chatroom.city)
-      );
+      // FILTER: Show chatrooms for user's relevant locations (with metro area consolidation)
+      const legitimateChatrooms = allChatrooms.filter(chatroom => {
+        // Check if chatroom city is directly in user locations
+        if (userLocations.has(chatroom.city)) {
+          return true;
+        }
+        
+        // METRO CONSOLIDATION: Check if chatroom city consolidates to any of user's locations
+        const consolidatedChatroomCity = consolidateToMetropolitanArea(chatroom.city, chatroom.state || '', chatroom.country || '');
+        if (userLocations.has(consolidatedChatroomCity)) {
+          return true;
+        }
+        
+        // Also check the reverse - if any user location consolidates to the chatroom's city
+        for (const userLocation of userLocations) {
+          const consolidatedUserLocation = consolidateToMetropolitanArea(userLocation, '', '');
+          if (consolidatedUserLocation === chatroom.city) {
+            return true;
+          }
+        }
+        
+        return false;
+      });
       
       if (process.env.NODE_ENV === 'development') {
         console.log(`🏠 MY-LOCATIONS: Found ${allChatrooms.length} total chatrooms, filtered to ${legitimateChatrooms.length} relevant ones`);
