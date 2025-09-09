@@ -430,11 +430,13 @@ export default function SimpleChatroomPage() {
                       className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700 rounded-full px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                     >
                       <Avatar className="w-6 h-6">
-                        <AvatarImage 
-                          src={member.profileImage} 
-                          alt={member.username}
-                          className="object-cover"
-                        />
+                        {member.profileImage && (
+                          <AvatarImage 
+                            src={member.profileImage} 
+                            alt={member.username}
+                            className="object-cover"
+                          />
+                        )}
                         <AvatarFallback className="text-xs bg-gradient-to-br from-blue-400 to-purple-500 text-white font-bold">
                           {member.username.slice(0, 1).toUpperCase()}
                         </AvatarFallback>
@@ -525,11 +527,13 @@ export default function SimpleChatroomPage() {
                             onClick={() => navigate(`/profile/${message.sender_id}`)}
                           >
                             <Avatar className="w-8 h-8 border border-gray-200 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-200 group-hover:scale-105">
-                              <AvatarImage 
-                                src={senderAvatar} 
-                                alt={`${senderName}'s avatar`}
-                                className="object-cover"
-                              />
+                              {senderAvatar && (
+                                <AvatarImage 
+                                  src={senderAvatar} 
+                                  alt={`${senderName}'s avatar`}
+                                  className="object-cover"
+                                />
+                              )}
                               <AvatarFallback className="text-xs bg-gradient-to-br from-blue-400 to-purple-500 text-white font-semibold">
                                 {senderName[0]?.toUpperCase() || 'U'}
                               </AvatarFallback>

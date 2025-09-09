@@ -15,7 +15,14 @@ interface SimpleAvatarProps {
 }
 
 export function SimpleAvatar({ user, size = 'md', className = '', clickable = true, onClick }: SimpleAvatarProps) {
-  const [currentImage, setCurrentImage] = useState<string | null>(null);
+  // Initialize with profile image immediately to prevent flicker
+  const [currentImage, setCurrentImage] = useState<string | null>(() => {
+    if (!user) return null;
+    if (user.profileImage && user.profileImage.trim() !== '' && user.profileImage.length > 10) {
+      return user.profileImage;
+    }
+    return null;
+  });
   const [forceRefresh, setForceRefresh] = useState(0);
 
   // Size mappings
