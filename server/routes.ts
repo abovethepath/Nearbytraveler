@@ -6148,7 +6148,22 @@ Questions? Just reply to this message. Welcome aboard!
           )
         );
 
-      return res.json(connectionsWithUsers);
+      // Transform the connections to include connectedUser object (required by frontend)
+      const transformedConnections = connectionsWithUsers.map((conn: any) => ({
+        id: conn.id,
+        status: conn.status,
+        createdAt: conn.createdAt,
+        connectionNote: conn.connectionNote,
+        connectedUser: {
+          id: conn.userId,
+          username: conn.username,
+          name: conn.name,
+          profileImage: conn.profileImage,
+          location: conn.location
+        }
+      }));
+
+      return res.json(transformedConnections);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching connections:", error);
       return res.status(500).json({ message: "Failed to fetch connections" });
