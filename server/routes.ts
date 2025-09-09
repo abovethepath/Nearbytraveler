@@ -1075,14 +1075,32 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const { METRO_AREAS } = await import('../shared/constants');
       const laMetroCities = METRO_AREAS['Los Angeles'].cities;
       
-      // Get state/country for cities - LA Metro get California/US, others get from city_pages
-      const getCityCountry = (cityName: string): { state: string, country: string } => {
+      // Get state/country for cities - LA Metro get California/US, others get from database
+      const getCityCountry = async (cityName: string): Promise<{ state: string, country: string }> => {
         // LA Metro cities are in California, United States
         if (laMetroCities.includes(cityName)) {
           return { state: 'California', country: 'United States' };
         }
         
-        // For other cities, return generic values (will be looked up later if needed)
+        // For other cities, look up actual country from user data
+        const cityCountryQuery = await db.execute(sql`
+          SELECT hometown_country as country, hometown_state as state 
+          FROM users 
+          WHERE hometown_city = ${cityName} 
+          AND hometown_country IS NOT NULL 
+          AND hometown_country != ''
+          LIMIT 1
+        `);
+        
+        if (cityCountryQuery.rows.length > 0) {
+          const row = cityCountryQuery.rows[0] as any;
+          return { 
+            state: row.state || '', 
+            country: row.country || 'Unknown' 
+          };
+        }
+        
+        // Fallback to unknown only if no data found
         return { state: '', country: 'Unknown' };
       };
 
@@ -1099,7 +1117,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
       // Process each city and consolidate to metro areas
       for (const cityName of rawCities) {
-        const cityData = getCityCountry(cityName);
+        const cityData = await getCityCountry(cityName);
         const consolidatedCity = consolidateToMetropolitanArea(cityName, cityData.state, cityData.country);
         
         if (!consolidatedCityMap.has(consolidatedCity)) {
