@@ -357,7 +357,6 @@ export default function SimpleChatroomPage() {
                 title="Back to Chatrooms"
               >
                 <ArrowLeft className="w-4 h-4" />
-                <span className="hidden md:inline ml-2">Back to Chatrooms</span>
               </Button>
               
               <div className="flex-1 min-w-0">
@@ -443,15 +442,24 @@ export default function SimpleChatroomPage() {
                       onClick={() => navigate(`/profile/${member.id}`)}
                       className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700 rounded-full px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                     >
-                      <Avatar className="w-6 h-6">
+                      <div className="w-6 h-6 rounded-full overflow-hidden bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
                         {member.profileImage ? (
-                          <AvatarImage src={member.profileImage} alt={member.username} />
-                        ) : (
-                          <AvatarFallback className="text-xs bg-gradient-to-br from-blue-400 to-purple-500 text-white">
-                            {member.username.slice(0, 2).toUpperCase()}
-                          </AvatarFallback>
+                          <img 
+                            src={member.profileImage} 
+                            alt={member.username}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              console.log('Avatar image failed to load for:', member.username);
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                        ) : null}
+                        {!member.profileImage && (
+                          <span className="text-xs text-white font-bold">
+                            {member.username.slice(0, 1).toUpperCase()}
+                          </span>
                         )}
-                      </Avatar>
+                      </div>
                       <span className="text-sm font-medium">{member.username}</span>
                       {member.role === 'admin' && (
                         <span className="text-xs bg-blue-500 text-white rounded px-1.5 py-0.5">Admin</span>
@@ -662,15 +670,24 @@ export default function SimpleChatroomPage() {
                     onClick={() => navigate(`/profile/${member.id}`)}
                     className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-600/50 transition-colors text-left w-full"
                   >
-                    <Avatar className="w-10 h-10 border-2 border-white dark:border-gray-600 shadow-sm">
+                    <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center border-2 border-white dark:border-gray-600 shadow-sm">
                       {member.profileImage ? (
-                        <AvatarImage src={member.profileImage} alt={member.username} />
-                      ) : (
-                        <AvatarFallback className="text-sm font-medium bg-gradient-to-br from-blue-400 to-purple-500 text-white">
-                          {member.username.slice(0, 2).toUpperCase()}
-                        </AvatarFallback>
+                        <img 
+                          src={member.profileImage} 
+                          alt={member.username}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            console.log('Avatar image failed to load for:', member.username);
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                      ) : null}
+                      {!member.profileImage && (
+                        <span className="text-white font-bold">
+                          {member.username.slice(0, 1).toUpperCase()}
+                        </span>
                       )}
-                    </Avatar>
+                    </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-gray-900 dark:text-white truncate">
