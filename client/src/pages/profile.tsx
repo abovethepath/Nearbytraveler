@@ -3962,17 +3962,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       {/* Main content section - Mobile Responsive Layout */}
       <div className="w-full max-w-full mx-auto pb-20 sm:pb-4 px-1 sm:px-4 lg:px-6 mt-2 overflow-x-hidden">
         <div className="flex flex-col lg:grid lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
-          {/* Large Left Column - Main Content + Travel Plans */}
+          {/* Large Left Column - Main Content */}
           <div className="w-full lg:col-span-2 space-y-3 sm:space-y-4 lg:space-y-6">
-            
-            {/* Travel Plans Widget at top of left column */}
-            {user?.userType !== 'business' && (
-              <div className="w-full">
-                <TravelPlansWidget userId={effectiveUserId} />
-              </div>
-            )}
 
-            {/* About Section - Always Visible */}
+            {/* About Section - FIRST THING PEOPLE SEE */}
             <Card className="mt-2 relative overflow-visible">
               <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-4 lg:px-6 pt-3 sm:pt-4 lg:pt-6">
                 <div className="flex items-center justify-between w-full">
@@ -6412,6 +6405,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
           {/* Right Sidebar - Mobile Responsive */}
           <div className="w-full lg:col-span-1 space-y-2 lg:space-y-4">
+            {/* Travel Plans Widget in sidebar */}
+            {user?.userType !== 'business' && (
+              <TravelPlansWidget userId={effectiveUserId} />
+            )}
+            
             {/* Quick Meetup Widget - Only show for own profile (travelers/locals only, NOT business) */}
             {isOwnProfile && user && user.userType !== 'business' && (
               <div className="mt-6" data-testid="quick-meetup-widget">
