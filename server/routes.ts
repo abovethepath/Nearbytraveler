@@ -2954,18 +2954,22 @@ Questions? Just reply to this message. Welcome to the community!
             await storage.sendSystemMessage(2, user.id, 
               `Welcome to Nearby Traveler, ${user.name || user.username}! ✈️
 
-We're excited to have you join our community of travelers and locals. Here's what you can do now:
+I'm excited to personally welcome you to our community of travelers and locals. You now have access to some incredible features:
 
-🌍 Connect with locals in ${user.travelDestination}
-🏠 Stay connected with your hometown community in ${user.hometownCity}
-💬 Join city chatrooms to meet people
-📅 Discover local events and activities
-🤝 Build meaningful connections wherever you go
+🎯 **City Match Pages** - Find people with shared interests in ${user.travelDestination} and ${user.hometownCity}
+💬 **City Chatrooms** - Jump into "Meet Locals" and "Travel Tips & Local Secrets" conversations
+📅 **Create Events** - Host your own meetups, activities, and local experiences
+🌍 **Discover Page** - Explore new destinations and see what's happening worldwide
+⚡ **Quick Meetups** - Create spontaneous hangouts when you're free
+🔍 **Advanced Search** - Find exactly the type of people and activities you're looking for
+🤝 **Direct Messaging** - Connect one-on-one with locals and travelers
+📱 **Real-time Updates** - Get notified when people want to meet up
 
-Your journey starts now - explore, connect, and make the most of your travels!
+Whether you're exploring ${user.travelDestination} or sharing your hometown ${user.hometownCity} with visitors, this platform is designed to create authentic connections and unforgettable experiences.
 
-Safe travels,
-The Nearby Traveler Team`);
+Your adventure starts now - dive in and start connecting!
+
+-Aaron`);
             console.log(`✅ Welcome message sent`);
           } else {
             console.error("❌ nearbytrav account (ID 2) not found");
