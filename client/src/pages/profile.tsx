@@ -6313,7 +6313,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </div>
             )}
 
-            {/* Countries Tab */}
+            {/* Countries Tab - Simplified */}
             {/* Countries Panel - Lazy Loaded */}
             {activeTab === 'countries' && loadedTabs.has('countries') && (
               <div 
@@ -6325,125 +6325,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 style={{zIndex: 10, position: 'relative'}} 
                 data-testid="countries-content"
               >
-                <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
-                  <CardHeader className="bg-white dark:bg-gray-900">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="flex items-center gap-2 text-black dark:text-white">
-                        <Globe className="w-5 h-5" />
-                        Countries I've Visited ({countriesVisited.length})
-                      </CardTitle>
-                      {isOwnProfile && !editingCountries && (
-                        <Button size="sm" variant="outline" onClick={handleEditCountries}>
-                          <Edit className="w-4 h-4 mr-2" />
-                          Edit
-                        </Button>
-                      )}
-                    </div>
-                  </CardHeader>
-                  <CardContent className="bg-white dark:bg-gray-900">
-                    {editingCountries ? (
-                      <div className="space-y-4">
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              role="combobox"
-                              className="w-full justify-between bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
-                            >
-                              {tempCountries.length > 0 
-                                ? `${tempCountries.length} countr${tempCountries.length > 1 ? 'ies' : 'y'} selected`
-                                : "Select countries visited..."
-                              }
-                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-full p-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
-                            <Command className="bg-white dark:bg-gray-800">
-                              <CommandInput placeholder="Search countries..." className="border-0" />
-                              <CommandEmpty>No country found.</CommandEmpty>
-                              <CommandGroup className="max-h-64 overflow-auto">
-                                {COUNTRIES_OPTIONS.map((country) => (
-                                  <CommandItem
-                                    key={country}
-                                    value={country}
-                                    onSelect={() => {
-                                      setTempCountries(current =>
-                                        current.includes(country)
-                                          ? current.filter(c => c !== country)
-                                          : [...current, country]
-                                      );
-                                    }}
-                                    className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
-                                  >
-                                    <Check
-                                      className={`mr-2 h-4 w-4 ${
-                                        tempCountries.includes(country) ? "opacity-100" : "opacity-0"
-                                      }`}
-                                    />
-                                    {country}
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </Command>
-                          </PopoverContent>
-                        </Popover>
-
-                        {/* Show selected countries */}
-                        {tempCountries.length > 0 && (
-                          <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                            {tempCountries.map((country) => (
-                              <div key={country} className="flex items-center gap-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-md">
-                                <span className="text-sm">{country}</span>
-                                <button
-                                  onClick={() => setTempCountries(current => current.filter(c => c !== country))}
-                                  className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200"
-                                >
-                                  <X className="w-3 h-3" />
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        <div className="flex gap-2">
-                          <Button
-                            onClick={() => {
-                              updateCountries.mutate(tempCountries);
-                            }}
-                            disabled={updateCountries.isPending}
-                            className="bg-green-600 hover:bg-green-700 text-white"
-                          >
-                            {updateCountries.isPending ? "Saving..." : "Save Countries"}
-                          </Button>
-                          <Button
-                            variant="outline"
-                            onClick={() => {
-                              setEditingCountries(false);
-                              setTempCountries(user?.countriesVisited || []);
-                            }}
-                          >
-                            Cancel
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        {countriesVisited.length > 0 ? (
-                          <div className="flex flex-wrap gap-2">
-                            {countriesVisited.map((country: string, index: number) => (
-                              <div 
-                                key={country} 
-                                className="pill-interests"
-                              >
-                                {country}
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <p className="text-gray-500 dark:text-white text-sm">No countries visited yet</p>
-                        )}
-                      </>
-                    )}
+                <Card>
+                  <CardContent className="p-6">
+                    <p className="text-gray-500 text-center">
+                      Countries visited are now shown in the sidebar on the right →
+                    </p>
                   </CardContent>
                 </Card>
               </div>
@@ -6535,6 +6421,134 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6 hidden sm:block">
                       Get vouched by vouched community members who know you personally
                     </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Countries Widget - Right Sidebar - Hidden for business profiles */}
+            {user?.userType !== 'business' && (
+              <Card 
+                className="hover:shadow-lg transition-all duration-200 hover:border-orange-300"
+                ref={tabRefs.countries}
+                id="panel-countries"
+              >
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center gap-2 dark:text-white">
+                      <Globe className="w-4 h-4" />
+                      <span className="text-sm">Countries Visited ({countriesVisited.length})</span>
+                    </CardTitle>
+                    {isOwnProfile && !editingCountries && (
+                      <Button size="sm" variant="outline" onClick={handleEditCountries} className="h-7">
+                        <Edit className="w-3 h-3" />
+                      </Button>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {editingCountries ? (
+                    <div className="space-y-3">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            className="w-full justify-between text-xs h-8"
+                          >
+                            {tempCountries.length > 0 
+                              ? `${tempCountries.length} selected`
+                              : "Select countries..."
+                            }
+                            <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-full p-0">
+                          <Command>
+                            <CommandInput placeholder="Search countries..." className="h-8 text-xs" />
+                            <CommandEmpty>No country found.</CommandEmpty>
+                            <CommandGroup className="max-h-32 overflow-auto">
+                              {COUNTRIES_OPTIONS.map((country) => (
+                                <CommandItem
+                                  key={country}
+                                  value={country}
+                                  onSelect={() => {
+                                    setTempCountries(current =>
+                                      current.includes(country)
+                                        ? current.filter(c => c !== country)
+                                        : [...current, country]
+                                    );
+                                  }}
+                                  className="cursor-pointer text-xs"
+                                >
+                                  <Check
+                                    className={`mr-2 h-3 w-3 ${
+                                      tempCountries.includes(country) ? "opacity-100" : "opacity-0"
+                                    }`}
+                                  />
+                                  {country}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+
+                      {tempCountries.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {tempCountries.map((country) => (
+                            <div key={country} className="flex items-center gap-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-1.5 py-0.5 rounded-md text-xs">
+                              <span>{country}</span>
+                              <button
+                                onClick={() => setTempCountries(current => current.filter(c => c !== country))}
+                                className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200"
+                              >
+                                <X className="w-2 h-2" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="flex gap-1">
+                        <Button
+                          onClick={() => updateCountries.mutate(tempCountries)}
+                          disabled={updateCountries.isPending}
+                          size="sm"
+                          className="h-6 text-xs bg-green-600 hover:bg-green-700"
+                        >
+                          {updateCountries.isPending ? "Saving..." : "Save"}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setEditingCountries(false);
+                            setTempCountries(user?.countriesVisited || []);
+                          }}
+                          className="h-6 text-xs"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      {countriesVisited.length > 0 ? (
+                        <div className="flex flex-wrap gap-1">
+                          {countriesVisited.map((country: string) => (
+                            <div 
+                              key={country} 
+                              className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 px-2 py-1 rounded-md text-xs font-medium"
+                            >
+                              {country}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-gray-500 dark:text-white text-xs">No countries visited yet</p>
+                      )}
+                    </>
                   )}
                 </CardContent>
               </Card>
@@ -6693,9 +6707,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             {connection.connectedUser?.name || connection.connectedUser?.username}
                           </p>
                           <p className="text-xs truncate text-gray-500 dark:text-gray-400">
-                            {connection.connectedUser?.hometownCity && connection.connectedUser?.hometownCountry
-                              ? `${connection.connectedUser?.hometownCity}, ${connection.connectedUser?.hometownCountry.replace("United States", "USA")}`
-                              : "New member"}
+                            {connection.connectedUser?.location || "New member"}
                           </p>
                           
                           {/* How We Met Notes - Only for Profile Owner */}
