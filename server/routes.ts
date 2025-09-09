@@ -1239,7 +1239,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             const eventCount = eventsResult[0]?.count || 0;
 
 
-            const cityLocation = getCityCountry(cityName);
+            const cityLocation = await getCityCountry(cityName);
             
             return {
               city: cityName,
