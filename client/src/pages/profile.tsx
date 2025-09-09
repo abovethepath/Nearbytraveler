@@ -3962,15 +3962,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       {/* Main content section - Mobile Responsive Layout */}
       <div className="w-full max-w-full mx-auto pb-20 sm:pb-4 px-1 sm:px-4 lg:px-6 mt-2 overflow-x-hidden">
         <div className="flex flex-col lg:grid lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
-          {/* Left Sidebar - Travel Plans Widget */}
-          {user?.userType !== 'business' && (
-            <div className="w-full lg:col-span-1 space-y-2 lg:space-y-4">
-              <TravelPlansWidget userId={effectiveUserId} />
-            </div>
-          )}
-          
-          {/* Main Content Column */}
-          <div className="w-full lg:col-span-1 space-y-3 sm:space-y-4 lg:space-y-6">
+          {/* Large Left Column - Main Content + Travel Plans */}
+          <div className="w-full lg:col-span-2 space-y-3 sm:space-y-4 lg:space-y-6">
+            
+            {/* Travel Plans Widget at top of left column */}
+            {user?.userType !== 'business' && (
+              <div className="w-full">
+                <TravelPlansWidget userId={effectiveUserId} />
+              </div>
+            )}
 
             {/* About Section - Always Visible */}
             <Card className="mt-2 relative overflow-visible">
