@@ -95,12 +95,22 @@ export default function SimpleChatroomPage() {
   
 
   // Get messages - load immediately, server will handle membership check
-  const { data: messages = [], isLoading: messagesLoading, isFetching: messagesFetching, refetch: refetchMessages } = useQuery<ChatMessage[]>({
+  const { data: messages = [], isLoading: messagesLoading, isFetching: messagesFetching, refetch: refetchMessages, error: messagesError } = useQuery<ChatMessage[]>({
     queryKey: [`/api/chatrooms/${chatroomId}/messages`],
     enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
     refetchInterval: 8000, // Poll every 8 seconds
     staleTime: 30000, // 30 seconds
     refetchOnWindowFocus: false,
+  });
+
+  // Debug logging for messages
+  console.log('🔍 Messages query debug:', {
+    chatroomId,
+    currentUserId,
+    enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
+    messagesLength: messages.length,
+    isLoading: messagesLoading,
+    error: messagesError?.message
   });
 
   // NO AUTO-JOIN - Users must manually click Join button
