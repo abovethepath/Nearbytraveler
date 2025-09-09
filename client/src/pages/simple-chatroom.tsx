@@ -366,7 +366,7 @@ export default function SimpleChatroomPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="space-y-1">
-                    <CardTitle className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white leading-tight break-words">
+                    <CardTitle className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white leading-tight break-words">
                       {chatroom?.name || "Loading chatroom..."}
                     </CardTitle>
                     <div className="text-sm text-gray-600 dark:text-gray-300">
@@ -376,19 +376,6 @@ export default function SimpleChatroomPage() {
                   </div>
                 </div>
                 
-                <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600 dark:text-gray-300">
-                  <span className="flex items-center gap-1">
-                    <span>Logged in as:</span>
-                    <span className="font-medium text-blue-600 dark:text-blue-400">@{currentUser?.username}</span>
-                  </span>
-                  <span>•</span>
-                  <span>{chatroom?.city}, {chatroom?.country}</span>
-                  <span>•</span>
-                  <span className="flex items-center gap-1">
-                    <Users className="w-3 h-3" />
-                    {memberCount} members
-                  </span>
-                </div>
                 
                 {!userIsMember && (
                   <div className="mt-3 p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg border border-orange-200 dark:border-orange-800">
