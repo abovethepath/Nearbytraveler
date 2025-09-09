@@ -348,7 +348,7 @@ export default function SimpleChatroomPage() {
         <Card className="mb-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-gray-800 dark:to-gray-700 border-0">
           <CardHeader className="pb-4">
             {/* Clean Header Layout */}
-            <div className="flex items-start gap-4">
+            <div className="flex items-center justify-between gap-4">
               <Button 
                 variant="ghost" 
                 size="sm"
@@ -358,20 +358,18 @@ export default function SimpleChatroomPage() {
                 <ArrowLeft className="w-4 h-4" />
               </Button>
               
-              <div className="flex-1 min-w-0">
+              <div className="flex-1 flex flex-col items-center text-center">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
                     {chatroom?.name?.charAt(0).toUpperCase() || "C"}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="space-y-1">
+                  <div>
                     <CardTitle className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white leading-tight break-words">
                       {chatroom?.name || "Loading chatroom..."}
                     </CardTitle>
                     <div className="text-sm text-gray-600 dark:text-gray-300">
                       {members.length} member{members.length !== 1 ? 's' : ''} • {chatroom?.city || 'Unknown location'}
                     </div>
-                  </div>
                   </div>
                 </div>
                 
