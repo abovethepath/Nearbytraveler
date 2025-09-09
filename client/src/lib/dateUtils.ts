@@ -295,7 +295,11 @@ export function getCurrentTravelDestination(travelPlans: any[]): string | null {
         
         // Debug disabled for performance
         // ALWAYS return the destination if there's an active trip, even if it's the same as hometown
-        return plan.destination; // Return the full destination string for display
+        // Clean up redundant prefecture names and duplicate city names for better display
+        const cleanDestination = plan.destination
+          .replace(/,\s*\w+\s+Prefecture/g, '') // Remove "Prefecture" mentions
+          .replace(/(\w+),\s*\1/g, '$1'); // Remove duplicate city names
+        return cleanDestination; // Return the cleaned destination string for display
       }
     }
   }

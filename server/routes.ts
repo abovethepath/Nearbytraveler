@@ -2956,7 +2956,7 @@ Questions? Just reply to this message. Welcome to the community!
 
 I'm excited to personally welcome you to our community of travelers and locals. You now have access to some incredible features:
 
-🎯 **City Match Pages** - Find people with shared interests in ${user.travelDestination} and ${user.hometownCity}
+🎯 **City Match Pages** - Find people with shared interests in ${user.travelDestination ? user.travelDestination.replace(/,\s*\w+\s+Prefecture/g, '').replace(/(\w+),\s*\1/g, '$1') : 'your destinations'} and ${user.hometownCity}
 💬 **City Chatrooms** - Jump into "Meet Locals" and "Travel Tips & Local Secrets" conversations
 📅 **Create Events** - Host your own meetups, activities, and local experiences
 🌍 **Discover Page** - Explore new destinations and see what's happening worldwide
@@ -2965,7 +2965,7 @@ I'm excited to personally welcome you to our community of travelers and locals. 
 🤝 **Direct Messaging** - Connect one-on-one with locals and travelers
 📱 **Real-time Updates** - Get notified when people want to meet up
 
-Whether you're exploring ${user.travelDestination} or sharing your hometown ${user.hometownCity} with visitors, this platform is designed to create authentic connections and unforgettable experiences.
+Whether you're exploring ${user.travelDestination ? user.travelDestination.replace(/,\s*\w+\s+Prefecture/g, '').replace(/(\w+),\s*\1/g, '$1') : 'new destinations'} or sharing your hometown ${user.hometownCity} with visitors, this platform is designed to create authentic connections and unforgettable experiences.
 
 Your adventure starts now - dive in and start connecting!
 
