@@ -7178,7 +7178,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </div>
             )}
 
-            {/* Travel Panel - Always Load for Travel Widget */}
+            {/* Travel Panel - Current and Past Travel Plans */}
             {activeTab === 'travel' && user?.userType !== 'business' && (
               <div 
                 role="tabpanel"
@@ -7188,10 +7188,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 className="mt-6"
                 data-testid="travel-content"
               >
-                {/* Travel Plans Widget moved to left sidebar */}
-                <div className="p-4 text-center text-gray-500">
-                  Travel Plans are now displayed in the left sidebar for easy access while browsing your profile.
-                </div>
+                {/* Travel Plans Widget - FIXED: Show actual travel plans here */}
+                {user?.id && (
+                  <TravelPlansWidget 
+                    userId={user.id}
+                  />
+                )}
               </div>
             )}
 
