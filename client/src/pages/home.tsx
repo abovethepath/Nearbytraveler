@@ -100,9 +100,10 @@ export default function Home() {
     enabled: !!currentUserId,
   });
 
-  const { data: travelPlans = [], isLoading: isLoadingTravelPlans } = useQuery({
+  const { data: travelPlans = [], isLoading: isLoadingTravelPlans } = useQuery<any[]>({
     queryKey: [`/api/travel-plans/${currentUserId}`],
     enabled: !!currentUserId,
+    staleTime: 30000, // 30 seconds to reduce flickering
   });
 
   const matchedUsersUserId = currentUserId;
@@ -124,7 +125,7 @@ export default function Home() {
 
     // Calculate current travel status with proper destination logic
     // Prioritize API data over travel plans for travel status
-    const currentTravelDestination = getCurrentTravelDestination(travelPlans || []);
+    const currentTravelDestination = getCurrentTravelDestination(Array.isArray(travelPlans) ? travelPlans : []);
     const isCurrentlyTraveling = userData.isCurrentlyTraveling ?? !!currentTravelDestination;
     
     // Use the active travel plan destination first, fallback to API data
@@ -145,7 +146,7 @@ export default function Home() {
   const enrichedEffectiveUser = useMemo(() => {
     if (!effectiveUser) return null;
     
-    const currentTravelDestination = getCurrentTravelDestination(travelPlans || []);
+    const currentTravelDestination = getCurrentTravelDestination(Array.isArray(travelPlans) ? travelPlans : []);
     const actualCurrentLocation = currentTravelDestination || effectiveUser.location;
     
     console.log('🔍 FIXED enrichedEffectiveUser:', {
@@ -201,7 +202,7 @@ export default function Home() {
   // Function to get current location (same logic as weather widget)
   const getCurrentUserLocation = () => {
     // Use exact same logic as weather widget
-    const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
+    const currentTravelPlan = getCurrentTravelDestination(Array.isArray(travelPlans) ? travelPlans : []);
     if (currentTravelPlan) {
       // Avoid duplication when state/prefecture contains city name (e.g. "Hiroshima Prefecture")
       const city = currentTravelPlan.destinationCity;
@@ -370,7 +371,7 @@ export default function Home() {
     if (!compatibilityData || !otherUser) return 0;
     
     // Find the compatibility data for this specific user
-    const userCompatibility = compatibilityData.find((match: any) => match.userId === otherUser.id);
+    const userCompatibility = Array.isArray(compatibilityData) ? compatibilityData.find((match: any) => match.userId === otherUser.id) : null;
     
     if (userCompatibility) {
       // Calculate total from all shared categories
@@ -865,8 +866,8 @@ export default function Home() {
     }
 
     // Add ALL planned travel destinations from travel plans
-    if (travelPlans && travelPlans.length > 0) {
-      travelPlans.forEach(plan => {
+    if (Array.isArray(travelPlans) && travelPlans.length > 0) {
+      travelPlans.forEach((plan: any) => {
         if (plan.destination && !locations.some(loc => loc.city === plan.destination)) {
           locations.push({ city: plan.destination, type: 'planned_travel' });
           console.log('📅 USER DISCOVERY: Travel plan', plan.destination);
@@ -1380,14 +1381,14 @@ export default function Home() {
 
       // Check if current user has any travel plans or legacy destination
       const hasLegacyTravel = effectiveUser?.travelDestination && effectiveUser?.travelStartDate && effectiveUser?.travelEndDate;
-      const hasTravelPlans = travelPlans.length > 0;
+      const hasTravelPlans = Array.isArray(travelPlans) && travelPlans.length > 0;
 
       if (!hasLegacyTravel && !hasTravelPlans) {
         return false;
       }
 
       // Check for matches against all travel plans
-      const hasMatchWithPlans = travelPlans.some(plan => {
+      const hasMatchWithPlans = Array.isArray(travelPlans) ? travelPlans.some((plan: any) => {
         if (!plan.startDate || !plan.endDate) return false;
 
         return otherUser.travelDestination === plan.destination &&
@@ -1399,7 +1400,7 @@ export default function Home() {
                  typeof otherUser.travelStartDate === 'string' ? otherUser.travelStartDate : otherUser.travelStartDate.toISOString(),
                  typeof otherUser.travelEndDate === 'string' ? otherUser.travelEndDate : otherUser.travelEndDate.toISOString()
                );
-      });
+      }) : false;
 
       // Check for matches against legacy travel destination
       const hasMatchWithLegacy = hasLegacyTravel && 
