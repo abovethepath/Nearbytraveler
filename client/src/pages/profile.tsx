@@ -3816,14 +3816,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 >
                   {getConnectButtonState().text}
                 </Button>
-                <Button 
-                  className="bg-red-500 hover:bg-red-600 text-white border-0 px-6 py-2 rounded-lg shadow-md transition-all"
-                  onClick={handleBlockUser}
-                  data-testid="button-block-user"
-                >
-                  <UserX className="w-4 h-4 mr-2" />
-                  Block
-                </Button>
+                {/* Hide block button for user2 - they cannot be blocked */}
+                {user?.id !== 2 && (
+                  <Button 
+                    className="bg-red-500 hover:bg-red-600 text-white border-0 px-6 py-2 rounded-lg shadow-md transition-all"
+                    onClick={handleBlockUser}
+                    data-testid="button-block-user"
+                  >
+                    <UserX className="w-4 h-4 mr-2" />
+                    Block
+                  </Button>
+                )}
               </div>
             ) : (
               <div className="flex items-center gap-3 flex-wrap min-w-0">
