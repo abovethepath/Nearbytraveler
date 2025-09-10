@@ -427,10 +427,8 @@ export default function FixedChatroom() {
       
       setMessageText("");
       
-      // Reload messages after sending
-      setTimeout(async () => {
-        await loadMessages();
-      }, 1000);
+      // Reload messages immediately after sending
+      await loadMessages();
       
     } catch (error: any) {
       (`❌ Failed to send message: ${error.message}`);
@@ -605,17 +603,17 @@ export default function FixedChatroom() {
                   ) : (
                     members.map((member) => (
                       <div 
-                        key={`${member.user_id}-${member.id}`} 
+                        key={`${member.id}`} 
                         className="flex items-center space-x-4 p-3 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                       >
                         {/* Clickable Avatar */}
                         <div 
                           className="relative cursor-pointer group"
-                          onClick={() => window.location.href = `/profile/${member.user_id}`}
+                          onClick={() => window.location.href = `/profile/${member.id}`}
                         >
                           <Avatar className="w-14 h-14 ring-2 ring-purple-200 hover:ring-purple-400 transition-all duration-200 group-hover:scale-105">
                             <AvatarImage 
-                              src={member.profile_image} 
+                              src={member.profileImage} 
                               alt={`${member.username}'s profile`}
                               className="object-cover"
                             />
@@ -632,13 +630,13 @@ export default function FixedChatroom() {
                         {/* Member Info - also clickable */}
                         <div 
                           className="flex-1 min-w-0 cursor-pointer" 
-                          onClick={() => window.location.href = `/profile/${member.user_id}`}
+                          onClick={() => window.location.href = `/profile/${member.id}`}
                         >
                           <div className="flex items-center space-x-2 mb-1">
                             <p className="text-sm font-semibold text-gray-900 dark:text-white truncate hover:text-purple-600 transition-colors">
                               {member.username || member.name || 'Unknown User'}
                             </p>
-                            {member.user_id === currentUserId && (
+                            {member.id === currentUserId && (
                               <span className="px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded-full font-bold">
                                 YOU
                               </span>
@@ -651,7 +649,7 @@ export default function FixedChatroom() {
                                '👤 Member'}
                             </p>
                             <p className="text-xs text-gray-400">
-                              {member.user_id === currentUserId ? 'You' : 'Member'}
+                              {member.id === currentUserId ? 'You' : 'Member'}
                             </p>
                           </div>
                         </div>
@@ -692,7 +690,7 @@ export default function FixedChatroom() {
                         // Fixed: Use correct field names from API
                         const messageSenderId = message.sender_id || message.senderId;
                         const isOwnMessage = messageSenderId === currentUserId;
-                        const senderMember = members.find(m => m.user_id === messageSenderId || m.id === messageSenderId);
+                        const senderMember = members.find(m => m.id === messageSenderId);
                         const displayName = isOwnMessage ? 'You' : (senderMember?.username || message.username || message.senderUsername || 'Unknown User');
                         
                         // For avatar, always use actual username (not "You")
