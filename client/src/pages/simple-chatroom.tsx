@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Send, ArrowLeft, Users, MessageCircle, Loader2 } from "lucide-react";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { SimpleAvatar } from "@/components/simple-avatar";
 
 interface ChatMessage {
   id: number;
@@ -355,6 +355,7 @@ export default function SimpleChatroomPage() {
                 size="sm"
                 onClick={() => navigate('/city-chatrooms')}
                 className="flex-shrink-0 hover:bg-white/20 dark:hover:bg-gray-600/20"
+                title="Back to chatrooms"
               >
                 <ArrowLeft className="w-4 h-4" />
               </Button>
@@ -430,18 +431,15 @@ export default function SimpleChatroomPage() {
                       }}
                       className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700 rounded-full px-3 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                     >
-                      <Avatar className="w-6 h-6">
-                        {member.profileImage && (
-                          <AvatarImage 
-                            src={member.profileImage} 
-                            alt={member.username}
-                            className="object-cover"
-                          />
-                        )}
-                        <AvatarFallback className="text-xs bg-gradient-to-br from-blue-400 to-purple-500 text-white font-bold">
-                          {member.username.slice(0, 1).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
+                      <SimpleAvatar 
+                        user={{
+                          id: member.id,
+                          username: member.username,
+                          profileImage: member.profileImage
+                        }}
+                        size="sm"
+                        clickable={false}
+                      />
                       <span className="text-sm font-medium">{member.username}</span>
                       {member.role === 'admin' && (
                         <span className="text-xs bg-blue-500 text-white rounded px-1.5 py-0.5">Admin</span>
@@ -527,18 +525,16 @@ export default function SimpleChatroomPage() {
                             className="flex-shrink-0 mt-1 cursor-pointer group relative"
                             onClick={() => navigate(`/profile/${message.sender_id}`)}
                           >
-                            <Avatar className="w-8 h-8 border border-gray-200 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-200 group-hover:scale-105">
-                              {senderAvatar && (
-                                <AvatarImage 
-                                  src={senderAvatar} 
-                                  alt={`${senderName}'s avatar`}
-                                  className="object-cover"
-                                />
-                              )}
-                              <AvatarFallback className="text-xs bg-gradient-to-br from-blue-400 to-purple-500 text-white font-semibold">
-                                {senderName[0]?.toUpperCase() || 'U'}
-                              </AvatarFallback>
-                            </Avatar>
+                            <SimpleAvatar 
+                              user={{
+                                id: message.sender_id,
+                                username: senderName,
+                                profileImage: senderAvatar
+                              }}
+                              size="sm"
+                              className="border border-gray-200 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-200 group-hover:scale-105"
+                              clickable={false}
+                            />
                             
                             {/* Online indicator */}
                             <div className="absolute -bottom-1 -right-1 w-3 h-3 border-2 border-white dark:border-gray-800 rounded-full bg-gray-400"></div>
