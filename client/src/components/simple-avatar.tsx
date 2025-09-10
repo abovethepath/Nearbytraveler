@@ -44,16 +44,17 @@ export function SimpleAvatar({ user, size = 'md', className = '', clickable = tr
     const colorIndex = user.username.charCodeAt(0) % colors.length;
     const bgColor = colors[colorIndex];
 
-    // Check if has valid profile image
-    const hasImage = user.profileImage && 
-                     user.profileImage.trim() !== '' && 
-                     user.profileImage.length > 10;
+    // More robust image validation - check for data URLs or http URLs
+    const hasValidImage = user.profileImage && 
+                         user.profileImage.trim() !== '' && 
+                         (user.profileImage.startsWith('data:image/') || 
+                          user.profileImage.startsWith('http'));
 
     return {
       letter: firstLetter,
       bgColor,
-      hasImage,
-      imageUrl: hasImage ? user.profileImage : null
+      hasImage: hasValidImage,
+      imageUrl: hasValidImage ? user.profileImage : null
     };
   }, [user?.id, user?.username, user?.profileImage]);
 
@@ -68,33 +69,33 @@ export function SimpleAvatar({ user, size = 'md', className = '', clickable = tr
   const cursorClass = clickable ? 'cursor-pointer hover:ring-2 hover:ring-orange-400 transition-all' : '';
   const baseClasses = `${sizeClasses[size]} ${className} ${cursorClass} rounded-full flex items-center justify-center relative`;
 
-  // Show profile image if available
-  if (avatarData.hasImage && avatarData.imageUrl) {
-    return (
-      <img
-        src={avatarData.imageUrl}
-        alt={`${user?.username} avatar`}
-        className={`${baseClasses} object-cover`}
-        onClick={handleClick}
-        title={clickable ? `View ${user?.username}'s profile` : undefined}
-        onError={(e) => {
-          // Hide image on error and show fallback letter instead
-          e.currentTarget.style.display = 'none';
-          const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-          if (fallback) fallback.style.display = 'flex';
-        }}
-      />
-    );
-  }
-
-  // Fallback to letter avatar
+  // Always render both image and letter fallback, but show only one
   return (
-    <div 
-      className={`${baseClasses} ${avatarData.bgColor} text-white`}
-      onClick={handleClick}
-      title={clickable ? `View ${user?.username || 'User'}'s profile` : undefined}
-    >
-      <span className="font-bold">{avatarData.letter}</span>
+    <div className="relative">
+      {/* Profile image - show if available */}
+      {avatarData.hasImage && avatarData.imageUrl && (
+        <img
+          src={avatarData.imageUrl}
+          alt={`${user?.username} avatar`}
+          className={`${baseClasses} object-cover`}
+          onClick={handleClick}
+          title={clickable ? `View ${user?.username}'s profile` : undefined}
+          onError={(e) => {
+            // Hide image on error to show letter fallback
+            e.currentTarget.style.display = 'none';
+          }}
+        />
+      )}
+      
+      {/* Letter fallback - show if no image or image failed to load */}
+      <div 
+        className={`${baseClasses} ${avatarData.bgColor} text-white ${avatarData.hasImage ? 'absolute inset-0' : ''}`}
+        onClick={handleClick}
+        title={clickable ? `View ${user?.username || 'User'}'s profile` : undefined}
+        style={{ display: avatarData.hasImage ? 'none' : 'flex' }}
+      >
+        <span className="font-bold">{avatarData.letter}</span>
+      </div>
     </div>
   );
 }
