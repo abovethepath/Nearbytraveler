@@ -275,28 +275,31 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-4 gap-4 mb-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{referenceCounts.total}</div>
-              <div className="text-sm text-gray-500">Total References</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">
+          {/* Total References Count at Top */}
+          <div className="text-center mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+            <div className="text-3xl font-bold text-blue-600">{referenceCounts.total}</div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">Total References</div>
+          </div>
+          
+          {/* Positive, Neutral, Negative in Mobile-Friendly Row */}
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6">
+            <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+              <div className="text-xl sm:text-2xl font-bold text-green-600">
                 {referenceCounts.positive}
               </div>
-              <div className="text-sm text-gray-500">Positive</div>
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Positive</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-yellow-600">
+            <div className="text-center p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+              <div className="text-xl sm:text-2xl font-bold text-yellow-600">
                 {referenceCounts.neutral}
               </div>
-              <div className="text-sm text-gray-500">Neutral</div>
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Neutral</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-red-600">
+            <div className="text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
+              <div className="text-xl sm:text-2xl font-bold text-red-600">
                 {referenceCounts.negative}
               </div>
-              <div className="text-sm text-gray-500">Negative</div>
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Negative</div>
             </div>
           </div>
 

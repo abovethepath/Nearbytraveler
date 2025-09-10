@@ -3931,9 +3931,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 data-testid="tab-references"
               >
                 References
-                {!!(vouches?.length) && (
-                  <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
-                    {vouches.length}
+                {!!(userReferences?.length) && (
+                  <span className="ml-2 px-2 py-1 text-xs bg-blue-500 text-white rounded-full">
+                    {userReferences.length}
                   </span>
                 )}
               </button>
@@ -7194,44 +7194,21 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </Card>
 
             {/* References Widget */}
-            {activeTab === 'references' && user?.id && (
-              <div className="space-y-4 mt-6" style={{zIndex: 10, position: 'relative'}}>
-                <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
-                  <CardHeader className="bg-white dark:bg-gray-900">
-                    <CardTitle className="flex items-center gap-2 text-black dark:text-white">
-                      <Star className="w-5 h-5 text-yellow-500" />
-                      References
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="bg-white dark:bg-gray-900">
-                    <ReferenceSystem userId={user.id} isOwnProfile={isOwnProfile} />
-                  </CardContent>
-                </Card>
-              </div>
-            )}
-
-            {/* Vouch Widget */}
-            {/* References Panel - Lazy Loaded */}
-            {activeTab === 'references' && loadedTabs.has('references') && (
+            {activeTab === 'references' && loadedTabs.has('references') && user?.id && (
               <div 
                 role="tabpanel"
                 id="panel-references"
                 aria-labelledby="tab-references"
                 ref={tabRefs.references}
-                className="mt-6"
-              data-testid="references-content"
-            >
-              {user?.id && (
-                <div>
-                <VouchWidget 
-                  userId={user.id} 
-                  isOwnProfile={isOwnProfile}
-                  currentUserId={currentUser?.id || 0}
-                />
-                </div>
-              )}
-            </div>
+                className="space-y-4 mt-6"
+                style={{zIndex: 10, position: 'relative'}}
+                data-testid="references-widget"
+              >
+                <ReferenceSystem userId={user.id} isOwnProfile={isOwnProfile} />
+              </div>
             )}
+
+            {/* Vouch Widget - Removed duplicate references section */}
 
             {/* Travel Panel - Current and Past Travel Plans */}
             {activeTab === 'travel' && user?.userType !== 'business' && (
