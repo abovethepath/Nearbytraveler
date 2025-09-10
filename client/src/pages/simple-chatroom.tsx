@@ -274,7 +274,69 @@ export default function SimpleChatroomPage() {
         {/* Header */}
         <Card className="mb-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-gray-800 dark:to-gray-700 border-0">
           <CardHeader className="pb-4">
-            <div className="flex items-center justify-between gap-4">
+            {/* Mobile Layout */}
+            <div className="block sm:hidden">
+              <div className="flex items-center gap-3 mb-3">
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigate('/city-chatrooms')}
+                  className="flex-shrink-0 hover:bg-white/20 dark:hover:bg-gray-600/20"
+                  title="Back to chatrooms"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span className="text-xs ml-1">Back to Chatrooms</span>
+                </Button>
+              </div>
+              
+              <div className="flex items-start gap-3 mb-4">
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                  {chatroom?.name?.charAt(0).toUpperCase() || "C"}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <CardTitle className="text-lg font-bold text-gray-900 dark:text-white leading-tight break-words hyphens-auto">
+                    {chatroom?.name || "Loading chatroom..."}
+                  </CardTitle>
+                  <div className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                    {members.length} member{members.length !== 1 ? 's' : ''} •<br className="sm:hidden" />
+                    <span className="sm:ml-1">Logged in as: <span className="font-medium">{currentUser?.username}</span> •</span><br className="sm:hidden" />
+                    <span className="sm:ml-1">{chatroom?.city || 'Unknown location'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {!userIsMember && (
+                <div className="mb-4 p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg border border-orange-200 dark:border-orange-800">
+                  <p className="text-sm text-orange-800 dark:text-orange-200 font-medium">
+                    You are not a member of this chatroom. Join to participate in conversations!
+                  </p>
+                </div>
+              )}
+              
+              {/* Mobile Action buttons */}
+              <div className="flex gap-3 mb-4">
+                <Button 
+                  onClick={joinRoom} 
+                  disabled={isJoining || userIsMember}
+                  className="flex-1 bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-0"
+                >
+                  {isJoining ? "Joining..." : userIsMember ? "✓ Joined" : "Join Chatroom"}
+                </Button>
+                {userIsMember && (
+                  <Button 
+                    onClick={leaveRoom} 
+                    variant="outline" 
+                    disabled={isLeaving}
+                    className="border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20"
+                  >
+                    {isLeaving ? "Leaving..." : "Leave"}
+                  </Button>
+                )}
+              </div>
+            </div>
+
+            {/* Desktop Layout */}
+            <div className="hidden sm:flex items-center justify-between gap-4">
               <Button 
                 variant="ghost" 
                 size="sm"
@@ -283,6 +345,7 @@ export default function SimpleChatroomPage() {
                 title="Back to chatrooms"
               >
                 <ArrowLeft className="w-4 h-4" />
+                <span className="ml-2">Back to Chatrooms</span>
               </Button>
               
               <div className="flex-1 flex flex-col items-center text-center">
@@ -291,11 +354,13 @@ export default function SimpleChatroomPage() {
                     {chatroom?.name?.charAt(0).toUpperCase() || "C"}
                   </div>
                   <div>
-                    <CardTitle className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white leading-tight break-words">
+                    <CardTitle className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white leading-tight break-words">
                       {chatroom?.name || "Loading chatroom..."}
                     </CardTitle>
                     <div className="text-sm text-gray-600 dark:text-gray-300">
-                      {members.length} member{members.length !== 1 ? 's' : ''} • {chatroom?.city || 'Unknown location'}
+                      {members.length} member{members.length !== 1 ? 's' : ''} • 
+                      Logged in as: <span className="font-medium">{currentUser?.username}</span> • 
+                      {chatroom?.city || 'Unknown location'}
                     </div>
                   </div>
                 </div>
