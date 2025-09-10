@@ -46,15 +46,14 @@ export default function SimpleChatroomPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messageText, setMessageText] = useState("");
   
-  // Simple membership tracking - NO AUTO-JOIN
   const [isJoining, setIsJoining] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
 
-  // Extract chatroom ID from URL path: /simple-chatroom/198
+  // Extract chatroom ID from URL
   const pathSegments = location.split('/');
   const chatroomId = parseInt(pathSegments[2] || '198');
   
-  // Get current user with error handling
+  // Get current user
   const getCurrentUser = () => {
     try {
       const storedUser = localStorage.getItem('travelconnect_user') || localStorage.getItem('user');
@@ -77,36 +76,32 @@ export default function SimpleChatroomPage() {
   const { data: chatroom, isLoading: chatroomLoading } = useQuery<Chatroom>({
     queryKey: [`/api/chatrooms/${chatroomId}`],
     enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
-    staleTime: 10 * 60 * 1000, // 10 minutes - chatroom details rarely change
+    staleTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
 
-  // Get members list - check if current user is a member
+  // Get members list
   const { data: members = [], refetch: refetchMembers } = useQuery<ChatMember[]>({
     queryKey: [`/api/chatrooms/${chatroomId}/members`],
     enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
-    refetchInterval: 10000, // 10 seconds
-    staleTime: 0, // Always fetch fresh data
+    refetchInterval: 10000,
+    staleTime: 0,
     refetchOnWindowFocus: false,
   });
 
-  // Check membership when members data changes - SIMPLE CHECK ONLY
+  // Check membership
   const userIsMember = Array.isArray(members) ? members.some((member: ChatMember) => member.id === currentUserId) : false;
-  
 
-  // Get messages - load immediately, server will handle membership check
+  // Get messages
   const { data: messages = [], isLoading: messagesLoading, isFetching: messagesFetching, refetch: refetchMessages, error: messagesError } = useQuery<ChatMessage[]>({
     queryKey: [`/api/chatrooms/${chatroomId}/messages`],
     enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
-    refetchInterval: 8000, // Poll every 8 seconds
-    staleTime: 30000, // 30 seconds
+    refetchInterval: 8000,
+    staleTime: 30000,
     refetchOnWindowFocus: false,
   });
 
-
-  // NO AUTO-JOIN - Users must manually click Join button
-
-  // Join room function - MANUAL ONLY
+  // Join room function
   async function joinRoom() {
     if (!currentUserId || isJoining || userIsMember) {
       return;
@@ -130,10 +125,7 @@ export default function SimpleChatroomPage() {
           description: "You have successfully joined the chatroom",
           className: "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100",
         });
-        // Refresh data immediately - clear cache and refetch
         queryClient.removeQueries({ queryKey: [`/api/chatrooms/${chatroomId}/members`] });
-        
-        // Force immediate refresh to update UI
         refetchMembers();
       } else {
         throw new Error("Failed to join chatroom");
@@ -190,94 +182,28 @@ export default function SimpleChatroomPage() {
     }
   }
 
-  const memberCount = members.length;
-
-  // Enhanced send message with multiple API attempts
+  // Send message
   const sendMessageMutation = useMutation({
     mutationFn: async (content: string) => {
       if (!currentUser?.id) throw new Error("User not found");
       if (!userIsMember) throw new Error("You must join the chatroom first");
 
-      // Try multiple endpoints and methods for sending messages
-      const messageAttempts = [
-        // Standard REST approaches
-        { url: `/api/chatrooms/${chatroomId}/messages`, body: { content } },
-        { url: `/api/chatrooms/${chatroomId}/messages`, body: { message: content } },
-        { url: `/api/chatrooms/${chatroomId}/messages`, body: { text: content } },
-        
-        // With user ID in body
-        { url: `/api/chatrooms/${chatroomId}/messages`, body: { content, user_id: currentUserId } },
-        { url: `/api/chatrooms/${chatroomId}/messages`, body: { content, userId: currentUserId } },
-        { url: `/api/chatrooms/${chatroomId}/messages`, body: { content, senderId: currentUserId } },
-        
-        // Alternative endpoints
-        { url: `/api/chatroom/${chatroomId}/messages`, body: { content } },
-        { url: `/api/chatrooms/${chatroomId}/message`, body: { content } },
-        
-        // Different API structure
-        { url: `/api/messages`, body: { content, chatroom_id: chatroomId, user_id: currentUserId } },
-        { url: `/api/send-message`, body: { content, chatroomId: chatroomId, userId: currentUserId } }
-      ];
+      const response = await fetch(`/api/chatrooms/${chatroomId}/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': String(currentUserId)
+        },
+        body: JSON.stringify({ content }),
+        credentials: 'include'
+      });
       
-      let messageSuccessful = false;
-      let lastError = null;
-      
-      for (const attempt of messageAttempts) {
-        if (messageSuccessful) break;
-        
-        try {
-          
-          const response = await fetch(attempt.url, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'x-user-id': String(currentUserId),
-              'X-User-ID': String(currentUserId),
-              'user-id': String(currentUserId)
-            },
-            body: JSON.stringify(attempt.body),
-            credentials: 'include'
-          });
-          
-          
-          // Check if response is HTML (error page) vs JSON
-          const contentType = response.headers.get('content-type');
-          if (contentType && contentType.includes('text/html')) {
-            const htmlError = await response.text();
-            throw new Error(`Server returned HTML error page (${response.status})`);
-          }
-          
-          if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`${response.status}: ${errorText}`);
-          }
-          
-          // Try to parse JSON response
-          let data;
-          try {
-            const responseText = await response.text();
-            if (responseText.trim() === '') {
-              // Empty response is sometimes OK for message sending
-              data = { success: true };
-            } else {
-              data = JSON.parse(responseText);
-            }
-          } catch (parseError) {
-            // If we get here, the API might return non-JSON success responses
-            data = { success: true };
-          }
-          
-          messageSuccessful = true;
-          return data;
-          
-        } catch (error) {
-          lastError = error;
-        }
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`${response.status}: ${errorText}`);
       }
       
-      if (!messageSuccessful) {
-        throw lastError || new Error('All message send attempts failed');
-      }
+      return response.json();
     },
     onSuccess: () => {
       setMessageText("");
@@ -296,7 +222,7 @@ export default function SimpleChatroomPage() {
     },
   });
 
-  // Auto-scroll to bottom only when user sends a message, not on every message update
+  // Auto-scroll when sending message
   useEffect(() => {
     if (messagesEndRef.current && sendMessageMutation.isSuccess) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -348,7 +274,6 @@ export default function SimpleChatroomPage() {
         {/* Header */}
         <Card className="mb-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-gray-800 dark:to-gray-700 border-0">
           <CardHeader className="pb-4">
-            {/* Clean Header Layout */}
             <div className="flex items-center justify-between gap-4">
               <Button 
                 variant="ghost" 
@@ -374,7 +299,6 @@ export default function SimpleChatroomPage() {
                     </div>
                   </div>
                 </div>
-                
                 
                 {!userIsMember && (
                   <div className="mt-3 p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg border border-orange-200 dark:border-orange-800">
@@ -407,7 +331,7 @@ export default function SimpleChatroomPage() {
               </div>
             </div>
             
-            {/* Member List in Header - Show All Members with Avatars */}
+            {/* Member List */}
             {Array.isArray(members) && members.length > 0 && (
               <div className="mt-4 pt-4 border-t">
                 <div className="flex items-center gap-2 mb-3">
@@ -420,7 +344,6 @@ export default function SimpleChatroomPage() {
                   )}
                 </div>
                 
-                {/* Show first 8 members in header */}
                 <div className="flex flex-wrap gap-2">
                   {members.slice(0, 8).map((member) => (
                     <button
@@ -435,7 +358,7 @@ export default function SimpleChatroomPage() {
                         user={{
                           id: member.id,
                           username: member.username,
-                          profileImage: member.profileImage
+                          profileImage: member.profileImage || null
                         }}
                         size="sm"
                         clickable={false}
@@ -451,13 +374,12 @@ export default function SimpleChatroomPage() {
                   ))}
                   {members.length > 8 && (
                     <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                      +{members.length - 8} more (see below)
+                      +{members.length - 8} more
                     </div>
                   )}
                 </div>
               </div>
             )}
-            
           </CardHeader>
         </Card>
 
@@ -494,14 +416,10 @@ export default function SimpleChatroomPage() {
               ) : (
                 <div className="space-y-3">
                   {messages.map((message, index) => {
-                    // Simplified sender identification using correct API structure
                     const isCurrentUser = message.sender_id === currentUserId;
-                    
-                    // Use message username and profile_image from API response
                     const senderName = message.username || 'Unknown User';
                     const senderAvatar = message.profile_image;
                     
-                    // Fixed timestamp parsing - use created_at field
                     let displayTime = 'Just now';
                     if (message.created_at) {
                       try {
@@ -519,7 +437,7 @@ export default function SimpleChatroomPage() {
                         key={`${message.id}-${index}`}
                         className={`flex items-start gap-3 ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
                       >
-                        {/* Avatar for others' messages (left side) */}
+                        {/* Avatar for others' messages */}
                         {!isCurrentUser && (
                           <div 
                             className="flex-shrink-0 mt-1 cursor-pointer group relative"
@@ -529,7 +447,7 @@ export default function SimpleChatroomPage() {
                               user={{
                                 id: message.sender_id,
                                 username: senderName,
-                                profileImage: senderAvatar
+                                profileImage: senderAvatar || null
                               }}
                               size="sm"
                               className="border border-gray-200 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-200 group-hover:scale-105"
@@ -549,165 +467,55 @@ export default function SimpleChatroomPage() {
                         <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg shadow-sm ${
                           isCurrentUser
                             ? 'bg-blue-500 text-white'
-                            : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-600'
+                            : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border'
                         }`}>
-                          <div className={`text-xs mb-1 font-medium ${
-                            isCurrentUser 
-                              ? 'text-blue-100' 
-                              : 'text-gray-700 dark:text-gray-300'
-                          }`}>
-                            <button
-                              onClick={() => !isCurrentUser && navigate(`/profile/${message.sender_id}`)}
-                              className="hover:underline"
-                            >
-                              {isCurrentUser ? 'You' : senderName}
-                            </button>
-                            <span className="ml-2 text-xs">
-                              {displayTime}
-                            </span>
+                          {!isCurrentUser && (
+                            <div className="text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
+                              {senderName}
+                            </div>
+                          )}
+                          <div className="text-sm break-words">
+                            {message.content}
                           </div>
-                          <div className={`font-medium leading-relaxed ${
-                            isCurrentUser 
-                              ? 'text-white' 
-                              : 'text-gray-900 dark:text-white'
+                          <div className={`text-xs mt-1 ${
+                            isCurrentUser ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'
                           }`}>
-                            {message.content || message.message || message.text || 'No message content'}
+                            {displayTime}
                           </div>
                         </div>
-
-                        {/* Avatar for current user's messages (right side) */}
-                        {isCurrentUser && (
-                          <div 
-                            className="flex-shrink-0 mt-1 cursor-pointer group relative"
-                            onClick={() => navigate(`/profile/${currentUserId}`)}
-                          >
-                            <Avatar className="w-8 h-8 border border-gray-200 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-200 group-hover:scale-105">
-                              <AvatarImage 
-                                src={currentUser?.profileImage || senderAvatar} 
-                                alt={`${senderName}'s avatar`}
-                                className="object-cover"
-                              />
-                              <AvatarFallback className="text-xs bg-blue-500 text-white font-semibold">
-                                {senderName[0]?.toUpperCase() || 'U'}
-                              </AvatarFallback>
-                            </Avatar>
-                            
-                            {/* Online indicator for current user */}
-                            <div className="absolute -bottom-1 -right-1 w-3 h-3 border-2 border-white dark:border-gray-800 rounded-full bg-green-400"></div>
-                          </div>
-                        )}
                       </div>
                     );
                   })}
-                  {/* Subtle indicator when fetching new messages */}
-                  {messagesFetching && !messagesLoading && (
-                    <div className="flex justify-center">
-                      <div className="text-xs text-gray-400 bg-gray-50 dark:bg-gray-800 px-3 py-1 rounded-full">
-                        Checking for new messages...
-                      </div>
-                    </div>
-                  )}
+                  <div ref={messagesEndRef} />
                 </div>
               )}
-              <div ref={messagesEndRef} />
             </div>
 
             {/* Message Input */}
-            <form onSubmit={handleSendMessage} className="flex gap-2">
-              <Input
-                value={messageText}
-                onChange={(e) => setMessageText(e.target.value)}
-                placeholder={
-                  userIsMember ? "Type your message..." : "Join the chatroom to send messages"
-                }
-                disabled={sendMessageMutation.isPending || !userIsMember}
-                className="flex-1"
-              />
-              <Button 
-                type="submit" 
-                disabled={!messageText.trim() || sendMessageMutation.isPending || !userIsMember}
-              >
-                <Send className="w-4 h-4" />
-              </Button>
-            </form>
+            {userIsMember && (
+              <form onSubmit={handleSendMessage} className="flex gap-2">
+                <Input
+                  value={messageText}
+                  onChange={(e) => setMessageText(e.target.value)}
+                  placeholder="Type your message..."
+                  className="flex-1"
+                  disabled={sendMessageMutation.isPending}
+                />
+                <Button 
+                  type="submit" 
+                  disabled={!messageText.trim() || sendMessageMutation.isPending}
+                  className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-0"
+                >
+                  {sendMessageMutation.isPending ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
+                </Button>
+              </form>
+            )}
           </CardContent>
         </Card>
-
-        {/* All Members List - Complete List at Bottom */}
-        {Array.isArray(members) && members.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Users className="w-5 h-5" />
-                All Chatroom Members ({members.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                {members.map((member) => (
-                  <button
-                    key={member.id}
-                    onClick={() => {
-                      console.log('Navigating to profile:', member.id, 'for user:', member.username);
-                      navigate(`/profile/${member.id}`);
-                    }}
-                    className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-600/50 transition-colors text-left w-full"
-                  >
-                    <Avatar className="w-10 h-10 border-2 border-white dark:border-gray-600 shadow-sm">
-                      <AvatarImage 
-                        src={member.profileImage || member.profile_image} 
-                        alt={member.username}
-                        className="object-cover"
-                      />
-                      <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white font-bold">
-                        {member.username.slice(0, 1).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-gray-900 dark:text-white truncate">
-                          {member.username}
-                        </span>
-                        {member.role === 'admin' && (
-                          <span className="text-xs bg-blue-500 text-white rounded px-2 py-1">
-                            Admin
-                          </span>
-                        )}
-                        {member.id === currentUserId && (
-                          <span className="text-xs bg-green-500 text-white rounded px-2 py-1">
-                            You
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400 truncate">
-                        {member.name || 'No display name'}
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-              
-              {/* Member Statistics */}
-              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
-                <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
-                  <span>
-                    <strong className="text-gray-900 dark:text-white">{members.length}</strong> total members
-                  </span>
-                  <span>
-                    <strong className="text-gray-900 dark:text-white">
-                      {members.filter(m => m.role === 'admin').length}
-                    </strong> admin{members.filter(m => m.role === 'admin').length !== 1 ? 's' : ''}
-                  </span>
-                  <span>
-                    <strong className="text-gray-900 dark:text-white">
-                      {members.filter(m => m.role !== 'admin').length}
-                    </strong> regular member{members.filter(m => m.role !== 'admin').length !== 1 ? 's' : ''}
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
       </div>
     </div>
   );
