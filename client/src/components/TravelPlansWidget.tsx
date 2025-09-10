@@ -93,7 +93,7 @@ export default function TravelPlansWidget({ userId, isOwnProfile = false }: Trav
   return (
     <>
     <Card 
-      className="travel-plans-widget bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-sm"
+      className="travel-plans-widget bg-white dark:bg-gray-800 border border-black dark:border-gray-700 shadow-sm"
       data-testid="travel-plans-widget"
     >
       <CardHeader>

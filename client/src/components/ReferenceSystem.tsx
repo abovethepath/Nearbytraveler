@@ -236,7 +236,7 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
   return (
     <div className="space-y-6">
       {/* References Summary Card */}
-      <Card>
+      <Card className="border border-black dark:border-gray-700">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">

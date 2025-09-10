@@ -4185,7 +4185,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Secret Activities Section - Separate Card */}
             {user?.userType !== 'business' && user?.secretActivities && (
-              <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm w-full overflow-hidden">
+              <Card className="bg-white dark:bg-gray-800 border border-black dark:border-gray-700 shadow-sm w-full overflow-hidden">
                 <CardContent className="p-4">
                   <div className="p-3 bg-gradient-to-br from-orange-50 to-blue-50 border-l-4 border-orange-200 rounded-r-lg">
                     <h5 className="font-medium text-black mb-2">
@@ -4199,9 +4199,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </Card>
             )}
 
-
             {/* Travel Plans and Business Information Card */}
-            <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm w-full overflow-hidden">
+            <Card className="bg-white dark:bg-gray-800 border border-black dark:border-gray-700 shadow-sm w-full overflow-hidden">
               <CardContent className="p-4">
 
                 {/* Business Contact Information */}
@@ -7046,7 +7045,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {/* MOBILE-FRIENDLY RIGHT-SIDE WIDGETS SECTION */}
             
             {/* Languages Widget - Top Priority for Customer Visibility */}
-            <Card className="hover:shadow-lg transition-all duration-200 border-2 border-blue-200 dark:border-blue-700 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
+            <Card className="hover:shadow-lg transition-all duration-200 border border-black dark:border-gray-700 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">

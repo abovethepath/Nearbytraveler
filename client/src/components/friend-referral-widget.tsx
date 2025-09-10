@@ -130,7 +130,7 @@ ${emailForm.personalMessage || generatePersonalMessage()}`;
   };
 
   return (
-    <Card className="border-gray-200 bg-gray-100 dark:bg-gray-800 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
+    <Card className="border border-black bg-gray-100 dark:bg-gray-800 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Users className="h-5 w-5 text-gray-600 dark:text-gray-400" />
