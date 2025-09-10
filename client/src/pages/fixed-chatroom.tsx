@@ -609,7 +609,11 @@ export default function FixedChatroom() {
                         {/* Clickable Avatar */}
                         <div 
                           className="relative cursor-pointer group"
-                          onClick={() => window.location.href = `/profile/${member.id}`}
+                          onClick={() => {
+                            console.log('🖱️ Avatar clicked for member:', member);
+                            console.log('🔗 Navigating to profile:', member.id);
+                            window.location.href = `/profile/${member.id}`;
+                          }}
                         >
                           <Avatar className="w-14 h-14 ring-2 ring-purple-200 hover:ring-purple-400 transition-all duration-200 group-hover:scale-105">
                             <AvatarImage 
@@ -630,7 +634,11 @@ export default function FixedChatroom() {
                         {/* Member Info - also clickable */}
                         <div 
                           className="flex-1 min-w-0 cursor-pointer" 
-                          onClick={() => window.location.href = `/profile/${member.id}`}
+                          onClick={() => {
+                            console.log('🖱️ Member name clicked for member:', member);
+                            console.log('🔗 Navigating to profile:', member.id);
+                            window.location.href = `/profile/${member.id}`;
+                          }}
                         >
                           <div className="flex items-center space-x-2 mb-1">
                             <p className="text-sm font-semibold text-gray-900 dark:text-white truncate hover:text-purple-600 transition-colors">
