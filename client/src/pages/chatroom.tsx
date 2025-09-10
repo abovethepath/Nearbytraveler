@@ -173,31 +173,32 @@ export default function ChatroomPage() {
         {/* Header */}
         <Card className="mb-6">
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => window.history.back()}
-                  data-testid="button-back"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                </Button>
-                <div>
-                  <CardTitle className="text-xl">
+            <div className="flex items-center gap-4">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => window.location.href = '/city-chatrooms'}
+                data-testid="button-back"
+                className="flex-shrink-0 hover:bg-white/20 dark:hover:bg-gray-600/20"
+                aria-label="Back"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                <span className="sr-only">Back</span>
+              </Button>
+              
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
+                  {chatroom?.name?.charAt(0).toUpperCase() || 'C'}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <CardTitle className="text-base sm:text-lg md:text-2xl font-bold text-gray-900 dark:text-white leading-tight break-words whitespace-normal" data-testid="text-chatroom-title">
                     {chatroom?.name || `Chatroom ${chatroomId}`}
                   </CardTitle>
-                  {chatroom && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                      {chatroom.city}, {chatroom.state}
-                    </p>
-                  )}
+                  <div className="text-sm text-gray-600 dark:text-gray-300">
+                    {chatroom?.memberCount || 0} member{((chatroom?.memberCount || 0) !== 1) ? 's' : ''} • {chatroom?.city ? `${chatroom.city}, ${chatroom.state}` : 'Unknown location'}
+                  </div>
                 </div>
               </div>
-              <Badge variant="secondary">
-                <Users className="w-3 h-3 mr-1" />
-                {chatroom?.memberCount || 0} members
-              </Badge>
             </div>
           </CardHeader>
         </Card>

@@ -244,7 +244,9 @@ export default function SimpleChatroomPage() {
           <Card>
             <CardContent className="p-8 text-center">
               <div className="text-red-600 font-semibold mb-4">Invalid Chatroom ID</div>
-              <Button onClick={() => navigate('/city-chatrooms')}>Back to Chatrooms</Button>
+              <Button onClick={() => navigate('/city-chatrooms')} aria-label="Back to chatrooms">
+                <ArrowLeft className="w-4 h-4" />
+              </Button>
             </CardContent>
           </Card>
         </div>

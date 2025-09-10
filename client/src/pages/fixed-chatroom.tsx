@@ -500,7 +500,7 @@ export default function FixedChatroom() {
               className="flex items-center space-x-2 hover:bg-purple-100"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Back to Chatrooms</span>
+              <span className="sr-only">Back</span>
             </Button>
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
