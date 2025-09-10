@@ -125,14 +125,14 @@ export default function SimpleChatroomPage() {
           description: "You have successfully joined the chatroom",
           className: "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100",
         });
-        queryClient.removeQueries({ queryKey: [`/api/chatrooms/${chatroomId}/members`] });
         refetchMembers();
       } else {
-        throw new Error("Failed to join chatroom");
+        const errorText = await response.text();
+        throw new Error(`${response.status}: ${errorText}`);
       }
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: "Error", 
         description: error.message || "Failed to join chatroom",
         variant: "destructive",
         className: "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100",
@@ -144,9 +144,12 @@ export default function SimpleChatroomPage() {
 
   // Leave room function
   async function leaveRoom() {
-    if (!currentUserId || isLeaving || !userIsMember) return;
+    if (!currentUserId || isLeaving || !userIsMember) {
+      return;
+    }
     
     setIsLeaving(true);
+    
     try {
       const response = await fetch(`/api/chatrooms/${chatroomId}/leave`, {
         method: "POST",
@@ -160,17 +163,15 @@ export default function SimpleChatroomPage() {
       if (response.ok) {
         toast({
           title: "Left chatroom",
-          description: "You have successfully left the chatroom",
+          description: "You have left the chatroom",
           className: "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100",
         });
-        queryClient.invalidateQueries({ queryKey: [`/api/chatrooms/${chatroomId}/members`] });
-        queryClient.removeQueries({ queryKey: [`/api/chatrooms/${chatroomId}/messages`] });
-        setTimeout(() => navigate('/city-chatrooms'), 1000);
+        refetchMembers();
       } else {
-        throw new Error("Failed to leave chatroom");
+        const errorText = await response.text();
+        throw new Error(`${response.status}: ${errorText}`);
       }
     } catch (error: any) {
-      console.error("Leave room error:", error);
       toast({
         title: "Error", 
         description: error.message || "Failed to leave chatroom",
@@ -274,69 +275,7 @@ export default function SimpleChatroomPage() {
         {/* Header */}
         <Card className="mb-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-gray-800 dark:to-gray-700 border-0">
           <CardHeader className="pb-4">
-            {/* Mobile Layout */}
-            <div className="block sm:hidden">
-              <div className="flex items-center gap-3 mb-3">
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => navigate('/city-chatrooms')}
-                  className="flex-shrink-0 hover:bg-white/20 dark:hover:bg-gray-600/20"
-                  title="Back to chatrooms"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  <span className="text-xs ml-1">Back to Chatrooms</span>
-                </Button>
-              </div>
-              
-              <div className="flex items-start gap-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
-                  {chatroom?.name?.charAt(0).toUpperCase() || "C"}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <CardTitle className="text-lg font-bold text-gray-900 dark:text-white leading-tight break-words hyphens-auto">
-                    {chatroom?.name || "Loading chatroom..."}
-                  </CardTitle>
-                  <div className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                    {members.length} member{members.length !== 1 ? 's' : ''} •<br className="sm:hidden" />
-                    <span className="sm:ml-1">Logged in as: <span className="font-medium">{currentUser?.username}</span> •</span><br className="sm:hidden" />
-                    <span className="sm:ml-1">{chatroom?.city || 'Unknown location'}</span>
-                  </div>
-                </div>
-              </div>
-
-              {!userIsMember && (
-                <div className="mb-4 p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg border border-orange-200 dark:border-orange-800">
-                  <p className="text-sm text-orange-800 dark:text-orange-200 font-medium">
-                    You are not a member of this chatroom. Join to participate in conversations!
-                  </p>
-                </div>
-              )}
-              
-              {/* Mobile Action buttons */}
-              <div className="flex gap-3 mb-4">
-                <Button 
-                  onClick={joinRoom} 
-                  disabled={isJoining || userIsMember}
-                  className="flex-1 bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-0"
-                >
-                  {isJoining ? "Joining..." : userIsMember ? "✓ Joined" : "Join Chatroom"}
-                </Button>
-                {userIsMember && (
-                  <Button 
-                    onClick={leaveRoom} 
-                    variant="outline" 
-                    disabled={isLeaving}
-                    className="border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20"
-                  >
-                    {isLeaving ? "Leaving..." : "Leave"}
-                  </Button>
-                )}
-              </div>
-            </div>
-
-            {/* Desktop Layout */}
-            <div className="hidden sm:flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
               <Button 
                 variant="ghost" 
                 size="sm"
@@ -345,63 +284,58 @@ export default function SimpleChatroomPage() {
                 title="Back to chatrooms"
               >
                 <ArrowLeft className="w-4 h-4" />
-                <span className="ml-2">Back to Chatrooms</span>
               </Button>
               
-              <div className="flex-1 flex flex-col items-center text-center">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
-                    {chatroom?.name?.charAt(0).toUpperCase() || "C"}
-                  </div>
-                  <div>
-                    <CardTitle className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white leading-tight break-words">
-                      {chatroom?.name || "Loading chatroom..."}
-                    </CardTitle>
-                    <div className="text-sm text-gray-600 dark:text-gray-300">
-                      {members.length} member{members.length !== 1 ? 's' : ''} • 
-                      Logged in as: <span className="font-medium">{currentUser?.username}</span> • 
-                      {chatroom?.city || 'Unknown location'}
-                    </div>
-                  </div>
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-xl flex-shrink-0">
+                  {chatroom?.name?.charAt(0).toUpperCase() || "C"}
                 </div>
-                
-                {!userIsMember && (
-                  <div className="mt-3 p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg border border-orange-200 dark:border-orange-800">
-                    <p className="text-sm text-orange-800 dark:text-orange-200 font-medium">
-                      You are not a member of this chatroom. Join to participate in conversations!
-                    </p>
+                <div className="flex-1 min-w-0">
+                  <CardTitle className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white leading-tight truncate">
+                    {chatroom?.name || "Loading chatroom..."}
+                  </CardTitle>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">
+                    {members.length} member{members.length !== 1 ? 's' : ''} • {chatroom?.city || 'Unknown location'}
                   </div>
-                )}
-                
-                {/* Action buttons */}
-                <div className="flex gap-3 mt-4">
-                  <Button 
-                    onClick={joinRoom} 
-                    disabled={isJoining || userIsMember}
-                    className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-0"
-                  >
-                    {isJoining ? "Joining..." : userIsMember ? "✓ Joined" : "Join Chatroom"}
-                  </Button>
-                  {userIsMember && (
-                    <Button 
-                      onClick={leaveRoom} 
-                      variant="outline" 
-                      disabled={isLeaving}
-                      className="border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20"
-                    >
-                      {isLeaving ? "Leaving..." : "Leave"}
-                    </Button>
-                  )}
                 </div>
               </div>
             </div>
+
+            {!userIsMember && (
+              <div className="mt-4 p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg border border-orange-200 dark:border-orange-800">
+                <p className="text-sm text-orange-800 dark:text-orange-200 font-medium">
+                  You are not a member of this chatroom. Join to participate in conversations!
+                </p>
+              </div>
+            )}
             
+            {/* Action buttons */}
+            <div className="flex gap-3 mt-4">
+              <Button 
+                onClick={joinRoom} 
+                disabled={isJoining || userIsMember}
+                className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-0"
+              >
+                {isJoining ? "Joining..." : userIsMember ? "✓ Joined" : "Join Chatroom"}
+              </Button>
+              {userIsMember && (
+                <Button 
+                  onClick={leaveRoom} 
+                  variant="outline" 
+                  disabled={isLeaving}
+                  className="border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20"
+                >
+                  {isLeaving ? "Leaving..." : "Leave"}
+                </Button>
+              )}
+            </div>
+
             {/* Member List */}
             {Array.isArray(members) && members.length > 0 && (
               <div className="mt-4 pt-4 border-t">
                 <div className="flex items-center gap-2 mb-3">
                   <Users className="w-4 h-4" />
-                  <span className="text-sm font-medium">Online Members ({members.length})</span>
+                  <span className="text-sm font-medium">Members ({members.length})</span>
                   {userIsMember && (
                     <span className="text-xs bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-200 rounded px-2 py-1">
                       You're a member
@@ -448,126 +382,70 @@ export default function SimpleChatroomPage() {
           </CardHeader>
         </Card>
 
-        {/* Messages Container */}
+        {/* Messages */}
         <Card className="mb-6">
-          <CardContent className="p-4">
-            <div className="h-96 overflow-y-auto space-y-3 mb-4">
-              {!userIsMember ? (
-                <div className="flex items-center justify-center h-full text-gray-500">
-                  <div className="text-center">
-                    <p className="mb-2">Join this chatroom to see messages and participate</p>
-                    <Button onClick={joinRoom} disabled={isJoining}>
-                      {isJoining ? "Joining..." : "Join Chatroom"}
-                    </Button>
-                  </div>
-                </div>
-              ) : messagesLoading ? (
-                <div className="flex items-center justify-center h-full">
-                  <div className="flex items-center gap-2">
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>Loading messages...</span>
-                  </div>
-                </div>
-              ) : messages.length === 0 ? (
-                <div className="flex items-center justify-center h-full text-gray-500">
-                  <div className="text-center">
-                    <MessageCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                    <p>No messages yet. Start the conversation!</p>
-                    {messagesFetching && !messagesLoading && (
-                      <p className="text-xs text-gray-400 mt-2">Checking for new messages...</p>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {messages.map((message, index) => {
-                    const isCurrentUser = message.sender_id === currentUserId;
-                    const senderName = message.username || 'Unknown User';
-                    const senderAvatar = message.profile_image;
-                    
-                    let displayTime = 'Just now';
-                    if (message.created_at) {
-                      try {
-                        const date = new Date(message.created_at);
-                        if (!isNaN(date.getTime())) {
-                          displayTime = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                        }
-                      } catch (e) {
-                        console.error('Date parsing error:', e);
-                      }
-                    }
-
-                    return (
-                      <div
-                        key={`${message.id}-${index}`}
-                        className={`flex items-start gap-3 ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
-                      >
-                        {/* Avatar for others' messages */}
-                        {!isCurrentUser && (
-                          <div 
-                            className="flex-shrink-0 mt-1 cursor-pointer group relative"
-                            onClick={() => navigate(`/profile/${message.sender_id}`)}
-                          >
-                            <SimpleAvatar 
-                              user={{
-                                id: message.sender_id,
-                                username: senderName,
-                                profileImage: senderAvatar || null
-                              }}
-                              size="sm"
-                              className="border border-gray-200 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-200 group-hover:scale-105"
-                              clickable={false}
-                            />
-                            
-                            {/* Online indicator */}
-                            <div className="absolute -bottom-1 -right-1 w-3 h-3 border-2 border-white dark:border-gray-800 rounded-full bg-gray-400"></div>
-                            
-                            {/* Hover tooltip */}
-                            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 dark:bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                              View {senderName}'s Profile
-                            </div>
-                          </div>
-                        )}
-                        
-                        <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg shadow-sm ${
-                          isCurrentUser
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border'
-                        }`}>
-                          {!isCurrentUser && (
-                            <div className="text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
-                              {senderName}
-                            </div>
-                          )}
-                          <div className="text-sm break-words">
-                            {message.content}
-                          </div>
-                          <div className={`text-xs mt-1 ${
-                            isCurrentUser ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'
-                          }`}>
-                            {displayTime}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                  <div ref={messagesEndRef} />
-                </div>
+          <CardHeader className="border-b">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <MessageCircle className="w-5 h-5" />
+                Messages
+              </CardTitle>
+              {(messagesLoading || messagesFetching) && (
+                <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
               )}
             </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="h-96 overflow-y-auto p-4 space-y-3">
+              {messages.length === 0 ? (
+                <div className="text-center text-gray-500 dark:text-gray-400 py-8">
+                  No messages yet. Be the first to say hello!
+                </div>
+              ) : (
+                messages.map((message) => (
+                  <div key={message.id} className="flex gap-3">
+                    <SimpleAvatar 
+                      user={{
+                        id: message.sender_id,
+                        username: message.username,
+                        profileImage: message.profile_image || null
+                      }}
+                      size="sm"
+                      clickable={true}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-medium text-sm">{message.username}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {new Date(message.created_at).toLocaleTimeString()}
+                        </span>
+                      </div>
+                      <div className="text-sm text-gray-700 dark:text-gray-300 break-words">
+                        {message.content}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+          </CardContent>
+        </Card>
 
-            {/* Message Input */}
-            {userIsMember && (
-              <form onSubmit={handleSendMessage} className="flex gap-2">
+        {/* Message Input */}
+        {userIsMember ? (
+          <Card>
+            <CardContent className="p-4">
+              <form onSubmit={handleSendMessage} className="flex gap-3">
                 <Input
                   value={messageText}
                   onChange={(e) => setMessageText(e.target.value)}
                   placeholder="Type your message..."
                   className="flex-1"
-                  disabled={sendMessageMutation.isPending}
+                  maxLength={1000}
                 />
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   disabled={!messageText.trim() || sendMessageMutation.isPending}
                   className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-0"
                 >
@@ -578,9 +456,24 @@ export default function SimpleChatroomPage() {
                   )}
                 </Button>
               </form>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card>
+            <CardContent className="p-4 text-center">
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
+                Join this chatroom to send messages
+              </p>
+              <Button 
+                onClick={joinRoom} 
+                disabled={isJoining}
+                className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-0"
+              >
+                {isJoining ? "Joining..." : "Join Chatroom"}
+              </Button>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
