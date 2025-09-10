@@ -301,7 +301,7 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
           </div>
 
           {showWriteReference && (
-            <div className="space-y-4 p-6 border rounded-lg bg-white dark:bg-gray-900 shadow-lg mb-6">
+            <div className="space-y-4 p-6 border rounded-lg bg-white shadow-lg mb-6">
               <h4 className="font-semibold text-lg">{isEditingReference ? 'Edit Your Reference' : 'Write a Reference'}</h4>
               {isEditingReference && (
                 <p className="text-sm text-blue-600 dark:text-blue-400 mb-4">
@@ -369,7 +369,7 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
           )}
 
           {showPrivateReference && (
-            <div className="space-y-4 p-6 border rounded-lg bg-white dark:bg-gray-900 shadow-lg mb-6 border-orange-200 dark:border-orange-800">
+            <div className="space-y-4 p-6 border rounded-lg bg-white shadow-lg mb-6 border-orange-200">
               <h4 className="font-semibold text-lg text-orange-700 dark:text-orange-300 flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5" />
 Private Reference to Support Team
