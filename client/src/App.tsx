@@ -1116,9 +1116,17 @@ function Router() {
     return null;
   }
 
+  // NAVIGATION RELIABILITY FIX: Check ALL authentication sources immediately
+  const hasAnyAuthEvidence = 
+    authValue.isAuthenticated || 
+    !!user || 
+    !!localStorage.getItem('user') || 
+    !!localStorage.getItem('travelconnect_user') || 
+    !!localStorage.getItem('auth_token');
+
   return (
     <AuthContext.Provider value={authValue}>
-      {!authValue.isAuthenticated ? (
+      {!hasAnyAuthEvidence ? (
         // MOBILE FIX: Check if this is a navigation to home page from mobile nav
         location === '/home' && (localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token')) ? (
           // User clicked home button and has auth data - force authenticate
@@ -1148,9 +1156,9 @@ function Router() {
           </>
         )
       ) : (
-        // Show full app with navbar when authenticated
+        // Show full app with navbar when ANY authentication evidence exists
         <>
-          {console.log('🔍 APP ROUTING: User IS authenticated, showing authenticated app for location:', location)}
+          {console.log('🔍 APP ROUTING: Authentication evidence found, showing authenticated app for location:', location)}
           <div className="min-h-screen w-full max-w-full flex flex-col bg-background text-foreground overflow-x-hidden">
             {/* Navigation - ALWAYS show for authenticated users regardless of user state timing */}
             <>
