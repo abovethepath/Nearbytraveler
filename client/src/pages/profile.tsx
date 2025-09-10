@@ -6710,7 +6710,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             {connection.connectedUser?.name || connection.connectedUser?.username}
                           </p>
                           <p className="text-xs truncate text-gray-500 dark:text-gray-400">
-                            {connection.connectedUser?.location || "New member"}
+                            {connection.connectedUser?.location || connection.connectedUser?.username || "Member"}
                           </p>
                           
                           {/* How We Met Notes - Only for Profile Owner */}
@@ -6859,12 +6859,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             </div>
                           )}
                           
-                          {/* Show connection note for others viewing */}
-                          {!isOwnProfile && connection.connectionNote && (
-                            <div className="mt-2 text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded px-2 py-1">
-                              📍 {connection.connectionNote}
-                            </div>
-                          )}
+                          {/* Connection notes are private - only visible to profile owner */}
                         </div>
 
                         {/* Show the button on ≥sm only; on mobile the whole tile is tappable */}
