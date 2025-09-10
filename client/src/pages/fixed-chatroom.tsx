@@ -491,40 +491,45 @@ export default function FixedChatroom() {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
       <div className="container mx-auto px-4 py-6 max-w-6xl">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-4">
+        <div className="mb-6">
+          {/* Title Row */}
+          <div className="flex items-center gap-3 mb-4">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => window.location.href = '/city-chatrooms'}
-              className="flex items-center space-x-2 hover:bg-purple-100"
+              className="flex-shrink-0 hover:bg-purple-100"
             >
               <ArrowLeft className="w-4 h-4" />
               <span className="sr-only">Back</span>
             </Button>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                🏠 {chatroom?.name || `Chatroom #${chatroomId}`}
-              </h1>
-              <p className="text-sm text-gray-600 dark:text-gray-300">
-                {members.length} member{members.length !== 1 ? 's' : ''} • 
-                Logged in as: <strong>{currentUser.username}</strong>
-                {chatroom?.city && ` • ${chatroom.city}`}
-                {chatroom?.state && `, ${chatroom.state}`}
-              </p>
+            
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                {chatroom?.name?.charAt(0).toUpperCase() || 'C'}
+              </div>
+              <div className="flex-1 min-w-0">
+                <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white leading-tight break-words whitespace-normal">
+                  {chatroom?.name || `Chatroom #${chatroomId}`}
+                </h1>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  {members.length} member{members.length !== 1 ? 's' : ''}{chatroom?.city && ` • ${chatroom.city}`}{chatroom?.state && `, ${chatroom.state}`}
+                </p>
+              </div>
             </div>
           </div>
           
-          <div className="flex items-center space-x-3">
+          {/* Action Buttons Row */}
+          <div className="flex items-center gap-3 flex-wrap">
             <Button
               variant="outline"
               size="sm"
               onClick={loadAllData}
-              className="flex items-center space-x-2"
+              className="flex items-center gap-2"
               disabled={loading}
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-              <span>Refresh</span>
+              <span className="hidden sm:inline">Refresh</span>
             </Button>
             
             {userIsMember ? (
@@ -533,20 +538,20 @@ export default function FixedChatroom() {
                 size="sm"
                 onClick={leaveChatroom}
                 disabled={isLeaving}
-                className="flex items-center space-x-2"
+                className="flex items-center gap-2"
               >
                 {isLeaving && <Loader2 className="w-4 h-4 animate-spin" />}
-                <span>{isLeaving ? 'Leaving...' : 'Leave Chat'}</span>
+                <span>{isLeaving ? 'Leaving...' : 'Leave'}</span>
               </Button>
             ) : (
               <Button
                 size="sm"
                 onClick={joinChatroom}
                 disabled={isJoining}
-                className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white font-semibold px-6"
+                className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold"
               >
                 {isJoining && <Loader2 className="w-4 h-4 animate-spin" />}
-                <span>{isJoining ? 'Joining...' : 'Join Chat'}</span>
+                <span>{isJoining ? 'Joining...' : 'Join'}</span>
               </Button>
             )}
           </div>
