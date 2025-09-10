@@ -1,25 +1,21 @@
-import { useState, useEffect } from "react";
+import { useMemo } from "react";
 
 interface SimpleAvatarProps {
   user: {
     id: number;
     username: string;
     profileImage?: string | null;
-    avatarColor?: string | null; // User's chosen avatar color preference
-    avatarGradient?: string | null; // User's gradient preference
+    avatarColor?: string | null;
+    avatarGradient?: string | null;
   } | null;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
-  clickable?: boolean; // Whether the avatar should be clickable
-  onClick?: () => void; // Custom click handler
+  clickable?: boolean;
+  onClick?: () => void;
 }
 
 export function SimpleAvatar({ user, size = 'md', className = '', clickable = true, onClick }: SimpleAvatarProps) {
-  // Simple, stable image state management
-  const [currentImage, setCurrentImage] = useState<string | null>(null);
-  const [forceRefresh, setForceRefresh] = useState(0);
-
-  // Size mappings
+  // Size classes
   const sizeClasses = {
     sm: 'w-8 h-8 text-sm',
     md: 'w-10 h-10 text-base', 
@@ -27,78 +23,39 @@ export function SimpleAvatar({ user, size = 'md', className = '', clickable = tr
     xl: 'w-full h-full text-xl'
   };
 
-  // Generate colorful avatar based on username and user preferences
-  const generateAvatar = (username: string | null | undefined, userColor?: string | null) => {
-    if (!username || typeof username !== 'string' || username.length === 0) {
-      return `https://ui-avatars.com/api/?name=U&background=06b6d4&color=fff&size=150`;
-    }
-    
-    const firstLetter = username.charAt(0).toUpperCase();
-    let backgroundColor = '06b6d4'; // Default cyan
-    
-    // Use user's custom color if available
-    if (userColor && userColor.startsWith('#')) {
-      backgroundColor = userColor.slice(1); // Remove # prefix for ui-avatars API
-    } else {
-      // Enhanced gradient color system based on username characteristics
-      const gradientColors = [
-        '3b82f6', // blue
-        'ef4444', // red  
-        '10b981', // green
-        'f59e0b', // orange
-        '8b5cf6', // purple
-        'ec4899', // pink
-        '06b6d4', // cyan
-        '84cc16', // lime
-        'f97316', // amber
-        'e11d48', // rose
-        '7c3aed', // violet
-        '059669'  // emerald
-      ];
-      
-      // Create a more sophisticated color selection based on username
-      const charCodes = username.split('').map(char => char.charCodeAt(0));
-      const colorSeed = charCodes.reduce((acc, code) => acc + code, 0);
-      const colorIndex = colorSeed % gradientColors.length;
-      backgroundColor = gradientColors[colorIndex];
-    }
-    
-    return `https://ui-avatars.com/api/?name=${firstLetter}&background=${backgroundColor}&color=fff&size=150`;
-  };
-
-  // Update image when user changes or force refresh - STABLE VERSION
-  useEffect(() => {
-    if (!user) {
-      setCurrentImage(null);
-      return;
+  // Stable avatar generation with useMemo to prevent flickering
+  const avatarData = useMemo(() => {
+    if (!user?.username) {
+      return { 
+        letter: 'U', 
+        bgColor: 'bg-blue-500',
+        hasImage: false,
+        imageUrl: null
+      };
     }
 
-    // Stable image assignment without excessive logging to prevent blinking
-    if (user.profileImage && user.profileImage.trim() !== '' && user.profileImage.length > 10) {
-      // Use profile image without cache busting to prevent constant reloads
-      setCurrentImage(user.profileImage);
-    } else {
-      // Generate stable avatar without timestamp changes
-      const generatedAvatar = generateAvatar(user.username, user.avatarColor);
-      setCurrentImage(generatedAvatar);
-    }
+    const firstLetter = user.username.charAt(0).toUpperCase();
+    
+    // Simple color based on username
+    const colors = [
+      'bg-blue-500', 'bg-red-500', 'bg-green-500', 'bg-orange-500',
+      'bg-purple-500', 'bg-pink-500', 'bg-cyan-500', 'bg-lime-500'
+    ];
+    const colorIndex = user.username.charCodeAt(0) % colors.length;
+    const bgColor = colors[colorIndex];
+
+    // Check if has valid profile image
+    const hasImage = user.profileImage && 
+                     user.profileImage.trim() !== '' && 
+                     user.profileImage.length > 10;
+
+    return {
+      letter: firstLetter,
+      bgColor,
+      hasImage,
+      imageUrl: hasImage ? user.profileImage : null
+    };
   }, [user?.id, user?.username, user?.profileImage]);
-
-  // Minimal refresh handling to prevent blinking
-  useEffect(() => {
-    const handleRefresh = (event: any) => {
-      // Only refresh for actual profile photo updates
-      if (event.type === 'profilePhotoUpdated' && event.detail?.userId === user?.id) {
-        setForceRefresh(prev => prev + 1);
-      }
-    };
-
-    window.addEventListener('profilePhotoUpdated', handleRefresh);
-    
-    return () => {
-      window.removeEventListener('profilePhotoUpdated', handleRefresh);
-    };
-  }, [user?.id]);
 
   const handleClick = () => {
     if (onClick) {
@@ -109,36 +66,35 @@ export function SimpleAvatar({ user, size = 'md', className = '', clickable = tr
   };
 
   const cursorClass = clickable ? 'cursor-pointer hover:ring-2 hover:ring-orange-400 transition-all' : '';
+  const baseClasses = `${sizeClasses[size]} ${className} ${cursorClass} rounded-full flex items-center justify-center relative`;
 
-  if (!user || !currentImage) {
+  // Show profile image if available
+  if (avatarData.hasImage && avatarData.imageUrl) {
     return (
-      <div 
-        className={`${sizeClasses[size]} ${className} ${cursorClass} bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center relative group`}
+      <img
+        src={avatarData.imageUrl}
+        alt={`${user?.username} avatar`}
+        className={`${baseClasses} object-cover`}
         onClick={handleClick}
-        title={clickable ? `View ${user?.username || 'User'}'s profile` : 'Complete your profile!'}
-      >
-        <span className="text-white font-bold">{user?.username?.charAt(0)?.toUpperCase() || 'U'}</span>
-        {/* Tooltip for profile completion reminder */}
-        <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
-          {clickable ? `View ${user?.username || 'User'}'s profile` : 'Complete your profile!'}
-        </div>
-      </div>
+        title={clickable ? `View ${user?.username}'s profile` : undefined}
+        onError={(e) => {
+          // Hide image on error and show fallback letter instead
+          e.currentTarget.style.display = 'none';
+          const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+          if (fallback) fallback.style.display = 'flex';
+        }}
+      />
     );
   }
 
+  // Fallback to letter avatar
   return (
-    <img
-      src={currentImage}
-      alt={`${user.username} avatar`}
-      className={`${sizeClasses[size]} ${className} ${cursorClass} rounded-full object-cover`}
-      loading="lazy"
+    <div 
+      className={`${baseClasses} ${avatarData.bgColor} text-white`}
       onClick={handleClick}
-      title={clickable ? `View ${user.username}'s profile` : undefined}
-      onError={() => {
-        // Fallback to generated avatar if image fails
-        const fallbackAvatar = generateAvatar(user.username, user.avatarColor);
-        setCurrentImage(fallbackAvatar);
-      }}
-    />
+      title={clickable ? `View ${user?.username || 'User'}'s profile` : undefined}
+    >
+      <span className="font-bold">{avatarData.letter}</span>
+    </div>
   );
 }

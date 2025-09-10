@@ -103,15 +103,6 @@ export default function SimpleChatroomPage() {
     refetchOnWindowFocus: false,
   });
 
-  // Debug logging for messages
-  console.log('🔍 Messages query debug:', {
-    chatroomId,
-    currentUserId,
-    enabled: !!(currentUserId && chatroomId && !isNaN(chatroomId)),
-    messagesLength: messages.length,
-    isLoading: messagesLoading,
-    error: messagesError?.message
-  });
 
   // NO AUTO-JOIN - Users must manually click Join button
 
