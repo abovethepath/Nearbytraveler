@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
-import { Users, MapPin, Globe, Coffee, Heart, Plane, Car } from "lucide-react";
+import { Users, MapPin, Globe, Coffee, Heart, Car } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useTheme } from "@/components/theme-provider";
 
@@ -34,7 +34,7 @@ export default function LandingNew() {
   ];
 
   // Static hero image for users (no more rotating business content)
-  const heroImage = "/travelers together hugging_1754971726997.avif";
+  const heroImage = "/travelers_1756778615408.jpg";
   const heroImageAlt = "Travelers connecting and making friends";
 
   useEffect(() => {
