@@ -133,7 +133,7 @@ export default function TravelersLanding() {
                 <span className="text-2xl font-bold text-blue-600">2</span>
               </div>
               <h3 className="font-bold mb-2 text-gray-900 dark:text-white text-lg">Get Matched</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Find compatible solo travelers and locals based on your interests</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Find compatible travelers and locals based on your interests</p>
             </div>
             <div>
               <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
