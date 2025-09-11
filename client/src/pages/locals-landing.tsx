@@ -156,12 +156,9 @@ export default function LocalsLanding() {
         </div>
       </div>
 
-      {/* Share Your City, Build Your World */}
+      {/* Key Features */}
       <div className="py-8 bg-white dark:bg-gray-900">
         <div className="max-w-6xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-8 text-gray-900 dark:text-white">
-            Share Your City, Build Your World
-          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
               <div className="text-4xl mb-4">🗺️</div>
