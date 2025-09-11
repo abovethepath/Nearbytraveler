@@ -101,32 +101,32 @@ export default function TravelersLanding() {
 
         {/* Weekly Events Highlight */}
         <div className="max-w-6xl mx-auto mb-8">
-          <div className="bg-gradient-to-r from-blue-600 to-purple-500 text-white p-8 rounded-2xl shadow-lg text-center">
-            <h2 className="text-3xl font-bold mb-4">
+          <div className="bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 p-8 rounded-2xl shadow-lg text-center">
+            <h2 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">
               🎉 Weekly Events Just for Travelers
             </h2>
-            <p className="text-xl mb-6 text-blue-100">
+            <p className="text-xl mb-6 text-gray-700 dark:text-gray-300">
               We host multiple events every week designed specifically for travelers to connect with locals and each other
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+              <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                 <div className="text-3xl mb-2">🍽️</div>
-                <p className="font-semibold">Weekly Food Tours</p>
+                <p className="font-semibold text-gray-900 dark:text-white">Weekly Food Tours</p>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+              <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                 <div className="text-3xl mb-2">🚶‍♀️</div>
-                <p className="font-semibold">City Walking Meetups</p>
+                <p className="font-semibold text-gray-900 dark:text-white">City Walking Meetups</p>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+              <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                 <div className="text-3xl mb-2">🎤</div>
-                <p className="font-semibold">Karaoke Nights</p>
+                <p className="font-semibold text-gray-900 dark:text-white">Karaoke Nights</p>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+              <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                 <div className="text-3xl mb-2">🔥</div>
-                <p className="font-semibold">Bonfire Beach BBQs</p>
+                <p className="font-semibold text-gray-900 dark:text-white">Bonfire Beach BBQs</p>
               </div>
             </div>
-            <p className="text-lg mt-6 font-medium text-blue-100">
+            <p className="text-lg mt-6 font-medium text-gray-700 dark:text-gray-300">
               Join travelers from around the world at events happening every week in your destination city
             </p>
           </div>
