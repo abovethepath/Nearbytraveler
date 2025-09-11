@@ -310,9 +310,9 @@ export default function LocalsLanding() {
             >
               BECOME A NEARBY LOCAL
             </Button>
-          </div>
         </div>
       </div>
+      
       <Footer />
     </div>
   );
