@@ -275,6 +275,10 @@ export default function LocalsLanding() {
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Adventure Seekers</h3>
               <p className="text-gray-600 dark:text-gray-300">Find people to try new restaurants, events, and activities in your own city</p>
             </div>
+            <div className="bg-white dark:bg-gray-700 p-6 rounded-xl shadow-lg">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">Families with Young Children</h3>
+              <p className="text-gray-600 dark:text-gray-300">Connect with traveling families for playground meetups, children's activities, and family-friendly local adventures</p>
+            </div>
           </div>
         </div>
       </div>
