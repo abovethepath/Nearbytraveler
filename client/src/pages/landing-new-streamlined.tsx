@@ -243,63 +243,63 @@ export default function LandingStreamlined() {
               Whether you're traveling or at home, Nearby Traveler helps you create real connections that last.
             </p>
             
-            <div className="space-y-12 sm:space-y-16">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Users className="w-8 h-8 text-white" />
+            <div className="space-y-8 sm:space-y-10">
+              <div className="text-center bg-white p-8 rounded-xl shadow-sm">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Users className="w-8 h-8 text-gray-700" />
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Share Meals with Travelers & Locals</h3>
-                <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
+                <p className="text-base sm:text-lg text-gray-600">
                   Connect with travelers & locals before your trip starts.
                 </p>
               </div>
 
-              <div className="text-center">
-                <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <MapPin className="w-8 h-8 text-white" />
+              <div className="text-center bg-white p-8 rounded-xl shadow-sm">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <MapPin className="w-8 h-8 text-gray-700" />
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Explore Authentic Spots Beyond Guidebooks</h3>
-                <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
+                <p className="text-base sm:text-lg text-gray-600">
                   Explore authentic spots shared by locals, not tourist traps.
                 </p>
               </div>
 
-              <div className="text-center">
-                <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Globe className="w-8 h-8 text-white" />
+              <div className="text-center bg-white p-8 rounded-xl shadow-sm">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Globe className="w-8 h-8 text-gray-700" />
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Build a Global Circle of Connections</h3>
-                <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
+                <p className="text-base sm:text-lg text-gray-600">
                   Build a global network of real connections around the world.
                 </p>
               </div>
 
-              <div className="text-center">
-                <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <RefreshCw className="w-8 h-8 text-white" />
+              <div className="text-center bg-white p-8 rounded-xl shadow-sm">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <RefreshCw className="w-8 h-8 text-gray-700" />
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Reconnect When Paths Cross Again</h3>
-                <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
+                <p className="text-base sm:text-lg text-gray-600">
                   Know when a friend you met in one city shows up in your next destination.
                 </p>
               </div>
 
-              <div className="text-center">
-                <div className="w-16 h-16 bg-pink-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Home className="w-8 h-8 text-white" />
+              <div className="text-center bg-white p-8 rounded-xl shadow-sm">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Home className="w-8 h-8 text-gray-700" />
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Create Events and Welcome the World</h3>
-                <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
+                <p className="text-base sm:text-lg text-gray-600">
                   Welcome travelers, create events, and meet the world without leaving home.
                 </p>
               </div>
 
-              <div className="text-center">
-                <div className="w-16 h-16 bg-blue-700 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Shield className="w-8 h-8 text-white" />
+              <div className="text-center bg-white p-8 rounded-xl shadow-sm">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Shield className="w-8 h-8 text-gray-700" />
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Build Trust with References & Verification</h3>
-                <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
+                <p className="text-base sm:text-lg text-gray-600">
                   Build trust through mutual connections and community references.
                 </p>
               </div>
