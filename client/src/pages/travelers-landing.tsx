@@ -67,7 +67,7 @@ export default function TravelersLanding() {
                 <h1>Travel Like a Local</h1>
               </div>
               <div className="mt-3 sm:mt-4 max-w-xl text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300">
-                <p>Never explore alone again — join events with locals and fellow solo travelers</p>
+                <p>Never explore alone again — join events with locals and fellow travelers</p>
               </div>
             </div>
           
