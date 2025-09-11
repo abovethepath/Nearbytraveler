@@ -145,10 +145,10 @@ export default function TravelersLanding() {
           </div>
         </div>
 
-        {/* Solo Travel, But Never Alone */}
+        {/* Travel with Connection */}
         <div className="max-w-6xl mx-auto mb-8">
           <h2 className="text-3xl font-bold text-center mb-8 text-gray-900 dark:text-white">
-            Solo Travel, But Never Alone
+            Travel with Connection
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
@@ -177,22 +177,22 @@ export default function TravelersLanding() {
             </div>
           </div>
           <p className="text-center text-lg font-medium text-gray-900 dark:text-white mt-8">
-            This isn't just solo travel. This is confident exploration.
+            This isn't just travel. This is confident exploration with community.
           </p>
         </div>
 
-        {/* Perfect For Solo Travelers */}
+        {/* Perfect For All Travelers */}
         <div className="max-w-6xl mx-auto mb-8">
           <h2 className="text-3xl font-bold text-center mb-8 text-gray-900 dark:text-white">
-            Perfect For Solo Travelers
+            Perfect For All Travelers
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-xl border border-blue-200 dark:border-blue-800">
-              <h3 className="text-xl font-bold mb-3 text-blue-900 dark:text-blue-400">First-Time Solo Travelers</h3>
+              <h3 className="text-xl font-bold mb-3 text-blue-900 dark:text-blue-400">First-Time Travelers</h3>
               <p className="text-blue-800 dark:text-blue-300">Skip the anxiety with instant connections and daily activities</p>
             </div>
             <div className="bg-green-50 dark:bg-green-900/20 p-6 rounded-xl border border-green-200 dark:border-green-800">
-              <h3 className="text-xl font-bold mb-3 text-green-900 dark:text-green-400">Experienced Solo Travelers</h3>
+              <h3 className="text-xl font-bold mb-3 text-green-900 dark:text-green-400">Experienced Travelers</h3>
               <p className="text-green-800 dark:text-green-300">Find your tribe faster and access the real local scene</p>
             </div>
             <div className="bg-purple-50 dark:bg-purple-900/20 p-6 rounded-xl border border-purple-200 dark:border-purple-800">
