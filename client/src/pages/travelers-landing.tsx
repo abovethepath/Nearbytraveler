@@ -99,6 +99,34 @@ export default function TravelersLanding() {
 
       <main className="flex-1 px-4 py-6">
 
+        {/* Weekly Events Highlight */}
+        <div className="max-w-6xl mx-auto mb-8">
+          <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-8 rounded-2xl shadow-lg text-center">
+            <h2 className="text-3xl font-bold mb-4">
+              🎉 Weekly Events Just for Travelers
+            </h2>
+            <p className="text-xl mb-6 text-blue-100">
+              We host multiple events every week designed specifically for travelers to connect with locals and each other
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                <div className="text-3xl mb-2">🍽️</div>
+                <p className="font-semibold">Weekly Food Tours</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                <div className="text-3xl mb-2">🚶‍♀️</div>
+                <p className="font-semibold">City Walking Meetups</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                <div className="text-3xl mb-2">🌅</div>
+                <p className="font-semibold">Morning Coffee Connections</p>
+              </div>
+            </div>
+            <p className="text-lg mt-6 font-medium text-blue-100">
+              Join travelers from around the world at events happening every week in your destination city
+            </p>
+          </div>
+        </div>
 
         {/* From the Founder */}
         <div className="max-w-4xl mx-auto mb-8">
