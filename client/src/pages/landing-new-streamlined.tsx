@@ -414,35 +414,76 @@ export default function LandingStreamlined() {
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-              <div className="bg-gradient-to-br from-blue-50 to-orange-50 rounded-xl p-6 sm:p-8">
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-900">Beach Bonfire & BBQ</h3>
-                  <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold self-start">Free</span>
+              
+              {/* Beach Bonfire & BBQ */}
+              <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
+                <div className="h-48 bg-gradient-to-br from-orange-400 to-red-500 relative">
+                  <img 
+                    src="/beach-bonfire-bbq.jpg" 
+                    alt="Beach bonfire and BBQ event with people gathering at sunset" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <p className="text-sm sm:text-base text-gray-700">
-                  Sunset gathering with locals — authentic LA beach culture, music, and new friends.
-                </p>
+                <div className="p-6">
+                  <div className="flex justify-between items-start mb-3">
+                    <h3 className="text-lg font-bold text-gray-900">Beach Bonfire & BBQ</h3>
+                    <span className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">Free</span>
+                  </div>
+                  <p className="text-gray-600 text-sm mb-4">
+                    Sunset gathering with locals — authentic LA beach culture, music, and new friends.
+                  </p>
+                  <button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-200">
+                    Join Now
+                  </button>
+                </div>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-orange-50 rounded-xl p-6 sm:p-8">
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-900">Taco Tuesday</h3>
-                  <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold self-start">$1.50</span>
+              {/* Taco Tuesday */}
+              <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
+                <div className="h-48 bg-gradient-to-br from-yellow-400 to-orange-500 relative">
+                  <img 
+                    src="/taco-tuesday.jpg" 
+                    alt="Street tacos and Mexican food adventure" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <p className="text-sm sm:text-base text-gray-700">
-                  Weekly street taco adventure with fellow food lovers at the city's best Mexican spots.
-                </p>
+                <div className="p-6">
+                  <div className="flex justify-between items-start mb-3">
+                    <h3 className="text-lg font-bold text-gray-900">Taco Tuesday</h3>
+                    <span className="bg-orange-500 text-white px-2 py-1 rounded-full text-xs font-medium">$1.50</span>
+                  </div>
+                  <p className="text-gray-600 text-sm mb-4">
+                    Weekly street taco adventure with fellow food lovers at the city's best Mexican spots.
+                  </p>
+                  <button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-200">
+                    Join Now
+                  </button>
+                </div>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-orange-50 rounded-xl p-6 sm:p-8">
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-900">Hollywood Sign Hike</h3>
-                  <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold self-start">Free</span>
+              {/* Hollywood Sign Hike */}
+              <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
+                <div className="h-48 bg-gradient-to-br from-green-400 to-blue-500 relative">
+                  <img 
+                    src="/hollywood-sign-hike.jpg" 
+                    alt="Hollywood Sign hike with hikers and city views" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <p className="text-sm sm:text-base text-gray-700">
-                  Saturday morning hikes with locals and travelers — amazing views, great photos, real LA.
-                </p>
+                <div className="p-6">
+                  <div className="flex justify-between items-start mb-3">
+                    <h3 className="text-lg font-bold text-gray-900">Hollywood Sign Hike</h3>
+                    <span className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">Free</span>
+                  </div>
+                  <p className="text-gray-600 text-sm mb-4">
+                    Saturday morning hikes with locals and travelers — amazing views, great photos, real LA.
+                  </p>
+                  <button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-200">
+                    Join Now
+                  </button>
+                </div>
               </div>
+
             </div>
           </div>
         </section>
