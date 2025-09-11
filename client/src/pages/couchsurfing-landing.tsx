@@ -177,15 +177,44 @@ export default function CouchsurfingLanding() {
               </p>
             </div>
             
-            <div className="max-w-4xl mx-auto">
-              <ul className="space-y-4 text-lg text-zinc-700 dark:text-zinc-300">
-                <li><strong className="text-zinc-900 dark:text-white">Match by what you love</strong> — Interests and activities</li>
-                <li><strong className="text-zinc-900 dark:text-white">Headed to the same events</strong> — See who's also going to Taylor Swift, Comic-Con, SXSW, and more</li>
-                <li><strong className="text-zinc-900 dark:text-white">Meet on your terms</strong> — Coffee, hikes, shows, markets, bars, the beach</li>
-                <li><strong className="text-zinc-900 dark:text-white">Real moments, not just messages</strong> — Share hidden gems and build experiences together</li>
-                <li><strong className="text-zinc-900 dark:text-white">Total flexibility</strong> — Connect when you want—hosting or not</li>
-                <li><strong className="text-zinc-900 dark:text-white">Short on time while hosting?</strong> — Point guests to Nearby Traveler so they can meet others in town</li>
-              </ul>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+              
+              {/* Match by what you love */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Match by what you love</h3>
+                <p className="text-zinc-700 dark:text-zinc-300">Interests and activities</p>
+              </div>
+              
+              {/* Headed to the same events */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Headed to the same events</h3>
+                <p className="text-zinc-700 dark:text-zinc-300">See who's also going to Taylor Swift, Comic-Con, SXSW, and more</p>
+              </div>
+              
+              {/* Meet on your terms */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Meet on your terms</h3>
+                <p className="text-zinc-700 dark:text-zinc-300">Coffee, hikes, shows, markets, bars, the beach</p>
+              </div>
+              
+              {/* Real moments, not just messages */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Real moments, not just messages</h3>
+                <p className="text-zinc-700 dark:text-zinc-300">Share hidden gems and build experiences together</p>
+              </div>
+              
+              {/* Total flexibility */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Total flexibility</h3>
+                <p className="text-zinc-700 dark:text-zinc-300">Connect when you want—hosting or not</p>
+              </div>
+              
+              {/* Short on time while hosting? */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Short on time while hosting?</h3>
+                <p className="text-zinc-700 dark:text-zinc-300">Point guests to Nearby Traveler so they can meet others in town</p>
+              </div>
+              
             </div>
           </div>
         </section>
