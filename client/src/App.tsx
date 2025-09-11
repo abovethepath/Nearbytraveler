@@ -592,6 +592,17 @@ function Router() {
       // JOIN PAGE NOW HANDLED AT TOP OF FUNCTION - removed duplicate check
 
       // Show landing page
+      // Landing page variants for investor comparison
+      if (location === '/landing-1') {
+        console.log('📄 Showing Landing 1 (Long Version) for investor comparison');
+        return <LandingStreamlined />;
+      }
+      
+      if (location === '/landing-2') {
+        console.log('📄 Showing Landing 2 (Optimized Version) for investor comparison');
+        return <LandingNew />;
+      }
+
       if (location === '/landing-new') {
         return <LandingStreamlined />;
       }
