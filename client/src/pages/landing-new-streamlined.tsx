@@ -58,13 +58,13 @@ export default function LandingStreamlined() {
 
   // User-focused rotating images (removed business photo)
   const heroImages = [
-    "/travelers_1756778615408.jpg", // General travelers - connecting travelers
+    "/travelers together hugging_1754971726997.avif", // General travelers - people with arms around each other
     "/Image-Social-Travel-with-Contiki-photo-courtesy-Co_1756483970192.webp", // Locals sharing experiences - group adventure
     "/image_1756483833676.png" // Families - family at airport watching plane
   ];
 
   const heroImageAlts = [
-    "Travelers connecting and making friends", // General
+    "Travelers with arms around each other - true connections", // General
     "Locals sharing city experiences with travelers", // Locals
     "Families traveling together and exploring the world" // Families
   ];
