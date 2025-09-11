@@ -78,7 +78,7 @@ export default function TravelersLanding() {
                   {wisdomSayings[currentWisdom]}
                 </p>
                 <p className="text-sm md:text-lg font-bold text-zinc-800 italic px-2 mt-1">
-                  Travel doesn't change you — people do.
+                  Travel doesn't change you — people you meet do.
                 </p>
               </div>
               <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[200px] sm:h-[250px] md:h-[350px] rounded-2xl">

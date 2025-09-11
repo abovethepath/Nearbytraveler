@@ -140,7 +140,7 @@ export default function EventsLanding() {
                 {/* Static powerful quote */}
                 <div className="mb-2 text-center w-full">
                   <p className="text-sm md:text-lg lg:text-xl font-bold text-zinc-800 dark:text-zinc-200 italic px-2">
-                    <span className="sm:hidden">Travel doesn't change you — people do.</span>
+                    <span className="sm:hidden">Travel doesn't change you — people you meet do.</span>
                     <span className="hidden sm:inline">Travel doesn't change you — the people you meet do.</span>
                   </p>
                 </div>
