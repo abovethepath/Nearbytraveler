@@ -99,29 +99,6 @@ export default function TravelersLanding() {
 
       <main className="flex-1 px-4 py-6">
 
-        {/* What Makes Us Different */}
-        <div className="max-w-6xl mx-auto mb-8">
-          <h2 className="text-3xl font-bold text-center mb-8 text-gray-900 dark:text-white">
-            What Makes Us Different
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <div className="text-4xl mb-4">⚡</div>
-              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Constant events happening</h3>
-              <p className="text-gray-700 dark:text-gray-300">Multiple weekly events hosted by locals and our community — from morning hikes to sunset happy hours.</p>
-            </div>
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <div className="text-4xl mb-4">🌍</div>
-              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Connect Before You Arrive</h3>
-              <p className="text-gray-700 dark:text-gray-300">Meet your connections before landing — no more awkward first days wondering where to go.</p>
-            </div>
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <div className="text-4xl mb-4">💬</div>
-              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Instant Meetups</h3>
-              <p className="text-gray-700 dark:text-gray-300">Create "meet now" events for spontaneous adventures and real-time connections.</p>
-            </div>
-          </div>
-        </div>
 
         {/* From the Founder */}
         <div className="max-w-4xl mx-auto mb-8">
