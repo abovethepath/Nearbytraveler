@@ -261,7 +261,7 @@ export default function LandingNew() {
               </div>
               <div className="flex items-center justify-center p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 rounded-xl">
                 <Users className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500 mr-2 sm:mr-3 flex-shrink-0" />
-                <span className="text-sm sm:text-base text-gray-900 font-medium">Experience real culture</span>
+                <span className="text-sm sm:text-base text-gray-900 font-medium">Experience local culture</span>
               </div>
               <div className="flex items-center justify-center p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 rounded-xl">
                 <Users className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mr-2 sm:mr-3 flex-shrink-0" />
