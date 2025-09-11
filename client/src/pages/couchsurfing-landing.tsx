@@ -225,8 +225,12 @@ export default function CouchsurfingLanding() {
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
               Now We Can All Connect
             </h2>
-            <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-4xl mx-auto leading-relaxed">
-              Imagine our couchsurfing community expanded to include everyone who shares our values — not just those who can host or surf. That's millions more genuine connections, friendships, and adventures waiting to happen.
+            <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-4xl mx-auto leading-relaxed mb-6">
+              Imagine our couchsurfing community expanded to include everyone who shares our values — not just those who can host or surf.
+            </p>
+            
+            <p className="text-xl sm:text-2xl font-bold text-zinc-800 dark:text-zinc-200 max-w-4xl mx-auto leading-relaxed">
+              That's millions more genuine connections, friendships, and adventures waiting to happen.
             </p>
           </div>
           
