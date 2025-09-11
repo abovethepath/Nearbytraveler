@@ -101,7 +101,7 @@ export default function TravelersLanding() {
 
         {/* Weekly Events Highlight */}
         <div className="max-w-6xl mx-auto mb-8">
-          <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-8 rounded-2xl shadow-lg text-center">
+          <div className="bg-gradient-to-r from-blue-600 to-purple-500 text-white p-8 rounded-2xl shadow-lg text-center">
             <h2 className="text-3xl font-bold mb-4">
               🎉 Weekly Events Just for Travelers
             </h2>
@@ -118,8 +118,8 @@ export default function TravelersLanding() {
                 <p className="font-semibold">City Walking Meetups</p>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                <div className="text-3xl mb-2">🌅</div>
-                <p className="font-semibold">Morning Coffee Connections</p>
+                <div className="text-3xl mb-2">🎤</div>
+                <p className="font-semibold">Karaoke Nights</p>
               </div>
             </div>
             <p className="text-lg mt-6 font-medium text-blue-100">
