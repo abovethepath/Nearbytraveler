@@ -97,7 +97,7 @@ export default function LocalsLanding() {
                 </div>
                 <div className="mt-3 sm:mt-4 max-w-xl text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[80px] sm:h-[100px] md:h-[120px]">
                   <p className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700">
-                    Travel doesn't change you — people you meet do.
+                    Share Your City, Build Your World
                   </p>
                 </div>
               </div>
@@ -156,12 +156,9 @@ export default function LocalsLanding() {
         </div>
       </div>
 
-      {/* Share Your City, Build Your World */}
+      {/* Key Features */}
       <div className="py-6 bg-white dark:bg-gray-900">
         <div className="max-w-6xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-8 text-gray-900 dark:text-white">
-            Share Your City, Build Your World
-          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
               <div className="text-4xl mb-4">🗺️</div>
