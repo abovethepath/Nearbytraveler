@@ -363,7 +363,7 @@ export default function LandingStreamlined() {
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Connect Authentically</h3>
                 <p className="text-base sm:text-lg text-gray-600">
-                  Meet verified locals and travelers who match your energy.
+                  Meet Nearby Locals and Nearby Travelers who match your interests.
                 </p>
               </div>
 
