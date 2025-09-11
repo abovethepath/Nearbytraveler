@@ -595,12 +595,12 @@ function Router() {
       // Landing page variants for investor comparison
       if (location === '/landing-1') {
         console.log('📄 Showing Landing 1 (Long Version) for investor comparison');
-        return <LandingStreamlined />;
+        return <LandingNew />;
       }
       
       if (location === '/landing-2') {
         console.log('📄 Showing Landing 2 (Optimized Version) for investor comparison');
-        return <LandingNew />;
+        return <LandingStreamlined />;
       }
 
       if (location === '/landing-new') {
