@@ -1,60 +1,9 @@
-import { useLocation, Link } from "wouter";
+import { useLocation } from "wouter";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import { useTheme } from "@/components/theme-provider";
-
-
-
-// Helper function for custom icons
-const CustomIcon = ({ iconName, className }: { iconName: string; className?: string }) => {
-  // Fallback to simple SVG icons since step icons may not exist
-  const getStepIcon = (stepNumber: string) => {
-    if (stepNumber.includes('step1')) {
-      return (
-        <svg width="80" height="80" viewBox="0 0 100 100" className="text-teal-500">
-          <g>
-            <circle cx="50" cy="30" r="15" fill="#0d9488" />
-            <path d="M20 80 Q50 60 80 80" stroke="#0d9488" strokeWidth="8" fill="none" />
-            <circle cx="35" cy="72" r="6" fill="#0d9488" />
-            <circle cx="65" cy="72" r="6" fill="#0d9488" />
-            <line x1="25" y1="65" x2="35" y2="80" stroke="#0d9488" strokeWidth="3" />
-          </g>
-        </svg>
-      );
-    } else if (stepNumber.includes('step2')) {
-      return (
-        <svg width="80" height="80" viewBox="0 0 100 100" className="text-teal-500">
-          <g>
-            <circle cx="50" cy="50" r="25" stroke="#0d9488" strokeWidth="4" fill="none" />
-            <circle cx="35" cy="40" r="3" fill="#0d9488" />
-            <circle cx="65" cy="40" r="3" fill="#0d9488" />
-            <path d="M35 60 Q50 70 65 60" stroke="#0d9488" strokeWidth="3" fill="none" />
-          </g>
-        </svg>
-      );
-    } else {
-      return (
-        <svg width="80" height="80" viewBox="0 0 100 100" className="text-teal-500">
-          <g>
-            <circle cx="40" cy="40" r="25" stroke="#0d9488" strokeWidth="4" fill="none" />
-            <line x1="58" y1="58" x2="75" y2="75" stroke="#0d9488" strokeWidth="6" strokeLinecap="round" />
-            <circle cx="30" cy="35" r="3" fill="#0d9488" />
-            <circle cx="50" cy="35" r="3" fill="#0d9488" />
-            <path d="M30 45 Q40 55 50 45" stroke="#0d9488" strokeWidth="2" fill="none" />
-          </g>
-        </svg>
-      );
-    }
-  };
-  
-  return (
-    <div className={className}>
-      {getStepIcon(iconName)}
-    </div>
-  );
-};
 
 export default function Landing() {
   const [, setLocation] = useLocation();
@@ -77,17 +26,18 @@ export default function Landing() {
   }, []);
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 font-sans" key="landing-v2-no-copy-button">
-      {/* Sticky CTA - Always Visible on All Devices */}
+    <div className="bg-gray-50 dark:bg-gray-900 font-sans" key="landing-optimized">
+      {/* Fixed CTA */}
       <div className="fixed bottom-6 right-6 z-50">
         <Button
           onClick={() => setLocation('/launching-soon')}
           size="lg"
-          className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-black px-8 py-4 rounded-2xl shadow-2xl transition-all duration-200"
+          className="bg-orange-500 hover:bg-orange-600 text-white font-black px-8 py-4 rounded-2xl shadow-2xl transition-all duration-200"
           style={{
             boxShadow: '0 12px 35px rgba(0,0,0,0.4), 0 0 0 3px rgba(255,255,255,0.9)',
             animation: 'gentle-pulse 2.5s ease-in-out infinite',
           }}
+          data-testid="button-fixed-cta"
         >
           JOIN NOW
         </Button>
@@ -95,14 +45,11 @@ export default function Landing() {
       
       <LandingHeader />
       <LandingHeaderSpacer />
-      
-
-
 
       {/* HERO SECTION */}
       <div className="relative z-10">
-        <div className="bg-gray-800 dark:bg-gray-900 border-4 border-orange-500 shadow-lg">
-          <div className="relative bg-gray-800 dark:bg-gray-900 pb-32 overflow-hidden min-h-[500px]">
+        <div className="bg-gray-800 border-4 border-orange-500 shadow-lg">
+          <div className="relative bg-gray-800 pb-32 overflow-hidden min-h-[500px]">
             <div className="absolute inset-0 h-full min-h-[500px]">
               <img
                 src="/travelers together hugging_1754971726997.avif"
@@ -113,8 +60,7 @@ export default function Landing() {
               <div
                 className="absolute inset-0"
                 style={{
-                  background:
-                    "linear-gradient(to bottom, rgba(0,0,0,.55), rgba(0,0,0,.25), rgba(0,0,0,0))"
+                  background: "linear-gradient(to bottom, rgba(0,0,0,.55), rgba(0,0,0,.25), rgba(0,0,0,0))"
                 }}
                 aria-hidden="true"
               />
@@ -135,36 +81,35 @@ export default function Landing() {
                         </span>
                       </h1>
                       
-                      {/* From the Founder - Condensed */}
+                      {/* Condensed Founder Quote */}
                       <div className="mt-6 sm:mt-8 p-4 sm:p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20">
-                        <p className="text-sm sm:text-base md:text-xl lg:text-2xl text-white leading-relaxed px-1 sm:px-2">
+                        <p className="text-sm sm:text-base md:text-xl text-white leading-relaxed px-1 sm:px-2">
                           <span className="text-orange-300 font-bold">"I've hosted 400+ travelers from 50+ countries. </span>
-                          <span className="text-white">Nearby Traveler brings that same magic to everyone—connecting travelers and locals for real friendships."</span>
+                          <span className="text-white">Nearby Traveler brings that same magic to everyone."</span>
                         </p>
                         <div className="mt-3 sm:mt-4 text-center">
                           <p className="text-white font-bold text-base sm:text-lg">— Aaron, Founder</p>
-                          <p className="text-orange-200 text-xs sm:text-sm">400+ travelers hosted • 50+ countries • 15+ years</p>
                         </div>
                       </div>
                     </div>
                     
-                    {/* Primary signup CTA */}
+                    {/* Primary CTA */}
                     <div className="mt-12 mb-8 px-4">
                       <Button
                         onClick={() => setLocation('/launching-soon')}
                         size="lg"
-                        className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-black text-lg sm:text-xl md:text-2xl px-6 sm:px-12 md:px-16 py-4 sm:py-5 md:py-6 rounded-2xl shadow-xl transition-all duration-200 w-full max-w-lg mx-auto"
+                        className="bg-orange-500 hover:bg-orange-600 text-white font-black text-lg sm:text-xl md:text-2xl px-6 sm:px-12 md:px-16 py-4 sm:py-5 md:py-6 rounded-2xl shadow-xl transition-all duration-200 w-full max-w-lg mx-auto"
                         style={{
                           fontSize: 'clamp(1.1rem, 3.5vw, 1.8rem)',
                           minHeight: 'clamp(60px, 12vw, 80px)',
                           boxShadow: '0 8px 30px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,255,255,0.9)',
                           animation: 'gentle-pulse 3s ease-in-out infinite',
                         }}
+                        data-testid="button-hero-cta"
                       >
                         JOIN NEARBY TRAVELER NOW!!!
                       </Button>
                     </div>
-
                   </div>
                 </main>
               </div>
@@ -173,14 +118,10 @@ export default function Landing() {
         </div>
       </div>
 
-
-
-
-
-      {/* Live Events - Lu.ma style */}
+      {/* LIVE EVENTS - Condensed to 3 cards */}
       <div className="relative z-10 py-16 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12 animate-slide-in-left">
+          <div className="text-center mb-12">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white mb-4 leading-normal px-2">
               Live Events Near You
             </h2>
@@ -189,214 +130,90 @@ export default function Landing() {
             </p>
           </div>
           
-          {/* Event Cards - Modern Lu.ma style */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
-
-            {/* Beach Bonfire Event Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-xl transition-all duration-300 flex flex-col min-h-[480px]">
-              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-orange-400 to-red-500">
-                <img 
-                  src="/event page bbq party_1753299541268.png" 
-                  alt="Beach bonfire event" 
-                  className="w-full h-48 object-cover"
-                />
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Beach Bonfire */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col min-h-[400px]">
+              <img 
+                src="/event page bbq party_1753299541268.png" 
+                alt="Beach bonfire event" 
+                className="w-full h-48 object-cover"
+              />
               <div className="p-6 flex flex-col flex-grow">
-                <div className="mb-3">
-                  <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-1" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Beach Bonfire & BBQ</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Sunset gathering on the beach</p>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Beach Bonfire & BBQ</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">Sunset gathering on the beach</p>
+                <div className="flex gap-1 mb-4">
+                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs">Free</span>
+                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">Beach</span>
                 </div>
-                
-                {/* Tags - Smaller and limited to 2 max */}
-                <div className="flex gap-1 mb-6">
-                  <span className="bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded-full text-xs">Free</span>
-                  <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full text-xs">Beach</span>
-                </div>
-                
-                <p className="text-gray-700 dark:text-gray-300 text-sm sm:text-base mb-8 flex-grow leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Authentic beach bonfire with BBQ, music, and sunset views. Real LA beach culture.</p>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-6 flex-grow">Authentic beach bonfire with BBQ, music, and sunset views.</p>
                 <Button 
                   onClick={() => setLocation('/launching-soon')}
-                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
-                  style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}
+                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold"
+                  data-testid="button-event-beach"
                 >
                   JOIN TO CONNECT
                 </Button>
               </div>
             </div>
             
-            {/* Taco Tuesday Event Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col min-h-[480px]" style={{animationDelay: '0.2s'}}>
-              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-yellow-400 to-orange-500">
-                <img 
-                  src="/image_1754973365104.png" 
-                  alt="Authentic taco stand with vintage neon sign" 
-                  className="w-full h-48 object-cover"
-                />
-              </div>
+            {/* Taco Tuesday */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col min-h-[400px]">
+              <img 
+                src="/image_1754973365104.png" 
+                alt="Authentic taco stand" 
+                className="w-full h-48 object-cover"
+              />
               <div className="p-6 flex flex-col flex-grow">
-                <div className="mb-3">
-                  <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-1" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Taco Tuesday</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Every Tuesday • $1.50 tacos</p>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Taco Tuesday</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">Every Tuesday • $1.50 tacos</p>
+                <div className="flex gap-1 mb-4">
+                  <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">$1.50</span>
+                  <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs">Food</span>
                 </div>
-                
-                {/* Tags - Smaller and limited to 2 max */}
-                <div className="flex gap-1 mb-6">
-                  <span className="bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full text-xs">$1.50</span>
-                  <span className="bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded-full text-xs">Food</span>
-                </div>
-                
-                <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-8 flex-grow leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Authentic street tacos at unbeatable prices. Discover the best local Mexican spots.</p>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-6 flex-grow">Authentic street tacos at unbeatable prices.</p>
                 <Button 
                   onClick={() => setLocation('/launching-soon')}
-                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
-                  style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}
+                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold"
+                  data-testid="button-event-taco"
                 >
                   JOIN TO CONNECT
                 </Button>
               </div>
             </div>
             
-            {/* Hollywood Sign Hike Event Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col min-h-[480px]" style={{animationDelay: '0.3s'}}>
-              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-500 to-indigo-600">
-                <img 
-                  src="/image_1754974796221.png" 
-                  alt="Hollywood Sign at sunrise with mountain views" 
-                  className="w-full h-48 object-cover"
-                />
-              </div>
+            {/* Hollywood Hike */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col min-h-[400px]">
+              <img 
+                src="/image_1754974796221.png" 
+                alt="Hollywood Sign hike" 
+                className="w-full h-48 object-cover"
+              />
               <div className="p-6 flex flex-col flex-grow">
-                <div className="mb-3">
-                  <h3 className="font-bold text-gray-900 dark:text-white mb-1" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Hollywood Sign Hike</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Every Saturday • 9:00 AM</p>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Hollywood Sign Hike</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">Every Saturday • 9:00 AM</p>
+                <div className="flex gap-1 mb-4">
+                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">Free</span>
+                  <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">Hiking</span>
                 </div>
-                
-                {/* Tags - Smaller and limited to 2 max */}
-                <div className="flex gap-1 mb-6">
-                  <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full text-xs">Free</span>
-                  <span className="bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full text-xs">Hiking</span>
-                </div>
-                
-                <p className="text-gray-700 dark:text-gray-300 text-sm mb-8 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Iconic Hollywood Sign hike with amazing city views and great photos.</p>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-6 flex-grow">Iconic Hollywood Sign hike with amazing city views.</p>
                 <Button 
                   onClick={() => setLocation('/launching-soon')}
-                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
-                  style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}
+                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold"
+                  data-testid="button-event-hike"
                 >
                   JOIN TO CONNECT
                 </Button>
               </div>
             </div>
-
-            {/* Happy Hour at Jameson Pub Event Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col min-h-[480px]" style={{animationDelay: '0.4s'}}>
-              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-amber-500 to-orange-600">
-                <img 
-                  src="/image_1754975666980.png" 
-                  alt="Jameson's Pub exterior with green storefront and traditional Irish pub atmosphere" 
-                  className="w-full h-48 object-cover"
-                />
-              </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <div className="mb-3">
-                  <h3 className="font-bold text-gray-900 dark:text-white mb-1" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Happy Hour Thursday</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Jameson Pub • Live Music</p>
-                </div>
-                
-                {/* Tags - Smaller and limited to 2 max */}
-                <div className="flex gap-1 mb-6">
-                  <span className="bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full text-xs">Drinks</span>
-                  <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full text-xs">21+</span>
-                </div>
-                
-                <p className="text-gray-700 dark:text-gray-300 text-sm mb-8 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Thursday happy hour with live music. Great drinks and authentic LA nightlife.</p>
-                <Button 
-                  onClick={() => setLocation('/launching-soon')}
-                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
-                  style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}
-                >
-                  JOIN TO CONNECT
-                </Button>
-              </div>
-            </div>
-
-            {/* Sunset Yoga on the Beach Event Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col min-h-[480px]" style={{animationDelay: '0.5s'}}>
-              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-pink-400 to-orange-500">
-                <img 
-                  src="/venice-beach-yoga.png" 
-                  alt="Sunset yoga on Venice Beach with people in poses" 
-                  className="w-full h-48 object-cover"
-                />
-              </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <div className="mb-3">
-                  <h3 className="font-bold text-gray-900 dark:text-white mb-1" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Venice Beach Sunset Yoga</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Every Sunday • 6:00 PM</p>
-                </div>
-                
-                {/* Tags - Smaller and limited to 2 max */}
-                <div className="flex gap-1 mb-6">
-                  <span className="bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded-full text-xs">Wellness</span>
-                </div>
-                
-                <p className="text-gray-700 dark:text-gray-300 text-sm mb-8 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Peaceful sunset yoga over the Pacific. All levels welcome.</p>
-                <Button 
-                  onClick={() => setLocation('/launching-soon')}
-                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
-                  style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}
-                >
-                  JOIN TO CONNECT
-                </Button>
-              </div>
-            </div>
-
-            {/* Griffith Observatory Night Event Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden event-card animate-fade-in-up hover:shadow-2xl transform transition-all duration-300 flex flex-col min-h-[480px]" style={{animationDelay: '0.6s'}}>
-              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-indigo-600 to-purple-700">
-                <img 
-                  src="/Los_Angeles_1753819372180.jpg" 
-                  alt="Los Angeles cityscape with Griffith Observatory view" 
-                  className="w-full h-48 object-cover"
-                />
-              </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <div className="mb-3">
-                  <h3 className="font-bold text-gray-900 dark:text-white mb-1" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Griffith Observatory Night</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Every Friday • 7:30 PM</p>
-                </div>
-                
-                {/* Tags - Smaller and limited to 2 max */}
-                <div className="flex gap-1 mb-6">
-                  <span className="bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded-full text-xs">Free</span>
-                  <span className="bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-full text-xs">Stargazing</span>
-                </div>
-                
-                <p className="text-gray-700 dark:text-gray-300 text-sm mb-8 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Explore the cosmos at LA's iconic observatory. Stunning city views and stargazing.</p>
-                <Button 
-                  onClick={() => setLocation('/launching-soon')}
-                  className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
-                  style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}
-                >
-                  JOIN TO CONNECT
-                </Button>
-              </div>
-            </div>
-
-
           </div>
-
-
         </div>
       </div>
 
-
-      {/* SIMPLIFIED VALUE PROPOSITION */}
+      {/* VALUE PROPOSITION - Simplified */}
       <div className="relative z-10 py-16 bg-gradient-to-r from-blue-600 to-orange-500">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl sm:text-4xl font-black text-white mb-8">Why Nearby Traveler?</h2>
           
-          {/* Core Benefits - Condensed */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div className="bg-white/95 rounded-2xl p-6 shadow-lg">
               <div className="text-3xl mb-3">🤝</div>
@@ -418,341 +235,61 @@ export default function Landing() {
         </div>
       </div>
 
-      {/* HOW IT WORKS SECTION - SEXY REDESIGN */}
-      <div className="relative z-10 py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-orange-900/20">
+      {/* HOW IT WORKS - Streamlined */}
+      <div className="relative z-10 py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-orange-50">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
-            <span className="inline-block px-6 py-2 bg-gradient-to-r from-blue-100 to-orange-100 text-blue-800 text-sm font-bold rounded-full mb-4 animate-pulse">
-              HOW IT WORKS
-            </span>
-            <h2 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mb-6" style={{fontFamily: '"Open Sans", sans-serif'}}>
+            <h2 className="text-4xl sm:text-5xl font-black text-gray-900 mb-6">
               Turn Connections into <span className="bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent">Travel Adventures</span>
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              Three simple steps that transform your travel experience from ordinary to extraordinary
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Three simple steps that transform your travel experience
             </p>
           </div>
           
-          <div className="relative">
-            {/* Connection line */}
-            <div className="hidden md:block absolute top-24 left-1/2 transform -translate-x-1/2 w-full max-w-4xl">
-              <div className="h-1 bg-gradient-to-r from-blue-300 via-purple-300 to-orange-300 rounded-full opacity-30"></div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Step 1 */}
+            <div className="group text-center">
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <span className="text-3xl font-bold text-white">1</span>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Join Your City</h3>
+              <p className="text-gray-600 text-lg">Sign up and add your interests to find your tribe of travelers and locals.</p>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
-              {/* Step 1: Join */}
-              <div className="group">
-                <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-blue-100 dark:border-blue-800">
-                  <div className="relative mb-8">
-                    <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:shadow-xl transition-all duration-300">
-                      <span className="text-white text-2xl font-black">1</span>
-                    </div>
-                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-400 rounded-full animate-bounce"></div>
-                  </div>
-                  <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 text-center">
-                    Join the Movement
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed">
-                    Share your travel style, interests, and dream destinations. Our matching algorithm connects you with like-minded travelers and locals.
-                  </p>
-                  <div className="mt-6 flex justify-center">
-                    <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                      <div className="w-2 h-2 bg-blue-300 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-                      <div className="w-2 h-2 bg-blue-200 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
 
-              {/* Step 2: Connect */}
-              <div className="group">
-                <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-purple-100 dark:border-purple-800">
-                  <div className="relative mb-8">
-                    <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:shadow-xl transition-all duration-300">
-                      <span className="text-white text-2xl font-black">2</span>
-                    </div>
-                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-purple-400 rounded-full animate-bounce" style={{animationDelay: '0.5s'}}></div>
-                  </div>
-                  <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 text-center">
-                    Make Real Connections
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed">
-                    Chat with locals who know secret spots and fellow travelers heading to your destination. No awkward small talk - just shared adventures.
-                  </p>
-                  <div className="mt-6 flex justify-center">
-                    <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
-                      <div className="w-2 h-2 bg-purple-300 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-                      <div className="w-2 h-2 bg-orange-300 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
-                    </div>
-                  </div>
-                </div>
+            {/* Step 2 */}
+            <div className="group text-center">
+              <div className="bg-gradient-to-br from-orange-500 to-orange-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <span className="text-3xl font-bold text-white">2</span>
               </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Get Matched</h3>
+              <p className="text-gray-600 text-lg">Our smart algorithm connects you with compatible people based on location and interests.</p>
+            </div>
 
-              {/* Step 3: Explore */}
-              <div className="group">
-                <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-shadow duration-300 border border-orange-100 dark:border-orange-800">
-                  <div className="relative mb-8">
-                    <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg group-hover:shadow-xl transition-all duration-300">
-                      <span className="text-white text-2xl font-black">3</span>
-                    </div>
-                  </div>
-                  <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 text-center">
-                    Create Epic Memories
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed">
-                    Join authentic experiences, discover hidden gems, and turn strangers into lifelong friends. This is travel the way it's meant to be.
-                  </p>
-                  <div className="mt-6 flex justify-center">
-                    <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
-                      <div className="w-2 h-2 bg-orange-300 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-                      <div className="w-2 h-2 bg-orange-200 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
-                    </div>
-                  </div>
-                </div>
+            {/* Step 3 */}
+            <div className="group text-center">
+              <div className="bg-gradient-to-br from-purple-500 to-purple-600 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <span className="text-3xl font-bold text-white">3</span>
               </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Explore Together</h3>
+              <p className="text-gray-600 text-lg">Join events, create meetups, and build lasting friendships through shared adventures.</p>
             </div>
           </div>
 
-          {/* Call to Action */}
+          {/* Final CTA */}
           <div className="text-center mt-16">
-            <Button 
+            <Button
               onClick={() => setLocation('/launching-soon')}
               size="lg"
-              className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-black text-xl px-12 py-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
+              className="bg-gradient-to-r from-orange-500 to-blue-500 hover:from-orange-600 hover:to-blue-600 text-white font-black text-xl px-12 py-6 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-200"
+              data-testid="button-final-cta"
             >
-              Start Your Adventure Now
-            </Button>
-            <p className="text-gray-500 dark:text-gray-400 mt-4 text-sm">
-              Join Nearby Travelers already making connections
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* FOR LOCALS SECTION - REDESIGNED */}
-      <div id="locals" className="relative z-10 py-20 bg-gradient-to-br from-white via-blue-50 to-teal-50 dark:from-gray-800 dark:via-blue-900/10 dark:to-teal-900/10">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="space-y-8">
-              <div>
-                <span className="inline-block px-6 py-3 bg-gradient-to-r from-orange-100 to-red-100 text-orange-800 text-sm sm:text-base font-bold rounded-full mb-6 shadow-lg border-2 border-orange-200">
-                  FOR LOCALS
-                </span>
-                <h2 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mb-6" style={{fontFamily: '"Open Sans", sans-serif'}}>
-                  🏠 Your City, <span className="bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">Your Adventures</span>
-                </h2>
-                <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
-                  Turn your local knowledge into lasting friendships. Show off your favorite spots, join epic events, and build a social circle that spans the globe. Whether you're hosting travelers or exploring with fellow locals, every connection opens new doors.
-                </p>
-              </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-gradient-to-br from-blue-700 to-blue-800 dark:bg-gradient-to-br dark:from-blue-900 dark:to-blue-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-blue-600 dark:border-blue-700">
-                  <div className="flex items-center mb-3">
-                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
-                      <span className="text-white text-lg font-bold">🎉</span>
-                    </div>
-                    <h3 className="font-black text-white text-lg">Create Fun Hangouts</h3>
-                  </div>
-                  <p className="text-blue-100 text-base font-semibold">Beach BBQs, hiking adventures, cultural deep-dives</p>
-                </div>
-                
-                <div className="bg-gradient-to-br from-teal-700 to-teal-800 dark:bg-gradient-to-br dark:from-teal-900 dark:to-teal-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-teal-600 dark:border-teal-700">
-                  <div className="flex items-center mb-3">
-                    <div className="w-12 h-12 bg-gradient-to-r from-teal-500 to-teal-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
-                      <span className="text-white text-lg font-bold">💎</span>
-                    </div>
-                    <h3 className="font-black text-white text-lg">Show Off Your Spots</h3>
-                  </div>
-                  <p className="text-teal-100 text-base font-semibold">Your secret spots become legendary discoveries</p>
-                </div>
-                
-                <div className="bg-gradient-to-br from-purple-700 to-purple-800 dark:bg-gradient-to-br dark:from-purple-900 dark:to-purple-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-purple-600 dark:border-purple-700">
-                  <div className="flex items-center mb-3">
-                    <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
-                      <span className="text-white text-lg font-bold">🤝</span>
-                    </div>
-                    <h3 className="font-black text-white text-lg">Expand Your Circle</h3>
-                  </div>
-                  <p className="text-purple-100 text-base font-semibold">Welcome travelers, connect with fellow locals</p>
-                </div>
-                
-                <div className="bg-gradient-to-br from-orange-700 to-orange-800 dark:bg-gradient-to-br dark:from-orange-900 dark:to-orange-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-orange-600 dark:border-orange-700">
-                  <div className="flex items-center mb-3">
-                    <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
-                      <span className="text-white text-lg font-bold">🌟</span>
-                    </div>
-                    <h3 className="font-black text-white text-lg">Find Your Tribe</h3>
-                  </div>
-                  <p className="text-orange-100 text-base font-semibold">Turn strangers into lifelong friends</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-200 to-teal-200 rounded-3xl transform rotate-3 opacity-20"></div>
-              <div className="relative bg-white dark:bg-gray-800 rounded-3xl p-10 shadow-2xl border border-blue-100 dark:border-blue-800">
-                <div className="text-center">
-                  <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                    <span className="text-white text-3xl">🏠</span>
-                  </div>
-                  <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4">
-                    Expand Your Social World
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
-                    Meet locals and Nearby Travelers who share your interests and build lasting friendships. From weekend adventures to casual hangouts, grow your circle locally and globally.
-                  </p>
-                  <Button 
-                    onClick={() => setLocation('/launching-soon')}
-                    size="lg"
-                    className="w-full bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white font-black text-lg px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
-                  >
-                    Join as a Nearby Local
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* FOR TRAVELERS SECTION - REDESIGNED */}
-      <div id="travelers" className="relative z-10 py-20 bg-gradient-to-br from-gray-50 via-orange-50 to-red-50 dark:from-gray-900 dark:via-orange-900/10 dark:to-red-900/10">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="relative order-2 lg:order-1">
-              <div className="absolute inset-0 bg-gradient-to-br from-orange-200 to-red-200 rounded-3xl transform -rotate-3 opacity-20"></div>
-              <div className="relative bg-white dark:bg-gray-800 rounded-3xl p-10 shadow-2xl border border-orange-100 dark:border-orange-800">
-                <div className="text-center">
-                  <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                    <span className="text-white text-3xl">🌍</span>
-                  </div>
-                  <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4">
-                    Adventure Beyond Guidebooks
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
-                    Skip the tourist traps and dive into authentic experiences. 
-                    Connect with locals and travelers who share your interests.
-                  </p>
-                  <Button 
-                    onClick={() => setLocation('/launching-soon')}
-                    size="lg"
-                    className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white font-black text-lg px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300"
-                  >
-                    Start Your Adventure
-                  </Button>
-                </div>
-              </div>
-            </div>
-            
-            <div className="space-y-8 order-1 lg:order-2">
-              <div>
-                <span className="inline-block px-6 py-3 bg-gradient-to-r from-orange-100 to-red-100 text-orange-800 text-sm sm:text-base font-bold rounded-full mb-6 shadow-lg border-2 border-orange-200">
-                  FOR TRAVELERS
-                </span>
-                <h2 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white mb-6" style={{fontFamily: '"Open Sans", sans-serif'}}>
-                  🌍 Travel Like <span className="bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">You Live There</span>
-                </h2>
-                <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
-                  Skip crowds and clichés. Connect with locals and fellow travelers.
-                </p>
-              </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-gradient-to-br from-slate-100 to-slate-200 dark:bg-gradient-to-br dark:from-slate-800 dark:to-slate-700 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-orange-300 dark:border-orange-600">
-                  <div className="flex items-center mb-3">
-                    <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
-                      <span className="text-white text-lg font-bold">🎯</span>
-                    </div>
-                    <h3 className="font-black text-slate-800 dark:text-slate-100 text-lg">Local-Led Events</h3>
-                  </div>
-                  <p className="text-slate-700 dark:text-slate-200 text-base font-semibold">Authentic local experiences. Beach bonfires, dance parties, and more.</p>
-                </div>
-                
-                <div className="bg-gradient-to-br from-emerald-100 to-emerald-200 dark:bg-gradient-to-br dark:from-emerald-800 dark:to-emerald-700 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-red-300 dark:border-red-600">
-                  <div className="flex items-center mb-3">
-                    <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
-                      <span className="text-white text-lg font-bold">🗺️</span>
-                    </div>
-                    <h3 className="font-black text-emerald-800 dark:text-emerald-100 text-lg">Secret Spots</h3>
-                  </div>
-                  <p className="text-emerald-700 dark:text-emerald-200 text-base font-semibold">Discover places locals actually go - hidden restaurants, rooftop views, secret spots.</p>
-                </div>
-                
-                <div className="bg-gradient-to-br from-blue-100 to-blue-200 dark:bg-gradient-to-br dark:from-blue-800 dark:to-blue-700 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-pink-300 dark:border-pink-600">
-                  <div className="flex items-center mb-3">
-                    <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-pink-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
-                      <span className="text-white text-lg font-bold">👥</span>
-                    </div>
-                    <h3 className="font-black text-blue-800 dark:text-blue-100 text-lg">Travel Buddies</h3>
-                  </div>
-                  <p className="text-blue-700 dark:text-blue-200 text-base font-semibold">Meet travelers and locals who share your interests and travel goals.</p>
-                </div>
-                
-                <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:bg-gradient-to-br dark:from-purple-900/30 dark:to-purple-800/20 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-purple-200 dark:border-purple-700">
-                  <div className="flex items-center mb-3">
-                    <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-3 shadow-md">
-                      <span className="text-white text-lg font-bold">💡</span>
-                    </div>
-                    <h3 className="font-black text-purple-900 dark:text-purple-100 text-lg">Local Intel</h3>
-                  </div>
-                  <p className="text-purple-800 dark:text-purple-200 text-base font-semibold">Get insider tips: best routes, local eats, money-saving secrets.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-
-
-      {/* CALL TO ACTION SECTION */}
-      <div className="relative z-10 py-16 bg-gradient-to-r from-blue-600 to-orange-600">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-6" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
-            <span className="drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]">
-              Ready to Join the Community?
-            </span>
-          </h2>
-          <p className="text-xl text-gray-200 mb-8">
-            Your authentic travel community starts here.
-          </p>
-          <div className="flex justify-center">
-            <Button 
-              onClick={() => setLocation('/launching-soon')}
-              size="lg"
-              className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-lg px-8 py-4 rounded-lg shadow-lg hover:shadow-xl text-white"
-            >
-              Join Nearby Traveler
+              🚀 START YOUR ADVENTURE
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Exclusive Beta Access */}
-      <div className="relative z-10 py-12 bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900/30 dark:to-red-900/30">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="p-8 bg-gradient-to-r from-orange-600 to-red-600 dark:from-orange-700 dark:to-red-700 rounded-xl shadow-2xl">
-            <div className="flex items-center justify-center mb-4">
-              <span className="inline-block w-3 h-3 bg-yellow-400 rounded-full mr-2 animate-pulse"></span>
-              <span className="text-white font-bold text-sm uppercase tracking-wide">Exclusive Beta Access</span>
-              <span className="inline-block w-3 h-3 bg-yellow-400 rounded-full ml-2 animate-pulse"></span>
-            </div>
-            <h3 className="text-2xl font-bold text-white text-center mb-4">
-              Join Our Premium Los Angeles Launch
-            </h3>
-            <p className="text-lg text-white text-center leading-relaxed">
-              <span className="font-semibold">Be among the first</span> to join our curated LA community. Early members get lifetime premium features.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Extra bottom padding so content is not hidden behind mobile bottom nav */}
-      <div className="h-20 md:h-0" />
       <Footer />
     </div>
   );
