@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
-import { Users, MapPin, Globe, Coffee, Heart, Car } from "lucide-react";
+import { Users, MapPin, Globe, Coffee, Heart, Car, RefreshCw, Home, Shield } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useTheme } from "@/components/theme-provider";
 
@@ -271,6 +271,36 @@ export default function LandingStreamlined() {
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Build a Global Circle of Connections</h3>
                 <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
                   Build a global network of real connections around the world.
+                </p>
+              </div>
+
+              <div className="text-center">
+                <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <RefreshCw className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Reconnect When Paths Cross Again</h3>
+                <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
+                  Know when a friend you met in one city shows up in your next destination.
+                </p>
+              </div>
+
+              <div className="text-center">
+                <div className="w-16 h-16 bg-pink-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Home className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Create Events and Welcome the World</h3>
+                <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
+                  Welcome travelers, create events, and meet the world without leaving home.
+                </p>
+              </div>
+
+              <div className="text-center">
+                <div className="w-16 h-16 bg-blue-700 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Shield className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Build Trust with References & Verification</h3>
+                <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
+                  Build trust through mutual connections and community references.
                 </p>
               </div>
             </div>
