@@ -225,39 +225,186 @@ export default function EventsLanding() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-6 sm:mb-8">
             
             {/* Venice Beach Dance Party */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Venice Beach Dance Party • Free</h3>
-              <p className="text-gray-600 mb-4">Sunset dancing on the famous boardwalk with live music and authentic LA beach culture.</p>
+            <div className="bg-gray-100 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-400 to-purple-500">
+                <img 
+                  src="/venice-beach-dance-party.png" 
+                  alt="Venice Beach dance party event" 
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="mb-3">
+                  <h3 className="font-bold text-gray-900 mb-1">Venice Beach Dance Party • Free</h3>
+                  <p className="text-sm text-gray-600">Sunset dancing on the famous boardwalk</p>
+                </div>
+                
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs font-medium">Free</span>
+                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">Beach</span>
+                  <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">Dancing</span>
+                </div>
+                
+                <p className="text-gray-700 text-sm mb-4 flex-grow">Sunset dancing on the famous boardwalk with live music and authentic LA beach culture.</p>
+                <a
+                  href="/join"
+                  className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
+                >
+                  JOIN THE PARTY
+                </a>
+              </div>
             </div>
 
-            {/* Authentic Food Adventure */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Authentic Food Adventure • Various Prices</h3>
-              <p className="text-gray-600 mb-4">Join locals discovering hidden food spots — from dollar tacos to Korean BBQ and the best burgers in town.</p>
+            {/* Food Adventure */}
+            <div className="bg-gray-100 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-orange-400 to-red-500">
+                <img 
+                  src="/authentic-food-adventure.png" 
+                  alt="Local food experience event" 
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="mb-3">
+                  <h3 className="font-bold text-gray-900 mb-1">Authentic Food Adventure • Various Prices</h3>
+                  <p className="text-sm text-gray-600">Hidden spots from tacos to Korean BBQ</p>
+                </div>
+                
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs font-medium">Food</span>
+                  <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-medium">Local Spots</span>
+                  <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs font-medium">Social</span>
+                </div>
+                
+                <p className="text-gray-700 text-sm mb-4 flex-grow">Join locals discovering hidden food spots — from dollar tacos to Korean BBQ and the best burgers in town.</p>
+                <a
+                  href="/join"
+                  className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
+                >
+                  JOIN FOOD TOUR
+                </a>
+              </div>
             </div>
 
             {/* Marina Movie Nights */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Marina Movie Nights • Saturday 8PM • Free</h3>
-              <p className="text-gray-600 mb-4">Outdoor movie screenings at Burton Chace Park. Bring a blanket, pack a picnic, enjoy movies under the stars.</p>
+            <div className="bg-gray-100 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-500 to-purple-600">
+                <img 
+                  src={movieImage} 
+                  alt="Marina del Rey outdoor movie night at Burton Chace Park" 
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="mb-3">
+                  <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-1 leading-tight">Marina Movie Nights • Saturday 8PM • Free</h3>
+                  <p className="text-sm text-gray-600">Burton Chace Park outdoor screenings</p>
+                </div>
+                
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">Free</span>
+                  <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">Movies</span>
+                  <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Outdoor</span>
+                </div>
+                
+                <p className="text-gray-700 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Outdoor movie screenings at Burton Chace Park. Bring a blanket, pack a picnic, enjoy movies under the stars.</p>
+                <a
+                  href="/join"
+                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
+                >
+                  JOIN MOVIE NIGHT
+                </a>
+              </div>
             </div>
 
             {/* Art Gallery Walk */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Art Gallery Walk • First Friday • Free</h3>
-              <p className="text-gray-600 mb-4">Monthly walk through the Arts District. Meet artists, see local work, discuss creativity with fellow art lovers.</p>
+            <div className="bg-gray-100 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-purple-400 to-pink-500">
+                <img 
+                  src={artWalkImage} 
+                  alt="First Friday Art Walk in colorful arts district with people walking" 
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="mb-3">
+                  <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-1 leading-tight">Art Gallery Walk • First Friday • Free</h3>
+                  <p className="text-sm text-gray-600">Monthly Arts District exploration</p>
+                </div>
+                
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-medium">Free</span>
+                  <span className="bg-pink-100 text-pink-700 px-2 py-1 rounded-full text-xs font-medium">Culture</span>
+                </div>
+                
+                <p className="text-gray-700 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Monthly walk through the Arts District. Meet artists, see local work, discuss creativity with fellow art lovers.</p>
+                <a
+                  href="/join"
+                  className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
+                >
+                  JOIN ART WALK
+                </a>
+              </div>
             </div>
 
             {/* Karaoke Night */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Karaoke Night • Wednesday 8PM</h3>
-              <p className="text-gray-600 mb-4">Weekly karaoke where locals and travelers bond over terrible singing voices. No talent required — just bring energy!</p>
+            <div className="bg-gray-100 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-red-500 to-pink-600">
+                <img 
+                  src={karaokeImage} 
+                  alt="Person singing karaoke with silhouette against stage lights" 
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="mb-3">
+                  <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-1 leading-tight">Karaoke Night • Wednesday 8PM</h3>
+                  <p className="text-sm text-gray-600">Weekly singing with locals and travelers</p>
+                </div>
+                
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-medium">Fun</span>
+                  <span className="bg-pink-100 text-pink-700 px-2 py-1 rounded-full text-xs font-medium">Music</span>
+                </div>
+                
+                <p className="text-gray-700 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Weekly karaoke where locals and travelers bond over terrible singing voices. No talent required — just bring energy!</p>
+                <a
+                  href="/join"
+                  className="w-full bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
+                >
+                  JOIN KARAOKE
+                </a>
+              </div>
             </div>
 
-            {/* City Bike Tour */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">City Bike Tour • Saturday 10AM</h3>
-              <p className="text-gray-600 mb-4">Explore the best neighborhoods on two wheels. Local guides show hidden spots and street art you'd never find alone.</p>
+            {/* Bike Tour */}
+            <div className="bg-gray-100 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
+              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-teal-500 to-green-600">
+                <img 
+                  src={bikeImage} 
+                  alt="Group of cyclists with bikes under palm trees in beach setting" 
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="mb-3">
+                  <h3 className="text-sm sm:text-base font-bold text-gray-900 mb-1 leading-tight">City Bike Tour • Saturday 10AM</h3>
+                  <p className="text-sm text-gray-600">Hidden spots and street art tours</p>
+                </div>
+                
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className="bg-teal-100 text-teal-700 px-2 py-1 rounded-full text-xs font-medium">Active</span>
+                  <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Sightseeing</span>
+                </div>
+                
+                <p className="text-gray-700 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Explore the best neighborhoods on two wheels. Local guides show hidden spots and street art you'd never find alone.</p>
+                <a
+                  href="/join"
+                  className="w-full bg-gradient-to-r from-teal-500 to-green-600 hover:from-teal-600 hover:to-green-700 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
+                >
+                  JOIN BIKE TOUR
+                </a>
+              </div>
             </div>
 
           </div>
