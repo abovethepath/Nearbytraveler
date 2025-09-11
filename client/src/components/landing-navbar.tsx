@@ -35,9 +35,6 @@ export default function LandingNavbar() {
               <Link href="/events-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
                 Events
               </Link>
-              <Link href="/networking-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
-                Networking
-              </Link>
               <Link href="/business-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
                 Business
               </Link>
@@ -123,12 +120,6 @@ export default function LandingNavbar() {
               onClick={() => setMobileMenuOpen(false)}
             >
               📅 For Events
-            </Link>
-            <Link href="/networking-landing" 
-              className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-3 pr-3 py-2 border-l-4 text-sm font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              🤝 Networking
             </Link>
             <Link href="/business-landing" 
               className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-3 pr-3 py-2 border-l-4 text-sm font-medium rounded-r-lg transition-all duration-200 touch-manipulation"

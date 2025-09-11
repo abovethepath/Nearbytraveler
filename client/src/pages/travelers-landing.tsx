@@ -226,9 +226,9 @@ export default function TravelersLanding() {
               <p className="text-black dark:text-white">Verified users and safety features for trustworthy connections.</p>
             </div>
             <div className="bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-900/30 dark:to-rose-800/30 p-6 rounded-xl shadow-lg border dark:border-rose-700/50">
-              <div className="text-4xl mb-4">🤝</div>
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Better Networking Events</h3>
-              <p className="text-black dark:text-white">Pre-match with attendees for meaningful networking connections.</p>
+              <div className="text-4xl mb-4">🎪</div>
+              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Event Discovery</h3>
+              <p className="text-black dark:text-white">Find and join local events happening during your travel dates.</p>
             </div>
           </div>
         </div>

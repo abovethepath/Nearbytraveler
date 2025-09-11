@@ -33,7 +33,7 @@ import EventsLanding from "@/pages/events-landing";
 import BusinessLanding from "@/pages/business-landing";
 import LocalsLanding from "@/pages/locals-landing";
 import TravelersLanding from "@/pages/travelers-landing";
-import NetworkingLanding from "@/pages/networking-landing";
+// import NetworkingLanding from "@/pages/networking-landing"; // HIDDEN: Networking functionality temporarily disabled
 import CouchsurfingLanding from "@/pages/couchsurfing-landing";
 import BusinessCustomLanding from "@/pages/business-custom-landing";
 import Connect from "@/pages/connect";
@@ -214,7 +214,7 @@ function Router() {
 
   const landingPageRoutes = [
     '/', '/landing', '/landing-new', '/auth', '/join', '/signup', '/signup/local', '/signup/traveler', '/signup/business', '/signup/account', '/signup/traveling', '/account-success',
-    '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', '/networking-landing', '/couchsurfing', '/cs', '/b', '/privacy', '/terms', '/cookies', '/about', '/getting-started',
+    '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', /* '/networking-landing', */ '/couchsurfing', '/cs', '/b', '/privacy', '/terms', '/cookies', '/about', '/getting-started',
     '/forgot-password', '/reset-password', '/welcome', '/welcome-business', '/quick-login', '/preview-landing', '/preview-first-landing',
     '/travel-quiz', '/TravelIntentQuiz', '/business-card', '/qr-code'
   ];
@@ -621,10 +621,11 @@ function Router() {
       }
 
       // Allow access to networking landing page without authentication
-      if (location === '/networking-landing') {
-        console.log('Showing NetworkingLanding for unauthenticated user');
-        return <NetworkingLanding />;
-      }
+      // HIDDEN: Networking functionality temporarily disabled
+      // if (location === '/networking-landing') {
+      //   console.log('Showing NetworkingLanding for unauthenticated user');
+      //   return <NetworkingLanding />;
+      // }
 
       // Allow access to couchsurfing landing page without authentication
       if (location === '/couchsurfing' || location === '/cs') {

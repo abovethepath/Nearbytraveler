@@ -210,8 +210,8 @@ export default function EventsLanding() {
             
             <div className="text-center p-4">
               <div className="text-3xl mb-3">🎯</div>
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Create Event Connections</h3>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">Meet fellow conference attendees before you travel. Turn business events into reunions, not rooms full of strangers.</p>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Pre-Event Connections</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm">Connect with fellow travelers before local events and festivals. Turn events into reunions, not rooms full of strangers.</p>
             </div>
           </div>
         </div>
@@ -221,7 +221,7 @@ export default function EventsLanding() {
       <div className="py-12 bg-white dark:bg-gray-900">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <p className="text-xl text-gray-800 dark:text-gray-300 leading-relaxed font-light">
-            "Thanks to Nearby Traveler, You can meet half your conference before even landing. An event can feel like a reunion, not a room full of strangers."
+            "Thanks to Nearby Traveler, you can meet fellow travelers before local events. Every festival or gathering feels like a reunion, not a room full of strangers."
           </p>
           <div className="mt-6 text-center">
             <p className="text-gray-600 dark:text-white text-base">— Real connections before you arrive</p>

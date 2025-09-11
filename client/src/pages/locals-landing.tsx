@@ -267,10 +267,10 @@ export default function LocalsLanding() {
                 </p>
               </div>
               <div className="bg-purple-200 dark:bg-purple-600 p-6 rounded-xl shadow-lg text-gray-800 dark:text-white flex flex-col h-full">
-                <div className="text-4xl mb-4">💼</div>
-                <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-800 dark:text-white leading-tight">Pre-Network for Business Events</h3>
+                <div className="text-4xl mb-4">🎯</div>
+                <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-800 dark:text-white leading-tight">Interest-Based Matching</h3>
                 <p className="text-gray-700 dark:text-white text-sm leading-relaxed flex-grow">
-                  See who's attending conferences, mixers, or meetups before they start. Break the ice early, walk in with warm intros, and keep connections alive afterward.
+                  Connect with travelers who share your hobbies and interests. Find hiking buddies, food lovers, art enthusiasts, and adventure seekers in your city.
                 </p>
               </div>
               <div className="bg-blue-200 dark:bg-blue-600 p-6 rounded-xl shadow-lg text-gray-800 dark:text-white flex flex-col h-full">

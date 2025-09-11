@@ -374,8 +374,8 @@ export default function CouchsurfingLanding() {
                 <div className="flex items-start">
                   <Coffee className="w-6 h-6 text-yellow-600 mt-1 mr-3 flex-shrink-0" />
                   <div>
-                    <h3 className="font-semibold text-zinc-900 dark:text-white mb-2">Business Travelers</h3>
-                    <p className="text-zinc-700 dark:text-zinc-300">Connect with professionals traveling for work who want meaningful local connections during their stay</p>
+                    <h3 className="font-semibold text-zinc-900 dark:text-white mb-2">Solo Travelers</h3>
+                    <p className="text-zinc-700 dark:text-zinc-300">Connect with independent travelers seeking authentic local experiences and cultural exchange during their journey</p>
                   </div>
                 </div>
               </div>

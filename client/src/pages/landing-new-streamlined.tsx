@@ -353,7 +353,7 @@ export default function LandingStreamlined() {
                 Build a Global Circle of Connections
               </h3>
               <p className="mt-2 text-sm text-zinc-600">
-                Build a global network of real connections around the world.
+                Build a global community of real connections around the world.
               </p>
             </div>
 
@@ -572,7 +572,7 @@ export default function LandingStreamlined() {
               </div>
               <div className="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
                 <span className="text-2xl mb-2 block">🤝</span>
-                <span className="text-gray-700">Business network</span>
+                <span className="text-gray-700">Local business culture</span>
               </div>
               <div className="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-200">
                 <span className="text-2xl mb-2 block">🍻</span>
