@@ -97,7 +97,7 @@ export default function TravelersLanding() {
                 </div>
                 <div className="mt-3 sm:mt-4 max-w-xl text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[80px] sm:h-[100px] md:h-[120px]">
                   <p className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700">
-                    Skip the tourist traps and connect with nearby travelers and locals for authentic experiences
+                    Connect with locals and travelers for authentic experiences
                   </p>
                 </div>
               </div>
@@ -141,7 +141,7 @@ export default function TravelersLanding() {
                 Travel Like a Local
               </h1>
               <p className="text-xl font-light text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-                Skip the tourist traps and connect with nearby travelers and locals for authentic experiences
+                Connect with locals and travelers for authentic experiences
               </p>
               
               <Button
@@ -160,7 +160,7 @@ export default function TravelersLanding() {
       <div className="py-2 bg-white dark:bg-gray-900">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-            ✈️ Skip tourist traps • Connect with real locals • Discover hidden gems • Create lasting memories
+            ✈️ Real local connections • Hidden gems • Authentic experiences
           </p>
         </div>
       </div>
@@ -175,60 +175,60 @@ export default function TravelersLanding() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
             <div className="text-center">
               <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Hidden Gems</h3>
-              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Discover secret spots, local hangouts, and authentic experiences that guidebooks never mention.</p>
+              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Find secret spots and local hangouts guidebooks miss.</p>
             </div>
             <div className="text-center">
               <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Local Connections</h3>
-              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Connect with locals who share your interests and get insider tips from people who actually live there.</p>
+              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Connect with locals who share your interests for insider tips.</p>
             </div>
             <div className="text-center">
               <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Smart Matching</h3>
-              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Our AI matches you with locals and travelers based on shared interests, travel dates, and compatibility.</p>
+              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">AI matches you with compatible locals and travelers.</p>
             </div>
             <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 p-6 rounded-xl shadow-lg border dark:border-purple-700/50">
               <div className="text-4xl mb-4">⚡</div>
               <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Instant Meetups</h3>
-              <p className="text-black dark:text-white">Create "meet now" events for instant connections when you arrive in a new city and want to explore.</p>
+              <p className="text-black dark:text-white">Create "meet now" events for instant connections.</p>
             </div>
             <div className="bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/30 dark:to-pink-800/30 p-6 rounded-xl shadow-lg border dark:border-pink-700/50">
               <div className="text-4xl mb-4">🌍</div>
               <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Cultural Immersion</h3>
-              <p className="text-black dark:text-white">Experience authentic local culture through community events and personal connections with residents.</p>
+              <p className="text-black dark:text-white">Experience authentic culture through local connections.</p>
             </div>
             <div className="bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-900/30 dark:to-teal-800/30 p-6 rounded-xl shadow-lg border dark:border-teal-700/50">
               <div className="text-4xl mb-4">💡</div>
               <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Personalized Tips</h3>
-              <p className="text-black dark:text-white">Get customized recommendations based on your interests, budget, and travel style from real locals.</p>
+              <p className="text-black dark:text-white">Get personalized recommendations from real locals.</p>
             </div>
             <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/30 dark:to-indigo-800/30 p-6 rounded-xl shadow-lg border dark:border-indigo-700/50">
               <div className="text-4xl mb-4">💬</div>
               <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Real-Time Messaging</h3>
-              <p className="text-black dark:text-white">Instant messaging with typing indicators, read receipts, and online status like AOL Messenger.</p>
+              <p className="text-black dark:text-white">Instant messaging with typing indicators and read receipts.</p>
             </div>
             <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/30 dark:to-yellow-800/30 p-6 rounded-xl shadow-lg border dark:border-yellow-700/50">
               <div className="text-4xl mb-4">📅</div>
               <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Travel Date Matching</h3>
-              <p className="text-black dark:text-white">Find travelers with overlapping dates in the same destination for coordinated adventures.</p>
+              <p className="text-black dark:text-white">Match with travelers visiting same destination.</p>
             </div>
             <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-900/30 dark:to-cyan-800/30 p-6 rounded-xl shadow-lg border dark:border-cyan-700/50">
               <div className="text-4xl mb-4">📸</div>
               <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Travel Memories</h3>
-              <p className="text-black dark:text-white">Photo sharing, travel stories, and memory timeline to document your adventures.</p>
+              <p className="text-black dark:text-white">Share photos and stories to document adventures.</p>
             </div>
             <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-800/30 p-6 rounded-xl shadow-lg border dark:border-emerald-700/50">
               <div className="text-4xl mb-4">🏆</div>
               <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Travel Aura System</h3>
-              <p className="text-black dark:text-white">Earn points for participating, sharing photos, and connecting with other travelers who share your interests.</p>
+              <p className="text-black dark:text-white">Earn points for connecting and sharing experiences.</p>
             </div>
             <div className="bg-gradient-to-br from-violet-50 to-violet-100 dark:from-violet-900/30 dark:to-violet-800/30 p-6 rounded-xl shadow-lg border dark:border-violet-700/50">
               <div className="text-4xl mb-4">🔒</div>
               <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Safety & References</h3>
-              <p className="text-black dark:text-white">Reference system, user verification, and safety features to ensure trustworthy connections.</p>
+              <p className="text-black dark:text-white">Verified users and safety features for trustworthy connections.</p>
             </div>
             <div className="bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-900/30 dark:to-rose-800/30 p-6 rounded-xl shadow-lg border dark:border-rose-700/50">
               <div className="text-4xl mb-4">🤝</div>
               <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Better Networking Events</h3>
-              <p className="text-black dark:text-white">Transform shallow networking into meaningful connections. Pre-match with attendees who share your interests, plan meetups before events, and continue conversations that matter.</p>
+              <p className="text-black dark:text-white">Pre-match with attendees for meaningful networking connections.</p>
             </div>
           </div>
         </div>
@@ -244,21 +244,21 @@ export default function TravelersLanding() {
                 <span className="text-2xl font-bold text-orange-600 dark:text-orange-400">1</span>
               </div>
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Plan Your Trip</h3>
-              <p className="text-gray-700 dark:text-gray-300">Add your travel dates and destinations to find locals and other travelers who'll be there at the same time.</p>
+              <p className="text-gray-700 dark:text-gray-300">Add travel dates to find locals and travelers there.</p>
             </div>
             <div className="text-center">
               <div className="bg-blue-100 dark:bg-blue-900/30 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">2</span>
               </div>
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Get Matched</h3>
-              <p className="text-gray-700 dark:text-gray-300">Our smart algorithm connects you with compatible locals and travelers based on interests and travel overlap.</p>
+              <p className="text-gray-700 dark:text-gray-300">Smart matching based on interests and travel overlap.</p>
             </div>
             <div className="text-center">
               <div className="bg-green-100 dark:bg-green-900/30 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl font-bold text-green-600 dark:text-green-400">3</span>
               </div>
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Experience & Connect</h3>
-              <p className="text-gray-700 dark:text-gray-300">Join local events, create meetups, and build lasting connections that enhance your travel experience.</p>
+              <p className="text-gray-700 dark:text-gray-300">Join events and create meetups for lasting connections.</p>
             </div>
           </div>
         </div>
@@ -272,32 +272,32 @@ export default function TravelersLanding() {
             <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-gray-600 dark:to-gray-500 p-6 rounded-xl shadow-lg border border-purple-200 dark:border-gray-400">
               <div className="text-4xl mb-4">🎲</div>
               <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Surprise Me Feature</h3>
-              <p className="text-black dark:text-white">Let locals surprise you with spontaneous activities and hidden gems you'd never discover on your own.</p>
+              <p className="text-black dark:text-white">Let locals surprise you with hidden gems.</p>
             </div>
             <div className="bg-gradient-to-br from-teal-50 to-teal-100 dark:from-gray-600 dark:to-gray-500 p-6 rounded-xl shadow-lg border border-teal-200 dark:border-gray-400">
               <div className="text-4xl mb-4">📍</div>
               <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Location Intelligence</h3>
-              <p className="text-black dark:text-white">Smart location detection shows you nearby travelers, events, and meetup opportunities in real-time.</p>
+              <p className="text-black dark:text-white">Real-time detection of nearby travelers and events.</p>
             </div>
             <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-gray-600 dark:to-gray-500 p-6 rounded-xl shadow-lg border border-indigo-200 dark:border-gray-400">
               <div className="text-4xl mb-4">🌐</div>
               <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Global Community</h3>
-              <p className="text-black dark:text-white">Starting our beta launch in Los Angeles, growing to connect travelers worldwide with authentic local experiences.</p>
+              <p className="text-black dark:text-white">Beta launching in LA, expanding worldwide.</p>
             </div>
             <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-gray-600 dark:to-gray-500 p-6 rounded-xl shadow-lg border border-emerald-200 dark:border-gray-400">
               <div className="text-4xl mb-4">🔄</div>
               <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Trip Synchronization</h3>
-              <p className="text-black dark:text-white">Automatically sync your travel plans across devices and share itineraries with travel companions.</p>
+              <p className="text-black dark:text-white">Sync travel plans across devices automatically.</p>
             </div>
             <div className="bg-gradient-to-br from-rose-50 to-rose-100 dark:from-gray-600 dark:to-gray-500 p-6 rounded-xl shadow-lg border border-rose-200 dark:border-gray-400">
               <div className="text-4xl mb-4">🎯</div>
               <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Interest Targeting</h3>
-              <p className="text-black dark:text-white">Precision matching based on 100+ interests and activities to find your perfect travel companions.</p>
+              <p className="text-black dark:text-white">Precision matching based on 100+ interests.</p>
             </div>
             <div className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-gray-600 dark:to-gray-500 p-6 rounded-xl shadow-lg border border-amber-200 dark:border-gray-400">
               <div className="text-4xl mb-4">🎪</div>
               <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Event Discovery</h3>
-              <p className="text-black dark:text-white">Access exclusive local events, festivals, and cultural experiences only available to community members.</p>
+              <p className="text-black dark:text-white">Access exclusive local events for members only.</p>
             </div>
           </div>
         </div>
@@ -306,7 +306,7 @@ export default function TravelersLanding() {
         <div className="bg-gray-100 dark:bg-gradient-to-r dark:from-orange-600 dark:to-blue-600 text-gray-900 dark:text-white py-6 sm:py-12 rounded-2xl shadow-lg dark:shadow-2xl mb-6 sm:mb-8">
           <div className="max-w-4xl mx-auto text-center px-6">
             <h2 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">Ready to Explore Like a Local?</h2>
-            <p className="text-xl mb-8 text-gray-700 dark:text-white dark:opacity-90">Start your journey of authentic local connections and experiences.</p>
+            <p className="text-xl mb-8 text-gray-700 dark:text-white dark:opacity-90">Start connecting with locals today.</p>
             
             {/* Single CTA Button */}
             <div className="flex justify-center">
