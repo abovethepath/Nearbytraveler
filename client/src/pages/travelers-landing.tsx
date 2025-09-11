@@ -108,25 +108,55 @@ export default function TravelersLanding() {
             <p className="text-xl mb-6 text-gray-700">
               We host multiple events every week designed specifically for travelers to connect with locals and each other
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                <div className="text-3xl mb-2">🍽️</div>
-                <p className="font-semibold text-gray-900">Weekly Food Tours</p>
+            
+            {/* Detailed Event Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+              
+              {/* Beach Bonfire & BBQ */}
+              <div className="bg-white border-2 border-gray-200 rounded-xl p-6 text-left hover:shadow-lg transition-all duration-300">
+                <div className="flex justify-between items-start mb-3">
+                  <h3 className="text-lg font-bold text-gray-900">Beach Bonfire & BBQ</h3>
+                  <span className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">Free</span>
+                </div>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  Sunset gathering with locals — authentic LA beach culture, music, and new friends.
+                </p>
+                <button className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-200">
+                  Join Now
+                </button>
               </div>
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                <div className="text-3xl mb-2">🚶‍♀️</div>
-                <p className="font-semibold text-gray-900">City Walking Meetups</p>
+
+              {/* Taco Tuesday */}
+              <div className="bg-white border-2 border-gray-200 rounded-xl p-6 text-left hover:shadow-lg transition-all duration-300">
+                <div className="flex justify-between items-start mb-3">
+                  <h3 className="text-lg font-bold text-gray-900">Taco Tuesday</h3>
+                  <span className="bg-orange-500 text-white px-2 py-1 rounded-full text-xs font-medium">$1.50</span>
+                </div>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  Weekly street taco adventure with fellow food lovers at the city's best Mexican spots.
+                </p>
+                <button className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-200">
+                  Join Now
+                </button>
               </div>
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                <div className="text-3xl mb-2">🎤</div>
-                <p className="font-semibold text-gray-900">Karaoke Nights</p>
+
+              {/* Hollywood Sign Hike */}
+              <div className="bg-white border-2 border-gray-200 rounded-xl p-6 text-left hover:shadow-lg transition-all duration-300">
+                <div className="flex justify-between items-start mb-3">
+                  <h3 className="text-lg font-bold text-gray-900">Hollywood Sign Hike</h3>
+                  <span className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">Free</span>
+                </div>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  Saturday morning hikes with locals and travelers — amazing views, great photos, real LA.
+                </p>
+                <button className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition duration-200">
+                  Join Now
+                </button>
               </div>
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                <div className="text-3xl mb-2">🔥</div>
-                <p className="font-semibold text-gray-900">Bonfire Beach BBQs</p>
-              </div>
+              
             </div>
-            <p className="text-lg mt-6 font-medium text-gray-700">
+            
+            <p className="text-lg mt-8 font-medium text-gray-700">
               Join travelers from around the world at events happening every week in your destination city
             </p>
           </div>
