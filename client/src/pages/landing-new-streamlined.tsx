@@ -371,7 +371,7 @@ export default function LandingStreamlined() {
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
               <div className="text-center bg-white p-6 sm:p-8 lg:p-10 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
+                <div className="w-16 h-16 bg-gray-100 text-gray-700 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
                   1
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Share Your Vibe</h3>
@@ -381,7 +381,7 @@ export default function LandingStreamlined() {
               </div>
 
               <div className="text-center bg-white p-6 sm:p-8 lg:p-10 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-orange-500 text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
+                <div className="w-16 h-16 bg-gray-100 text-gray-700 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
                   2
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Connect Authentically</h3>
@@ -391,7 +391,7 @@ export default function LandingStreamlined() {
               </div>
 
               <div className="text-center bg-white p-6 sm:p-8 lg:p-10 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
+                <div className="w-16 h-16 bg-gray-100 text-gray-700 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
                   3
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Create Epic Memories</h3>
