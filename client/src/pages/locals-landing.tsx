@@ -97,7 +97,7 @@ export default function LocalsLanding() {
                 </div>
                 <div className="mt-3 sm:mt-4 max-w-xl text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[80px] sm:h-[100px] md:h-[120px]">
                   <p className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700">
-                    Show off those hidden gems only locals know and build lasting friendships with travelers from around the world
+                    Connect with curious travelers and like-minded locals while sharing what makes your city special
                   </p>
                 </div>
               </div>
@@ -141,7 +141,7 @@ export default function LocalsLanding() {
                 Turn Your City Knowledge Into Global Friendships
               </h1>
               <p className="text-xl font-light text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-                Show off those hidden gems only locals know and build lasting friendships with travelers from around the world
+                Connect with curious travelers and like-minded locals while sharing what makes your city special
               </p>
               
               <Button
