@@ -383,9 +383,12 @@ export default function LandingStreamlined() {
         {/* Community in Action */}
         <section className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-white">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center text-gray-900 mb-12 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center text-gray-900 mb-8 sm:mb-12">
               See Our Community in Action
             </h2>
+            <p className="text-center text-lg sm:text-xl text-gray-600 mb-12 sm:mb-16 max-w-4xl mx-auto leading-relaxed">
+              Every week, Nearby Traveler sponsors authentic local experiences hosted by passionate Nearby Locals. From cultural tours to food adventures, these events bring our community together and showcase the real heart of each city.
+            </p>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
               <div className="bg-gradient-to-br from-blue-50 to-orange-50 rounded-xl p-6 sm:p-8">
