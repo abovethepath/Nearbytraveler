@@ -191,9 +191,9 @@ export default function CouchsurfingLanding() {
                 <p className="text-zinc-700 dark:text-zinc-300">See who's also going to Taylor Swift, Comic-Con, SXSW, and more</p>
               </div>
               
-              {/* Meet your way */}
+              {/* Meet on your terms */}
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
-                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Meet your way</h3>
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Meet on your terms</h3>
                 <p className="text-zinc-700 dark:text-zinc-300">Coffee, hikes, shows, markets, bars, the beach</p>
               </div>
               
