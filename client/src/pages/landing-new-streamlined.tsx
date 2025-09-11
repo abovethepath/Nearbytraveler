@@ -235,49 +235,42 @@ export default function LandingStreamlined() {
 
         {/* Why Nearby Traveler */}
         <section className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
-          <div className="max-w-7xl mx-auto">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center text-gray-900 mb-12 sm:mb-16">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-8 sm:mb-12">
               Why Nearby Traveler
             </h2>
+            <p className="text-lg sm:text-xl text-gray-600 mb-12 sm:mb-16 leading-relaxed">
+              Whether you're traveling or at home, Nearby Traveler helps you create real connections that last.
+            </p>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-              <div className="text-center bg-white p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="space-y-12 sm:space-y-16">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Users className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3">Connect Before You Go</h3>
-                <p className="text-sm sm:text-base text-gray-600">
-                  Meet locals and travelers before your trip starts — no more wandering alone in new cities.
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Share Meals with Travelers & Locals</h3>
+                <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
+                  Connect with travelers & locals before your trip starts.
                 </p>
               </div>
 
-              <div className="text-center bg-white p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
                   <MapPin className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3">Discover Hidden Gems</h3>
-                <p className="text-sm sm:text-base text-gray-600">
-                  Access authentic spots locals actually love, not tourist traps from guidebooks.
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Explore Authentic Spots Beyond Guidebooks</h3>
+                <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
+                  Explore authentic spots shared by locals, not tourist traps.
                 </p>
               </div>
 
-              <div className="text-center bg-white p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Globe className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3">Stay Connected Globally</h3>
-                <p className="text-sm sm:text-base text-gray-600">
-                  Get notified when friends from past trips are in your next destination.
-                </p>
-              </div>
-
-              <div className="text-center bg-white p-6 sm:p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Coffee className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3">Create & Join Local Events</h3>
-                <p className="text-sm sm:text-base text-gray-600">
-                  Host experiences in your city or join authentic local gatherings anywhere.
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Build a Global Circle of Connections</h3>
+                <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
+                  Build a global network of real connections around the world.
                 </p>
               </div>
             </div>
