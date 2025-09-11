@@ -95,10 +95,8 @@ export default function LocalsLanding() {
                     Turn Your City Knowledge Into Global Friendships
                   </h1>
                 </div>
-                <div className="mt-3 sm:mt-4 max-w-xl text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300 overflow-hidden relative h-[80px] sm:h-[100px] md:h-[120px]">
-                  <p className="absolute top-0 left-0 w-full animate-in slide-in-from-left-full fade-in duration-700">
-                    Share Your City, Build Your World
-                  </p>
+                <div className="mt-3 sm:mt-4 max-w-xl text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300">
+                  <p>Connect with curious travelers and like-minded locals while sharing what makes your city special</p>
                 </div>
               </div>
             
@@ -157,7 +155,7 @@ export default function LocalsLanding() {
       </div>
 
       {/* Key Features */}
-      <div className="py-8 bg-white dark:bg-gray-900">
+      <div className="py-4 bg-white dark:bg-gray-900">
         <div className="max-w-6xl mx-auto px-4 text-center">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
@@ -190,7 +188,7 @@ export default function LocalsLanding() {
       </div>
 
         {/* From the Founder */}
-        <div className="py-8 bg-gray-50 dark:bg-gray-800">
+        <div className="py-4 bg-gray-50 dark:bg-gray-800">
           <div className="max-w-4xl mx-auto px-4 text-center">
             <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
               From the Founder
@@ -205,7 +203,7 @@ export default function LocalsLanding() {
         </div>
 
       {/* How It Works */}
-      <div className="py-8 bg-white dark:bg-gray-900">
+      <div className="py-4 bg-white dark:bg-gray-900">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
@@ -248,7 +246,7 @@ export default function LocalsLanding() {
       </div>
           
       {/* Perfect For */}
-      <div className="py-8 bg-gray-50 dark:bg-gray-800">
+      <div className="py-4 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white text-center mb-8">Perfect For</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -281,7 +279,7 @@ export default function LocalsLanding() {
       </div>
 
       {/* Final CTA */}
-      <div className="py-12 bg-white dark:bg-gray-900">
+      <div className="py-6 bg-white dark:bg-gray-900">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <p className="text-lg mb-6 text-gray-600 dark:text-gray-400">
             Be part of a new way for locals to build global friendships while sharing what they love about their city.
