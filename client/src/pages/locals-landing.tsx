@@ -244,7 +244,7 @@ export default function LocalsLanding() {
           {/* Unique Features Section */}
           <div className="max-w-6xl mx-auto px-4 text-center mb-6 sm:mb-8">
             <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-gray-900 dark:text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
-              What Makes Nearby Traveler Special
+              Why Locals Choose Nearby Traveler
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch">
               <div className="bg-emerald-200 dark:bg-emerald-600 p-6 rounded-xl shadow-lg text-gray-800 dark:text-white flex flex-col h-full">
