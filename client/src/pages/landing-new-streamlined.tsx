@@ -483,7 +483,7 @@ export default function LandingStreamlined() {
         <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white">
           <div className="max-w-4xl mx-auto text-center">
             <p className="text-xl sm:text-2xl lg:text-3xl text-gray-600 mb-8 sm:mb-12 leading-relaxed font-bold">
-              Join thousands of solo travelers who've discovered that with daily events and instant connections, you're never really traveling alone.
+              Be part of a new way to travel where daily events and instant connections mean you're never really traveling alone.
             </p>
             
             <Button 
