@@ -292,7 +292,7 @@ export default function EventsLanding() {
                 <img 
                   src={movieImage} 
                   alt="Marina del Rey outdoor movie night at Burton Chace Park" 
-                  className="w-full h-48 object-cover object-bottom"
+                  className="w-full h-48 object-cover object-top"
                 />
               </div>
               <div className="p-6 flex flex-col flex-grow">
