@@ -289,6 +289,13 @@ export default function LocalsLanding() {
                   Create unforgettable moments and collect amazing stories from every connection you make around the world.
                 </p>
               </div>
+              <div className="bg-yellow-200 dark:bg-yellow-600 p-6 rounded-xl shadow-lg text-gray-800 dark:text-white flex flex-col h-full">
+                <div className="text-4xl mb-4">🎟️</div>
+                <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-800 dark:text-white leading-tight">Weekly Sponsored Events</h3>
+                <p className="text-gray-700 dark:text-white text-sm leading-relaxed flex-grow">
+                  Every week, Nearby Traveler sponsors authentic local experiences. Host sponsored events or join curated activities that bring our community together.
+                </p>
+              </div>
             </div>
           </div>
 
