@@ -107,7 +107,7 @@ export default function TravelersLanding() {
               From the Founder
             </h2>
             <blockquote className="text-lg italic text-gray-700 dark:text-gray-300 text-center mb-4">
-              "I was tired of touring cities alone while amazing people walked past me every day. After hosting 400+ solo travelers from 50 countries, I saw how one connection transforms an entire trip. I built the solution I wished existed — a way to never explore alone again."
+              "I was tired of touring cities alone while amazing people walked past me every day. After hosting 400+ travelers from 50 countries, I saw how one connection transforms an entire trip. I built the solution I wished existed — a way to never explore alone again."
             </blockquote>
             <p className="text-center text-gray-600 dark:text-gray-400 font-medium">
               — Aaron Lefkowitz, Founder
