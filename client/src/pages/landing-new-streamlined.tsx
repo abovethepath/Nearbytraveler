@@ -89,8 +89,8 @@ export default function LandingStreamlined() {
       setCurrentSubtext((prev) => (prev + 1) % subtexts.length);
     };
 
-    // First headline ("Planning a Trip Soon?") shows for 25 seconds, others for 10 seconds
-    const getDelay = () => currentHeadline === 0 ? 25000 : 10000;
+    // First headline ("Planning a Trip Soon?") shows for 25 seconds, others for 20 seconds
+    const getDelay = () => currentHeadline === 0 ? 25000 : 20000;
     
     const timeout = setTimeout(rotate, getDelay());
     return () => clearTimeout(timeout);
