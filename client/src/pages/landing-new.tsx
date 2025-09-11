@@ -358,32 +358,32 @@ export default function LandingNew() {
         </section>
 
         {/* Everyone's Welcome */}
-        <section className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-600 to-orange-500">
+        <section className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-white">
           <div className="max-w-6xl mx-auto text-center">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-12 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-12 sm:mb-16">
               Everyone's Welcome
             </h2>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6">
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6 text-white">
-                <h3 className="text-base sm:text-lg font-bold mb-2">Solo Travelers</h3>
-                <p className="text-sm sm:text-base">Turn exploring alone into shared adventures</p>
+              <div className="bg-gray-50 rounded-xl p-4 sm:p-6 shadow-sm">
+                <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900">Solo Travelers</h3>
+                <p className="text-sm sm:text-base text-gray-600">Turn exploring alone into shared adventures</p>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6 text-white">
-                <h3 className="text-base sm:text-lg font-bold mb-2">Families</h3>
-                <p className="text-sm sm:text-base">Connect with local families and fellow travelers</p>
+              <div className="bg-gray-50 rounded-xl p-4 sm:p-6 shadow-sm">
+                <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900">Locals</h3>
+                <p className="text-sm sm:text-base text-gray-600">Share your city and meet the world</p>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6 text-white">
-                <h3 className="text-base sm:text-lg font-bold mb-2">Locals</h3>
-                <p className="text-sm sm:text-base">Share your city and meet the world</p>
+              <div className="bg-gray-50 rounded-xl p-4 sm:p-6 shadow-sm">
+                <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900">New in Town</h3>
+                <p className="text-sm sm:text-base text-gray-600">Find your tribe fast</p>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6 text-white">
-                <h3 className="text-base sm:text-lg font-bold mb-2">New in Town</h3>
-                <p className="text-sm sm:text-base">Find your tribe fast</p>
+              <div className="bg-gray-50 rounded-xl p-4 sm:p-6 shadow-sm">
+                <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900">Families</h3>
+                <p className="text-sm sm:text-base text-gray-600">Connect with local families and fellow travelers</p>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6 text-white">
-                <h3 className="text-base sm:text-lg font-bold mb-2">Business Travelers</h3>
-                <p className="text-sm sm:text-base">Make work trips more than meetings</p>
+              <div className="bg-gray-50 rounded-xl p-4 sm:p-6 shadow-sm">
+                <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900">Business Travelers</h3>
+                <p className="text-sm sm:text-base text-gray-600">Make work trips more than meetings</p>
               </div>
             </div>
           </div>
