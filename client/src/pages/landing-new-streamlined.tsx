@@ -418,11 +418,6 @@ export default function LandingStreamlined() {
               {/* Beach Bonfire & BBQ */}
               <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
                 <div className="h-48 bg-gradient-to-br from-orange-400 to-red-500 relative">
-                  <img 
-                    src="/beach-bonfire-bbq.jpg" 
-                    alt="Beach bonfire and BBQ event with people gathering at sunset" 
-                    className="w-full h-full object-cover"
-                  />
                 </div>
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-3">
@@ -441,11 +436,6 @@ export default function LandingStreamlined() {
               {/* Taco Tuesday */}
               <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
                 <div className="h-48 bg-gradient-to-br from-yellow-400 to-orange-500 relative">
-                  <img 
-                    src="/taco-tuesday.jpg" 
-                    alt="Street tacos and Mexican food adventure" 
-                    className="w-full h-full object-cover"
-                  />
                 </div>
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-3">
@@ -464,11 +454,6 @@ export default function LandingStreamlined() {
               {/* Hollywood Sign Hike */}
               <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
                 <div className="h-48 bg-gradient-to-br from-green-400 to-blue-500 relative">
-                  <img 
-                    src="/hollywood-sign-hike.jpg" 
-                    alt="Hollywood Sign hike with hikers and city views" 
-                    className="w-full h-full object-cover"
-                  />
                 </div>
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-3">
