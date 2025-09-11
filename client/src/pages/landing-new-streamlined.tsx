@@ -45,13 +45,13 @@ export default function LandingStreamlined() {
   
   const [currentSubtext, setCurrentSubtext] = useState(0);
   const subtexts = [
-    "Turn every trip into meaningful connections that last.", // General travelers
+    "Connect with locals and travelers before your trip begins— and create friendships that last a lifetime.", // General travelers
     "Show your city to nearby travelers.", // Locals who want to share their city
     "Connect with families everywhere." // Families
   ];
   
   const descriptions = [
-    "Connect with locals and travelers before your trip begins— and create friendships that last a lifetime.", // General
+    "Turn every trip into meaningful connections that last.", // General
     "Meet travelers at coffee shops, events, and local experiences. Show off your city's hidden gems to curious visitors.", // Locals who want to share their city
     "Help your family build global friendships through safe, public meetups and cultural exchanges." // Families
   ];
