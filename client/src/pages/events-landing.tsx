@@ -415,7 +415,7 @@ export default function EventsLanding() {
       <div className="py-12 bg-white text-center">
         <div className="max-w-4xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Ready to join events only the Nearby Traveler community knows about?
+            Ready to join some events only the Nearby Traveler community knows about?
           </h2>
           <p className="text-xl text-gray-600 mb-8">
             Join others already creating unforgettable experiences together.
