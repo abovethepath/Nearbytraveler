@@ -133,36 +133,88 @@ export default function BusinessLanding() {
         </div>
       </section>
 
-      {/* YOUR ADVANTAGE - Condensed */}
+      {/* YOUR ADVANTAGE - With Details */}
       <section className="bg-white py-6 sm:py-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-4 sm:mb-6">
+          <div className="text-center mb-6 sm:mb-8">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Your Advantage
+              Your Competitive Advantage
             </h2>
+            <p className="text-lg text-gray-600">Get customers other businesses can't reach</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 text-center">
-              <Target className="w-8 h-8 text-green-600 mx-auto mb-2" />
-              <h3 className="font-bold text-gray-900 text-sm mb-1">Zero Competition</h3>
-              <p className="text-xs text-gray-600">Direct access</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 text-center">
+              <Target className="w-12 h-12 text-green-600 mx-auto mb-4" />
+              <h3 className="font-bold text-gray-900 text-lg mb-2">Zero Competition</h3>
+              <p className="text-sm text-gray-700 mb-3">No bidding wars or ad costs</p>
+              <ul className="text-xs text-gray-600 space-y-1">
+                <li>• Direct customer connection</li>
+                <li>• No competitor interference</li>
+                <li>• Exclusive access to travelers</li>
+              </ul>
             </div>
-            <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-4 text-center">
-              <Star className="w-8 h-8 text-orange-600 mx-auto mb-2" />
-              <h3 className="font-bold text-gray-900 text-sm mb-1">Quality Customers</h3>
-              <p className="text-xs text-gray-600">Experience seekers</p>
+            <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 text-center">
+              <Star className="w-12 h-12 text-orange-600 mx-auto mb-4" />
+              <h3 className="font-bold text-gray-900 text-lg mb-2">Quality Customers</h3>
+              <p className="text-sm text-gray-700 mb-3">Experience seekers with spending power</p>
+              <ul className="text-xs text-gray-600 space-y-1">
+                <li>• Higher lifetime value</li>
+                <li>• Authentic experience seekers</li>
+                <li>• Word-of-mouth promoters</li>
+              </ul>
             </div>
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 text-center">
-              <BarChart3 className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-              <h3 className="font-bold text-gray-900 text-sm mb-1">Complete Data</h3>
-              <p className="text-xs text-gray-600">Full customer profiles</p>
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 text-center">
+              <BarChart3 className="w-12 h-12 text-purple-600 mx-auto mb-4" />
+              <h3 className="font-bold text-gray-900 text-lg mb-2">Complete Data</h3>
+              <p className="text-sm text-gray-700 mb-3">Full customer profiles and preferences</p>
+              <ul className="text-xs text-gray-600 space-y-1">
+                <li>• Travel dates & duration</li>
+                <li>• Interests & preferences</li>
+                <li>• Group size & budget</li>
+              </ul>
             </div>
           </div>
         </div>
       </section>
 
 
+
+      {/* HOW IT WORKS */}
+      <section className="py-8 sm:py-12 bg-gradient-to-br from-blue-50 to-indigo-50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+              How It Works
+            </h2>
+            <p className="text-lg text-gray-600">Simple setup, instant results</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center">
+              <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-blue-600">1</span>
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">Create Your Profile</h3>
+              <p className="text-sm text-gray-600">Add your services, location, and what makes you special</p>
+            </div>
+            <div className="text-center">
+              <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-orange-600">2</span>
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">Get Matched</h3>
+              <p className="text-sm text-gray-600">Travelers find you based on their interests and travel plans</p>
+            </div>
+            <div className="text-center">
+              <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-green-600">3</span>
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">Grow Your Business</h3>
+              <p className="text-sm text-gray-600">Connect with customers and build lasting relationships</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* PRICING */}
       <section className="py-6 sm:py-8 bg-gradient-to-br from-orange-50 to-blue-50">
@@ -177,7 +229,26 @@ export default function BusinessLanding() {
                 🔥 FREE BETA ACCESS
               </div>
               <div className="text-3xl font-black text-green-600 mb-2">$0</div>
-              <div className="text-sm text-gray-600">Complete access • No setup fees</div>
+              <div className="text-sm text-gray-600 mb-4">Complete access • No setup fees • No hidden costs</div>
+              
+              <div className="text-left max-w-md mx-auto mb-4">
+                <div className="flex items-center text-sm text-gray-700 mb-1">
+                  <span className="text-green-500 mr-2">✓</span>
+                  Full profile creation
+                </div>
+                <div className="flex items-center text-sm text-gray-700 mb-1">
+                  <span className="text-green-500 mr-2">✓</span>
+                  Direct customer messaging
+                </div>
+                <div className="flex items-center text-sm text-gray-700 mb-1">
+                  <span className="text-green-500 mr-2">✓</span>
+                  Event promotion tools
+                </div>
+                <div className="flex items-center text-sm text-gray-700">
+                  <span className="text-green-500 mr-2">✓</span>
+                  Customer insights dashboard
+                </div>
+              </div>
             </div>
 
             <Button

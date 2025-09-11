@@ -102,23 +102,38 @@ export default function TravelersLanding() {
         {/* Core Features */}
         <div className="max-w-6xl mx-auto mb-8">
           <h2 className="text-3xl font-bold text-center mb-8 text-gray-900 dark:text-white">
-            Core Features
+            What Makes Us Different
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl shadow-lg">
               <div className="text-4xl mb-4">⚡</div>
               <h3 className="text-xl font-bold mb-3 text-black">Instant Meetups</h3>
-              <p className="text-black">Create "meet now" events for instant connections.</p>
+              <p className="text-black mb-3">Create "meet now" events for instant connections.</p>
+              <ul className="text-sm text-gray-700 space-y-1">
+                <li>• Spontaneous adventures</li>
+                <li>• Skip the planning stress</li>
+                <li>• Connect in real-time</li>
+              </ul>
             </div>
             <div className="bg-gradient-to-br from-pink-50 to-pink-100 p-6 rounded-xl shadow-lg">
               <div className="text-4xl mb-4">🌍</div>
               <h3 className="text-xl font-bold mb-3 text-black">Local Connections</h3>
-              <p className="text-black">Connect with locals for authentic experiences.</p>
+              <p className="text-black mb-3">Connect with locals for authentic experiences.</p>
+              <ul className="text-sm text-gray-700 space-y-1">
+                <li>• Skip tourist traps</li>
+                <li>• Insider knowledge</li>
+                <li>• Authentic cultural exchange</li>
+              </ul>
             </div>
             <div className="bg-gradient-to-br from-teal-50 to-teal-100 p-6 rounded-xl shadow-lg">
               <div className="text-4xl mb-4">💬</div>
               <h3 className="text-xl font-bold mb-3 text-black">Real-Time Chat</h3>
-              <p className="text-black">Instant messaging with full features.</p>
+              <p className="text-black mb-3">Instant messaging with full features.</p>
+              <ul className="text-sm text-gray-700 space-y-1">
+                <li>• Group conversations</li>
+                <li>• Photo & location sharing</li>
+                <li>• Coordinated meetups</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -130,38 +145,60 @@ export default function TravelersLanding() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <div className="bg-orange-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
-                <span className="text-lg font-bold text-orange-600">1</span>
+              <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-orange-600">1</span>
               </div>
-              <h3 className="font-bold mb-2 text-gray-900 dark:text-white">Add Travel Dates</h3>
+              <h3 className="font-bold mb-2 text-gray-900 dark:text-white text-lg">Share Your Plans</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Add travel dates, interests, and what you want to explore</p>
             </div>
             <div>
-              <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
-                <span className="text-lg font-bold text-blue-600">2</span>
+              <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-blue-600">2</span>
               </div>
-              <h3 className="font-bold mb-2 text-gray-900 dark:text-white">Get Matched</h3>
+              <h3 className="font-bold mb-2 text-gray-900 dark:text-white text-lg">Get Matched</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Find compatible travelers and locals based on your interests</p>
             </div>
             <div>
-              <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
-                <span className="text-lg font-bold text-green-600">3</span>
+              <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-green-600">3</span>
               </div>
-              <h3 className="font-bold mb-2 text-gray-900 dark:text-white">Connect & Explore</h3>
+              <h3 className="font-bold mb-2 text-gray-900 dark:text-white text-lg">Connect & Explore</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Join events, create meetups, and make lasting friendships</p>
             </div>
           </div>
         </div>
 
+        {/* Benefits Section */}
+        <div className="max-w-6xl mx-auto mb-8">
+          <h2 className="text-3xl font-bold text-center mb-8 text-gray-900 dark:text-white">
+            Why Choose Nearby Traveler?
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+              <div className="text-3xl mb-4">🎯</div>
+              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Quality Over Quantity</h3>
+              <p className="text-gray-700 dark:text-gray-300">We focus on meaningful connections, not endless swiping. Every match is based on genuine compatibility and shared interests.</p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+              <div className="text-3xl mb-4">🛡️</div>
+              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Safe & Verified</h3>
+              <p className="text-gray-700 dark:text-gray-300">All users are verified for safety. Meet in public places and trust your instincts - we provide the tools for safe connections.</p>
+            </div>
+          </div>
+        </div>
         
         {/* Get Started */}
         <div className="bg-gradient-to-r from-orange-500 to-blue-600 text-white py-8 rounded-2xl shadow-lg mb-8">
           <div className="max-w-4xl mx-auto text-center px-6">
             <h2 className="text-3xl font-bold mb-4">Ready to Travel Like a Local?</h2>
+            <p className="text-lg mb-6 text-white/90">Join thousands of travelers creating authentic connections worldwide</p>
             <Button
               onClick={() => setLocation('/launching-soon')}
               size="lg"
               className="bg-white hover:bg-gray-100 text-orange-600 font-bold px-8 py-3 rounded-lg"
               data-testid="button-get-started"
             >
-              🚀 Join Now
+              🚀 Start Connecting Now
             </Button>
           </div>
         </div>
