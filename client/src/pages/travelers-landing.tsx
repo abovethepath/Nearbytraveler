@@ -108,7 +108,7 @@ export default function TravelersLanding() {
             <p className="text-xl mb-6 text-blue-100">
               We host multiple events every week designed specifically for travelers to connect with locals and each other
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
                 <div className="text-3xl mb-2">🍽️</div>
                 <p className="font-semibold">Weekly Food Tours</p>
@@ -120,6 +120,10 @@ export default function TravelersLanding() {
               <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
                 <div className="text-3xl mb-2">🎤</div>
                 <p className="font-semibold">Karaoke Nights</p>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                <div className="text-3xl mb-2">🔥</div>
+                <p className="font-semibold">Bonfire Beach BBQs</p>
               </div>
             </div>
             <p className="text-lg mt-6 font-medium text-blue-100">
