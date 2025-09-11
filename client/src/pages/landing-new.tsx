@@ -126,20 +126,20 @@ export default function Landing() {
                     <div className="max-w-4xl mx-auto">
                       <h1 className="px-3 leading-tight sm:leading-snug">
                         <span className="block font-black text-[clamp(1.5rem,6vw,2.25rem)] text-white">
-                          Skip the Tourist Traps, Connect Before Your Trip or Business Event, Keep Connections Forever!!!
+                          Skip Tourist Traps. Connect Before You Go.
                         </span>
                         <span className="block font-black text-[clamp(1.25rem,5.5vw,2rem)]">
-                          <span className="text-amber-300 sm:text-orange-500">Meet Locals and Other </span>
-                          <span className="text-blue-300 sm:text-blue-600">Nearby Travelers </span>
-                          <span className="text-white">Right Now, Today!!!</span>
+                          <span className="text-amber-300 sm:text-orange-500">Meet Locals & </span>
+                          <span className="text-blue-300 sm:text-blue-600">Travelers </span>
+                          <span className="text-white">Today!</span>
                         </span>
                       </h1>
                       
-                      {/* From the Founder - Now visible on mobile */}
+                      {/* From the Founder - Condensed */}
                       <div className="mt-6 sm:mt-8 p-4 sm:p-6 bg-black/40 backdrop-blur-sm rounded-2xl border border-white/20">
                         <p className="text-sm sm:text-base md:text-xl lg:text-2xl text-white leading-relaxed px-1 sm:px-2">
-                          <span className="text-orange-300 font-bold">"For over 15 years, I've opened my home and city to more than 400 travelers from over 50 countries. Each visit showed me how powerful travel becomes when strangers connect like friends.</span>
-                          <span className="text-white"> I built Nearby Traveler to share that same experience with the world—bringing locals and travelers together to create real friendships and unforgettable adventures."</span>
+                          <span className="text-orange-300 font-bold">"I've hosted 400+ travelers from 50+ countries. </span>
+                          <span className="text-white">Nearby Traveler brings that same magic to everyone—connecting travelers and locals for real friendships."</span>
                         </p>
                         <div className="mt-3 sm:mt-4 text-center">
                           <p className="text-white font-bold text-base sm:text-lg">— Aaron, Founder</p>
@@ -182,7 +182,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12 animate-slide-in-left">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white mb-4 leading-normal px-2">
-              Connect with Locals and other Travelers
+              Live Events Near You
             </h2>
             <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 px-2">
               Real people. Real experiences. Zero tourist traps.
@@ -213,7 +213,7 @@ export default function Landing() {
                   <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full text-xs">Beach</span>
                 </div>
                 
-                <p className="text-gray-700 dark:text-gray-300 text-sm sm:text-base mb-8 flex-grow leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join locals for an authentic beach bonfire with BBQ, music, and sunset views. Experience the real LA beach culture with friendly people.</p>
+                <p className="text-gray-700 dark:text-gray-300 text-sm sm:text-base mb-8 flex-grow leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Authentic beach bonfire with BBQ, music, and sunset views. Real LA beach culture.</p>
                 <Button 
                   onClick={() => setLocation('/launching-soon')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
@@ -245,7 +245,7 @@ export default function Landing() {
                   <span className="bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded-full text-xs">Food</span>
                 </div>
                 
-                <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-8 flex-grow leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join locals every Tuesday for authentic street tacos at unbeatable prices. Meet fellow taco lovers and discover the best Mexican spots in the city.</p>
+                <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-8 flex-grow leading-relaxed" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Authentic street tacos at unbeatable prices. Discover the best local Mexican spots.</p>
                 <Button 
                   onClick={() => setLocation('/launching-soon')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
@@ -277,7 +277,7 @@ export default function Landing() {
                   <span className="bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full text-xs">Hiking</span>
                 </div>
                 
-                <p className="text-gray-700 dark:text-gray-300 text-sm mb-8 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Weekly hike to the iconic Hollywood Sign with locals and travelers. Amazing city views, great photos, and authentic LA hiking culture.</p>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-8 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Iconic Hollywood Sign hike with amazing city views and great photos.</p>
                 <Button 
                   onClick={() => setLocation('/launching-soon')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
@@ -309,7 +309,7 @@ export default function Landing() {
                   <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full text-xs">21+</span>
                 </div>
                 
-                <p className="text-gray-700 dark:text-gray-300 text-sm mb-8 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Join locals and travelers for Thursday happy hour with live music at Jameson Pub. Great drinks, live bands, and authentic LA nightlife.</p>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-8 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Thursday happy hour with live music. Great drinks and authentic LA nightlife.</p>
                 <Button 
                   onClick={() => setLocation('/launching-soon')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
@@ -340,7 +340,7 @@ export default function Landing() {
                   <span className="bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded-full text-xs">Wellness</span>
                 </div>
                 
-                <p className="text-gray-700 dark:text-gray-300 text-sm mb-8 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Unwind with peaceful yoga as the sun sets over the Pacific. Perfect for connecting with wellness-focused travelers and locals. All levels welcome.</p>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-8 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Peaceful sunset yoga over the Pacific. All levels welcome.</p>
                 <Button 
                   onClick={() => setLocation('/launching-soon')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
@@ -372,7 +372,7 @@ export default function Landing() {
                   <span className="bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-full text-xs">Stargazing</span>
                 </div>
                 
-                <p className="text-gray-700 dark:text-gray-300 text-sm mb-8 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Explore the cosmos with fellow stargazers at LA's iconic observatory. Perfect for curious minds who love science, space, and stunning city views.</p>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-8 flex-grow" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>Explore the cosmos at LA's iconic observatory. Stunning city views and stargazing.</p>
                 <Button 
                   onClick={() => setLocation('/launching-soon')}
                   className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold mt-auto"
@@ -391,67 +391,30 @@ export default function Landing() {
       </div>
 
 
-      {/* FROM THE FOUNDER SECTION */}
-      <div className="relative z-10 py-16 sm:py-20 overflow-hidden">
-        {/* Blue to orange gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500"></div>
-        
-        <div className="relative max-w-4xl mx-auto px-4">
-          <div className="text-center mb-12 animate-fade-in-up">
-            <h2 className="text-3xl sm:text-4xl font-black text-white mb-4" style={{fontFamily: '"Inter", sans-serif'}}>
-              From the Founder
-            </h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-white to-blue-300 mx-auto rounded-full"></div>
+      {/* SIMPLIFIED VALUE PROPOSITION */}
+      <div className="relative z-10 py-16 bg-gradient-to-r from-blue-600 to-orange-500">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-3xl sm:text-4xl font-black text-white mb-8">Why Nearby Traveler?</h2>
+          
+          {/* Core Benefits - Condensed */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="bg-white/95 rounded-2xl p-6 shadow-lg">
+              <div className="text-3xl mb-3">🤝</div>
+              <p className="font-bold text-gray-900">Meet Like-Minded People</p>
+            </div>
+            <div className="bg-white/95 rounded-2xl p-6 shadow-lg">
+              <div className="text-3xl mb-3">💎</div>
+              <p className="font-bold text-gray-900">Find Hidden Gems</p>
+            </div>
+            <div className="bg-white/95 rounded-2xl p-6 shadow-lg">
+              <div className="text-3xl mb-3">✨</div>
+              <p className="font-bold text-gray-900">Create Real Connections</p>
+            </div>
           </div>
           
-          {/* Main content with better readability */}
-          <div className="max-w-3xl mx-auto animate-slide-in-left" style={{animationDelay: '0.2s'}}>
-            <div className="text-center mb-8">
-              <p className="text-xl sm:text-2xl text-white leading-relaxed font-medium mb-6">
-                "As a traveler and local, I always loved meeting new people—but finding those who truly shared my interests wasn't easy."
-              </p>
-              <p className="text-2xl sm:text-3xl text-white font-bold leading-relaxed mb-6">
-                That's why I created Nearby Traveler.
-              </p>
-            </div>
-            
-            <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm rounded-3xl p-8 shadow-2xl animate-zoom-in" style={{animationDelay: '0.4s'}}>
-              <p className="text-lg text-gray-900 dark:text-white leading-relaxed mb-6 text-center font-medium">
-                Nearby Traveler connects travelers and locals through shared interests, activities, demographics, and events—transforming random encounters into life-changing connections.
-              </p>
-              
-              {/* Benefits with orange and blue theme */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="text-center p-4 bg-white dark:bg-gray-700 rounded-2xl border-2 border-orange-300 shadow-lg">
-                  <div className="text-3xl mb-3">🤝</div>
-                  <p className="font-bold text-black dark:text-white">Connect with like-minded people</p>
-                </div>
-                <div className="text-center p-4 bg-white dark:bg-gray-700 rounded-2xl border-2 border-blue-300 shadow-lg">
-                  <div className="text-3xl mb-3">💎</div>
-                  <p className="font-bold text-gray-900 dark:text-white">Discover hidden gems</p>
-                </div>
-                <div className="text-center p-4 bg-white dark:bg-gray-700 rounded-2xl border-2 border-orange-300 shadow-lg">
-                  <div className="text-3xl mb-3">✨</div>
-                  <p className="font-bold text-black dark:text-white">Create unforgettable memories</p>
-                </div>
-              </div>
-              
-              <p className="text-lg text-gray-900 dark:text-white leading-relaxed text-center mb-6 font-medium">
-                It's more than just travel—it's about real community, wherever you are.
-              </p>
-              
-              {/* Founder signature with orange and blue accents */}
-              <div className="text-center pt-6 border-t border-blue-200 dark:border-blue-600">
-                <p className="text-lg text-gray-800 dark:text-gray-200 mb-3 font-medium">Thanks for being part of the journey.</p>
-                <div className="flex items-center justify-center space-x-4">
-                  <div>
-                    <p className="text-xl font-black text-gray-900 dark:text-white">Aaron Lefkowitz</p>
-                    <p className="text-blue-600 font-bold">Founder, Nearby Traveler</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <p className="text-xl text-white leading-relaxed">
+            Skip the tourist traps. Connect before you go. Make memories that last.
+          </p>
         </div>
       </div>
 
@@ -672,7 +635,7 @@ export default function Landing() {
                   </h3>
                   <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
                     Skip the tourist traps and dive into authentic experiences. 
-                    Connect with locals who'll show you their city's soul and fellow travelers who share your wanderlust.
+                    Connect with locals and travelers who share your interests.
                   </p>
                   <Button 
                     onClick={() => setLocation('/launching-soon')}
@@ -694,7 +657,7 @@ export default function Landing() {
                   🌍 Travel Like <span className="bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">You Live There</span>
                 </h2>
                 <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
-                  Skip the crowds and clichés. Connect with locals who'll show you their city's soul and fellow travelers who get your wanderlust.
+                  Skip crowds and clichés. Connect with locals and fellow travelers.
                 </p>
               </div>
               
@@ -706,7 +669,7 @@ export default function Landing() {
                     </div>
                     <h3 className="font-black text-slate-800 dark:text-slate-100 text-lg">Local-Led Events</h3>
                   </div>
-                  <p className="text-slate-700 dark:text-slate-200 text-base font-semibold">Join authentic experiences crafted by locals and joined by all. Beach Bonfires, Dance Parties, House Parties, and more....</p>
+                  <p className="text-slate-700 dark:text-slate-200 text-base font-semibold">Authentic local experiences. Beach bonfires, dance parties, and more.</p>
                 </div>
                 
                 <div className="bg-gradient-to-br from-emerald-100 to-emerald-200 dark:bg-gradient-to-br dark:from-emerald-800 dark:to-emerald-700 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-red-300 dark:border-red-600">
@@ -716,7 +679,7 @@ export default function Landing() {
                     </div>
                     <h3 className="font-black text-emerald-800 dark:text-emerald-100 text-lg">Secret Spots</h3>
                   </div>
-                  <p className="text-emerald-700 dark:text-emerald-200 text-base font-semibold">Discover places locals actually go - the hole-in-the-wall restaurants, rooftop views, and neighborhoods tourists never find</p>
+                  <p className="text-emerald-700 dark:text-emerald-200 text-base font-semibold">Discover places locals actually go - hidden restaurants, rooftop views, secret spots.</p>
                 </div>
                 
                 <div className="bg-gradient-to-br from-blue-100 to-blue-200 dark:bg-gradient-to-br dark:from-blue-800 dark:to-blue-700 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-pink-300 dark:border-pink-600">
@@ -726,7 +689,7 @@ export default function Landing() {
                     </div>
                     <h3 className="font-black text-blue-800 dark:text-blue-100 text-lg">Travel Buddies</h3>
                   </div>
-                  <p className="text-blue-700 dark:text-blue-200 text-base font-semibold">Meet travelers and locals who share your same interests, activities and demographics. Find those visiting a city for the same reasons as you!</p>
+                  <p className="text-blue-700 dark:text-blue-200 text-base font-semibold">Meet travelers and locals who share your interests and travel goals.</p>
                 </div>
                 
                 <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:bg-gradient-to-br dark:from-purple-900/30 dark:to-purple-800/20 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-purple-200 dark:border-purple-700">
@@ -736,7 +699,7 @@ export default function Landing() {
                     </div>
                     <h3 className="font-black text-purple-900 dark:text-purple-100 text-lg">Local Intel</h3>
                   </div>
-                  <p className="text-purple-800 dark:text-purple-200 text-base font-semibold">Get the real scoop: which subway line to avoid, where locals eat breakfast, and what tourists waste money on</p>
+                  <p className="text-purple-800 dark:text-purple-200 text-base font-semibold">Get insider tips: best routes, local eats, money-saving secrets.</p>
                 </div>
               </div>
             </div>
@@ -755,8 +718,7 @@ export default function Landing() {
             </span>
           </h2>
           <p className="text-xl text-gray-200 mb-8">
-            Whether you're a local ready to share your city, a traveler seeking authentic experiences or a business traveler looking to connect prior, 
-            your journey starts here.
+            Your authentic travel community starts here.
           </p>
           <div className="flex justify-center">
             <Button 
@@ -782,11 +744,8 @@ export default function Landing() {
             <h3 className="text-2xl font-bold text-white text-center mb-4">
               Join Our Premium Los Angeles Launch
             </h3>
-            <p className="text-lg text-white text-center leading-relaxed mb-4">
-              <span className="font-semibold">You're invited to be among the first</span> to experience our curated community of travelers and locals. While our network is global, we're launching with an exclusive focus on Los Angeles premium events and experiences.
-            </p>
-            <p className="text-base text-orange-100 text-center">
-              Early members get lifetime premium features and priority access to new cities as we expand worldwide.
+            <p className="text-lg text-white text-center leading-relaxed">
+              <span className="font-semibold">Be among the first</span> to join our curated LA community. Early members get lifetime premium features.
             </p>
           </div>
         </div>
