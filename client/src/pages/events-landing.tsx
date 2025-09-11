@@ -9,7 +9,7 @@ import { trackEvent } from "@/lib/analytics";
 import karaokeImage from "@assets/image_1756447354157.png";
 import bikeImage from "@assets/image_1756447442403.png";
 import artWalkImage from "@assets/image_1756447587360.png";
-const movieImage = "/marina-movie-night-clear.jpg";
+import movieImage from "@assets/image_1757628873930.png";
 const eventHeaderImage = "/event page bbq party_1753299541268.png";
 
 export default function EventsLanding() {
