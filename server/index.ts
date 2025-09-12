@@ -10,6 +10,7 @@ import path from "path";
 import dotenv from "dotenv";
 import { db } from "./db";
 import { users, events, businessOffers, quickMeetups, quickDeals } from "../shared/schema";
+import { setupWaitlistRoutes } from "./waitlist-routes";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
 
 // Load environment variables
@@ -73,6 +74,13 @@ app.use(cors({
 // ===== CRITICAL API ROUTES - MUST BE FIRST TO BYPASS VITE =====
 // Register these API routes BEFORE any other middleware to prevent Vite interception
 console.log('🚀 REGISTERING CRITICAL API ROUTES FIRST TO BYPASS VITE INTERCEPTION');
+
+// Essential middleware for API routes
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true }));
+
+// Setup waitlist routes
+setupWaitlistRoutes(app);
 
 // REMOVED: This conflicted with the proper filtering endpoint in routes.ts
 // The events endpoint is now handled in routes.ts with proper city filtering
