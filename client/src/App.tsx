@@ -674,7 +674,7 @@ function Router() {
           console.log('🏠 MOBILE FIX: User has auth data, showing Home page instead of landing');
           return <Home />;
         }
-        return <LandingStreamlined />;
+        return <LaunchingSoon />;
       }
       // QR code signup route
       if (location.startsWith('/signup/qr/')) {
