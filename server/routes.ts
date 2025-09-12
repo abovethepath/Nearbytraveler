@@ -4319,46 +4319,7 @@ Aaron`
   // Registration endpoint
   app.post("/api/register", handleRegistration);
 
-  // WAITLIST ENDPOINT - minimal implementation for collecting launch leads
-  app.post("/api/waitlist", async (req, res) => {
-    try {
-      // Validate request data
-      const validation = insertWaitlistLeadSchema.safeParse(req.body);
-      
-      if (!validation.success) {
-        return res.status(400).json({ 
-          message: "Invalid data provided", 
-          errors: validation.error.errors 
-        });
-      }
-
-      // Save to database
-      const lead = await storage.createWaitlistLead(validation.data);
-      
-      // Log success
-      console.log(`📧 WAITLIST: New lead - ${validation.data.name} (${validation.data.email})`);
-      
-      // Return success response
-      res.status(201).json({ 
-        message: "Successfully joined waitlist"
-      });
-      
-    } catch (error: any) {
-      console.error('Waitlist error:', error);
-      
-      // Handle duplicate email
-      if (error.code === '23505') {
-        return res.status(409).json({ 
-          message: "This email is already on our waitlist" 
-        });
-      }
-      
-      // Handle other errors
-      res.status(500).json({ 
-        message: "Failed to join waitlist. Please try again." 
-      });
-    }
-  });
+  // REMOVED: Duplicate waitlist endpoint - using the one in waitlist-routes.ts instead
 
   // MANUAL WELCOME MESSAGE ENDPOINT - for businesses that missed the automatic welcome
   app.post("/api/send-manual-welcome/:userId", async (req, res) => {
