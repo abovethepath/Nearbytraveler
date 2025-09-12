@@ -37,10 +37,13 @@ export default function LaunchingSoon() {
 
   const waitlistMutation = useMutation({
     mutationFn: async (data: WaitlistForm) => {
+      console.log("🚨 MUTATION FUNCTION CALLED!", data);
       const response = await apiRequest("POST", "/api/waitlist", data);
+      console.log("🚨 API RESPONSE:", response);
       return response;
     },
     onSuccess: () => {
+      console.log("🚨 MUTATION SUCCESS!");
       setIsSubmitted(true);
       toast({
         title: "Thank you!",
@@ -49,6 +52,7 @@ export default function LaunchingSoon() {
       });
     },
     onError: (error: any) => {
+      console.log("🚨 MUTATION ERROR:", error);
       toast({
         title: "Error",
         description: error.message || "Failed to join waitlist. Please try again.",
@@ -58,6 +62,8 @@ export default function LaunchingSoon() {
   });
 
   const onSubmit = (data: WaitlistForm) => {
+    console.log("🚨 FORM SUBMITTED!", data);
+    console.log("🚨 MUTATION STARTING...");
     waitlistMutation.mutate(data);
   };
 
