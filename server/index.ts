@@ -58,17 +58,9 @@ app.use((req, res, next) => {
 });
 
 // CORS: simplified for development and production
-app.use((req, _res, next) => {
-  if (process.env.NODE_ENV !== "production") {
-    console.log("Origin:", req.headers.origin);
-  }
-  next();
-});
-
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow all origins and specifically handle undefined origins (for direct requests)
-    console.log('🌐 CORS Origin Check:', origin || 'undefined');
+    // Allow all origins and handle undefined origins (for direct requests from deployed sites)
     callback(null, true);
   },
   credentials: true,
