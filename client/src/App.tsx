@@ -154,7 +154,6 @@ import ShareQR from "@/pages/share-qr";
 import BusinessCardPage from "@/pages/business-card";
 import QRCodePage from "@/pages/qr-code";
 import QRSimplePage from "@/pages/qr-simple";
-import LandingStreamlined from "@/pages/landing-new-streamlined";
 import LandingMinimal from "@/pages/landing-minimal";
 import ComingSoon from "@/pages/coming-soon";
 
@@ -600,11 +599,11 @@ function Router() {
       
       if (location === '/landing-2') {
         console.log('📄 Showing Landing 2 (Optimized Version) for investor comparison');
-        return <LandingStreamlined />;
+        return <LaunchingSoon />;
       }
 
       if (location === '/landing-new') {
-        return <LandingStreamlined />;
+        return <LaunchingSoon />;
       }
 
       // Allow access to business landing page without authentication
@@ -652,7 +651,7 @@ function Router() {
 
       // Show landing page for /landing route too
       if (location === '/landing') {
-        return <LandingStreamlined />;
+        return <LaunchingSoon />;
       }
 
       // Show minimal landing page for comparison
@@ -761,13 +760,13 @@ function Router() {
       // CRITICAL: Root path should always show landing page for unauthenticated users
       if (location === '/' || location === '') {
         console.log('🏠 STREAMLINED LANDING v20250128-2024 - Root path for unauthenticated user - showing new streamlined version');
-        return <LandingStreamlined />;
+        return <LaunchingSoon />;
       }
       
       // Test route for new streamlined landing
       if (location === '/landing-streamlined') {
         console.log('🎯 TESTING - Streamlined landing page');
-        return <LandingStreamlined />;
+        return <LaunchingSoon />;
       }
       
       // SIGNUP ROUTES - MUST BE FIRST TO AVOID FALLBACKS
@@ -810,7 +809,7 @@ function Router() {
       } else {
         // Force unknown routes to landing page for unauthenticated users
         console.log('❌ STREAMLINED FALLBACK - Unknown route for unauthenticated user, showing streamlined landing page:', location);
-        return <LandingStreamlined />;
+        return <LaunchingSoon />;
       }
     }
 
@@ -1068,9 +1067,9 @@ function Router() {
         return <BusinessCardPage />;
 
       case '/preview-landing':
-        return <LandingStreamlined />;
+        return <LaunchingSoon />;
       case '/preview-first-landing':
-        return <LandingStreamlined />;
+        return <LaunchingSoon />;
 
       case '/donate':
         return <Donate />;
