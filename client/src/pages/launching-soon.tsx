@@ -12,6 +12,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { Rocket, Mail, User, ArrowLeft, Phone } from "lucide-react";
 import Logo from "@/components/logo";
 import { useLocation } from "wouter";
+import { getLocalTimezone, getLocalTimezoneOffset, getLocalTimestampForSubmission } from "@/lib/dateUtils";
 
 const waitlistSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -37,7 +38,14 @@ export default function LaunchingSoon() {
 
   const waitlistMutation = useMutation({
     mutationFn: async (data: WaitlistForm) => {
-      const response = await apiRequest("POST", "/api/waitlist", data);
+      // Add timezone information to capture user's local timezone as required
+      const payload = {
+        ...data,
+        clientTimeZone: getLocalTimezone(),
+        clientOffsetMinutes: getLocalTimezoneOffset(),
+        submittedAtLocal: getLocalTimestampForSubmission(),
+      };
+      const response = await apiRequest("POST", "/api/waitlist", payload);
       return response;
     },
     onSuccess: () => {

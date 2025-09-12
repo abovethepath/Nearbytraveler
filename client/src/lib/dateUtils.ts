@@ -307,3 +307,54 @@ export function getCurrentTravelDestination(travelPlans: any[]): string | null {
   // No active trips = User is NEARBY LOCAL only (future trips don't count)
   return null;
 }
+
+/**
+ * CRITICAL: Format timestamps in user's LOCAL timezone as required
+ * Per user requirement: "ALWAYS use local timezone for ALL time displays"
+ */
+export function formatLocalTimestamp(date: Date | string): string {
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+  
+  return new Intl.DateTimeFormat('en-US', {
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  }).format(dateObj);
+}
+
+export function formatLocalTime(date: Date | string): string {
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+  
+  return new Intl.DateTimeFormat('en-US', {
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  }).format(dateObj);
+}
+
+export function getLocalTimezone(): string {
+  return Intl.DateTimeFormat().resolvedOptions().timeZone;
+}
+
+export function getLocalTimezoneOffset(): number {
+  return new Date().getTimezoneOffset();
+}
+
+export function getLocalTimestampForSubmission(): string {
+  const now = new Date();
+  return new Intl.DateTimeFormat('en-US', {
+    timeZone: getLocalTimezone(),
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    timeZoneName: 'short'
+  }).format(now);
+}
