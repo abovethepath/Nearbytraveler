@@ -514,7 +514,7 @@ export default function LandingStreamlined() {
               </div>
               <div className="bg-gray-50 rounded-xl p-4 sm:p-6 shadow-sm">
                 <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900">Business Travelers</h3>
-                <p className="text-sm sm:text-base text-gray-600">Make work trips more than meetings</p>
+                <p className="text-sm sm:text-base text-gray-600">Turn work trips into more than meetings</p>
               </div>
             </div>
           </div>
