@@ -32,9 +32,14 @@ export default function LaunchingSoon() {
   });
 
   const onSubmit = async (data: WaitlistForm) => {
+    console.log("🚨 FORM SUBMISSION STARTED");
+    console.log("Form data:", data);
+    console.log("Current URL:", window.location.href);
+    
     setIsLoading(true);
     
     try {
+      console.log("📡 Making fetch request to /api/waitlist");
       const response = await fetch("/api/waitlist", {
         method: "POST",
         headers: {
@@ -42,6 +47,8 @@ export default function LaunchingSoon() {
         },
         body: JSON.stringify(data),
       });
+      
+      console.log("📨 Response received:", response.status, response.statusText);
 
       if (response.ok) {
         setIsSubmitted(true);

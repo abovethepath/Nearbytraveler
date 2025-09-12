@@ -4,6 +4,10 @@ import { storage } from "./storage";
 export function setupWaitlistRoutes(app: Express) {
   // POST /api/waitlist - Join waitlist
   app.post("/api/waitlist", async (req: Request, res: Response) => {
+    console.log("🚨 WAITLIST POST REQUEST RECEIVED!");
+    console.log("Request body:", req.body);
+    console.log("Request headers:", req.headers);
+    
     try {
       const { name, email, phone } = req.body;
       
@@ -12,6 +16,7 @@ export function setupWaitlistRoutes(app: Express) {
       }
 
       const lead = await storage.createWaitlistLead({ name, email, phone });
+      console.log("✅ WAITLIST LEAD CREATED SUCCESSFULLY:", lead);
       
       return res.status(201).json({ 
         message: "Successfully joined waitlist"
