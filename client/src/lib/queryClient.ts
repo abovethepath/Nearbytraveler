@@ -27,8 +27,10 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  // Force logging for debugging
-  console.log('🚨 apiRequest called:', { method, url, hasData: !!data, env: import.meta.env.MODE });
+  // Only log in development
+  if (import.meta.env.DEV) {
+    console.log('apiRequest called:', { method, url, hasData: !!data });
+  }
   
   // Use cached user data for better performance
   const user = getCachedUser();
