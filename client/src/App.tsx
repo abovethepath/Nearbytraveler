@@ -105,7 +105,7 @@ import SignupAccount from "@/pages/signup-account";
 import UnifiedSignup from "@/pages/unified-signup";
 import BusinessRegistration from "@/pages/business-registration";
 import LandingNew from "@/pages/landing-new";
-import LaunchingSoon from "@/pages/launching-soon";
+import LandingStreamlined from "@/pages/landing-new-streamlined";
 import Photos from "@/pages/photos";
 import UploadPhotos from "@/pages/upload-photos";
 import AICompanion from "@/pages/ai-companion";
@@ -599,11 +599,11 @@ function Router() {
       
       if (location === '/landing-2') {
         console.log('📄 Showing Landing 2 (Optimized Version) for investor comparison');
-        return <LaunchingSoon />;
+        return <LandingStreamlined />;
       }
 
       if (location === '/landing-new') {
-        return <LaunchingSoon />;
+        return <LandingStreamlined />;
       }
 
       // Allow access to business landing page without authentication
@@ -651,7 +651,7 @@ function Router() {
 
       // Show landing page for /landing route too
       if (location === '/landing') {
-        return <LaunchingSoon />;
+        return <LandingStreamlined />;
       }
 
       // Show minimal landing page for comparison
@@ -673,7 +673,7 @@ function Router() {
           console.log('🏠 MOBILE FIX: User has auth data, showing Home page instead of landing');
           return <Home />;
         }
-        return <LaunchingSoon />;
+        return <LandingStreamlined />;
       }
       // QR code signup route
       if (location.startsWith('/signup/qr/')) {
@@ -729,7 +729,7 @@ function Router() {
       }
       if (location === '/launching-soon') {
         console.log('Showing Launching Soon page');
-        return <LaunchingSoon />;
+        return <LandingStreamlined />;
       }
       if (location === '/business-card') {
         console.log('Returning BusinessCard component for /business-card - PUBLIC ACCESS');
@@ -760,13 +760,13 @@ function Router() {
       // CRITICAL: Root path should always show landing page for unauthenticated users
       if (location === '/' || location === '') {
         console.log('🏠 STREAMLINED LANDING v20250128-2024 - Root path for unauthenticated user - showing new streamlined version');
-        return <LaunchingSoon />;
+        return <LandingStreamlined />;
       }
       
       // Test route for new streamlined landing
       if (location === '/landing-streamlined') {
         console.log('🎯 TESTING - Streamlined landing page');
-        return <LaunchingSoon />;
+        return <LandingStreamlined />;
       }
       
       // SIGNUP ROUTES - MUST BE FIRST TO AVOID FALLBACKS
@@ -809,7 +809,7 @@ function Router() {
       } else {
         // Force unknown routes to landing page for unauthenticated users
         console.log('❌ STREAMLINED FALLBACK - Unknown route for unauthenticated user, showing streamlined landing page:', location);
-        return <LaunchingSoon />;
+        return <LandingStreamlined />;
       }
     }
 
@@ -1067,9 +1067,9 @@ function Router() {
         return <BusinessCardPage />;
 
       case '/preview-landing':
-        return <LaunchingSoon />;
+        return <LandingStreamlined />;
       case '/preview-first-landing':
-        return <LaunchingSoon />;
+        return <LandingStreamlined />;
 
       case '/donate':
         return <Donate />;

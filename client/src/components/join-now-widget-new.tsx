@@ -1,85 +1,168 @@
 import { useState } from "react";
-import { useLocation } from "wouter";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
+import { Rocket, Mail, User, CheckCircle } from "lucide-react";
+
+const waitlistSchema = z.object({
+  name: z.string().min(1, "Name is required").max(100, "Name is too long"),
+  email: z.string().email("Please enter a valid email address"),
+  phone: z.string().optional(),
+});
+
+type WaitlistForm = z.infer<typeof waitlistSchema>;
 
 export default function JoinNowWidgetNew() {
-  const [, setLocation] = useLocation();
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const [userType, setUserType] = useState("");
 
-  const handleUserTypeSelection = () => {
-    console.log('🔥 JOIN WIDGET: Button clicked, userType:', userType);
+  const form = useForm<WaitlistForm>({
+    resolver: zodResolver(waitlistSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+    },
+  });
+
+  const onSubmit = async (data: WaitlistForm) => {
+    setIsLoading(true);
     
-    if (!userType) {
-      console.log('❌ JOIN WIDGET: No user type selected');
+    try {
+      const response = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        setIsSubmitted(true);
+        toast({
+          title: "Success!",
+          description: "You've been added to our waitlist.",
+        });
+      } else {
+        const error = await response.json();
+        toast({
+          title: "Error",
+          description: error.message || "Failed to join waitlist",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
       toast({
-        title: "Please select your type",
-        description: "Choose whether you're a local or traveler.",
+        title: "Error",
+        description: "Failed to join waitlist. Please try again.",
         variant: "destructive",
       });
-      return;
+    } finally {
+      setIsLoading(false);
     }
-    
-    console.log('✅ JOIN WIDGET: Storing userType in sessionStorage:', userType);
-    // Store user type and redirect to account creation
-    sessionStorage.setItem('selectedUserType', userType);
-    
-    console.log('🚀 JOIN WIDGET: Navigating to /signup/account');
-    setLocation('/signup/account');
   };
+
+  if (isSubmitted) {
+    return (
+      <div className="text-center space-y-4">
+        <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
+        <h3 className="text-xl font-semibold text-green-600">You're In!</h3>
+        <p className="text-gray-600">
+          Thank you for joining our waitlist. We'll notify you as soon as we launch.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
-      {/* Step 1: User Type Selection - 2 Main Types */}
-      <div className="space-y-2">
-        <Label className="text-base md:text-lg font-medium text-gray-900 dark:text-white text-crisp">I am a...</Label>
-        <div className="space-y-2">
-          {/* Local */}
-          <div
-            onClick={() => setUserType("local")}
-            className={`cursor-pointer border-2 rounded-lg p-3 text-center transition-all ${
-              userType === "local" 
-                ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30 dark:border-blue-400" 
-                : "border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 dark:bg-gray-700/50"
-            }`}
-          >
-            <div className="text-sm font-medium text-gray-900 dark:text-white">
-              Nearby Local
-            </div>
-            <div className="text-xs text-gray-600 dark:text-gray-400">
-              Not Traveling Now
-            </div>
-          </div>
-
-          {/* Traveler */}
-          <div
-            onClick={() => setUserType("traveler")}
-            className={`cursor-pointer border-2 rounded-lg p-3 text-center transition-all ${
-              userType === "traveler" 
-                ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30 dark:border-blue-400" 
-                : "border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 dark:bg-gray-700/50"
-            }`}
-          >
-            <div className="text-sm font-medium text-gray-900 dark:text-white">
-              Nearby Traveler
-            </div>
-            <div className="text-xs text-gray-600 dark:text-gray-400">
-              Currently Traveling
-            </div>
-          </div>
-        </div>
+      <div className="text-center mb-4">
+        <Rocket className="w-12 h-12 text-blue-500 mx-auto mb-2" />
+        <h3 className="text-lg font-semibold">Join Our Waitlist</h3>
+        <p className="text-sm text-gray-600">Be the first to know when we launch!</p>
       </div>
-
-      <div className="mt-6">
-        <Button
-          onClick={handleUserTypeSelection}
-          className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white py-3 text-base font-medium border-2 border-blue-600 dark:border-blue-500"
-        >
-          Continue →
-        </Button>
-      </div>
+      
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input 
+                      placeholder="Your name" 
+                      className="pl-10" 
+                      data-testid="input-name"
+                      {...field} 
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input 
+                      type="email" 
+                      placeholder="your@email.com" 
+                      className="pl-10" 
+                      data-testid="input-email"
+                      {...field} 
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone (Optional)</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="tel" 
+                    placeholder="Your phone number" 
+                    data-testid="input-phone"
+                    {...field} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <Button 
+            type="submit" 
+            className="w-full" 
+            disabled={isLoading}
+            data-testid="button-join-waitlist"
+          >
+            {isLoading ? "Joining..." : "Join Waitlist"}
+          </Button>
+        </form>
+      </Form>
     </div>
   );
 }
