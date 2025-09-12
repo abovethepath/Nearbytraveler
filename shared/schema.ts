@@ -571,6 +571,7 @@ export const waitlistLeads = pgTable("waitlist_leads", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
+  phone: text("phone"), // Optional phone number
   submittedAt: timestamp("submitted_at").defaultNow(),
   contacted: boolean("contacted").default(false),
   notes: text("notes"), // For admin notes about follow-up
