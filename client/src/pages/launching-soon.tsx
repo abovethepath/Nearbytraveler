@@ -14,7 +14,7 @@ import Logo from "@/components/logo";
 import { useLocation } from "wouter";
 
 const waitlistSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
+  name: z.string().min(1, "Name is required").max(100, "Name is too long"),
   email: z.string().email("Please enter a valid email address"),
   phone: z.string().optional(),
 });

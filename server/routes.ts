@@ -4319,35 +4319,41 @@ Aaron`
   // Registration endpoint
   app.post("/api/register", handleRegistration);
 
-  // WAITLIST ENDPOINT - for collecting launch leads
+  // WAITLIST ENDPOINT - minimal implementation for collecting launch leads
   app.post("/api/waitlist", async (req, res) => {
     try {
-      const result = insertWaitlistLeadSchema.safeParse(req.body);
+      // Validate request data
+      const validation = insertWaitlistLeadSchema.safeParse(req.body);
       
-      if (!result.success) {
+      if (!validation.success) {
         return res.status(400).json({ 
-          message: "Invalid data", 
-          errors: result.error.errors 
+          message: "Invalid data provided", 
+          errors: validation.error.errors 
         });
       }
 
-      const lead = await storage.createWaitlistLead(result.data);
+      // Save to database
+      const lead = await storage.createWaitlistLead(validation.data);
       
-      console.log(`📧 WAITLIST: New lead added - ${result.data.name} (${result.data.email})`);
+      // Log success
+      console.log(`📧 WAITLIST: New lead - ${validation.data.name} (${validation.data.email})`);
       
+      // Return success response
       res.status(201).json({ 
-        message: "Successfully joined waitlist",
-        lead: { name: lead.name, email: lead.email } 
+        message: "Successfully joined waitlist"
       });
-    } catch (error: any) {
-      console.error('Error creating waitlist lead:', error);
       
-      if (error.code === '23505') { // Duplicate email
+    } catch (error: any) {
+      console.error('Waitlist error:', error);
+      
+      // Handle duplicate email
+      if (error.code === '23505') {
         return res.status(409).json({ 
           message: "This email is already on our waitlist" 
         });
       }
       
+      // Handle other errors
       res.status(500).json({ 
         message: "Failed to join waitlist. Please try again." 
       });

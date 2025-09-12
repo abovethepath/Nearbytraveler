@@ -573,9 +573,6 @@ export const waitlistLeads = pgTable("waitlist_leads", {
   email: text("email").notNull().unique(),
   phone: text("phone"), // Optional phone number
   submittedAt: timestamp("submitted_at").defaultNow(),
-  clientTimeZone: text("client_time_zone"), // User's IANA timezone (e.g., "America/New_York")
-  clientOffsetMinutes: integer("client_offset_minutes"), // User's timezone offset in minutes
-  submittedAtLocal: text("submitted_at_local"), // User's local time as string for display
   contacted: boolean("contacted").default(false),
   notes: text("notes"), // For admin notes about follow-up
 });
@@ -601,9 +598,9 @@ export const insertWaitlistLeadSchema = createInsertSchema(waitlistLeads).omit({
   contacted: true,
   notes: true,
 }).extend({
-  clientTimeZone: z.string().optional(),
-  clientOffsetMinutes: z.number().optional(),
-  submittedAtLocal: z.string().optional(),
+  name: z.string().min(1, "Name is required").max(100, "Name is too long"),
+  email: z.string().email("Please enter a valid email address"),
+  phone: z.string().optional(),
 });
 
 export type WaitlistLead = typeof waitlistLeads.$inferSelect;
