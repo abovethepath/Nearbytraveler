@@ -106,6 +106,7 @@ import UnifiedSignup from "@/pages/unified-signup";
 import BusinessRegistration from "@/pages/business-registration";
 import LandingNew from "@/pages/landing-new";
 import LandingStreamlined from "@/pages/landing-new-streamlined";
+import LaunchingSoon from "@/pages/launching-soon";
 import Photos from "@/pages/photos";
 import UploadPhotos from "@/pages/upload-photos";
 import AICompanion from "@/pages/ai-companion";
@@ -729,7 +730,7 @@ function Router() {
       }
       if (location === '/launching-soon') {
         console.log('Showing Launching Soon page');
-        return <LandingStreamlined />;
+        return <LaunchingSoon />;
       }
       if (location === '/business-card') {
         console.log('Returning BusinessCard component for /business-card - PUBLIC ACCESS');
