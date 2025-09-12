@@ -66,7 +66,7 @@ export default function NetworkingHero({ isAirbnbStyle = true }: NetworkingHeroP
           </p>
           
           <Button
-            onClick={() => setLocation('/join')}
+            onClick={() => setLocation('/launching-soon')}
             size="lg"
             className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
           >
@@ -173,7 +173,7 @@ export default function NetworkingHero({ isAirbnbStyle = true }: NetworkingHeroP
                   {/* Primary signup CTA */}
                   <div className="mt-32 mb-8 px-4">
                     <Button
-                      onClick={() => setLocation('/join')}
+                      onClick={() => setLocation('/launching-soon')}
                       size="lg"
                       className="bg-white dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 hover:bg-gray-100 dark:hover:from-blue-700 dark:hover:to-orange-600 text-black dark:text-white font-bold px-8 py-3 rounded-xl shadow-lg transition-all duration-200 border-2 border-black dark:border-white max-w-md mx-auto"
                       style={{

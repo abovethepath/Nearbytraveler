@@ -122,7 +122,7 @@ export default function AccountSuccess() {
                       Try Signing In
                     </Button>
                     <Button
-                      onClick={() => setLocation('/join')}
+                      onClick={() => setLocation('/launching-soon')}
                       variant="outline"
                       className="border-gray-300"
                     >
