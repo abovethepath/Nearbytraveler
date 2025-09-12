@@ -58,8 +58,6 @@ export default function LaunchingSoon() {
   });
 
   const onSubmit = (data: WaitlistForm) => {
-    console.log('🚀 FORM SUBMIT:', data);
-    console.log('🚀 FORM ERRORS:', form.formState.errors);
     waitlistMutation.mutate(data);
   };
 

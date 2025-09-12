@@ -66,7 +66,11 @@ app.use((req, _res, next) => {
 });
 
 app.use(cors({
-  origin: true, // Allow all origins for now to fix blank page issue
+  origin: (origin, callback) => {
+    // Allow all origins and specifically handle undefined origins (for direct requests)
+    console.log('🌐 CORS Origin Check:', origin || 'undefined');
+    callback(null, true);
+  },
   credentials: true,
   methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
   allowedHeaders: ["Content-Type","Authorization"],
