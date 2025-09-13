@@ -115,6 +115,7 @@ export const ADDITIONAL_INTERESTS = [
   // Health/Wellness
   "Spa & Wellness",
   "Meditation & Mindfulness",
+  "Alcohol Free",
   
   // Creative/Learning
   "Dance Classes and Events",
