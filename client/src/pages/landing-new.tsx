@@ -167,7 +167,12 @@ export default function LandingNew() {
                 </div>
                 
                 <p className="mt-3 sm:mt-4 text-sm sm:text-base italic text-orange-600 text-center font-medium">
-                  Where Local Experiences Meet Worldwide Connections
+                  {isMobile ? (
+                    <>
+                      Where Local Experiences<br />
+                      Meet Worldwide Connections
+                    </>
+                  ) : "Where Local Experiences Meet Worldwide Connections"}
                 </p>
               </div>
             </div>
