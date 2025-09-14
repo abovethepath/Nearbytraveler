@@ -211,7 +211,12 @@ export default function LandingStreamlined() {
                 {/* Static powerful quote */}
                 <div className="mb-4 sm:mb-6 text-center w-full">
                   <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 italic px-2">
-                    {isMobile ? "Travel doesn't change you — people you meet do." : "Travel doesn't change you — the people you meet do."}
+                    {isMobile ? (
+                      <>
+                        Travel doesn't change you —<br />
+                        the people you meet do.
+                      </>
+                    ) : "Travel doesn't change you — the people you meet do."}
                   </p>
                 </div>
                 
