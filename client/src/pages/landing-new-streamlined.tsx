@@ -45,7 +45,7 @@ export default function LandingStreamlined() {
   
   const [currentSubtext, setCurrentSubtext] = useState(0);
   const subtexts = [
-    "Connect with locals and travelers before your trip begins— and create friendships that last a lifetime.", // General travelers
+    "Connect with locals and travelers before your trip begins.", // General travelers
     "Show your city to nearby travelers.", // Locals who want to share their city
     "Connect with families everywhere." // Families
   ];
