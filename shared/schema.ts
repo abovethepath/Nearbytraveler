@@ -250,7 +250,7 @@ export const citychatrooms = pgTable("city_chatrooms", {
   city: text("city").notNull(),
   state: text("state"),
   country: text("country").notNull(),
-  createdById: integer("created_by_id").notNull(),
+  createdById: integer("created_by_id").notNull().references(() => users.id),
   isActive: boolean("is_active").default(true),
   isPublic: boolean("is_public").default(true),
   maxMembers: integer("max_members").default(500),
@@ -334,7 +334,7 @@ export const chatroomMembers = pgTable("chatroom_members", {
   id: serial("id").primaryKey(),
   chatroomId: integer("chatroom_id").notNull(),
   userId: integer("user_id").notNull(),
-  role: text("role").default("member"), // 'admin', 'moderator', 'member'
+  role: text("role").default("member"), // 'owner' (creator, all permissions), 'admin' (can remove members), 'member' (regular participant)
   joinedAt: timestamp("joined_at").defaultNow(),
   lastReadAt: timestamp("last_read_at"),
   isMuted: boolean("is_muted").default(false),
