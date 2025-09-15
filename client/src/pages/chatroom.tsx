@@ -12,6 +12,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { MessageCircle, Users, Send, ArrowLeft, Loader2, Search, Crown, Shield, User, MoreVertical, UserMinus, UserPlus, ArrowRightLeft } from "lucide-react";
+import { useCSRFToken, makeCSRFRequest } from "@/hooks/useCSRFToken";
 
 interface ChatMessage {
   id: number;
@@ -87,6 +88,9 @@ export default function ChatroomPage() {
   };
   
   const currentUser = getCurrentUser();
+  
+  // Get CSRF token for admin operations
+  const { token: csrfToken, loading: csrfLoading, error: csrfError } = useCSRFToken();
   
   
   // Scroll to top when entering chatroom
@@ -205,17 +209,17 @@ export default function ChatroomPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Member management mutations
+  // Member management mutations with CSRF protection
   const removeMemberMutation = useMutation({
     mutationFn: async (targetUserId: number) => {
-      const response = await fetch(`/api/chatrooms/${chatroomId}/admin/remove`, {
+      if (!csrfToken) {
+        throw new Error('CSRF token not available - please refresh the page');
+      }
+      
+      const response = await makeCSRFRequest(`/api/chatrooms/${chatroomId}/admin/remove`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include', // Use session-based authentication
-        body: JSON.stringify({ targetUserId }) // Fixed field name
-      });
+        body: JSON.stringify({ targetUserId })
+      }, csrfToken);
       
       if (!response.ok) {
         const error = await response.json();
@@ -225,6 +229,8 @@ export default function ChatroomPage() {
       return response.json();
     },
     onSuccess: () => {
+      // SECURITY FIX: Proper query invalidation for immediate UI updates
+      queryClient.invalidateQueries({ queryKey: ['/api/chatrooms', chatroomId, 'members'] });
       queryClient.invalidateQueries({ queryKey: [`/api/chatrooms/${chatroomId}/members`] });
       queryClient.invalidateQueries({ queryKey: [`/api/chatrooms/${chatroomId}`] });
       toast({
@@ -244,14 +250,14 @@ export default function ChatroomPage() {
 
   const promoteMemberMutation = useMutation({
     mutationFn: async (targetUserId: number) => {
-      const response = await fetch(`/api/chatrooms/${chatroomId}/admin/promote`, {
+      if (!csrfToken) {
+        throw new Error('CSRF token not available - please refresh the page');
+      }
+      
+      const response = await makeCSRFRequest(`/api/chatrooms/${chatroomId}/admin/promote`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include', // Use session-based authentication
-        body: JSON.stringify({ targetUserId }) // Fixed field name
-      });
+        body: JSON.stringify({ targetUserId })
+      }, csrfToken);
       
       if (!response.ok) {
         const error = await response.json();
@@ -261,7 +267,10 @@ export default function ChatroomPage() {
       return response.json();
     },
     onSuccess: () => {
+      // SECURITY FIX: Proper query invalidation for immediate UI updates
+      queryClient.invalidateQueries({ queryKey: ['/api/chatrooms', chatroomId, 'members'] });
       queryClient.invalidateQueries({ queryKey: [`/api/chatrooms/${chatroomId}/members`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/chatrooms/${chatroomId}`] });
       toast({
         title: "Success",
         description: "Member promoted to admin",
@@ -279,14 +288,15 @@ export default function ChatroomPage() {
 
   const demoteMemberMutation = useMutation({
     mutationFn: async (targetUserId: number) => {
-      const response = await fetch(`/api/chatrooms/${chatroomId}/admin/demote`, {
+      if (!csrfToken) {
+        throw new Error('CSRF token not available - please refresh the page');
+      }
+      
+      const response = await makeCSRFRequest(`/api/chatrooms/${chatroomId}/admin/demote`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include', // Use session-based authentication
-        body: JSON.stringify({ targetUserId }) // Fixed field name
-      });
+        body: JSON.stringify({ targetUserId })
+      }, csrfToken);
+      
       
       if (!response.ok) {
         const error = await response.json();
@@ -296,7 +306,10 @@ export default function ChatroomPage() {
       return response.json();
     },
     onSuccess: () => {
+      // SECURITY FIX: Proper query invalidation for immediate UI updates
+      queryClient.invalidateQueries({ queryKey: ['/api/chatrooms', chatroomId, 'members'] });
       queryClient.invalidateQueries({ queryKey: [`/api/chatrooms/${chatroomId}/members`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/chatrooms/${chatroomId}`] });
       toast({
         title: "Success",
         description: "Admin demoted to member",
@@ -314,14 +327,14 @@ export default function ChatroomPage() {
 
   const transferOwnershipMutation = useMutation({
     mutationFn: async (newOwnerId: number) => {
-      const response = await fetch(`/api/chatrooms/${chatroomId}/admin/transfer`, {
+      if (!csrfToken) {
+        throw new Error('CSRF token not available - please refresh the page');
+      }
+      
+      const response = await makeCSRFRequest(`/api/chatrooms/${chatroomId}/admin/transfer`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include', // Use session-based authentication
-        body: JSON.stringify({ newOwnerId }) // Field name already correct
-      });
+        body: JSON.stringify({ newOwnerId })
+      }, csrfToken);
       
       if (!response.ok) {
         const error = await response.json();
@@ -331,7 +344,10 @@ export default function ChatroomPage() {
       return response.json();
     },
     onSuccess: () => {
+      // SECURITY FIX: Proper query invalidation for immediate UI updates
+      queryClient.invalidateQueries({ queryKey: ['/api/chatrooms', chatroomId, 'members'] });
       queryClient.invalidateQueries({ queryKey: [`/api/chatrooms/${chatroomId}/members`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/chatrooms/${chatroomId}`] });
       toast({
         title: "Success",
         description: "Ownership transferred successfully",

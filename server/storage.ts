@@ -4456,12 +4456,10 @@ export class DatabaseStorage implements IStorage {
         role: chatroomMembers.role,
         isActive: chatroomMembers.isActive,
         joinedAt: chatroomMembers.joinedAt,
-        user: {
-          id: users.id,
-          username: users.username,
-          name: users.name,
-          profileImage: users.profileImage
-        }
+        // Flatten user data for frontend compatibility
+        username: users.username,
+        name: users.name,
+        profileImage: users.profileImage
       })
       .from(chatroomMembers)
       .leftJoin(users, eq(chatroomMembers.userId, users.id))
