@@ -11,6 +11,7 @@ import dotenv from "dotenv";
 import { db } from "./db";
 import { users, events, businessOffers, quickMeetups, quickDeals } from "../shared/schema";
 import { setupWaitlistRoutes } from "./waitlist-routes";
+import { getChatroomMembers, promoteMember, demoteAdmin, removeMember, transferOwnership } from "./routes/adminChatrooms";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
 
 // Load environment variables
@@ -81,6 +82,15 @@ app.use(express.urlencoded({ extended: true }));
 
 // Setup waitlist routes
 setupWaitlistRoutes(app);
+
+// CRITICAL: Chatroom admin endpoints - bypassing broken routes.ts
+console.log('🔧 REGISTERING ISOLATED CHATROOM ADMIN ENDPOINTS');
+app.get('/api/chatrooms/:id/members', getChatroomMembers);
+app.post('/api/chatrooms/:id/admin/promote', promoteMember);
+app.post('/api/chatrooms/:id/admin/demote', demoteAdmin);
+app.post('/api/chatrooms/:id/admin/remove', removeMember);
+app.post('/api/chatrooms/:id/admin/transfer', transferOwnership);
+console.log('✅ CHATROOM ADMIN ENDPOINTS REGISTERED');
 
 // REMOVED: This conflicted with the proper filtering endpoint in routes.ts
 // The events endpoint is now handled in routes.ts with proper city filtering
