@@ -3613,7 +3613,7 @@ Your adventure starts now - dive in and start connecting!
             await db.insert(connections).values({
               requesterId: referrer.id,
               receiverId: user.id,
-  , // Auto-accept referral connections
+              status: 'accepted', // Auto-accept referral connections
               connectionNote: connectionNote
             });
 
@@ -12521,10 +12521,12 @@ Questions? Just reply to this message. Welcome aboard!
   app.get("/api/chatrooms/:roomId/messages", async (req, res) => {
     try {
       const roomId = parseInt(req.params.roomId || '0');
-      const userId = req.headers['x-user-id'];
+      
+      // Use session-based authentication
+      const userId = req.session?.user?.id;
       
       if (!userId) {
-        return res.status(401).json({ message: "User ID required" });
+        return res.status(401).json({ message: "Authentication required - please log in" });
       }
 
       // 🔒 SECURITY CHECK: Verify user is a member of the chatroom before returning messages
@@ -12534,7 +12536,7 @@ Questions? Just reply to this message. Welcome aboard!
         .where(
           and(
             eq(chatroomMembers.chatroomId, roomId),
-            eq(chatroomMembers.userId, parseInt(userId as string)),
+            eq(chatroomMembers.userId, userId),
             eq(chatroomMembers.isActive, true)
           )
         );
@@ -12571,11 +12573,13 @@ Questions? Just reply to this message. Welcome aboard!
   app.post("/api/chatrooms/:roomId/messages", async (req, res) => {
     try {
       const roomId = parseInt(req.params.roomId || '0');
-      const userId = req.headers['x-user-id'];
+      
+      // Use session-based authentication
+      const userId = req.session?.user?.id;
       const { content } = req.body;
       
       if (!userId) {
-        return res.status(401).json({ message: "User ID required" });
+        return res.status(401).json({ message: "Authentication required - please log in" });
       }
 
       if (!content?.trim()) {
@@ -12589,7 +12593,7 @@ Questions? Just reply to this message. Welcome aboard!
         .where(
           and(
             eq(chatroomMembers.chatroomId, roomId),
-            eq(chatroomMembers.userId, parseInt(userId as string)),
+            eq(chatroomMembers.userId, userId),
             eq(chatroomMembers.isActive, true)
           )
         );
@@ -12601,7 +12605,7 @@ Questions? Just reply to this message. Welcome aboard!
 
       if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM MESSAGE: User ${userId} sending message to chatroom ${roomId}`);
 
-      const message = await storage.createChatroomMessage(roomId, parseInt(userId as string), content.trim());
+      const message = await storage.createChatroomMessage(roomId, userId, content.trim());
       return res.json(message);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error sending chatroom message:", error);

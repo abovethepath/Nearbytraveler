@@ -72,25 +72,41 @@ app.use(cors({
 
 // REMOVED: Duplicate session middleware - using the one below with Redis support
 
-// ===== CRITICAL API ROUTES - MUST BE FIRST TO BYPASS VITE =====
-// Register these API routes BEFORE any other middleware to prevent Vite interception
-console.log('🚀 REGISTERING CRITICAL API ROUTES FIRST TO BYPASS VITE INTERCEPTION');
+// ===== CRITICAL SETUP - SESSION FIRST FOR ADMIN ROUTES =====
+console.log('🚀 SETTING UP SESSION MIDDLEWARE FIRST FOR ADMIN ROUTES');
 
 // Essential middleware for API routes
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
+// Configure session middleware with Redis for production - MUST BE BEFORE ADMIN ROUTES
+const redis = process.env.REDIS_URL ? new Redis(process.env.REDIS_URL) : null;
+app.use(session({
+  store: redis ? new RedisStore({ client: redis }) : undefined, // Use Redis if available, fallback to memory store for dev
+  secret: process.env.SESSION_SECRET || 'nearby-traveler-secret-key-dev',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false, // Set to false for mobile compatibility
+    httpOnly: true,
+    sameSite: "lax",
+    maxAge: 24 * 60 * 60 * 1000
+  },
+  name: "nt.sid"
+}));
+console.log('✅ SESSION MIDDLEWARE CONFIGURED');
+
 // Setup waitlist routes
 setupWaitlistRoutes(app);
 
-// CRITICAL: Chatroom admin endpoints - bypassing broken routes.ts
+// CRITICAL: Chatroom admin endpoints - now with session support
 console.log('🔧 REGISTERING ISOLATED CHATROOM ADMIN ENDPOINTS');
 app.get('/api/chatrooms/:id/members', getChatroomMembers);
 app.post('/api/chatrooms/:id/admin/promote', promoteMember);
 app.post('/api/chatrooms/:id/admin/demote', demoteAdmin);
 app.post('/api/chatrooms/:id/admin/remove', removeMember);
 app.post('/api/chatrooms/:id/admin/transfer', transferOwnership);
-console.log('✅ CHATROOM ADMIN ENDPOINTS REGISTERED');
+console.log('✅ CHATROOM ADMIN ENDPOINTS REGISTERED WITH SESSION ACCESS');
 
 // REMOVED: This conflicted with the proper filtering endpoint in routes.ts
 // The events endpoint is now handled in routes.ts with proper city filtering
@@ -309,21 +325,7 @@ app.use("/api/", rateLimit({
   legacyHeaders: false
 }));
 
-// Configure session middleware with Redis for production
-const redis = process.env.REDIS_URL ? new Redis(process.env.REDIS_URL) : null;
-app.use(session({
-  store: redis ? new RedisStore({ client: redis }) : undefined, // Use Redis if available, fallback to memory store for dev
-  secret: process.env.SESSION_SECRET || 'nearby-traveler-secret-key-dev',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: false, // Set to false for mobile compatibility
-    httpOnly: true,
-    sameSite: "lax",
-    maxAge: 24 * 60 * 60 * 1000
-  },
-  name: "nt.sid"
-}));
+// Session middleware already configured above for admin routes
 
 // CRITICAL FIX: Increase payload limits to prevent 431 "Request Header Fields Too Large" errors
 app.use(express.json({ limit: '50mb' }));

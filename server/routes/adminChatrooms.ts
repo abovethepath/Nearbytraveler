@@ -30,14 +30,13 @@ export const getChatroomMembers = async (req: Request, res: Response) => {
       });
     }
 
-    // Get user ID from x-user-id header
-    const userIdHeader = req.headers['x-user-id'] as string;
-    const userId = userIdHeader ? parseInt(userIdHeader) : null;
+    // SECURITY FIX: Use session-based authentication instead of spoofable header
+    const userId = req.session?.user?.id;
     
-    if (!userId || isNaN(userId)) {
+    if (!userId) {
       return res.status(401).json({ 
         success: false, 
-        message: "Authentication required" 
+        message: "Authentication required - please log in" 
       });
     }
 
@@ -53,14 +52,12 @@ export const getChatroomMembers = async (req: Request, res: Response) => {
     // Get all chatroom members
     const members = await storage.getChatroomMembers(chatroomId);
     
-    res.json({
-      success: true,
-      data: members
-    });
+    // API CONTRACT FIX: Return raw array to match frontend expectations
+    res.json(members);
 
   } catch (error: any) {
     console.error('Error getting chatroom members:', error);
-    res.status(500).json({ 
+    return res.status(500).json({ 
       success: false, 
       message: "Failed to get chatroom members" 
     });
@@ -90,14 +87,13 @@ export const promoteMember = async (req: Request, res: Response) => {
 
     const { targetUserId } = validation.data;
 
-    // Get user ID from x-user-id header
-    const userIdHeader = req.headers['x-user-id'] as string;
-    const actorId = userIdHeader ? parseInt(userIdHeader) : null;
+    // SECURITY FIX: Use session-based authentication instead of spoofable header
+    const actorId = req.session?.user?.id;
     
-    if (!actorId || isNaN(actorId)) {
+    if (!actorId) {
       return res.status(401).json({ 
         success: false, 
-        message: "Authentication required" 
+        message: "Authentication required - please log in" 
       });
     }
 
@@ -112,7 +108,7 @@ export const promoteMember = async (req: Request, res: Response) => {
 
   } catch (error: any) {
     console.error('Error promoting chatroom member:', error);
-    res.status(500).json({ 
+    return res.status(500).json({ 
       success: false, 
       message: "Failed to promote member" 
     });
@@ -142,14 +138,13 @@ export const demoteAdmin = async (req: Request, res: Response) => {
 
     const { targetUserId } = validation.data;
 
-    // Get user ID from x-user-id header
-    const userIdHeader = req.headers['x-user-id'] as string;
-    const actorId = userIdHeader ? parseInt(userIdHeader) : null;
+    // SECURITY FIX: Use session-based authentication instead of spoofable header
+    const actorId = req.session?.user?.id;
     
-    if (!actorId || isNaN(actorId)) {
+    if (!actorId) {
       return res.status(401).json({ 
         success: false, 
-        message: "Authentication required" 
+        message: "Authentication required - please log in" 
       });
     }
 
@@ -164,7 +159,7 @@ export const demoteAdmin = async (req: Request, res: Response) => {
 
   } catch (error: any) {
     console.error('Error demoting chatroom admin:', error);
-    res.status(500).json({ 
+    return res.status(500).json({ 
       success: false, 
       message: "Failed to demote admin" 
     });
@@ -194,14 +189,13 @@ export const removeMember = async (req: Request, res: Response) => {
 
     const { targetUserId } = validation.data;
 
-    // Get user ID from x-user-id header
-    const userIdHeader = req.headers['x-user-id'] as string;
-    const actorId = userIdHeader ? parseInt(userIdHeader) : null;
+    // SECURITY FIX: Use session-based authentication instead of spoofable header
+    const actorId = req.session?.user?.id;
     
-    if (!actorId || isNaN(actorId)) {
+    if (!actorId) {
       return res.status(401).json({ 
         success: false, 
-        message: "Authentication required" 
+        message: "Authentication required - please log in" 
       });
     }
 
@@ -216,7 +210,7 @@ export const removeMember = async (req: Request, res: Response) => {
 
   } catch (error: any) {
     console.error('Error removing chatroom member:', error);
-    res.status(500).json({ 
+    return res.status(500).json({ 
       success: false, 
       message: "Failed to remove member" 
     });
@@ -246,14 +240,13 @@ export const transferOwnership = async (req: Request, res: Response) => {
 
     const { newOwnerId } = validation.data;
 
-    // Get user ID from x-user-id header
-    const userIdHeader = req.headers['x-user-id'] as string;
-    const actorId = userIdHeader ? parseInt(userIdHeader) : null;
+    // SECURITY FIX: Use session-based authentication instead of spoofable header
+    const actorId = req.session?.user?.id;
     
-    if (!actorId || isNaN(actorId)) {
+    if (!actorId) {
       return res.status(401).json({ 
         success: false, 
-        message: "Authentication required" 
+        message: "Authentication required - please log in" 
       });
     }
 
@@ -268,7 +261,7 @@ export const transferOwnership = async (req: Request, res: Response) => {
 
   } catch (error: any) {
     console.error('Error transferring chatroom ownership:', error);
-    res.status(500).json({ 
+    return res.status(500).json({ 
       success: false, 
       message: "Failed to transfer ownership" 
     });
