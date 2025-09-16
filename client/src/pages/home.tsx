@@ -1910,6 +1910,24 @@ export default function Home() {
               </div>
               
               <div className="flex items-center gap-1 sm:gap-2">
+                {/* Sort Dropdown */}
+                <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
+                  <SelectTrigger className="w-32 sm:w-40" data-testid="select-sort">
+                    <ArrowUpDown className="w-4 h-4 mr-2" />
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="recent">Recent</SelectItem>
+                    <SelectItem value="active">Most Active</SelectItem>
+                    <SelectItem value="compatibility">Compatibility</SelectItem>
+                    <SelectItem value="closest_nearby">Closest</SelectItem>
+                    <SelectItem value="travel_experience">Travel Exp</SelectItem>
+                    <SelectItem value="aura">Travel Aura</SelectItem>
+                    <SelectItem value="references">References</SelectItem>
+                    <SelectItem value="alphabetical">A-Z</SelectItem>
+                  </SelectContent>
+                </Select>
+
                 {/* Advanced Search Button */}
                 <Button
                   variant="outline"
@@ -1919,7 +1937,7 @@ export default function Home() {
                   data-testid="button-advanced-search"
                 >
                   <Search className="w-4 h-4 mr-2" />
-                  <span className="hidden sm:inline">Advanced Search</span>
+                  <span className="hidden sm:inline">Search</span>
                   <span className="sm:hidden">Search</span>
                 </Button>
               </div>
