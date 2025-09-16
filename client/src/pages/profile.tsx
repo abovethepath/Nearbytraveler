@@ -37,6 +37,22 @@ import { formatDateForDisplay, getCurrentTravelDestination } from "@/lib/dateUti
 import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/locationData";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { calculateAge, formatDateOfBirthForInput, validateDateInput, getDateInputConstraints } from "@/lib/ageUtils";
+
+// Function to remove birth date information from bio text
+const filterBirthDateFromBio = (bio: string): string => {
+  if (!bio) return bio;
+  
+  // Remove common birth date patterns
+  return bio
+    .replace(/Born:?\s*[A-Za-z]+ \d{1,2},?\s*\d{4}/gi, '') // "Born: October 10, 1988" or "Born October 10 1988"
+    .replace(/Birthday:?\s*[A-Za-z]+ \d{1,2},?\s*\d{4}/gi, '') // "Birthday: October 10, 1988"
+    .replace(/Date of birth:?\s*[A-Za-z]+ \d{1,2},?\s*\d{4}/gi, '') // "Date of birth: October 10, 1988"
+    .replace(/DOB:?\s*[A-Za-z]+ \d{1,2},?\s*\d{4}/gi, '') // "DOB: October 10, 1988"
+    .replace(/\d{1,2}\/\d{1,2}\/\d{4}/g, '') // "10/10/1988"
+    .replace(/\d{4}-\d{1,2}-\d{1,2}/g, '') // "1988-10-10"
+    .replace(/\s+/g, ' ') // Clean up extra spaces
+    .trim();
+};
 import { isTopChoiceInterest, getInterestStyle, getActivityStyle, getEventStyle } from "@/lib/topChoicesUtils";
 
 // Import InterestPills component for mobile-optimized interest display
@@ -3018,7 +3034,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <p className="text-gray-900 dark:text-white leading-relaxed mb-4 font-semibold">
                   {user?.userType === 'business' 
                     ? (user?.businessDescription || user?.bio || "No business description available yet.")
-                    : (user?.bio || "No bio available yet.")
+                    : (filterBirthDateFromBio(user?.bio) || "No bio available yet.")
                   }
                 </p>
                 {user?.userType !== 'business' && user?.secretActivities && (
