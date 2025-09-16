@@ -13525,6 +13525,10 @@ Questions? Just reply to this message. Welcome aboard!
       
       // Handle duplicate key constraint (user already has this interest) - TOGGLE OFF
       if (error.code === '23505' && error.constraint === 'user_city_interests_user_id_activity_id_unique') {
+        // Re-extract variables to ensure they're available in this scope
+        const { activityId, cityName } = req.body;
+        const userId = req.headers['x-user-id'];
+        
         // If interest already exists, remove it (toggle off)
         try {
           const deletedInterest = await db
@@ -13532,7 +13536,7 @@ Questions? Just reply to this message. Welcome aboard!
             .where(
               and(
                 eq(userCityInterests.userId, parseInt(userId as string)),
-                eq(userCityInterests.activityId, dbActivityId)
+                eq(userCityInterests.activityId, parseInt(activityId))
               )
             )
             .returning();
