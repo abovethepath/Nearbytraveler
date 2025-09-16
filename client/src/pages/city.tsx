@@ -402,7 +402,8 @@ export default function CityPage({ cityName }: CityPageProps) {
                             hometownState: user.hometownState || "",
                             hometownCountry: user.hometownCountry || "",
                             profileImage: user.profileImage || "",
-                            interests: user.interests || []
+                            interests: user.interests || [],
+                            isCurrentlyTraveling: user.isCurrentlyTraveling || false
                           }} 
                           searchLocation={decodedCityName} 
                         />
