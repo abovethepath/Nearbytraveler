@@ -971,12 +971,12 @@ function Router() {
       case '/business-registration':
         return <BusinessRegistration />;
       case '/profile':
-        // USING NEW CLEAN PROFILE - Updated version without removed features
-        return <ProfileNew />;
+        // USING COMPLETE PROFILE - Has ThingsIWantToDoSection, no cover photo, no travel personality
+        return <ProfileComplete />;
       case '/profile-old':
         return <Profile />;
-      case '/profile-complete':
-        return <ProfileComplete />;
+      case '/profile-new':
+        return <ProfileNew />;
       case '/messages':
         return <Messages />;
       case '/meetups':
