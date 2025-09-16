@@ -95,12 +95,8 @@ export function InterestPills({
       {visibleInterests.map((interest, index) => (
         <Badge
           key={index}
-          variant={prioritizedInterests.includes(interest) ? "default" : "secondary"}
-          className={`${getVariantClasses()} ${
-            prioritizedInterests.includes(interest) 
-              ? 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900 dark:text-blue-200 dark:border-blue-700' 
-              : 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700'
-          } font-medium rounded-full transition-colors`}
+          variant="secondary"
+          className={`${getVariantClasses()} bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 font-medium rounded-full transition-colors`}
         >
           {isMobile && variant === 'card' ? truncateLabel(interest) : interest}
         </Badge>
