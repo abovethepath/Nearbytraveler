@@ -1078,8 +1078,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       
       // Get state/country for cities - LA Metro get California/US, others get from database
       const getCityCountry = async (cityName: string): Promise<{ state: string, country: string }> => {
-        // LA Metro cities are in California, United States
-        if (laMetroCities.includes(cityName)) {
+        // LA Metro consolidated city and individual LA Metro cities are in California, United States
+        if (cityName === 'Los Angeles Metro' || laMetroCities.includes(cityName)) {
           return { state: 'California', country: 'United States' };
         }
         
