@@ -3951,14 +3951,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </CardContent>
             </Card>
 
-            {/* Vouch System */}
-            {currentUser?.id && (
-              <VouchWidget 
-                userId={effectiveUserId} 
-                isOwnProfile={isOwnProfile} 
-                currentUserId={currentUser.id}
-              />
-            )}
 
 
             {/* Travel Plans - Hidden for business profiles */}
@@ -4771,12 +4763,33 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </Card>
             )}
 
-            {/* References Widget */}
-            {user?.id && (
-              <div className="references-widget-container">
-                <ReferencesWidgetNew userId={user.id} />
+            {/* Two-Column Layout: Main Content + Right Sidebar (References + Vouch) */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              {/* Main Content Column */}
+              <div className="lg:col-span-2">
+                {/* Main content can go here in future if needed */}
               </div>
-            )}
+              
+              {/* Right Sidebar - References and Vouch */}
+              <div className="lg:col-span-1 space-y-4">
+                {/* References Widget */}
+                {user?.id && (
+                  <ReferencesWidgetNew userId={user.id} />
+                )}
+                
+                {/* Vouch System - Compact Widget */}
+                {currentUser?.id && user?.id && (
+                  <VouchWidget 
+                    userId={effectiveUserId} 
+                    isOwnProfile={isOwnProfile} 
+                    currentUserId={currentUser.id}
+                    variant="compact"
+                    className="w-full"
+                    data-testid="widget-vouch"
+                  />
+                )}
+              </div>
+            </div>
 
             {/* Travel Personality Assessment Widget - Show for all non-business users */}
             {user?.userType !== 'business' && (
