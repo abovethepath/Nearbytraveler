@@ -169,7 +169,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     // Get user from localStorage if not in context
     const storedUser = localStorage.getItem('travelConnectUser');
     const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
-    const userId = actualUser?.id || 51; // Use actual user ID
+    const userId = actualUser?.id || 2; // Use actual user ID, fallback to valid user 2
     console.log('🔧 FETCH USER ACTIVITIES: using userId =', userId, 'user object:', actualUser);
     
     try {
@@ -471,7 +471,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     // Get user from localStorage if not in context
     const storedUser = localStorage.getItem('travelConnectUser');
     const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
-    const userId = actualUser?.id || 51; // Use actual user ID
+    const userId = actualUser?.id || 2; // Use actual user ID, fallback to valid user 2
     const isCurrentlySelected = userActivities.some(ua => ua.activityId === activityId);
     
     console.log('🔄 TOGGLE ACTIVITY:', activityId, activityName, 'currently selected:', isCurrentlySelected);
@@ -534,7 +534,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     // Get user from localStorage if not in context  
     const storedUser = localStorage.getItem('travelConnectUser');
     const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
-    const userId = actualUser?.id || 51; // Use actual user ID
+    const userId = actualUser?.id || 2; // Use actual user ID, fallback to valid user 2
     
     try {
       const response = await fetch(`/api/user-city-interests/${userActivityId}`, {
