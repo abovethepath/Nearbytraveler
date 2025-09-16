@@ -549,9 +549,32 @@ export default function ProfileComplete({ userId: propUserId }: { userId?: strin
   const [showCountryInput, setShowCountryInput] = useState(false);
   const [newCountry, setNewCountry] = useState('');
   
-  // Determine profile owner
-  const isOwnProfile = !propUserId || propUserId === user?.id?.toString();
-  const profileUserId = propUserId ? parseInt(propUserId, 10) : user?.id;
+  // Determine profile owner - check multiple sources for current user ID
+  const getCurrentUserId = () => {
+    // Try user context first
+    if (user?.id) return user.id;
+    
+    // Try authStorage as fallback
+    const authUser = authStorage.getUser();
+    if (authUser?.id) return authUser.id;
+    
+    // Try localStorage as last resort  
+    const storageUser = localStorage.getItem('user');
+    if (storageUser) {
+      try {
+        const parsed = JSON.parse(storageUser);
+        if (parsed?.id) return parsed.id;
+      } catch (e) {
+        console.warn('Failed to parse user from localStorage');
+      }
+    }
+    
+    return null;
+  };
+
+  const currentUserId = getCurrentUserId();
+  const isOwnProfile = !propUserId || propUserId === currentUserId?.toString();
+  const profileUserId = propUserId ? parseInt(propUserId, 10) : currentUserId;
 
   console.log('🔍 PROFILE DEBUG:', {
     propUserId,
