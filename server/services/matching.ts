@@ -116,6 +116,8 @@ export class TravelMatchingService {
     const sharedEvents = await this.getSharedEvents(user1, user2);
     const totalSharedItems = sharedInterests.length + sharedActivities.length + sharedEvents.length;
 
+    // Compatibility calculation complete
+
     // Core compatibility scoring - much simpler and more intuitive
     // Base score from shared interests, activities, events (70 points max)
     const baseScore = Math.min(totalSharedItems * 3, 70); // Each shared thing = 3 points
