@@ -607,12 +607,25 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                 <Label>Start Date (Optional)</Label>
                 <Popover open={showStartCalendar} onOpenChange={setShowStartCalendar}>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start text-left font-normal">
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start text-left font-normal"
+                      data-testid="button-start-date"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowStartCalendar(!showStartCalendar);
+                      }}
+                    >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {startDate ? format(startDate, "PPP") : "Select start date"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
+                  <PopoverContent 
+                    className="w-auto p-0 z-[1000000]" 
+                    align="start"
+                    side="bottom"
+                    sideOffset={5}
+                  >
                     <Calendar
                       mode="single"
                       selected={startDate}
@@ -621,6 +634,7 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                         setShowStartCalendar(false);
                       }}
                       initialFocus
+                      data-testid="calendar-start-date"
                     />
                   </PopoverContent>
                 </Popover>
@@ -630,12 +644,25 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                 <Label>End Date (Optional)</Label>
                 <Popover open={showEndCalendar} onOpenChange={setShowEndCalendar}>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start text-left font-normal">
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start text-left font-normal"
+                      data-testid="button-end-date"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowEndCalendar(!showEndCalendar);
+                      }}
+                    >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {endDate ? format(endDate, "PPP") : "Select end date"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
+                  <PopoverContent 
+                    className="w-auto p-0 z-[1000000]" 
+                    align="start"
+                    side="bottom"
+                    sideOffset={5}
+                  >
                     <Calendar
                       mode="single"
                       selected={endDate}
@@ -645,6 +672,7 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                       }}
                       disabled={(date) => startDate ? date < startDate : false}
                       initialFocus
+                      data-testid="calendar-end-date"
                     />
                   </PopoverContent>
                 </Popover>
