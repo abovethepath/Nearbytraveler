@@ -149,31 +149,21 @@ export default function UserCard({
             ) : null;
           })()}
           
-          {/* Things in Common Badge */}
+          {/* Things in Common Badge - simplified to match backend algorithm */}
           {compatibilityData && (() => {
             const data = compatibilityData as any;
+            // Use the same simple calculation as the backend algorithm
             const totalCommon = 
               (data.sharedInterests?.length || 0) +
               (data.sharedActivities?.length || 0) +
-              (data.sharedEvents?.length || 0) +
-              (data.sharedTravelIntent?.length || 0) +
-              (data.sharedSexualPreferences?.length || 0) +
-              (data.sharedLanguages?.length || 0) +
-              (data.sharedCountries?.length || 0) +
-              (data.locationOverlap ? 1 : 0) +
-              (data.dateOverlap ? 1 : 0) +
-              (data.userTypeCompatibility ? 1 : 0) +
-              (data.travelIntentCompatibility ? 1 : 0) +
-              (data.bothVeterans ? 1 : 0) +
-              (data.bothActiveDuty ? 1 : 0) +
-              (data.sameFamilyStatus ? 1 : 0) +
-              (data.sameAge ? 1 : 0) +
-              (data.sameGender ? 1 : 0);
+              (data.sharedEvents?.length || 0);
+            
+            const matchPercentage = Math.round((data.score || 0) * 100);
             
             return totalCommon > 0 ? (
               <div className="flex justify-center">
                 <div className="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full dark:bg-blue-900/30 dark:text-blue-400 inline-block">
-                  {totalCommon} Things in Common
+                  {totalCommon} Things in Common • {matchPercentage}% Match
                 </div>
               </div>
             ) : null;
