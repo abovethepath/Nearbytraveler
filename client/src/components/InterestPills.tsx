@@ -15,6 +15,7 @@ interface InterestPillsProps {
   interests: string[];
   maxVisibleMobile?: number;
   maxVisibleDesktop?: number;
+  maxRows?: number; // Limit by number of rows instead of count
   variant?: 'card' | 'profile' | 'inline' | 'compact';
   prioritizedInterests?: string[]; // Interests to show first (e.g., shared with viewer)
   showCommonCount?: boolean;
@@ -23,8 +24,9 @@ interface InterestPillsProps {
 
 export function InterestPills({ 
   interests, 
-  maxVisibleMobile = 3, 
-  maxVisibleDesktop = 6,
+  maxVisibleMobile = 8, 
+  maxVisibleDesktop = 12,
+  maxRows = 2,
   variant = 'card',
   prioritizedInterests = [],
   showCommonCount = false,
@@ -33,7 +35,12 @@ export function InterestPills({
   const [showAll, setShowAll] = useState(false);
   const isMobile = useIsMobile();
   
-  const maxVisible = isMobile ? maxVisibleMobile : maxVisibleDesktop;
+  // Estimate interests per row based on average length and screen width
+  const estimatedPerRow = isMobile ? 3 : 4;
+  const maxVisible = Math.min(
+    isMobile ? maxVisibleMobile : maxVisibleDesktop,
+    maxRows * estimatedPerRow
+  );
   
   // Sort interests: prioritized first, then alphabetical
   const sortedInterests = [...interests].sort((a, b) => {
@@ -99,18 +106,19 @@ export function InterestPills({
         </Badge>
       ))}
       
-      {/* Show more button for mobile */}
+      {/* Show more button */}
       {hiddenCount > 0 && (
         <>
           {isMobile ? (
             <Sheet>
               <SheetTrigger asChild>
-                <Badge 
+                <Button
                   variant="outline" 
-                  className={`${getVariantClasses()} cursor-pointer bg-gray-50 text-gray-600 border-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700 font-medium rounded-full`}
+                  size="sm"
+                  className="bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-600 dark:hover:bg-blue-900/30 font-medium rounded-full px-4 py-1 h-auto"
                 >
-                  +{hiddenCount}
-                </Badge>
+                  See {hiddenCount} more
+                </Button>
               </SheetTrigger>
               <SheetContent side="bottom" className="max-h-[80vh]">
                 <SheetHeader>
@@ -126,7 +134,7 @@ export function InterestPills({
                     <Badge
                       key={index}
                       variant={prioritizedInterests.includes(interest) ? "default" : "secondary"}
-                      className={`text-sm px-3 py-1 ${
+                      className={`text-sm px-3 py-1.5 ${
                         prioritizedInterests.includes(interest) 
                           ? 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900 dark:text-blue-200' 
                           : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
@@ -139,13 +147,14 @@ export function InterestPills({
               </SheetContent>
             </Sheet>
           ) : (
-            <Badge 
+            <Button
               variant="outline" 
-              className={`${getVariantClasses()} cursor-pointer bg-gray-50 text-gray-600 border-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700 font-medium rounded-full`}
+              size="sm"
+              className="bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-600 dark:hover:bg-blue-900/30 font-medium rounded-full px-4 py-1 h-auto"
               onClick={() => setShowAll(!showAll)}
             >
-              {showAll ? 'Show less' : `+${hiddenCount}`}
-            </Badge>
+              {showAll ? 'Show less' : `See ${hiddenCount} more`}
+            </Button>
           )}
         </>
       )}

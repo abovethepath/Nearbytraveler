@@ -738,8 +738,9 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                             <InterestPills 
                               interests={user.interests}
                               variant="card"
-                              maxVisibleMobile={3}
-                              maxVisibleDesktop={5}
+                              maxRows={2}
+                              maxVisibleMobile={8}
+                              maxVisibleDesktop={10}
                               className="mb-3"
                             />
                           )}

@@ -185,8 +185,9 @@ export default function UserCard({
               <InterestPills 
                 interests={user.interests || []}
                 variant="card"
-                maxVisibleMobile={3}
-                maxVisibleDesktop={4}
+                maxRows={2}
+                maxVisibleMobile={6}
+                maxVisibleDesktop={8}
                 prioritizedInterests={compatibilityData?.sharedInterests || []}
                 showCommonCount={!!(compatibilityData?.sharedInterests?.length)}
                 className="w-full justify-center"
