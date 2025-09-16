@@ -852,8 +852,18 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                   ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white border-emerald-300 shadow-emerald-200' 
                                   : 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white border-blue-300 shadow-blue-200 hover:from-blue-600 hover:to-indigo-700'
                               }`}
-                              onClick={() => handleToggleActivity(activity.id, activity.activityName)}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                console.log('🚀 PILL CLICK DETECTED!', activity.activityName, activity.id);
+                                handleToggleActivity(activity.id, activity.activityName);
+                              }}
+                              onMouseDown={(e) => {
+                                console.log('🖱️ PILL MOUSE DOWN!', activity.activityName);
+                              }}
                               data-testid="activity-pill"
+                              type="button"
+                              style={{ pointerEvents: 'auto', zIndex: 1 }}
                             >
                               <span className="relative z-10">{activity.activityName}</span>
                               {isSelected && (
