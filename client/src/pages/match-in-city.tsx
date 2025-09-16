@@ -423,7 +423,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const handleAddActivity = async () => {
     if (!newActivity.trim()) return;
     
-    const userId = user?.id || 1;
+    // Get user from localStorage if not in context (same as toggle function)
+    const storedUser = localStorage.getItem('travelConnectUser');
+    const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
+    const userId = actualUser?.id || 2; // Use actual user ID, fallback to valid user 2
     console.log('➕ ADDING ACTIVITY:', newActivity, 'userId:', userId);
 
     try {
@@ -444,11 +447,32 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       if (response.ok) {
         const newActivityData = await response.json();
         setCityActivities(prev => [...prev, newActivityData]);
+        
+        // Automatically add the new activity to user's interests (make it green)
+        console.log('🎯 Auto-selecting new activity:', newActivityData.activityName);
+        const interestResponse = await fetch('/api/user-city-interests', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-id': userId.toString()
+          },
+          body: JSON.stringify({
+            activityId: newActivityData.id,
+            cityName: selectedCity
+          })
+        });
+        
+        if (interestResponse.ok) {
+          const newUserActivity = await interestResponse.json();
+          setUserActivities(prev => [...prev, newUserActivity]);
+          console.log('✅ Auto-selected activity for user');
+        }
+        
         setNewActivity('');
         
         toast({
-          title: "Activity Added",
-          description: `Added "${newActivity}" to ${selectedCity}`,
+          title: "Activity Added & Selected",
+          description: `Created and selected "${newActivity}" for ${selectedCity}`,
         });
       } else {
         const error = await response.json();
