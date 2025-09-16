@@ -399,14 +399,6 @@ export interface IStorage {
   getUserChatroomInvitations(): Promise<any>;
   respondToChatroomInvitation(): Promise<any>;
   canUserAccessChatroom(): Promise<any>;
-  
-  // Enhanced chatroom member management with permission checks
-  getMemberRole(chatroomId: number, userId: number): Promise<string | null>;
-  removeChatroomMember(chatroomId: number, targetUserId: number, actorId: number): Promise<{ success: boolean; message: string }>;
-  promoteChatroomMember(chatroomId: number, targetUserId: number, actorId: number): Promise<{ success: boolean; message: string }>;
-  demoteChatroomAdmin(chatroomId: number, targetUserId: number, actorId: number): Promise<{ success: boolean; message: string }>;
-  transferChatroomOwnership(chatroomId: number, newOwnerId: number, actorId: number): Promise<{ success: boolean; message: string }>;
-  
   getCityStatistics(): Promise<any>;
   ensureCityExists(city: string, state: string, country: string): Promise<boolean>;
   
@@ -4456,10 +4448,12 @@ export class DatabaseStorage implements IStorage {
         role: chatroomMembers.role,
         isActive: chatroomMembers.isActive,
         joinedAt: chatroomMembers.joinedAt,
-        // Flatten user data for frontend compatibility
-        username: users.username,
-        name: users.name,
-        profileImage: users.profileImage
+        user: {
+          id: users.id,
+          username: users.username,
+          name: users.name,
+          profileImage: users.profileImage
+        }
       })
       .from(chatroomMembers)
       .leftJoin(users, eq(chatroomMembers.userId, users.id))
@@ -8380,6 +8374,11 @@ export class DatabaseStorage implements IStorage {
 
 
 
+  async getUserByResetToken(token: string) {
+    const [user] = await db.select().from(users)
+      .where(eq(users.passwordResetToken, token));
+    return user || null;
+  }
 
   // Travel preferences methods
   async getUserTravelPreferences(userId: number): Promise<any> {
@@ -8396,6 +8395,19 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  async createUserTravelPreferences(preferences: any): Promise<any> {
+    try {
+      const updatedUser = await this.updateUser(preferences.userId, {
+        defaultTravelInterests: preferences.defaultTravelInterests,
+        defaultTravelActivities: preferences.defaultTravelActivities,
+        defaultTravelEvents: preferences.defaultTravelEvents
+      });
+      return updatedUser;
+    } catch (error) {
+      console.error('Error creating user travel preferences:', error);
+      throw error;
+    }
+  }
 
   async updateUserTravelPreferences(userId: number, updates: any): Promise<any> {
     try {
@@ -9750,198 +9762,86 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-
-  // Enhanced chatroom member management methods with permission checks
-  async getMemberRole(chatroomId: number, userId: number): Promise<string | null> {
+  async getChatroomMessages(chatroomId: number): Promise<any[]> {
     try {
-      const [member] = await db
-        .select({ role: chatroomMembers.role })
-        .from(chatroomMembers)
-        .where(and(
-          eq(chatroomMembers.chatroomId, chatroomId),
-          eq(chatroomMembers.userId, userId),
-          eq(chatroomMembers.isActive, true)
-        ));
+      const messages = await db
+        .select({
+          id: chatroomMessages.id,
+          content: chatroomMessages.content,
+          senderId: chatroomMessages.senderId,
+          messageType: chatroomMessages.messageType,
+          createdAt: chatroomMessages.createdAt,
+          user: {
+            id: users.id,
+            username: users.username,
+            name: users.name,
+            profileImage: users.profileImage
+          }
+        })
+        .from(chatroomMessages)
+        .leftJoin(users, eq(chatroomMessages.senderId, users.id))
+        .where(eq(chatroomMessages.chatroomId, chatroomId))
+        .orderBy(asc(chatroomMessages.createdAt))
+        .limit(100); // Limit to last 100 messages
       
-      return member?.role || null;
+      return messages;
     } catch (error) {
-      console.error('Error getting member role:', error);
-      return null;
+      console.error('Error fetching chatroom messages:', error);
+      return [];
     }
   }
 
-  async removeChatroomMember(chatroomId: number, targetUserId: number, actorId: number): Promise<{ success: boolean; message: string }> {
+  async joinChatroom(chatroomId: number, userId: number): Promise<any> {
     try {
-      // Get actor's role to check permissions
-      const actorRole = await this.getMemberRole(chatroomId, actorId);
-      if (!actorRole) {
-        return { success: false, message: "You must be a member of this chatroom to perform this action" };
-      }
-
-      // Get target's role
-      const targetRole = await this.getMemberRole(chatroomId, targetUserId);
-      if (!targetRole) {
-        return { success: false, message: "User is not a member of this chatroom" };
-      }
-
-      // Permission checks
-      if (actorRole === 'member') {
-        return { success: false, message: "Only owners and admins can remove members" };
-      }
-
-      if (targetRole === 'owner') {
-        return { success: false, message: "Cannot remove the chatroom owner" };
-      }
-
-      if (actorRole === 'admin' && targetRole === 'admin') {
-        return { success: false, message: "Admins cannot remove other admins" };
-      }
-
-      if (targetUserId === actorId) {
-        return { success: false, message: "Cannot remove yourself. Use leave chatroom instead" };
-      }
-
-      // Remove the member by setting isActive to false
-      await db
-        .update(chatroomMembers)
-        .set({ isActive: false })
-        .where(and(
-          eq(chatroomMembers.chatroomId, chatroomId),
-          eq(chatroomMembers.userId, targetUserId)
-        ));
-
-      return { success: true, message: "Member removed successfully" };
-    } catch (error) {
-      console.error('Error removing chatroom member:', error);
-      return { success: false, message: "Failed to remove member" };
-    }
-  }
-
-  async promoteChatroomMember(chatroomId: number, targetUserId: number, actorId: number): Promise<{ success: boolean; message: string }> {
-    try {
-      // Get actor's role to check permissions
-      const actorRole = await this.getMemberRole(chatroomId, actorId);
-      if (actorRole !== 'owner') {
-        return { success: false, message: "Only the chatroom owner can promote members to admin" };
-      }
-
-      // Get target's current role
-      const targetRole = await this.getMemberRole(chatroomId, targetUserId);
-      if (!targetRole) {
-        return { success: false, message: "User is not a member of this chatroom" };
-      }
-
-      if (targetRole === 'admin') {
-        return { success: false, message: "User is already an admin" };
-      }
-
-      if (targetRole === 'owner') {
-        return { success: false, message: "Cannot promote the owner" };
-      }
-
-      // Promote the member to admin
-      await db
-        .update(chatroomMembers)
-        .set({ role: 'admin' })
-        .where(and(
-          eq(chatroomMembers.chatroomId, chatroomId),
-          eq(chatroomMembers.userId, targetUserId)
-        ));
-
-      return { success: true, message: "Member promoted to admin successfully" };
-    } catch (error) {
-      console.error('Error promoting chatroom member:', error);
-      return { success: false, message: "Failed to promote member" };
-    }
-  }
-
-  async demoteChatroomAdmin(chatroomId: number, targetUserId: number, actorId: number): Promise<{ success: boolean; message: string }> {
-    try {
-      // Get actor's role to check permissions
-      const actorRole = await this.getMemberRole(chatroomId, actorId);
-      if (actorRole !== 'owner') {
-        return { success: false, message: "Only the chatroom owner can demote admins" };
-      }
-
-      // Get target's current role
-      const targetRole = await this.getMemberRole(chatroomId, targetUserId);
-      if (!targetRole) {
-        return { success: false, message: "User is not a member of this chatroom" };
-      }
-
-      if (targetRole !== 'admin') {
-        return { success: false, message: "User is not an admin" };
-      }
-
-      if (targetUserId === actorId) {
-        return { success: false, message: "Cannot demote yourself" };
-      }
-
-      // Demote the admin to regular member
-      await db
-        .update(chatroomMembers)
-        .set({ role: 'member' })
-        .where(and(
-          eq(chatroomMembers.chatroomId, chatroomId),
-          eq(chatroomMembers.userId, targetUserId)
-        ));
-
-      return { success: true, message: "Admin demoted to member successfully" };
-    } catch (error) {
-      console.error('Error demoting chatroom admin:', error);
-      return { success: false, message: "Failed to demote admin" };
-    }
-  }
-
-  async transferChatroomOwnership(chatroomId: number, newOwnerId: number, actorId: number): Promise<{ success: boolean; message: string }> {
-    try {
-      // Get actor's role to check permissions
-      const actorRole = await this.getMemberRole(chatroomId, actorId);
-      if (actorRole !== 'owner') {
-        return { success: false, message: "Only the chatroom owner can transfer ownership" };
-      }
-
-      // Get new owner's role
-      const newOwnerRole = await this.getMemberRole(chatroomId, newOwnerId);
-      if (!newOwnerRole) {
-        return { success: false, message: "New owner must be a member of this chatroom" };
-      }
-
-      if (newOwnerId === actorId) {
-        return { success: false, message: "You are already the owner" };
-      }
-
-      // Use a transaction to ensure atomic ownership transfer
-      await db.transaction(async (tx) => {
-        // Demote current owner to admin
-        await tx
-          .update(chatroomMembers)
-          .set({ role: 'admin' })
-          .where(and(
+      // Check if already a member
+      const [existingMember] = await db
+        .select()
+        .from(chatroomMembers)
+        .where(
+          and(
             eq(chatroomMembers.chatroomId, chatroomId),
-            eq(chatroomMembers.userId, actorId)
-          ));
-
-        // Promote new member to owner
-        await tx
-          .update(chatroomMembers)
-          .set({ role: 'owner' })
-          .where(and(
-            eq(chatroomMembers.chatroomId, chatroomId),
-            eq(chatroomMembers.userId, newOwnerId)
-          ));
-
-        // Update the chatroom's createdById to reflect new ownership
-        await tx
-          .update(citychatrooms)
-          .set({ createdById: newOwnerId })
-          .where(eq(citychatrooms.id, chatroomId));
-      });
-
-      return { success: true, message: "Chatroom ownership transferred successfully" };
+            eq(chatroomMembers.userId, userId)
+          )
+        );
+      
+      if (existingMember) {
+        // Update to active if inactive and award aura for rejoining
+        if (!existingMember.isActive) {
+          await db
+            .update(chatroomMembers)
+            .set({ isActive: true, joinedAt: new Date() })
+            .where(
+              and(
+                eq(chatroomMembers.chatroomId, chatroomId),
+                eq(chatroomMembers.userId, userId)
+              )
+            );
+          
+          // Award 1 aura for rejoining chatroom
+          await this.awardAura(userId, 1, 'rejoining chatroom');
+        }
+        return existingMember;
+      }
+      
+      // Add as new member
+      const [newMember] = await db
+        .insert(chatroomMembers)
+        .values({
+          chatroomId,
+          userId,
+          role: 'member',
+          isActive: true,
+          joinedAt: new Date()
+        })
+        .returning();
+      
+      // Award 1 aura for joining chatroom
+      await this.awardAura(userId, 1, 'joining chatroom');
+      
+      return newMember;
     } catch (error) {
-      console.error('Error transferring chatroom ownership:', error);
-      return { success: false, message: "Failed to transfer ownership" };
+      console.error('Error joining chatroom:', error);
+      throw error;
     }
   }
 
@@ -9959,6 +9859,19 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  async getEvent(eventId: number): Promise<any> {
+    try {
+      const [event] = await db
+        .select()
+        .from(events)
+        .where(eq(events.id, eventId));
+      
+      return event;
+    } catch (error) {
+      console.error('Error fetching event:', error);
+      return undefined;
+    }
+  }
 
   // Quick Meetup Template Methods
   async createQuickMeetupTemplate(templateData: InsertQuickMeetupTemplate): Promise<QuickMeetupTemplate> {

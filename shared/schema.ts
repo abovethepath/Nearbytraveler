@@ -4,7 +4,7 @@ import { z } from "zod";
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
-  username: varchar("username", { length: 13 }).notNull().unique(),
+  username: varchar("username", { length: 12 }).notNull().unique(),
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
   name: text("name").notNull(),
@@ -250,7 +250,7 @@ export const citychatrooms = pgTable("city_chatrooms", {
   city: text("city").notNull(),
   state: text("state"),
   country: text("country").notNull(),
-  createdById: integer("created_by_id").notNull().references(() => users.id),
+  createdById: integer("created_by_id").notNull(),
   isActive: boolean("is_active").default(true),
   isPublic: boolean("is_public").default(true),
   maxMembers: integer("max_members").default(500),
@@ -334,7 +334,7 @@ export const chatroomMembers = pgTable("chatroom_members", {
   id: serial("id").primaryKey(),
   chatroomId: integer("chatroom_id").notNull(),
   userId: integer("user_id").notNull(),
-  role: text("role").default("member"), // 'owner' (creator, all permissions), 'admin' (can remove members), 'member' (regular participant)
+  role: text("role").default("member"), // 'admin', 'moderator', 'member'
   joinedAt: timestamp("joined_at").defaultNow(),
   lastReadAt: timestamp("last_read_at"),
   isMuted: boolean("is_muted").default(false),
@@ -566,13 +566,14 @@ export const blockedUsers = pgTable("blocked_users", {
   unique().on(table.blockerId, table.blockedId), // Prevent duplicate blocks
 ]);
 
-// Simple waitlist table
+// Waitlist for launch leads
 export const waitlistLeads = pgTable("waitlist_leads", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
-  phone: text("phone"),
   submittedAt: timestamp("submitted_at").defaultNow(),
+  contacted: boolean("contacted").default(false),
+  notes: text("notes"), // For admin notes about follow-up
 });
 
 export const insertUserSchema = createInsertSchema(users).omit({
@@ -593,6 +594,8 @@ export const insertUserSchema = createInsertSchema(users).omit({
 export const insertWaitlistLeadSchema = createInsertSchema(waitlistLeads).omit({
   id: true,
   submittedAt: true,
+  contacted: true,
+  notes: true,
 });
 
 export type WaitlistLead = typeof waitlistLeads.$inferSelect;

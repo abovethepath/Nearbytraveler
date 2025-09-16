@@ -105,7 +105,6 @@ import SignupAccount from "@/pages/signup-account";
 import UnifiedSignup from "@/pages/unified-signup";
 import BusinessRegistration from "@/pages/business-registration";
 import LandingNew from "@/pages/landing-new";
-import LandingStreamlined from "@/pages/landing-new-streamlined";
 import LaunchingSoon from "@/pages/launching-soon";
 import Photos from "@/pages/photos";
 import UploadPhotos from "@/pages/upload-photos";
@@ -155,6 +154,7 @@ import ShareQR from "@/pages/share-qr";
 import BusinessCardPage from "@/pages/business-card";
 import QRCodePage from "@/pages/qr-code";
 import QRSimplePage from "@/pages/qr-simple";
+import LandingStreamlined from "@/pages/landing-new-streamlined";
 import LandingMinimal from "@/pages/landing-minimal";
 import ComingSoon from "@/pages/coming-soon";
 

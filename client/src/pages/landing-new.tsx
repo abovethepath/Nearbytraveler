@@ -148,12 +148,7 @@ export default function LandingNew() {
                 {/* Static powerful quote */}
                 <div className="mb-4 sm:mb-6 text-center w-full">
                   <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 italic px-2">
-                    {isMobile ? (
-                      <>
-                        Travel doesn't change you —<br />
-                        the people you meet do.
-                      </>
-                    ) : "Travel doesn't change you — the people you meet do."}
+                    {isMobile ? "Travel doesn't change you — people you meet do." : "Travel doesn't change you — the people you meet do."}
                   </p>
                 </div>
                 
@@ -167,12 +162,7 @@ export default function LandingNew() {
                 </div>
                 
                 <p className="mt-3 sm:mt-4 text-sm sm:text-base italic text-orange-600 text-center font-medium">
-                  {isMobile ? (
-                    <>
-                      Where Local Experiences<br />
-                      Meet Worldwide Connections
-                    </>
-                  ) : "Where Local Experiences Meet Worldwide Connections"}
+                  Where Local Experiences Meet Worldwide Connections
                 </p>
               </div>
             </div>
@@ -393,7 +383,7 @@ export default function LandingNew() {
               </div>
               <div className="bg-gray-50 rounded-xl p-4 sm:p-6 shadow-sm">
                 <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900">Business Travelers</h3>
-                <p className="text-sm sm:text-base text-gray-600">Turn work trips into more than just work</p>
+                <p className="text-sm sm:text-base text-gray-600">Make work trips more than meetings</p>
               </div>
             </div>
           </div>

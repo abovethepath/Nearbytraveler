@@ -422,7 +422,7 @@ export default function SignupTraveling() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setLocation('/launching-soon')}
+                onClick={() => setLocation('/join')}
                 className="text-blue-600 hover:text-blue-800 border-blue-300 hover:border-blue-500 font-medium"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />

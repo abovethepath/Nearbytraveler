@@ -766,7 +766,7 @@ async function sendWeeklyDigestEmails() {
       
       // Filter out users who joined in this cycle (they shouldn't get digest about themselves)
       const recipientUsers = existingUsers.filter(user => {
-        const userJoinDate = new Date(user.createdAt || new Date());
+        const userJoinDate = new Date(user.createdAt || user.joinDate);
         return userJoinDate < lastCycleStart;
       });
 
@@ -822,7 +822,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     
     try {
       // Get the real user from database
-      const user = await storage.getUser(2);
+      const user = await storage.getUser("2");
       
       if (user) {
         // Create session with real user data
@@ -902,7 +902,6 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         console.log("✅ Login successful for:", email);
         return res.status(200).json({ ok: true, user: { id: user.id, username: user.username } });
       });
-      return;
     } catch (error) {
       console.error("Login error:", error);
       return res.status(500).json({ message: "Server error" });
@@ -936,7 +935,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       return res.status(200).json({ ok: true });
     }
     
-    return (req as any).session.destroy((err: any) => {
+    (req as any).session.destroy((err: any) => {
       if (err) {
         console.error("Session destroy error:", err);
       }
@@ -1678,7 +1677,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       // Check if city page already exists
       const existingCity = await db.select().from(cityPages)
         .where(and(
-          eq(cityPages.city, city),
+          eq(cityPages.cityName, city),
           eq(cityPages.state, state || ''),
           eq(cityPages.country, country || '')
         )).limit(1);
@@ -1686,11 +1685,13 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       if (existingCity.length === 0) {
         // Create city page
         await db.insert(cityPages).values({
-          city: city,
+          cityName: city,
           state: state || '',
           country: country || '',
-          createdById: 1, // Default system user
-          description: `Discover ${city} and connect with locals and travelers`
+          description: `Discover ${city} and connect with locals and travelers`,
+          heroImage: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
         });
         
         if (process.env.NODE_ENV === 'development') console.log(`🏙️ CREATED CITY PAGE: ${city}`);
@@ -1720,14 +1721,14 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           country: country || '',
           name: `${city} General Chat`,
           description: `Connect with locals and travelers in ${city}`,
-          createdById: 1, // Default system user
-          isPublic: true
+          isPrivate: false,
+          createdAt: new Date()
         });
         
         if (process.env.NODE_ENV === 'development') console.log(`💬 CREATED CHATROOM: ${city}`);
       }
       
-      return res.json({ 
+      res.json({ 
         message: "City infrastructure ensured", 
         city, 
         state, 
@@ -1737,7 +1738,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       
     } catch (error) {
       console.error('Error ensuring city infrastructure:', error);
-      return res.status(500).json({ message: 'Failed to ensure city infrastructure' });
+      res.status(500).json({ message: 'Failed to ensure city infrastructure' });
     }
   });
 
@@ -1752,7 +1753,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       // Get city page info
       const cityPage = await db.select().from(cityPages)
         .where(and(
-          eq(cityPages.city, city),
+          eq(cityPages.cityName, city),
           eq(cityPages.state, (state as string) || ''),
           eq(cityPages.country, (country as string) || '')
         )).limit(1);
@@ -1761,9 +1762,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const [coords, stats] = await Promise.all([
         Promise.resolve({ lat: 34.0522, lng: -118.2437 }), // Default LA coords for now
         (async () => {
-          const usersInCity = await storage.getUsersByCity(city);
-          const eventsInCity = await storage.getUpcomingEvents(city);
-          const businessesInCity = await storage.getUsersByCity(city).then(users => users.filter(u => u.userType === 'business'));
+          const usersInCity = await storage.getUsersInCity(city, state as string, country as string);
+          const eventsInCity = await storage.getEventsInCity([city]);
+          const businessesInCity = await storage.getBusinessesInCity([city]);
           
           return {
             totalUsers: usersInCity.length,
@@ -1775,7 +1776,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         })()
       ]);
       
-      return res.json({
+      res.json({
         cityPage: cityPage[0] || null,
         coordinates: coords,
         stats,
@@ -1786,7 +1787,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       
     } catch (error) {
       console.error('Error getting city overview:', error);
-      return res.status(500).json({ message: 'Failed to get city overview' });
+      res.status(500).json({ message: 'Failed to get city overview' });
     }
   });
 
@@ -1803,7 +1804,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       if (process.env.NODE_ENV === 'development') console.log(`🔍 CITY MATCHES: ${city} for user ${userId}`);
       
       // Get all users in the city
-      const usersInCity = await storage.getUsersByCity(city);
+      const usersInCity = await storage.getUsersInCity(city);
       const currentUser = await storage.getUser(parseInt(userId as string));
       
       if (!currentUser) {
@@ -1817,11 +1818,10 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       for (const user of usersInCity) {
         if (user.id === currentUser.id) continue; // Skip self
         
-        const compatibility = await matchingService.calculateCompatibilityScore(
+        const compatibility = await matchingService.getCompatibilityData(
           currentUser,
           user,
-          null,
-          null
+          usersInCity // Pass all users for context
         );
         
         matches.push({
@@ -1836,11 +1836,11 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       // Limit results
       const limitedMatches = matches.slice(0, parseInt(limit as string));
       
-      return res.json(limitedMatches);
+      res.json(limitedMatches);
       
     } catch (error) {
       console.error('Error getting city matches:', error);
-      return res.status(500).json({ message: 'Failed to get city matches' });
+      res.status(500).json({ message: 'Failed to get city matches' });
     }
   });
 
@@ -2043,7 +2043,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       return res.json(users);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Failed to search users by location:", error);
-      return res.status(500).json({ message: "Failed to search users by location", error });
+      res.status(500).json({ message: "Failed to search users by location", error });
     }
   });
 
@@ -2059,10 +2059,10 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       
       const { getUserCurrentStatus } = await import('./services/user-status-service');
       const status = await getUserCurrentStatus(userId);
-      return res.json(status);
+      res.json(status);
     } catch (error) {
       console.error('Error fetching user status:', error);
-      return res.status(500).json({ error: 'Failed to fetch user status' });
+      res.status(500).json({ error: 'Failed to fetch user status' });
     }
   });
 
@@ -2078,22 +2078,24 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         .select({
           id: users.id,
           username: users.username,
-          name: users.name,
+          firstName: users.firstName,
+          lastName: users.lastName,
           profileImage: users.profileImage,
         })
         .from(users)
         .where(
           or(
             ilike(users.username, `%${query}%`),
-            ilike(users.name, `%${query}%`)
+            ilike(users.firstName, `%${query}%`),
+            ilike(users.lastName, `%${query}%`)
           )
         )
         .limit(20);
         
-      return res.json(searchResults);
+      res.json(searchResults);
     } catch (error: any) {
       console.error("Error searching users:", error);
-      return res.status(500).json({ message: "Failed to search users", error });
+      res.status(500).json({ message: "Failed to search users", error });
     }
   });
 
@@ -2258,13 +2260,13 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       }
 
       if (process.env.NODE_ENV === 'development') console.log("🌴 LA metropolitan area consolidation completed!");
-      return res.json({ 
+      res.json({ 
         message: "LA metropolitan area consolidated successfully", 
         totalRecordsUpdated: totalUpdated 
       });
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error consolidating LA metropolitan area:", error);
-      return res.status(500).json({ message: "Failed to consolidate LA metropolitan area", error: error.message });
+      res.status(500).json({ message: "Failed to consolidate LA metropolitan area", error: error.message });
     }
   });
 
@@ -2289,7 +2291,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       return res.json({ exists: false });
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Email check error:", error);
-      return res.status(500).json({ message: "Failed to check email availability" });
+      res.status(500).json({ message: "Failed to check email availability" });
     }
   });
 
@@ -2312,7 +2314,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       };
 
       // Save session
-      return (req as any).session.save((err: any) => {
+      (req as any).session.save((err: any) => {
         if (err) {
           console.error("Session save error:", err);
           return res.status(500).json({ message: "Session error" });
@@ -2322,7 +2324,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       });
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Quick login error:", error);
-      return res.status(500).json({ message: "Login failed" });
+      res.status(500).json({ message: "Login failed" });
     }
   });
 
@@ -2360,7 +2362,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const { emailService } = await import('./services/emailService');
       console.log(`🔍 Attempting to send forgot password email to: ${user.email}`);
       const emailResult = await emailService.sendForgotPasswordEmail(user.email!, {
-        name: user.name || user.username || 'User',
+        name: user.displayName || user.username || 'User',
         resetUrl: `${req.protocol}://${req.get('host')}/reset-password?token=${resetToken}`,
         expiryHours: 1
       });
@@ -2380,7 +2382,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       return res.json({ message: "If an account with this email or username exists, a password reset link has been sent." });
     } catch (error: any) {
       console.error("Forgot password error:", error);
-      return res.status(500).json({ message: "Failed to process password reset request" });
+      res.status(500).json({ message: "Failed to process password reset request" });
     }
   });
 
@@ -2402,7 +2404,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       return res.json({ message: "Token is valid", valid: true });
     } catch (error: any) {
       console.error("Verify reset token error:", error);
-      return res.status(500).json({ message: "Failed to verify token", valid: false });
+      res.status(500).json({ message: "Failed to verify token", valid: false });
     }
   });
 
@@ -2436,7 +2438,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       return res.json({ message: "Password has been reset successfully" });
     } catch (error: any) {
       console.error("Reset password error:", error);
-      return res.status(500).json({ message: "Failed to reset password" });
+      res.status(500).json({ message: "Failed to reset password" });
     }
   });
 
@@ -2553,7 +2555,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
     } catch (error: any) {
       console.error("Test endpoint error:", error);
-      return res.status(500).json({ message: "Test failed", error: error.message });
+      res.status(500).json({ message: "Test failed", error: error.message });
     }
   });
 
@@ -2561,14 +2563,14 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   app.post("/api/admin/send-weekly-digest", async (req, res) => {
     try {
       const result = await sendWeeklyDigestEmails();
-      return res.json({ 
+      res.json({ 
         success: true, 
         message: "3-day digest process completed",
         ...result
       });
     } catch (error: any) {
       console.error("3-day digest sending failed:", error);
-      return res.status(500).json({ message: "Failed to send 3-day digest", error: error.message });
+      res.status(500).json({ message: "Failed to send 3-day digest", error: error.message });
     }
   });
 
@@ -2639,10 +2641,10 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const available = !exists;
       
       if (process.env.NODE_ENV === 'development') console.log(`Username check for "${username}" - exists: ${exists}, available: ${available}`);
-      return res.json({ exists, available });
+      res.json({ exists, available });
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Username check error:", error);
-      return res.status(500).json({ message: "Failed to check username availability" });
+      res.status(500).json({ message: "Failed to check username availability" });
     }
   });
 
@@ -2689,10 +2691,10 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         
         await storage.autoJoinUserCityChatrooms(
           user.id, 
-          user.hometownCity || null, 
-          user.hometownCountry || null,
-          travelCity || null,
-          travelCountry || null
+          user.hometownCity, 
+          user.hometownCountry,
+          travelCity,
+          travelCountry
         );
         if (process.env.NODE_ENV === 'development') console.log(`✅ Auto-joined user ${user.id} to their city chatrooms`);
       } catch (error: any) {
@@ -2841,7 +2843,7 @@ Questions? Just reply to this message. Welcome to the community!
           await storage.createConnection({
             requesterId: 2,
             receiverId: user.id,
-
+            status: 'accepted'
           });
           console.log(`✓ PROFILE COMPLETION: Connected user ${user.username} to nearbytrav system account`);
         } catch (error: any) {
@@ -3014,7 +3016,7 @@ Your adventure starts now - dive in and start connecting!
           await storage.createConnection({
             requesterId: 2,
             receiverId: user.id,
-
+            status: 'accepted'
           });
           console.log(`✅ Connection created to nearbytrav account`);
         } catch (error) {
@@ -3027,10 +3029,10 @@ Your adventure starts now - dive in and start connecting!
         console.log(`   userType: ${user.userType}, isCurrentlyTraveling: ${user.isCurrentlyTraveling}`);
       }
       
-      return res.json({ success: true, message: "Bootstrap completed successfully" });
+      res.json({ success: true, message: "Bootstrap completed successfully" });
     } catch (error) {
       console.error("Bootstrap error:", error);
-      return res.status(500).json({ message: "Bootstrap failed", error: error.message });
+      res.status(500).json({ message: "Bootstrap failed", error: error.message });
     }
   });
 
@@ -3647,28 +3649,28 @@ Your adventure starts now - dive in and start connecting!
       // CRITICAL DEBUG: Log all travel-related fields received
       if (process.env.NODE_ENV === 'development') {
         console.log('🔍 TRAVEL PLAN DEBUG - ALL RECEIVED FIELDS:');
-        console.log('  userData.destinationCity:', userData.destinationCity);
+        console.log('  userData.currentTravelCity:', userData.currentTravelCity);
         console.log('  userData.currentCity:', userData.currentCity);
-        console.log('  userData.destinationCountry:', userData.destinationCountry);
-        console.log('  userData.country:', userData.country);
+        console.log('  userData.currentTravelCountry:', userData.currentTravelCountry);
+        console.log('  userData.currentCountry:', userData.currentCountry);
         console.log('  userData.travelDestination:', userData.travelDestination);
-        console.log('  userData.destinationCity:', userData.destinationCity);
-        console.log('  userData.destinationCountry:', userData.destinationCountry);
-        console.log('  userData.destinationCity:', userData.destinationCity);
-        console.log('  userData.destinationState:', userData.destinationState);
-        console.log('  userData.destinationCountry:', userData.destinationCountry);
+        console.log('  userData.travelDestinationCity:', userData.travelDestinationCity);
+        console.log('  userData.travelDestinationCountry:', userData.travelDestinationCountry);
+        console.log('  userData.currentTripDestinationCity:', userData.currentTripDestinationCity);
+        console.log('  userData.currentTripDestinationState:', userData.currentTripDestinationState);
+        console.log('  userData.currentTripDestinationCountry:', userData.currentTripDestinationCountry);
         console.log('  userData.travelStartDate:', userData.travelStartDate);
         console.log('  userData.travelEndDate:', userData.travelEndDate);
-        console.log('  userData.travelEndDate:', userData.travelEndDate);
-        console.log('  userData.travelEndDate:', userData.travelEndDate);
+        console.log('  userData.travelReturnDate:', userData.travelReturnDate);
+        console.log('  userData.currentTripReturnDate:', userData.currentTripReturnDate);
         console.log('  userData.userType:', userData.userType);
         console.log('  userData.isCurrentlyTraveling:', userData.isCurrentlyTraveling);
       }
       
-      const hasCurrentTravel = (userData.destinationCity || userData.currentCity) && (userData.destinationCountry || userData.country);
-      const hasTravelDestination = userData.travelDestination || (userData.destinationCity && userData.destinationCountry) || (userData.destinationCity && userData.destinationCountry);
+      const hasCurrentTravel = (userData.currentTravelCity || userData.currentCity) && (userData.currentTravelCountry || userData.currentCountry);
+      const hasTravelDestination = userData.travelDestination || (userData.travelDestinationCity && userData.travelDestinationCountry) || (userData.currentTripDestinationCity && userData.currentTripDestinationCountry);
       const hasTravelDates = userData.travelStartDate && userData.travelEndDate;
-      const hasReturnDateOnly = userData.travelEndDate || userData.travelEndDate; // For simplified signup
+      const hasReturnDateOnly = userData.travelReturnDate || userData.currentTripReturnDate; // For simplified signup
       const isTraveingUser = userData.userType === 'traveler' || userData.userType === 'currently_traveling' || userData.isCurrentlyTraveling;
       
       // DEBUG CONDITIONS
@@ -3712,9 +3714,9 @@ Your adventure starts now - dive in and start connecting!
           // CRITICAL FIX: Use userData instead of originalData to match condition checks
           // Build destination from all possible field variations
           const tripLocation = userData.travelDestination || [
-            userData.destinationCity || userData.destinationCity || userData.currentCity || userData.destinationCity,
-            userData.destinationState || userData.destinationState || userData.state || userData.destinationState,
-            userData.destinationCountry || userData.destinationCountry || userData.country || userData.destinationCountry
+            userData.currentTravelCity || userData.travelDestinationCity || userData.currentCity || userData.currentTripDestinationCity,
+            userData.currentTravelState || userData.travelDestinationState || userData.currentState || userData.currentTripDestinationState,
+            userData.currentTravelCountry || userData.travelDestinationCountry || userData.currentCountry || userData.currentTripDestinationCountry
           ].filter(Boolean).join(", ");
 
           if (process.env.NODE_ENV === 'development') console.log("CREATING TRAVEL PLAN:", { tripLocation, userId: user.id });
@@ -3724,22 +3726,22 @@ Your adventure starts now - dive in and start connecting!
           if (userData.travelStartDate && userData.travelEndDate) {
             startDate = new Date(userData.travelStartDate);
             endDate = new Date(userData.travelEndDate);
-          } else if (userData.travelEndDate || userData.travelEndDate) {
+          } else if (userData.travelReturnDate || userData.currentTripReturnDate) {
             startDate = new Date(); // Today
-            endDate = new Date(userData.travelEndDate || userData.travelEndDate);
+            endDate = new Date(userData.travelReturnDate || userData.currentTripReturnDate);
           }
 
           const travelPlan = await storage.createTravelPlan({
             userId: user.id,
             destination: tripLocation, // FIXED: Use correct field name for travel plan
-            destinationCity: userData.currentCity || userData.destinationCity || userData.destinationCity,
-            destinationState: userData.state || userData.destinationState || userData.destinationState,  
-            destinationCountry: userData.country || userData.destinationCountry || userData.destinationCountry,
+            destinationCity: userData.currentCity || userData.currentTravelCity || userData.travelDestinationCity,
+            destinationState: userData.currentState || userData.currentTravelState || userData.travelDestinationState,  
+            destinationCountry: userData.currentCountry || userData.currentTravelCountry || userData.travelDestinationCountry,
             startDate,
             endDate,
             activities: [],
             accommodation: null,
-            // Removed budget as it doesn't exist in schema
+            budget: null,
             notes: null
           });
 
@@ -4253,7 +4255,7 @@ Your adventure starts now - dive in and start connecting!
             .values({
               requesterId: parseInt(nearbytravelerUser.id.toString() || '0'),
               receiverId: parseInt(user.id.toString() || '0'),
-  
+              status: 'accepted'
             })
             .returning();
           
@@ -4317,7 +4319,40 @@ Aaron`
   // Registration endpoint
   app.post("/api/register", handleRegistration);
 
-  // REMOVED: Duplicate waitlist endpoint - using the one in waitlist-routes.ts instead
+  // WAITLIST ENDPOINT - for collecting launch leads
+  app.post("/api/waitlist", async (req, res) => {
+    try {
+      const result = insertWaitlistLeadSchema.safeParse(req.body);
+      
+      if (!result.success) {
+        return res.status(400).json({ 
+          message: "Invalid data", 
+          errors: result.error.errors 
+        });
+      }
+
+      const lead = await storage.createWaitlistLead(result.data);
+      
+      console.log(`📧 WAITLIST: New lead added - ${result.data.name} (${result.data.email})`);
+      
+      res.status(201).json({ 
+        message: "Successfully joined waitlist",
+        lead: { name: lead.name, email: lead.email } 
+      });
+    } catch (error: any) {
+      console.error('Error creating waitlist lead:', error);
+      
+      if (error.code === '23505') { // Duplicate email
+        return res.status(409).json({ 
+          message: "This email is already on our waitlist" 
+        });
+      }
+      
+      res.status(500).json({ 
+        message: "Failed to join waitlist. Please try again." 
+      });
+    }
+  });
 
   // MANUAL WELCOME MESSAGE ENDPOINT - for businesses that missed the automatic welcome
   app.post("/api/send-manual-welcome/:userId", async (req, res) => {
@@ -4356,7 +4391,7 @@ Aaron`
             .values({
               requesterId: parseInt(nearbytravelerUser.id.toString() || '0'),
               receiverId: parseInt(user.id.toString() || '0'),
-  
+              status: 'accepted'
             })
             .returning();
           console.log(`✓ Created connection between nearbytraveler and ${user.username}`);
@@ -4388,14 +4423,14 @@ Questions? Just reply to this message. Welcome aboard!
 
       console.log(`✓ Manual welcome message sent to business user ${user.username} (ID: ${user.id})`);
       
-      return res.json({ 
+      res.json({ 
         success: true, 
         message: "Welcome message sent successfully",
         messageId: welcomeMessage.id 
       });
     } catch (error: any) {
       console.error("Error sending manual welcome message:", error);
-      return res.status(500).json({ message: "Failed to send welcome message", error: error.message });
+      res.status(500).json({ message: "Failed to send welcome message", error: error.message });
     }
   });
 
@@ -4602,8 +4637,7 @@ Questions? Just reply to this message. Welcome aboard!
         if (statusList.length > 0) {
           whereConditions.push(or(
             ...statusList.map(status => 
-              // militaryStatus field removed - no longer supported
-              sql`false` // Skip military status filter
+              ilike(users.militaryStatus, `%${status}%`)
             )
           ));
         }
@@ -4689,15 +4723,15 @@ Questions? Just reply to this message. Welcome aboard!
           console.log(`🔍 SEARCH TERM USED: "${search}" (length: ${search.length})`);
           console.log(`🔍 FIRST FEW RESULTS NAME MATCH CHECK:`);
           searchResults.slice(0, 3).forEach(user => {
-            const nameMatch = user.name?.toLowerCase().includes((search as string).toLowerCase());
-            const usernameMatch = user.username?.toLowerCase().includes((search as string).toLowerCase());
-            const bioMatch = user.bio?.toLowerCase().includes((search as string).toLowerCase());
+            const nameMatch = user.name?.toLowerCase().includes(search.toLowerCase());
+            const usernameMatch = user.username?.toLowerCase().includes(search.toLowerCase());
+            const bioMatch = user.bio?.toLowerCase().includes(search.toLowerCase());
             console.log(`  ${user.username}: name="${user.name}" matches=${nameMatch}, username matches=${usernameMatch}, bio matches=${bioMatch}`);
           });
         }
       }
       
-      return res.json({
+      res.json({
         users: searchResults,
         total: searchResults.length,
         page: 1,
@@ -4707,7 +4741,7 @@ Questions? Just reply to this message. Welcome aboard!
       if (process.env.NODE_ENV === 'development') {
         console.error('Error in advanced search:', error);
       }
-      return res.status(500).json({ error: 'Failed to perform advanced search' });
+      res.status(500).json({ error: 'Failed to perform advanced search' });
     }
   });
 
@@ -4927,7 +4961,7 @@ Questions? Just reply to this message. Welcome aboard!
           // Check if city page already exists
           const existingCity = await db.select().from(cityPages)
             .where(and(
-              eq(cityPages.city, cityName),
+              eq(cityPages.cityName, cityName),
               eq(cityPages.state, stateName),
               eq(cityPages.country, countryName)
             )).limit(1);
@@ -4935,7 +4969,7 @@ Questions? Just reply to this message. Welcome aboard!
           if (existingCity.length === 0) {
             // Create city page
             await db.insert(cityPages).values({
-              city: cityName,
+              cityName: cityName,
               state: stateName,
               country: countryName,
               description: `Discover ${cityName} and connect with locals and travelers`,
@@ -5025,7 +5059,7 @@ Questions? Just reply to this message. Welcome aboard!
                   .values({
                     requesterId: nearbytravelerUser.id,
                     receiverId: userId,
-        
+                    status: 'accepted'
                   });
 
                 // Create welcome message
@@ -5272,20 +5306,7 @@ Questions? Just reply to this message. Welcome aboard!
       }));
       
       if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS SEARCH RESULT: ${enrichedUsers.length} users found with travel plans`);
-      
-      // Extract query parameters for filtering
-      const { location, interests, userType, minAge, maxAge, gender, search } = req.query as {
-        location?: string;
-        interests?: string;
-        userType?: string;
-        minAge?: string;
-        maxAge?: string;
-        gender?: string;
-        search?: string;
-      };
-      
-      // Initialize conditions array for filtering
-      const conditions: any[] = [];
+      return res.json(enrichedUsers);
       
       // LOCATION FILTER with LA Metro consolidation
       if (location && typeof location === 'string' && location.trim() !== '' && location !== ', United States') {
@@ -5390,35 +5411,15 @@ Questions? Just reply to this message. Welcome aboard!
         );
       }
       
-      // Apply all conditions - CRITICAL FIX: Initialize base query first
-      let finalUsers;
+      // Apply all conditions - CRITICAL DEBUG
       if (conditions.length > 0) {
-        if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS: Applying ${conditions.length} conditions to fresh query`);
-        // Create fresh query with conditions
-        const query = db.select().from(users).where(and(...conditions));
-        const filteredUsersFromDB = await query;
-        
-        // Enrich filtered users with travel plans
-        finalUsers = await Promise.all(filteredUsersFromDB.map(async (user) => {
-          const userTravelPlans = await db.select().from(travelPlans).where(eq(travelPlans.userId, user.id));
-          
-          const formattedTravelPlans = userTravelPlans.map(plan => ({
-            ...plan,
-            destination: `${plan.destinationCity}${plan.destinationState ? `, ${plan.destinationState}` : ''}, ${plan.destinationCountry}`
-          }));
-          
-          return {
-            ...user,
-            travelPlans: formattedTravelPlans
-          };
-        }));
+        if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS: Applying ${conditions.length} conditions to query`);
+        query = query.where(and(...conditions));
       } else {
-        if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS: NO CONDITIONS - returning ALL enriched users`);
-        // Use the already enriched users from above
-        finalUsers = enrichedUsers;
+        if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS: NO CONDITIONS - returning ALL users (this is the bug!)`);
       }
       
-      const filteredUsers = finalUsers;
+      const filteredUsers = await query;
       
       if (!filteredUsers || filteredUsers.length === 0) {
         if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS SEARCH: No users found with current filters`);
@@ -5662,7 +5663,7 @@ Questions? Just reply to this message. Welcome aboard!
 
       console.log(`📨 PRIVATE SUPPORT MESSAGE: User ${userId} (@${user[0].username}) sent ${category} message about user ${targetUserId} (@${targetUser[0].username})`);
 
-      return res.json({ 
+      res.json({ 
         success: true, 
         message: "Private message sent to support team successfully",
         id: supportMessage[0].id
@@ -5670,7 +5671,7 @@ Questions? Just reply to this message. Welcome aboard!
 
     } catch (error) {
       console.error("❌ Error creating private reference:", error);
-      return res.status(500).json({ error: "Failed to send private message" });
+      res.status(500).json({ error: "Failed to send private message" });
     }
   });
 
@@ -5719,14 +5720,14 @@ Questions? Just reply to this message. Welcome aboard!
 
       console.log(`🚫 BLOCK: User ${blockerId} blocked user ${blockedUserId}`);
 
-      return res.json({ 
+      res.json({ 
         success: true, 
         message: "User blocked successfully" 
       });
 
     } catch (error) {
       console.error("❌ Error blocking user:", error);
-      return res.status(500).json({ error: "Failed to block user" });
+      res.status(500).json({ error: "Failed to block user" });
     }
   });
 
@@ -5752,11 +5753,11 @@ Questions? Just reply to this message. Welcome aboard!
       .where(eq(blockedUsers.blockerId, blockerId))
       .orderBy(desc(blockedUsers.blockedAt));
 
-      return res.json(blocks);
+      res.json(blocks);
 
     } catch (error) {
       console.error("❌ Error fetching blocked users:", error);
-      return res.status(500).json({ error: "Failed to fetch blocked users" });
+      res.status(500).json({ error: "Failed to fetch blocked users" });
     }
   });
 
@@ -5782,14 +5783,14 @@ Questions? Just reply to this message. Welcome aboard!
 
       console.log(`✅ UNBLOCK: User ${blockerId} unblocked user ${blockedUserId}`);
 
-      return res.json({ 
+      res.json({ 
         success: true, 
         message: "User unblocked successfully" 
       });
 
     } catch (error) {
       console.error("❌ Error unblocking user:", error);
-      return res.status(500).json({ error: "Failed to unblock user" });
+      res.status(500).json({ error: "Failed to unblock user" });
     }
   });
 
@@ -5862,7 +5863,7 @@ Questions? Just reply to this message. Welcome aboard!
           // Check if city page already exists
           const existingCity = await db.select().from(cityPages)
             .where(and(
-              eq(cityPages.city, city),
+              eq(cityPages.cityName, city),
               eq(cityPages.state, state),
               eq(cityPages.country, country)
             )).limit(1);
@@ -5870,7 +5871,7 @@ Questions? Just reply to this message. Welcome aboard!
           if (existingCity.length === 0) {
             // Create city page
             await db.insert(cityPages).values({
-              city: city,
+              cityName: city,
               state: state,
               country: country,
               description: `Discover ${city} and connect with locals and travelers`,
@@ -6088,7 +6089,7 @@ Questions? Just reply to this message. Welcome aboard!
       }
       
       // Get remaining travel plans for this user
-      const remainingTravelPlans = await storage.getTravelPlansByUserId(userId);
+      const remainingTravelPlans = await storage.getTravelPlansForUser(userId);
       if (process.env.NODE_ENV === 'development') console.log('=== REMAINING TRAVEL PLANS ===', remainingTravelPlans?.length || 0);
       
       // If user has no remaining travel plans, clear their travel status
@@ -6450,10 +6451,10 @@ Questions? Just reply to this message. Welcome aboard!
         .from(users)
         .where(inArray(users.id, mutualUserIds.map(id => parseInt(id))));
 
-      return res.json(mutualUsers);
+      res.json(mutualUsers);
     } catch (error) {
       console.error('Error fetching mutual connections:', error);
-      return res.status(500).json({ error: 'Failed to fetch mutual connections' });
+      res.status(500).json({ error: 'Failed to fetch mutual connections' });
     }
   });
 
@@ -12541,12 +12542,10 @@ Questions? Just reply to this message. Welcome aboard!
   app.get("/api/chatrooms/:roomId/messages", async (req, res) => {
     try {
       const roomId = parseInt(req.params.roomId || '0');
-      
-      // Use session-based authentication
-      const userId = req.session?.user?.id;
+      const userId = req.headers['x-user-id'];
       
       if (!userId) {
-        return res.status(401).json({ message: "Authentication required - please log in" });
+        return res.status(401).json({ message: "User ID required" });
       }
 
       // 🔒 SECURITY CHECK: Verify user is a member of the chatroom before returning messages
@@ -12556,7 +12555,7 @@ Questions? Just reply to this message. Welcome aboard!
         .where(
           and(
             eq(chatroomMembers.chatroomId, roomId),
-            eq(chatroomMembers.userId, userId),
+            eq(chatroomMembers.userId, parseInt(userId as string)),
             eq(chatroomMembers.isActive, true)
           )
         );
@@ -12593,13 +12592,11 @@ Questions? Just reply to this message. Welcome aboard!
   app.post("/api/chatrooms/:roomId/messages", async (req, res) => {
     try {
       const roomId = parseInt(req.params.roomId || '0');
-      
-      // Use session-based authentication
-      const userId = req.session?.user?.id;
+      const userId = req.headers['x-user-id'];
       const { content } = req.body;
       
       if (!userId) {
-        return res.status(401).json({ message: "Authentication required - please log in" });
+        return res.status(401).json({ message: "User ID required" });
       }
 
       if (!content?.trim()) {
@@ -12613,7 +12610,7 @@ Questions? Just reply to this message. Welcome aboard!
         .where(
           and(
             eq(chatroomMembers.chatroomId, roomId),
-            eq(chatroomMembers.userId, userId),
+            eq(chatroomMembers.userId, parseInt(userId as string)),
             eq(chatroomMembers.isActive, true)
           )
         );
@@ -12625,7 +12622,7 @@ Questions? Just reply to this message. Welcome aboard!
 
       if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM MESSAGE: User ${userId} sending message to chatroom ${roomId}`);
 
-      const message = await storage.createChatroomMessage(roomId, userId, content.trim());
+      const message = await storage.createChatroomMessage(roomId, parseInt(userId as string), content.trim());
       return res.json(message);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error sending chatroom message:", error);
@@ -12940,278 +12937,6 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error creating chatroom:", error);
       res.status(500).json({ message: "Failed to create chatroom" });
-    }
-  });
-
-  // =================
-  // CHATROOM ADMIN API ENDPOINTS
-  // =================
-
-  // Zod schemas for admin action validation
-  const adminRemoveSchema = z.object({
-    targetUserId: z.number().int().positive("Target user ID must be a positive integer")
-  });
-
-  const adminPromoteSchema = z.object({
-    targetUserId: z.number().int().positive("Target user ID must be a positive integer")
-  });
-
-  const adminDemoteSchema = z.object({
-    targetUserId: z.number().int().positive("Target user ID must be a positive integer")
-  });
-
-  const adminTransferSchema = z.object({
-    newOwnerId: z.number().int().positive("New owner ID must be a positive integer")
-  });
-
-  // GET /api/chatrooms/:id/members - List chatroom members with roles
-  app.get("/api/chatrooms/:id/members", async (req, res) => {
-    try {
-      const chatroomId = parseInt(req.params.id || '0');
-      const userId = req.headers['x-user-id'];
-
-      if (!userId) {
-        return res.status(401).json({ message: "User ID required" });
-      }
-
-      if (!chatroomId || isNaN(chatroomId)) {
-        return res.status(400).json({ message: "Valid chatroom ID required" });
-      }
-
-      const userIdInt = parseInt(userId as string);
-
-      // Check if user is a member of the chatroom
-      const userRole = await storage.getMemberRole(chatroomId, userIdInt);
-      if (!userRole) {
-        return res.status(403).json({ message: "You must be a member to view member list" });
-      }
-
-      // Get all members with their roles
-      const members = await db
-        .select({
-          id: users.id,
-          username: users.username,
-          name: users.name,
-          profileImage: users.profileImage,
-          role: chatroomMembers.role,
-          joinedAt: chatroomMembers.joinedAt
-        })
-        .from(chatroomMembers)
-        .leftJoin(users, eq(chatroomMembers.userId, users.id))
-        .where(and(
-          eq(chatroomMembers.chatroomId, chatroomId),
-          eq(chatroomMembers.isActive, true)
-        ))
-        .orderBy(
-          sql`CASE 
-            WHEN ${chatroomMembers.role} = 'owner' THEN 0 
-            WHEN ${chatroomMembers.role} = 'admin' THEN 1 
-            ELSE 2 
-          END`,
-          asc(chatroomMembers.joinedAt)
-        );
-
-      return res.json({
-        success: true,
-        members,
-        userRole
-      });
-
-    } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("Error fetching chatroom members:", error);
-      return res.status(500).json({ message: "Failed to fetch members" });
-    }
-  });
-
-  // POST /api/chatrooms/:id/admin/remove - Remove a member
-  app.post("/api/chatrooms/:id/admin/remove", async (req, res) => {
-    try {
-      const chatroomId = parseInt(req.params.id || '0');
-      const userId = req.headers['x-user-id'];
-
-      if (!userId) {
-        return res.status(401).json({ message: "User ID required" });
-      }
-
-      if (!chatroomId || isNaN(chatroomId)) {
-        return res.status(400).json({ message: "Valid chatroom ID required" });
-      }
-
-      // Validate request body
-      const validation = adminRemoveSchema.safeParse(req.body);
-      if (!validation.success) {
-        return res.status(400).json({ 
-          message: "Invalid request data",
-          errors: validation.error.errors 
-        });
-      }
-
-      const { targetUserId } = validation.data;
-      const actorId = parseInt(userId as string);
-
-      // Use storage method for permission validation and removal
-      const result = await storage.removeChatroomMember(chatroomId, targetUserId, actorId);
-
-      if (!result.success) {
-        // Return appropriate status code based on error message
-        if (result.message.includes("not found") || result.message.includes("not a member")) {
-          return res.status(404).json(result);
-        } else if (result.message.includes("permission") || result.message.includes("cannot")) {
-          return res.status(403).json(result);
-        } else {
-          return res.status(400).json(result);
-        }
-      }
-
-      return res.json(result);
-
-    } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("Error removing chatroom member:", error);
-      return res.status(500).json({ message: "Failed to remove member" });
-    }
-  });
-
-  // POST /api/chatrooms/:id/admin/promote - Promote member to admin
-  app.post("/api/chatrooms/:id/admin/promote", async (req, res) => {
-    try {
-      const chatroomId = parseInt(req.params.id || '0');
-      const userId = req.headers['x-user-id'];
-
-      if (!userId) {
-        return res.status(401).json({ message: "User ID required" });
-      }
-
-      if (!chatroomId || isNaN(chatroomId)) {
-        return res.status(400).json({ message: "Valid chatroom ID required" });
-      }
-
-      // Validate request body
-      const validation = adminPromoteSchema.safeParse(req.body);
-      if (!validation.success) {
-        return res.status(400).json({ 
-          message: "Invalid request data",
-          errors: validation.error.errors 
-        });
-      }
-
-      const { targetUserId } = validation.data;
-      const actorId = parseInt(userId as string);
-
-      // Use storage method for permission validation and promotion
-      const result = await storage.promoteChatroomMember(chatroomId, targetUserId, actorId);
-
-      if (!result.success) {
-        // Return appropriate status code based on error message
-        if (result.message.includes("not found") || result.message.includes("not a member")) {
-          return res.status(404).json(result);
-        } else if (result.message.includes("permission") || result.message.includes("Only owner")) {
-          return res.status(403).json(result);
-        } else {
-          return res.status(400).json(result);
-        }
-      }
-
-      return res.json(result);
-
-    } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("Error promoting chatroom member:", error);
-      return res.status(500).json({ message: "Failed to promote member" });
-    }
-  });
-
-  // POST /api/chatrooms/:id/admin/demote - Demote admin to member
-  app.post("/api/chatrooms/:id/admin/demote", async (req, res) => {
-    try {
-      const chatroomId = parseInt(req.params.id || '0');
-      const userId = req.headers['x-user-id'];
-
-      if (!userId) {
-        return res.status(401).json({ message: "User ID required" });
-      }
-
-      if (!chatroomId || isNaN(chatroomId)) {
-        return res.status(400).json({ message: "Valid chatroom ID required" });
-      }
-
-      // Validate request body
-      const validation = adminDemoteSchema.safeParse(req.body);
-      if (!validation.success) {
-        return res.status(400).json({ 
-          message: "Invalid request data",
-          errors: validation.error.errors 
-        });
-      }
-
-      const { targetUserId } = validation.data;
-      const actorId = parseInt(userId as string);
-
-      // Use storage method for permission validation and demotion
-      const result = await storage.demoteChatroomAdmin(chatroomId, targetUserId, actorId);
-
-      if (!result.success) {
-        // Return appropriate status code based on error message
-        if (result.message.includes("not found") || result.message.includes("not a member")) {
-          return res.status(404).json(result);
-        } else if (result.message.includes("permission") || result.message.includes("Only owner")) {
-          return res.status(403).json(result);
-        } else {
-          return res.status(400).json(result);
-        }
-      }
-
-      return res.json(result);
-
-    } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("Error demoting chatroom admin:", error);
-      return res.status(500).json({ message: "Failed to demote admin" });
-    }
-  });
-
-  // POST /api/chatrooms/:id/admin/transfer - Transfer ownership
-  app.post("/api/chatrooms/:id/admin/transfer", async (req, res) => {
-    try {
-      const chatroomId = parseInt(req.params.id || '0');
-      const userId = req.headers['x-user-id'];
-
-      if (!userId) {
-        return res.status(401).json({ message: "User ID required" });
-      }
-
-      if (!chatroomId || isNaN(chatroomId)) {
-        return res.status(400).json({ message: "Valid chatroom ID required" });
-      }
-
-      // Validate request body
-      const validation = adminTransferSchema.safeParse(req.body);
-      if (!validation.success) {
-        return res.status(400).json({ 
-          message: "Invalid request data",
-          errors: validation.error.errors 
-        });
-      }
-
-      const { newOwnerId } = validation.data;
-      const actorId = parseInt(userId as string);
-
-      // Use storage method for permission validation and ownership transfer
-      const result = await storage.transferChatroomOwnership(chatroomId, newOwnerId, actorId);
-
-      if (!result.success) {
-        // Return appropriate status code based on error message
-        if (result.message.includes("not found") || result.message.includes("not a member")) {
-          return res.status(404).json(result);
-        } else if (result.message.includes("permission") || result.message.includes("Only owner")) {
-          return res.status(403).json(result);
-        } else {
-          return res.status(400).json(result);
-        }
-      }
-
-      return res.json(result);
-
-    } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("Error transferring chatroom ownership:", error);
-      return res.status(500).json({ message: "Failed to transfer ownership" });
     }
   });
 

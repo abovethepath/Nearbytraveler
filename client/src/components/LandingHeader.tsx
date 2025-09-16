@@ -22,7 +22,7 @@ export default function LandingHeader() {
       {/* Desktop announcement bar */}
       <div className="hidden xl:block bg-orange-500 text-black py-3 px-4 text-center">
         <Button
-          onClick={() => setLocation("/launching-soon")}
+          onClick={() => setLocation("/join")}
           className="bg-black text-orange-400 font-bold text-xl px-8 py-3 rounded-xl hover:bg-gray-800 transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg"
         >
           🔥 CONNECT WITH LOCALS & TRAVELERS TODAY!

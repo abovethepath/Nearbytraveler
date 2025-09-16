@@ -22,11 +22,6 @@ self.addEventListener('activate', function(event) {
 });
 
 self.addEventListener('fetch', function(event) {
-  // CRITICAL: Never intercept API calls - let them go directly to server
-  if (event.request.url.includes('/api/')) {
-    return; // Don't intercept API calls at all
-  }
-  
   event.respondWith(
     fetch(event.request, {
       cache: 'no-store',

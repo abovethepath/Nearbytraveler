@@ -182,37 +182,67 @@ export default function CouchsurfingLanding() {
               {/* Match by what you love */}
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
                 <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Match by what you love</h3>
-                <p className="text-zinc-700 dark:text-zinc-300">Interests and activities</p>
+                <p className="text-zinc-700 dark:text-zinc-300">Interests and activities.</p>
               </div>
               
               {/* Headed to the same events */}
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
                 <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Headed to the same events</h3>
-                <p className="text-zinc-700 dark:text-zinc-300">See who's also going to Taylor Swift, Comic-Con, SXSW, and more</p>
+                <p className="text-zinc-700 dark:text-zinc-300">See who's also going to Taylor Swift, Comic-Con, SXSW, and more.</p>
               </div>
               
-              {/* Meet on your terms */}
+              {/* Meet your way */}
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
-                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Meet on your terms</h3>
-                <p className="text-zinc-700 dark:text-zinc-300">Coffee, hikes, shows, markets, bars, the beach</p>
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Meet your way</h3>
+                <p className="text-zinc-700 dark:text-zinc-300">Coffee, hikes, shows, markets, bars, the beach.</p>
               </div>
               
               {/* Real moments, not just messages */}
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
                 <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Real moments, not just messages</h3>
-                <p className="text-zinc-700 dark:text-zinc-300">Share hidden gems and build experiences together</p>
+                <p className="text-zinc-700 dark:text-zinc-300">Share hidden gems and build experiences together.</p>
               </div>
               
               {/* Total flexibility */}
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
                 <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Total flexibility</h3>
-                <p className="text-zinc-700 dark:text-zinc-300">Connect when you want—hosting or not</p>
+                <p className="text-zinc-700 dark:text-zinc-300">Connect when you want—hosting or not.</p>
               </div>
               
               {/* Short on time while hosting? */}
               <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
                 <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Short on time while hosting?</h3>
-                <p className="text-zinc-700 dark:text-zinc-300">Point guests to Nearby Traveler so they can meet others in town</p>
+                <p className="text-zinc-700 dark:text-zinc-300">Point guests to Nearby Traveler so they can meet others in town.</p>
+              </div>
+              
+              {/* Make informed connections */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Make informed connections</h3>
+                <p className="text-zinc-700 dark:text-zinc-300">Check references & vouches, review profiles, and start in public places if you'd like.</p>
+              </div>
+              
+              {/* Broaden who you meet */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Broaden who you meet</h3>
+                <p className="text-zinc-700 dark:text-zinc-300">Business travelers, families, students, digital nomads—people of all ages.</p>
+              </div>
+              
+              {/* Plan ahead, never land cold */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Plan ahead, never land cold</h3>
+                <p className="text-zinc-700 dark:text-zinc-300">Line up intros before you arrive; meet more than one person per city.</p>
+              </div>
+              
+              {/* Local perks */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Local perks</h3>
+                <p className="text-zinc-700 dark:text-zinc-300">Discover traveler-friendly deals from nearby businesses.</p>
+              </div>
+              
+              {/* Stay connected */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-3">Stay connected</h3>
+                <p className="text-zinc-700 dark:text-zinc-300">Reconnect years later with Discover People Nearby.</p>
               </div>
               
             </div>
@@ -225,13 +255,14 @@ export default function CouchsurfingLanding() {
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
               Now We Can All Connect
             </h2>
-            <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-4xl mx-auto leading-relaxed mb-6">
+            <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-4xl mx-auto leading-relaxed">
               Imagine our couchsurfing community expanded to include everyone who shares our values — not just those who can host or surf.
             </p>
-            
-            <p className="text-xl sm:text-2xl font-bold text-zinc-800 dark:text-zinc-200 max-w-4xl mx-auto leading-relaxed">
-              That's millions more genuine connections, friendships, and adventures waiting to happen.
-            </p>
+            <div className="mt-8 max-w-4xl mx-auto">
+              <p className="text-xl sm:text-2xl font-semibold text-zinc-800 dark:text-zinc-200 leading-relaxed">
+                That's millions more genuine connections, friendships, and adventures waiting to happen.
+              </p>
+            </div>
           </div>
           
         </section>
@@ -285,7 +316,7 @@ export default function CouchsurfingLanding() {
                 We Know You've Loved Surfing
               </h2>
               <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-4xl mx-auto leading-relaxed">
-                If you've surfed before, you know the magic: authentic local insights, genuine connections, and the thrill of discovering a place through someone else's eyes. But finding the right hosts and navigating unpredictable situations can be challenging. With Nearby Traveler, you can keep that authentic travel spirit alive with more options and fewer limitations.
+                If you've surfed before, you know the magic: authentic local insights, genuine connections, and the thrill of discovering a place through someone else's eyes. But finding the right hosts and navigating unpredictable situations can be challenging. With Nearby Traveler, you can keep that authentic travel spirit alive with more options and fewer limitations. Plus you can still surf, we love couchsurfing, but now you can expand who you meet outside the limitations of just couchsurfing. Open your world to ALL TRAVELERS.
               </p>
             </div>
           </div>
@@ -302,7 +333,7 @@ export default function CouchsurfingLanding() {
                 Connect with 100% of Travelers
               </h2>
               <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-4xl mx-auto leading-relaxed mb-8">
-                Couchsurfing's hangouts feature was brilliant for last-minute connections. We've expanded that concept — now reach ALL travelers in your city:
+                Couchsurfing's hangouts feature was brilliant for last-minute connections. We've expanded that concept — now reach ALL travelers: those staying in hotels, hostels, Airbnbs, with friends, or anywhere else. Connect with every traveler in your city, not just the small percentage looking for a couch.
               </p>
               
               <Button 
@@ -324,7 +355,7 @@ export default function CouchsurfingLanding() {
                   <Building2 className="w-6 h-6 text-orange-600 mt-1 mr-3 flex-shrink-0" />
                   <div>
                     <h3 className="font-semibold text-zinc-900 dark:text-white mb-2">Hotel & Airbnb Travelers</h3>
-                    <p className="text-zinc-700 dark:text-zinc-300">Connect with travelers who have accommodation but want authentic local experiences</p>
+                    <p className="text-zinc-700 dark:text-zinc-300">Connect with travelers who have accommodation but want authentic local experiences and cultural exchange</p>
                   </div>
                 </div>
               </div>
@@ -334,7 +365,7 @@ export default function CouchsurfingLanding() {
                   <Users className="w-6 h-6 text-red-600 mt-1 mr-3 flex-shrink-0" />
                   <div>
                     <h3 className="font-semibold text-zinc-900 dark:text-white mb-2">Visiting Friends & Family</h3>
-                    <p className="text-zinc-700 dark:text-zinc-300">Meet travelers staying with locals who want to expand their social circle</p>
+                    <p className="text-zinc-700 dark:text-zinc-300">Meet travelers staying with locals who want to expand their social circle and meet new people in the city</p>
                   </div>
                 </div>
               </div>
@@ -344,7 +375,7 @@ export default function CouchsurfingLanding() {
                   <Coffee className="w-6 h-6 text-yellow-600 mt-1 mr-3 flex-shrink-0" />
                   <div>
                     <h3 className="font-semibold text-zinc-900 dark:text-white mb-2">Solo Travelers</h3>
-                    <p className="text-zinc-700 dark:text-zinc-300">Connect with independent travelers seeking authentic local experiences during their journey</p>
+                    <p className="text-zinc-700 dark:text-zinc-300">Connect with independent travelers seeking authentic local experiences and cultural exchange during their journey</p>
                   </div>
                 </div>
               </div>
@@ -354,7 +385,7 @@ export default function CouchsurfingLanding() {
                   <Compass className="w-6 h-6 text-purple-600 mt-1 mr-3 flex-shrink-0" />
                   <div>
                     <h3 className="font-semibold text-zinc-900 dark:text-white mb-2">Digital Nomads</h3>
-                    <p className="text-zinc-700 dark:text-zinc-300">Meet remote workers and long-term travelers who want community connections</p>
+                    <p className="text-zinc-700 dark:text-zinc-300">Meet remote workers and long-term travelers who want community connections wherever they work</p>
                   </div>
                 </div>
               </div>

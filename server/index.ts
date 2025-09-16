@@ -3,7 +3,6 @@ import session from "express-session";
 import helmet from "helmet";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
-import cookieParser from "cookie-parser";
 import { RedisStore } from "connect-redis";
 import { Redis } from "ioredis";
 import { setupVite, serveStatic, log } from "./vite";
@@ -11,9 +10,6 @@ import path from "path";
 import dotenv from "dotenv";
 import { db } from "./db";
 import { users, events, businessOffers, quickMeetups, quickDeals } from "../shared/schema";
-import { setupWaitlistRoutes } from "./waitlist-routes";
-import { getChatroomMembers, promoteMember, demoteAdmin, removeMember, transferOwnership } from "./routes/adminChatrooms";
-import { csrfProtection, getCSRFToken } from "./middleware/csrf";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
 
 // Load environment variables
@@ -61,94 +57,26 @@ app.use((req, res, next) => {
   next();
 });
 
-// HARDENED CORS: strict allowlist of approved domains
-const allowedOrigins = [
-  'http://localhost:5000',
-  'http://localhost:3000', 
-  'http://127.0.0.1:5000', // Development server
-  'http://0.0.0.0:5000',   // Development server
-  'https://nearbytraveler.org',
-  'https://www.nearbytraveler.org',
-  // Replit development domains
-  /\.replit\.dev$/,
-  /\.replit\.app$/,
-  /\.replit\.co$/
-];
+// CORS: simplified for development and production
+app.use((req, _res, next) => {
+  if (process.env.NODE_ENV !== "production") {
+    console.log("Origin:", req.headers.origin);
+  }
+  next();
+});
 
 app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, etc.)
-    if (!origin) return callback(null, true);
-    
-    const isAllowed = allowedOrigins.some(allowed => {
-      if (typeof allowed === 'string') {
-        return origin === allowed;
-      }
-      return allowed.test(origin);
-    });
-    
-    if (isAllowed) {
-      callback(null, true);
-    } else {
-      // In development, be more permissive but log warnings
-      if (process.env.NODE_ENV !== 'production') {
-        console.warn(`⚠️ CORS: Development mode - allowing origin: ${origin}`);
-        return callback(null, true);
-      }
-      console.error(`🔒 CORS: BLOCKED origin in production: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: true, // Allow all origins for now to fix blank page issue
   credentials: true,
   methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
-  allowedHeaders: ["Content-Type","Authorization","X-CSRF-Token"],
+  allowedHeaders: ["Content-Type","Authorization"],
 }));
 
 // REMOVED: Duplicate session middleware - using the one below with Redis support
 
-// ===== CRITICAL SETUP - SESSION FIRST FOR ADMIN ROUTES =====
-console.log('🚀 SETTING UP SESSION MIDDLEWARE FIRST FOR ADMIN ROUTES');
-
-// Essential middleware for API routes
-app.use(cookieParser()); // SECURITY: Required for CSRF protection
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true }));
-
-// CSRF protection for all routes (but only validates tokens on state-changing requests)
-app.use(csrfProtection());
-
-// Configure session middleware with Redis for production - MUST BE BEFORE ADMIN ROUTES
-const redis = process.env.REDIS_URL ? new Redis(process.env.REDIS_URL) : null;
-app.use(session({
-  store: redis ? new RedisStore({ client: redis }) : undefined, // Use Redis if available, fallback to memory store for dev
-  secret: process.env.SESSION_SECRET || 'nearby-traveler-secret-key-dev',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production', // SECURITY: Secure cookies in production
-    httpOnly: true,
-    sameSite: "strict", // SECURITY: Prevent CSRF attacks
-    maxAge: 24 * 60 * 60 * 1000
-  },
-  name: "nt.sid"
-}));
-console.log('✅ SESSION MIDDLEWARE CONFIGURED');
-
-// Setup waitlist routes
-setupWaitlistRoutes(app);
-
-// CSRF token endpoint - must be available before protected routes
-app.get('/api/csrf-token', getCSRFToken);
-console.log('✅ CSRF TOKEN ENDPOINT REGISTERED');
-
-// CRITICAL: Chatroom admin endpoints - now with session support
-console.log('🔧 REGISTERING ISOLATED CHATROOM ADMIN ENDPOINTS');
-app.get('/api/chatrooms/:id/members', getChatroomMembers);
-app.post('/api/chatrooms/:id/admin/promote', promoteMember);
-app.post('/api/chatrooms/:id/admin/demote', demoteAdmin);
-app.post('/api/chatrooms/:id/admin/remove', removeMember);
-app.post('/api/chatrooms/:id/admin/transfer', transferOwnership);
-console.log('✅ CHATROOM ADMIN ENDPOINTS REGISTERED WITH SESSION ACCESS');
+// ===== CRITICAL API ROUTES - MUST BE FIRST TO BYPASS VITE =====
+// Register these API routes BEFORE any other middleware to prevent Vite interception
+console.log('🚀 REGISTERING CRITICAL API ROUTES FIRST TO BYPASS VITE INTERCEPTION');
 
 // REMOVED: This conflicted with the proper filtering endpoint in routes.ts
 // The events endpoint is now handled in routes.ts with proper city filtering
@@ -367,7 +295,21 @@ app.use("/api/", rateLimit({
   legacyHeaders: false
 }));
 
-// Session middleware already configured above for admin routes
+// Configure session middleware with Redis for production
+const redis = process.env.REDIS_URL ? new Redis(process.env.REDIS_URL) : null;
+app.use(session({
+  store: redis ? new RedisStore({ client: redis }) : undefined, // Use Redis if available, fallback to memory store for dev
+  secret: process.env.SESSION_SECRET || 'nearby-traveler-secret-key-dev',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false, // Set to false for mobile compatibility
+    httpOnly: true,
+    sameSite: "lax",
+    maxAge: 24 * 60 * 60 * 1000
+  },
+  name: "nt.sid"
+}));
 
 // CRITICAL FIX: Increase payload limits to prevent 431 "Request Header Fields Too Large" errors
 app.use(express.json({ limit: '50mb' }));
