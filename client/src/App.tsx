@@ -12,9 +12,6 @@ import GlobalHotfixes from "@/GlobalHotfixes";
 import { METRO_AREAS } from "@shared/constants";
 import Home from "@/pages/home";
 import Discover from "@/pages/discover";
-import Profile from "@/pages/profile";
-import ProfileNew from "@/pages/profile-new";
-import ProfileDebug from "@/pages/profile-debug";
 import ProfileComplete from "@/pages/profile-complete";
 import Messages from "@/pages/messages";
 import Events from "@/pages/events";
@@ -944,7 +941,7 @@ function Router() {
 
     if (location.startsWith('/business/')) {
       const businessId = location.split('/')[2];
-      return <Profile userId={parseInt(businessId)} />;
+      return <ProfileComplete userId={businessId} />;
     }
 
     // ✅ CRITICAL FIX: Handle dynamic routes BEFORE the switch statement
@@ -952,7 +949,7 @@ function Router() {
     if (location.startsWith('/profile/')) {
       const userId = parseInt(location.split('/')[2]);
       console.log('🔍 AUTHENTICATED PROFILE ROUTE WITH ID: userId:', userId, 'location:', location);
-      return <Profile userId={userId} />;
+      return <ProfileComplete userId={userId.toString()} />;
     }
 
     switch (location) {
@@ -973,10 +970,7 @@ function Router() {
       case '/profile':
         // USING COMPLETE PROFILE - Has ThingsIWantToDoSection, no cover photo, no travel personality
         return <ProfileComplete />;
-      case '/profile-old':
-        return <Profile />;
-      case '/profile-new':
-        return <ProfileNew />;
+      // OLD PROFILE ROUTES REMOVED - ONLY ProfileComplete EXISTS
       case '/messages':
         return <Messages />;
       case '/meetups':
