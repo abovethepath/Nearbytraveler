@@ -5,7 +5,7 @@ export default function GlobalHotfixes() {
   useEffect(() => {
     // Clear service worker cache to fix alert bug
     const clearCacheOnce = async () => {
-      const cacheCleared = localStorage.getItem('cache-cleared-v3');
+      const cacheCleared = localStorage.getItem('cache-cleared-v4-force');
       if (!cacheCleared) {
         try {
           // Unregister all service workers
@@ -27,7 +27,7 @@ export default function GlobalHotfixes() {
           }
 
           // Mark as cleared
-          localStorage.setItem('cache-cleared-v3', 'true');
+          localStorage.setItem('cache-cleared-v4-force', 'true');
           console.log('🎯 Cache cleared! Refreshing to load fresh code...');
           
           // Hard reload to ensure fresh code
