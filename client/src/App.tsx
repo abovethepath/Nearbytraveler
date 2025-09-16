@@ -120,6 +120,7 @@ import BusinessProfile from "@/pages/business-profile";
 import Deals from "@/pages/deals";
 import Settings from "@/pages/settings";
 import PrivacySettingsPage from "@/pages/privacy-settings";
+import { PitchPreview } from "@/pages/pitch-preview";
 import AdminSettings from "@/pages/admin-settings";
 import SMSTest from "@/pages/sms-test";
 import Welcome from "@/pages/welcome";
@@ -1044,6 +1045,8 @@ function Router() {
         return <Settings />;
       case '/privacy-settings':
         return <PrivacySettingsPage />;
+      case '/pitch-preview':
+        return <PitchPreview />;
       case '/admin-settings':
         return <AdminSettings user={user} />;
       case '/sms-test':
