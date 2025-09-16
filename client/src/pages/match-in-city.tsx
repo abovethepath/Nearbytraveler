@@ -790,6 +790,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
               <p>• <strong>Choose activities you want to do</strong> → Get matched with others who share your interests</p>
               <p>• <strong>Add your own activities</strong> → Help others discover new experiences</p>
               <p>• <strong>Connect with locals & travelers</strong> → Plan meetups and explore together</p>
+              <p>• <strong>Edit or delete outdated activities</strong> → Keep your interests current and relevant</p>
             </div>
           </div>
         </div>
