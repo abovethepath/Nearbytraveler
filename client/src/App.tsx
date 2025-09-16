@@ -119,6 +119,7 @@ import BusinessDashboard from "@/pages/business-dashboard";
 import BusinessProfile from "@/pages/business-profile";
 import Deals from "@/pages/deals";
 import Settings from "@/pages/settings";
+import PrivacySettingsPage from "@/pages/privacy-settings";
 import AdminSettings from "@/pages/admin-settings";
 import SMSTest from "@/pages/sms-test";
 import Welcome from "@/pages/welcome";
@@ -1041,6 +1042,8 @@ function Router() {
         return <UsersPage />;
       case '/settings':
         return <Settings />;
+      case '/privacy-settings':
+        return <PrivacySettingsPage />;
       case '/admin-settings':
         return <AdminSettings user={user} />;
       case '/sms-test':

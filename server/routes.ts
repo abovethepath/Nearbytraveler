@@ -13464,6 +13464,50 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Update user display name preference
+  app.put("/api/users/display-preference", async (req, res) => {
+    try {
+      const userId = (req.session as any)?.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const { displayNamePreference } = req.body;
+
+      // Validate the preference value
+      const validPreferences = ['username', 'first_name', 'full_name'];
+      if (!displayNamePreference || !validPreferences.includes(displayNamePreference)) {
+        return res.status(400).json({ 
+          message: "Invalid display preference. Must be 'username', 'first_name', or 'full_name'" 
+        });
+      }
+
+      // Update the user's display name preference in the database
+      const updatedUser = await db.update(users)
+        .set({ displayNamePreference })
+        .where(eq(users.id, userId))
+        .returning()
+        .then(rows => rows[0]);
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`👤 DISPLAY PREFERENCE: User ${userId} updated preference to '${displayNamePreference}'`);
+      }
+
+      res.json({ 
+        success: true, 
+        message: "Display preference updated successfully",
+        displayNamePreference: updatedUser.displayNamePreference
+      });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error updating display preference:", error);
+      res.status(500).json({ message: "Failed to update display preference" });
+    }
+  });
+
   // Retroactive aura award system - award missing aura for existing users
   // TODO: Implement retroactive aura award system
 

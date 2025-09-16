@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BlockedUsersList } from "@/components/blocked-users-list";
-import { Settings, Shield, Users, Bell, Eye, MapPin, MessageSquare, Camera, Mail, Loader2, X } from "lucide-react";
+import { Settings, Shield, Users, Bell, Eye, MapPin, MessageSquare, Camera, Mail, Loader2, X, User } from "lucide-react";
 import { useAuth } from "@/App";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -140,6 +140,28 @@ export default function SettingsPage() {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   
+                  {/* Display Name Settings */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-base font-medium flex items-center gap-2">
+                        <User className="h-4 w-4" />
+                        Display Name Settings
+                      </Label>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setLocation("/privacy-settings")}
+                        className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                        data-testid="button-privacy-settings"
+                      >
+                        Configure
+                      </Button>
+                    </div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Control how your name appears to others (username, first name, or full name)
+                    </p>
+                  </div>
+
                   {/* Profile Visibility */}
                   <div className="space-y-3">
                     <Label className="text-base font-medium flex items-center gap-2">

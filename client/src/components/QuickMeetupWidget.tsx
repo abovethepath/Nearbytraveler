@@ -539,7 +539,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                             className="object-cover" 
                           />
                           <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-orange-500 text-white font-semibold">
-                            {(meetup.organizerUsername || meetup.organizerPublicName || 'U').charAt(0).toUpperCase()}
+                            {(meetup.organizerPublicName || meetup.organizerUsername || 'U').charAt(0).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
                         <div className="min-w-0 flex-1">
