@@ -3023,7 +3023,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </p>
                 {user?.userType !== 'business' && user?.secretActivities && (
                   <div className="mb-4 p-3 bg-gradient-to-br from-orange-50 to-blue-50 border-l-4 border-orange-200 rounded-r-lg">
-                    <h5 className="font-medium text-black dark:text-black mb-2">Secret things I would do if my closest friends came to town</h5>
+                    <h5 className="font-medium text-black dark:text-black mb-2">
+                      Secret things {isOwnProfile ? "I" : `${user?.name || user?.username || "they"}`} would do if {isOwnProfile ? "my" : "their"} closest friends came to town
+                    </h5>
                     <p className="text-black dark:text-black text-sm italic">
                       {user?.secretActivities}
                     </p>
@@ -4954,7 +4956,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle>
-                      <span className="text-black dark:text-white">Countries I've Visited ({countriesVisited.length})</span>
+                      <span className="text-black dark:text-white">
+                        Countries {isOwnProfile ? "I've" : `${user?.name || user?.username || "They've"} Has`} Visited ({countriesVisited.length})
+                      </span>
                     </CardTitle>
                     {isOwnProfile && !editingCountries && (
                       <Button size="sm" variant="outline" onClick={handleEditCountries}>
@@ -5015,7 +5019,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle>Languages I Speak</CardTitle>
+                  <CardTitle>
+                    Languages {isOwnProfile ? "I" : `${user?.name || user?.username || "They"}`} Speak
+                  </CardTitle>
                   {isOwnProfile && !editingLanguages && (
                     <Button size="sm" variant="outline" onClick={handleEditLanguages}>
                       <Edit className="w-3 h-3" />
