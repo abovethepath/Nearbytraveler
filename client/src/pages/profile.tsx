@@ -45,6 +45,7 @@ import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { calculateAge, formatDateOfBirthForInput, validateDateInput, getDateInputConstraints } from "@/lib/ageUtils";
 import { isTopChoiceInterest } from "@/lib/topChoicesUtils";
 import { BUSINESS_TYPES } from "../../../shared/base-options";
+import { InterestPills } from "@/components/InterestPills";
 
 // Helper function to check if two cities are in the same metro area
 function areInSameMetroArea(city1: string, city2: string): boolean {
@@ -100,13 +101,14 @@ function ThingsInCommonSection({ currentUser, profileUser }: ThingsInCommonSecti
             {sharedInterests.length > 0 && (
               <div>
                 <h6 className="text-sm font-medium text-black mb-2">Shared Interests ({sharedInterests.length})</h6>
-                <div className="flex flex-wrap gap-1">
-                  {sharedInterests.map((interest: string, index: number) => (
-                    <div key={index} className="pill-interests bg-green-100 text-green-800 border-green-200">
-                      {interest}
-                    </div>
-                  ))}
-                </div>
+                <InterestPills 
+                  interests={sharedInterests}
+                  variant="compact"
+                  maxRows={2}
+                  maxVisibleMobile={6}
+                  maxVisibleDesktop={8}
+                  className="bg-green-50 p-2 rounded-lg"
+                />
               </div>
             )}
 
@@ -9340,18 +9342,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <Star className="w-4 h-4" />
                     Top Interests ({selectedTravelPlan.interests.length})
                   </h4>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {selectedTravelPlan.interests.slice(0, 9).map((interest) => (
-                      <div key={interest} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white text-black border border-black appearance-none select-none gap-1.5">
-                        {interest}
-                      </div>
-                    ))}
-                    {selectedTravelPlan.interests.length > 9 && (
-                      <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white text-black border border-black appearance-none select-none gap-1.5">
-                        +{selectedTravelPlan.interests.length - 9} more
-                      </div>
-                    )}
-                  </div>
+                  <InterestPills 
+                    interests={selectedTravelPlan.interests}
+                    variant="compact"
+                    maxRows={3}
+                    maxVisibleMobile={9}
+                    maxVisibleDesktop={12}
+                    className="justify-start"
+                  />
                 </div>
               )}
 
