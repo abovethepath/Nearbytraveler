@@ -3940,12 +3940,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               />
             )}
 
-            {/* City Stats with Chatroom Links */}
-            <CityStatsWidget
-              city={user?.hometownCity || ''}
-              state={user?.hometownState || ''}
-              country={user?.hometownCountry || 'United States'}
-            />
+            {/* City Stats with Chatroom Links - Only show on own profile */}
+            {isOwnProfile && (
+              <CityStatsWidget
+                city={user?.hometownCity || ''}
+                state={user?.hometownState || ''}
+                country={user?.hometownCountry || 'United States'}
+              />
+            )}
 
             {/* Travel Plans - Hidden for business profiles */}
             {user?.userType !== 'business' && (
