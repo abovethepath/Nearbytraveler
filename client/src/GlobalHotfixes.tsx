@@ -3,13 +3,6 @@ import { useEffect } from "react";
 
 export default function GlobalHotfixes() {
   useEffect(() => {
-    // NUCLEAR OPTION: Completely disable all alerts globally
-    console.log('🚫 DISABLING ALL ALERTS GLOBALLY TO FIX BUG');
-    const originalAlert = window.alert;
-    window.alert = (message) => {
-      console.log('🚫 BLOCKED ALERT:', message);
-      // Don't show alert, just log it
-    };
 
     if (document.getElementById("nearby-hotfix")) return;
     const css = `
