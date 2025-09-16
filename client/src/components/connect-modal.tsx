@@ -910,33 +910,42 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                 <div className="grid grid-cols-1 gap-6">
                   {searchResults.map((user) => (
                     <Card key={user.id} className="hover:shadow-2xl transition-all duration-300 cursor-pointer bg-gradient-to-br from-white via-blue-50/30 to-orange-50/30 dark:from-gray-800 dark:via-blue-900/20 dark:to-orange-900/20 border-2 border-transparent hover:border-blue-200 dark:hover:border-blue-600/30 rounded-2xl overflow-hidden">
-                      <CardContent className="p-6">
-                        <div className="flex items-start justify-between">
+                      <CardContent className="p-4 sm:p-6">
+                        {/* Mobile-responsive layout: stack on mobile, side-by-side on desktop */}
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                           <div 
-                            className="flex items-center space-x-6 flex-1 cursor-pointer group"
+                            className="flex flex-col sm:flex-row sm:items-center sm:space-x-6 flex-1 cursor-pointer group space-y-4 sm:space-y-0"
                             onClick={() => handleViewProfile(user.id)}
                           >
-                            <Avatar className="w-16 h-16 ring-4 ring-blue-100 dark:ring-blue-800 group-hover:ring-blue-200 dark:group-hover:ring-blue-700 transition-all">
-                              <AvatarImage src={user.profileImage} alt={user.username} className="object-cover" />
-                              <AvatarFallback className="bg-gradient-to-br from-blue-500 to-orange-500 text-white text-xl font-bold">
-                                {user.username.charAt(0).toUpperCase()}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div className="flex-1">
-                              <h4 className="text-xl font-bold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-gray-900 dark:text-white mb-2">{user.username}</h4>
-                              <p className="text-base text-gray-700 dark:text-gray-300 mb-3 leading-relaxed">{user.bio}</p>
-                              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                            {/* Avatar - centered on mobile, left-aligned on desktop */}
+                            <div className="flex justify-center sm:justify-start">
+                              <Avatar className="w-16 h-16 sm:w-16 sm:h-16 ring-4 ring-blue-100 dark:ring-blue-800 group-hover:ring-blue-200 dark:group-hover:ring-blue-700 transition-all">
+                                <AvatarImage src={user.profileImage} alt={user.username} className="object-cover" />
+                                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-orange-500 text-white text-xl font-bold">
+                                  {user.username.charAt(0).toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                            </div>
+                            
+                            {/* User details - centered on mobile, left-aligned on desktop */}
+                            <div className="flex-1 text-center sm:text-left">
+                              <h4 className="text-lg sm:text-xl font-bold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-gray-900 dark:text-white mb-2">{user.username}</h4>
+                              <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 mb-3 leading-relaxed">{user.bio}</p>
+                              <div className="flex items-center justify-center sm:justify-start gap-2 text-sm text-gray-600 dark:text-gray-400">
                                 <MapPin className="w-4 h-4" />
                                 <span className="font-medium">{user.location}</span>
                               </div>
                             </div>
                           </div>
-                          <div className="flex gap-3">
+                          
+                          {/* Action buttons - full width stack on mobile, side-by-side on desktop */}
+                          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
                             <Button
                               size="lg"
                               variant="outline"
                               onClick={() => handleMessage(user.id)}
-                              className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 hover:from-blue-600 hover:to-blue-700 font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all"
+                              className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 hover:from-blue-600 hover:to-blue-700 font-semibold px-4 sm:px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all w-full sm:w-auto"
+                              data-testid={`button-message-${user.id}`}
                             >
                               <MessageCircle className="w-4 h-4" />
                               Message
@@ -945,7 +954,8 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                               size="lg"
                               onClick={() => handleConnect(user.id)}
                               disabled={connectMutation.isPending}
-                              className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 hover:from-orange-600 hover:to-orange-700 font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all"
+                              className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 hover:from-orange-600 hover:to-orange-700 font-semibold px-4 sm:px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all w-full sm:w-auto"
+                              data-testid={`button-connect-${user.id}`}
                             >
                               <UserPlus className="w-4 h-4" />
                               {connectMutation.isPending ? "Connecting..." : "Connect"}
