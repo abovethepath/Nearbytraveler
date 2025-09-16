@@ -60,6 +60,19 @@ import {
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 
+// Helper function to compute public display name based on user preference
+function computePublicName(displayNamePreference: string, username: string, fullName: string): string {
+  switch (displayNamePreference) {
+    case 'first_name':
+      return fullName?.split(' ')[0] || username;
+    case 'full_name':
+      return fullName || username;
+    case 'username':
+    default:
+      return username;
+  }
+}
+
 // City coordinates helper function - FIXED coordinate lookup
 const getCityCoordinates = (city: string): [number, number] => {
   // Ensure city is a string and handle edge cases
@@ -9989,9 +10002,10 @@ Questions? Just reply to this message. Welcome aboard!
           isActive: quickMeetups.isActive,
           createdAt: quickMeetups.createdAt,
           participantCount: quickMeetups.participantCount,
-          // Select user fields with alias
+          // Select user fields with alias including displayNamePreference
           organizerUsername: users.username,
           organizerName: users.name,
+          organizerDisplayNamePreference: users.displayNamePreference,
           organizerProfileImage: users.profileImage
         })
         .from(quickMeetups)
@@ -10007,7 +10021,11 @@ Questions? Just reply to this message. Welcome aboard!
             id: queryResult[0].id,
             organizerId: queryResult[0].organizerId,
             organizerUsername: queryResult[0].organizerUsername,
-            organizerName: queryResult[0].organizerName,
+            organizerPublicName: computePublicName(
+              queryResult[0].organizerDisplayNamePreference || 'username',
+              queryResult[0].organizerUsername || '',
+              queryResult[0].organizerName || ''
+            ),
             organizerProfileImage: queryResult[0].organizerProfileImage ? 'HAS IMAGE' : 'NO IMAGE'
           });
         }
@@ -10020,7 +10038,11 @@ Questions? Just reply to this message. Welcome aboard!
             id: row.id,
             organizerId: row.organizerId,
             organizerUsername: row.organizerUsername,
-            organizerName: row.organizerName,
+            organizerPublicName: computePublicName(
+              row.organizerDisplayNamePreference || 'username',
+              row.organizerUsername || '',
+              row.organizerName || ''
+            ),
             organizerProfileImage: row.organizerProfileImage ? 'HAS IMAGE' : 'NO IMAGE'
           });
         }
@@ -10044,7 +10066,11 @@ Questions? Just reply to this message. Welcome aboard!
           createdAt: row.createdAt,
           participantCount: row.participantCount,
           organizerUsername: row.organizerUsername,
-          organizerName: row.organizerName,
+          organizerPublicName: computePublicName(
+            row.organizerDisplayNamePreference || 'username',
+            row.organizerUsername || '',
+            row.organizerName || ''
+          ),
           organizerProfileImage: row.organizerProfileImage
         };
       });
@@ -10575,9 +10601,18 @@ Questions? Just reply to this message. Welcome aboard!
 
       console.log(`🔧 QUICK MEETS DEBUG: Using basic query with user join to get organizer info`);
 
-      // Basic query with JOIN to get organizer information
+      // Basic query with JOIN to get organizer information including displayNamePreference
       const queryResult = await db
-        .select()
+        .select({
+          quickMeetups,
+          users: {
+            id: users.id,
+            username: users.username,
+            name: users.name,
+            displayNamePreference: users.displayNamePreference,
+            profileImage: users.profileImage
+          }
+        })
         .from(quickMeetups)
         .leftJoin(users, eq(quickMeetups.organizerId, users.id))
         .limit(20);
@@ -10594,34 +10629,39 @@ Questions? Just reply to this message. Welcome aboard!
       const allMeetups = queryResult.map(row => {
         if (process.env.NODE_ENV === 'development') {
           console.log(`🔧 QUICK MEET ROW DEBUG:`, {
-            id: row.quick_meetups?.id,
-            organizerId: row.quick_meetups?.organizerId,
+            id: row.quickMeetups?.id,
+            organizerId: row.quickMeetups?.organizerId,
             organizerUsername: row.users?.username,
             organizerName: row.users?.name,
+            displayNamePreference: row.users?.displayNamePreference,
             organizerProfileImage: row.users?.profileImage ? 'HAS IMAGE' : 'NO IMAGE'
           });
         }
         
         return {
-          id: row.quick_meetups?.id,
-          organizerId: row.quick_meetups?.organizerId,
-          title: row.quick_meetups?.title,
-          description: row.quick_meetups?.description,
-          meetingPoint: row.quick_meetups?.meetingPoint,
-          street: row.quick_meetups?.street,
-          city: row.quick_meetups?.city,
-          state: row.quick_meetups?.state,
-          zipcode: row.quick_meetups?.zipcode,
-          country: row.quick_meetups?.country,
-          location: row.quick_meetups?.location,
-          availableAt: row.quick_meetups?.availableAt,
-          expiresAt: row.quick_meetups?.expiresAt,
-          duration: row.quick_meetups?.duration,
-          isActive: row.quick_meetups?.isActive,
-          createdAt: row.quick_meetups?.createdAt,
-          participantCount: row.quick_meetups?.participantCount,
+          id: row.quickMeetups?.id,
+          organizerId: row.quickMeetups?.organizerId,
+          title: row.quickMeetups?.title,
+          description: row.quickMeetups?.description,
+          meetingPoint: row.quickMeetups?.meetingPoint,
+          street: row.quickMeetups?.street,
+          city: row.quickMeetups?.city,
+          state: row.quickMeetups?.state,
+          zipcode: row.quickMeetups?.zipcode,
+          country: row.quickMeetups?.country,
+          location: row.quickMeetups?.location,
+          availableAt: row.quickMeetups?.availableAt,
+          expiresAt: row.quickMeetups?.expiresAt,
+          duration: row.quickMeetups?.duration,
+          isActive: row.quickMeetups?.isActive,
+          createdAt: row.quickMeetups?.createdAt,
+          participantCount: row.quickMeetups?.participantCount,
           organizerUsername: row.users?.username,
-          organizerName: row.users?.name,
+          organizerPublicName: row.users ? computePublicName(
+            row.users.displayNamePreference || 'username',
+            row.users.username || '',
+            row.users.name || ''
+          ) : '',
           organizerProfileImage: row.users?.profileImage
         };
       });
