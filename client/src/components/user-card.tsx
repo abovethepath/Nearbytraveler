@@ -1,6 +1,7 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { SimpleAvatar } from "./simple-avatar";
+import { InterestPills } from "./InterestPills";
 
 export interface User {
   id: number;
@@ -180,19 +181,16 @@ export default function UserCard({
           
           {/* Interests */}
           {(user.interests?.length || 0) > 0 && (
-            <div className="flex flex-wrap gap-2 justify-center">
-              {user.interests?.slice(0, 3).map((interest) => (
-                <span 
-                  key={interest} 
-                  className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
-                  data-testid="interest-pill"
-                >
-                  {interest}
-                </span>
-              ))}
-              {(user.interests?.length || 0) > 3 && (
-                <span className="text-xs text-gray-500">+{(user.interests?.length || 0) - 3} more</span>
-              )}
+            <div className="flex justify-center">
+              <InterestPills 
+                interests={user.interests || []}
+                variant="card"
+                maxVisibleMobile={3}
+                maxVisibleDesktop={4}
+                prioritizedInterests={compatibilityData?.sharedInterests || []}
+                showCommonCount={!!(compatibilityData?.sharedInterests?.length)}
+                className="w-full justify-center"
+              />
             </div>
           )}
         </div>

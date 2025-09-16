@@ -17,6 +17,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { authStorage } from "@/lib/auth";
 import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, getAllActivities, getAllEvents, getPrivateInterests } from "@shared/base-options";
 import { GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS, MILITARY_STATUS_OPTIONS } from "@/lib/formConstants";
+import { InterestPills } from "@/components/InterestPills";
 
 interface AdvancedSearchWidgetProps {
   open: boolean;
@@ -734,18 +735,13 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                           )}
                           {/* Interests Preview */}
                           {user.interests && user.interests.length > 0 && (
-                            <div className="flex flex-wrap gap-1 mb-3">
-                              {user.interests.slice(0, 3).map((interest, index) => (
-                                <Badge key={index} variant="outline" className="text-xs">
-                                  {interest}
-                                </Badge>
-                              ))}
-                              {user.interests.length > 3 && (
-                                <Badge variant="outline" className="text-xs">
-                                  +{user.interests.length - 3} more
-                                </Badge>
-                              )}
-                            </div>
+                            <InterestPills 
+                              interests={user.interests}
+                              variant="card"
+                              maxVisibleMobile={3}
+                              maxVisibleDesktop={5}
+                              className="mb-3"
+                            />
                           )}
                         </div>
                         
