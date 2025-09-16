@@ -283,6 +283,28 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
             </div>
           </div>
 
+          {/* Search CTA Button */}
+          <div className="text-center">
+            <Button 
+              onClick={handleAdvancedSearch}
+              disabled={isAdvancedSearching}
+              className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white py-3 px-8 rounded-xl font-semibold text-lg shadow-lg transition-all duration-200 transform hover:scale-105"
+              data-testid="button-search-top"
+            >
+              {isAdvancedSearching ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                  Searching...
+                </>
+              ) : (
+                <>
+                  <Search className="w-5 h-5 mr-2" />
+                  Search Now
+                </>
+              )}
+            </Button>
+          </div>
+
           {/* Collapsible Filters */}
           <div className="space-y-4">
             {/* Top Choices Filter */}
