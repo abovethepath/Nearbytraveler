@@ -108,82 +108,49 @@ export class TravelMatchingService {
   ): Promise<MatchScore> {
     const reasons: string[] = [];
     let totalScore = 0;
-    const maxScore = 140; // Updated max score: 25 (interests) + 15 (activities) + 10 (events) + 20 (location) + 15 (dates) + 10 (user type) + 5 (travel style) + 15 (travel intent) + 5 (sexual preferences) + 5 (family status) + 5 (veteran status) + 5 (age) + 5 (languages)
+    const maxScore = 100; // Simplified to 100 for intuitive percentages
 
-    // Interest compatibility (25 points max)
-    const interestScore = this.calculateInterestCompatibility(user1, user2);
-    totalScore += interestScore.score;
-    reasons.push(...interestScore.reasons);
+    // Calculate shared items for intuitive matching
+    const sharedInterests = this.getSharedInterests(user1, user2);
+    const sharedActivities = this.getSharedActivities(user1, user2);
+    const sharedEvents = await this.getSharedEvents(user1, user2);
+    const totalSharedItems = sharedInterests.length + sharedActivities.length + sharedEvents.length;
 
-    // Activity compatibility (15 points max)
-    const activityScore = this.calculateActivityCompatibility(user1, user2);
-    totalScore += activityScore.score;
-    reasons.push(...activityScore.reasons);
+    // Core compatibility scoring - much simpler and more intuitive
+    // Base score from shared interests, activities, events (70 points max)
+    const baseScore = Math.min(totalSharedItems * 3, 70); // Each shared thing = 3 points
+    totalScore += baseScore;
+    
+    if (totalSharedItems > 0) {
+      reasons.push(`${totalSharedItems} things in common`);
+      if (sharedInterests.length > 0) {
+        reasons.push(`${sharedInterests.length} shared interests: ${sharedInterests.slice(0, 3).join(', ')}`);
+      }
+      if (sharedActivities.length > 0) {
+        reasons.push(`${sharedActivities.length} shared activities: ${sharedActivities.slice(0, 3).join(', ')}`);
+      }
+      if (sharedEvents.length > 0) {
+        reasons.push(`${sharedEvents.length} shared events: ${sharedEvents.slice(0, 3).join(', ')}`);
+      }
+    }
 
-    // Event compatibility (10 points max)
-    const eventScore = await this.calculateEventCompatibility(user1, user2);
-    totalScore += eventScore.score;
-    reasons.push(...eventScore.reasons);
-
-    // Location/destination overlap (20 points max - reduced for higher percentages)
+    // Location bonus (15 points max)
     const locationScore = this.calculateLocationCompatibility(
       user1Plans, 
       user2Plans, 
       preferences?.destination
     );
-    totalScore += Math.min(locationScore.score * 0.67, 20); // Scale down location weight
+    totalScore += Math.min(locationScore.score * 0.5, 15); // Reduced weight
     reasons.push(...locationScore.reasons);
 
-    // Date overlap (15 points max - reduced for higher percentages)
-    const dateScore = this.calculateDateCompatibility(
-      user1Plans, 
-      user2Plans, 
-      preferences?.startDate, 
-      preferences?.endDate
-    );
-    totalScore += Math.min(dateScore.score * 0.6, 15); // Scale down date weight
-    reasons.push(...dateScore.reasons);
-
-    // User type compatibility (10 points max)
+    // User type compatibility bonus (10 points max)
     const userTypeScore = this.calculateUserTypeCompatibility(user1, user2);
-    totalScore += userTypeScore.score;
+    totalScore += Math.min(userTypeScore.score, 10);
     reasons.push(...userTypeScore.reasons);
 
-    // Travel style compatibility (5 points max - reduced for higher percentages)
-    const travelStyleScore = this.calculateTravelStyleCompatibility(user1, user2);
-    totalScore += Math.min(travelStyleScore.score * 0.5, 5); // Scale down travel style weight
-    reasons.push(...travelStyleScore.reasons);
-
-    // Travel intent compatibility (15 points max - NEW)
-    const travelIntentScore = this.calculateTravelIntentCompatibility(user1, user2);
-    totalScore += travelIntentScore.score;
-    reasons.push(...travelIntentScore.reasons);
-
-    // Sexual preference compatibility (5 points max - NEW)
-    const sexualPreferenceScore = this.calculateSexualPreferenceCompatibility(user1, user2);
-    totalScore += sexualPreferenceScore.score;
-    reasons.push(...sexualPreferenceScore.reasons);
-
-    // Family status compatibility (5 points max - NEW)
-    const familyStatusScore = this.calculateFamilyStatusCompatibility(user1, user2);
-    totalScore += familyStatusScore.score;
-    if (familyStatusScore.reasons.length > 0) {
-      reasons.push(...familyStatusScore.reasons);
-    }
-
-    // Veteran status compatibility (5 points max - NEW)
-    const veteranStatusScore = this.calculateVeteranStatusCompatibility(user1, user2);
-    totalScore += veteranStatusScore.score;
-    reasons.push(...veteranStatusScore.reasons);
-
-    // Age compatibility (5 points max - NEW)
-    const ageScore = this.calculateAgeCompatibility(user1, user2);
-    totalScore += ageScore.score;
-    reasons.push(...ageScore.reasons);
-
-    // Language compatibility (5 points max - NEW)
+    // Small bonuses for other compatibility factors (5 points max combined)
     const languageScore = this.calculateLanguageCompatibility(user1, user2);
-    totalScore += languageScore.score;
+    totalScore += Math.min(languageScore.score * 0.5, 5);
     reasons.push(...languageScore.reasons);
 
     const normalizedScore = Math.min(totalScore / maxScore, 1);
@@ -193,19 +160,19 @@ export class TravelMatchingService {
       score: normalizedScore,
       reasons: reasons.filter(r => r.length > 0),
       compatibilityLevel: this.getCompatibilityLevel(normalizedScore),
-      sharedInterests: this.getSharedInterests(user1, user2),
-      sharedActivities: this.getSharedActivities(user1, user2),
-      sharedEvents: await this.getSharedEvents(user1, user2),
+      sharedInterests: sharedInterests,
+      sharedActivities: sharedActivities,
+      sharedEvents: sharedEvents,
       sharedTravelIntent: this.getSharedTravelIntent(user1, user2),
       sharedSexualPreferences: this.getSharedSexualPreferences(user1, user2),
       locationOverlap: locationScore.hasOverlap,
-      dateOverlap: dateScore.hasOverlap,
+      dateOverlap: false, // Simplified for now
       userTypeCompatibility: userTypeScore.isCompatible,
-      travelIntentCompatibility: travelIntentScore.isCompatible,
-      bothVeterans: veteranStatusScore.bothVeterans,
-      bothActiveDuty: veteranStatusScore.bothActiveDuty,
-      sameFamilyStatus: familyStatusScore.sameFamilyStatus,
-      sameAge: ageScore.sameAge,
+      travelIntentCompatibility: true, // Simplified for now  
+      bothVeterans: false, // Simplified for now
+      bothActiveDuty: false, // Simplified for now
+      sameFamilyStatus: false, // Simplified for now
+      sameAge: false, // Simplified for now
       sameGender: this.haveSameGender(user1, user2),
       sharedLanguages: this.getSharedLanguages(user1, user2),
       sharedCountries: this.getSharedCountries(user1, user2)
@@ -1096,7 +1063,7 @@ export class TravelMatchingService {
       reasons.push(...activityScore.reasons);
       
       // Event compatibility (10 points max)
-      const eventScore = this.calculateEventCompatibility(user1, user2);
+      const eventScore = await this.calculateEventCompatibility(user1, user2);
       totalScore += eventScore.score;
       reasons.push(...eventScore.reasons);
       
