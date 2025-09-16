@@ -3054,7 +3054,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       {user?.userType === 'business' 
                         ? (user?.location || user?.hometownCity || "Los Angeles, CA")
                         : (() => {
-                            const parts = [user?.hometownCity, user?.hometownState, user?.hometownCountry].filter(Boolean);
+                            const parts = [user?.hometownCity, user?.hometownState, user?.hometownCountry]
+                              .filter(Boolean)
+                              .filter((part, index, arr) => index === 0 || part !== arr[index - 1]); // Remove consecutive duplicates
                             return parts.length > 0 ? parts.join(', ') : "Not specified";
                           })()
                       }
