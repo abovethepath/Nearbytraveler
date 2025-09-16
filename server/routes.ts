@@ -58,6 +58,7 @@ import {
   insertWaitlistLeadSchema
 } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
 
 // City coordinates helper function - FIXED coordinate lookup
 const getCityCoordinates = (city: string): [number, number] => {
@@ -6506,30 +6507,23 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // CRITICAL: Get ALL messages for user (needed for full conversation history)
+  // CRITICAL: Get ALL messages for user (needed for full conversation history) with JOIN for user data
   app.get("/api/messages/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId || '0');
       
-      // Get ALL messages for this user (both sent and received)
-      const allMessages = await db
-        .select({
-          id: messages.id,
-          senderId: messages.senderId,
-          receiverId: messages.receiverId,
-          content: messages.content,
-          messageType: messages.messageType,
-          isRead: messages.isRead,
-          createdAt: messages.createdAt,
-          // Add a field to identify the other person in the conversation
-          otherPersonId: sql<number>`
-            CASE 
-              WHEN ${messages.senderId} = ${userId} THEN ${messages.receiverId}
-              ELSE ${messages.senderId}
-            END
-          `
-        })
+      if (process.env.NODE_ENV === 'development') console.log(`📧 MESSAGES: Fetching all messages for user ${userId} with JOIN for user data`);
+      
+      // Create proper table aliases for sender and receiver users
+      const senderUser = alias(users, 'sender_user');
+      const receiverUser = alias(users, 'receiver_user');
+      
+      // Get ALL messages for this user (both sent and received) with JOINed user data
+      const queryResult = await db
+        .select()
         .from(messages)
+        .leftJoin(senderUser, eq(messages.senderId, senderUser.id))
+        .leftJoin(receiverUser, eq(messages.receiverId, receiverUser.id))
         .where(
           or(
             eq(messages.senderId, userId),
@@ -6537,6 +6531,60 @@ Questions? Just reply to this message. Welcome aboard!
           )
         )
         .orderBy(desc(messages.createdAt));
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`📧 MESSAGES: Found ${queryResult.length} messages for user ${userId}`);
+        if (queryResult.length > 0) {
+          console.log(`📧 MESSAGES FIRST RESULT KEYS:`, Object.keys(queryResult[0]));
+          console.log(`📧 MESSAGES RAW SAMPLE:`, JSON.stringify(queryResult[0], null, 2));
+        }
+      }
+
+      // Transform the joined data to include embedded user objects
+      const allMessages = queryResult.map(row => {
+        const messageData = row.messages;
+        const senderData = row.sender_user;
+        const receiverData = row.receiver_user;
+        
+        return {
+          id: messageData?.id,
+          senderId: messageData?.senderId,
+          receiverId: messageData?.receiverId,
+          content: messageData?.content,
+          messageType: messageData?.messageType,
+          isRead: messageData?.isRead,
+          createdAt: messageData?.createdAt,
+          // Add a field to identify the other person in the conversation
+          otherPersonId: messageData?.senderId === userId ? messageData?.receiverId : messageData?.senderId,
+          // Include embedded sender user data
+          senderUser: {
+            id: senderData?.id,
+            username: senderData?.username,
+            name: senderData?.name,
+            profileImage: senderData?.profileImage
+          },
+          // Include embedded receiver user data
+          receiverUser: {
+            id: receiverData?.id,
+            username: receiverData?.username,
+            name: receiverData?.name,
+            profileImage: receiverData?.profileImage
+          }
+        };
+      });
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`📧 MESSAGES: Transformed ${allMessages.length} messages with user data`);
+        if (allMessages.length > 0) {
+          console.log(`📧 MESSAGES SAMPLE:`, {
+            id: allMessages[0].id,
+            senderId: allMessages[0].senderId,
+            receiverId: allMessages[0].receiverId,
+            senderUser: allMessages[0].senderUser,
+            receiverUser: allMessages[0].receiverUser
+          });
+        }
+      }
 
       return res.json(allMessages || []);
     } catch (error: any) {
