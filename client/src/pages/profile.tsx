@@ -2951,12 +2951,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       Create Instant Deal
                     </Button>
                   </div>
-                ) : (
-                  // Show QuickMeetupWidget for travelers/locals - same as home page
-                  <div className="mt-6">
-                    <QuickMeetupWidget city={user?.hometownCity || ''} />
-                  </div>
-                )}
+                ) : null}
               </div>
             )}
 
@@ -4770,8 +4765,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 {/* Main content can go here in future if needed */}
               </div>
               
-              {/* Right Sidebar - References and Vouch */}
+              {/* Right Sidebar - Quick Actions, References and Vouch */}
               <div className="lg:col-span-1 space-y-4">
+                {/* Quick Meetup Widget - Let's Meet Now (for non-business users) */}
+                {isOwnProfile && user?.userType !== 'business' && (
+                  <QuickMeetupWidget city={user?.hometownCity || ''} />
+                )}
+                
                 {/* References Widget */}
                 {user?.id && (
                   <ReferencesWidgetNew userId={user.id} />

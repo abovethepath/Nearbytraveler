@@ -6312,60 +6312,42 @@ Questions? Just reply to this message. Welcome aboard!
     try {
       const userId = parseInt(req.params.userId || '0');
       
-      // Get connections with full user details
-      const connectionsWithUsers = await db
-        .select({
-          id: connections.id,
-          status: connections.status,
-          createdAt: connections.createdAt,
-          connectionNote: connections.connectionNote,
-          // Get the connected user's details (not the requesting user)
-          userId: sql`
-            CASE 
-              WHEN ${connections.requesterId} = ${userId} THEN ${connections.receiverId}
-              ELSE ${connections.requesterId}
-            END
-          `,
-          username: sql`
-            CASE 
-              WHEN ${connections.requesterId} = ${userId} THEN ${users.username}
-              ELSE requester.username
-            END
-          `,
-          name: sql`
-            CASE 
-              WHEN ${connections.requesterId} = ${userId} THEN ${users.name}
-              ELSE requester.name
-            END
-          `,
-          profileImage: sql`
-            CASE 
-              WHEN ${connections.requesterId} = ${userId} THEN ${users.profileImage}
-              ELSE requester.profile_image
-            END
-          `,
-          location: sql`
-            CASE 
-              WHEN ${connections.requesterId} = ${userId} THEN ${users.location}
-              ELSE requester.location
-            END
-          `
-        })
-        .from(connections)
-        .leftJoin(users, eq(connections.receiverId, users.id))
-        .leftJoin(sql`users AS requester`, sql`${connections.requesterId} = requester.id`)
-        .where(
-          and(
-            eq(connections.status, 'accepted'),
-            or(
-              eq(connections.requesterId, userId),
-              eq(connections.receiverId, userId)
-            )
-          )
-        );
+      // Get connections with full user details using proper joins
+      const connectionsWithUsers = await db.execute(sql`
+        SELECT 
+          c.id,
+          c.status,
+          c.created_at as "createdAt",
+          c.connection_note as "connectionNote",
+          CASE 
+            WHEN c.requester_id = ${userId} THEN c.receiver_id
+            ELSE c.requester_id
+          END as "userId",
+          CASE 
+            WHEN c.requester_id = ${userId} THEN receiver.username
+            ELSE requester.username
+          END as username,
+          CASE 
+            WHEN c.requester_id = ${userId} THEN receiver.name
+            ELSE requester.name
+          END as name,
+          CASE 
+            WHEN c.requester_id = ${userId} THEN receiver.profile_image
+            ELSE requester.profile_image
+          END as "profileImage",
+          CASE 
+            WHEN c.requester_id = ${userId} THEN receiver.location
+            ELSE requester.location
+          END as location
+        FROM connections c
+        LEFT JOIN users receiver ON c.receiver_id = receiver.id
+        LEFT JOIN users requester ON c.requester_id = requester.id
+        WHERE c.status = 'accepted' 
+        AND (c.requester_id = ${userId} OR c.receiver_id = ${userId})
+      `);
 
       // Transform the connections to include connectedUser object (required by frontend)
-      const transformedConnections = connectionsWithUsers.map((conn: any) => ({
+      const transformedConnections = connectionsWithUsers.rows.map((conn: any) => ({
         id: conn.id,
         status: conn.status,
         createdAt: conn.createdAt,
