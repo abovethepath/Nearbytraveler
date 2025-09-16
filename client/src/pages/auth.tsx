@@ -57,9 +57,33 @@ export default function Auth() {
     setIsLoading(true);
     console.log('Starting login request...');
     try {
+      // First fetch CSRF token
+      let csrfToken = null;
+      try {
+        const csrfResponse = await fetch('/api/csrf-token', {
+          credentials: 'include'
+        });
+        if (csrfResponse.ok) {
+          const csrfData = await csrfResponse.json();
+          csrfToken = csrfData.token;
+          console.log('CSRF token obtained for login');
+        }
+      } catch (csrfError) {
+        console.warn('Could not get CSRF token:', csrfError);
+      }
+
+      // Prepare headers
+      const headers: Record<string, string> = { 
+        'Content-Type': 'application/json'
+      };
+      if (csrfToken) {
+        headers['X-CSRF-Token'] = csrfToken;
+      }
+
       const response = await fetch('/api/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
+        credentials: 'include',
         body: JSON.stringify({ email: formData.email.toLowerCase().trim(), password: formData.password }),
       });
 
@@ -147,9 +171,33 @@ export default function Auth() {
     setIsLoading(true);
     console.log('Starting signup request...');
     try {
+      // First fetch CSRF token
+      let csrfToken = null;
+      try {
+        const csrfResponse = await fetch('/api/csrf-token', {
+          credentials: 'include'
+        });
+        if (csrfResponse.ok) {
+          const csrfData = await csrfResponse.json();
+          csrfToken = csrfData.token;
+          console.log('CSRF token obtained for signup');
+        }
+      } catch (csrfError) {
+        console.warn('Could not get CSRF token:', csrfError);
+      }
+
+      // Prepare headers
+      const headers: Record<string, string> = { 
+        'Content-Type': 'application/json'
+      };
+      if (csrfToken) {
+        headers['X-CSRF-Token'] = csrfToken;
+      }
+
       const response = await fetch('/api/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
+        credentials: 'include',
         body: JSON.stringify({
           email: formData.email.toLowerCase().trim(),
           password: formData.password,
