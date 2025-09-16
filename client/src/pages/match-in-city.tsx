@@ -853,8 +853,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                   : 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white border-blue-300 shadow-blue-200 hover:from-blue-600 hover:to-indigo-700'
                               }`}
                               onClick={() => {
-                                console.log('🚀 PILL CLICKED!', activity.activityName);
-                                alert('PILL CLICKED: ' + activity.activityName);
                                 handleToggleActivity(activity.id, activity.activityName);
                               }}
                               onMouseDown={(e) => {
