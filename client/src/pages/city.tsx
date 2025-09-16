@@ -392,7 +392,20 @@ export default function CityPage({ cityName }: CityPageProps) {
                   <>
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
                       {displayedUsers.map((user: User) => (
-                        <UserCard key={user.id} user={user} searchLocation={decodedCityName} />
+                        <UserCard 
+                          key={user.id} 
+                          user={{
+                            ...user, 
+                            bio: user.bio || "",
+                            location: user.location || "",
+                            hometownCity: user.hometownCity || "",
+                            hometownState: user.hometownState || "",
+                            hometownCountry: user.hometownCountry || "",
+                            profileImage: user.profileImage || "",
+                            interests: user.interests || []
+                          }} 
+                          searchLocation={decodedCityName} 
+                        />
                       ))}
                     </div>
                     
