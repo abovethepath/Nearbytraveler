@@ -33,6 +33,7 @@ export const users = pgTable("users", {
   gender: text("gender"), // 'male', 'female', 'non-binary', 'prefer-not-to-say'
   sexualPreference: text("sexual_preference").array(), // Array of preferences: 'straight', 'gay', 'lesbian', 'bisexual', 'pansexual', 'asexual', 'prefer-not-to-say'
   sexualPreferenceVisible: boolean("sexual_preference_visible").default(false),
+  displayNamePreference: text("display_name_preference").notNull().default("username"), // 'username', 'first_name', 'full_name'
   isCurrentlyTraveling: boolean("is_currently_traveling").default(false),
   travelDestination: text("travel_destination"),
   travelStartDate: timestamp("travel_start_date"),
