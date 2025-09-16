@@ -89,7 +89,7 @@ export default function UserCard({
             <SimpleAvatar 
               user={user} 
               size="lg" 
-              className="border-2 sm:border-4 border-gray-200 dark:border-gray-600 shadow-lg w-16 h-16 sm:w-18 sm:h-18"
+              className="border-2 sm:border-4 border-gray-200 dark:border-gray-600 shadow-lg w-24 h-24 sm:w-28 sm:h-28"
             />
           </div>
           
