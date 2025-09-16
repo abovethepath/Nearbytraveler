@@ -936,8 +936,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                               : 'bg-gradient-to-r from-gray-50 to-white text-gray-700 border-gray-200 hover:border-blue-300 hover:shadow-blue-100'
                           }`}
                           onClick={async () => {
-                            console.log('🎯 UNIVERSAL ACTIVITY CLICKED!', activity);
-                            alert('UNIVERSAL ACTIVITY: ' + activity);
                             
                             // Create this as a city activity if it doesn't exist, then toggle
                             try {
