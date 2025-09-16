@@ -833,7 +833,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
               {/* Dynamic City Activities - Universal + City-Specific + AI */}
               <div className="space-y-8">
                 {/* Show activities for selected city */}
-                {cityActivities.length > 0 ? (
+                {cityActivities.length > 0 && (
                   <div>
                     <div className="text-center mb-6">
                       <h3 className="text-2xl font-bold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent mb-2">{selectedCity}</h3>
