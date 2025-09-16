@@ -676,7 +676,9 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   {/* Content - EXACTLY like original screenshots */}
                   <div className="absolute inset-0 p-6 flex flex-col justify-end text-white">
                     <h3 className="text-xl font-bold mb-2 drop-shadow-lg">{city.city}</h3>
-                    <p className="text-sm opacity-90 drop-shadow-lg">{city.state}, {city.country}</p>
+                    <p className="text-sm opacity-90 drop-shadow-lg">
+                      {city.state ? `${city.state}, ${city.country}` : city.country}
+                    </p>
                     
                     {/* Match button like in screenshots */}
                     <div className="mt-3">
