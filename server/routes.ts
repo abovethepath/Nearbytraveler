@@ -5390,15 +5390,35 @@ Questions? Just reply to this message. Welcome aboard!
         );
       }
       
-      // Apply all conditions - CRITICAL DEBUG
+      // Apply all conditions - CRITICAL FIX: Initialize base query first
+      let finalUsers;
       if (conditions.length > 0) {
-        if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS: Applying ${conditions.length} conditions to query`);
-        query = query.where(and(...conditions));
+        if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS: Applying ${conditions.length} conditions to fresh query`);
+        // Create fresh query with conditions
+        const query = db.select().from(users).where(and(...conditions));
+        const filteredUsersFromDB = await query;
+        
+        // Enrich filtered users with travel plans
+        finalUsers = await Promise.all(filteredUsersFromDB.map(async (user) => {
+          const userTravelPlans = await db.select().from(travelPlans).where(eq(travelPlans.userId, user.id));
+          
+          const formattedTravelPlans = userTravelPlans.map(plan => ({
+            ...plan,
+            destination: `${plan.destinationCity}${plan.destinationState ? `, ${plan.destinationState}` : ''}, ${plan.destinationCountry}`
+          }));
+          
+          return {
+            ...user,
+            travelPlans: formattedTravelPlans
+          };
+        }));
       } else {
-        if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS: NO CONDITIONS - returning ALL users (this is the bug!)`);
+        if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS: NO CONDITIONS - returning ALL enriched users`);
+        // Use the already enriched users from above
+        finalUsers = enrichedUsers;
       }
       
-      const filteredUsers = await query;
+      const filteredUsers = finalUsers;
       
       if (!filteredUsers || filteredUsers.length === 0) {
         if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS SEARCH: No users found with current filters`);
