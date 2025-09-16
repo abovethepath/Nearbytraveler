@@ -135,8 +135,13 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
       const now = new Date();
       let expireHours = 1; // default 1 hour
       switch (meetupData.responseTime) {
+        case '1hour': expireHours = 1; break;
+        case '2hours': expireHours = 2; break;
+        case '3hours': expireHours = 3; break;
+        case '6hours': expireHours = 6; break;
+        case '12hours': expireHours = 12; break;
         case '24hours': expireHours = 24; break;
-        default: expireHours = 24;
+        default: expireHours = 1; // default to 1 hour instead of 24
       }
       const expiresAt = new Date(now.getTime() + (expireHours * 60 * 60 * 1000));
 
@@ -189,7 +194,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
         state: actualUser?.hometownState || '',
         country: actualUser?.hometownCountry || 'United States',
         zipcode: '',
-        responseTime: '24hours'
+        responseTime: '1hour'
       });
       toast({
         title: "Quick Meetup Posted!",
@@ -358,7 +363,12 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                     <SelectValue placeholder="Available for how long?" />
                   </SelectTrigger>
                   <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
-                    <SelectItem value="24hours">⏰ Expires today</SelectItem>
+                    <SelectItem value="1hour">⏰ 1 hour</SelectItem>
+                    <SelectItem value="2hours">⏰ 2 hours</SelectItem>
+                    <SelectItem value="3hours">⏰ 3 hours</SelectItem>
+                    <SelectItem value="6hours">⏰ 6 hours</SelectItem>
+                    <SelectItem value="12hours">⏰ 12 hours</SelectItem>
+                    <SelectItem value="24hours">⏰ Today (24 hours)</SelectItem>
                   </SelectContent>
                 </Select>
 
