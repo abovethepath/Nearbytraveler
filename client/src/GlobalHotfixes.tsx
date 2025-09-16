@@ -3,6 +3,43 @@ import { useEffect } from "react";
 
 export default function GlobalHotfixes() {
   useEffect(() => {
+    // Clear service worker cache to fix alert bug
+    const clearCacheOnce = async () => {
+      const cacheCleared = localStorage.getItem('cache-cleared-v3');
+      if (!cacheCleared) {
+        try {
+          // Unregister all service workers
+          if ('serviceWorker' in navigator) {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            for (const registration of registrations) {
+              await registration.unregister();
+              console.log('🗑️ Service worker unregistered');
+            }
+          }
+
+          // Clear all caches
+          if ('caches' in window) {
+            const cacheNames = await caches.keys();
+            for (const cacheName of cacheNames) {
+              await caches.delete(cacheName);
+              console.log('🗑️ Cache cleared:', cacheName);
+            }
+          }
+
+          // Mark as cleared
+          localStorage.setItem('cache-cleared-v3', 'true');
+          console.log('🎯 Cache cleared! Refreshing to load fresh code...');
+          
+          // Hard reload to ensure fresh code
+          setTimeout(() => window.location.reload(), 100);
+        } catch (error) {
+          console.error('Cache clear error:', error);
+        }
+      }
+    };
+
+    clearCacheOnce();
+
     if (document.getElementById("nearby-hotfix")) return;
     const css = `
 /* ===== Nearby Hotfix (chips/pills, events, map, wrapping) ===== */
