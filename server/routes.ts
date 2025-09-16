@@ -4651,31 +4651,33 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
 
-      // Top Choices filter (searches in interests field)
+      // Top Choices filter (searches in interests field)  
       if (topChoices && typeof topChoices === 'string') {
-        const topChoicesList = topChoices.split(',').map(i => i.trim()).filter(Boolean);
+        // Decode HTML entities and normalize
+        const decodedTopChoices = topChoices.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
+        const topChoicesList = decodedTopChoices.split(',').map(i => i.trim()).filter(Boolean);
         if (topChoicesList.length > 0) {
           if (process.env.NODE_ENV === 'development') console.log('⭐ TOP CHOICES FILTER: Searching for users with top choices:', topChoicesList);
           
-          whereConditions.push(or(
-            ...topChoicesList.map(choice => 
-              sql`array_to_string(${users.interests}, ',') ILIKE ${`%${choice}%`}`
-            )
-          ));
+          // Use proper array matching with unnest for case-insensitive search
+          whereConditions.push(
+            sql`EXISTS (SELECT 1 FROM unnest(${users.interests}) AS interest WHERE lower(interest) = ANY(${sql.array(topChoicesList.map(c => c.toLowerCase()), 'text')}))`
+          );
         }
       }
 
       // Interests filter (fixed)
       if (interests && typeof interests === 'string') {
-        const interestsList = interests.split(',').map(i => i.trim()).filter(Boolean);
+        // Decode HTML entities and normalize
+        const decodedInterests = interests.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
+        const interestsList = decodedInterests.split(',').map(i => i.trim()).filter(Boolean);
         if (interestsList.length > 0) {
           if (process.env.NODE_ENV === 'development') console.log('🎯 INTERESTS FILTER: Searching for users with interests:', interestsList);
           
-          whereConditions.push(or(
-            ...interestsList.map(interest => 
-              sql`array_to_string(${users.interests}, ',') ILIKE ${`%${interest}%`}`
-            )
-          ));
+          // Use proper array matching with unnest for case-insensitive search
+          whereConditions.push(
+            sql`EXISTS (SELECT 1 FROM unnest(${users.interests}) AS interest WHERE lower(interest) = ANY(${sql.array(interestsList.map(i => i.toLowerCase()), 'text')}))`
+          );
         }
       }
 
