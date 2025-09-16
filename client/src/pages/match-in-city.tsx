@@ -744,6 +744,33 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">⭐ Discover Your Perfect {selectedCity} Experience</h2>
                 <p className="text-lg text-gray-600">Select activities that inspire you and connect with fellow adventurers</p>
               </div>
+
+              {/* Add new activity section - GORGEOUS DESIGN - MOVED TO TOP */}
+              <div className="mb-8 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl border border-purple-200/50 shadow-inner">
+                <div className="text-center mb-4">
+                  <h4 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">✨ Create Your Own Experience</h4>
+                  <p className="text-gray-600 text-sm">Share something unique you want to do in {selectedCity}</p>
+                </div>
+                <div className="flex gap-3">
+                  <Input
+                    placeholder="e.g., Taylor Swift November 8th, Pickleball Saturday Mornings..."
+                    value={newActivity}
+                    onChange={(e) => setNewActivity(e.target.value)}
+                    className="border-purple-200 bg-white/80 backdrop-blur-sm focus:border-purple-400 focus:ring-purple-200 rounded-xl text-gray-800 placeholder-gray-500 shadow-md"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        handleAddActivity();
+                      }
+                    }}
+                  />
+                  <Button 
+                    onClick={handleAddActivity}
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                  >
+                    <Plus className="w-5 h-5" />
+                  </Button>
+                </div>
+              </div>
               
               {/* Dynamic City Activities - Universal + City-Specific + AI */}
               <div className="space-y-8">
@@ -829,32 +856,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   </div>
                 )}
 
-                {/* Add new activity section - GORGEOUS DESIGN */}
-                <div className="mt-12 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl border border-purple-200/50 shadow-inner">
-                  <div className="text-center mb-4">
-                    <h4 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">✨ Create Your Own Experience</h4>
-                    <p className="text-gray-600 text-sm">Share something unique you want to do in {selectedCity}</p>
-                  </div>
-                  <div className="flex gap-3">
-                    <Input
-                      placeholder="e.g., Taylor Swift November 8th, Pickleball Saturday Mornings..."
-                      value={newActivity}
-                      onChange={(e) => setNewActivity(e.target.value)}
-                      className="border-purple-200 bg-white/80 backdrop-blur-sm focus:border-purple-400 focus:ring-purple-200 rounded-xl text-gray-800 placeholder-gray-500 shadow-md"
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                          handleAddActivity();
-                        }
-                      }}
-                    />
-                    <Button 
-                      onClick={handleAddActivity}
-                      className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
-                    >
-                      <Plus className="w-5 h-5" />
-                    </Button>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
