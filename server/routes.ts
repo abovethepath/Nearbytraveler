@@ -13268,6 +13268,24 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // DELETE city activity by ID
+  app.delete("/api/city-activities/:activityId", async (req, res) => {
+    try {
+      const activityId = parseInt(req.params.activityId);
+      if (isNaN(activityId)) {
+        return res.status(400).json({ error: 'Invalid activity ID' });
+      }
+
+      await db.delete(cityActivities).where(eq(cityActivities.id, activityId));
+      
+      if (process.env.NODE_ENV === 'development') console.log(`🗑️ DELETED CITY ACTIVITY: ID ${activityId}`);
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error('Error deleting city activity:', error);
+      res.status(500).json({ error: 'Failed to delete city activity' });
+    }
+  });
+
   // POST enhance city with AI-generated activities
   app.post("/api/city-activities/:cityName/enhance", async (req, res) => {
     try {
