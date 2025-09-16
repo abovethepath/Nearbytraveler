@@ -11,10 +11,10 @@ interface ParticipantAvatarsProps {
 
 export function ParticipantAvatars({ type, itemId, maxVisible = 5, className = '' }: ParticipantAvatarsProps) {
   const { data: participants = [], isLoading } = useQuery<EventParticipantWithUser[]>({
-    queryKey: [`/${type === 'meetup' ? 'quick-meetups' : 'events'}/${itemId}/participants`],
+    queryKey: [`/${type === 'meetup' ? 'quick-meets' : 'events'}/${itemId}/participants`],
     queryFn: async () => {
       const endpoint = type === 'meetup' 
-        ? `/api/quick-meetups/${itemId}/participants`
+        ? `/api/quick-meets/${itemId}/participants`
         : `/api/events/${itemId}/participants`;
       
       const response = await fetch(endpoint);

@@ -830,7 +830,7 @@ function Router() {
     }
 
     if (location.startsWith('/quick-meetup-chat/')) {
-      const meetupId = location.split('/')[2];
+      const quickMeetId = location.split('/')[2];
       return <QuickMeetupChat />;
     }
 

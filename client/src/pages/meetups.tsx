@@ -58,10 +58,10 @@ export default function MeetupsPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   
   // State for viewing meetup details
-  const [selectedMeetup, setSelectedMeetup] = useState<QuickMeetup | null>(null);
+  const [selectedQuickMeet, setSelectedQuickMeet] = useState<QuickMeetup | null>(null);
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
 
-  const [newMeetup, setNewMeetup] = useState({
+  const [newQuickMeet, setNewQuickMeet] = useState({
     title: "",
     description: "",
     meetingPoint: "",
@@ -74,13 +74,13 @@ export default function MeetupsPage() {
   });
 
   // Fetch active meetups
-  const { data: meetups = [], isLoading } = useQuery({
+  const { data: quickMeets = [], isLoading } = useQuery({
     queryKey: ["/api/availability"],
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 
   // Fetch user's archived meetups
-  const { data: archivedMeetups = [], isLoading: archivedLoading } = useQuery({
+  const { data: archivedQuickMeets = [], isLoading: archivedLoading } = useQuery({
     queryKey: [`/api/users/${user?.id}/archived-meetups`],
     enabled: !!user?.id,
     staleTime: 60000, // Cache for 1 minute
@@ -90,15 +90,15 @@ export default function MeetupsPage() {
   const [showArchived, setShowArchived] = useState(false);
 
   // Create meetup mutation
-  const createMeetupMutation = useMutation({
-    mutationFn: async (meetupData: any) => {
-      console.log("Creating meetup with data:", meetupData);
-      return await apiRequest("POST", "/api/availability", meetupData);
+  const createQuickMeetMutation = useMutation({
+    mutationFn: async (quickMeetData: any) => {
+      console.log("Creating quick meet with data:", quickMeetData);
+      return await apiRequest("POST", "/api/availability", quickMeetData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/availability"] });
       setIsCreateDialogOpen(false);
-      setNewMeetup({
+      setNewQuickMeet({
         title: "",
         description: "",
         meetingPoint: "",
@@ -111,33 +111,33 @@ export default function MeetupsPage() {
       });
       toast({
         title: "Success",
-        description: "Your meetup has been created and is now visible to others!",
+        description: "Your quick meet has been created and is now visible to others!",
       });
     },
     onError: (error: any) => {
       console.error("Meetup creation error:", error);
       toast({
-        title: "Error creating meetup",
-        description: error.message || "Failed to create meetup. Please check required fields.",
+        title: "Error creating quick meet",
+        description: error.message || "Failed to create quick meet. Please check required fields.",
         variant: "destructive",
       });
     },
   });
 
   // Join meetup mutation
-  const joinMeetupMutation = useMutation({
-    mutationFn: async (meetupId: number) => {
+  const joinQuickMeetMutation = useMutation({
+    mutationFn: async (quickMeetId: number) => {
       // Get user from multiple sources for reliability
       const localStorageUser = localStorage.getItem('user');
       const currentUser = user || (localStorageUser ? JSON.parse(localStorageUser) : null);
       
       if (!currentUser?.id) {
-        throw new Error("Please log in to join meetups");
+        throw new Error("Please log in to join quick meets");
       }
       
       console.log("Joining meetup with user ID:", currentUser.id);
       
-      return await apiRequest("POST", `/api/availability/${meetupId}/join`, {
+      return await apiRequest("POST", `/api/availability/${quickMeetId}/join`, {
         userId: currentUser.id
       });
     },
@@ -145,43 +145,43 @@ export default function MeetupsPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/availability"] });
       toast({
         title: "Joined!",
-        description: "You've successfully joined the meetup. Click the Chat button to coordinate with other participants!",
+        description: "You've successfully joined the quick meet. Click the Chat button to coordinate with other participants!",
       });
     },
     onError: (error: any) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to join meetup",
+        description: error.message || "Failed to join quick meet",
         variant: "destructive",
       });
     },
   });
 
   // Leave meetup mutation
-  const leaveMeetupMutation = useMutation({
-    mutationFn: async (meetupId: number) => {
-      return await apiRequest("POST", `/api/availability/${meetupId}/leave`);
+  const leaveQuickMeetMutation = useMutation({
+    mutationFn: async (quickMeetId: number) => {
+      return await apiRequest("POST", `/api/availability/${quickMeetId}/leave`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/availability"] });
       toast({
-        title: "Left meetup",
-        description: "You've left the meetup successfully.",
+        title: "Left quick meet",
+        description: "You've left the quick meet successfully.",
       });
     },
     onError: (error: any) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to leave meetup",
+        description: error.message || "Failed to leave quick meet",
         variant: "destructive",
       });
     },
   });
 
   // Reinstate archived meetup mutation
-  const reinstateMeetupMutation = useMutation({
-    mutationFn: async ({ meetupId, duration }: { meetupId: number; duration: string }) => {
-      return await apiRequest("POST", `/api/quick-meetups/${meetupId}/reinstate`, { duration });
+  const reinstateQuickMeetMutation = useMutation({
+    mutationFn: async ({ quickMeetId, duration }: { quickMeetId: number; duration: string }) => {
+      return await apiRequest("POST", `/api/quick-meets/${quickMeetId}/restart`, { duration });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/availability"] });
@@ -200,7 +200,7 @@ export default function MeetupsPage() {
     },
   });
 
-  const handleCreateMeetup = () => {
+  const handleCreateQuickMeet = () => {
     // Get fresh user data from multiple sources for debugging  
     const localStorageUser = localStorage.getItem('user');
     const sessionUser = sessionStorage.getItem('user');
@@ -225,7 +225,7 @@ export default function MeetupsPage() {
       return;
     }
 
-    if (!newMeetup.title.trim() || !newMeetup.meetingPoint.trim()) {
+    if (!newQuickMeet.title.trim() || !newQuickMeet.meetingPoint.trim()) {
       toast({
         title: "Missing Information",
         description: "Please fill in the title and meeting point.",
@@ -235,7 +235,7 @@ export default function MeetupsPage() {
     }
 
     // Validate required address fields
-    if (!newMeetup.city.trim()) {
+    if (!newQuickMeet.city.trim()) {
       toast({
         title: "Missing Information",
         description: "Please fill in the city for location-based discovery.",
@@ -244,38 +244,38 @@ export default function MeetupsPage() {
       return;
     }
 
-    const meetupData = {
-      ...newMeetup,
-      street: newMeetup.streetAddress,
+    const quickMeetData = {
+      ...newQuickMeet,
+      street: newQuickMeet.streetAddress,
       // Use form fields if provided, fall back to user data as last resort
-      city: newMeetup.city.trim() || currentUser?.hometownCity || currentUser?.location || "Unknown",
-      state: newMeetup.state.trim() || currentUser?.hometownState || "",
-      country: newMeetup.country.trim() || currentUser?.hometownCountry || "",
-      zipcode: newMeetup.zipcode.trim() || "",
+      city: newQuickMeet.city.trim() || currentUser?.hometownCity || currentUser?.location || "Unknown",
+      state: newQuickMeet.state.trim() || currentUser?.hometownState || "",
+      country: newQuickMeet.country.trim() || currentUser?.hometownCountry || "",
+      zipcode: newQuickMeet.zipcode.trim() || "",
       // Always create chatroom for meetup coordination
       createChatroom: true,
-      chatroomName: `${newMeetup.title} - Let's Meet Now`
+      chatroomName: `${newQuickMeet.title} - Let's Meet Now`
     };
     
-    console.log("Meetup data being sent:", meetupData);
-    createMeetupMutation.mutate(meetupData);
+    console.log("Quick meet data being sent:", quickMeetData);
+    createQuickMeetMutation.mutate(quickMeetData);
   };
 
-  const handleJoinMeetup = (meetupId: number) => {
-    joinMeetupMutation.mutate(meetupId);
+  const handleJoinQuickMeet = (quickMeetId: number) => {
+    joinQuickMeetMutation.mutate(quickMeetId);
   };
 
-  const handleLeaveMeetup = (meetupId: number) => {
-    leaveMeetupMutation.mutate(meetupId);
+  const handleLeaveQuickMeet = (quickMeetId: number) => {
+    leaveQuickMeetMutation.mutate(quickMeetId);
   };
 
-  const isUserInMeetup = (meetup: QuickMeetup) => {
+  const isUserInQuickMeet = (quickMeet: QuickMeetup) => {
     // Only check participants list, not creator - creator needs to join like everyone else
-    return meetup.participantsList?.some(p => p.id === user?.id) || false;
+    return quickMeet.participantsList?.some(p => p.id === user?.id) || false;
   };
 
-  const isUserOwner = (meetup: QuickMeetup) => {
-    return meetup.organizerId === user?.id;
+  const isUserOwner = (quickMeet: QuickMeetup) => {
+    return quickMeet.organizerId === user?.id;
   };
 
   const getTimeRemaining = (expiresAt: string) => {
@@ -312,7 +312,7 @@ export default function MeetupsPage() {
             Let's Meet Now
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2">
-            Connect with people who are available right now for spontaneous meetups
+            Connect with people who are available right now for spontaneous quick meets
           </p>
         </div>
         
@@ -329,7 +329,7 @@ export default function MeetupsPage() {
           </DialogTrigger>
           <DialogContent className="max-w-2xl w-full">
             <DialogHeader>
-              <DialogTitle>Create a Quick Meetup</DialogTitle>
+              <DialogTitle>Create a Quick Meet</DialogTitle>
             </DialogHeader>
             <div className="grid grid-cols-2 gap-6">
               {/* Left Column */}
@@ -342,7 +342,7 @@ export default function MeetupsPage() {
                   {/* Quick Activity Dropdown */}
                   <div className="mb-3">
                     <Select
-                      value={newMeetup.title}
+                      value={newQuickMeet.title}
                       onValueChange={(value) => {
                         if (value !== "custom") {
                           setNewMeetup(prev => ({ ...prev, title: value }));
@@ -390,7 +390,7 @@ export default function MeetupsPage() {
                   </label>
                   <Input
                     placeholder="e.g., Starbucks on Main St, Central Park entrance"
-                    value={newMeetup.meetingPoint}
+                    value={newQuickMeet.meetingPoint}
                     onChange={(e) => setNewMeetup(prev => ({ ...prev, meetingPoint: e.target.value }))}
                   />
                 </div>
@@ -492,7 +492,7 @@ export default function MeetupsPage() {
                   Cancel
                 </Button>
                 <Button
-                  onClick={handleCreateMeetup}
+                  onClick={handleCreateQuickMeet}
                   disabled={createMeetupMutation.isPending}
                   className="px-6 bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600"
                 >

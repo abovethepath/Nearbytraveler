@@ -43,9 +43,9 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
 
   // Fetch existing quick meetups
   const { data: quickMeetups, isLoading } = useQuery({
-    queryKey: ['/api/quick-meetups', city, profileUserId],
+    queryKey: ['/api/quick-meets', city, profileUserId],
     queryFn: async () => {
-      let url = '/api/quick-meetups';
+      let url = '/api/quick-meets';
       const params = new URLSearchParams();
       
       if (city) params.append('city', city);
@@ -95,12 +95,12 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
     mutationFn: async (meetupId: number) => {
       if (!actualUser?.id) {
         console.error('❌ JOIN FAILED: User not authenticated:', { contextUser: user, storageUser: authStorage.getUser() });
-        throw new Error("Please log in to join meetups");
+        throw new Error("Please log in to join quick meets");
       }
 
       console.log('🚀 ATTEMPTING JOIN:', { meetupId, userId: actualUser.id });
       
-      const result = await apiRequest('POST', `/api/quick-meetups/${meetupId}/join`, {
+      const result = await apiRequest('POST', `/api/quick-meets/${meetupId}/join`, {
         userId: actualUser.id
       });
 
@@ -108,16 +108,16 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
       return result;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/quick-meetups'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
       toast({
         title: "Joined!",
-        description: "You've successfully joined the meetup.",
+        description: "You've successfully joined the quick meet.",
       });
     },
     onError: (error: any) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to join meetup",
+        description: error.message || "Failed to join quick meet",
         variant: "destructive",
       });
     },
@@ -130,7 +130,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
   const createMutation = useMutation({
     mutationFn: async (meetupData: any) => {
       if (!actualUser?.id) {
-        throw new Error("Please log in to create meetups");
+        throw new Error("Please log in to create quick meets");
       }
 
       // Calculate expiration based on response time - ALWAYS USE LOCAL TIME
@@ -155,7 +155,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
       
       const meetupPayload = {
         title: meetupData.title,
-        description: meetupData.description || 'Quick meetup',
+        description: meetupData.description || 'Quick meet',
         meetingPoint: meetupData.meetingPoint,
         street: meetupData.streetAddress || '',
         city: meetupData.city,
@@ -185,10 +185,10 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
       console.log('📦 MEETUP PAYLOAD:', meetupPayload);
       console.log('🏠 STREET IN PAYLOAD:', meetupPayload.street);
       
-      return await apiRequest('POST', '/api/quick-meetups', meetupPayload);
+      return await apiRequest('POST', '/api/quick-meet', meetupPayload);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/quick-meetups'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
       setShowCreateForm(false);
       setIsCustomActivity(false);
       setNewMeetup({
@@ -204,14 +204,14 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
         organizerNotes: ''
       });
       toast({
-        title: "Quick Meetup Posted!",
+        title: "Quick Meet Posted!",
         description: "Your availability is now live for others to join.",
       });
     },
     onError: (error: any) => {
       console.error('❌ CREATE MEETUP ERROR:', error);
       toast({
-        title: "Error Creating Meetup",
+        title: "Error Creating Quick Meet",
         description: error.message || "Failed to post availability. Please try again.",
         variant: "destructive"
       });
@@ -221,19 +221,19 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
   // Delete meetup mutation
   const deleteMutation = useMutation({
     mutationFn: async (meetupId: number) => {
-      return await apiRequest('DELETE', `/api/quick-meetups/${meetupId}`);
+      return await apiRequest('DELETE', `/api/quick-meets/${meetupId}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/quick-meetups'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
       toast({
         title: "Deleted!",
-        description: "Your meetup has been deleted.",
+        description: "Your quick meet has been deleted.",
       });
     },
     onError: (error: any) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to delete meetup",
+        description: error.message || "Failed to delete quick meet",
         variant: "destructive",
       });
     },
@@ -587,19 +587,19 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                                       console.log('Edit meetup:', meetup.id);
                                     }}
                                     className="p-1 rounded-full hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
-                                    title="Edit meetup"
+                                    title="Edit quick meet"
                                   >
                                     <Edit3 className="w-3 h-3 text-green-500" />
                                   </button>
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      if (confirm('Delete this meetup? This action cannot be undone.')) {
+                                      if (confirm('Delete this quick meet? This action cannot be undone.')) {
                                         deleteMeetup(meetup.id);
                                       }
                                     }}
                                     className="p-1 rounded-full hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
-                                    title="Delete meetup"
+                                    title="Delete quick meet"
                                   >
                                     <Trash2 className="w-3 h-3 text-red-500" />
                                   </button>

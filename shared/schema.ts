@@ -945,23 +945,22 @@ export const quickMeetups = pgTable("quick_meetups", {
   category: text("category").notNull(),
   location: text("location").notNull(),
   meetingPoint: text("meeting_point").notNull(),
-  street: text("street"), // Street address
+  street: text("street"),
   city: text("city").notNull(),
   state: text("state"),
   country: text("country").notNull(),
   zipcode: text("zipcode"),
-  availableAt: timestamp("available_at").notNull(), // When they're available
-  expiresAt: timestamp("expires_at").notNull(), // Auto-expire after 24 hours
-  maxParticipants: integer("max_participants").notNull().default(10),
-  minParticipants: integer("min_participants").notNull().default(2),
+  availableAt: timestamp("available_at").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  maxParticipants: integer("max_participants").notNull(),
+  minParticipants: integer("min_participants").notNull(),
   costEstimate: text("cost_estimate"),
-  availability: text("availability").notNull(), // "1hour", "3hours", "today", "tomorrow", "week"
-  responseTime: text("response_time").notNull().default("ASAP"),
-  autoCancel: boolean("auto_cancel").notNull().default(false),
-  organizerNotes: text("organizer_notes"), // Contact notes like "call me if lost", "text me if running late"
-  isActive: boolean("is_active").notNull().default(true),
-  participantCount: integer("participant_count").notNull().default(0),
-  createdAt: timestamp("created_at").defaultNow(),
+  availability: text("availability").notNull(),
+  responseTime: text("response_time").notNull(),
+  autoCancel: boolean("auto_cancel").notNull(),
+  isActive: boolean("is_active").notNull(),
+  participantCount: integer("participant_count").notNull(),
+  createdAt: timestamp("created_at"),
 });
 
 export const quickMeetupParticipants = pgTable("quick_meetup_participants", {

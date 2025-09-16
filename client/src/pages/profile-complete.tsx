@@ -3939,7 +3939,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 setTriggerQuickMeetup(true);
                 // Scroll to the QuickMeetupWidget
                 setTimeout(() => {
-                  const widget = document.querySelector('[data-testid="quick-meetup-widget"]');
+                  const widget = document.querySelector('[data-testid="quick-meet-widget"]');
                   if (widget) {
                     widget.scrollIntoView({ behavior: 'smooth', block: 'center' });
                   }
@@ -6407,7 +6407,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           <div className="w-full lg:col-span-1 space-y-2 lg:space-y-4">
             {/* Quick Meetup Widget - Only show for own profile (travelers/locals only, NOT business) */}
             {isOwnProfile && user && user.userType !== 'business' && (
-              <div className="mt-6" data-testid="quick-meetup-widget">
+              <div className="mt-6" data-testid="quick-meet-widget">
                 <QuickMeetupWidget 
                   city={user?.hometownCity ?? ''} 
                   profileUserId={user?.id}

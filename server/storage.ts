@@ -9854,16 +9854,17 @@ export class DatabaseStorage implements IStorage {
           description: quickMeetups.description,
           organizerId: quickMeetups.organizerId,
           location: quickMeetups.location,
-          latitude: quickMeetups.latitude,
-          longitude: quickMeetups.longitude,
-          startTime: quickMeetups.startTime,
-          duration: quickMeetups.duration,
+          meetingPoint: quickMeetups.meetingPoint,
+          city: quickMeetups.city,
+          state: quickMeetups.state,
+          country: quickMeetups.country,
+          availableAt: quickMeetups.availableAt,
+          expiresAt: quickMeetups.expiresAt,
           maxParticipants: quickMeetups.maxParticipants,
-          currentParticipants: quickMeetups.currentParticipants,
+          participantCount: quickMeetups.participantCount,
           isActive: quickMeetups.isActive,
           category: quickMeetups.category,
-          createdAt: quickMeetups.createdAt,
-          expiresAt: quickMeetups.expiresAt
+          createdAt: quickMeetups.createdAt
         })
         .from(quickMeetups)
         .where(eq(quickMeetups.id, meetupId));

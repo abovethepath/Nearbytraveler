@@ -58,9 +58,9 @@ export function MeetupChatroom({ meetupId, meetupTitle, isOpen, onClose, current
 
   // Fetch meetup chatroom
   const { data: chatroom, isLoading: chatroomLoading } = useQuery<MeetupChatroom>({
-    queryKey: ['/api/quick-meetups', meetupId, 'chatroom'],
+    queryKey: ['/api/quick-meets', meetupId, 'chatroom'],
     queryFn: async () => {
-      const response = await apiRequest('GET', `/api/quick-meetups/${meetupId}/chatroom`);
+      const response = await apiRequest('GET', `/api/quick-meets/${meetupId}/chatroom`);
       return response.json();
     },
     enabled: isOpen && !!meetupId
@@ -173,7 +173,7 @@ export function MeetupChatroom({ meetupId, meetupTitle, isOpen, onClose, current
           )}
           
           <p className="text-sm text-gray-500">
-            {chatroom?.description || "Private chat for meetup participants. This chat expires when the meetup ends."}
+            {chatroom?.description || "Private chat for quick meet participants. This chat expires when the quick meet ends."}
           </p>
         </DialogHeader>
 

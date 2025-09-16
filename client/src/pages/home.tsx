@@ -76,7 +76,7 @@ export default function Home() {
   const [sortBy, setSortBy] = useState<'recent' | 'active' | 'compatibility' | 'travel_experience' | 'closest_nearby' | 'aura' | 'references' | 'alphabetical'>('recent');
   
   // Lazy loading state - track which sections have been loaded - LOAD ALL IMMEDIATELY FOR DEMO
-  const [loadedSections, setLoadedSections] = useState<Set<string>>(new Set(['hero', 'users', 'events', 'messages', 'weather', 'meetups'])); // Load all sections immediately
+  const [loadedSections, setLoadedSections] = useState<Set<string>>(new Set(['hero', 'users', 'events', 'messages', 'weather', 'quickMeets'])); // Load all sections immediately
   const [activeSection, setActiveSection] = useState<string>('hero');
 
   const { user, setUser } = useContext(AuthContext);
@@ -1012,46 +1012,46 @@ export default function Home() {
   // Business deals functionality removed - focusing on travelers and locals
 
   // Fetch active quick meetups from ALL locations (hometown + all travel destinations) - LAZY LOADED
-  const { data: allMeetups = [], isLoading: meetupsLoading } = useQuery<any[]>({
-    queryKey: [`/api/quick-meetups/all-locations`, discoveryLocations.allCities.map(loc => loc.city)],
+  const { data: allQuickMeets = [], isLoading: quickMeetsLoading } = useQuery<any[]>({
+    queryKey: [`/api/quick-meets/all-locations`, discoveryLocations.allCities.map(loc => loc.city)],
     queryFn: async () => {
       if (!discoveryLocations.allCities.length) return [];
 
       console.log('Fetching active quick meetups from ALL locations:', discoveryLocations.allCities);
 
       // Fetch meetups from all cities in parallel
-      const meetupPromises = discoveryLocations.allCities.map(async (location) => {
+      const quickMeetPromises = discoveryLocations.allCities.map(async (location) => {
         const cityName = location.city.split(',')[0].trim();
         console.log(`Fetching quick meetups for ${location.type}:`, cityName);
 
         try {
-          const response = await fetch(`/api/quick-meetups?city=${encodeURIComponent(cityName)}`);
-          if (!response.ok) throw new Error(`Failed to fetch quick meetups for ${cityName}`);
+          const response = await fetch(`/api/quick-meets?city=${encodeURIComponent(cityName)}`);
+          if (!response.ok) throw new Error(`Failed to fetch quick meets for ${cityName}`);
           const data = await response.json();
-          console.log(`${location.type} Quick Meetups API response:`, data.length, 'meetups for', cityName);
+          console.log(`${location.type} Quick Meets API response:`, data.length, 'meets for', cityName);
           return data.map((meetup: any) => ({ ...meetup, sourceLocation: location }));
         } catch (error) {
-          console.error(`Error fetching quick meetups for ${cityName}:`, error);
+          console.error(`Error fetching quick meets for ${cityName}:`, error);
           return [];
         }
       });
 
-      const allMeetupsArrays = await Promise.all(meetupPromises);
-      const combined = allMeetupsArrays.flat();
+      const allQuickMeetsArrays = await Promise.all(quickMeetPromises);
+      const combined = allQuickMeetsArrays.flat();
 
       // Remove duplicates by meetup ID
-      const unique = combined.filter((meetup, index, self) => 
-        index === self.findIndex((m) => m.id === meetup.id)
+      const unique = combined.filter((quickMeet, index, self) => 
+        index === self.findIndex((m) => m.id === quickMeet.id)
       );
 
-      console.log('Combined meetups:', unique.length, 'meetups from ALL', discoveryLocations.allCities.length, 'locations');
+      console.log('Combined quick meets:', unique.length, 'meets from ALL', discoveryLocations.allCities.length, 'locations');
       return unique;
     },
     staleTime: 30 * 1000, // 30-second cache
     gcTime: 0,
   });
 
-  const meetups = allMeetups;
+  const quickMeets = allQuickMeets;
 
   // Query users - prioritize specific location filter, otherwise show ALL users
   const { data: rawUsers = [], isLoading: usersLoading, error: usersError } = useQuery<User[]>({
@@ -1757,7 +1757,7 @@ export default function Home() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 dark:text-white">Real-time Connect</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Instant messaging and live notifications for spontaneous meetups</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Instant messaging and live notifications for spontaneous quick meets</p>
                   </div>
                 </div>
               </>
@@ -2084,7 +2084,7 @@ export default function Home() {
             )}
             
             {/* Quick Meetup Widget - "Let's Meet Now" */}
-            {loadedSections.has('meetups') && (
+            {loadedSections.has('quickMeets') && (
               <QuickMeetupWidget currentUser={effectiveUser} />
             )}
             

@@ -71,9 +71,9 @@ function QuickMeetupsPage() {
   });
 
   const { data: allMeetups = [], isLoading } = useQuery<QuickMeetup[]>({
-    queryKey: ['/api/quick-meetups'],
+    queryKey: ['/api/quick-meets'],
     queryFn: async () => {
-      const response = await fetch('/api/quick-meetups');
+      const response = await fetch('/api/quick-meets');
       if (!response.ok) throw new Error('Failed to fetch meetups');
       const data = await response.json();
       
@@ -93,10 +93,10 @@ function QuickMeetupsPage() {
 
   // Get participants for selected meetup
   const { data: participants = [] } = useQuery<MeetupParticipant[]>({
-    queryKey: ['/api/quick-meetups', selectedMeetupId, 'participants'],
+    queryKey: ['/api/quick-meets', selectedMeetupId, 'participants'],
     queryFn: async () => {
       if (!selectedMeetupId) return [];
-      const response = await fetch(`/api/quick-meetups/${selectedMeetupId}/participants`);
+      const response = await fetch(`/api/quick-meets/${selectedMeetupId}/participants`);
       if (!response.ok) throw new Error('Failed to fetch participants');
       return response.json();
     },
@@ -106,7 +106,7 @@ function QuickMeetupsPage() {
   // Restart meetup mutation
   const restartMeetupMutation = useMutation({
     mutationFn: async ({ meetupId, duration }: { meetupId: number; duration: string }) => {
-      const response = await fetch(`/api/quick-meetups/${meetupId}/restart`, {
+      const response = await fetch(`/api/quick-meets/${meetupId}/restart`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -117,23 +117,23 @@ function QuickMeetupsPage() {
       
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Failed to restart meetup');
+        throw new Error(error.message || 'Failed to restart quick meet');
       }
       
       return response.json();
     },
     onSuccess: (data) => {
       toast({
-        title: "Meetup Restarted Successfully!",
+        title: "Quick Meet Restarted Successfully!",
         description: `"${data.meetup.title}" is now active for ${restartDuration} with a fresh participant list.`,
       });
       
       // Refresh the meetups list
-      queryClient.invalidateQueries({ queryKey: ['/api/quick-meetups'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
     },
     onError: (error: Error) => {
       toast({
-        title: "Failed to Restart Meetup",
+        title: "Failed to Restart Quick Meet",
         description: error.message,
         variant: "destructive",
       });
@@ -143,7 +143,7 @@ function QuickMeetupsPage() {
   // Update meetup mutation
   const updateMeetupMutation = useMutation({
     mutationFn: async ({ meetupId, updates }: { meetupId: number; updates: any }) => {
-      const response = await fetch(`/api/quick-meetups/${meetupId}`, {
+      const response = await fetch(`/api/quick-meets/${meetupId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -154,7 +154,7 @@ function QuickMeetupsPage() {
       
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Failed to update meetup');
+        throw new Error(error.message || 'Failed to update quick meet');
       }
       
       return response.json();
@@ -162,9 +162,9 @@ function QuickMeetupsPage() {
     onSuccess: () => {
       toast({
         title: "Success!",
-        description: "Meetup updated successfully.",
+        description: "Quick meet updated successfully.",
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/quick-meetups'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
     },
     onError: (error: Error) => {
       toast({
@@ -178,7 +178,7 @@ function QuickMeetupsPage() {
   // Delete meetup mutation
   const deleteMeetupMutation = useMutation({
     mutationFn: async (meetupId: number) => {
-      const response = await fetch(`/api/quick-meetups/${meetupId}`, {
+      const response = await fetch(`/api/quick-meets/${meetupId}`, {
         method: 'DELETE',
         headers: {
           'x-user-id': actualUser?.id?.toString() || '',
@@ -187,7 +187,7 @@ function QuickMeetupsPage() {
       
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Failed to delete meetup');
+        throw new Error(error.message || 'Failed to delete quick meet');
       }
       
       return response.json();
@@ -197,7 +197,7 @@ function QuickMeetupsPage() {
         title: "Success!",
         description: "Meetup deleted successfully.",
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/quick-meetups'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
     },
     onError: (error: Error) => {
       toast({
@@ -494,7 +494,7 @@ function QuickMeetupsPage() {
                     setShowCreateForm(true);
                   } else {
                     try {
-                      const response = await fetch(`/api/quick-meetups/${meetup.id}/join`, {
+                      const response = await fetch(`/api/quick-meets/${meetup.id}/join`, {
                         method: 'POST',
                         headers: {
                           'Content-Type': 'application/json',
@@ -507,7 +507,7 @@ function QuickMeetupsPage() {
                           title: "Successfully Joined!",
                           description: `You've joined "${meetup.title}". You can now chat with other participants.`,
                         });
-                        queryClient.invalidateQueries({ queryKey: ['/api/quick-meetups'] });
+                        queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
                       } else {
                         const error = await response.json();
                         toast({

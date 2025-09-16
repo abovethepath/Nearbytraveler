@@ -68,7 +68,7 @@ export default function MeetupChat() {
 
   // Fetch meetup details
   const { data: meetup, isLoading: meetupLoading } = useQuery<Meetup>({
-    queryKey: ['/api/quick-meetups', meetupId],
+    queryKey: ['/api/quick-meets', meetupId],
     enabled: !!meetupId
   });
 
@@ -101,10 +101,10 @@ export default function MeetupChat() {
 
   // Fetch participants
   const { data: participants = [] } = useQuery<Participant[]>({
-    queryKey: ['/api/quick-meetups', meetupId, 'participants'],
+    queryKey: ['/api/quick-meets', meetupId, 'participants'],
     queryFn: async () => {
       if (!meetupId) return [];
-      const response = await apiRequest('GET', `/api/quick-meetups/${meetupId}/participants`);
+      const response = await apiRequest('GET', `/api/quick-meets/${meetupId}/participants`);
       const data = await response.json();
       console.log('🔍 Participants data received:', data);
       return data;

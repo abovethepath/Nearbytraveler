@@ -85,9 +85,9 @@ function QuickMeetupChat() {
 
   // Fetch meetup details
   const { data: meetup, isLoading: meetupLoading } = useQuery<QuickMeetup>({
-    queryKey: ['/api/quick-meetups', meetupId],
+    queryKey: ['/api/quick-meets', meetupId],
     queryFn: async () => {
-      const response = await fetch(`/api/quick-meetups/${meetupId}`);
+      const response = await fetch(`/api/quick-meets/${meetupId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch meetup');
       }
@@ -125,10 +125,10 @@ function QuickMeetupChat() {
 
   // Fetch meetup participants
   const { data: participants = [] } = useQuery<Participant[]>({
-    queryKey: ['/api/quick-meetups', meetupId, 'participants'],
+    queryKey: ['/api/quick-meets', meetupId, 'participants'],
     queryFn: async () => {
       if (!meetupId) return [];
-      const response = await fetch(`/api/quick-meetups/${meetupId}/participants`);
+      const response = await fetch(`/api/quick-meets/${meetupId}/participants`);
       if (!response.ok) throw new Error('Failed to fetch participants');
       return response.json();
     },

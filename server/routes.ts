@@ -9815,8 +9815,12 @@ Questions? Just reply to this message. Welcome aboard!
 
 
 
-  // CREATE quick meetup endpoint
+  // CREATE quick meetup endpoint (DEPRECATED - use /api/quick-meet instead)
   app.post("/api/quick-meetups", async (req, res) => {
+    // Add deprecation header
+    res.set('X-Deprecated-API', 'This endpoint is deprecated. Please use /api/quick-meet instead.');
+    res.set('X-Deprecation-Date', '2025-09-16');
+    res.set('X-Sunset-Date', '2025-12-01');
     try {
       const userId = req.headers['x-user-id'];
       if (!userId) {
@@ -9846,8 +9850,12 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // Get single quick meetup by ID
+  // Get single quick meetup by ID (DEPRECATED - use /api/quick-meets/:id instead)
   app.get("/api/quick-meetups/:id", async (req, res) => {
+    // Add deprecation header
+    res.set('X-Deprecated-API', 'This endpoint is deprecated. Please use /api/quick-meets/:id instead.');
+    res.set('X-Deprecation-Date', '2025-09-16');
+    res.set('X-Sunset-Date', '2025-12-01');
     try {
       const meetupId = parseInt(req.params.id || '0');
       if (isNaN(meetupId)) {
@@ -9866,8 +9874,12 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // CRITICAL: Get quick meetups - ACTIVE FIRST, NEWEST FIRST - RAW SQL VERSION
+  // CRITICAL: Get quick meetups - ACTIVE FIRST, NEWEST FIRST (DEPRECATED - use /api/quick-meets instead)
   app.get("/api/quick-meetups", async (req, res) => {
+    // Add deprecation header
+    res.set('X-Deprecated-API', 'This endpoint is deprecated. Please use /api/quick-meets instead.');
+    res.set('X-Deprecation-Date', '2025-09-16');
+    res.set('X-Sunset-Date', '2025-12-01');
     console.log(`🔧 ROUTE HIT: /api/quick-meetups called at ${new Date().toISOString()}`);
     console.log(`🔧 NODE_ENV:`, process.env.NODE_ENV);
     try {
@@ -10010,8 +10022,12 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // GET quick meetup participants - CRITICAL MISSING ENDPOINT
+  // GET quick meetup participants (DEPRECATED - use /api/quick-meets/:id/participants instead)
   app.get("/api/quick-meetups/:id/participants", async (req, res) => {
+    // Add deprecation header
+    res.set('X-Deprecated-API', 'This endpoint is deprecated. Please use /api/quick-meets/:id/participants instead.');
+    res.set('X-Deprecation-Date', '2025-09-16');
+    res.set('X-Sunset-Date', '2025-12-01');
     try {
       const meetupId = parseInt(req.params.id || '0');
       if (process.env.NODE_ENV === 'development') console.log(`👥 GETTING PARTICIPANTS FOR MEETUP ${meetupId}`);
@@ -10026,8 +10042,12 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // JOIN quick meetup endpoint - CRITICAL MISSING ENDPOINT
+  // JOIN quick meetup endpoint (DEPRECATED - use /api/quick-meets/:id/join instead)
   app.post("/api/quick-meetups/:id/join", async (req, res) => {
+    // Add deprecation header
+    res.set('X-Deprecated-API', 'This endpoint is deprecated. Please use /api/quick-meets/:id/join instead.');
+    res.set('X-Deprecation-Date', '2025-09-16');
+    res.set('X-Sunset-Date', '2025-12-01');
     try {
       const meetupId = parseInt(req.params.id || '0');
       const userId = req.headers['x-user-id'];
@@ -10233,8 +10253,12 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // RESTART quick meetup from expired meetup
+  // RESTART quick meetup from expired meetup (DEPRECATED - use /api/quick-meets/:id/restart instead)
   app.post("/api/quick-meetups/:id/restart", async (req, res) => {
+    // Add deprecation header
+    res.set('X-Deprecated-API', 'This endpoint is deprecated. Please use /api/quick-meets/:id/restart instead.');
+    res.set('X-Deprecation-Date', '2025-09-16');
+    res.set('X-Sunset-Date', '2025-12-01');
     try {
       const meetupId = parseInt(req.params.id || '0');
       const userId = req.headers['x-user-id'];
@@ -10302,8 +10326,12 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // UPDATE quick meetup
+  // UPDATE quick meetup (DEPRECATED - use /api/quick-meets/:id instead)
   app.put("/api/quick-meetups/:id", async (req, res) => {
+    // Add deprecation header
+    res.set('X-Deprecated-API', 'This endpoint is deprecated. Please use /api/quick-meets/:id instead.');
+    res.set('X-Deprecation-Date', '2025-09-16');
+    res.set('X-Sunset-Date', '2025-12-01');
     try {
       const meetupId = parseInt(req.params.id || '0');
       const userId = req.headers['x-user-id'];
@@ -10365,8 +10393,12 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // DELETE quick meetup
+  // DELETE quick meetup (DEPRECATED - use /api/quick-meets/:id instead)
   app.delete("/api/quick-meetups/:id", async (req, res) => {
+    // Add deprecation header
+    res.set('X-Deprecated-API', 'This endpoint is deprecated. Please use /api/quick-meets/:id instead.');
+    res.set('X-Deprecation-Date', '2025-09-16');
+    res.set('X-Sunset-Date', '2025-12-01');
     try {
       const meetupId = parseInt(req.params.id || '0');
       const userId = req.headers['x-user-id'];
@@ -10404,8 +10436,12 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // GET user's expired meetups for restart management
+  // GET user's expired meetups for restart management (DEPRECATED - use /api/users/:userId/expired-quick-meets instead)
   app.get("/api/users/:userId/expired-meetups", async (req, res) => {
+    // Add deprecation header
+    res.set('X-Deprecated-API', 'This endpoint is deprecated. Please use /api/users/:userId/expired-quick-meets instead.');
+    res.set('X-Deprecation-Date', '2025-09-16');
+    res.set('X-Sunset-Date', '2025-12-01');
     try {
       const userId = parseInt(req.params.userId || '0');
       const authUserId = req.headers['x-user-id'];
@@ -10425,6 +10461,390 @@ Questions? Just reply to this message. Welcome aboard!
       return res.status(500).json({ message: "Failed to fetch expired meetups" });
     }
   });
+
+  // ===== NEW QUICK MEET API ROUTES (Stage 1: Aliases for backward compatibility) =====
+  // These new routes provide the updated "quick meet" terminology while maintaining
+  // identical functionality to the legacy "quick-meetups" endpoints below.
+
+  // CREATE quick meet endpoint (alias for quick-meetup)
+  app.post("/api/quick-meet", async (req, res) => {
+    try {
+      const userId = req.headers['x-user-id'];
+      if (!userId) {
+        return res.status(401).json({ message: "User ID required" });
+      }
+
+      const meetupData = {
+        ...req.body,
+        organizerId: parseInt(userId as string || '0')
+      };
+
+      if (process.env.NODE_ENV === 'development') console.log(`🚀 CREATING QUICK MEET: ${meetupData.title} by user ${userId}`);
+      if (process.env.NODE_ENV === 'development') console.log(`🏠 STREET ADDRESS RECEIVED:`, meetupData.street);
+      if (process.env.NODE_ENV === 'development') console.log(`📦 FULL REQUEST BODY:`, req.body);
+      
+      const newMeetup = await storage.createQuickMeetup(meetupData);
+      if (process.env.NODE_ENV === 'development') console.log(`✅ QUICK MEET CREATED: ID ${newMeetup.id}, expires at ${newMeetup.expiresAt}`);
+      if (process.env.NODE_ENV === 'development') console.log(`🏠 STREET ADDRESS SAVED:`, newMeetup.street);
+      
+      // Award 1 aura point for creating a quick meet
+      await awardAuraPoints(parseInt(userId as string || '0'), 1, 'creating a quick meet');
+      
+      res.json(newMeetup);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error creating quick meet:", error);
+      res.status(500).json({ message: "Failed to create quick meet" });
+    }
+  });
+
+  // Get single quick meet by ID
+  app.get("/api/quick-meets/:id", async (req, res) => {
+    try {
+      const meetupId = parseInt(req.params.id || '0');
+      if (isNaN(meetupId)) {
+        return res.status(400).json({ message: "Invalid quick meet ID" });
+      }
+
+      const meetup = await storage.getQuickMeetupById(meetupId);
+      if (!meetup) {
+        return res.status(404).json({ message: "Quick meet not found" });
+      }
+
+      res.json(meetup);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error fetching quick meet:", error);
+      res.status(500).json({ message: "Failed to fetch quick meet" });
+    }
+  });
+
+  // Get quick meets - ACTIVE FIRST, NEWEST FIRST
+  app.get("/api/quick-meets", async (req, res) => {
+    console.log(`🔧 ROUTE HIT: /api/quick-meets called at ${new Date().toISOString()}`);
+    console.log(`🔧 NODE_ENV:`, process.env.NODE_ENV);
+    try {
+      const { city, userId } = req.query;
+      const now = new Date();
+
+      console.log(`🔧 QUICK MEETS DEBUG: Using minimal query to avoid schema issues`);
+
+      // Minimal query - no conditions, no joins, no ordering
+      const queryResult = await db.select().from(quickMeetups).limit(10);
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🔧 QUICK MEETS RAW QUERY RESULT:`, queryResult.length, 'results');
+        if (queryResult.length > 0) {
+          console.log(`🔧 FIRST RESULT:`, {
+            id: queryResult[0].id,
+            organizerId: queryResult[0].organizerId,
+            organizerUsername: queryResult[0].organizerUsername,
+            organizerName: queryResult[0].organizerName,
+            organizerProfileImage: queryResult[0].organizerProfileImage ? 'HAS IMAGE' : 'NO IMAGE'
+          });
+        }
+      }
+      
+      // Transform the joined data to match expected format
+      const allMeetups = queryResult.map(row => {
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`🔧 QUICK MEET ROW DEBUG:`, {
+            id: row.id,
+            organizerId: row.organizerId,
+            organizerUsername: row.organizerUsername,
+            organizerName: row.organizerName,
+            organizerProfileImage: row.organizerProfileImage ? 'HAS IMAGE' : 'NO IMAGE'
+          });
+        }
+        
+        return {
+          id: row.id,
+          organizerId: row.organizerId,
+          title: row.title,
+          description: row.description,
+          meetingPoint: row.meetingPoint,
+          street: row.street,
+          city: row.city,
+          state: row.state,
+          zipcode: row.zipcode,
+          country: row.country,
+          location: row.location,
+          availableAt: row.availableAt,
+          expiresAt: row.expiresAt,
+          duration: row.duration,
+          isActive: row.isActive,
+          createdAt: row.createdAt,
+          participantCount: row.participantCount,
+          organizerUsername: row.organizerUsername,
+          organizerName: row.organizerName,
+          organizerProfileImage: row.organizerProfileImage
+        };
+      });
+      
+      // Separate active and expired, then sort each group by newest first
+      const activeMeetups = allMeetups
+        .filter(meetup => new Date(meetup.expiresAt) > now)
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        
+      const expiredMeetups = allMeetups
+        .filter(meetup => new Date(meetup.expiresAt) <= now)
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+      // Combine: active first, then expired
+      const sortedMeetups = [...activeMeetups, ...expiredMeetups];
+
+      if (process.env.NODE_ENV === 'development') console.log(`QUICK MEETS: Found ${activeMeetups.length} active + ${expiredMeetups.length} expired = ${sortedMeetups.length} total meets`);
+
+      return res.json(sortedMeetups);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error fetching quick meets:", error);
+      return res.json([]);
+    }
+  });
+
+  // GET quick meet participants
+  app.get("/api/quick-meets/:id/participants", async (req, res) => {
+    try {
+      const meetupId = parseInt(req.params.id || '0');
+      if (process.env.NODE_ENV === 'development') console.log(`👥 GETTING PARTICIPANTS FOR QUICK MEET ${meetupId}`);
+      
+      const participants = await storage.getQuickMeetupParticipants(meetupId);
+      if (process.env.NODE_ENV === 'development') console.log(`👥 FOUND ${participants.length} PARTICIPANTS:`, participants.map(p => p.user?.username));
+      
+      return res.json(participants);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error fetching quick meet participants:", error);
+      return res.status(500).json({ message: "Failed to fetch participants" });
+    }
+  });
+
+  // JOIN quick meet endpoint
+  app.post("/api/quick-meets/:id/join", async (req, res) => {
+    try {
+      const meetupId = parseInt(req.params.id || '0');
+      const userId = req.headers['x-user-id'];
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User ID required" });
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`🤝 USER ${userId} JOINING QUICK MEET ${meetupId}`);
+
+      // Check if meetup exists and is active
+      const meetup = await storage.getQuickMeetup(meetupId);
+      if (!meetup) {
+        return res.status(404).json({ message: "Quick meet not found" });
+      }
+
+      if (new Date(meetup.expiresAt) <= new Date()) {
+        return res.status(400).json({ message: "This quick meet has expired" });
+      }
+
+      // Join the meetup
+      const result = await storage.joinQuickMeetup(meetupId, parseInt(userId as string || '0'));
+      if (process.env.NODE_ENV === 'development') console.log(`✅ USER ${userId} SUCCESSFULLY JOINED QUICK MEET ${meetupId}`);
+      
+      return res.json({ success: true, result });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error joining quick meet:", error);
+      return res.status(500).json({ message: "Failed to join quick meet" });
+    }
+  });
+
+  // RESTART quick meet from expired meet
+  app.post("/api/quick-meets/:id/restart", async (req, res) => {
+    try {
+      const meetupId = parseInt(req.params.id || '0');
+      const userId = req.headers['x-user-id'];
+      const { duration = '1hour' } = req.body;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User ID required" });
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`🔄 RESTARTING QUICK MEET ${meetupId} for user ${userId} with duration ${duration}`);
+
+      // Get the original meetup to copy its details
+      const originalMeetup = await storage.getQuickMeetup(meetupId);
+      if (!originalMeetup) {
+        return res.status(404).json({ message: "Original quick meet not found" });
+      }
+
+      // Check if user is the original organizer
+      if (originalMeetup.organizerId !== parseInt(userId as string || '0')) {
+        return res.status(403).json({ message: "Only the original organizer can restart this quick meet" });
+      }
+
+      // Create new meetup with same details but fresh expiration
+      const now = new Date();
+      const durationMs = {
+        '1hour': 1 * 60 * 60 * 1000,
+        '2hours': 2 * 60 * 60 * 1000,
+        '3hours': 3 * 60 * 60 * 1000,
+        '4hours': 4 * 60 * 60 * 1000,
+        '6hours': 6 * 60 * 60 * 1000,
+        '12hours': 12 * 60 * 60 * 1000,
+        '24hours': 24 * 60 * 60 * 1000
+      }[duration] || 1 * 60 * 60 * 1000;
+
+      const newMeetupData = {
+        organizerId: originalMeetup.organizerId,
+        title: originalMeetup.title,
+        description: originalMeetup.description,
+        category: originalMeetup.category,
+        location: originalMeetup.location,
+        meetingPoint: originalMeetup.meetingPoint,
+        street: originalMeetup.street,
+        city: originalMeetup.city,
+        state: originalMeetup.state,
+        country: originalMeetup.country,
+        zipcode: originalMeetup.zipcode,
+        maxParticipants: originalMeetup.maxParticipants,
+        minParticipants: originalMeetup.minParticipants,
+        responseTime: duration,
+        expiresAt: new Date(now.getTime() + durationMs).toISOString(),
+        availableAt: now.toISOString()
+      };
+
+      const newMeetup = await storage.createQuickMeetup(newMeetupData);
+      if (process.env.NODE_ENV === 'development') console.log(`✅ QUICK MEET RESTARTED: New ID ${newMeetup.id} from original ${meetupId}`);
+      
+      return res.json({ 
+        success: true, 
+        meetup: newMeetup,
+        message: "Quick meet successfully restarted with fresh participant list"
+      });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error restarting quick meet:", error);
+      return res.status(500).json({ message: "Failed to restart quick meet" });
+    }
+  });
+
+  // UPDATE quick meet
+  app.put("/api/quick-meets/:id", async (req, res) => {
+    try {
+      const meetupId = parseInt(req.params.id || '0');
+      const userId = req.headers['x-user-id'];
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User ID required" });
+      }
+
+      // Get the meetup to verify ownership
+      const existingMeetup = await storage.getQuickMeetup(meetupId);
+      if (!existingMeetup) {
+        return res.status(404).json({ message: "Quick meet not found" });
+      }
+
+      // Check if user is the organizer
+      if (existingMeetup.organizerId !== parseInt(userId as string || '0')) {
+        return res.status(403).json({ message: "Only the organizer can edit this quick meet" });
+      }
+
+      const { title, description, duration } = req.body;
+      const updates: any = {};
+
+      if (title !== undefined) updates.title = title;
+      if (description !== undefined) updates.description = description;
+      
+      // Handle duration extension
+      if (duration) {
+        const durationMs = {
+          '1hour': 1 * 60 * 60 * 1000,
+          '2hours': 2 * 60 * 60 * 1000,
+          '3hours': 3 * 60 * 60 * 1000,
+          '4hours': 4 * 60 * 60 * 1000,
+          '6hours': 6 * 60 * 60 * 1000,
+          '12hours': 12 * 60 * 60 * 1000,
+          '24hours': 24 * 60 * 60 * 1000
+        }[duration] || 1 * 60 * 60 * 1000;
+
+        const currentExpiry = new Date(existingMeetup.expiresAt);
+        const newExpiry = new Date(currentExpiry.getTime() + durationMs);
+        updates.expiresAt = newExpiry.toISOString();
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`🔄 UPDATING QUICK MEET ${meetupId} for user ${userId}:`, updates);
+
+      const updatedMeetup = await storage.updateQuickMeetup(meetupId, updates);
+      if (!updatedMeetup) {
+        return res.status(500).json({ message: "Failed to update quick meet" });
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`✅ QUICK MEET UPDATED: ID ${meetupId}`);
+      return res.json({ 
+        success: true, 
+        meetup: updatedMeetup,
+        message: "Quick meet updated successfully"
+      });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error updating quick meet:", error);
+      return res.status(500).json({ message: "Failed to update quick meet" });
+    }
+  });
+
+  // DELETE quick meet
+  app.delete("/api/quick-meets/:id", async (req, res) => {
+    try {
+      const meetupId = parseInt(req.params.id || '0');
+      const userId = req.headers['x-user-id'];
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User ID required" });
+      }
+
+      // Get the meetup to verify ownership
+      const existingMeetup = await storage.getQuickMeetup(meetupId);
+      if (!existingMeetup) {
+        return res.status(404).json({ message: "Quick meet not found" });
+      }
+
+      // Check if user is the organizer
+      if (existingMeetup.organizerId !== parseInt(userId as string || '0')) {
+        return res.status(403).json({ message: "Only the organizer can delete this quick meet" });
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`🗑️ DELETING QUICK MEET ${meetupId} for user ${userId}`);
+
+      const deleted = await storage.deleteQuickMeetup(meetupId);
+      if (!deleted) {
+        return res.status(500).json({ message: "Failed to delete quick meet" });
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`✅ QUICK MEET DELETED: ID ${meetupId}`);
+      return res.json({ 
+        success: true, 
+        message: "Quick meet deleted successfully"
+      });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error deleting quick meet:", error);
+      return res.status(500).json({ message: "Failed to delete quick meet" });
+    }
+  });
+
+  // GET user's expired quick meets for restart management
+  app.get("/api/users/:userId/expired-quick-meets", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId || '0');
+      const authUserId = req.headers['x-user-id'];
+      
+      if (!authUserId || parseInt(authUserId as string || '0') !== userId) {
+        return res.status(403).json({ message: "Unauthorized access" });
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`📋 FETCHING EXPIRED QUICK MEETS for user ${userId}`);
+      
+      const expiredMeetups = await storage.getUserArchivedMeetups(userId);
+      if (process.env.NODE_ENV === 'development') console.log(`Found ${expiredMeetups.length} expired quick meets for restart`);
+      
+      return res.json(expiredMeetups);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error fetching expired quick meets:", error);
+      return res.status(500).json({ message: "Failed to fetch expired quick meets" });
+    }
+  });
+
+  // ===== LEGACY QUICK MEETUPS API ROUTES (deprecated, will be removed in future versions) =====
+  // These endpoints are deprecated in favor of the new "quick meet" terminology above.
+  // They are kept for backward compatibility but will be removed in a future release.
 
   // ===== QUICK DEALS API ROUTES =====
   
