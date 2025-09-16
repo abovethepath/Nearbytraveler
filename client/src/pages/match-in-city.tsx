@@ -852,10 +852,9 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                   ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white border-emerald-300 shadow-emerald-200' 
                                   : 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white border-blue-300 shadow-blue-200 hover:from-blue-600 hover:to-indigo-700'
                               }`}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                console.log('🚀 PILL CLICK DETECTED!', activity.activityName, activity.id);
+                              onClick={() => {
+                                console.log('🚀 PILL CLICKED!', activity.activityName);
+                                alert('PILL CLICKED: ' + activity.activityName);
                                 handleToggleActivity(activity.id, activity.activityName);
                               }}
                               onMouseDown={(e) => {
@@ -904,28 +903,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         );
                       })}
                     </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <h3 className="text-lg font-semibold text-red-600 mb-4">{selectedCity}</h3>
-                    <div className="mb-6">
-                      <h4 className="text-lg font-semibold text-gray-800 mb-4">🎯 Popular Activities & Interests</h4>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                        {[
-                          "Single and Looking", "Meet Locals/Travelers", "Family Activities",
-                          "Nightlife & Dancing", "Local Food Specialties", "Museums",
-                          "Coffee Culture", "Craft Beer & Breweries", "City Tours & Sightseeing",
-                          "Photography", "Hiking & Nature", "Live Music Venues",
-                          "Local Hidden Gems", "Beach Activities", "Art Galleries",
-                          "Brunch Spots", "Historical Tours", "Festivals & Events"
-                        ].map((activity) => (
-                          <div key={activity} className="p-3 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
-                            <span className="text-sm font-medium text-gray-700">{activity}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <p className="text-gray-500 text-sm">💡 These are popular interests - start matching with people who share them!</p>
                   </div>
                 )}
 
