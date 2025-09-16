@@ -958,6 +958,7 @@ export const quickMeetups = pgTable("quick_meetups", {
   availability: text("availability").notNull(), // "1hour", "3hours", "today", "tomorrow", "week"
   responseTime: text("response_time").notNull().default("ASAP"),
   autoCancel: boolean("auto_cancel").notNull().default(false),
+  organizerNotes: text("organizer_notes"), // Contact notes like "call me if lost", "text me if running late"
   isActive: boolean("is_active").notNull().default(true),
   participantCount: integer("participant_count").notNull().default(0),
   createdAt: timestamp("created_at").defaultNow(),

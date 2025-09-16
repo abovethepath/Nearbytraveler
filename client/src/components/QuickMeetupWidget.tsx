@@ -24,6 +24,7 @@ interface NewMeetup {
   country: string;
   zipcode: string;
   responseTime: string;
+  organizerNotes: string; // Contact info like "call me if lost"
 }
 
 export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city?: string; profileUserId?: number; triggerCreate?: boolean }) {
@@ -71,7 +72,8 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
     state: actualUser?.hometownState || '',
     country: actualUser?.hometownCountry || 'United States',
     zipcode: '',
-    responseTime: '24hours'
+    responseTime: '24hours',
+    organizerNotes: '' // Contact info like "call me if lost"
   });
 
   const queryClient = useQueryClient();
@@ -162,6 +164,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
         zipcode: meetupData.zipcode || '',
         location: `${meetupData.city}, ${meetupData.state}`,
         responseTime: meetupData.responseTime,
+        organizerNotes: meetupData.organizerNotes || '', // Contact notes like "call me if lost"
         expiresAt: expiresAt.toISOString(),
         maxParticipants: 10,
         minParticipants: 1,
@@ -197,7 +200,8 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
         state: actualUser?.hometownState || '',
         country: actualUser?.hometownCountry || 'United States',
         zipcode: '',
-        responseTime: '1hour'
+        responseTime: '1hour',
+        organizerNotes: ''
       });
       toast({
         title: "Quick Meetup Posted!",
@@ -444,6 +448,14 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                   className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                 />
                 
+                <textarea
+                  placeholder="Contact notes (e.g., 'Call me if lost: 555-1234', 'Text if running late')"
+                  value={newMeetup.organizerNotes}
+                  onChange={(e) => setNewMeetup(prev => ({ ...prev, organizerNotes: e.target.value }))}
+                  className="w-full px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded h-16 resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  data-testid="input-organizer-notes"
+                />
+                
                 {/* Location Selection - FIXED TO USE SMARTLOCATIONINPUT */}
                 <div className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">Location *</div>
                 <SmartLocationInput
@@ -640,6 +652,15 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                       <p className="text-xs text-gray-600 dark:text-gray-400 break-words line-clamp-3">
                         {meetup.description}
                       </p>
+                    )}
+
+                    {/* Organizer Contact Notes */}
+                    {meetup.organizerNotes && (
+                      <div className="bg-blue-50 dark:bg-blue-900/20 p-2 rounded-md border border-blue-200 dark:border-blue-800" data-testid="organizer-notes">
+                        <p className="text-xs text-blue-800 dark:text-blue-300 font-medium">
+                          📞 Contact Info: {meetup.organizerNotes}
+                        </p>
+                      </div>
                     )}
                   
                     {/* Participants and Call to Action */}
