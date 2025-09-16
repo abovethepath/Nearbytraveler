@@ -103,11 +103,12 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
 
   // Fetch direct compatibility data from the API (consistent with discover page)
   const { data: compatibilityData, isLoading } = useQuery<{
-    totalCommonalities: number;
-    commonalities: string[];
-    sharedInterests: number;
-    sharedActivities: number;
-    sameCity: boolean;
+    userId: number;
+    score: number;
+    sharedInterests: string[];
+    sharedActivities: string[];
+    sharedEvents: string[];
+    reasons: string[];
   }>({
     queryKey: [`/api/compatibility/${currentUserId}/${otherUserId}`],
     enabled: !!currentUserId && !!otherUserId && currentUserId !== otherUserId
@@ -515,27 +516,16 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
           </CardTitle>
           <div className="flex items-center gap-1.5 flex-wrap">
             <Badge className="bg-green-500 text-white shadow-md border-green-600 text-xs sm:text-sm px-2 py-1 font-bold whitespace-nowrap">
-              <span style={{ color: 'white !important' }}>{commonalities.compatibilityPercentage}% Match</span>
+              <span style={{ color: 'white !important' }}>
+                {compatibilityData ? Math.round((compatibilityData.score || 0) * 100) : commonalities.compatibilityPercentage}% Match
+              </span>
             </Badge>
             <Badge className="bg-blue-500 text-white shadow-md border-blue-600 text-xs sm:text-sm px-2 py-1 font-medium whitespace-nowrap">
               <span style={{ color: 'white !important' }}>
-                {matchData ? (
-                  matchData.sharedInterests?.length + 
-                  matchData.sharedActivities?.length + 
-                  matchData.sharedEvents?.length + 
-                  matchData.sharedLanguages?.length + 
-                  matchData.sharedCountries?.length + 
-                  matchData.sharedTravelIntent?.length + 
-                  matchData.sharedSexualPreferences?.length +
-                  (matchData.bothVeterans ? 1 : 0) +
-                  (matchData.bothActiveDuty ? 1 : 0) +
-                  (matchData.locationOverlap ? 1 : 0) +
-                  (matchData.dateOverlap ? 1 : 0) +
-                  (matchData.userTypeCompatibility ? 1 : 0) +
-                  (matchData.travelIntentCompatibility ? 1 : 0) +
-                  (matchData.sameGender ? 1 : 0) +
-                  (matchData.sameAge ? 1 : 0) +
-                  (matchData.sameFamilyStatus ? 1 : 0)
+                {compatibilityData ? (
+                  (compatibilityData.sharedInterests?.length || 0) + 
+                  (compatibilityData.sharedActivities?.length || 0) + 
+                  (compatibilityData.sharedEvents?.length || 0)
                 ) : commonalities.totalCount} Common
               </span>
             </Badge>
