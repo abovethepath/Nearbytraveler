@@ -286,7 +286,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
   }
 
   return (
-    <div className="space-y-4 overflow-x-hidden">
+    <div className="w-full">
       {/* ENERGETIC PRIMARY CTA - LETS MEET NOW! */}
       <Card className="border-2 border-orange-400 dark:border-orange-600 bg-gradient-to-br from-orange-100 via-red-50 to-pink-100 dark:from-orange-900/40 dark:via-red-900/30 dark:to-pink-900/40 hover:shadow-xl hover:shadow-orange-200 dark:hover:shadow-orange-900/30 transition-all duration-300 w-full max-h-[90vh] overflow-hidden animate-pulse-slow">
         <CardContent className="p-6 bg-transparent">
