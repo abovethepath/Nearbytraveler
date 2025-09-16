@@ -26,14 +26,108 @@ export function PitchPreview() {
             <div className="h-[64px] w-[3px] bg-gray-800 dark:bg-gray-300 absolute -end-[17px] top-[142px] rounded-e-lg"></div>
             
             {/* Screen Container */}
-            <div className="rounded-[2rem] overflow-hidden w-[322px] h-[684px] bg-white dark:bg-gray-900 relative">
-              {/* Embedded Privacy Settings Page */}
-              <iframe 
-                src="/privacy-settings"
-                className="w-full h-full border-0"
-                title="Privacy Settings Preview"
-                style={{ transform: 'scale(1)', transformOrigin: 'top left' }}
-              />
+            <div className="rounded-[2rem] overflow-hidden w-[322px] h-[684px] bg-gray-50 dark:bg-gray-900 relative">
+              {/* Mock Privacy Settings UI */}
+              <div className="h-full overflow-y-auto">
+                {/* Status Bar */}
+                <div className="flex items-center justify-between px-6 pt-3 pb-1 text-sm">
+                  <span className="font-medium">9:41</span>
+                  <div className="flex items-center gap-1">
+                    <div className="w-4 h-2 bg-black rounded-sm"></div>
+                    <div className="w-1 h-1 bg-black rounded-full"></div>
+                  </div>
+                </div>
+
+                {/* Header */}
+                <div className="px-4 py-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-6 h-6 bg-gray-300 rounded"></div>
+                    <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                      🔒
+                    </div>
+                    <h1 className="text-xl font-bold text-gray-900">Privacy Settings</h1>
+                  </div>
+
+                  {/* Main Card */}
+                  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-5 h-5 bg-gray-400 rounded"></div>
+                      <h2 className="text-base font-semibold text-gray-900">Display Name Preference</h2>
+                    </div>
+                    <p className="text-xs text-gray-600 mb-4">
+                      Choose how your name appears to other users across all meetups and interactions.
+                    </p>
+
+                    {/* Preview Box */}
+                    <div className="bg-blue-50 p-3 rounded-lg border border-blue-200 mb-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-4 h-4 bg-blue-600 rounded"></div>
+                        <span className="text-xs font-medium text-blue-900">Preview</span>
+                      </div>
+                      <p className="text-sm font-semibold text-blue-900">
+                        Others will see you as: <span className="bg-white px-2 py-1 rounded border text-blue-800">
+                          nearbytrav
+                        </span>
+                      </p>
+                    </div>
+
+                    {/* Radio Options */}
+                    <div className="space-y-3">
+                      {/* Username Option - Selected */}
+                      <div className="flex items-start gap-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div className="w-4 h-4 rounded-full bg-blue-500 mt-0.5 flex items-center justify-center">
+                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-sm font-medium text-gray-900">Username Only</span>
+                            <span className="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">RECOMMENDED</span>
+                          </div>
+                          <p className="text-xs text-gray-600 mb-2">
+                            Shows only your username (e.g., "nearbytrav")
+                          </p>
+                          <p className="text-xs text-blue-700 font-medium">
+                            ✅ Most private • Best for travelers
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* First Name Option */}
+                      <div className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg">
+                        <div className="w-4 h-4 rounded-full border-2 border-gray-300 mt-0.5"></div>
+                        <div className="flex-1">
+                          <span className="text-sm font-medium text-gray-900">First Name</span>
+                          <p className="text-xs text-gray-600 mb-1">
+                            Shows first word of your name (e.g., "Aaron")
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            ⚖️ Balanced privacy and personal connection
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Full Name Option */}
+                      <div className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg">
+                        <div className="w-4 h-4 rounded-full border-2 border-gray-300 mt-0.5"></div>
+                        <div className="flex-1">
+                          <span className="text-sm font-medium text-gray-900">Full Name</span>
+                          <p className="text-xs text-gray-600 mb-1">
+                            Shows your complete name (e.g., "Aaron Lefkowitz")
+                          </p>
+                          <p className="text-xs text-orange-600">
+                            ⚠️ Less private • Use with caution when traveling
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Save Button */}
+                    <button className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg text-sm font-medium mt-4">
+                      Save Changes
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
