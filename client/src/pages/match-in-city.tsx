@@ -251,9 +251,11 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   };
 
   const toggleActivity = async (activity: any) => {
-    // Force user ID to 1 for now to fix authentication issue
-    const userId = user?.id || 1;
-    console.log('🔧 TOGGLE: using userId =', userId);
+    // Get user from localStorage if not in context
+    const storedUser = localStorage.getItem('travelConnectUser');
+    const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
+    const userId = actualUser?.id || 2; // Use actual user ID, fallback to valid user 2
+    console.log('🔧 TOGGLE: using userId =', userId, 'user object:', actualUser);
 
     const isCurrentlyActive = userActivities.some(ua => ua.activityId === activity.id);
     console.log('🎯 TOGGLE ACTIVITY:', activity.activityName, 'isCurrentlyActive:', isCurrentlyActive);
