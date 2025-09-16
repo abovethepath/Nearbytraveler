@@ -13,15 +13,16 @@ interface MessagesWidgetProps {
 function MessagesWidget({ userId }: MessagesWidgetProps) {
   const [, setLocation] = useLocation();
 
-  const { data: messages = [], isLoading: messagesLoading } = useQuery<Message[]>({
+  const { data: messages = [], isLoading: messagesLoading, error: messagesError } = useQuery<Message[]>({
     queryKey: [`/api/messages/${userId}`],
     enabled: !!userId,
     staleTime: 0, // Always fetch fresh data
     refetchOnWindowFocus: true,
   });
 
-  const { data: users = [] } = useQuery<User[]>({
+  const { data: users = [], isLoading: usersLoading, error: usersError } = useQuery<User[]>({
     queryKey: ["/api/users"],
+    enabled: !!userId && messages.length > 0, // Only fetch users if we have messages
   });
 
   return (
@@ -47,7 +48,22 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
           </Button>
         </div>
         <div className="space-y-3 max-h-64 overflow-y-auto">
-          {(() => {
+          {/* Show loading state */}
+          {(messagesLoading || (messages.length > 0 && usersLoading)) && (
+            <div className="text-center py-4">
+              <p className="text-sm text-gray-600 dark:text-gray-300 font-medium">Loading messages...</p>
+            </div>
+          )}
+
+          {/* Show error state */}
+          {(messagesError || usersError) && (
+            <div className="text-center py-4">
+              <p className="text-sm text-red-600 dark:text-red-400 font-medium">Error loading messages</p>
+            </div>
+          )}
+
+          {/* Show messages when both queries are ready */}
+          {!messagesLoading && !usersLoading && !messagesError && !usersError && (() => {
             // Group messages by conversation (other user)
             const conversationMap = new Map();
             messages
@@ -78,17 +94,37 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
 
             return displayMessages.map((message, index) => {
               const otherUserId = message.senderId === userId ? message.receiverId : message.senderId;
-              const otherUser = users.find(u => u.id === otherUserId);
+              // Improved user lookup with debug logging
+              const otherUser = users.find(u => {
+                // Handle both string and number IDs
+                const matchesId = u.id === otherUserId || 
+                                 u.id === String(otherUserId) || 
+                                 String(u.id) === String(otherUserId);
+                return matchesId;
+              });
+              
               const isFromMe = message.senderId === userId;
               const isYourTurn = !isFromMe;
+
+              // Debug logging for troubleshooting
+              if (!otherUser) {
+                console.log('🚨 MessagesWidget: User lookup failed', {
+                  otherUserId,
+                  otherUserIdType: typeof otherUserId,
+                  availableUsers: users.map(u => ({ id: u.id, idType: typeof u.id, username: u.username })),
+                  message
+                });
+              }
             
               return (
                 <div
                   key={message.id || index} 
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (otherUser) {
-                      setLocation(`/messages?user=${otherUser.id}`);
+                    // Navigate even if user object isn't found, using the user ID
+                    const targetUserId = otherUser?.id || otherUserId;
+                    if (targetUserId) {
+                      setLocation(`/messages?user=${targetUserId}`);
                     }
                   }}
                   className={`cursor-pointer hover:bg-gradient-to-r hover:from-blue-50 hover:to-orange-50 dark:hover:from-blue-900/30 dark:hover:to-orange-900/30 rounded-xl p-4 transition-all duration-300 border-2 ${
@@ -105,7 +141,10 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
                         </span>
                       )}
                       <span className="text-sm font-bold text-blue-700 dark:text-blue-300">
-                        {isFromMe ? `To: ${otherUser?.username || "Unknown"}` : `From: ${otherUser?.username || "Unknown"}`}
+                        {isFromMe ? 
+                          `To: ${otherUser?.username || otherUser?.name || `User ${otherUserId}`}` : 
+                          `From: ${otherUser?.username || otherUser?.name || `User ${otherUserId}`}`
+                        }
                       </span>
                     </div>
                     {message.createdAt && (
@@ -128,8 +167,9 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
               );
             });
           })()}
-          
-          {(() => {
+
+          {/* Show no messages state when not loading and no messages exist */}
+          {!messagesLoading && !usersLoading && !messagesError && !usersError && (() => {
             const conversationCount = new Set(
               messages
                 .filter(message => message.senderId !== message.receiverId)
