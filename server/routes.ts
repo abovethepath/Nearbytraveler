@@ -4452,15 +4452,23 @@ Questions? Just reply to this message. Welcome aboard!
         location,
         userType,
         travelerTypes,
-        militaryStatus
+        militaryStatus,
+        currentUserId: currentUserIdParam
       } = req.query;
 
-      // Get current user ID from headers to exclude them from results (optional)
+      // Get current user ID from URL params first, then fall back to headers
       const userIdHeader = req.headers['x-user-id'] as string;
       let currentUserId = null;
       
-      // FIX: Make user ID optional for search - only parse if valid
-      if (userIdHeader && userIdHeader !== 'NaN' && userIdHeader !== 'undefined' && userIdHeader !== 'null') {
+      // First try URL parameter (frontend sends it this way)
+      if (currentUserIdParam && typeof currentUserIdParam === 'string') {
+        const parsedUserId = parseInt(currentUserIdParam);
+        if (!isNaN(parsedUserId) && parsedUserId > 0) {
+          currentUserId = parsedUserId;
+        }
+      }
+      // Fall back to header if URL param not found
+      else if (userIdHeader && userIdHeader !== 'NaN' && userIdHeader !== 'undefined' && userIdHeader !== 'null') {
         const parsedUserId = parseInt(userIdHeader);
         if (!isNaN(parsedUserId) && parsedUserId > 0) {
           currentUserId = parsedUserId;
@@ -4469,7 +4477,7 @@ Questions? Just reply to this message. Welcome aboard!
 
       if (process.env.NODE_ENV === 'development') {
         console.log('🔍 ADVANCED SEARCH: Performing search with filters:', {
-          search, gender, sexualPreference, minAge, maxAge, interests, privateInterests, activities, events: eventsFilter, location, userType, travelerTypes, militaryStatus, currentUserId
+          search, gender, sexualPreference, minAge, maxAge, topChoices, interests, privateInterests, activities, events: eventsFilter, location, userType, travelerTypes, militaryStatus, currentUserId
         });
         console.log('🔍 SEARCH QUERY TYPE:', typeof search, 'value:', search);
       }
