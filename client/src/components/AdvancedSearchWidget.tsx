@@ -672,17 +672,44 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
           {/* Search Results */}
           {advancedSearchResults.length > 0 && (
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-black dark:text-white">
-                People ({advancedSearchResults.length})
-              </h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-black dark:text-white">
+                  Found {advancedSearchResults.length} {advancedSearchResults.length === 1 ? 'person' : 'people'}
+                </h3>
+                <Button 
+                  onClick={() => onOpenChange(false)}
+                  variant="outline" 
+                  size="sm"
+                  className="text-blue-600 hover:text-blue-700"
+                  data-testid="button-close-to-see-results"
+                >
+                  Close to see {advancedSearchResults.length === 1 ? 'profile' : 'profiles'}
+                </Button>
+              </div>
               <div className="grid gap-4">
                 {advancedSearchResults.map((user) => (
-                  <Card key={user.id} className="hover:shadow-lg transition-shadow">
+                  <Card key={user.id} className="hover:shadow-lg transition-shadow border-l-4 border-l-blue-500">
                     <CardContent className="p-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <h4 className="font-semibold text-black dark:text-white">
+                      <div className="flex items-start gap-4">
+                        {/* Profile Image */}
+                        <div className="flex-shrink-0">
+                          {user.profileImage ? (
+                            <img 
+                              src={user.profileImage} 
+                              alt={user.name || user.username}
+                              className="w-16 h-16 rounded-full object-cover border-2 border-gray-200"
+                            />
+                          ) : (
+                            <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-orange-500 flex items-center justify-center text-white font-bold text-xl">
+                              {(user.name || user.username)?.charAt(0)?.toUpperCase()}
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* User Info */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className="font-semibold text-black dark:text-white text-lg">
                               {user.name || user.username}
                             </h4>
                             {user.userType && (
@@ -691,29 +718,58 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                               </Badge>
                             )}
                           </div>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                             @{user.username}
                           </p>
                           {user.location && (
-                            <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
-                              📍 {user.location}
+                            <p className="text-sm text-gray-500 dark:text-gray-500 mb-2 flex items-center gap-1">
+                              <MapPin className="w-3 h-3" />
+                              {user.location}
                             </p>
                           )}
                           {user.bio && (
-                            <p className="text-sm mt-2 text-gray-700 dark:text-gray-300">
-                              {user.bio.length > 100 ? `${user.bio.substring(0, 100)}...` : user.bio}
+                            <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
+                              {user.bio.length > 120 ? `${user.bio.substring(0, 120)}...` : user.bio}
                             </p>
                           )}
+                          {/* Interests Preview */}
+                          {user.interests && user.interests.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mb-3">
+                              {user.interests.slice(0, 3).map((interest, index) => (
+                                <Badge key={index} variant="outline" className="text-xs">
+                                  {interest}
+                                </Badge>
+                              ))}
+                              {user.interests.length > 3 && (
+                                <Badge variant="outline" className="text-xs">
+                                  +{user.interests.length - 3} more
+                                </Badge>
+                              )}
+                            </div>
+                          )}
                         </div>
-                        <Button
-                          size="sm"
-                          onClick={() => connectionMutation.mutate(user.id)}
-                          disabled={connectionMutation.isPending}
-                          className="ml-4"
-                        >
-                          <UserPlus className="h-4 w-4 mr-1" />
-                          Connect
-                        </Button>
+                        
+                        {/* Connect Button */}
+                        <div className="flex-shrink-0">
+                          <Button
+                            onClick={() => connectionMutation.mutate(user.id)}
+                            disabled={connectionMutation.isPending}
+                            className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-6 py-2"
+                            data-testid={`button-connect-${user.id}`}
+                          >
+                            {connectionMutation.isPending ? (
+                              <>
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                Connecting...
+                              </>
+                            ) : (
+                              <>
+                                <UserPlus className="h-4 w-4 mr-2" />
+                                Connect
+                              </>
+                            )}
+                          </Button>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
