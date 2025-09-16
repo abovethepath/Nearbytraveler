@@ -562,6 +562,7 @@ function QuickMeetupsPage() {
                 onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
                 placeholder="What are you planning to do?"
                 rows={3}
+                className="bg-white"
               />
             </div>
             
