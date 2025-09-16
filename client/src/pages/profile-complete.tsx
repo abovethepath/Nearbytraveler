@@ -22,8 +22,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight, AlertCircle, Phone, Plane, User as UserIcon } from "lucide-react";
-
-type TabKey = 'contacts' | 'photos' | 'references' | 'travel' | 'countries';
 import { compressPhotoAdaptive } from "@/utils/photoCompression";
 import { AdaptiveCompressionIndicator } from "@/components/adaptive-compression-indicator";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
@@ -32,7 +30,6 @@ import FriendReferralWidget from "@/components/friend-referral-widget";
 import ReferencesWidgetNew from "@/components/references-widget-new";
 import { VouchWidget } from "@/components/vouch-widget";
 import { LocationSharingSection } from "@/components/LocationSharingSection";
-import TravelPlansWidget from "@/components/TravelPlansWidget";
 // Removed framer-motion import for static interface
 import { useToast } from "@/hooks/use-toast";
 import { AuthContext } from "@/App";
@@ -249,7 +246,7 @@ import { BlockUserButton } from "@/components/block-user-button";
 
 import type { User, UserPhoto, PassportStamp, TravelPlan } from "@shared/schema";
 import { insertUserReferenceSchema } from "@shared/schema";
-import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, getPublicInterests, getPrivateInterests } from "../../../shared/base-options";
+import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS } from "../../../shared/base-options";
 
 // Extended user interface for additional properties
 interface ExtendedUser extends User {
@@ -494,7 +491,7 @@ function MultiSelect({ options, selected, onChange, placeholder, maxDisplay = 3,
             ) : (
               <>
                 {selected.slice(0, maxDisplay).map((item) => (
-                  <div key={item} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-white text-black border border-gray-300 dark:border-gray-600 appearance-none select-none">
+                  <div key={item} className={pillType === 'pill-interests' ? 'inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-blue-500 text-white border-0 appearance-none select-none' : 'inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-orange-500 text-white border-0 appearance-none select-none'}>
                     {item}
                   </div>
                 ))}
@@ -543,6 +540,14 @@ export default function ProfileComplete({ userId: propUserId }: { userId?: strin
   const [isProfileUploading, setIsProfileUploading] = useState(false);
   const [activeTab, setActiveTab] = useState("about");
   const [showInviteCodeField, setShowInviteCodeField] = useState(false);
+  const [selectedReference, setSelectedReference] = useState('');
+  const [selectedReferenceType, setSelectedReferenceType] = useState('general');
+  const [referenceContent, setReferenceContent] = useState('');
+  const [quickTags, setQuickTags] = useState<string[]>([]);
+  const [showReferenceForm, setShowReferenceForm] = useState(false);
+  const [editingReference, setEditingReference] = useState<any>(null);
+  const [showCountryInput, setShowCountryInput] = useState(false);
+  const [newCountry, setNewCountry] = useState('');
   
   // Determine profile owner
   const isOwnProfile = !propUserId || propUserId === user?.id?.toString();
@@ -906,6 +911,145 @@ export default function ProfileComplete({ userId: propUserId }: { userId?: strin
     },
   });
 
+  // Add country to passport stamps
+  const addCountryMutation = useMutation({
+    mutationFn: async (country: string) => {
+      const response = await apiRequest(`/api/users/${profileUserId}/passport-stamps`, {
+        method: 'POST',
+        body: JSON.stringify({ country }),
+      });
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${profileUserId}/passport-stamps`] });
+      setNewCountry('');
+      setShowCountryInput(false);
+      toast({
+        title: "Country added!",
+        description: "Your travel destination has been added to your passport.",
+      });
+    },
+    onError: (error) => {
+      console.error('❌ Add country error:', error);
+      toast({
+        title: "Add failed",
+        description: "There was a problem adding your country. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Remove country from passport stamps
+  const removeCountryMutation = useMutation({
+    mutationFn: async (country: string) => {
+      const response = await apiRequest(`/api/users/${profileUserId}/passport-stamps/${encodeURIComponent(country)}`, {
+        method: 'DELETE',
+      });
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${profileUserId}/passport-stamps`] });
+      toast({
+        title: "Country removed",
+        description: "The country has been removed from your passport.",
+      });
+    },
+    onError: (error) => {
+      console.error('❌ Remove country error:', error);
+      toast({
+        title: "Remove failed",
+        description: "There was a problem removing the country. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Add reference mutation
+  const addReferenceMutation = useMutation({
+    mutationFn: async (referenceData: any) => {
+      const response = await apiRequest(`/api/users/${profileUserId}/references`, {
+        method: 'POST',
+        body: JSON.stringify(referenceData),
+      });
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${profileUserId}/references`] });
+      setSelectedReference('');
+      setReferenceContent('');
+      setQuickTags([]);
+      setShowReferenceForm(false);
+      toast({
+        title: "Reference added!",
+        description: "Your reference has been successfully submitted.",
+      });
+    },
+    onError: (error) => {
+      console.error('❌ Add reference error:', error);
+      toast({
+        title: "Reference failed",
+        description: "There was a problem adding your reference. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Update reference mutation
+  const updateReferenceMutation = useMutation({
+    mutationFn: async ({ referenceId, referenceData }: { referenceId: number, referenceData: any }) => {
+      const response = await apiRequest(`/api/users/${profileUserId}/references/${referenceId}`, {
+        method: 'PUT',
+        body: JSON.stringify(referenceData),
+      });
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${profileUserId}/references`] });
+      setEditingReference(null);
+      setSelectedReference('');
+      setReferenceContent('');
+      setQuickTags([]);
+      setShowReferenceForm(false);
+      toast({
+        title: "Reference updated!",
+        description: "Your reference has been successfully updated.",
+      });
+    },
+    onError: (error) => {
+      console.error('❌ Update reference error:', error);
+      toast({
+        title: "Update failed",
+        description: "There was a problem updating your reference. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Delete reference mutation
+  const deleteReferenceMutation = useMutation({
+    mutationFn: async (referenceId: number) => {
+      const response = await apiRequest(`/api/users/${profileUserId}/references/${referenceId}`, {
+        method: 'DELETE',
+      });
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${profileUserId}/references`] });
+      toast({
+        title: "Reference deleted",
+        description: "The reference has been removed.",
+      });
+    },
+    onError: (error) => {
+      console.error('❌ Delete reference error:', error);
+      toast({
+        title: "Delete failed",
+        description: "There was a problem deleting the reference. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const onSubmit = (data: any) => {
     console.log('📝 Form submit data:', data);
     updateProfileMutation.mutate(data);
@@ -923,6 +1067,60 @@ export default function ProfileComplete({ userId: propUserId }: { userId?: strin
     if (file) {
       uploadProfileImageMutation.mutate(file);
     }
+  };
+
+  const handleAddCountry = () => {
+    if (newCountry.trim()) {
+      addCountryMutation.mutate(newCountry.trim());
+    }
+  };
+
+  const handleRemoveCountry = (country: string) => {
+    removeCountryMutation.mutate(country);
+  };
+
+  const handleAddReference = () => {
+    if (selectedReference && referenceContent.trim()) {
+      const referenceData = {
+        revieweeId: parseInt(selectedReference),
+        experience: 'positive' as const,
+        content: referenceContent,
+        type: selectedReferenceType,
+        quickTags: quickTags
+      };
+      
+      if (editingReference) {
+        updateReferenceMutation.mutate({
+          referenceId: editingReference.id,
+          referenceData
+        });
+      } else {
+        addReferenceMutation.mutate(referenceData);
+      }
+    }
+  };
+
+  const handleEditReference = (reference: any) => {
+    setEditingReference(reference);
+    setSelectedReference(reference.revieweeId.toString());
+    setSelectedReferenceType(reference.type || 'general');
+    setReferenceContent(reference.content || '');
+    setQuickTags(reference.quickTags || []);
+    setShowReferenceForm(true);
+  };
+
+  const handleDeleteReference = (referenceId: number) => {
+    if (confirm('Are you sure you want to delete this reference?')) {
+      deleteReferenceMutation.mutate(referenceId);
+    }
+  };
+
+  const handleQuickTagToggle = (tag: string) => {
+    setQuickTags(prev => 
+      prev.includes(tag) 
+        ? prev.filter(t => t !== tag)
+        : [...prev, tag]
+    );
   };
 
   // Show loading state while user data is loading
@@ -1541,12 +1739,6 @@ export default function ProfileComplete({ userId: propUserId }: { userId?: strin
             />
           ) : (
             <>
-              {/* Travel Plans Widget */}
-              <TravelPlansWidget 
-                userId={profileUserId || 0}
-                isOwnProfile={isOwnProfile}
-              />
-
               {/* Travel Itinerary */}
               <TravelItinerary 
                 userId={profileUserId || 0}
