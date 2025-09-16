@@ -693,7 +693,7 @@ export default function ProfileComplete({ userId: propUserId }: { userId?: strin
     const total = displayUser.userType === 'business' ? 10 : 12;
     
     // Basic info
-    if (displayUser.profileImageUrl) completed++;
+    if (displayUser.profileImage) completed++;
     if (displayUser.bio) completed++;
     if (displayUser.hometownCity) completed++;
     
@@ -1211,7 +1211,7 @@ export default function ProfileComplete({ userId: propUserId }: { userId?: strin
               {/* Profile Image */}
               <div className="relative flex-shrink-0">
                 <SimpleAvatar 
-                  src={displayUser.profileImageUrl} 
+                  imageUrl={displayUser.profileImage} 
                   fallback={displayUser.username?.[0] || displayUser.businessName?.[0] || '?'}
                   className="w-24 h-24 md:w-32 md:h-32"
                 />
