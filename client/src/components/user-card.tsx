@@ -179,21 +179,7 @@ export default function UserCard({
             ) : null;
           })()}
           
-          {/* Interests */}
-          {(user.interests?.length || 0) > 0 && (
-            <div className="flex justify-center">
-              <InterestPills 
-                interests={user.interests || []}
-                variant="card"
-                maxRows={2}
-                maxVisibleMobile={6}
-                maxVisibleDesktop={8}
-                prioritizedInterests={compatibilityData?.sharedInterests || []}
-                showCommonCount={!!(compatibilityData?.sharedInterests?.length)}
-                className="w-full justify-center"
-              />
-            </div>
-          )}
+          {/* Interests section removed - only showing "Things in Common" count */}
         </div>
       </CardContent>
     </Card>
