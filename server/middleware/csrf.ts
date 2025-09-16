@@ -34,6 +34,20 @@ export const csrfProtection = () => {
       return next();
     }
 
+    // Exempt authentication routes from CSRF protection (they establish the session)
+    const authExemptRoutes = [
+      '/api/auth/login',
+      '/api/register', 
+      '/api/login',
+      '/api/callback',
+      '/api/dev-login'
+    ];
+    
+    if (authExemptRoutes.includes(req.path)) {
+      console.log('🔓 CSRF Protection: Exempting auth route:', req.path);
+      return next();
+    }
+
     // For state-changing requests (POST, PUT, DELETE), validate CSRF token
     if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method)) {
       const tokenFromCookie = req.cookies._csrf;
