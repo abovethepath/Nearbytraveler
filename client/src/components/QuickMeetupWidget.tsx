@@ -131,7 +131,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
         throw new Error("Please log in to create meetups");
       }
 
-      // Calculate expiration based on response time
+      // Calculate expiration based on response time - ALWAYS USE LOCAL TIME
       const now = new Date();
       let expireHours = 1; // default 1 hour
       switch (meetupData.responseTime) {
@@ -143,7 +143,10 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
         case '24hours': expireHours = 24; break;
         default: expireHours = 1; // default to 1 hour instead of 24
       }
-      const expiresAt = new Date(now.getTime() + (expireHours * 60 * 60 * 1000));
+      
+      // Create expiration time in LOCAL timezone (not UTC)
+      const expiresAt = new Date();
+      expiresAt.setHours(now.getHours() + expireHours, now.getMinutes(), now.getSeconds(), now.getMilliseconds());
 
       console.log('🚀 CREATING QUICK MEETUP:', meetupData);
       console.log('🏠 STREET ADDRESS FROM FORM:', meetupData.streetAddress);
@@ -490,11 +493,21 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
             .slice(0, 3)
             .map((meetup: any) => {
               const isOwn = meetup.organizerId === user?.id;
+              
+              // ALWAYS USE LOCAL TIME for countdown calculations
+              const now = new Date();
               const expiresAtLocal = new Date(meetup.expiresAt);
-              const timeLeft = Math.max(0, expiresAtLocal.getTime() - Date.now());
+              const timeLeft = Math.max(0, expiresAtLocal.getTime() - now.getTime());
               const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
               const minutesLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-              const untilStr = expiresAtLocal.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+              
+              // Display expiration time in LOCAL timezone
+              const untilStr = expiresAtLocal.toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit', 
+                hour12: true,
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone // Explicit local timezone
+              });
 
               return (
                 <Card 
