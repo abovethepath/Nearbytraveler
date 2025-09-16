@@ -550,7 +550,7 @@ function QuickMeetupsPage() {
                 id="edit-title"
                 value={editForm.title}
                 onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                placeholder="Meetup title"
+                placeholder="Quick meet title"
               />
             </div>
             
@@ -609,7 +609,7 @@ function QuickMeetupsPage() {
                 }}
                 disabled={updateMeetupMutation.isPending || !editForm.title.trim()}
               >
-                {updateMeetupMutation.isPending ? 'Updating...' : 'Update Meetup'}
+                {updateMeetupMutation.isPending ? 'Updating...' : 'Update Quick Meet'}
               </Button>
             </div>
           </div>
@@ -621,7 +621,7 @@ function QuickMeetupsPage() {
         <div className="mb-6">
           <UniversalBackButton />
           <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-800 bg-clip-text text-transparent mb-2">
-            All Quick Meetups
+            All Quick Meets
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
             Find spontaneous hangouts and activities in your area
@@ -633,7 +633,7 @@ function QuickMeetupsPage() {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
-              placeholder="Search meetups by activity, location, or username..."
+              placeholder="Search quick meets by activity, location, or username..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -648,7 +648,7 @@ function QuickMeetupsPage() {
             className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white"
           >
             <Plus className="w-4 h-4 mr-2" />
-            {showCreateForm ? 'Cancel' : 'Create Quick Meetup'}
+            {showCreateForm ? 'Cancel' : 'Create Quick Meet'}
           </Button>
         </div>
 

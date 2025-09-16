@@ -9848,7 +9848,23 @@ export class DatabaseStorage implements IStorage {
   async getQuickMeetup(meetupId: number): Promise<any> {
     try {
       const [meetup] = await db
-        .select()
+        .select({
+          id: quickMeetups.id,
+          title: quickMeetups.title,
+          description: quickMeetups.description,
+          organizerId: quickMeetups.organizerId,
+          location: quickMeetups.location,
+          latitude: quickMeetups.latitude,
+          longitude: quickMeetups.longitude,
+          startTime: quickMeetups.startTime,
+          duration: quickMeetups.duration,
+          maxParticipants: quickMeetups.maxParticipants,
+          currentParticipants: quickMeetups.currentParticipants,
+          isActive: quickMeetups.isActive,
+          category: quickMeetups.category,
+          createdAt: quickMeetups.createdAt,
+          expiresAt: quickMeetups.expiresAt
+        })
         .from(quickMeetups)
         .where(eq(quickMeetups.id, meetupId));
       
