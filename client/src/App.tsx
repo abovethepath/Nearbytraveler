@@ -661,7 +661,7 @@ function Router() {
       if (location.startsWith('/profile/')) {
         const userId = parseInt(location.split('/')[2]);
         console.log('🔍 UNAUTHENTICATED PROFILE ACCESS: Allowing profile access for userId:', userId);
-        return <Profile userId={userId} />;
+        return <ProfileComplete userId={userId.toString()} />;
       }
 
       // Show appropriate page for root path based on authentication
@@ -702,9 +702,7 @@ function Router() {
       if (location === '/profile-responsive') {
         return <ProfilePageResponsive />;
       }
-      if (location === '/profile-new') {
-        return <ProfileNew />;
-      }
+      // OLD PROFILE ROUTES REMOVED
       if (location === '/events-responsive') {
         return <EventsListResponsive />;
       }
@@ -824,7 +822,7 @@ function Router() {
 
     if (location.startsWith('/profile/')) {
       const userId = parseInt(location.split('/')[2]);
-      return <Profile userId={userId} />;
+      return <ProfileComplete userId={userId.toString()} />;
     }
 
     if (location.startsWith('/quick-meetups/') && location.includes('/manage')) {
@@ -1076,7 +1074,7 @@ function Router() {
         // Handle dynamic routes first before showing NotFound
         if (location.startsWith('/profile/')) {
           const userId = parseInt(location.split('/')[2]);
-          return <Profile userId={userId} />;
+          return <ProfileComplete userId={userId.toString()} />;
         }
         if (location.startsWith('/events/')) {
           const eventId = location.split('/')[2];
