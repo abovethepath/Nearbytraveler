@@ -129,20 +129,22 @@ export function InterestPills({
                     </SheetDescription>
                   )}
                 </SheetHeader>
-                <div className="flex flex-wrap gap-2 mt-4 max-h-[60vh] overflow-y-auto">
-                  {sortedInterests.map((interest, index) => (
-                    <Badge
-                      key={index}
-                      variant={prioritizedInterests.includes(interest) ? "default" : "secondary"}
-                      className={`text-sm px-3 py-1.5 ${
-                        prioritizedInterests.includes(interest) 
-                          ? 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900 dark:text-blue-200' 
-                          : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
-                      } rounded-full`}
-                    >
-                      {interest}
-                    </Badge>
-                  ))}
+                <div className="mt-4 max-h-[50vh] overflow-y-auto overscroll-contain">
+                  <div className="flex flex-wrap gap-2 pr-2">
+                    {sortedInterests.map((interest, index) => (
+                      <Badge
+                        key={index}
+                        variant={prioritizedInterests.includes(interest) ? "default" : "secondary"}
+                        className={`text-sm px-3 py-1.5 ${
+                          prioritizedInterests.includes(interest) 
+                            ? 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900 dark:text-blue-200' 
+                            : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
+                        } rounded-full flex-shrink-0`}
+                      >
+                        {interest}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>
