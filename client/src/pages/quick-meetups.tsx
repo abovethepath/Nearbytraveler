@@ -83,7 +83,7 @@ function QuickMeetupsPage() {
         creator: {
           id: meetup.organizerId,
           username: meetup.organizerUsername || 'unknown',
-          name: meetup.organizerName || 'Unknown User',
+          name: meetup.organizerPublicName || meetup.organizerUsername || 'Unknown User',
           profileImage: meetup.organizerProfileImage || ''
         }
       }));

@@ -25,7 +25,7 @@ interface QuickMeetup {
   meetingPoint: string;
   organizerId: number;
   organizerUsername: string;
-  organizerName?: string;
+  organizerPublicName?: string;
   organizerProfileImage?: string;
 
   currentParticipants: number;
