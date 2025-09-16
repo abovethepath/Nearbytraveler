@@ -906,6 +906,100 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   </div>
                 )}
 
+                {/* Universal Activities - Always show these for every city */}
+                <div className="mt-8">
+                  <div className="text-center mb-6">
+                    <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent mb-2">🎯 Popular Activities & Interests</h3>
+                    <p className="text-gray-600 text-sm">Click to add to your "Things I Want To Do" profile</p>
+                    <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto rounded-full mt-2"></div>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+                    {[
+                      "Single and Looking", "Meet Locals/Travelers", "Family Activities",
+                      "Nightlife & Dancing", "Local Food Specialties", "Museums",
+                      "Coffee Culture", "Craft Beer & Breweries", "City Tours & Sightseeing",
+                      "Photography", "Hiking & Nature", "Live Music Venues",
+                      "Local Hidden Gems", "Beach Activities", "Art Galleries",
+                      "Brunch Spots", "Historical Tours", "Festivals & Events",
+                      "Shopping", "Street Art", "Local Markets", "Architecture",
+                      "Public Transportation", "Parks & Recreation"
+                    ].map((activity) => {
+                      // Check if user already has this activity in their interests
+                      const isSelected = userActivities.some(ua => ua.activityName === activity && ua.cityName === selectedCity);
+                      
+                      return (
+                        <button
+                          key={activity}
+                          className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border-2 ${
+                            isSelected 
+                              ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white border-emerald-300' 
+                              : 'bg-gradient-to-r from-gray-50 to-white text-gray-700 border-gray-200 hover:border-blue-300 hover:shadow-blue-100'
+                          }`}
+                          onClick={async () => {
+                            console.log('🎯 UNIVERSAL ACTIVITY CLICKED!', activity);
+                            alert('UNIVERSAL ACTIVITY: ' + activity);
+                            
+                            // Create this as a city activity if it doesn't exist, then toggle
+                            try {
+                              if (!isSelected) {
+                                // First create the activity for this city if it doesn't exist
+                                const createResponse = await fetch('/api/city-activities', {
+                                  method: 'POST',
+                                  headers: {
+                                    'Content-Type': 'application/json',
+                                    'x-user-id': '2'
+                                  },
+                                  body: JSON.stringify({
+                                    cityName: selectedCity,
+                                    activityName: activity,
+                                    createdByUserId: 2,
+                                    description: 'Universal activity',
+                                    category: 'universal'
+                                  })
+                                });
+                                
+                                if (createResponse.ok) {
+                                  const newActivity = await createResponse.json();
+                                  
+                                  // Add to user interests
+                                  const interestResponse = await fetch('/api/user-city-interests', {
+                                    method: 'POST',
+                                    headers: {
+                                      'Content-Type': 'application/json',
+                                      'x-user-id': '2'
+                                    },
+                                    body: JSON.stringify({
+                                      activityId: newActivity.id,
+                                      cityName: selectedCity
+                                    })
+                                  });
+                                  
+                                  if (interestResponse.ok) {
+                                    const newUserActivity = await interestResponse.json();
+                                    setUserActivities(prev => [...prev, newUserActivity]);
+                                    fetchUserActivities(); // Refresh to sync
+                                  }
+                                }
+                              } else {
+                                // Remove from user activities
+                                const userActivity = userActivities.find(ua => ua.activityName === activity && ua.cityName === selectedCity);
+                                if (userActivity) {
+                                  await handleDeleteActivity(userActivity.id);
+                                }
+                              }
+                            } catch (error) {
+                              console.error('Error handling universal activity:', error);
+                            }
+                          }}
+                          data-testid={`universal-activity-${activity.replace(/\s+/g, '-').toLowerCase()}`}
+                        >
+                          {activity}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
