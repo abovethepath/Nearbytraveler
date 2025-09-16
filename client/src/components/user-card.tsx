@@ -77,7 +77,7 @@ export default function UserCard({
 
   return (
     <Card 
-      className="user-card border-gray-200 dark:border-gray-700 shadow-md bg-white dark:bg-gray-800 overflow-hidden cursor-pointer transition-shadow hover:shadow-lg h-80"
+      className="user-card border-gray-200 dark:border-gray-700 shadow-md bg-white dark:bg-gray-800 overflow-hidden cursor-pointer transition-shadow hover:shadow-lg h-full"
       onClick={handleCardClick}
       data-testid={`user-card-${user.id}`}
     >

@@ -1931,7 +1931,7 @@ export default function Home() {
             {/* User Grid Display */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4">{filteredUsers.length > 0 ? (
                 filteredUsers.slice(0, showAllUsers ? filteredUsers.length : 8).map((otherUser) => (
-                  <div key={otherUser.id} className="transform hover:scale-[1.02] transition-transform min-w-0 overflow-hidden min-h-[300px] sm:min-h-[320px]">
+                  <div key={otherUser.id} className="transform hover:scale-[1.02] transition-transform min-w-0 overflow-hidden">
                     <UserCard 
                       user={otherUser} 
                       currentUserId={effectiveUser?.id}
