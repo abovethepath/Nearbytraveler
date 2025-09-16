@@ -1554,6 +1554,18 @@ export default function Home() {
         )}
       </h1>
       
+      {/* Mobile Search CTA */}
+      <div className="mb-6 px-4">
+        <Button 
+          onClick={() => setShowAdvancedSearchWidget(true)}
+          className="w-full bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white py-4 px-6 rounded-xl font-semibold text-lg shadow-lg transition-all duration-200 transform hover:scale-105"
+          data-testid="button-search-cta"
+        >
+          <Search className="w-5 h-5 mr-2" />
+          Find Your Perfect Travel Match
+        </Button>
+      </div>
+      
       <div className="mb-6 flex justify-center px-4">
         <div className="relative w-full max-w-sm rounded-xl overflow-hidden shadow-xl">
           <img 
