@@ -10525,21 +10525,20 @@ Questions? Just reply to this message. Welcome aboard!
       const { city, userId } = req.query;
       const now = new Date();
 
-      console.log(`🔧 QUICK MEETS DEBUG: Using minimal query to avoid schema issues`);
+      console.log(`🔧 QUICK MEETS DEBUG: Using basic query with user join to get organizer info`);
 
-      // Minimal query - no conditions, no joins, no ordering
-      const queryResult = await db.select().from(quickMeetups).limit(10);
+      // Basic query with JOIN to get organizer information
+      const queryResult = await db
+        .select()
+        .from(quickMeetups)
+        .leftJoin(users, eq(quickMeetups.organizerId, users.id))
+        .limit(20);
       
       if (process.env.NODE_ENV === 'development') {
         console.log(`🔧 QUICK MEETS RAW QUERY RESULT:`, queryResult.length, 'results');
         if (queryResult.length > 0) {
-          console.log(`🔧 FIRST RESULT:`, {
-            id: queryResult[0].id,
-            organizerId: queryResult[0].organizerId,
-            organizerUsername: queryResult[0].organizerUsername,
-            organizerName: queryResult[0].organizerName,
-            organizerProfileImage: queryResult[0].organizerProfileImage ? 'HAS IMAGE' : 'NO IMAGE'
-          });
+          console.log(`🔧 FIRST RAW RESULT KEYS:`, Object.keys(queryResult[0]));
+          console.log(`🔧 FIRST RAW RESULT FULL:`, JSON.stringify(queryResult[0], null, 2));
         }
       }
       
@@ -10547,35 +10546,35 @@ Questions? Just reply to this message. Welcome aboard!
       const allMeetups = queryResult.map(row => {
         if (process.env.NODE_ENV === 'development') {
           console.log(`🔧 QUICK MEET ROW DEBUG:`, {
-            id: row.id,
-            organizerId: row.organizerId,
-            organizerUsername: row.organizerUsername,
-            organizerName: row.organizerName,
-            organizerProfileImage: row.organizerProfileImage ? 'HAS IMAGE' : 'NO IMAGE'
+            id: row.quick_meetups?.id,
+            organizerId: row.quick_meetups?.organizerId,
+            organizerUsername: row.users?.username,
+            organizerName: row.users?.name,
+            organizerProfileImage: row.users?.profileImage ? 'HAS IMAGE' : 'NO IMAGE'
           });
         }
         
         return {
-          id: row.id,
-          organizerId: row.organizerId,
-          title: row.title,
-          description: row.description,
-          meetingPoint: row.meetingPoint,
-          street: row.street,
-          city: row.city,
-          state: row.state,
-          zipcode: row.zipcode,
-          country: row.country,
-          location: row.location,
-          availableAt: row.availableAt,
-          expiresAt: row.expiresAt,
-          duration: row.duration,
-          isActive: row.isActive,
-          createdAt: row.createdAt,
-          participantCount: row.participantCount,
-          organizerUsername: row.organizerUsername,
-          organizerName: row.organizerName,
-          organizerProfileImage: row.organizerProfileImage
+          id: row.quick_meetups?.id,
+          organizerId: row.quick_meetups?.organizerId,
+          title: row.quick_meetups?.title,
+          description: row.quick_meetups?.description,
+          meetingPoint: row.quick_meetups?.meetingPoint,
+          street: row.quick_meetups?.street,
+          city: row.quick_meetups?.city,
+          state: row.quick_meetups?.state,
+          zipcode: row.quick_meetups?.zipcode,
+          country: row.quick_meetups?.country,
+          location: row.quick_meetups?.location,
+          availableAt: row.quick_meetups?.availableAt,
+          expiresAt: row.quick_meetups?.expiresAt,
+          duration: row.quick_meetups?.duration,
+          isActive: row.quick_meetups?.isActive,
+          createdAt: row.quick_meetups?.createdAt,
+          participantCount: row.quick_meetups?.participantCount,
+          organizerUsername: row.users?.username,
+          organizerName: row.users?.name,
+          organizerProfileImage: row.users?.profileImage
         };
       });
       
