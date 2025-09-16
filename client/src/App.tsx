@@ -971,10 +971,10 @@ function Router() {
       case '/business-registration':
         return <BusinessRegistration />;
       case '/profile':
-        // USING ORIGINAL MASSIVE PROFILE - Full feature set
-        return <Profile />;
-      case '/profile-new':
+        // USING NEW CLEAN PROFILE - Updated version without removed features
         return <ProfileNew />;
+      case '/profile-old':
+        return <Profile />;
       case '/profile-complete':
         return <ProfileComplete />;
       case '/messages':
