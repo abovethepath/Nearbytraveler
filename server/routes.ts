@@ -58,6 +58,7 @@ import {
   insertWaitlistLeadSchema
 } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
+import { waitlistLeads } from "../shared/schema";
 import { alias } from "drizzle-orm/pg-core";
 
 // Helper function to compute public display name based on user preference
@@ -4365,6 +4366,43 @@ Aaron`
       res.status(500).json({ 
         message: "Failed to join waitlist. Please try again." 
       });
+    }
+  });
+
+  // GET WAITLIST LEADS - for debugging/admin viewing
+  app.get("/api/waitlist", async (req, res) => {
+    try {
+      const { start, end } = req.query;
+      
+      let query = db.select({
+        id: waitlistLeads.id,
+        name: waitlistLeads.name,
+        email: waitlistLeads.email,
+        phone: waitlistLeads.phone,
+        submittedAt: waitlistLeads.submittedAt
+      }).from(waitlistLeads);
+
+      // Add date filters if provided
+      if (start && end) {
+        const startDate = new Date(String(start));
+        const endDate = new Date(String(end));
+        endDate.setDate(endDate.getDate() + 1); // Include full end date
+        
+        query = query.where(and(
+          gte(waitlistLeads.submittedAt, startDate),
+          lt(waitlistLeads.submittedAt, endDate)
+        ));
+      }
+      
+      const leads = await query.orderBy(desc(waitlistLeads.submittedAt));
+      
+      res.json({
+        count: leads.length,
+        leads: leads
+      });
+    } catch (error: any) {
+      console.error('Error fetching waitlist leads:', error);
+      res.status(500).json({ message: "Failed to fetch waitlist data" });
     }
   });
 
