@@ -4364,7 +4364,6 @@ Aaron`
           .values({
             name: result.data.name,
             email: result.data.email,
-            phoneNumber: result.data.phoneNumber || null,
             submittedAt: new Date(),
             contacted: false,
             notes: null
