@@ -4334,30 +4334,79 @@ Aaron`
   // Registration endpoint
   app.post("/api/register", handleRegistration);
 
-  // WAITLIST ENDPOINT - for collecting launch leads
+  // WAITLIST ENDPOINT - for collecting launch leads - BULLETPROOF VERSION
   app.post("/api/waitlist", async (req, res) => {
+    const reqId = `waitlist_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
     try {
+      console.log(`🔍 WAITLIST [${reqId}]: Request received from ${req.ip}`, { 
+        name: req.body?.name, 
+        email: req.body?.email ? `${req.body.email.substring(0, 3)}***@${req.body.email.split('@')[1]}` : 'none',
+        timestamp: new Date().toISOString()
+      });
+      
       const result = insertWaitlistLeadSchema.safeParse(req.body);
       
       if (!result.success) {
+        console.log(`❌ WAITLIST [${reqId}]: Validation failed`, result.error.errors);
         return res.status(400).json({ 
           message: "Invalid data", 
           errors: result.error.errors 
         });
       }
 
-      const lead = await storage.createWaitlistLead(result.data);
+      console.log(`✅ WAITLIST [${reqId}]: Validation passed, saving to database...`);
       
-      console.log(`📧 WAITLIST: New lead added - ${result.data.name} (${result.data.email})`);
+      // BULLETPROOF DATABASE SAVE with verification
+      const lead = await withRetry(async () => {
+        const savedLead = await db
+          .insert(waitlistLeads)
+          .values({
+            name: result.data.name,
+            email: result.data.email,
+            phone: result.data.phone || null,
+            submittedAt: new Date(),
+            contacted: false,
+            notes: null
+          })
+          .returning();
+        
+        if (!savedLead || savedLead.length === 0) {
+          throw new Error('Database insert returned no data');
+        }
+        
+        console.log(`💾 WAITLIST [${reqId}]: Initial save successful, verifying...`);
+        
+        // IMMEDIATE VERIFICATION - Read back the data to confirm it's really saved
+        const verification = await db.select().from(waitlistLeads).where(eq(waitlistLeads.id, savedLead[0].id));
+        if (!verification || verification.length === 0) {
+          throw new Error(`CRITICAL: Data verification failed - lead ${savedLead[0].id} not found after insert`);
+        }
+        
+        console.log(`✅ WAITLIST [${reqId}]: Database verification successful - lead ${savedLead[0].id} permanently saved`);
+        return savedLead[0];
+      });
       
+      console.log(`📧 WAITLIST [${reqId}]: CONFIRMED SAVE - ${result.data.name} (ID: ${lead.id}) successfully added to waitlist`);
+      
+      // ONLY send success response after database verification
       res.status(201).json({ 
         message: "Successfully joined waitlist",
         lead: { name: lead.name, email: lead.email } 
       });
+      
+      console.log(`📤 WAITLIST [${reqId}]: Success response sent`);
+      
     } catch (error: any) {
-      console.error('Error creating waitlist lead:', error);
+      console.error(`❌ WAITLIST [${reqId}]: CRITICAL ERROR:`, {
+        message: error.message,
+        code: error.code,
+        name: error.name,
+        stack: error.stack?.split('\n').slice(0, 5).join('\n')
+      });
       
       if (error.code === '23505') { // Duplicate email
+        console.log(`⚠️ WAITLIST [${reqId}]: Duplicate email detected for ${req.body?.email}`);
         return res.status(409).json({ 
           message: "This email is already on our waitlist" 
         });
