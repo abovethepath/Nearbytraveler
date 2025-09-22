@@ -4374,13 +4374,7 @@ Aaron`
     try {
       const { start, end } = req.query;
       
-      let query = db.select({
-        id: waitlistLeads.id,
-        name: waitlistLeads.name,
-        email: waitlistLeads.email,
-        phone: waitlistLeads.phone,
-        submittedAt: waitlistLeads.submittedAt
-      }).from(waitlistLeads);
+      let leads;
 
       // Add date filters if provided
       if (start && end) {
@@ -4388,13 +4382,16 @@ Aaron`
         const endDate = new Date(String(end));
         endDate.setDate(endDate.getDate() + 1); // Include full end date
         
-        query = query.where(and(
-          gte(waitlistLeads.submittedAt, startDate),
-          lt(waitlistLeads.submittedAt, endDate)
-        ));
+        leads = await db.select().from(waitlistLeads)
+          .where(and(
+            gte(waitlistLeads.submittedAt, startDate),
+            lt(waitlistLeads.submittedAt, endDate)
+          ))
+          .orderBy(desc(waitlistLeads.submittedAt));
+      } else {
+        leads = await db.select().from(waitlistLeads)
+          .orderBy(desc(waitlistLeads.submittedAt));
       }
-      
-      const leads = await query.orderBy(desc(waitlistLeads.submittedAt));
       
       res.json({
         count: leads.length,
