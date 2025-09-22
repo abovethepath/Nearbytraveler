@@ -9,14 +9,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Rocket, Mail, User, ArrowLeft, Phone } from "lucide-react";
+import { Rocket, Mail, User, ArrowLeft } from "lucide-react";
 import Logo from "@/components/logo";
 import { useLocation } from "wouter";
 
 const waitlistSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
-  phoneNumber: z.string().optional(),
 });
 
 type WaitlistForm = z.infer<typeof waitlistSchema>;
@@ -31,7 +30,6 @@ export default function LaunchingSoon() {
     defaultValues: {
       name: "",
       email: "",
-      phoneNumber: "",
     },
   });
 
@@ -188,27 +186,6 @@ export default function LaunchingSoon() {
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="phoneNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        <Phone className="w-4 h-4" />
-                        Phone Number (Optional)
-                      </FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="Enter your phone number" 
-                          type="tel"
-                          {...field}
-                          data-testid="input-waitlist-phone"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
 
                 <Button 
                   type="submit" 

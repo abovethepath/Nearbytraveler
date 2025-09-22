@@ -4342,7 +4342,6 @@ Aaron`
       console.log(`🔍 WAITLIST [${reqId}]: Request received from ${req.ip}`, { 
         name: req.body?.name, 
         email: req.body?.email ? `${req.body.email.substring(0, 3)}***@${req.body.email.split('@')[1]}` : 'none',
-        phoneNumber: req.body?.phoneNumber || 'none',
         timestamp: new Date().toISOString()
       });
       
