@@ -3537,51 +3537,16 @@ Your adventure starts now - dive in and start connecting!
 
       // REMOVED: Travel plan creation moved to fast registration section to prevent duplicates
 
-      // CRITICAL: Create hometown city page with activities during signup
-      if (user.hometownCity && user.hometownState && user.hometownCountry) {
-        setImmediate(async () => {
-          try {
-            console.log(`🏠 HOMETOWN SETUP: Creating city page for ${user.hometownCity}, ${user.hometownState}, ${user.hometownCountry}`);
-            await ensureCityHasActivities(user.hometownCity, user.hometownState, user.hometownCountry, user.id);
-            console.log(`✅ HOMETOWN SETUP: Successfully created city page for ${user.hometownCity}`);
-          } catch (error) {
-            console.error(`❌ HOMETOWN SETUP: Failed to create city page for ${user.hometownCity}:`, error);
-          }
-        });
-      }
-
-      // Send welcome email to new user and location notifications to existing users
-      setImmediate(async () => {
-        try {
-          const { emailService } = await import('./services/emailService');
-          
-          // Send welcome email to the new user (only if not already sent)
-          if (user.email && !user.welcomeEmailSent) {
-            const emailSent = await emailService.sendWelcomeEmail(user.email, {
-              name: user.name || user.username,
-              username: user.username,
-              userType: user.userType || 'traveler'
-            });
-            
-            if (emailSent) {
-              // Mark welcome email as sent to prevent duplicates
-              await db.update(users)
-                .set({ welcomeEmailSent: true })
-                .where(eq(users.id, user.id));
-              console.log(`✅ Welcome email sent to new user ${user.email}`);
-            } else {
-              console.log(`❌ Failed to send welcome email to ${user.email}`);
-            }
-          } else if (user.welcomeEmailSent) {
-            console.log(`⚠️ Welcome email already sent to ${user.email}, skipping duplicate`);
-          }
-
-          // Track user for 3-day digest instead of instant notifications
-          await trackUserForWeeklyDigest(user);
-        } catch (error) {
-          console.error("Failed to send welcome email or location notifications:", error);
+      // INSTANT OPERATIONS: Chatroom assignments and city setup (as before)
+      try {
+        // Auto-assign user to chatrooms immediately (this was always fast)
+        if (user.hometownCity && user.hometownCountry) {
+          await storage.assignUserToChatrooms(user.id, user.hometownCity, user.hometownState, user.hometownCountry);
+          console.log('✅ CHATROOM ASSIGNMENT: User automatically assigned to chatrooms');
         }
-      });
+      } catch (error) {
+        console.error('❌ Failed to assign user to chatrooms:', error);
+      }
 
       if (process.env.NODE_ENV === 'development') console.log("💾 USER CREATED IN DATABASE - Location data stored:", {
         id: user.id,
@@ -3851,11 +3816,7 @@ Your adventure starts now - dive in and start connecting!
       // Heavy operations (chatrooms, AI content, city setup) happen during profile completion
       if (process.env.NODE_ENV === 'development') console.log("✅ FAST REGISTRATION SUCCESS - Returning user for profile completion");
       
-      return res.status(201).json({ 
-        user,
-        message: "Account created successfully",
-        nextStep: "profile_completion"
-      });
+      return res.status(201).json(userWithoutPassword);
 
       // ====== HEAVY OPERATIONS MOVED TO PROFILE COMPLETION ======
       // The following operations now happen after profile completion to speed up registration
