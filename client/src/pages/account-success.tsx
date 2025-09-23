@@ -1,29 +1,98 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useLocation } from 'wouter';
-import { CheckCircle, Users, MessageCircle, MapPin, User } from 'lucide-react';
+import { CheckCircle, Loader2, Users, MessageCircle, MapPin } from 'lucide-react';
 import { useAuth } from '@/App';
+
+interface BootstrapStatus {
+  status: 'pending' | 'completed' | 'error';
+  progress: number;
+  message: string;
+}
 
 export default function AccountSuccess() {
   const [, setLocation] = useLocation();
+  const [secondsElapsed, setSecondsElapsed] = useState(0);
+  const [bootstrapStatus, setBootstrapStatus] = useState<BootstrapStatus>({ 
+    status: 'pending', 
+    progress: 0, 
+    message: 'Starting setup...' 
+  });
+  const [bootstrapTriggered, setBootstrapTriggered] = useState(false);
   const { user, isAuthenticated } = useAuth();
 
-  // Trigger bootstrap operations silently in background when user is authenticated
+  // Timer for seconds elapsed
   useEffect(() => {
-    if (isAuthenticated && user) {
-      // Silent background bootstrap - no UI changes
-      fetch('/api/bootstrap/after-register', {
+    const timer = setInterval(() => {
+      setSecondsElapsed(prev => prev + 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Trigger bootstrap operations when user is authenticated
+  useEffect(() => {
+    if (isAuthenticated && user && !bootstrapTriggered) {
+      console.log('🚀 BOOTSTRAP: Triggering background setup operations');
+      setBootstrapTriggered(true);
+      triggerBootstrap();
+    }
+  }, [isAuthenticated, user, bootstrapTriggered]);
+
+  // Poll bootstrap status
+  useEffect(() => {
+    if (!bootstrapTriggered) return;
+
+    const statusChecker = setInterval(async () => {
+      try {
+        const response = await fetch('/api/bootstrap/status', {
+          method: 'GET',
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          const status: BootstrapStatus = await response.json();
+          setBootstrapStatus(status);
+          
+          if (status.status === 'completed') {
+            console.log('✅ Bootstrap completed');
+            clearInterval(statusChecker);
+          }
+        }
+      } catch (error) {
+        console.error('Error checking bootstrap status:', error);
+      }
+    }, 1000);
+
+    return () => clearInterval(statusChecker);
+  }, [bootstrapTriggered]);
+
+  const triggerBootstrap = async () => {
+    try {
+      console.log('🔄 BOOTSTRAP: Starting background operations...');
+      setBootstrapStatus({ status: 'pending', progress: 25, message: 'Setting up your personalized experience...' });
+      
+      const response = await fetch('/api/bootstrap/after-register', {
         method: 'POST',
         body: JSON.stringify({}),
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include'
-      }).catch(error => console.error('Background bootstrap error:', error));
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.status === 'pending') {
+          console.log('✅ BOOTSTRAP: Background operations started successfully');
+          setBootstrapStatus({ status: 'pending', progress: 50, message: 'Creating chatrooms and setting up connections...' });
+        }
+      }
+    } catch (error) {
+      console.error('Bootstrap trigger error:', error);
+      setBootstrapStatus({ status: 'error', progress: 0, message: 'Setup encountered an issue - redirecting anyway...' });
     }
-  }, [isAuthenticated, user]);
+  };
 
   const handleContinue = () => {
-    // Force reload authentication state before redirect
     window.location.href = '/';
   };
 
