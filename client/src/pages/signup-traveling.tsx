@@ -327,7 +327,7 @@ export default function SignupTraveling() {
           });
           
           // Redirect to welcome page after successful registration
-          window.location.href = '/account-success';
+          setLocation('/account-success');
           
         } else {
           console.error('❌ Registration failed:', data.message || 'Unknown error');

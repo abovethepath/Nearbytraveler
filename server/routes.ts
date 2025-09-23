@@ -3767,6 +3767,41 @@ Questions? Just reply to this message. Welcome to the community!
         userType: user.userType
       };
 
+      // Send welcome message from nearbytrav account (USER ID 2)
+      try {
+        // Find the nearbytrav system account (ID 2)
+        const nearbytravAccount = await storage.getUser(2);
+        if (nearbytravAccount) {
+          await storage.sendSystemMessage(2, user.id, `Welcome to Nearby Traveler, ${user.name || user.username}! ✈️
+
+I'm Aaron, and I'm excited to welcome you to our community of travelers, locals, and businesses who believe in authentic human connections.
+
+🌍 **What You Can Do:**
+• **Connect with Real People**: Find travelers and locals who share your interests
+• **Join Live Events & Meetups**: Discover what's happening in your area right now
+• **City Chat Rooms**: Jump into conversations with people in ${user.hometownCity}${hasExistingTravelPlan ? ` and your travel destination` : ''}
+• **Quick Meetups**: Create spontaneous hangouts when you're feeling social
+• **AI-Powered Discovery**: Get personalized recommendations for activities and connections
+
+🎯 **Your Next Steps:**
+1. Complete your profile with interests and a photo
+2. Browse people and events in your areas
+3. Join your city chat rooms to start conversations
+4. Create your first meetup or RSVP to an event
+
+${hasExistingTravelPlan ? `Since you're planning to travel, you'll get matched with locals and other travelers who share your interests!` : `As a local in ${user.hometownCity}, you'll be notified when travelers with similar interests visit your area!`}
+
+Questions? Just reply to this message. Welcome to the community!
+
+- Aaron (your fellow nearby traveler)`);
+          console.log(`✓ REGISTRATION: Sent welcome message from nearbytrav to ${user.username}`);
+        } else {
+          console.error('REGISTRATION ERROR: nearbytrav account (ID 2) not found');
+        }
+      } catch (error: any) {
+        console.error('REGISTRATION ERROR: Sending welcome message:', error);
+      }
+
       // Success response
       return res.status(201).json({
         message: "Registration successful",
