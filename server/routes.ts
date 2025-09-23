@@ -3757,6 +3757,26 @@ Questions? Just reply to this message. Welcome to the community!
         if (process.env.NODE_ENV === 'development') console.log(`🚫 SKIPPING TRAVEL PLAN CREATION: User ${user.id} already has ${existingTravelPlans.length} travel plans - preventing duplicates`);
       }
 
+      // Success response
+      return res.status(201).json({
+        message: "Registration successful",
+        user: userWithoutPassword,
+        redirectTo: "/account-success"
+      });
+
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error("❌ REGISTRATION ERROR:", error);
+        console.error("❌ REGISTRATION ERROR STACK:", error.stack);
+      }
+      
+      return res.status(500).json({ 
+        message: "Registration failed", 
+        error: process.env.NODE_ENV === 'development' ? error.message : "Internal server error"
+      });
+    }
+  };
+
   // ====== REGISTRATION ENDPOINT COMPLETE ======
 
   // Registration endpoint

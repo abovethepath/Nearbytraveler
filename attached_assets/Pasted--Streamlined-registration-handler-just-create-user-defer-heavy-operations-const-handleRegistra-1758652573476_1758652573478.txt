@@ -1,0 +1,85 @@
+// Streamlined registration handler - just create user, defer heavy operations
+const handleRegistration = async (req: any, res: any) => {
+  try { // <- LINE 3091: This try block now has a matching catch!
+    if (process.env.NODE_ENV === 'development') console.log("🔍 FULL REGISTRATION DATA RECEIVED:", JSON.stringify(req.body, null, 2));
+    
+    if (process.env.NODE_ENV === 'development') console.log("🏠 ORIGINAL LOCATION DATA RECEIVED:", {
+      hometownCity: (req.body as any).hometownCity,
+      hometownState: (req.body as any).hometownState,
+      hometownCountry: (req.body as any).hometownCountry
+    });
+    
+    if (process.env.NODE_ENV === 'development') console.log("✈️ ORIGINAL TRAVEL DATA RECEIVED:", {
+      isCurrentlyTraveling: (req.body as any).isCurrentlyTraveling,
+      travelDestination: (req.body as any).travelDestination,
+      currentCity: (req.body as any).currentCity,
+      currentState: (req.body as any).currentState,
+      currentCountry: (req.body as any).currentCountry,
+      travelStartDate: (req.body as any).travelStartDate,
+      travelEndDate: (req.body as any).travelEndDate
+    });
+
+    // Convert date strings to Date objects and map form data to correct schema fields
+    const processedData = { ...req.body };
+    
+    if (processedData.dateOfBirth && typeof processedData.dateOfBirth === 'string') {
+      processedData.dateOfBirth = new Date(processedData.dateOfBirth);
+    }
+    
+    if (processedData.travelStartDate && typeof processedData.travelStartDate === 'string') {
+      processedData.travelStartDate = new Date(processedData.travelStartDate);
+    }
+    
+    if (processedData.travelEndDate && typeof processedData.travelEndDate === 'string') {
+      processedData.travelEndDate = new Date(processedData.travelEndDate);
+    }
+
+    // Apply location normalization to prevent community splitting
+    if (processedData.hometownCity) {
+      // Keep original data and just normalize the city name
+      const originalCity = processedData.hometownCity;
+      const originalState = processedData.hometownState;
+      const originalCountry = processedData.hometownCountry;
+      
+      // Actually, don't normalize at all for now - let's preserve the exact original data
+      // processedData.hometownCity = normalizeLocation(originalCity);
+      processedData.hometownCity = originalCity;
+      processedData.hometownState = originalState;
+      processedData.hometownCountry = originalCountry;
+      
+      if (process.env.NODE_ENV === 'development') console.log("🗺️ LOCATION PRESERVED (NO NORMALIZATION):", {
+        original: {
+          city: (req.body as any).hometownCity,
+          state: (req.body as any).hometownState,
+          country: (req.body as any).hometownCountry
+        },
+        preserved: {
+          city: processedData.hometownCity,
+          state: processedData.hometownState,
+          country: processedData.hometownCountry
+        }
+      });
+    }
+
+    // ... ALL THE REST OF YOUR REGISTRATION LOGIC GOES HERE ...
+    // (thousands of lines of registration processing)
+
+    // At the end of successful registration, return success response
+    return res.status(201).json({ 
+      message: "Registration successful",
+      // ... other success data
+    });
+
+  } catch (error: any) {
+    // 🔧 MISSING CATCH BLOCK - NOW ADDED!
+    if (process.env.NODE_ENV === 'development') {
+      console.error("❌ REGISTRATION ERROR:", error);
+      console.error("❌ REGISTRATION ERROR STACK:", error.stack);
+    }
+    
+    return res.status(500).json({ 
+      message: "Registration failed", 
+      error: process.env.NODE_ENV === 'development' ? error.message : "Internal server error"
+    });
+  }
+};
