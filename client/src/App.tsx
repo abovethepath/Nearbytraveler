@@ -94,7 +94,7 @@ function JoinPageWithSignIn() {
     </div>
   );
 }
-// import SignupLocal from "@/pages/signup-local"; // Removed broken file
+import SignupLocal from "@/pages/signup-local";
 import SignupTraveling from "@/pages/signup-traveling";
 import SignupBusinessSimple from "@/pages/signup-business-simple";
 import SignupSteps from "@/pages/signup-steps";
@@ -514,8 +514,12 @@ function Router() {
         console.log('✅ SIGNUP ACCOUNT - Direct access');
         return <SignupAccount />;
       }
-      if (location === '/signup/local' || location === '/signup/traveler') {
-        console.log('✅ SIGNUP LOCAL/TRAVELER - Direct access');
+      if (location === '/signup/local') {
+        console.log('✅ SIGNUP LOCAL - Direct access');
+        return <SignupLocal />;
+      }
+      if (location === '/signup/traveler') {
+        console.log('✅ SIGNUP TRAVELER - Direct access');
         return <UnifiedSignup />;
       }
       if (location === '/signup/traveling') {
@@ -1168,7 +1172,8 @@ function Router() {
           {console.log('🔥 SIGNUP ROUTE RENDERING - bypassing auth logic:', location)}
           <div className="min-h-screen w-full max-w-full flex flex-col bg-background text-foreground overflow-x-hidden">
             {location === '/signup/account' && <SignupAccount />}
-            {(location === '/signup/local' || location === '/signup/traveler') && <UnifiedSignup />}
+            {location === '/signup/local' && <SignupLocal />}
+            {location === '/signup/traveler' && <UnifiedSignup />}
             {location === '/signup/traveling' && <SignupTraveling />}
             {location === '/signup/business' && <SignupBusinessSimple />}
             {location.startsWith('/signup/qr/') && <QRSignup referralCode={location.split('/signup/qr/')[1] || ''} />}
