@@ -38,7 +38,7 @@ export default function AccountSuccess() {
     return () => clearInterval(timer);
   }, []);
 
-  // Poll bootstrap status
+  // Poll bootstrap status only if user is authenticated and bootstrap triggered
   useEffect(() => {
     if (!bootstrapTriggered) return;
 
@@ -67,18 +67,22 @@ export default function AccountSuccess() {
       }
     }, 1000);
 
-    // Minimum 10-second welcome screen, then redirect regardless
+    return () => {
+      clearInterval(statusChecker);
+    };
+  }, [bootstrapTriggered]);
+
+  // ALWAYS run 10-second welcome timer regardless of authentication status
+  useEffect(() => {
     const minTimeout = setTimeout(() => {
       console.log('⏰ Minimum 10 seconds elapsed - redirecting to home');
-      clearInterval(statusChecker);
       window.location.href = '/';
     }, 10000);
 
     return () => {
-      clearInterval(statusChecker);
       clearTimeout(minTimeout);
     };
-  }, [bootstrapTriggered]);
+  }, []);
 
   const triggerBootstrap = async () => {
     try {

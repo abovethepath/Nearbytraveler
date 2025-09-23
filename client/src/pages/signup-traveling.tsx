@@ -299,101 +299,52 @@ export default function SignupTraveling() {
 
       console.log('✅ VALIDATION PASSED - Proceeding with traveler registration');
 
-      // Store registration data for background processing
-      sessionStorage.setItem('registrationData', JSON.stringify(registrationData));
-      
-      // Show success message and redirect immediately  
-      toast({
-        title: "Account created!",
-        description: "Redirecting to your success page...",
-        variant: "default",
-      });
+      try {
+        console.log('🚀 Starting traveler registration with data:', registrationData);
+        
+        const response = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(registrationData)
+        });
 
-      // Redirect immediately to success page
-      setLocation('/account-success');
+        const data = await response.json();
 
-      // Start account creation in background
-      setTimeout(async () => {
-        try {
-          console.log('🚀 Starting traveler registration with data:', registrationData);
+        if (response.ok && data.user) {
+          console.log('✅ Registration successful!');
           
-          const response = await fetch('/api/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(registrationData)
+          // Set user in auth context immediately
+          authStorage.setUser(data.user);
+          setUser(data.user);
+          login(data.user);
+          
+          // Show success message
+          toast({
+            title: "Account created!",
+            description: "Welcome to Nearby Traveler!",
+            variant: "default",
           });
-
-          const data = await response.json();
-
-          if (response.ok && data.user) {
-            console.log('✅ Registration successful, starting comprehensive onboarding');
-            
-            // CRITICAL: Store user data in ALL storage locations for maximum compatibility
-            localStorage.setItem('user', JSON.stringify(data.user));
-            localStorage.setItem('travelconnect_user', JSON.stringify(data.user));
-            localStorage.setItem('currentUser', JSON.stringify(data.user));
-            localStorage.setItem('authUser', JSON.stringify(data.user));
-            
-            // Set user in auth context immediately
-            authStorage.setUser(data.user);
-            setUser(data.user);
-            login(data.user);
-            
-            console.log('🔧 Setting user in all storage keys:', { id: data.user.id, username: data.user.username });
-            
-            // ✅ CRITICAL: Call bootstrap endpoint for comprehensive traveler onboarding
-            try {
-              console.log('🚀 Calling bootstrap for comprehensive traveler onboarding');
-              const bootstrapResponse = await fetch('/api/bootstrap/after-register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: data.user.id })
-              });
-              
-              const bootstrapData = await bootstrapResponse.json();
-              
-              if (bootstrapResponse.ok) {
-                console.log('✅ Comprehensive traveler onboarding completed successfully');
-              } else {
-                console.error('❌ Bootstrap failed:', bootstrapData.message);
-              }
-            } catch (bootstrapError) {
-              console.error('❌ Bootstrap error:', bootstrapError);
-            }
-            
-            // Original profile completion call (if still needed)
-            try {
-              const profileResponse = await fetch('/api/auth/complete-profile', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: data.user.id })
-              });
-              
-              if (profileResponse.ok) {
-                console.log('✅ Profile completion successful');
-              }
-            } catch (profileError) {
-              console.log('⚠️ Profile completion error:', profileError);
-            }
-            
-            // Clear stored account and registration data
-            sessionStorage.removeItem('accountData');
-            sessionStorage.removeItem('registrationData');
-            
-          } else {
-            console.error('❌ Registration failed:', data.message);
-          }
-        } catch (error) {
-          console.error('Background registration error:', error);
+          
+          // Redirect to welcome page after successful registration
+          window.location.href = '/account-success';
+          
+        } else {
+          console.error('❌ Registration failed:', data.message || 'Unknown error');
+          toast({
+            title: "Registration failed",
+            description: data.message || "Something went wrong",
+            variant: "destructive",
+          });
         }
-      }, 100); // Start background processing after 100ms
-    } catch (error) {
-      console.error('Validation error:', error);
-      toast({
-        title: "Validation failed",
-        description: "Please check your information and try again.",
-        variant: "destructive",
-      });
+      } catch (error) {
+        console.error('❌ Registration error:', error);
+        toast({
+          title: "Registration failed",
+          description: "Something went wrong. Please try again.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsLoading(false);
     }
