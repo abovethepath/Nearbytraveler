@@ -3817,55 +3817,18 @@ Your adventure starts now - dive in and start connecting!
       if (process.env.NODE_ENV === 'development') console.log("✅ FAST REGISTRATION SUCCESS - Returning user for profile completion");
       
       return res.status(201).json(userWithoutPassword);
+    } catch (error: any) {
+      console.error("Registration error:", error);
+      return res.status(500).json({ message: "Registration failed", error });
+    }
+  });
 
-      // ====== HEAVY OPERATIONS MOVED TO PROFILE COMPLETION ======
-      // The following operations now happen after profile completion to speed up registration
-      // These are handled by the /api/auth/complete-profile endpoint
+  // ====== REGISTRATION ENDPOINT COMPLETE ======
 
-      // UNUSED - MOVED TO COMPLETE-PROFILE ENDPOINT:
-      // await TravelStatusService.setNewUserTravelStatus(user.id);
+  // Registration endpoint
+  app.post("/api/register", handleRegistration);
 
-      // After creating a user, ensure "Meet Locals" chatrooms exist for both hometown and travel destinations
-      await storage.ensureMeetLocalsChatrooms();
-
-      // CRITICAL: Create chatrooms for user's hometown (all users have hometowns)
-      if (userData.hometownCity && userData.hometownCountry) {
-        try {
-          await storage.ensureMeetLocalsChatrooms(userData.hometownCity, userData.hometownState, userData.hometownCountry);
-          if (process.env.NODE_ENV === 'development') console.log(`✓ Created/verified hometown chatroom for ${userData.hometownCity}, ${userData.hometownCountry}`);
-          
-              // AUTO-JOIN: Add new user to Los Angeles Metro chatrooms (Welcome Newcomers and Let's Meet Up)
-          await storage.autoJoinWelcomeChatroom(user.id, userData.hometownCity, userData.hometownCountry);
-          if (process.env.NODE_ENV === 'development') console.log(`✓ Auto-joined user ${user.id} to Los Angeles Metro chatrooms`);
-        } catch (error: any) {
-          if (process.env.NODE_ENV === 'development') console.error('Error creating hometown chatroom:', error);
-        }
-      }
-
-      // AUTO-JOIN NEW USERS: Add to hometown and travel city chatrooms
-      try {
-        const travelCity = userData.isCurrentlyTraveling && userData.travelDestination ? userData.travelDestination.split(', ')[0] : undefined;
-        const travelCountry = userData.isCurrentlyTraveling && userData.travelDestination ? userData.travelDestination.split(', ')[2] || userData.travelDestination.split(', ')[1] : undefined;
-        
-        await storage.autoJoinUserCityChatrooms(
-          user.id, 
-          userData.hometownCity, 
-          userData.hometownCountry,
-          travelCity,
-          travelCountry
-        );
-        if (process.env.NODE_ENV === 'development') console.log(`✅ Auto-joined user ${user.id} to their city chatrooms`);
-      } catch (error: any) {
-        if (process.env.NODE_ENV === 'development') console.error('Error auto-joining city chatrooms:', error);
-      }
-
-
-      // CRITICAL: Create chatrooms for travel destination if user is currently traveling
-      if (userData.isCurrentlyTraveling && userData.travelDestination) {
-        try {
-          // Parse travel destination to get city, state, country
-          const destinationParts = userData.travelDestination.split(', ');
-          const travelCity = destinationParts[0];
+  app.post("/api/waitlist", async (req, res) => {
           const travelState = destinationParts[1];
           const travelCountry = destinationParts[2] || destinationParts[1]; // Handle cases where state might be country
 
@@ -4273,10 +4236,7 @@ Aaron`
         // Don't fail registration if auto-connection fails, but log heavily for debugging
       }
 
-      res.status(201).json({
-        user: userWithoutPassword,
-        token: 'auth_token_' + userWithoutPassword.id
-      });
+      res.status(201).json(userWithoutPassword);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Registration error:", error);
       if (error.code === '23505') { // PostgreSQL unique constraint violation
