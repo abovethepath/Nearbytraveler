@@ -166,12 +166,6 @@ export default function AccountSuccess() {
                   </div>
                 </div>
 
-                <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
-                  <p className="text-sm text-blue-800 dark:text-blue-200">
-                    <strong>📧 Check your email!</strong> We're sending you a welcome message. 
-                    If you don't see it in your inbox, check your promotions or spam folder and mark it as "not spam" for future messages.
-                  </p>
-                </div>
               </div>
             )}
 

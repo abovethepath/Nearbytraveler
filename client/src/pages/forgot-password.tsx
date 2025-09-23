@@ -66,14 +66,14 @@ export default function ForgotPassword() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-orange-50 px-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Check Your Email</CardTitle>
+            <CardTitle className="text-2xl">Reset Link Sent</CardTitle>
             <CardDescription>
-              We've sent a password reset link to your email address if an account with that email or username exists.
+              A password reset link has been sent if an account with that email or username exists.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-gray-600 text-center">
-              Didn't receive an email? Check your spam folder or try again.
+              If you don't see anything, try again with a different email.
             </p>
             
             {/* Development Mode: Show reset link directly */}
