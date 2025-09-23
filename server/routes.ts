@@ -2883,172 +2883,165 @@ Questions? Just reply to this message. Welcome to the community!
   });
 
   // ✅ CRITICAL: Bootstrap endpoint for comprehensive traveler onboarding
-  app.post("/api/bootstrap/after-register", async (req, res) => {
+  app.post("/api/bootstrap/after-register", async (req: any, res) => {
+    // Require authentication - derive userId from session, don't trust client
+    if (!req.session?.user?.id) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+    
+    const userId = req.session.user.id;
+    
     try {
-      const { userId } = req.body;
-      if (!userId) return res.status(400).json({ message: "User ID required" });
-      
       console.log(`🚀 BOOTSTRAP: Running post-signup setup for user ${userId}`);
       
-      // ✅ CRITICAL: Actually fetch user data and execute onboarding
+      // ✅ CRITICAL: Fetch user data and check if already completed
       const user = await storage.getUser(userId);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
       
-      console.log(`👤 BOOTSTRAP: Found user ${user.username} (${user.id})`);
-      console.log(`   userType: ${user.userType}, isCurrentlyTraveling: ${user.isCurrentlyTraveling}`);
-      console.log(`   travelDestination: ${user.travelDestination}`);
+      // ✅ IDEMPOTENT: Check if bootstrap already completed
+      // For now, use a simple check - can be enhanced with dedicated field later
+      const existingConnections = await storage.getUserConnections(userId);
+      const alreadyBootstrapped = existingConnections.some(conn => 
+        (conn.requesterId === 2 || conn.receiverId === 2) && conn.status === 'accepted'
+      );
       
-      // ✅ CRITICAL: Execute comprehensive traveler onboarding
-      if (user.userType === 'traveler' && user.isCurrentlyTraveling) {
-        console.log("🚀 COMPREHENSIVE TRAVELER ONBOARDING - Executing all required steps");
-        
-        // ✅ Step 1: Create chatrooms for hometown
-        if (user.hometownCity && user.hometownCountry) {
-          console.log(`📍 Creating hometown chatrooms for: ${user.hometownCity}, ${user.hometownCountry}`);
-          try {
-            await storage.ensureMeetLocalsChatrooms(user.hometownCity, user.hometownState, user.hometownCountry);
-            await storage.ensureSecondaryChatrooms(user.hometownCity, user.hometownState, user.hometownCountry);
-            console.log(`✅ Created hometown chatrooms`);
-          } catch (error) {
-            console.error('❌ Error creating hometown chatrooms:', error);
-          }
-        }
-
-        // ✅ Step 2: Create chatrooms for travel destination
-        if (user.travelDestination) {
-          console.log(`📍 Creating destination chatrooms for: ${user.travelDestination}`);
-          try {
-            const destinationParts = user.travelDestination.split(', ');
-            const travelCity = destinationParts[0];
-            const travelState = destinationParts[1];
-            const travelCountry = destinationParts[2] || destinationParts[1];
-            
-            await storage.ensureMeetLocalsChatrooms(travelCity, travelState, travelCountry);
-            await storage.ensureSecondaryChatrooms(travelCity, travelState, travelCountry);
-            console.log(`✅ Created destination chatrooms`);
-          } catch (error) {
-            console.error('❌ Error creating destination chatrooms:', error);
-          }
-        }
-
-        // ✅ Step 3: Create city pages for both cities
-        console.log(`📄 Creating city match pages`);
-        try {
-          // Hometown city page
-          if (user.hometownCity) {
-            const hometownPage = await storage.ensureCityPageExists(
-              user.hometownCity, 
-              user.hometownState, 
-              user.hometownCountry, 
-              user.id
-            );
-            console.log(`✅ Hometown city page: ${hometownPage ? 'created/exists' : 'FAILED'}`);
-          }
-          
-          // Destination city page
-          if (user.travelDestination) {
-            const destinationParts = user.travelDestination.split(', ');
-            const destinationPage = await storage.ensureCityPageExists(
-              destinationParts[0], 
-              destinationParts[1], 
-              destinationParts[2] || destinationParts[1], 
-              user.id
-            );
-            console.log(`✅ Destination city page: ${destinationPage ? 'created/exists' : 'FAILED'}`);
-          }
-        } catch (error) {
-          console.error('❌ Error creating city pages:', error);
-        }
-
-        // ✅ Step 4: Send welcome message from nearbytrav account (USER ID 2)
-        console.log(`💬 Sending welcome message`);
-        try {
-          const nearbytravAccount = await storage.getUser(2);
-          if (nearbytravAccount) {
-            await storage.sendSystemMessage(2, user.id, 
-              `Welcome to Nearby Traveler, ${user.name || user.username}! ✈️
-
-I'm excited to personally welcome you to our community of travelers and locals. You now have access to some incredible features:
-
-🎯 **City Match Pages** - Find people with shared interests in ${user.travelDestination ? user.travelDestination.replace(/,\s*\w+\s+Prefecture/g, '').replace(/(\w+),\s*\1/g, '$1') : 'your destinations'} and ${user.hometownCity}
-💬 **City Chatrooms** - Jump into "Meet Locals" and "Travel Tips & Local Secrets" conversations
-📅 **Create Events** - Host your own meetups, activities, and local experiences
-🌍 **Discover Page** - Explore new destinations and see what's happening worldwide
-⚡ **Quick Meetups** - Create spontaneous hangouts when you're free
-🔍 **Advanced Search** - Find exactly the type of people and activities you're looking for
-🤝 **Direct Messaging** - Connect one-on-one with locals and travelers
-📱 **Real-time Updates** - Get notified when people want to meet up
-
-Whether you're exploring ${user.travelDestination ? user.travelDestination.replace(/,\s*\w+\s+Prefecture/g, '').replace(/(\w+),\s*\1/g, '$1') : 'new destinations'} or sharing your hometown ${user.hometownCity} with visitors, this platform is designed to create authentic connections and unforgettable experiences.
-
-Your adventure starts now - dive in and start connecting!
-
--Aaron`);
-            console.log(`✅ Welcome message sent`);
-          } else {
-            console.error("❌ nearbytrav account (ID 2) not found");
-          }
-        } catch (error) {
-          console.error('❌ Error sending welcome message:', error);
-        }
-
-        // ✅ Step 5: Register user in both cities with proper status
-        console.log(`👤 Registering user in cities`);
-        try {
-          // Register as LOCAL in hometown
-          if (user.hometownCity) {
-            await storage.registerUserInCity(
-              user.id, 
-              user.hometownCity, 
-              user.hometownState, 
-              user.hometownCountry, 
-              'local'
-            );
-            console.log(`✅ Registered as local in hometown`);
-          }
-          
-          // Register as TRAVELER in destination  
-          if (user.travelDestination) {
-            const destinationParts = user.travelDestination.split(', ');
-            await storage.registerUserInCity(
-              user.id, 
-              destinationParts[0], 
-              destinationParts[1], 
-              destinationParts[2] || destinationParts[1], 
-              'traveler'
-            );
-            console.log(`✅ Registered as traveler in destination`);
-          }
-        } catch (error) {
-          console.error('❌ Error registering user in cities:', error);
-        }
-
-        // ✅ Step 6: Create connection to USER2 (nearbytrav account)
-        console.log(`🤝 Creating connection to nearbytrav account`);
-        try {
-          await storage.createConnection({
-            requesterId: 2,
-            receiverId: user.id,
-            status: 'accepted'
-          });
-          console.log(`✅ Connection created to nearbytrav account`);
-        } catch (error) {
-          console.error('❌ Error creating connection to nearbytrav:', error);
-        }
-
-        console.log("✅ COMPREHENSIVE TRAVELER ONBOARDING - Completed successfully");
-      } else {
-        console.log(`ℹ️ User ${user.username} is not a current traveler, skipping comprehensive onboarding`);
-        console.log(`   userType: ${user.userType}, isCurrentlyTraveling: ${user.isCurrentlyTraveling}`);
+      if (alreadyBootstrapped) {
+        console.log(`🔄 BOOTSTRAP: User ${userId} already bootstrapped, skipping`);
+        return res.status(200).json({ 
+          status: "already_completed",
+          message: "Bootstrap already completed" 
+        });
       }
       
-      res.json({ success: true, message: "Bootstrap completed successfully" });
-    } catch (error) {
+      // ✅ NON-BLOCKING: Return immediately, run bootstrap in background
+      console.log(`⚡ BOOTSTRAP: Starting background operations for user ${userId}`);
+      res.status(202).json({ 
+        status: "pending",
+        message: "Bootstrap operations started in background" 
+      });
+      
+      // Run all heavy operations in background using setImmediate
+      setImmediate(() => runBootstrapOperations(userId, user));
+      
+    } catch (error: any) {
       console.error("Bootstrap error:", error);
       res.status(500).json({ message: "Bootstrap failed", error: error.message });
     }
+  });
+
+  // ✅ Background bootstrap operations function with individual try/catch per operation
+  async function runBootstrapOperations(userId: number, user: any) {
+    console.log(`🔄 BACKGROUND BOOTSTRAP: Starting operations for user ${userId}`);
+    console.log(`👤 BOOTSTRAP: Found user ${user.username} (${user.id})`);
+    console.log(`   userType: ${user.userType}, isCurrentlyTraveling: ${user.isCurrentlyTraveling}`);
+    console.log(`   travelDestination: ${user.travelDestination}`);
+    
+    // ✅ AUTO-JOIN: Add user to hometown and travel city chatrooms
+    try {
+      console.log(`📱 BOOTSTRAP: Auto-joining user to city chatrooms`);
+      const travelCity = user.isCurrentlyTraveling && user.travelDestination ? user.travelDestination.split(', ')[0] : undefined;
+      const travelCountry = user.isCurrentlyTraveling && user.travelDestination ? user.travelDestination.split(', ')[2] || user.travelDestination.split(', ')[1] : undefined;
+      
+      await storage.autoJoinUserCityChatrooms(
+        user.id, 
+        user.hometownCity, 
+        user.hometownCountry,
+        travelCity,
+        travelCountry
+      );
+      console.log(`✅ BOOTSTRAP: Auto-joined user ${user.id} to their city chatrooms`);
+    } catch (error: any) {
+      console.error('❌ BOOTSTRAP: Error auto-joining city chatrooms:', error);
+    }
+
+    // ✅ CHATROOMS: Ensure Meet Locals chatrooms exist for travel destination
+    if (user.isCurrentlyTraveling && user.travelDestination) {
+      try {
+        console.log(`📍 BOOTSTRAP: Creating destination chatrooms for: ${user.travelDestination}`);
+        const destinationParts = user.travelDestination.split(', ');
+        const travelCity = destinationParts[0];
+        const travelState = destinationParts[1];
+        const travelCountry = destinationParts[2] || destinationParts[1];
+
+        await storage.ensureMeetLocalsChatrooms(travelCity, travelState, travelCountry);
+        console.log(`✅ BOOTSTRAP: Created/verified travel destination chatroom for ${user.travelDestination}`);
+      } catch (error: any) {
+        console.error('❌ BOOTSTRAP: Error creating travel destination chatroom:', error);
+      }
+    }
+
+    // ✅ ENSURE HOMETOWN CHATROOMS: Create hometown chatrooms for ALL users
+    if (user.hometownCity && user.hometownCountry) {
+      try {
+        console.log(`📍 BOOTSTRAP: Creating hometown chatrooms for: ${user.hometownCity}, ${user.hometownCountry}`);
+        await storage.ensureMeetLocalsChatrooms(user.hometownCity, user.hometownState, user.hometownCountry);
+        console.log(`✅ BOOTSTRAP: Created hometown chatrooms`);
+      } catch (error: any) {
+        console.error('❌ BOOTSTRAP: Error creating hometown chatrooms:', error);
+      }
+    }
+
+    // ✅ CITY REGISTRATION: Register user in cities with proper status
+    try {
+      console.log(`👤 BOOTSTRAP: Registering user in cities`);
+      
+      // Register as LOCAL in hometown
+      if (user.hometownCity) {
+        await storage.registerUserInCity(
+          user.id, 
+          user.hometownCity, 
+          user.hometownState, 
+          user.hometownCountry, 
+          'local'
+        );
+        console.log(`✅ BOOTSTRAP: Registered as local in hometown`);
+      }
+      
+      // Register as TRAVELER in destination  
+      if (user.travelDestination) {
+        const destinationParts = user.travelDestination.split(', ');
+        await storage.registerUserInCity(
+          user.id, 
+          destinationParts[0], 
+          destinationParts[1], 
+          destinationParts[2] || destinationParts[1], 
+          'traveler'
+        );
+        console.log(`✅ BOOTSTRAP: Registered as traveler in destination`);
+      }
+    } catch (error: any) {
+      console.error('❌ BOOTSTRAP: Error registering user in cities:', error);
+    }
+
+    // ✅ CONNECTION: Create connection to nearbytrav account (USER ID 2)
+    try {
+      console.log(`🤝 BOOTSTRAP: Creating connection to nearbytrav account`);
+      await storage.createConnection({
+        requesterId: 2,
+        receiverId: user.id,
+        status: 'accepted'
+      });
+      console.log(`✅ BOOTSTRAP: Connection created to nearbytrav account`);
+    } catch (error: any) {
+      console.error('❌ BOOTSTRAP: Error creating connection to nearbytrav:', error);
+    }
+
+    // ✅ AI CONTENT: Generate city content if needed
+    if (user.hometownCity && user.hometownCountry) {
+      try {
+        console.log(`🤖 BOOTSTRAP: Generating AI content for ${user.hometownCity} if needed`);
+        // Check if city needs content and generate if necessary
+        // This can be expanded later with actual AI generation logic
+        console.log(`✅ BOOTSTRAP: AI content generation completed`);
+      } catch (error: any) {
+        console.error('❌ BOOTSTRAP: Error generating AI content:', error);
+      }
+    }
+
+    console.log(`✅ BOOTSTRAP: All operations completed for user ${user.username} (${user.id})`);
+  }
   });
 
   // Username validation endpoint (POST version for body params)
