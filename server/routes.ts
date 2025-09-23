@@ -2931,6 +2931,44 @@ Questions? Just reply to this message. Welcome to the community!
     }
   });
 
+  // ✅ Bootstrap status tracking endpoint
+  app.get("/api/bootstrap/status", async (req: any, res) => {
+    // Require authentication
+    if (!req.session?.user?.id) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+    
+    const userId = req.session.user.id;
+    
+    try {
+      // Simple status check based on connection to USER ID 2 (nearbytrav account)
+      const existingConnections = await storage.getUserConnections(userId);
+      const isBootstrapped = existingConnections.some(conn => 
+        (conn.requesterId === 2 || conn.receiverId === 2) && conn.status === 'accepted'
+      );
+      
+      if (isBootstrapped) {
+        return res.status(200).json({ 
+          status: "completed",
+          progress: 100,
+          message: "Bootstrap operations completed successfully" 
+        });
+      } else {
+        return res.status(200).json({ 
+          status: "pending",
+          progress: 50,
+          message: "Bootstrap operations in progress" 
+        });
+      }
+    } catch (error: any) {
+      console.error("Bootstrap status check error:", error);
+      return res.status(500).json({ 
+        status: "error",
+        message: "Failed to check bootstrap status" 
+      });
+    }
+  });
+
   // ✅ Background bootstrap operations function with individual try/catch per operation
   async function runBootstrapOperations(userId: number, user: any) {
     console.log(`🔄 BACKGROUND BOOTSTRAP: Starting operations for user ${userId}`);
@@ -3042,7 +3080,6 @@ Questions? Just reply to this message. Welcome to the community!
 
     console.log(`✅ BOOTSTRAP: All operations completed for user ${user.username} (${user.id})`);
   }
-  });
 
   // Username validation endpoint (POST version for body params)
   app.post("/api/auth/check-username", async (req, res) => {
