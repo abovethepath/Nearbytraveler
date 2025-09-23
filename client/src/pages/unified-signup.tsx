@@ -102,10 +102,14 @@ export default function UnifiedSignup() {
   
   // Load auth data from sessionStorage
   useEffect(() => {
+    console.log('🔍 UNIFIED SIGNUP - Checking for accountData in sessionStorage');
     const storedData = sessionStorage.getItem('accountData');
+    console.log('🔍 UNIFIED SIGNUP - Found data:', !!storedData);
+    
     if (storedData) {
       try {
         const parsedData = JSON.parse(storedData);
+        console.log('✅ UNIFIED SIGNUP - Successfully parsed accountData:', parsedData);
         setAuthData(parsedData);
         // Pre-fill form with auth data
         setFormData(prev => ({
@@ -118,10 +122,11 @@ export default function UnifiedSignup() {
           userType: parsedData.userType || 'local'
         }));
       } catch (error) {
-        console.error('Error parsing stored signup data:', error);
+        console.error('❌ UNIFIED SIGNUP - Error parsing stored signup data:', error);
         setLocation('/auth');
       }
     } else {
+      console.log('❌ UNIFIED SIGNUP - No accountData found, redirecting to /auth');
       // No auth data, redirect back to auth
       setLocation('/auth');
     }
