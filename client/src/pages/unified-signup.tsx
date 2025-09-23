@@ -109,8 +109,15 @@ export default function UnifiedSignup() {
     if (storedData) {
       try {
         const parsedData = JSON.parse(storedData);
-        console.log('✅ UNIFIED SIGNUP - Successfully parsed accountData:', parsedData);
+        console.log('✅ UNIFIED SIGNUP - Successfully parsed accountData (password redacted)');
         setAuthData(parsedData);
+        
+        // If we have account data and this is a local user, skip to step 3 (profile completion)
+        if (parsedData.userType === 'local') {
+          console.log('🏠 LOCAL SIGNUP - Skipping to step 3 (profile completion)');
+          setStep(3);
+        }
+        
         // Pre-fill form with auth data
         setFormData(prev => ({
           ...prev,
@@ -378,7 +385,7 @@ export default function UnifiedSignup() {
               </div>
             )}
             
-            {step === 2 && (
+            {step === 2 && !authData && (
               <div className="space-y-4">{/* REMOVED DUPLICATE ACCOUNT FIELDS - ONLY IN STEP 1 */}
                 
                 <div className="grid grid-cols-2 gap-4">
@@ -459,7 +466,7 @@ export default function UnifiedSignup() {
               </div>
             )}
             
-            {step === 3 && (
+            {(step === 3 || (step === 2 && authData && authData.userType === 'local')) && (
               <div className="space-y-6">
                 {/* Location Section */}
                 <div className="space-y-4">
