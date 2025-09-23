@@ -100,9 +100,9 @@ export default function UnifiedSignup() {
   const [step, setStep] = useState(2); // Start at step 2 since user type already selected
   const [authData, setAuthData] = useState<any>(null);
   
-  // Load auth data from localStorage
+  // Load auth data from sessionStorage
   useEffect(() => {
-    const storedData = localStorage.getItem('signup_data');
+    const storedData = sessionStorage.getItem('accountData');
     if (storedData) {
       try {
         const parsedData = JSON.parse(storedData);
@@ -232,7 +232,7 @@ export default function UnifiedSignup() {
       setUser(data);
       
       // Clear signup data
-      localStorage.removeItem('signup_data');
+      sessionStorage.removeItem('accountData');
       
       console.log("✅ User set in context and storage:", data.username, data.id);
       
