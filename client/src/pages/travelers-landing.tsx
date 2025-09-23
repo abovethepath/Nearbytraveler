@@ -56,8 +56,43 @@ export default function TravelersLanding() {
       <LandingHeader />
       <LandingHeaderSpacer />
       
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      {/* DESKTOP FULL-BLEED HERO - Much Larger Image */}
+      <div className="hidden lg:block bg-white dark:bg-gray-900 py-8">
+        <div className="text-center mb-8">
+          <div className="text-3xl lg:text-4xl xl:text-5xl font-bold text-zinc-900 dark:text-white mb-4">
+            <h1>Travel Like a Local</h1>
+          </div>
+          <div className="text-xl lg:text-2xl text-zinc-600 dark:text-zinc-300 mb-6">
+            <p>Connect with locals and travelers for authentic experiences</p>
+          </div>
+          <p className="text-lg font-medium text-zinc-800 italic mb-2">
+            {wisdomSayings[currentWisdom]}
+          </p>
+          <p className="text-2xl font-bold text-zinc-800 italic mb-8">
+            Travel doesn't change you — people you meet do.
+          </p>
+        </div>
         
+        {/* Full-bleed large image for desktop */}
+        <div className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+          <div className="flex justify-center">
+            <div className="w-[90vw] h-[80vh] rounded-2xl overflow-hidden shadow-2xl">
+              <img
+                src={travelersHeaderImage}
+                alt="Nearby Traveler application interface"
+                className="w-full h-full object-contain"
+              />
+            </div>
+          </div>
+        </div>
+        
+        <p className="text-center text-lg italic text-orange-600 mt-8">
+          Where Local Experiences Meet Worldwide Connections
+        </p>
+      </div>
+
+      {/* MOBILE/TABLET HERO - Original smaller version */}
+      <div className="block lg:hidden max-w-6xl mx-auto px-4 sm:px-6">
         {/* HERO SECTION */}
         <div className="pt-2 pb-4 sm:pt-4 sm:pb-6 bg-white dark:bg-gray-900">
           <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 py-1 sm:py-2 md:py-4 grid gap-2 sm:gap-3 md:gap-4 md:grid-cols-5 items-center">
