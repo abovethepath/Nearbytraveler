@@ -14355,7 +14355,7 @@ Questions? Just reply to this message. Welcome aboard!
         console.log('✅ Session destroyed successfully');
         
         // Clear the session cookie with correct name
-        res.clearCookie('nt.sid', cookieOpts); // Use correct cookie name
+        res.clearCookie('nt.sid', cookieOpts);
         res.clearCookie('connect.sid', { 
           path: '/',
           httpOnly: true,
