@@ -202,16 +202,10 @@ function Router() {
   const [location, setLocation] = useLocation();
   const queryClient = useQueryClient();
   
-  // Track page views for analytics - MUST be called before any early returns
+  // Track page views for analytics
   useAnalytics();
   
-  // CRITICAL FIX: Don't render anything for API routes
-  if (location.startsWith('/api/')) {
-    console.log('🔄 ROUTER: API route detected, not rendering React app:', location);
-    return null;
-  }
-
-  // CRITICAL FIX: Handle signup routes IMMEDIATELY before any auth logic
+  // CRITICAL FIX: Check if this is a signup route to bypass auth logic
   const PUBLIC_SIGNUP_PATHS = [
     '/signup/account', 
     '/signup/local', 
@@ -219,29 +213,12 @@ function Router() {
     '/signup/business',
     '/signup/traveler'
   ];
+  const isSignupRoute = PUBLIC_SIGNUP_PATHS.includes(location) || location.startsWith('/signup/');
   
-  if (PUBLIC_SIGNUP_PATHS.includes(location) || location.startsWith('/signup/')) {
-    console.log('🔥 EARLY SIGNUP INTERCEPTION - bypassing ALL auth logic:', location);
-    
-    const authValue = {
-      user: null,
-      setUser: () => {},
-      login: () => {},
-      logout: () => {},
-      isAuthenticated: false,
-    };
-    
-    return (
-      <AuthContext.Provider value={authValue}>
-        <div className="min-h-screen w-full max-w-full flex flex-col bg-background text-foreground overflow-x-hidden">
-          {location === '/signup/account' && <SignupAccount />}
-          {(location === '/signup/local' || location === '/signup/traveler') && <UnifiedSignup />}
-          {location === '/signup/traveling' && <SignupTraveling />}
-          {location === '/signup/business' && <SignupBusinessSimple />}
-          {location.startsWith('/signup/qr/') && <QRSignup referralCode={location.split('/signup/qr/')[1] || ''} />}
-        </div>
-      </AuthContext.Provider>
-    );
+  // CRITICAL FIX: Don't render anything for API routes
+  if (location.startsWith('/api/')) {
+    console.log('🔄 ROUTER: API route detected, not rendering React app:', location);
+    return null;
   }
 
   const landingPageRoutes = [
@@ -253,6 +230,12 @@ function Router() {
   const isLandingPage = landingPageRoutes.includes(location);
 
   useEffect(() => {
+    // Skip auth check for signup routes
+    if (isSignupRoute) {
+      console.log('🔥 SIGNUP ROUTE - skipping auth check:', location);
+      setIsLoading(false);
+      return;
+    }
     console.log('🚀 PRODUCTION CACHE BUST v2025-08-17-17-28 - Starting authentication check');
 
     // Check server-side session first
@@ -1179,7 +1162,19 @@ function Router() {
 
   return (
     <AuthContext.Provider value={authValue}>
-      {!hasAnyAuthEvidence ? (
+      {/* CRITICAL FIX: Handle signup routes with minimal auth context */}
+      {isSignupRoute ? (
+        <>
+          {console.log('🔥 SIGNUP ROUTE RENDERING - bypassing auth logic:', location)}
+          <div className="min-h-screen w-full max-w-full flex flex-col bg-background text-foreground overflow-x-hidden">
+            {location === '/signup/account' && <SignupAccount />}
+            {(location === '/signup/local' || location === '/signup/traveler') && <UnifiedSignup />}
+            {location === '/signup/traveling' && <SignupTraveling />}
+            {location === '/signup/business' && <SignupBusinessSimple />}
+            {location.startsWith('/signup/qr/') && <QRSignup referralCode={location.split('/signup/qr/')[1] || ''} />}
+          </div>
+        </>
+      ) : !hasAnyAuthEvidence ? (
         // MOBILE FIX: Check if this is a navigation to home page from mobile nav
         location === '/home' && (localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token')) ? (
           // User clicked home button and has auth data - force authenticate
