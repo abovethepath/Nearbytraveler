@@ -206,6 +206,40 @@ function Router() {
     console.log('🔄 ROUTER: API route detected, not rendering React app:', location);
     return null;
   }
+
+  // CRITICAL FIX: Handle signup routes IMMEDIATELY before any auth logic
+  const PUBLIC_SIGNUP_PATHS = [
+    '/signup/account', 
+    '/signup/local', 
+    '/signup/traveling', 
+    '/signup/business',
+    '/signup/traveler'
+  ];
+  
+  if (PUBLIC_SIGNUP_PATHS.includes(location) || location.startsWith('/signup/')) {
+    console.log('🔥 EARLY SIGNUP INTERCEPTION - bypassing ALL auth logic:', location);
+    
+    const authValue = {
+      user: null,
+      setUser: () => {},
+      login: () => {},
+      logout: () => {},
+      isAuthenticated: false,
+    };
+    
+    return (
+      <AuthContext.Provider value={authValue}>
+        <div className="min-h-screen w-full max-w-full flex flex-col bg-background text-foreground overflow-x-hidden">
+          {location === '/signup/account' && <SignupAccount />}
+          {(location === '/signup/local' || location === '/signup/traveler') && <UnifiedSignup />}
+          {location === '/signup/traveling' && <SignupTraveling />}
+          {location === '/signup/business' && <SignupBusinessSimple />}
+          {location.startsWith('/signup/qr/') && <QRSignup referralCode={location.split('/signup/qr/')[1] || ''} />}
+        </div>
+      </AuthContext.Provider>
+    );
+  }
+  
   const queryClient = useQueryClient();
   
   // Track page views for analytics
@@ -1135,30 +1169,6 @@ function Router() {
     return null;
   }
 
-  // CRITICAL FIX: Handle all signup routes BEFORE any authentication checks
-  const PUBLIC_SIGNUP_PATHS = [
-    '/signup/account', 
-    '/signup/local', 
-    '/signup/traveling', 
-    '/signup/business',
-    '/signup/traveler'
-  ];
-  
-  if (PUBLIC_SIGNUP_PATHS.includes(location) || location.startsWith('/signup/')) {
-    console.log('🔥 SIGNUP ROUTE DETECTED - bypassing ALL auth checks:', location);
-    
-    return (
-      <AuthContext.Provider value={authValue}>
-        <div className="min-h-screen w-full max-w-full flex flex-col bg-background text-foreground overflow-x-hidden">
-          {location === '/signup/account' && <SignupAccount />}
-          {(location === '/signup/local' || location === '/signup/traveler') && <UnifiedSignup />}
-          {location === '/signup/traveling' && <SignupTraveling />}
-          {location === '/signup/business' && <SignupBusinessSimple />}
-          {location.startsWith('/signup/qr/') && <QRSignup referralCode={location.split('/signup/qr/')[1] || ''} />}
-        </div>
-      </AuthContext.Provider>
-    );
-  }
 
   // NAVIGATION RELIABILITY FIX: Check ALL authentication sources immediately
   const hasAnyAuthEvidence = 
