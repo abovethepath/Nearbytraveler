@@ -1787,8 +1787,8 @@ export default function Home() {
               {/* Subtle background glow */}
               <div className="absolute -inset-3 bg-gradient-to-r from-blue-200/30 via-purple-200/30 to-orange-200/30 dark:from-blue-900/20 dark:via-purple-900/20 dark:to-orange-900/20 rounded-3xl blur-lg"></div>
               
-              {/* Main image - standardized height */}
-              <div className="relative w-full max-w-sm h-[240px] rounded-xl overflow-hidden shadow-xl border border-gray-200/50 dark:border-gray-700/50 transform group-hover:scale-[1.02] transition-all duration-300">
+              {/* Main image - standardized height matching landing page */}
+              <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-xl overflow-hidden shadow-xl border border-gray-200/50 dark:border-gray-700/50 transform group-hover:scale-[1.02] transition-all duration-300">
                 {/* Loading placeholder */}
                 <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center">
                   <div className="text-center">
