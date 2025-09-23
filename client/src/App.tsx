@@ -99,7 +99,7 @@ import SignupTraveling from "@/pages/signup-traveling";
 import SignupBusinessSimple from "@/pages/signup-business-simple";
 import SignupSteps from "@/pages/signup-steps";
 import SignupAccount from "@/pages/signup-account";
-import UnifiedSignup from "@/pages/unified-signup";
+// OLD BROKEN UNIFIED SIGNUP DELETED FOREVER
 import BusinessRegistration from "@/pages/business-registration";
 import LandingNew from "@/pages/landing-new";
 import LaunchingSoon from "@/pages/launching-soon";
@@ -519,8 +519,9 @@ function Router() {
         return <SignupLocal />;
       }
       if (location === '/signup/traveler') {
-        console.log('✅ SIGNUP TRAVELER - Direct access');
-        return <UnifiedSignup />;
+        console.log('✅ SIGNUP TRAVELER - Redirecting to traveling');
+        setLocation('/signup/traveling');
+        return null;
       }
       if (location === '/signup/traveling') {
         console.log('✅ SIGNUP TRAVELING - Direct access');
@@ -1173,7 +1174,7 @@ function Router() {
           <div className="min-h-screen w-full max-w-full flex flex-col bg-background text-foreground overflow-x-hidden">
             {location === '/signup/account' && <SignupAccount />}
             {location === '/signup/local' && <SignupLocal />}
-            {location === '/signup/traveler' && <UnifiedSignup />}
+            {/* OLD BROKEN UNIFIED SIGNUP REMOVED FOREVER */}
             {location === '/signup/traveling' && <SignupTraveling />}
             {location === '/signup/business' && <SignupBusinessSimple />}
             {location.startsWith('/signup/qr/') && <QRSignup referralCode={location.split('/signup/qr/')[1] || ''} />}
