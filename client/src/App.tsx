@@ -200,6 +200,10 @@ function Router() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [location, setLocation] = useLocation();
+  const queryClient = useQueryClient();
+  
+  // Track page views for analytics - MUST be called before any early returns
+  useAnalytics();
   
   // CRITICAL FIX: Don't render anything for API routes
   if (location.startsWith('/api/')) {
@@ -239,11 +243,6 @@ function Router() {
       </AuthContext.Provider>
     );
   }
-  
-  const queryClient = useQueryClient();
-  
-  // Track page views for analytics
-  useAnalytics();
 
   const landingPageRoutes = [
     '/', '/landing', '/landing-new', '/auth', '/join', '/signup', '/signup/local', '/signup/traveler', '/signup/business', '/signup/account', '/signup/traveling', '/account-success',
