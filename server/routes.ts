@@ -3757,6 +3757,16 @@ Questions? Just reply to this message. Welcome to the community!
         if (process.env.NODE_ENV === 'development') console.log(`🚫 SKIPPING TRAVEL PLAN CREATION: User ${user.id} already has ${existingTravelPlans.length} travel plans - preventing duplicates`);
       }
 
+      // CRITICAL: Create user session after successful registration
+      if (process.env.NODE_ENV === 'development') console.log("🔐 Creating session for newly registered user:", user.username);
+      (req as any).session = (req as any).session || {};
+      (req as any).session.user = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        userType: user.userType
+      };
+
       // Success response
       return res.status(201).json({
         message: "Registration successful",
