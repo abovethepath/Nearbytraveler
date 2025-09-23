@@ -164,6 +164,7 @@ export default function SignupAccount() {
       name: formData.name,
       username: formData.username,
       email: formData.email.toLowerCase().trim(),
+      confirmEmail: formData.confirmEmail.toLowerCase().trim(),
       phoneNumber: formData.phoneNumber,
       password: formData.password,
       userType: userType
