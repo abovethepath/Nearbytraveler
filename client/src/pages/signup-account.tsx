@@ -169,7 +169,7 @@ export default function SignupAccount() {
       userType: userType
     };
 
-    sessionStorage.setItem('accountData', JSON.stringify(accountData));
+    localStorage.setItem('signup_data', JSON.stringify(accountData));
 
     // Redirect to profile completion based on user type
     if (userType === 'local') {
