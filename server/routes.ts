@@ -2691,30 +2691,13 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           await storage.ensureMeetLocalsChatrooms(user.hometownCity, user.hometownState, user.hometownCountry);
           if (process.env.NODE_ENV === 'development') console.log(`✓ Created/verified hometown chatroom for ${user.hometownCity}, ${user.hometownCountry}`);
           
-          // AUTO-JOIN: Add new user to Los Angeles Metro chatrooms (Welcome Newcomers and Let's Meet Up)
-          await storage.autoJoinWelcomeChatroom(user.id, user.hometownCity, user.hometownCountry);
-          if (process.env.NODE_ENV === 'development') console.log(`✓ Auto-joined user ${user.id} to Los Angeles Metro chatrooms`);
+          // REMOVED: Auto-joining - users choose chatrooms on profile page instead
         } catch (error: any) {
           if (process.env.NODE_ENV === 'development') console.error('Error creating hometown chatroom:', error);
         }
       }
 
-      // AUTO-JOIN NEW USERS: Add to hometown and travel city chatrooms
-      try {
-        const travelCity = user.isCurrentlyTraveling && user.travelDestination ? user.travelDestination.split(', ')[0] : undefined;
-        const travelCountry = user.isCurrentlyTraveling && user.travelDestination ? user.travelDestination.split(', ')[2] || user.travelDestination.split(', ')[1] : undefined;
-        
-        await storage.autoJoinUserCityChatrooms(
-          user.id, 
-          user.hometownCity, 
-          user.hometownCountry,
-          travelCity,
-          travelCountry
-        );
-        if (process.env.NODE_ENV === 'development') console.log(`✅ Auto-joined user ${user.id} to their city chatrooms`);
-      } catch (error: any) {
-        if (process.env.NODE_ENV === 'development') console.error('Error auto-joining city chatrooms:', error);
-      }
+      // REMOVED: Auto-joining to city chatrooms - users will choose on profile page instead
 
       // CRITICAL: Create chatrooms for travel destination if user is currently traveling
       if (user.isCurrentlyTraveling && user.travelDestination) {
