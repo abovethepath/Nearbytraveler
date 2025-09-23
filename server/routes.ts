@@ -3802,6 +3802,18 @@ Questions? Just reply to this message. Welcome to the community!
         console.error('REGISTRATION ERROR: Sending welcome message:', error);
       }
 
+      // Create connection to nearbytrav account (USER ID 2)
+      try {
+        await storage.createConnection({
+          requesterId: 2,
+          receiverId: user.id,
+          status: 'accepted'
+        });
+        console.log(`✓ REGISTRATION: Connected user ${user.username} to nearbytrav system account`);
+      } catch (error: any) {
+        console.error('REGISTRATION ERROR: Creating connection to nearbytrav:', error);
+      }
+
       // Success response
       return res.status(201).json({
         message: "Registration successful",
