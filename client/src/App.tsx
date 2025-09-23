@@ -482,6 +482,46 @@ function Router() {
       return null;
     }
 
+    // CRITICAL FIX: Handle all signup routes immediately to prevent auth conflicts
+    const PUBLIC_SIGNUP_PATHS = [
+      '/signup/account', 
+      '/signup/local', 
+      '/signup/traveling', 
+      '/signup/business',
+      '/signup/traveler'
+    ];
+    
+    if (PUBLIC_SIGNUP_PATHS.includes(location) || location.startsWith('/signup/')) {
+      console.log('🔥 SIGNUP ROUTE - bypassing all auth checks for:', location);
+      
+      if (location === '/signup/account') {
+        console.log('✅ SIGNUP ACCOUNT - Direct access');
+        return <SignupAccount />;
+      }
+      if (location === '/signup/local' || location === '/signup/traveler') {
+        console.log('✅ SIGNUP LOCAL/TRAVELER - Direct access');
+        return <UnifiedSignup />;
+      }
+      if (location === '/signup/traveling') {
+        console.log('✅ SIGNUP TRAVELING - Direct access');
+        return <SignupTraveling />;
+      }
+      if (location === '/signup/business') {
+        console.log('✅ SIGNUP BUSINESS - Direct access');
+        return <SignupBusinessSimple />;
+      }
+      if (location.startsWith('/signup/qr/')) {
+        const qrData = location.split('/signup/qr/')[1];
+        console.log('✅ SIGNUP QR - Direct access');
+        return <QRSignup referralCode={qrData || ''} />;
+      }
+      
+      // Default fallback for any other signup routes
+      console.log('⚠️ Unknown signup route, redirecting to account signup');
+      window.location.href = '/signup/account';
+      return null;
+    }
+
     // IMPROVED AUTHENTICATION CHECK: Multiple fallbacks to ensure authenticated users stay authenticated
     const hasUserInLocalStorage = !!localStorage.getItem('user');
     const hasAuthToken = !!localStorage.getItem('auth_token');
@@ -675,22 +715,7 @@ function Router() {
         }
         return <LandingStreamlined />;
       }
-      // QR code signup route
-      if (location.startsWith('/signup/qr/')) {
-        const qrData = location.split('/signup/qr/')[1];
-        return <QRSignup referralCode={qrData || ''} />;
-      }
-
-      // Signup pages
-      if (location === '/signup/local' || location === '/signup/traveler') {
-        return <UnifiedSignup />;
-      }
-      if (location === '/signup/traveling') {
-        return <SignupTraveling />;
-      }
-      if (location === '/signup/business') {
-        return <SignupBusinessSimple />;
-      }
+      // QR code signup route - handled by early return above
       // Allow access to legal pages without authentication
       if (location === '/privacy') {
         return <Privacy />;
@@ -767,23 +792,7 @@ function Router() {
         return <LandingStreamlined />;
       }
       
-      // SIGNUP ROUTES - MUST BE FIRST TO AVOID FALLBACKS
-      if (location === '/signup/account') {
-        console.log('✅ SIGNUP ACCOUNT - Unauthenticated access allowed');
-        return <SignupAccount />;
-      }
-      if (location === '/signup/local') {
-        console.log('✅ SIGNUP LOCAL - Unauthenticated access allowed');
-        return <UnifiedSignup />;
-      }
-      if (location === '/signup/traveling') {
-        console.log('✅ SIGNUP TRAVELING - Unauthenticated access allowed');
-        return <SignupTraveling />;
-      }
-      if (location === '/signup/business') {
-        console.log('✅ SIGNUP BUSINESS - Unauthenticated access allowed');
-        return <SignupBusinessSimple />;
-      }
+      // SIGNUP ROUTES - All handled by early return at top of function
       if (location === '/account-success') {
         console.log('✅ ACCOUNT SUCCESS - Showing account creation progress');
         return <AccountSuccess />;
