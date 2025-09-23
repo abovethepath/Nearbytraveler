@@ -5,7 +5,7 @@ import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import Footer from "@/components/footer";
 import { useTheme } from "@/components/theme-provider";
 import { trackEvent } from "@/lib/analytics";
-import travelersHeaderImage from "../../assets/travelers_1756778615408.jpg";
+import travelersHeaderImage from "@assets/image_1758643547084.png";
 
 export default function TravelersLanding() {
   const [, setLocation] = useLocation();
@@ -81,11 +81,11 @@ export default function TravelersLanding() {
                   Travel doesn't change you — people you meet do.
                 </p>
               </div>
-              <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[200px] sm:h-[250px] md:h-[350px] rounded-2xl">
+              <div className="overflow-hidden relative w-full max-w-lg sm:max-w-xl lg:max-w-2xl xl:max-w-4xl h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px] xl:h-[800px] rounded-2xl">
                 <img
                   src={travelersHeaderImage}
-                  alt="Travelers connecting and exploring together"
-                  className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl shadow-lg"
+                  alt="Nearby Traveler application interface"
+                  className="absolute top-0 left-0 w-full h-full object-contain rounded-2xl shadow-lg"
                 />
               </div>
               <p className="mt-2 text-xs md:text-sm italic text-orange-600 text-center">
