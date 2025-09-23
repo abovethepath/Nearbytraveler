@@ -95,11 +95,6 @@ export default function CityChatroomsPage() {
       // Refresh chatrooms and user data to update member status and aura
       queryClient.invalidateQueries({ queryKey: ['/api/chatrooms/my-locations'] });
       queryClient.invalidateQueries({ queryKey: ['/api/users'] });
-      
-      // REDIRECT: Take user directly to the chatroom after joining
-      setTimeout(() => {
-        navigate(`/simple-chatroom/${chatroomId}`);
-      }, 1500); // Small delay to let them see the success message
     },
     onError: (error: any) => {
       toast({
