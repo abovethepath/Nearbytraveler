@@ -711,7 +711,7 @@ function QuickMeetupsPage() {
 
     {/* Delete Meetup Confirmation Dialog */}
     <AlertDialog open={!!deletingMeetup} onOpenChange={(open) => !open && setDeletingMeetup(null)}>
-      <AlertDialogContent>
+      <AlertDialogContent className="bg-white dark:bg-gray-800">
         <AlertDialogHeader>
           <AlertDialogTitle>Cancel "{deletingMeetup?.title}"</AlertDialogTitle>
           <AlertDialogDescription>

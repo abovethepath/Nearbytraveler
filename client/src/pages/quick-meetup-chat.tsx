@@ -78,6 +78,7 @@ function QuickMeetupChat() {
     title: '',
     description: '',
   });
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -403,33 +404,12 @@ function QuickMeetupChat() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem className="text-red-600 focus:text-red-600">
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <div className="flex items-center w-full cursor-pointer">
-                            <Trash2 className="w-3 h-3 mr-2" />
-                            Cancel Meetup
-                          </div>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Cancel "{meetup.title}"</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Are you sure you want to cancel this meetup? This action cannot be undone and will remove all participants and chat history.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Keep Meetup</AlertDialogCancel>
-                            <AlertDialogAction
-                              className="bg-red-600 hover:bg-red-700"
-                              onClick={() => deleteMeetupMutation.mutate(meetup.id)}
-                              disabled={deleteMeetupMutation.isPending}
-                            >
-                              {deleteMeetupMutation.isPending ? 'Canceling...' : 'Cancel Meetup'}
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                    <DropdownMenuItem 
+                      className="text-red-600 focus:text-red-600 cursor-pointer"
+                      onClick={() => setShowDeleteDialog(true)}
+                    >
+                      <Trash2 className="w-3 h-3 mr-2" />
+                      Cancel Meetup
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -684,6 +664,33 @@ function QuickMeetupChat() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Meetup Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent className="bg-white dark:bg-gray-800">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel "{meetup?.title}"</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to cancel this meetup? This action cannot be undone and will remove all participants and chat history.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep Meetup</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-600 hover:bg-red-700"
+              onClick={() => {
+                if (meetup?.id) {
+                  deleteMeetupMutation.mutate(meetup.id);
+                  setShowDeleteDialog(false);
+                }
+              }}
+              disabled={deleteMeetupMutation.isPending}
+            >
+              {deleteMeetupMutation.isPending ? 'Canceling...' : 'Cancel Meetup'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
