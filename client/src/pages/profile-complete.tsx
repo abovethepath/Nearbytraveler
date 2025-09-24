@@ -4747,7 +4747,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
                         {/* SHOW CUSTOM PRIVATE INTERESTS WITH DELETE BUTTONS */}
                         {(() => {
-                          const customPrivateInterests = editFormData.privateInterests.filter(interest => 
+                          const customPrivateInterests = (editFormData.privateInterests || []).filter(interest => 
                             !getPrivateInterests().includes(interest) // Only show custom ones, not predefined
                           );
                           
@@ -4769,7 +4769,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       type="button"
                                       onClick={() => {
                                         console.log('🗑️ DELETING CUSTOM PRIVATE INTEREST:', interest);
-                                        const newPrivateInterests = editFormData.privateInterests.filter(i => i !== interest);
+                                        const newPrivateInterests = (editFormData.privateInterests || []).filter(i => i !== interest);
                                         setEditFormData({ ...editFormData, privateInterests: newPrivateInterests });
                                       }}
                                       className="ml-2 text-red-200 hover:text-white text-sm font-bold"
