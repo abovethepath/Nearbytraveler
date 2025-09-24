@@ -238,7 +238,10 @@ export const PRIVATE_INTERESTS = [
   "Nudist Beach",
   
   // Cannabis/Substance
-  "Marijuana/Cannabis User"
+  "Marijuana/Cannabis User",
+  
+  // Health/Medical Preferences
+  "Non Vaccinated"
 ];
 
 // PUBLIC INTERESTS - Safe for all audiences  
