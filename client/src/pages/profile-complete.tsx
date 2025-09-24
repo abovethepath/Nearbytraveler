@@ -4281,18 +4281,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
                     <Heart className="w-5 h-5 text-red-500" />
-                    Local Interests, Activities & Events
+                    Interests
                   </CardTitle>
-                  {/* Edit All Preferences Button - TOP RIGHT */}
-                  {isOwnProfile && !editingInterests && !editingActivities && !editingEvents && (
+                  {/* Edit Interests Button - Only for interests */}
+                  {isOwnProfile && !editingInterests && (
                     <Button
                       onClick={() => {
-                        // Open all editing modes at once
+                        // Open only interests editing mode
                         setEditingInterests(true);
-                        setEditingActivities(true);
-                        setEditingEvents(true);
                         
-                        // Initialize form data with all user preferences including private interests
+                        // Initialize form data with user interests only - keep private separate
                         setEditFormData({
                           interests: user?.interests || [],
                           activities: user?.activities || [],
@@ -4304,18 +4302,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       size="sm"
                     >
                       <Edit2 className="w-4 h-4 mr-1" />
-                      Edit
+                      Edit Interests
                     </Button>
                   )}
                 </div>
               </CardHeader>
               <CardContent className="space-y-6 px-4 sm:px-6 pb-4 sm:pb-6 break-words overflow-hidden">
 
-                {/* SIMPLIFIED TABBED EDIT INTERFACE */}
-                {isOwnProfile && (editingInterests && editingActivities && editingEvents) ? (
+                {/* INTERESTS EDIT INTERFACE */}
+                {isOwnProfile && editingInterests ? (
                   <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg border border-blue-200 dark:border-blue-600">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Edit Preferences</h3>
+                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Edit Interests</h3>
                       <div className="flex gap-2 w-full sm:w-auto">
                         <Button 
                           onClick={async () => {
@@ -4324,24 +4322,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               
                               // Separate predefined vs custom entries
                               const allInterests = [...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS];
-                              const allActivities = safeGetAllActivities();
-                              const allEvents = safeGetAllEvents();
                               
                               const predefinedInterests = editFormData.interests.filter(int => allInterests.includes(int));
-                              const predefinedActivities = (editFormData.activities || []).filter(act => allActivities.includes(act));
-                              const predefinedEvents = editFormData.events.filter(evt => allEvents.includes(evt));
-                              
                               const customInterests = editFormData.interests.filter(int => !allInterests.includes(int));
-                              const customActivities = (editFormData.activities || []).filter(act => !allActivities.includes(act));
-                              const customEvents = editFormData.events.filter(evt => !allEvents.includes(evt));
                               
                               const saveData = {
                                 interests: predefinedInterests,
-                                activities: predefinedActivities, 
-                                events: predefinedEvents,
                                 customInterests: customInterests.join(', '),
-                                customActivities: customActivities.join(', '),
-                                customEvents: customEvents.join(', '),
                                 privateInterests: editFormData.privateInterests || []
                               };
                               
@@ -4355,9 +4342,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               // Refresh data and close editing
                               queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
                               setEditingInterests(false);
-                              setEditingActivities(false);
-                              setEditingEvents(false);
-                              console.log('✅ Successfully saved user preferences');
+                              console.log('✅ Successfully saved interests');
                             } catch (error) {
                               console.error('❌ Failed to update preferences:', error);
                             }
@@ -4370,8 +4355,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           variant="outline" 
                           onClick={() => {
                             setEditingInterests(false);
-                            setEditingActivities(false);
-                            setEditingEvents(false);
                             setEditFormData({
                               interests: user?.interests || [],
                               activities: user?.activities || [],
