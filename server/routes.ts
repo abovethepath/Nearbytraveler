@@ -5898,10 +5898,14 @@ Questions? Just reply to this message. Welcome aboard!
       
       if (connection) {
         if (process.env.NODE_ENV === 'development') console.log(`CONNECTION STATUS: Found connection:`, connection);
-        return res.json(connection);
+        return res.json({
+          status: connection.status,
+          requesterId: connection.requesterId,
+          receiverId: connection.receiverId
+        });
       } else {
         if (process.env.NODE_ENV === 'development') console.log(`CONNECTION STATUS: No connection found between ${userId} and ${targetUserId}`);
-        return res.json(null);
+        return res.json({ status: 'none' });
       }
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error checking connection status:", error);
@@ -6097,6 +6101,7 @@ Questions? Just reply to this message. Welcome aboard!
       const newConnection = await storage.createConnection({
         requesterId: parseInt(finalRequesterId || '0'),
         receiverId: parseInt(finalTargetUserId || '0'),
+        status: 'pending',
         createdAt: new Date()
       });
 
