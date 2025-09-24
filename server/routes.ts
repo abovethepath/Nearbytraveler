@@ -4532,6 +4532,29 @@ Questions? Just reply to this message. Welcome aboard!
         delete updates.privateInterests;
       }
 
+      // CRITICAL FIX: Sync location field when hometown changes
+      if (updates.hometown_city || updates.hometown_state || updates.hometown_country) {
+        // Get current user data to fill in missing hometown fields
+        const currentUser = await storage.getUserById(userId);
+        
+        const cityToUse = updates.hometown_city || currentUser?.hometownCity || '';
+        const stateToUse = updates.hometown_state || currentUser?.hometownState || '';
+        const countryToUse = updates.hometown_country || currentUser?.hometownCountry || '';
+        
+        // Update location field to match new hometown 
+        if (cityToUse && stateToUse && countryToUse) {
+          updates.location = `${cityToUse}, ${stateToUse}, ${countryToUse}`;
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`🔄 LOCATION SYNC: Updated location field to "${updates.location}" for user ${userId}`);
+          }
+        } else if (cityToUse && stateToUse) {
+          updates.location = `${cityToUse}, ${stateToUse}`;
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`🔄 LOCATION SYNC: Updated location field to "${updates.location}" for user ${userId}`);
+          }
+        }
+      }
+
       if (process.env.NODE_ENV === 'development') console.log(`🏢 BUSINESS PROFILE: Mapped fields for user ${userId}:`, Object.keys(updates));
 
       // Convert dateOfBirth string to Date object if present

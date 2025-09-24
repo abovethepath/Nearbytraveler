@@ -22,6 +22,7 @@ import { authStorage } from "@/lib/auth";
 import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages } from "../../../shared/base-options";
 import { GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS, USER_TYPE_OPTIONS, TRAVELER_TYPE_OPTIONS, MILITARY_STATUS_OPTIONS } from "@/lib/formConstants";
 import { BASE_TRAVELER_TYPES } from "../../../shared/base-options";
+import ConnectButton from "@/components/ConnectButton";
 
 interface User {
   id: number;
@@ -287,29 +288,6 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
     }
   });
 
-  const connectMutation = useMutation({
-    mutationFn: (targetUserId: number) => 
-      apiRequest('POST', '/api/connections/request', { targetUserId }),
-    onSuccess: () => {
-      toast({
-        title: "Connection Request Sent!",
-        description: "Your connection request has been sent successfully."
-      });
-      queryClient.invalidateQueries({ queryKey: ['/api/connections'] });
-    },
-    onError: (error: any) => {
-      const errorMessage = error?.message || "Failed to send connection request. Please try again.";
-      const isPrivacyError = errorMessage.includes("privacy settings");
-      
-      toast({
-        title: isPrivacyError ? "Privacy Restriction" : "Connection Failed",
-        description: isPrivacyError 
-          ? "This user's privacy settings prevent connection requests from new users."
-          : errorMessage,
-        variant: "destructive"
-      });
-    }
-  });
 
   const handleSearch = () => {
     if (!searchLocation.trim()) {
@@ -325,9 +303,6 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
     searchMutation.mutate();
   };
 
-  const handleConnect = (userId: number) => {
-    connectMutation.mutate(userId);
-  };
 
   const handleMessage = (userId: number) => {
     onClose();
@@ -978,16 +953,14 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                               <MessageCircle className="w-4 h-4" />
                               Message
                             </Button>
-                            <Button
+                            <ConnectButton
+                              currentUserId={authStorage.getCurrentUserId() || 0}
+                              targetUserId={user.id}
+                              targetUsername={user.username}
+                              targetName={user.name}
                               size="lg"
-                              onClick={() => handleConnect(user.id)}
-                              disabled={connectMutation.isPending}
                               className="flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 hover:from-orange-600 hover:to-orange-700 font-semibold px-4 sm:px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all w-full sm:w-auto"
-                              data-testid={`button-connect-${user.id}`}
-                            >
-                              <UserPlus className="w-4 h-4" />
-                              {connectMutation.isPending ? "Connecting..." : "Connect"}
-                            </Button>
+                            />
                           </div>
                         </div>
                       </CardContent>
