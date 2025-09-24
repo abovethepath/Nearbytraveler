@@ -4281,12 +4281,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <Heart className="w-5 h-5 text-red-500" />
                     Interests
                   </CardTitle>
-                  {/* Edit Interests Button - Only for interests */}
-                  {isOwnProfile && !editingInterests && (
+                  {/* Edit Button - Opens editing for all categories */}
+                  {isOwnProfile && activeEditSection !== 'interests' && (
                     <Button
                       onClick={() => {
-                        // Open only interests editing mode
-                        setEditingInterests(true);
+                        // Open interests editing mode
+                        setActiveEditSection('interests');
                         
                         // Initialize form data with user interests only - keep private separate
                         setEditFormData({
