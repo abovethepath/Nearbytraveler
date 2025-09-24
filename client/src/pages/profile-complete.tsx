@@ -4904,12 +4904,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <Globe className="w-4 h-4 text-green-500" />
                       {isOwnProfile ? 'Your Activities' : `@${user?.username}'s Activities`}
                     </h4>
-                    {isOwnProfile && !editingActivities && (
-                      <Button size="sm" variant="outline" onClick={handleEditActivities} data-testid="button-edit-activities">
-                        <Edit className="w-4 h-4 mr-2" />
-                        Edit
-                      </Button>
-                    )}
                   </div>
                   
                   {editingActivities && !editingInterests && !editingEvents ? (
@@ -5052,12 +5046,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <Calendar className="w-4 h-4 text-purple-500" />
                       {isOwnProfile ? 'Your Events' : `@${user?.username}'s Events`}
                     </h4>
-                    {isOwnProfile && !editingEvents && (
-                      <Button size="sm" variant="outline" onClick={handleEditEvents} data-testid="button-edit-events">
-                        <Edit className="w-4 h-4 mr-2" />
-                        Edit
-                      </Button>
-                    )}
                   </div>
                   
                   {editingEvents && !editingInterests && !editingActivities ? (
