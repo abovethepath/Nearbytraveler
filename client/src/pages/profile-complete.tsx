@@ -363,20 +363,43 @@ interface ExtendedUser extends User {
   customEvents?: string;
 }
 
-// Safe wrappers to prevent undefined errors
+// Safe wrappers to prevent undefined errors with enhanced debugging
 const safeGetAllActivities = () => {
-  const activities = getAllActivities();
-  return Array.isArray(activities) ? activities : [];
+  try {
+    console.log('🔧 DEBUG: Calling getAllActivities...');
+    const activities = getAllActivities();
+    console.log('🔧 DEBUG: getAllActivities returned:', activities, 'type:', typeof activities, 'isArray:', Array.isArray(activities));
+    if (Array.isArray(activities)) {
+      console.log('✅ Activities array is valid, length:', activities.length);
+      return activities;
+    } else {
+      console.error('❌ Activities is not an array, falling back to empty array');
+      return [];
+    }
+  } catch (error) {
+    console.error('❌ Error in safeGetAllActivities:', error);
+    return [];
+  }
 };
 
 const safeGetAllEvents = () => {
-  const events = getAllEvents();
-  return Array.isArray(events) ? events : [];
+  try {
+    const events = getAllEvents();
+    return Array.isArray(events) ? events : [];
+  } catch (error) {
+    console.error('❌ Error in safeGetAllEvents:', error);
+    return [];
+  }
 };
 
 const safeGetAllInterests = () => {
-  const interests = getAllInterests();
-  return Array.isArray(interests) ? interests : [];
+  try {
+    const interests = getAllInterests();
+    return Array.isArray(interests) ? interests : [];
+  } catch (error) {
+    console.error('❌ Error in safeGetAllInterests:', error);
+    return [];
+  }
 };
 
 // Add missing constants
