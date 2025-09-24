@@ -4381,7 +4381,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                           }`}
                         >
-                          📋 Public Preferences
+                          💙 Interests
                         </button>
                         <button
                           onClick={() => setEditingTab('private')}
@@ -4391,7 +4391,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                           }`}
                         >
-                          🔒 Private Interests
+                          🔒 Private
                         </button>
                       </div>
 
@@ -4430,47 +4430,47 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               </div>
                             </div>
 
-                            {/* Activities */}
+                            {/* Additional Interests */}
                             <div>
                               <h4 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white flex items-center gap-2">
-                                <Globe className="w-5 h-5 text-green-500" />
-                                Activities
+                                <Heart className="w-5 h-5 text-blue-500" />
+                                Additional Interests
                               </h4>
-                              <div className="flex flex-wrap gap-2 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border">
-                                {safeGetAllActivities().map((activity) => {
-                                  const isSelected = (editFormData.activities || []).includes(activity);
+                              <div className="flex flex-wrap gap-2 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border">
+                                {ADDITIONAL_INTERESTS.map((interest) => {
+                                  const isSelected = editFormData.interests.includes(interest);
                                   return (
                                     <button
-                                      key={activity}
+                                      key={interest}
                                       type="button"
                                       onClick={() => {
-                                        toggleArrayValue(editFormData.activities, activity, (newActivities) => 
-                                          setEditFormData({ ...editFormData, activities: newActivities })
+                                        toggleArrayValue(editFormData.interests, interest, (newInterests) => 
+                                          setEditFormData({ ...editFormData, interests: newInterests })
                                         );
                                       }}
                                       className={`inline-flex items-center justify-center h-8 rounded-full px-3 text-sm font-medium whitespace-nowrap transition-all ${
                                         isSelected
-                                          ? 'bg-green-600 text-white'
+                                          ? 'bg-blue-600 text-white'
                                           : 'bg-white text-black border border-gray-300 hover:bg-gray-50'
                                       }`}
                                     >
-                                      {activity}
+                                      {interest}
                                     </button>
                                   );
                                 })}
                               </div>
                               <div className="flex space-x-2 mt-3">
                                 <Input
-                                  placeholder="Add custom activity..."
-                                  value={customActivityInput}
-                                  onChange={(e) => setCustomActivityInput(e.target.value)}
+                                  placeholder="Add custom interest..."
+                                  value={customInterestInput}
+                                  onChange={(e) => setCustomInterestInput(e.target.value)}
                                   onKeyPress={(e) => {
                                     if (e.key === 'Enter') {
                                       e.preventDefault();
-                                      const trimmed = customActivityInput.trim();
-                                      if (trimmed && !editFormData.activities.includes(trimmed)) {
-                                        setEditFormData(prev => ({ ...prev, activities: [...prev.activities, trimmed] }));
-                                        setCustomActivityInput('');
+                                      const trimmed = customInterestInput.trim();
+                                      if (trimmed && !editFormData.interests.includes(trimmed)) {
+                                        setEditFormData(prev => ({ ...prev, interests: [...prev.interests, trimmed] }));
+                                        setCustomInterestInput('');
                                       }
                                     }
                                   }}
@@ -4480,10 +4480,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                   variant="outline"
                                   size="sm"
                                   onClick={() => {
-                                    const trimmed = customActivityInput.trim();
-                                    if (trimmed && !editFormData.activities.includes(trimmed)) {
-                                      setEditFormData(prev => ({ ...prev, activities: [...prev.activities, trimmed] }));
-                                      setCustomActivityInput('');
+                                    const trimmed = customInterestInput.trim();
+                                    if (trimmed && !editFormData.interests.includes(trimmed)) {
+                                      setEditFormData(prev => ({ ...prev, interests: [...prev.interests, trimmed] }));
+                                      setCustomInterestInput('');
                                     }
                                   }}
                                 >
@@ -4492,67 +4492,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               </div>
                             </div>
 
-                            {/* Events */}
-                            <div>
-                              <h4 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white flex items-center gap-2">
-                                <Calendar className="w-5 h-5 text-purple-500" />
-                                Events
-                              </h4>
-                              <div className="flex flex-wrap gap-2 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border">
-                                {safeGetAllEvents().map((event) => {
-                                  const isSelected = editFormData.events.includes(event);
-                                  return (
-                                    <button
-                                      key={event}
-                                      type="button"
-                                      onClick={() => {
-                                        toggleArrayValue(editFormData.events, event, (newEvents) => 
-                                          setEditFormData({ ...editFormData, events: newEvents })
-                                        );
-                                      }}
-                                      className={`inline-flex items-center justify-center h-8 rounded-full px-3 text-sm font-medium whitespace-nowrap transition-all ${
-                                        isSelected
-                                          ? 'bg-purple-600 text-white'
-                                          : 'bg-white text-black border border-gray-300 hover:bg-gray-50'
-                                      }`}
-                                    >
-                                      {event}
-                                    </button>
-                                  );
-                                })}
-                              </div>
-                              <div className="flex space-x-2 mt-3">
-                                <Input
-                                  placeholder="Add custom event..."
-                                  value={customEventInput}
-                                  onChange={(e) => setCustomEventInput(e.target.value)}
-                                  onKeyPress={(e) => {
-                                    if (e.key === 'Enter') {
-                                      e.preventDefault();
-                                      const trimmed = customEventInput.trim();
-                                      if (trimmed && !editFormData.events.includes(trimmed)) {
-                                        setEditFormData(prev => ({ ...prev, events: [...prev.events, trimmed] }));
-                                        setCustomEventInput('');
-                                      }
-                                    }
-                                  }}
-                                />
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => {
-                                    const trimmed = customEventInput.trim();
-                                    if (trimmed && !editFormData.events.includes(trimmed)) {
-                                      setEditFormData(prev => ({ ...prev, events: [...prev.events, trimmed] }));
-                                      setCustomEventInput('');
-                                    }
-                                  }}
-                                >
-                                  <Plus className="w-4 h-4" />
-                                </Button>
-                              </div>
-                            </div>
+
                           </div>
                         )}
 
