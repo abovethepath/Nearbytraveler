@@ -2965,44 +2965,24 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     setTempEvents([]);
   };
 
-  // CRITICAL: Main save function that properly separates private interests
+  // CRITICAL: Main save function that saves interests and private interests correctly
   const handleSave = async () => {
     if (!user) return false;
     
     try {
-      console.log('🔧 COMPREHENSIVE SAVE: Starting save process');
-      
-      // Separate private interests from regular interests
-      const privateInterestsSet = new Set(getPrivateInterests());
-      
-      // Split interests based on whether they're private
-      const regularInterests = editFormData.interests.filter(interest => !privateInterestsSet.has(interest));
-      const privateInterests = editFormData.interests.filter(interest => privateInterestsSet.has(interest));
-      
-      // Add any custom private interests that aren't in the predefined list
-      const customPrivateInterests = editFormData.interests.filter(interest => 
-        !privateInterestsSet.has(interest) && // Not in predefined private list
-        !safeGetAllInterests().includes(interest) // Not in regular interests list either
-      );
-      
-      // Combine predefined and custom private interests
-      const allPrivateInterests = [...privateInterests, ...customPrivateInterests];
-      
-      console.log('🔧 PRIVATE INTERESTS: Separated interests', {
-        totalInterests: editFormData.interests.length,
-        regularInterests: regularInterests.length,
-        predefinedPrivateInterests: privateInterests.length,
-        customPrivateInterests: customPrivateInterests.length,
-        allPrivateInterests: allPrivateInterests.length,
-        privateInterestsList: allPrivateInterests
+      console.log('🔧 SAVING DATA:', {
+        interests: editFormData.interests,
+        activities: editFormData.activities,
+        events: editFormData.events,
+        privateInterests: editFormData.privateInterests
       });
       
-      // Prepare the update payload with separated interests
+      // Prepare the update payload - use the data as is since private interests are separate
       const updateData: any = {
-        interests: regularInterests,
-        privateInterests: allPrivateInterests,
+        interests: editFormData.interests,
         activities: editFormData.activities,
-        events: editFormData.events
+        events: editFormData.events,
+        privateInterests: editFormData.privateInterests
       };
       
       console.log('🔧 SAVE PAYLOAD: Sending update with separated data', updateData);
@@ -3025,7 +3005,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       
       toast({
         title: "All preferences saved!",
-        description: `Successfully saved ${regularInterests.length} public interests, ${allPrivateInterests.length} private interests, ${editFormData.activities.length} activities, and ${editFormData.events.length} events.`,
+        description: `Successfully saved ${editFormData.interests.length} public interests, ${editFormData.privateInterests.length} private interests, ${editFormData.activities.length} activities, and ${editFormData.events.length} events.`,
       });
       
       console.log('✓ COMPREHENSIVE SAVE: All preferences saved successfully');
@@ -4603,14 +4583,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             
                             <div className="flex flex-wrap gap-2 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-600">
                               {getPrivateInterests().map((interest) => {
-                                const isSelected = editFormData.interests.includes(interest);
+                                const isSelected = editFormData.privateInterests.includes(interest);
                                 return (
                                   <button
                                     key={interest}
                                     type="button"
                                     onClick={() => {
-                                      toggleArrayValue(editFormData.interests, interest, (newInterests) => 
-                                        setEditFormData({ ...editFormData, interests: newInterests })
+                                      toggleArrayValue(editFormData.privateInterests, interest, (newPrivateInterests) => 
+                                        setEditFormData({ ...editFormData, privateInterests: newPrivateInterests })
                                       );
                                     }}
                                     className={`inline-flex items-center justify-center h-8 rounded-full px-3 text-sm font-medium whitespace-nowrap transition-all ${
