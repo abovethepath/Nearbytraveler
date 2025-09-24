@@ -4480,45 +4480,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         
                         {activeEditSection !== 'private-interests' && editingTab === 'public' && (
                           <div className="space-y-6">
-                            {/* Top Choices */}
-                            <div>
-                              <h4 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white flex items-center gap-2">
-                                <Star className="w-5 h-5 text-yellow-500" />
-                                Top Choices
-                              </h4>
-                              <div className="flex flex-wrap gap-2 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/30 dark:to-orange-900/30 rounded-lg border border-yellow-200 dark:border-yellow-700">
-                                {MOST_POPULAR_INTERESTS.map((interest) => {
-                                  const isSelected = editFormData.interests.includes(interest);
-                                  return (
-                                    <button
-                                      key={interest}
-                                      type="button"
-                                      onClick={() => {
-                                        toggleArrayValue(editFormData.interests, interest, (newInterests) => 
-                                          setEditFormData({ ...editFormData, interests: newInterests })
-                                        );
-                                      }}
-                                      className={`inline-flex items-center justify-center h-8 rounded-full px-3 text-sm font-medium whitespace-nowrap transition-all ${
-                                        isSelected
-                                          ? 'bg-yellow-600 text-white'
-                                          : 'bg-white text-black border border-gray-300 hover:bg-gray-50'
-                                      }`}
-                                    >
-                                      {interest}
-                                    </button>
-                                  );
-                                })}
-                              </div>
-                            </div>
-
-                            {/* Additional Interests */}
+                            {/* Unified Interests Selection */}
                             <div>
                               <h4 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white flex items-center gap-2">
                                 <Heart className="w-5 h-5 text-blue-500" />
-                                Additional Interests
+                                Select Your Interests
                               </h4>
                               <div className="flex flex-wrap gap-2 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border">
-                                {ADDITIONAL_INTERESTS.map((interest) => {
+                                {[...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS].map((interest) => {
                                   const isSelected = editFormData.interests.includes(interest);
                                   return (
                                     <button
@@ -4583,31 +4552,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 ) : null}
 
 
-                {/* Top Choices Section - Now comes AFTER Edit Button */}
-                <div className="mb-6">
-                  <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2 mb-3">
-                    <Star className="w-4 h-4 text-yellow-500" />
-                    Top Choices for Most Travelers
-                  </h4>
-                  <div className="flex flex-wrap gap-2 sm:gap-3 p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
-                    {/* Show user's selected top choices, not the full list */}
-                    {(user?.interests || []).filter(interest => MOST_POPULAR_INTERESTS.includes(interest)).map((item) => (
-                      <div key={item} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-white text-black border border-black">
-                        {item}
-                      </div>
-                    ))}
-                    {(user?.interests || []).filter(interest => MOST_POPULAR_INTERESTS.includes(interest)).length === 0 && (
-                      <div className="text-gray-500 text-sm">No top choices selected yet</div>
-                    )}
-                  </div>
-                </div>
 
                 {/* Interests */}
                 <div className="mb-6">
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
                       <Heart className="w-4 h-4 text-blue-500" />
-                      {isOwnProfile ? 'Local Interests' : `@${user?.username}'s Interests`}
+                      {isOwnProfile ? 'Interests' : `@${user?.username}'s Interests`}
                     </h4>
                   </div>
                   
@@ -4616,7 +4567,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       {/* All Interests */}
                       <div>
                         <div className="flex flex-wrap gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border">
-                          {ADDITIONAL_INTERESTS.map((interest) => {
+                          {[...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS].map((interest) => {
                             const displayText = interest.startsWith("**") && interest.endsWith("**") ? 
                               interest.slice(2, -2) : interest;
                             const isSelected = tempInterests.includes(interest);
@@ -4744,25 +4695,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         )}
                       </div>
                       
-                      {/* Show selected interests - filter out top choices to avoid duplication */}
-                      {tempInterests.filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)).length > 0 && (
-                        <div className="p-3 bg-gray-50 rounded-lg">
-                          <p className="text-sm font-medium text-gray-700 mb-2">Selected Additional Interests:</p>
-                          <div className="flex flex-wrap gap-2">
-                            {tempInterests.filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)).map((interest) => (
-                              <div key={interest} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-white text-black border border-black">
-                                {interest}
-                                <button
-                                  onClick={() => setTempInterests(tempInterests.filter(i => i !== interest))}
-                                  className="ml-1 text-blue-200 hover:text-white"
-                                >
-                                  ×
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
                       <div className="flex gap-2">
                         <Button size="sm" onClick={handleSaveInterests} disabled={updateInterests.isPending}>
                           {updateInterests.isPending ? "Saving..." : "Save"}
