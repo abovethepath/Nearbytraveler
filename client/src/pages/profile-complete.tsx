@@ -4889,7 +4889,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             Only you can see this
                           </div>
                         </div>
-                        <p className="text-xs text-red-600 dark:text-red-400 mb-3">
+                        <p className="text-sm font-bold text-red-700 dark:text-red-300 mb-3">
                           These interests help with matching but remain hidden from your public profile.
                         </p>
                         <div className="flex flex-wrap gap-2">
