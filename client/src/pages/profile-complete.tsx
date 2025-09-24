@@ -4653,14 +4653,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
                       <Heart className="w-4 h-4 text-blue-500" />
-                      {isOwnProfile ? 'Your Interests' : `@${user?.username}'s Interests`}
+                      {isOwnProfile ? 'Local Interests' : `@${user?.username}'s Interests`}
                     </h4>
-                    {isOwnProfile && !editingInterests && (
-                      <Button size="sm" variant="outline" onClick={handleEditInterests} data-testid="button-edit-interests">
-                        <Edit className="w-4 h-4 mr-2" />
-                        Edit
-                      </Button>
-                    )}
                   </div>
                   
                   {editingInterests && !editingActivities && !editingEvents ? (
@@ -4902,7 +4896,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
                       <Globe className="w-4 h-4 text-green-500" />
-                      {isOwnProfile ? 'Your Activities' : `@${user?.username}'s Activities`}
+                      {isOwnProfile ? 'Local Activities' : `@${user?.username}'s Activities`}
                     </h4>
                   </div>
                   
@@ -5044,7 +5038,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-purple-500" />
-                      {isOwnProfile ? 'Your Events' : `@${user?.username}'s Events`}
+                      {isOwnProfile ? 'Local Events' : `@${user?.username}'s Events`}
                     </h4>
                   </div>
                   
