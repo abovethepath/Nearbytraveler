@@ -4528,7 +4528,12 @@ Questions? Just reply to this message. Welcome aboard!
       
       // MAP PRIVATE INTERESTS: Handle private interests for matching
       if (updates.privateInterests !== undefined) {
-        updates.private_interests = updates.privateInterests;
+        // Convert string to array if needed (frontend sends comma-separated string)
+        if (typeof updates.privateInterests === 'string') {
+          updates.private_interests = updates.privateInterests.split(',').map(s => s.trim()).filter(Boolean);
+        } else {
+          updates.private_interests = updates.privateInterests;
+        }
         delete updates.privateInterests;
       }
 
