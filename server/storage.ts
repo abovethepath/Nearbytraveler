@@ -9227,6 +9227,18 @@ export class DatabaseStorage implements IStorage {
       // Delete participants first
       await db.delete(quickMeetupParticipants).where(eq(quickMeetupParticipants.meetupId, id));
       
+      // Delete meetup chatroom messages and chatrooms (following same pattern as expireOldQuickMeetups)
+      const meetupChatroomsList = await db
+        .select({ id: meetupChatrooms.id })
+        .from(meetupChatrooms)
+        .where(eq(meetupChatrooms.meetupId, id));
+      
+      for (const chatroom of meetupChatroomsList) {
+        await db.delete(meetupChatroomMessages).where(eq(meetupChatroomMessages.meetupChatroomId, chatroom.id));
+      }
+      
+      await db.delete(meetupChatrooms).where(eq(meetupChatrooms.meetupId, id));
+      
       // Delete meetup
       const result = await db.delete(quickMeetups).where(eq(quickMeetups.id, id));
       
