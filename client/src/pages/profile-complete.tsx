@@ -37,6 +37,7 @@ import TravelPlansWidget from "@/components/TravelPlansWidget";
 import { useToast } from "@/hooks/use-toast";
 import { AuthContext } from "@/App";
 import { authStorage } from "@/lib/auth";
+import ConnectButton from "@/components/ConnectButton";
 
 import { formatDateForDisplay, getCurrentTravelDestination } from "@/lib/dateUtils";
 import { METRO_AREAS } from "@shared/constants";
@@ -3366,74 +3367,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Languages spoken (mock data - would be from user profile)
   const languages = ["English", "Spanish", "Portuguese"];
 
-  // Connect mutation
-  const connectMutation = useMutation({
-    mutationFn: async () => {
-      if (!currentUser?.id || !user?.id) throw new Error("Authentication required");
-      
-      const requestData = {
-        requesterId: currentUser.id,
-        targetUserId: user.id,
-        status: 'pending'
-      };
-      
-      console.log('🔵 CONNECT: Sending request data:', requestData);
-      
-      const response = await apiRequest('POST', '/api/connections', requestData);
-      
-      if (!response.ok) throw new Error('Failed to send connection request');
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/connections/${currentUser?.id}`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/connections/status/${currentUser?.id}/${user?.id}`] });
-      toast({
-        title: "Connection request sent",
-        description: `Your connection request has been sent to ${user?.name || user?.username}.`,
-      });
-    },
-    onError: (error: any) => {
-      const errorMessage = error.message || "Failed to send connection request. Please try again.";
-      const isPrivacyError = errorMessage.includes("privacy settings");
-      
-      toast({
-        title: isPrivacyError ? "Privacy Restriction" : "Connection Failed",
-        description: isPrivacyError 
-          ? "This user's privacy settings prevent connection requests from new users."
-          : errorMessage,
-        variant: "destructive",
-      });
-    },
-  });
-
-  const handleConnect = () => {
-    if (!currentUser?.id || !user?.id) {
-      toast({
-        title: "Error",
-        description: "Authentication required",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (connectionStatus?.status === 'accepted') {
-      // Already connected - do nothing or navigate to messages
-      setLocation(`/messages?userId=${user?.id}`);
-      return;
-    }
-    
-    if (connectionStatus?.status === 'pending') {
-      // Connection request already sent - show message
-      toast({
-        title: "Connection request already sent",
-        description: "Your connection request is pending approval.",
-      });
-      return;
-    }
-    
-    // Send new connection request
-    connectMutation.mutate();
-  };
+  // Removed old shared connectMutation - now using individual ConnectButton components
 
   const handleMessage = () => {
     setLocation(`/messages?userId=${user?.id}`);
@@ -3808,15 +3742,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <MessageCircle className="w-4 h-4 mr-2" />
                   Message
                 </Button>
-                <Button
-                  className={`px-6 py-2 rounded-lg shadow-md transition-all ${getConnectButtonState().className}`}
-                  variant={getConnectButtonState().variant}
-                  onClick={handleConnect}
-                  disabled={getConnectButtonState().disabled}
-                  data-testid="button-connect"
-                >
-                  {getConnectButtonState().text}
-                </Button>
+                <ConnectButton
+                  currentUserId={currentUser?.id || 0}
+                  targetUserId={user?.id || 0}
+                  targetUsername={user?.username}
+                  targetName={user?.name}
+                  connectionStatus={connectionStatus}
+                  className="px-6 py-2 rounded-lg shadow-md transition-all"
+                />
               </div>
             ) : (
               <div className="flex items-center gap-3 flex-wrap min-w-0">
