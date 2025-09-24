@@ -626,7 +626,7 @@ function QuickMeetupChat() {
 
       {/* Edit Meetup Dialog */}
       <Dialog open={editingMeetup} onOpenChange={(open) => !open && setEditingMeetup(false)}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md bg-white dark:bg-gray-800">
           <DialogHeader>
             <DialogTitle>Edit "{meetup?.title}"</DialogTitle>
           </DialogHeader>
