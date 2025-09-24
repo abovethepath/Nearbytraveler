@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/App";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useQuery } from "@tanstack/react-query";
 import { 
   MapPin, 
   Plus, 
@@ -88,6 +90,66 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       setFilteredCities(allCities);
     }
   }, [citySearchTerm, allCities]);
+
+  // Fetch user profile to sync with existing activities
+  const { data: userProfile } = useQuery({
+    queryKey: ['/api/users', user?.id],
+    enabled: !!user?.id
+  });
+
+  // Sync selected activities to user profile
+  const syncActivitiesToProfile = async (selectedActivityNames: string[], cityName: string) => {
+    if (!user?.id) return;
+    
+    try {
+      console.log('🔄 Syncing activities to profile:', { selectedActivityNames, cityName });
+      
+      // Wait for profile query to be available, don't sync if loading
+      if (!userProfile && !userProfile?.activities) {
+        console.log('⏳ Profile not loaded yet, skipping sync to prevent data loss');
+        return;
+      }
+      
+      // Get current user activities from profile (guaranteed to be loaded)
+      const currentActivities = userProfile.activities || [];
+      
+      // Add city-specific prefix to avoid conflicts (e.g., "Los Angeles: Beach Activities")
+      const cityPrefixedActivities = selectedActivityNames.map(activity => 
+        `${cityName}: ${activity}`
+      );
+      
+      // Merge with existing activities (remove old ones from this city, add new ones)
+      const cityPrefix = `${cityName}:`;
+      const otherCityActivities = currentActivities.filter((activity: string) => 
+        !activity.startsWith(cityPrefix)
+      );
+      const updatedActivities = [...otherCityActivities, ...cityPrefixedActivities];
+      
+      console.log('🔄 Profile update:', {
+        currentActivities: currentActivities.length,
+        selectedForThisCity: selectedActivityNames.length,
+        totalAfterUpdate: updatedActivities.length,
+        cityName
+      });
+      
+      // Update user profile
+      await apiRequest('PUT', `/api/users/${user.id}`, {
+        activities: updatedActivities
+      });
+      
+      // Invalidate profile query to refresh UI
+      queryClient.invalidateQueries({ queryKey: ['/api/users', user.id] });
+      
+      console.log('✅ Activities synced to profile successfully');
+    } catch (error) {
+      console.error('❌ Failed to sync activities to profile:', error);
+      toast({
+        title: "Sync Warning", 
+        description: "Activities saved locally but may not appear in profile immediately",
+        variant: "destructive"
+      });
+    }
+  };
 
   const fetchAllCities = async () => {
     try {
@@ -546,6 +608,23 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           });
         }
       }
+      
+      // Sync to user profile immediately with captured state
+      const currentSelectedNames = userActivities
+        .filter(ua => ua.cityName === selectedCity)
+        .map(ua => ua.activityName);
+      
+      const updatedSelectedNames = [...currentSelectedNames];
+      if (!isCurrentlySelected) {
+        updatedSelectedNames.push(activityName);
+      } else {
+        const index = updatedSelectedNames.indexOf(activityName);
+        if (index > -1) updatedSelectedNames.splice(index, 1);
+      }
+      
+      // Immediate sync with captured city name and state
+      syncActivitiesToProfile(updatedSelectedNames, selectedCity);
+      
     } catch (error) {
       console.error('Toggle activity error:', error);
       toast({
@@ -578,6 +657,14 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         setTimeout(() => {
           fetchUserActivities();
         }, 100);
+        
+        // Sync to user profile immediately with captured state
+        const remainingSelectedNames = userActivities
+          .filter(ua => ua.cityName === selectedCity && ua.id !== userActivityId)
+          .map(ua => ua.activityName);
+        
+        // Immediate sync with captured city name and state
+        syncActivitiesToProfile(remainingSelectedNames, selectedCity);
         
         toast({
           title: "Activity Removed",
@@ -851,7 +938,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                               className={`w-full px-5 py-4 rounded-2xl text-sm font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl border-2 ${
                                 isSelected 
                                   ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white border-emerald-300 shadow-emerald-200' 
-                                  : 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white border-blue-300 shadow-blue-200 hover:from-blue-600 hover:to-indigo-700'
+                                  : 'bg-gradient-to-r from-gray-50 to-white text-gray-700 border-gray-200 hover:border-blue-300 hover:shadow-blue-100'
                               }`}
                               onClick={() => {
                                 handleToggleActivity(activity.id, activity.activityName);
@@ -976,10 +1063,18 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                     const newUserActivity = await interestResponse.json();
                                     setUserActivities(prev => [...prev, newUserActivity]);
                                     fetchUserActivities(); // Refresh to sync
+                                    
+                                    // Sync to user profile immediately with captured state
+                                    const selectedNames = [...userActivities, newUserActivity]
+                                      .filter(ua => ua.cityName === selectedCity)
+                                      .map(ua => ua.activityName);
+                                    
+                                    // Immediate sync with captured city name and state
+                                    syncActivitiesToProfile(selectedNames, selectedCity);
                                   }
                                 }
                               } else {
-                                // Remove from user activities
+                                // Remove from user activities (handleDeleteActivity already syncs to profile)
                                 const userActivity = userActivities.find(ua => ua.activityName === activity && ua.cityName === selectedCity);
                                 if (userActivity) {
                                   await handleDeleteActivity(userActivity.id);
