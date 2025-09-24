@@ -97,6 +97,59 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     enabled: !!user?.id
   });
 
+  // Hydrate initial selections from user profile
+  useEffect(() => {
+    if (!userProfile?.activities || !selectedCity || !user?.id) return;
+    
+    console.log('🔄 Hydrating activities from user profile for city:', selectedCity);
+    
+    // Extract activities for current city from user profile
+    const cityPrefix = `${selectedCity}:`;
+    const cityActivitiesFromProfile = userProfile.activities
+      .filter((activity: string) => activity.startsWith(cityPrefix))
+      .map((activity: string) => activity.replace(cityPrefix, '').trim());
+    
+    console.log('🔄 Found existing activities for city:', {
+      cityActivitiesFromProfile,
+      totalProfileActivities: userProfile.activities.length
+    });
+    
+    if (cityActivitiesFromProfile.length > 0) {
+      // Cross-reference with cityActivities to get activityIds
+      const hydratedUserActivities = cityActivitiesFromProfile
+        .map((activityName, index) => {
+          // Find the matching activity from cityActivities
+          const matchingActivity = cityActivities.find(activity => 
+            activity.activityName === activityName
+          );
+          
+          if (matchingActivity) {
+            return {
+              id: `hydrated-${selectedCity}-${index}`, // Temporary ID for hydrated items
+              userId: user.id,
+              cityName: selectedCity,
+              activityName: activityName,
+              activityId: matchingActivity.id // Include the required activityId
+            };
+          }
+          return null;
+        })
+        .filter(Boolean); // Remove null entries
+      
+      // Set the hydrated activities to pre-select pills
+      setUserActivities(hydratedUserActivities);
+      
+      console.log('✅ Hydrated activities for pills:', {
+        found: hydratedUserActivities.length,
+        fromProfile: cityActivitiesFromProfile.length
+      });
+    } else {
+      // No existing activities for this city, clear any previous selections
+      setUserActivities([]);
+    }
+    
+  }, [userProfile?.activities, selectedCity, user?.id, cityActivities]);
+
   // Sync selected activities to user profile
   const syncActivitiesToProfile = async (selectedActivityNames: string[], cityName: string) => {
     if (!user?.id) return;
