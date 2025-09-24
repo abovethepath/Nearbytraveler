@@ -954,7 +954,7 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                               Message
                             </Button>
                             <ConnectButton
-                              currentUserId={authStorage.getCurrentUserId() || 0}
+                              currentUserId={authStorage.getUser()?.id || 0}
                               targetUserId={user.id}
                               targetUsername={user.username}
                               targetName={user.name}
