@@ -2973,17 +2973,28 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       const regularInterests = editFormData.interests.filter(interest => !privateInterestsSet.has(interest));
       const privateInterests = editFormData.interests.filter(interest => privateInterestsSet.has(interest));
       
+      // Add any custom private interests that aren't in the predefined list
+      const customPrivateInterests = editFormData.interests.filter(interest => 
+        !privateInterestsSet.has(interest) && // Not in predefined private list
+        !safeGetAllInterests().includes(interest) // Not in regular interests list either
+      );
+      
+      // Combine predefined and custom private interests
+      const allPrivateInterests = [...privateInterests, ...customPrivateInterests];
+      
       console.log('🔧 PRIVATE INTERESTS: Separated interests', {
         totalInterests: editFormData.interests.length,
         regularInterests: regularInterests.length,
-        privateInterests: privateInterests.length,
-        privateInterestsList: privateInterests
+        predefinedPrivateInterests: privateInterests.length,
+        customPrivateInterests: customPrivateInterests.length,
+        allPrivateInterests: allPrivateInterests.length,
+        privateInterestsList: allPrivateInterests
       });
       
       // Prepare the update payload with separated interests
       const updateData: any = {
         interests: regularInterests,
-        privateInterests: privateInterests,
+        privateInterests: allPrivateInterests,
         activities: editFormData.activities,
         events: editFormData.events
       };
@@ -3008,7 +3019,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       
       toast({
         title: "All preferences saved!",
-        description: `Successfully saved ${regularInterests.length} public interests, ${privateInterests.length} private interests, ${editFormData.activities.length} activities, and ${editFormData.events.length} events.`,
+        description: `Successfully saved ${regularInterests.length} public interests, ${allPrivateInterests.length} private interests, ${editFormData.activities.length} activities, and ${editFormData.events.length} events.`,
       });
       
       console.log('✓ COMPREHENSIVE SAVE: All preferences saved successfully');
@@ -4719,8 +4730,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 if (e.key === 'Enter') {
                                   e.preventDefault();
                                   const trimmed = privateInterestInput.trim();
-                                  if (trimmed && !editFormData.privateInterests.includes(trimmed)) {
-                                    setEditFormData(prev => ({ ...prev, privateInterests: [...prev.privateInterests, trimmed] }));
+                                  if (trimmed && !editFormData.interests.includes(trimmed)) {
+                                    setEditFormData(prev => ({ ...prev, interests: [...prev.interests, trimmed] }));
                                     setPrivateInterestInput('');
                                   }
                                 }
@@ -4733,8 +4744,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               size="sm"
                               onClick={() => {
                                 const trimmed = privateInterestInput.trim();
-                                if (trimmed && !editFormData.privateInterests.includes(trimmed)) {
-                                  setEditFormData(prev => ({ ...prev, privateInterests: [...prev.privateInterests, trimmed] }));
+                                if (trimmed && !editFormData.interests.includes(trimmed)) {
+                                  setEditFormData(prev => ({ ...prev, interests: [...prev.interests, trimmed] }));
                                   setPrivateInterestInput('');
                                 }
                               }}
@@ -4747,8 +4758,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
                         {/* SHOW CUSTOM PRIVATE INTERESTS WITH DELETE BUTTONS */}
                         {(() => {
-                          const customPrivateInterests = (editFormData.privateInterests || []).filter(interest => 
-                            !getPrivateInterests().includes(interest) // Only show custom ones, not predefined
+                          const customPrivateInterests = (editFormData.interests || []).filter(interest => 
+                            !getPrivateInterests().includes(interest) && // Only show custom ones, not predefined
+                            !safeGetAllInterests().includes(interest) // And not regular interests either
                           );
                           
                           if (customPrivateInterests.length === 0) return null;
@@ -4769,8 +4781,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       type="button"
                                       onClick={() => {
                                         console.log('🗑️ DELETING CUSTOM PRIVATE INTEREST:', interest);
-                                        const newPrivateInterests = (editFormData.privateInterests || []).filter(i => i !== interest);
-                                        setEditFormData({ ...editFormData, privateInterests: newPrivateInterests });
+                                        const newInterests = editFormData.interests.filter(i => i !== interest);
+                                        setEditFormData({ ...editFormData, interests: newInterests });
                                       }}
                                       className="ml-2 text-red-200 hover:text-white text-sm font-bold"
                                     >
