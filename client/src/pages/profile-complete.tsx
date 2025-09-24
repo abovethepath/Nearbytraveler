@@ -923,7 +923,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   }, []);
   const [showCropModal, setShowCropModal] = useState(false);
   const [customInterestInput, setCustomInterestInput] = useState("");
-  const [privateInterestInput, setPrivateInterestInput] = useState("");
   const [customActivityInput, setCustomActivityInput] = useState("");
   const [customEventInput, setCustomEventInput] = useState("");
   const [showCoverPhotoSelector, setShowCoverPhotoSelector] = useState(false);
