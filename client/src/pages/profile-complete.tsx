@@ -4802,31 +4802,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         );
                       })()}
 
-                      {/* PRIVATE INTERESTS VIEW (Only visible to own profile) */}
-                      {isOwnProfile && user?.privateInterests && user.privateInterests.length > 0 && (
-                      <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-600">
-                        <div className="flex items-center gap-2 mb-3">
-                          <Eye className="w-4 h-4 text-red-500" />
-                          <h5 className="text-sm font-semibold text-red-700 dark:text-red-300">Your Private Interests</h5>
-                          <div className="text-xs text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/40 px-2 py-1 rounded">
-                            Only you can see this
-                          </div>
-                        </div>
-                        <p className="text-sm font-bold text-red-700 dark:text-red-300 mb-3">
-                          These interests help with matching but remain hidden from your public profile.
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {user.privateInterests.map((interest, index) => (
-                            <div 
-                              key={`private-${index}`} 
-                              className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-red-600 text-white"
-                            >
-                              🔒 {interest}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      )}
                     </div>
                   )}
                 </div>
@@ -5119,6 +5094,37 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </Card>
             )}
 
+            {/* PRIVATE INTERESTS SECTION - Moved to bottom for better layout */}
+            {isOwnProfile && user?.privateInterests && user.privateInterests.length > 0 && (
+              <Card className="border-red-200 dark:border-red-800 bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/30 dark:to-pink-900/30">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-2">
+                    <Eye className="w-5 h-5 text-red-600 dark:text-red-400" />
+                    <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+                      Your Private Interests
+                    </CardTitle>
+                    <div className="inline-flex items-center justify-center h-6 min-w-[4rem] rounded-full px-2 text-xs font-medium leading-none whitespace-nowrap bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-200 border-0 appearance-none select-none gap-1">
+                      Only you can see this
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">
+                    These interests help with matching but remain hidden from your public profile.
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2">
+                    {user.privateInterests.map((interest, index) => (
+                      <div 
+                        key={`private-${index}`} 
+                        className="inline-flex items-center justify-center h-7 rounded-full px-4 text-sm font-medium whitespace-nowrap leading-none bg-red-600 text-white"
+                      >
+                        🔒 {interest}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Things I Want to Do Widget - Show for all non-business profiles */}
             {user?.userType !== 'business' && (
