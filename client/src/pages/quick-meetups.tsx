@@ -319,11 +319,11 @@ function QuickMeetupsPage() {
                   >
                     @{meetup.creator.username}
                   </span>
-                  {meetup.creator.id !== actualUser?.id && (
+                  {meetup.creator && meetup.creator.id !== actualUser?.id && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        setLocation(`/chat/${meetup.creator.id}`);
+                        setLocation(`/chat/${meetup.creator!.id}`);
                       }}
                       className="ml-1 p-0.5 rounded-full hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors"
                       title="Send message"
@@ -448,43 +448,41 @@ function QuickMeetupsPage() {
                     Edit
                   </Button>
                   
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button size="sm" variant="outline" className="h-7 w-7 p-0">
-                        <MoreHorizontal className="w-3 h-3" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem className="text-red-600 focus:text-red-600">
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <div className="flex items-center w-full">
-                              <Trash2 className="w-3 h-3 mr-2" />
-                              Delete Meetup
-                            </div>
+                  <AlertDialog>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button size="sm" variant="outline" className="h-7 w-7 p-0">
+                          <MoreHorizontal className="w-3 h-3" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem className="text-red-600 focus:text-red-600" asChild>
+                          <AlertDialogTrigger className="flex items-center w-full cursor-pointer">
+                            <Trash2 className="w-3 h-3 mr-2" />
+                            Cancel Meetup
                           </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Delete "{meetup.title}"</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Are you sure you want to delete this meetup? This action cannot be undone and will remove all participants and chat history.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                className="bg-red-600 hover:bg-red-700"
-                                onClick={() => deleteMeetupMutation.mutate(meetup.id)}
-                                disabled={deleteMeetupMutation.isPending}
-                              >
-                                {deleteMeetupMutation.isPending ? 'Deleting...' : 'Delete'}
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Cancel "{meetup.title}"</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to cancel this meetup? This action cannot be undone and will remove all participants and chat history.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          className="bg-red-600 hover:bg-red-700"
+                          onClick={() => deleteMeetupMutation.mutate(meetup.id)}
+                          disabled={deleteMeetupMutation.isPending}
+                        >
+                          {deleteMeetupMutation.isPending ? 'Canceling...' : 'Cancel Meetup'}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               )
             ) : (
