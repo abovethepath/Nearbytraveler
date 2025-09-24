@@ -776,18 +776,22 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   
 
   
-  // Edit mode states for individual widgets
-  const [editingInterests, setEditingInterests] = useState(false);
+  // Edit mode states for individual widgets - REFACTORED TO SINGLE STATE
+  // Single state to manage which section is being edited (prevents multiple sections editing simultaneously)
+  const [activeEditSection, setActiveEditSection] = useState<string | null>(null);
+  
+  // Computed flags for backwards compatibility
+  const editingInterests = activeEditSection === 'interests';
   const [showAllInterests, setShowAllInterests] = useState(false);
   const [showAllActivities, setShowAllActivities] = useState(false);
   const [showAllEvents, setShowAllEvents] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [editingActivities, setEditingActivities] = useState(false);
-  const [editingEvents, setEditingEvents] = useState(false);
-  const [editingLanguages, setEditingLanguages] = useState(false);
-  const [editingCountries, setEditingCountries] = useState(false);
-  const [editingBio, setEditingBio] = useState(false);
-  const [editingBusinessDescription, setEditingBusinessDescription] = useState(false);
+  const editingActivities = activeEditSection === 'activities';
+  const editingEvents = activeEditSection === 'events';
+  const editingLanguages = activeEditSection === 'languages';
+  const editingCountries = activeEditSection === 'countries';
+  const editingBio = activeEditSection === 'bio';
+  const editingBusinessDescription = activeEditSection === 'business';
   
   // Temporary state for editing values
   const [tempInterests, setTempInterests] = useState<string[]>([]);
@@ -831,7 +835,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [savingBusinessDescription, setSavingBusinessDescription] = useState(false);
   
   // Owner contact information state
-  const [editingOwnerInfo, setEditingOwnerInfo] = useState(false);
+  const editingOwnerInfo = activeEditSection === 'owner';
   const [ownerContactForm, setOwnerContactForm] = useState({
     ownerName: '',
     contactName: '',
@@ -2912,7 +2916,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     console.log('🔧 EDIT INTERESTS: Starting edit mode', { 
       user: user?.username, 
       userInterests: user?.interests,
-      editingInterests,
+      activeEditSection,
       tempInterests 
     });
     if (!user) {
@@ -2922,7 +2926,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     const userInterests = user.interests || [];
     console.log('🔧 EDIT INTERESTS: Setting temp interests to:', userInterests);
     setTempInterests(userInterests);
-    setEditingInterests(true);
+    setActiveEditSection('interests');
     console.log('🔧 EDIT INTERESTS: Edit mode activated');
   };
 
@@ -2931,14 +2935,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   };
 
   const handleCancelInterests = () => {
-    setEditingInterests(false);
+    setActiveEditSection(null);
     setTempInterests([]);
   };
 
   const handleEditActivities = () => {
     if (!user) return;
     setTempActivities(user.activities || []);
-    setEditingActivities(true);
+    setActiveEditSection('activities');
   };
 
   const handleSaveActivities = () => {
@@ -2946,14 +2950,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   };
 
   const handleCancelActivities = () => {
-    setEditingActivities(false);
+    setActiveEditSection(null);
     setTempActivities([]);
   };
 
   const handleEditEvents = () => {
     if (!user) return;
     setTempEvents(user.events || []);
-    setEditingEvents(true);
+    setActiveEditSection('events');
   };
 
   const handleSaveEvents = () => {
@@ -2961,7 +2965,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   };
 
   const handleCancelEvents = () => {
-    setEditingEvents(false);
+    setActiveEditSection(null);
     setTempEvents([]);
   };
 
@@ -3023,13 +3027,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Force reset all editing states
   const forceResetEditingStates = () => {
-    setEditingInterests(false);
-    setEditingActivities(false);
-    setEditingEvents(false);
-    setEditingLanguages(false);
-    setEditingCountries(false);
-    setEditingBio(false);
-    setEditingBusinessDescription(false);
+    setActiveEditSection(null);
     setTempInterests([]);
     setTempActivities([]);
     setTempEvents([]);
@@ -3049,7 +3047,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const handleEditLanguages = () => {
     if (!user) return;
     setTempLanguages(user.languagesSpoken || []);
-    setEditingLanguages(true);
+    setActiveEditSection('languages');
   };
 
   const handleSaveLanguages = () => {
@@ -3057,14 +3055,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   };
 
   const handleCancelLanguages = () => {
-    setEditingLanguages(false);
+    setActiveEditSection(null);
     setTempLanguages([]);
   };
 
   const handleEditCountries = () => {
     if (!user) return;
     setTempCountries(user.countriesVisited || []);
-    setEditingCountries(true);
+    setActiveEditSection('countries');
   };
 
   const handleSaveCountries = () => {
@@ -3072,7 +3070,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   };
 
   const handleCancelCountries = () => {
-    setEditingCountries(false);
+    setActiveEditSection(null);
     setTempCountries([]);
   };
 
@@ -3119,7 +3117,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   };
 
   const handleCancelEditBusinessDescription = () => {
-    setEditingBusinessDescription(false);
+    setActiveEditSection(null);
     setBusinessDescriptionForm({
       services: user?.services || '',
       specialOffers: user?.specialOffers || '',
@@ -3136,7 +3134,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       targetCustomers: user.targetCustomers || '',
       certifications: user.certifications || ''
     });
-    setEditingBusinessDescription(true);
+    setActiveEditSection('business');
   };
 
   // Owner contact mutation and handlers
