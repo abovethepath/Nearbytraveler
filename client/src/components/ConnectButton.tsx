@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
@@ -9,9 +9,6 @@ interface ConnectButtonProps {
   targetUserId: number;
   targetUsername?: string;
   targetName?: string;
-  connectionStatus?: {
-    status: 'pending' | 'accepted' | 'declined' | null;
-  } | null;
   className?: string;
   size?: "default" | "sm" | "lg" | "icon";
 }
@@ -21,13 +18,24 @@ export default function ConnectButton({
   targetUserId,
   targetUsername,
   targetName,
-  connectionStatus,
   className = "",
   size = "default"
 }: ConnectButtonProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
+
+  // Fetch connection status between current user and target user
+  const { data: connectionStatus = { status: 'none' } } = useQuery<{
+    status: 'pending' | 'accepted' | 'rejected' | 'none';
+    requesterId?: number;
+    receiverId?: number;
+  }>({
+    queryKey: [`/api/connections/status/${currentUserId}/${targetUserId}`],
+    enabled: !!currentUserId && !!targetUserId,
+    staleTime: 0,
+    gcTime: 0,
+  });
 
   // Individual mutation per button/target user - this prevents the blinking issue
   const connectMutation = useMutation({

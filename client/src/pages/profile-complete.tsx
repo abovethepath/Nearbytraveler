@@ -3747,7 +3747,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   targetUserId={user?.id || 0}
                   targetUsername={user?.username}
                   targetName={user?.name}
-                  connectionStatus={connectionStatus}
                   className="px-6 py-2 rounded-lg shadow-md transition-all"
                 />
               </div>
