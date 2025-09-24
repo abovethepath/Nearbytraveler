@@ -363,9 +363,15 @@ interface ExtendedUser extends User {
   customEvents?: string;
 }
 
+// Safe wrapper to prevent undefined errors
+const safeGetAllActivities = () => {
+  const activities = getAllActivities();
+  return Array.isArray(activities) ? activities : [];
+};
+
 // Add missing constants
 const INTERESTS_OPTIONS = ADDITIONAL_INTERESTS;
-const ACTIVITIES_OPTIONS = getAllActivities();
+const ACTIVITIES_OPTIONS = safeGetAllActivities();
 const EVENTS_OPTIONS = getAllEvents();
 
 // Reference constants
@@ -4579,7 +4585,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </div>
                         
                         <div className="flex flex-wrap gap-2 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border">
-                          {getAllActivities().map((activity) => {
+                          {safeGetAllActivities().map((activity) => {
                             const isSelected = (editFormData.activities || []).includes(activity);
                             
                             return (
@@ -5624,11 +5630,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               
                               // Separate predefined vs custom entries for proper database storage
                               const predefinedInterests = [...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS].filter(opt => editFormData.interests.includes(opt));
-                              const predefinedActivities = getAllActivities().filter(opt => (editFormData.activities || []).includes(opt));
+                              const predefinedActivities = safeGetAllActivities().filter(opt => (editFormData.activities || []).includes(opt));
                               const predefinedEvents = getAllEvents().filter(opt => editFormData.events.includes(opt));
                               
                               const customInterests = editFormData.interests.filter(int => !MOST_POPULAR_INTERESTS.includes(int) && !ADDITIONAL_INTERESTS.includes(int));
-                              const customActivities = (editFormData.activities || []).filter(act => !getAllActivities().includes(act));
+                              const customActivities = (editFormData.activities || []).filter(act => !safeGetAllActivities().includes(act));
                               const customEvents = editFormData.events.filter(evt => !getAllEvents().includes(evt));
                               
                               const saveData = {
@@ -5880,11 +5886,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           </div>
 
                           {/* Display Custom Activities with Delete Option */}
-                          {(editFormData.activities || []).filter(activity => !getAllActivities().includes(activity)).length > 0 && (
+                          {(editFormData.activities || []).filter(activity => !safeGetAllActivities().includes(activity)).length > 0 && (
                             <div className="mt-2">
                               <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Custom Activities (click X to remove):</p>
                               <div className="flex flex-wrap gap-2">
-                                {(editFormData.activities || []).filter(activity => !getAllActivities().includes(activity)).map((activity, index) => (
+                                {(editFormData.activities || []).filter(activity => !safeGetAllActivities().includes(activity)).map((activity, index) => (
                                   <span
                                     key={`custom-activity-${index}`}
                                     className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white text-black border border-black appearance-none select-none gap-1.5"
