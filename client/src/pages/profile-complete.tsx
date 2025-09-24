@@ -358,7 +358,7 @@ interface ExtendedUser extends User {
   specialOffers?: string;
   targetCustomers?: string;
   certifications?: string;
-  customInterests?: string;
+  customInterests: string | null;
   customActivities?: string;
   customEvents?: string;
 }
@@ -1043,7 +1043,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   }, [currentUser, setAuthUser]);
   
   const effectiveUserId = propUserId || currentUser?.id;
-  const isOwnProfile = propUserId ? (parseInt(propUserId) === currentUser?.id) : true;
+  const isOwnProfile = propUserId ? (parseInt(String(propUserId)) === currentUser?.id) : true;
   
   console.log('🔧 AUTHENTICATION STATE:', {
     currentUserId: currentUser?.id,
@@ -1063,7 +1063,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     comparison: `${propUserId} === ${currentUser?.id}`,
     comparisonResult: propUserId === currentUser?.id,
     parsedComparison: `parseInt(${propUserId}) === ${currentUser?.id}`,
-    parsedResult: parseInt(propUserId || '') === currentUser?.id
+    parsedResult: parseInt(String(propUserId || '')) === currentUser?.id
   });
   
 
@@ -1466,9 +1466,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       zipCode: "",
       phoneNumber: "",
       websiteUrl: "",
-      // Owner/Internal Contact Information
-      ownerName: "",
-      ownerPhone: "",
+      // Contact Information
+      contactName: "",
+      contactPhone: "",
       travelStyle: [],
       interests: [],
       activities: [],
@@ -1617,6 +1617,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   React.useEffect(() => {
     if (isEditMode && user && !userLoading) {
       console.log('🔥 Re-syncing form with updated user data');
+      
+      // Initialize editFormData with user's current data
+      setEditFormData({
+        interests: user.interests || [],
+        activities: user.activities || [],
+        events: user.events || []
+      });
       
       // For business users, extract and set custom fields
       if (user.userType === 'business') {
