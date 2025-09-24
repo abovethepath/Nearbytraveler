@@ -3400,7 +3400,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     if (connectionStatus?.status === 'pending') {
       return { text: 'Request Sent', disabled: true, variant: 'default' as const, className: 'bg-gray-600 hover:bg-gray-700 text-white border-0' };
     }
-    return { text: connectMutation.isPending ? 'Connecting...' : 'Connect', disabled: connectMutation.isPending, variant: 'default' as const, className: 'bg-blue-600 hover:bg-blue-700 text-white border-0' };
+    return { text: 'Connect', disabled: false, variant: 'default' as const, className: 'bg-blue-600 hover:bg-blue-700 text-white border-0' };
   };
 
   // Function to determine current location based on travel status
