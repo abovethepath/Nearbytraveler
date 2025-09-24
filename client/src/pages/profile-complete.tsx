@@ -4362,7 +4362,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 customInterests: customInterests.join(', '),
                                 customActivities: customActivities.join(', '),
                                 customEvents: customEvents.join(', '),
-                                privateInterests: (editFormData.privateInterests || []).join(', ')
+                                privateInterests: editFormData.privateInterests || []
                               };
                               
                               const response = await fetch(`/api/users/${user.id}`, {
