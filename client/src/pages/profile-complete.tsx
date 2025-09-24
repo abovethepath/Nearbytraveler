@@ -4300,7 +4300,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       size="sm"
                     >
                       <Edit2 className="w-4 h-4 mr-1" />
-                      Edit Interests
+                      Edit
                     </Button>
                   )}
                 </div>
