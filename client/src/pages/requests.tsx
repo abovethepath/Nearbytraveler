@@ -67,8 +67,8 @@ export default function Requests() {
         triggerCelebration({
           type: "connect",
           userInfo: {
-            username: requestInfo.requester.username,
-            profileImage: requestInfo.requester.profileImage
+            username: requestInfo.requesterUser?.username,
+            profileImage: requestInfo.requesterUser?.profileImage
           }
         });
       } else {
@@ -197,23 +197,23 @@ export default function Requests() {
                   >
                     <div className="flex items-center gap-4 flex-1">
                       <Avatar className="w-12 h-12">
-                        <AvatarImage src={request.requester.profileImage || undefined} />
+                        <AvatarImage src={request.requesterUser?.profileImage || undefined} />
                         <AvatarFallback>
-                          {request.requester.username.slice(0, 2).toUpperCase()}
+                          {request.requesterUser?.username?.slice(0, 2).toUpperCase() || 'U'}
                         </AvatarFallback>
                       </Avatar>
                       
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <h3 className="font-semibold text-gray-900">
-                            {request.requester.username}
+                            {request.requesterUser?.username || 'Unknown User'}
                           </h3>
                           <Badge variant="outline" className="text-xs">
-                            {request.requester.userType}
+                            {request.requesterUser?.userType || 'user'}
                           </Badge>
                         </div>
                         <p className="text-sm text-gray-600 mb-1">
-                          {request.requester.bio}
+                          {request.requesterUser?.bio || 'No bio available'}
                         </p>
                         <p className="text-xs text-gray-500">
                           Requested {formatDate(request.createdAt)}
