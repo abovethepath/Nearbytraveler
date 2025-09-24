@@ -4314,9 +4314,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         setEditFormData({
                           interests: user?.interests || [],
                           activities: user?.activities || [],
-                          events: user?.events || [],
-                          privateInterests: user?.privateInterests && typeof user.privateInterests === 'string' ? 
-                            user.privateInterests.split(',').map(s => s.trim()).filter(s => s) : []
+                          events: user?.events || []
                         });
                       }}
                       className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm"
@@ -4393,9 +4391,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             setEditFormData({
                               interests: user?.interests || [],
                               activities: user?.activities || [],
-                              events: user?.events || [],
-                              privateInterests: user?.privateInterests && typeof user.privateInterests === 'string' ? 
-                                user.privateInterests.split(',').map(s => s.trim()).filter(s => s) : []
+                              events: user?.events || []
                             });
                           }}
                           className="border-orange-500 text-orange-600 hover:bg-orange-50 dark:border-orange-400 dark:text-orange-400 dark:hover:bg-orange-900/20 flex-1 sm:flex-none"
@@ -4455,7 +4451,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       }}
                                       className={`inline-flex items-center justify-center h-8 rounded-full px-3 text-sm font-medium whitespace-nowrap transition-all ${
                                         isSelected
-                                          ? 'bg-yellow-600 text-white font-bold'
+                                          ? 'bg-yellow-600 text-white'
                                           : 'bg-white text-black border border-gray-300 hover:bg-gray-50'
                                       }`}
                                     >
@@ -4486,7 +4482,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       }}
                                       className={`inline-flex items-center justify-center h-8 rounded-full px-3 text-sm font-medium whitespace-nowrap transition-all ${
                                         isSelected
-                                          ? 'bg-green-600 text-white font-bold'
+                                          ? 'bg-green-600 text-white'
                                           : 'bg-white text-black border border-gray-300 hover:bg-gray-50'
                                       }`}
                                     >
@@ -4548,7 +4544,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                       }}
                                       className={`inline-flex items-center justify-center h-8 rounded-full px-3 text-sm font-medium whitespace-nowrap transition-all ${
                                         isSelected
-                                          ? 'bg-purple-600 text-white font-bold'
+                                          ? 'bg-purple-600 text-white'
                                           : 'bg-white text-black border border-gray-300 hover:bg-gray-50'
                                       }`}
                                     >
@@ -4614,7 +4610,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     }}
                                     className={`inline-flex items-center justify-center h-8 rounded-full px-3 text-sm font-medium whitespace-nowrap transition-all ${
                                       isSelected
-                                        ? 'bg-red-600 text-white font-bold'
+                                        ? 'bg-red-600 text-white'
                                         : 'bg-white text-black border border-red-300 hover:bg-red-50'
                                     }`}
                                   >
@@ -4716,7 +4712,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 }}
                                 className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
                                   isSelected
-                                    ? 'bg-green-600 text-white font-bold transform scale-105'
+                                    ? 'bg-green-600 text-white'
                                     : 'bg-white text-black'
                                 }`}
                               >
@@ -4960,7 +4956,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 }}
                                 className={`pill inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
                                   isSelected
-                                    ? 'bg-green-600 text-white font-bold transform scale-105'
+                                    ? 'bg-green-600 text-white'
                                     : 'bg-white text-black'
                                 }`}
                               >
@@ -5100,7 +5096,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 }}
                                 className={`pill inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
                                   isSelected
-                                    ? 'bg-green-600 text-white font-bold transform scale-105'
+                                    ? 'bg-green-600 text-white'
                                     : 'bg-white text-black'
                                 }`}
                               >
@@ -5485,9 +5481,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             setEditFormData({
                               interests: user?.interests || [],
                               activities: user?.activities || [],
-                              events: user?.events || [],
-                              privateInterests: user?.privateInterests && typeof user.privateInterests === 'string' ? 
-                                user.privateInterests.split(',').map(s => s.trim()).filter(s => s) : []
+                              events: user?.events || []
                             });
                           }}
                         >
@@ -5520,7 +5514,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 }}
                                 className={`inline-flex items-center justify-center h-7 rounded-full px-3 text-[11px] font-medium whitespace-nowrap leading-none border-0 transition-all ${
                                   isSelected
-                                    ? 'bg-green-600 text-white font-bold transform scale-105'
+                                    ? 'bg-green-600 text-white'
                                     : 'bg-orange-100 text-orange-800 hover:bg-orange-200 dark:bg-orange-800 dark:text-orange-200 dark:hover:bg-orange-700'
                                 }`}
                               >
@@ -5620,7 +5614,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 }}
                                 className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
                                   isSelected
-                                    ? 'bg-green-600 text-white font-bold transform scale-105'
+                                    ? 'bg-green-600 text-white'
                                     : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
                                 }`}
                               >
@@ -5720,7 +5714,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 }}
                                 className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
                                   isSelected
-                                    ? 'bg-green-600 text-white font-bold transform scale-105'
+                                    ? 'bg-green-600 text-white'
                                     : 'bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-800 dark:text-purple-200 dark:hover:bg-purple-700'
                                 }`}
                               >
