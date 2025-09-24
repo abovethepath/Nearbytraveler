@@ -776,12 +776,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   
 
   
-  // Edit mode states for individual widgets - REFACTORED TO SINGLE STATE
-  // Single state to manage which section is being edited (prevents multiple sections editing simultaneously)
+  // Edit mode states for individual widgets - FIXED WITH SEPARATE BOOLEANS
+  // Separate editing states for clean cancel functionality
+  const [isEditingPublicInterests, setIsEditingPublicInterests] = useState(false);
+  const [isEditingPrivateInterests, setIsEditingPrivateInterests] = useState(false);
   const [activeEditSection, setActiveEditSection] = useState<string | null>(null);
   
-  // Computed flags for backwards compatibility
-  const editingInterests = activeEditSection === 'interests';
+  // Legacy compatibility (will be phased out)
+  const editingInterests = isEditingPublicInterests;
   const [showAllInterests, setShowAllInterests] = useState(false);
   const [showAllActivities, setShowAllActivities] = useState(false);
   const [showAllEvents, setShowAllEvents] = useState(false);
@@ -2797,7 +2799,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         title: "Interests updated",
         description: "Your interests have been successfully updated.",
       });
-      setEditingInterests(false);
+      setIsEditingPublicInterests(false);
     },
     onError: () => {
       toast({
@@ -4346,7 +4348,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               
                               // Refresh data and close editing
                               queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
-                              setEditingInterests(false);
+                              setIsEditingPublicInterests(false);
                               console.log('✅ Successfully saved interests');
                             } catch (error) {
                               console.error('❌ Failed to update preferences:', error);
@@ -4359,7 +4361,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <Button 
                           variant="outline" 
                           onClick={() => {
-                            setEditingInterests(false);
+                            setIsEditingPublicInterests(false);
                             setActiveEditSection(null);
                             setEditFormData({
                               interests: user?.interests || [],
@@ -5193,7 +5195,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         });
                         
                         // Open ALL editing modes at once for business users
-                        setEditingInterests(true);
+                        setIsEditingPublicInterests(true);
                         setEditingActivities(true);
                         setEditingEvents(true);
                         
@@ -5396,7 +5398,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               // Refresh data
                               queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
                               // Close editing modes
-                              setEditingInterests(false);
+                              setIsEditingPublicInterests(false);
                               setEditingActivities(false);
                               setEditingEvents(false);
                               
@@ -5427,7 +5429,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           variant="outline" 
                           onClick={() => {
                             // Cancel edits and close editing modes
-                            setEditingInterests(false);
+                            setIsEditingPublicInterests(false);
                             setEditingActivities(false);
                             setEditingEvents(false);
                             setEditFormData({
@@ -5810,7 +5812,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
                             
                             // Close editing modes
-                            setEditingInterests(false);
+                            setIsEditingPublicInterests(false);
                             setEditingActivities(false);
                             setEditingEvents(false);
                             
@@ -7664,7 +7666,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       <Dialog open={!!editingTravelPlan} onOpenChange={() => {
         // Close travel plan editing and any profile editing to avoid conflicts
         setEditingTravelPlan(null);
-        setEditingInterests(false);
+        setIsEditingPublicInterests(false);
         setEditingActivities(false);
         setEditingEvents(false);
       }}>
