@@ -1526,7 +1526,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       setEditFormData({
         interests: (user.interests || []).filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)),
         activities: user.activities || [],
-        events: user.events || []
+        events: user.events || [],
+        privateInterests: user.privateInterests ? user.privateInterests.split(',').map(item => item.trim()).filter(item => item) : []
       });
       
       // Reset form with user type-specific data
@@ -1627,7 +1628,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       setEditFormData({
         interests: user.interests || [],
         activities: user.activities || [],
-        events: user.events || []
+        events: user.events || [],
+        privateInterests: user.privateInterests ? user.privateInterests.split(',').map(item => item.trim()).filter(item => item) : []
       });
       
       // For business users, extract and set custom fields
@@ -4314,7 +4316,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         setEditFormData({
                           interests: user?.interests || [],
                           activities: user?.activities || [],
-                          events: user?.events || []
+                          events: user?.events || [],
+                          privateInterests: user?.privateInterests ? user.privateInterests.split(',').map(item => item.trim()).filter(item => item) : []
                         });
                       }}
                       className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm"
@@ -4391,7 +4394,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             setEditFormData({
                               interests: user?.interests || [],
                               activities: user?.activities || [],
-                              events: user?.events || []
+                              events: user?.events || [],
+                              privateInterests: user?.privateInterests ? user.privateInterests.split(',').map(item => item.trim()).filter(item => item) : []
                             });
                           }}
                           className="border-orange-500 text-orange-600 hover:bg-orange-50 dark:border-orange-400 dark:text-orange-400 dark:hover:bg-orange-900/20 flex-1 sm:flex-none"
@@ -5481,7 +5485,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             setEditFormData({
                               interests: user?.interests || [],
                               activities: user?.activities || [],
-                              events: user?.events || []
+                              events: user?.events || [],
+                              privateInterests: user?.privateInterests ? user.privateInterests.split(',').map(item => item.trim()).filter(item => item) : []
                             });
                           }}
                         >
