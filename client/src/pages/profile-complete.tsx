@@ -4959,10 +4959,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     setEditFormData({ ...editFormData, activities: newActivities })
                                   );
                                 }}
-                                className={`pill inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
+                                className={`pill inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap appearance-none select-none gap-1.5 transition-all cursor-pointer hover:shadow-sm ${
                                   isSelected
-                                    ? 'bg-green-600 text-white'
-                                    : 'bg-white text-black'
+                                    ? 'bg-green-600 text-white border-2 border-green-700 shadow-md'
+                                    : 'bg-gray-100 text-gray-700 border-2 border-gray-300 hover:bg-gray-200 hover:border-gray-400'
                                 }`}
                               >
                                 {activity}
@@ -5099,10 +5099,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     setTempEvents([...tempEvents, event]);
                                   }
                                 }}
-                                className={`pill inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap border-0 appearance-none select-none gap-1.5 transition-all ${
+                                className={`pill inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap appearance-none select-none gap-1.5 transition-all cursor-pointer hover:shadow-sm ${
                                   isSelected
-                                    ? 'bg-green-600 text-white'
-                                    : 'bg-white text-black'
+                                    ? 'bg-green-600 text-white border-2 border-green-700 shadow-md'
+                                    : 'bg-gray-100 text-gray-700 border-2 border-gray-300 hover:bg-gray-200 hover:border-gray-400'
                                 }`}
                               >
                                 {event}

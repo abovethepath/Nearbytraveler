@@ -4384,19 +4384,23 @@ Questions? Just reply to this message. Welcome aboard!
       const { password: _, ...userWithoutPassword } = user;
       
       // MAP CUSTOM FIELDS: Convert snake_case database fields to camelCase for frontend
-      if (userWithoutPassword.customInterests !== undefined) {
-        userWithoutPassword.customInterests = userWithoutPassword.customInterests;
+      if (userWithoutPassword.custom_interests !== undefined) {
+        userWithoutPassword.customInterests = userWithoutPassword.custom_interests;
+        delete userWithoutPassword.custom_interests;
       }
-      if (userWithoutPassword.customActivities !== undefined) {
-        userWithoutPassword.customActivities = userWithoutPassword.customActivities;
+      if (userWithoutPassword.custom_activities !== undefined) {
+        userWithoutPassword.customActivities = userWithoutPassword.custom_activities;
+        delete userWithoutPassword.custom_activities;
       }
-      if (userWithoutPassword.customEvents !== undefined) {
-        userWithoutPassword.customEvents = userWithoutPassword.customEvents;
+      if (userWithoutPassword.custom_events !== undefined) {
+        userWithoutPassword.customEvents = userWithoutPassword.custom_events;
+        delete userWithoutPassword.custom_events;
       }
       
       // MAP PRIVATE INTERESTS: Handle private interests for frontend
-      if (userWithoutPassword.privateInterests !== undefined) {
-        userWithoutPassword.privateInterests = userWithoutPassword.privateInterests;
+      if (userWithoutPassword.private_interests !== undefined) {
+        userWithoutPassword.privateInterests = userWithoutPassword.private_interests;
+        delete userWithoutPassword.private_interests;
       }
       
       // Note: Travel intent fields are already in camelCase from database
