@@ -4361,7 +4361,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 events: predefinedEvents,
                                 customInterests: customInterests.join(', '),
                                 customActivities: customActivities.join(', '),
-                                customEvents: customEvents.join(', ')
+                                customEvents: customEvents.join(', '),
+                                privateInterests: (editFormData.privateInterests || []).join(', ')
                               };
                               
                               const response = await fetch(`/api/users/${user.id}`, {
@@ -5427,6 +5428,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 customEvents: customEvents.join(', ')
                               };
                               
+                              // Add private interests to business save data too
+                              saveData.privateInterests = (editFormData.privateInterests || []).join(', ');
+                              
                               console.log('🔧 BUSINESS SAVE - Separated data:', saveData);
                               
                               const response = await fetch(`/api/users/${effectiveUserId}`, {
@@ -5826,6 +5830,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               customActivities: customActivities.join(', '),
                               customEvents: customEvents.join(', ')
                             };
+                            
+                            // Add private interests to final save data
+                            saveData.privateInterests = (editFormData.privateInterests || []).join(', ');
                             
                             console.log('🔧 BUSINESS SAVE - Final payload:', JSON.stringify(saveData, null, 2));
                             
