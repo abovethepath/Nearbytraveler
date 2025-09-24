@@ -804,6 +804,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [customLanguageInput, setCustomLanguageInput] = useState("");
   const [customCountryInput, setCustomCountryInput] = useState("");
   const [tempBio, setTempBio] = useState("");
+  const [privateInterestInput, setPrivateInterestInput] = useState("");
   
   // Reference modal states
   const [showEditModal, setShowEditModal] = useState(false);
@@ -5040,8 +5041,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </Card>
             )}
 
-            {/* PRIVATE INTERESTS SECTION - Moved to bottom for better layout */}
-            {isOwnProfile && user?.privateInterests && user.privateInterests.length > 0 && (
+            {/* SEPARATE PRIVATE INTERESTS EDITOR - Independent of public interests */}
+            {isOwnProfile && (
               <Card className="border-red-200 dark:border-red-800 bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/30 dark:to-pink-900/30">
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
@@ -5054,22 +5055,21 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         Only you can see this
                       </div>
                     </div>
-                    {activeEditSection !== 'private-interests' && (
+                    {!isEditingPrivateInterests && (
                       <Button
                         onClick={() => {
-                          // Open ONLY private interests editing mode
-                          setActiveEditSection('private-interests');
-                          
-                          // Initialize form data with ONLY private interests
-                          setEditFormData({
-                            interests: [],
-                            activities: [],
-                            events: [],
-                            privateInterests: (user?.privateInterests && typeof user.privateInterests === 'string') ? user.privateInterests.split(',').map(item => item.trim()).filter(item => item) : (user?.privateInterests || [])
-                          });
+                          setIsEditingPrivateInterests(true);
+                          // Initialize editing with current private interests
+                          setEditFormData(prev => ({
+                            ...prev,
+                            privateInterests: (user?.privateInterests && typeof user.privateInterests === 'string') 
+                              ? user.privateInterests.split(',').map(item => item.trim()).filter(item => item) 
+                              : (user?.privateInterests || [])
+                          }));
                         }}
                         className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 text-sm"
                         size="sm"
+                        data-testid="button-edit-private-interests"
                       >
                         <Edit2 className="w-4 h-4 mr-1" />
                         Edit
@@ -5081,16 +5081,139 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </p>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex flex-wrap gap-2">
-                    {user.privateInterests.map((interest, index) => (
-                      <div 
-                        key={`private-${index}`} 
-                        className="inline-flex items-center justify-center h-7 rounded-full px-4 text-sm font-medium whitespace-nowrap leading-none bg-red-600 text-white"
-                      >
-                        🔒 {interest}
+                  {isEditingPrivateInterests ? (
+                    <div className="space-y-4">
+                      {/* Private Interests Editing Interface */}
+                      <div>
+                        <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Current Private Interests</h5>
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          {editFormData.privateInterests.map((interest, index) => (
+                            <div key={`editing-private-${index}`} className="inline-flex items-center bg-red-600 text-white rounded-full px-3 py-1 text-sm">
+                              🔒 {interest}
+                              <button
+                                onClick={() => {
+                                  setEditFormData(prev => ({
+                                    ...prev,
+                                    privateInterests: prev.privateInterests.filter((_, i) => i !== index)
+                                  }));
+                                }}
+                                className="ml-2 text-red-200 hover:text-white"
+                                data-testid={`button-remove-private-interest-${index}`}
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="flex gap-2">
+                          <Input
+                            placeholder="Add private interest..."
+                            value={privateInterestInput}
+                            onChange={(e) => setPrivateInterestInput(e.target.value)}
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                const trimmed = privateInterestInput.trim();
+                                if (trimmed && !editFormData.privateInterests.includes(trimmed)) {
+                                  setEditFormData(prev => ({
+                                    ...prev,
+                                    privateInterests: [...prev.privateInterests, trimmed]
+                                  }));
+                                  setPrivateInterestInput('');
+                                }
+                              }
+                            }}
+                            className="border-red-300 dark:border-red-600"
+                            data-testid="input-add-private-interest"
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const trimmed = privateInterestInput.trim();
+                              if (trimmed && !editFormData.privateInterests.includes(trimmed)) {
+                                setEditFormData(prev => ({
+                                  ...prev,
+                                  privateInterests: [...prev.privateInterests, trimmed]
+                                }));
+                                setPrivateInterestInput('');
+                              }
+                            }}
+                            className="bg-red-500 hover:bg-red-600 text-white border-red-500"
+                            data-testid="button-add-private-interest"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </div>
-                    ))}
-                  </div>
+                      
+                      {/* Save/Cancel buttons for Private Interests only */}
+                      <div className="flex gap-2 pt-2">
+                        <Button 
+                          size="sm" 
+                          onClick={async () => {
+                            try {
+                              await updateUser.mutateAsync({
+                                privateInterests: editFormData.privateInterests
+                              });
+                              setIsEditingPrivateInterests(false);
+                              toast({
+                                title: "Private interests updated",
+                                description: "Your private interests have been successfully updated.",
+                              });
+                            } catch (error) {
+                              toast({
+                                title: "Update failed",
+                                description: "Failed to update private interests.",
+                                variant: "destructive",
+                              });
+                            }
+                          }}
+                          disabled={updateUser.isPending}
+                          className="bg-red-600 hover:bg-red-700 text-white"
+                          data-testid="button-save-private-interests"
+                        >
+                          {updateUser.isPending ? "Saving..." : "Save Private Interests"}
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          onClick={() => {
+                            setIsEditingPrivateInterests(false);
+                            setPrivateInterestInput('');
+                            // Reset form data
+                            setEditFormData(prev => ({
+                              ...prev,
+                              privateInterests: (user?.privateInterests && typeof user.privateInterests === 'string') 
+                                ? user.privateInterests.split(',').map(item => item.trim()).filter(item => item) 
+                                : (user?.privateInterests || [])
+                            }));
+                          }}
+                          className="border-red-500 text-red-600 hover:bg-red-50 dark:border-red-400 dark:text-red-400 dark:hover:bg-red-900/20"
+                          data-testid="button-cancel-private-interests"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      {(user?.privateInterests && user.privateInterests.length > 0) ? (
+                        user.privateInterests.map((interest, index) => (
+                          <div 
+                            key={`private-${index}`} 
+                            className="inline-flex items-center justify-center h-7 rounded-full px-4 text-sm font-medium whitespace-nowrap leading-none bg-red-600 text-white"
+                            data-testid={`private-interest-${index}`}
+                          >
+                            🔒 {interest}
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-gray-500 text-sm italic">No private interests added yet. Click Edit to add some.</p>
+                      )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
