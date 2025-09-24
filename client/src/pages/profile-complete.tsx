@@ -4315,7 +4315,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           interests: user?.interests || [],
                           activities: user?.activities || [],
                           events: user?.events || [],
-                          privateInterests: user?.privateInterests ? 
+                          privateInterests: user?.privateInterests && typeof user.privateInterests === 'string' ? 
                             user.privateInterests.split(',').map(s => s.trim()).filter(s => s) : []
                         });
                       }}
@@ -4394,7 +4394,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               interests: user?.interests || [],
                               activities: user?.activities || [],
                               events: user?.events || [],
-                              privateInterests: user?.privateInterests ? 
+                              privateInterests: user?.privateInterests && typeof user.privateInterests === 'string' ? 
                                 user.privateInterests.split(',').map(s => s.trim()).filter(s => s) : []
                             });
                           }}
@@ -5689,7 +5689,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               interests: user?.interests || [],
                               activities: user?.activities || [],
                               events: user?.events || [],
-                              privateInterests: user?.privateInterests ? 
+                              privateInterests: user?.privateInterests && typeof user.privateInterests === 'string' ? 
                                 user.privateInterests.split(',').map(s => s.trim()).filter(s => s) : []
                             });
                           }}
