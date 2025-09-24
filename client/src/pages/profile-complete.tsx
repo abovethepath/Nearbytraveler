@@ -5854,8 +5854,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 if (e.key === 'Enter') {
                                   e.preventDefault();
                                   const trimmed = customActivityInput.trim();
-                                  if (trimmed && !editFormData.activities.includes(trimmed)) {
-                                    setEditFormData({ ...editFormData, activities: [...editFormData.activities, trimmed] });
+                                  if (trimmed && !(editFormData.activities || []).includes(trimmed)) {
+                                    setEditFormData({ ...editFormData, activities: [...(editFormData.activities || []), trimmed] });
                                     setCustomActivityInput('');
                                   }
                                 }
@@ -5868,8 +5868,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               size="sm"
                               onClick={() => {
                                 const trimmed = customActivityInput.trim();
-                                if (trimmed && !editFormData.activities.includes(trimmed)) {
-                                  setEditFormData({ ...editFormData, activities: [...editFormData.activities, trimmed] });
+                                if (trimmed && !(editFormData.activities || []).includes(trimmed)) {
+                                  setEditFormData({ ...editFormData, activities: [...(editFormData.activities || []), trimmed] });
                                   setCustomActivityInput('');
                                 }
                               }}
@@ -5893,7 +5893,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     <button
                                       type="button"
                                       onClick={() => {
-                                        const newActivities = editFormData.activities.filter(a => a !== activity);
+                                        const newActivities = (editFormData.activities || []).filter(a => a !== activity);
                                         setEditFormData({ ...editFormData, activities: newActivities });
                                       }}
                                       className="ml-1 text-green-600 hover:text-green-800 dark:text-green-300 dark:hover:text-green-100"
