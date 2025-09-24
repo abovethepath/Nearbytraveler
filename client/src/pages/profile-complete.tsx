@@ -8400,8 +8400,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       });
                       if (!response.ok) throw new Error('Failed to save');
                       
-                      // Update the cache and clear pending data
+                      // Update the cache and clear pending data - ALSO invalidate user listings
                       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+                      queryClient.invalidateQueries({ queryKey: [`/api/users`] });
+                      queryClient.invalidateQueries({ queryKey: ['/api/users/search'] });
                       setPendingLocationData(null);
                       
                       toast({
