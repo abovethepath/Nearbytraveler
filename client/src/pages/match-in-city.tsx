@@ -99,7 +99,11 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
   // Hydrate initial selections from user profile
   useEffect(() => {
-    if (!userProfile?.activities || !selectedCity || !user?.id) return;
+    // Skip hydration for new users who aren't logged in
+    if (!user?.id || !userProfile?.activities || !selectedCity) {
+      console.log('🔄 SKIP HYDRATION: New user or no profile data');
+      return;
+    }
     
     console.log('🔄 Hydrating activities from user profile for city:', selectedCity);
     
@@ -284,7 +288,15 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     // Get user from localStorage if not in context
     const storedUser = localStorage.getItem('travelConnectUser');
     const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
-    const userId = actualUser?.id || 2; // Use actual user ID, fallback to valid user 2
+    
+    // NEW USERS: Don't fallback to user 2 - show clean slate for new users
+    if (!actualUser || !actualUser.id) {
+      console.log('🔧 NEW USER: No user logged in, starting with clean slate');
+      setUserActivities([]);
+      return;
+    }
+    
+    const userId = actualUser.id;
     console.log('🔧 FETCH USER ACTIVITIES: using userId =', userId, 'user object:', actualUser);
     
     try {
