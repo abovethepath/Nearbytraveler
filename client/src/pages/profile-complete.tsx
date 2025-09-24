@@ -4672,6 +4672,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <Heart className="w-4 h-4 text-blue-500" />
                       {isOwnProfile ? 'Your Interests' : `@${user?.username}'s Interests`}
                     </h4>
+                    {isOwnProfile && !editingInterests && (
+                      <Button size="sm" variant="outline" onClick={handleEditInterests} data-testid="button-edit-interests">
+                        <Edit className="w-4 h-4 mr-2" />
+                        Edit
+                      </Button>
+                    )}
                   </div>
                   
                   {editingInterests && !editingActivities && !editingEvents ? (
