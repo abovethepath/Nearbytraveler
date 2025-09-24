@@ -5855,15 +5855,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </h4>
                         <div className="flex flex-wrap gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
                           {safeGetAllActivities().map((activity, index) => {
-                            const isSelected = editFormData.activities.includes(activity);
+                            const isSelected = (editFormData.activities ?? []).includes(activity);
                             return (
                               <button
                                 key={`business-activity-${activity}-${index}`}
                                 type="button"
                                 onClick={() => {
+                                  const current = editFormData.activities ?? [];
                                   const newActivities = isSelected
-                                    ? (editFormData.activities || []).filter((a: string) => a !== activity)
-                                    : [...(editFormData.activities || []), activity];
+                                    ? current.filter((a: string) => a !== activity)
+                                    : [...current, activity];
                                   setEditFormData({ ...editFormData, activities: newActivities });
                                 }}
                                 className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
@@ -5954,15 +5955,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </h4>
                         <div className="flex flex-wrap gap-2 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
                           {safeGetAllEvents().map((event, index) => {
-                            const isSelected = editFormData.events.includes(event);
+                            const isSelected = (editFormData.events ?? []).includes(event);
                             return (
                               <button
                                 key={`business-event-${event}-${index}`}
                                 type="button"
                                 onClick={() => {
+                                  const current = editFormData.events ?? [];
                                   const newEvents = isSelected
-                                    ? editFormData.events.filter((e: string) => e !== event)
-                                    : [...editFormData.events, event];
+                                    ? current.filter((e: string) => e !== event)
+                                    : [...current, event];
                                   setEditFormData({ ...editFormData, events: newEvents });
                                 }}
                                 className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
@@ -5991,8 +5993,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 if (e.key === 'Enter') {
                                   e.preventDefault();
                                   const trimmed = customEventInput.trim();
-                                  if (trimmed && !editFormData.events.includes(trimmed)) {
-                                    setEditFormData({ ...editFormData, events: [...editFormData.events, trimmed] });
+                                  if (trimmed && !(editFormData.events ?? []).includes(trimmed)) {
+                                    setEditFormData({ ...editFormData, events: [...(editFormData.events ?? []), trimmed] });
                                     setCustomEventInput('');
                                   }
                                 }
@@ -6005,8 +6007,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               size="sm"
                               onClick={() => {
                                 const trimmed = customEventInput.trim();
-                                if (trimmed && !editFormData.events.includes(trimmed)) {
-                                  setEditFormData({ ...editFormData, events: [...editFormData.events, trimmed] });
+                                if (trimmed && !(editFormData.events ?? []).includes(trimmed)) {
+                                  setEditFormData({ ...editFormData, events: [...(editFormData.events ?? []), trimmed] });
                                   setCustomEventInput('');
                                 }
                               }}
@@ -6017,11 +6019,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           </div>
 
                           {/* Display Custom Events with Delete Option */}
-                          {editFormData.events.filter(event => !safeGetAllEvents().includes(event)).length > 0 && (
+                          {(editFormData.events ?? []).filter(event => !safeGetAllEvents().includes(event)).length > 0 && (
                             <div className="mt-2">
                               <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Custom Events (click X to remove):</p>
                               <div className="flex flex-wrap gap-2">
-                                {editFormData.events.filter(event => !safeGetAllEvents().includes(event)).map((event, index) => (
+                                {(editFormData.events ?? []).filter(event => !safeGetAllEvents().includes(event)).map((event, index) => (
                                   <span
                                     key={`custom-event-${index}`}
                                     className="pill inline-flex items-center"
@@ -6030,7 +6032,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     <button
                                       type="button"
                                       onClick={() => {
-                                        const newEvents = editFormData.events.filter(e => e !== event);
+                                        const newEvents = (editFormData.events ?? []).filter(e => e !== event);
                                         setEditFormData({ ...editFormData, events: newEvents });
                                       }}
                                       className="ml-1 text-purple-600 hover:text-purple-800 dark:text-purple-300 dark:hover:text-purple-100"

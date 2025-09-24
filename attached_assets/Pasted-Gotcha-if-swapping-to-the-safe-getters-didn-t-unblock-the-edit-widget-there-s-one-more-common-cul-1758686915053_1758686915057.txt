@@ -1,0 +1,133 @@
+Gotcha — if swapping to the safe getters didn’t unblock the edit widget, there’s one more common culprit in your snippets: you’re still calling .includes on possibly-undefined arrays inside editFormData. That will crash even if your safeGetAllX() are perfect.
+
+Here are targeted fixes you can paste in.
+
+1) Activities Editing (Lines 5825–5893)
+
+Bug:
+const isSelected = editFormData.activities.includes(activity);
+This throws when editFormData.activities is undefined.
+
+Fix:
+
+// cache safe lists once per render (optional but clean)
+const allActivities = safeGetAllActivities();
+
+<div className="flex flex-wrap gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+  {allActivities.map((activity, index) => {
+    const isSelected = (editFormData.activities ?? []).includes(activity); // <-- FIX
+    return (
+      <button
+        key={`business-activity-${activity}-${index}`}
+        type="button"
+        onClick={() => {
+          const current = editFormData.activities ?? []; // <-- FIX
+          const newActivities = isSelected
+            ? current.filter((a: string) => a !== activity)
+            : [...current, activity];
+          setEditFormData({ ...editFormData, activities: newActivities });
+        }}
+        className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
+          isSelected
+            ? 'bg-green-600 text-white font-bold transform scale-105'
+            : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
+        }`}
+      >
+        {activity}
+      </button>
+    );
+  })}
+</div>
+
+
+Custom Activities Filter (your “ERROR LINE”)
+If safeGetAllActivities() really always returns an array, this is fine. Just avoid recalculating it twice:
+
+const allActivities = safeGetAllActivities();
+{(editFormData.activities ?? [])
+  .filter(activity => !allActivities.includes(activity))
+  .map((activity, index) => (
+    /* ...unchanged... */
+))}
+
+2) Events Editing (Lines 5924–5943)
+
+Two fixes here: use the safe getter and guard editFormData.events.
+
+const allEvents = safeGetAllEvents(); // <-- use safe
+<div className="flex flex-wrap gap-2 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+  {allEvents.map((event, index) => {
+    const isSelected = (editFormData.events ?? []).includes(event); // <-- FIX
+    return (
+      <button
+        key={`business-event-${event}-${index}`}
+        type="button"
+        onClick={() => {
+          const current = editFormData.events ?? []; // <-- FIX
+          const newEvents = isSelected
+            ? current.filter((e: string) => e !== event)
+            : [...current, event];
+          setEditFormData({ ...editFormData, events: newEvents });
+        }}
+        className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
+          isSelected
+            ? 'bg-green-600 text-white font-bold transform scale-105'
+            : 'bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-800 dark:text-purple-200 dark:hover:bg-purple-700'
+        }`}
+      >
+        {event}
+      </button>
+    );
+  })}
+</div>
+
+3) Travel Form Activities (Lines 8134–8164)
+
+This block already uses safeGetAllActivities() and field.value?.includes(...), which is fine. No change needed here.
+
+4) Make the safe getters bulletproof (once)
+// safe-options.ts
+import { getAllActivities, getAllEvents, getAllInterests } from "./shared/base-options"; // adjust path
+
+const asArray = <T,>(v: T[] | null | undefined): T[] => (Array.isArray(v) ? v : []);
+
+export function safeGetAllActivities(): string[] {
+  try { return asArray(getAllActivities?.()); } catch { return []; }
+}
+export function safeGetAllEvents(): string[] {
+  try { return asArray(getAllEvents?.()); } catch { return []; }
+}
+export function safeGetAllInterests(): string[] {
+  try { return asArray(getAllInterests?.()); } catch { return []; }
+}
+
+
+If shared/base-options changed or there’s a circular import, these still return [] instead of blowing up.
+
+5) (Optional but recommended) Normalize editFormData at source
+
+When you initialize or receive editFormData, coerce nullable arrays once:
+
+setEditFormData(prev => ({
+  ...prev,
+  activities: asArray(prev.activities),
+  events: asArray(prev.events),
+  interests: asArray(prev.interests),
+}));
+
+
+Or define your type as non-optional arrays and default them at state init:
+
+type EditFormData = {
+  activities: string[];
+  events: string[];
+  interests: string[];
+  // ...
+};
+
+const [editFormData, setEditFormData] = useState<EditFormData>({
+  activities: [],
+  events: [],
+  interests: [],
+  // ...
+});
