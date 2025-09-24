@@ -5896,11 +5896,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           </div>
 
                           {/* Display Custom Activities with Delete Option */}
-                          {(editFormData.activities || []).filter(activity => !safeGetAllActivities().includes(activity)).length > 0 && (
+                          {((editFormData.activities || []).filter(activity => !safeGetAllActivities().includes(activity))).length > 0 && (
                             <div className="mt-2">
                               <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Custom Activities (click X to remove):</p>
                               <div className="flex flex-wrap gap-2">
-                                {(editFormData.activities || []).filter(activity => !safeGetAllActivities().includes(activity)).map((activity, index) => (
+                                {((editFormData.activities || []).filter(activity => !safeGetAllActivities().includes(activity))).map((activity, index) => (
                                   <span
                                     key={`custom-activity-${index}`}
                                     className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white text-black border border-black appearance-none select-none gap-1.5"
