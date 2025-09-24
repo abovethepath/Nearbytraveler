@@ -281,8 +281,12 @@ function QuickMeetupChat() {
         title: "Success!",
         description: "Meetup deleted successfully.",
       });
-      // Navigate back to previous page after deletion
-      setLocation('/quick-meetups');
+      // Invalidate queries first to update the UI
+      queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
+      // Use a small delay to prevent navigation flash during re-render
+      setTimeout(() => {
+        setLocation('/quick-meetups');
+      }, 100);
     },
     onError: (error: Error) => {
       toast({
