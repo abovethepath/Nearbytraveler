@@ -818,6 +818,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Tab state for simplified editing interface  
   const [editingTab, setEditingTab] = useState<'public' | 'private'>('public');
 
+  // Auto-set editing tab to private when in private-interests mode
+  useEffect(() => {
+    if (activeEditSection === 'private-interests') {
+      setEditingTab('private');
+    }
+  }, [activeEditSection]);
+
   // Simple toggle function copied from signup
   const toggleArrayValue = (array: string[], value: string, setter: (newArray: string[]) => void) => {
     if (array.includes(value)) {
@@ -4308,10 +4315,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               <CardContent className="space-y-6 px-4 sm:px-6 pb-4 sm:pb-6 break-words overflow-hidden">
 
                 {/* INTERESTS EDIT INTERFACE */}
-                {isOwnProfile && editingInterests ? (
-                  <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg border border-blue-200 dark:border-blue-600">
+                {isOwnProfile && (editingInterests || activeEditSection === 'private-interests') ? (
+                  <div className={`p-6 rounded-lg border ${activeEditSection === 'private-interests' ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-600' : 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-600'}`}>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Edit Interests</h3>
+                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{activeEditSection === 'private-interests' ? 'Edit Private Interests' : 'Edit Interests'}</h3>
                       <div className="flex gap-2 w-full sm:w-auto">
                         <Button 
                           onClick={async () => {
@@ -4353,6 +4360,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           variant="outline" 
                           onClick={() => {
                             setEditingInterests(false);
+                            setActiveEditSection(null);
                             setEditFormData({
                               interests: user?.interests || [],
                               activities: user?.activities || [],
@@ -4367,35 +4375,108 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </div>
                     </div>
                     
-                    {/* CLEAN 2-TAB INTERFACE */}
+                    {/* CLEAN 2-TAB INTERFACE - Only show tabs if NOT in private-interests mode */}
                     <div className="w-full">
-                      {/* Tab Headers */}
-                      <div className="flex border-b border-gray-200 dark:border-gray-600 mb-6">
-                        <button
-                          onClick={() => setEditingTab('public')}
-                          className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
-                            editingTab === 'public'
-                              ? 'border-blue-500 text-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                          }`}
-                        >
-                          💙 Interests
-                        </button>
-                        <button
-                          onClick={() => setEditingTab('private')}
-                          className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
-                            editingTab === 'private'
-                              ? 'border-red-500 text-red-600 bg-red-50 dark:bg-red-900/20'
-                              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                          }`}
-                        >
-                          🔒 Private
-                        </button>
-                      </div>
+                      {activeEditSection !== 'private-interests' && (
+                        <div>
+                          {/* Tab Headers */}
+                          <div className="flex border-b border-gray-200 dark:border-gray-600 mb-6">
+                            <button
+                              onClick={() => setEditingTab('public')}
+                              className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                                editingTab === 'public'
+                                  ? 'border-blue-500 text-blue-600 bg-blue-50 dark:bg-blue-900/20'
+                                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                              }`}
+                            >
+                              💙 Interests
+                            </button>
+                            <button
+                              onClick={() => setEditingTab('private')}
+                              className={`flex-1 py-3 px-4 text-sm font-medium border-b-2 transition-colors ${
+                                editingTab === 'private'
+                                  ? 'border-red-500 text-red-600 bg-red-50 dark:bg-red-900/20'
+                                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                              }`}
+                            >
+                              🔒 Private
+                            </button>
+                          </div>
+                        </div>
+                      )}
 
                       {/* Tab Content */}
                       <div className="space-y-6">
-                        {editingTab === 'public' && (
+                        {/* Show private content directly if in private-interests mode, otherwise show based on tabs */}
+                        {(activeEditSection === 'private-interests' || editingTab === 'private') && (
+                          <div>
+                            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-600 rounded-lg">
+                              <p className="text-sm text-red-600 dark:text-red-400">
+                                🔒 <strong>Private Section:</strong> These interests help match you with like-minded people but never appear on your public profile.
+                              </p>
+                            </div>
+                            
+                            <div className="flex flex-wrap gap-2 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-600">
+                              {getPrivateInterests().map((interest) => {
+                                const isSelected = editFormData.privateInterests.includes(interest);
+                                return (
+                                  <button
+                                    key={interest}
+                                    type="button"
+                                    onClick={() => {
+                                      toggleArrayValue(editFormData.privateInterests, interest, (newPrivateInterests) => 
+                                        setEditFormData({ ...editFormData, privateInterests: newPrivateInterests })
+                                      );
+                                    }}
+                                    className={`inline-flex items-center justify-center h-8 rounded-full px-3 text-sm font-medium whitespace-nowrap transition-all ${
+                                      isSelected
+                                        ? 'bg-red-600 text-white'
+                                        : 'bg-white text-black border border-red-300 hover:bg-red-50'
+                                    }`}
+                                  >
+                                    {interest}
+                                  </button>
+                                );
+                              })}
+                            </div>
+
+                            <div className="flex space-x-2 mt-4">
+                              <Input
+                                placeholder="Add custom private interest..."
+                                value={privateInterestInput}
+                                onChange={(e) => setPrivateInterestInput(e.target.value)}
+                                onKeyPress={(e) => {
+                                  if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    const trimmed = privateInterestInput.trim();
+                                    if (trimmed && !editFormData.privateInterests.includes(trimmed)) {
+                                      setEditFormData(prev => ({ ...prev, privateInterests: [...prev.privateInterests, trimmed] }));
+                                      setPrivateInterestInput('');
+                                    }
+                                  }
+                                }}
+                                className="border-red-300 dark:border-red-600"
+                              />
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  const trimmed = privateInterestInput.trim();
+                                  if (trimmed && !editFormData.privateInterests.includes(trimmed)) {
+                                    setEditFormData(prev => ({ ...prev, privateInterests: [...prev.privateInterests, trimmed] }));
+                                    setPrivateInterestInput('');
+                                  }
+                                }}
+                                className="bg-red-500 hover:bg-red-600 text-white border-red-500"
+                              >
+                                <Plus className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {activeEditSection !== 'private-interests' && editingTab === 'public' && (
                           <div className="space-y-6">
                             {/* Top Choices */}
                             <div>
@@ -4494,73 +4575,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           </div>
                         )}
 
-                        {editingTab === 'private' && (
-                          <div>
-                            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-600 rounded-lg">
-                              <p className="text-sm text-red-600 dark:text-red-400">
-                                🔒 <strong>Private Section:</strong> These interests help match you with like-minded people but never appear on your public profile.
-                              </p>
-                            </div>
-                            
-                            <div className="flex flex-wrap gap-2 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-600">
-                              {getPrivateInterests().map((interest) => {
-                                const isSelected = editFormData.privateInterests.includes(interest);
-                                return (
-                                  <button
-                                    key={interest}
-                                    type="button"
-                                    onClick={() => {
-                                      toggleArrayValue(editFormData.privateInterests, interest, (newPrivateInterests) => 
-                                        setEditFormData({ ...editFormData, privateInterests: newPrivateInterests })
-                                      );
-                                    }}
-                                    className={`inline-flex items-center justify-center h-8 rounded-full px-3 text-sm font-medium whitespace-nowrap transition-all ${
-                                      isSelected
-                                        ? 'bg-red-600 text-white'
-                                        : 'bg-white text-black border border-red-300 hover:bg-red-50'
-                                    }`}
-                                  >
-                                    {interest}
-                                  </button>
-                                );
-                              })}
-                            </div>
-
-                            <div className="flex space-x-2 mt-4">
-                              <Input
-                                placeholder="Add custom private interest..."
-                                value={privateInterestInput}
-                                onChange={(e) => setPrivateInterestInput(e.target.value)}
-                                onKeyPress={(e) => {
-                                  if (e.key === 'Enter') {
-                                    e.preventDefault();
-                                    const trimmed = privateInterestInput.trim();
-                                    if (trimmed && !editFormData.interests.includes(trimmed)) {
-                                      setEditFormData(prev => ({ ...prev, interests: [...prev.interests, trimmed] }));
-                                      setPrivateInterestInput('');
-                                    }
-                                  }
-                                }}
-                                className="border-red-300 dark:border-red-600"
-                              />
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                  const trimmed = privateInterestInput.trim();
-                                  if (trimmed && !editFormData.interests.includes(trimmed)) {
-                                    setEditFormData(prev => ({ ...prev, interests: [...prev.interests, trimmed] }));
-                                    setPrivateInterestInput('');
-                                  }
-                                }}
-                                className="bg-red-500 hover:bg-red-600 text-white border-red-500"
-                              >
-                                <Plus className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        )}
                       </div>
                     </div>
                   </div>
@@ -5096,14 +5110,37 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {isOwnProfile && user?.privateInterests && user.privateInterests.length > 0 && (
               <Card className="border-red-200 dark:border-red-800 bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/30 dark:to-pink-900/30">
                 <CardHeader className="pb-3">
-                  <div className="flex items-center gap-2">
-                    <Eye className="w-5 h-5 text-red-600 dark:text-red-400" />
-                    <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
-                      Your Private Interests
-                    </CardTitle>
-                    <div className="inline-flex items-center justify-center h-6 min-w-[4rem] rounded-full px-2 text-xs font-medium leading-none whitespace-nowrap bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-200 border-0 appearance-none select-none gap-1">
-                      Only you can see this
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Eye className="w-5 h-5 text-red-600 dark:text-red-400" />
+                      <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
+                        Your Private Interests
+                      </CardTitle>
+                      <div className="inline-flex items-center justify-center h-6 min-w-[4rem] rounded-full px-2 text-xs font-medium leading-none whitespace-nowrap bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-200 border-0 appearance-none select-none gap-1">
+                        Only you can see this
+                      </div>
                     </div>
+                    {activeEditSection !== 'private-interests' && (
+                      <Button
+                        onClick={() => {
+                          // Open ONLY private interests editing mode
+                          setActiveEditSection('private-interests');
+                          
+                          // Initialize form data with ONLY private interests
+                          setEditFormData({
+                            interests: [],
+                            activities: [],
+                            events: [],
+                            privateInterests: (user?.privateInterests && typeof user.privateInterests === 'string') ? user.privateInterests.split(',').map(item => item.trim()).filter(item => item) : (user?.privateInterests || [])
+                          });
+                        }}
+                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 text-sm"
+                        size="sm"
+                      >
+                        <Edit2 className="w-4 h-4 mr-1" />
+                        Edit
+                      </Button>
+                    )}
                   </div>
                   <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">
                     These interests help with matching but remain hidden from your public profile.
