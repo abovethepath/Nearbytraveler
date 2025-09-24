@@ -6109,6 +6109,12 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(400).json({ message: "receiverId is required" });
       }
 
+      // Prevent self-connection
+      if (finalRequesterId === finalTargetUserId) {
+        if (process.env.NODE_ENV === 'development') console.log(`CONNECTION: Self-connection attempt blocked - user ${finalRequesterId} trying to connect to themselves`);
+        return res.status(400).json({ message: "Cannot connect to yourself" });
+      }
+
       if (process.env.NODE_ENV === 'development') console.log(`CONNECTION: Checking for existing connection between ${finalRequesterId} and ${finalTargetUserId}`);
 
       // CRITICAL: Check for existing connection to prevent duplicates

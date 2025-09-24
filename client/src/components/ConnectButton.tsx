@@ -87,6 +87,16 @@ export default function ConnectButton({
       return;
     }
 
+    // Prevent self-connection
+    if (currentUserId === targetUserId) {
+      toast({
+        title: "Cannot Connect to Yourself",
+        description: "You cannot send a connection request to yourself.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (connectionStatus?.status === 'accepted') {
       // Already connected - navigate to messages
       setLocation(`/messages?userId=${targetUserId}`);
