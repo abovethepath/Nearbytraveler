@@ -1,12 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useRoute } from 'wouter';
+import { useRoute, useLocation } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Send, ArrowLeft, Users, MapPin, Clock, MessageCircle } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Send, ArrowLeft, Users, MapPin, Clock, MessageCircle, Edit, Trash2, MoreHorizontal } from 'lucide-react';
 import { useAuth } from '@/App';
 import { authStorage } from '@/lib/auth';
 import { apiRequest } from '@/lib/queryClient';
@@ -63,10 +68,16 @@ interface Chatroom {
 
 function QuickMeetupChat() {
   const [, params] = useRoute("/quick-meetup-chat/:meetupId");
+  const [, setLocation] = useLocation();
   const meetupId = params?.meetupId ? parseInt(params.meetupId) : null;
   const [message, setMessage] = useState("");
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [editingMeetup, setEditingMeetup] = useState(false);
+  const [editForm, setEditForm] = useState({
+    title: '',
+    description: '',
+  });
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -211,6 +222,76 @@ function QuickMeetupChat() {
     }
   });
 
+  // Update meetup mutation
+  const updateMeetupMutation = useMutation({
+    mutationFn: async ({ meetupId, updates }: { meetupId: number; updates: any }) => {
+      const response = await fetch(`/api/quick-meets/${meetupId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': currentUser?.id?.toString() || '',
+        },
+        body: JSON.stringify(updates),
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to update quick meet');
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success!",
+        description: "Quick meet updated successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/quick-meets', meetupId] });
+      setEditingMeetup(false);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Delete meetup mutation
+  const deleteMeetupMutation = useMutation({
+    mutationFn: async (meetupId: number) => {
+      const response = await fetch(`/api/quick-meets/${meetupId}`, {
+        method: 'DELETE',
+        headers: {
+          'x-user-id': currentUser?.id?.toString() || '',
+        },
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to delete quick meet');
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success!",
+        description: "Meetup deleted successfully.",
+      });
+      // Navigate back to previous page after deletion
+      setLocation('/quick-meetups');
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim() || sendMessageMutation.isPending) return;
@@ -285,14 +366,76 @@ function QuickMeetupChat() {
       <div className="container mx-auto p-4 max-w-4xl">
         {/* Header */}
         <div className="mb-4">
-          <Button 
-            variant="outline" 
-            onClick={() => window.history.back()}
-            className="mb-4"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
+          <div className="flex justify-between items-center mb-4">
+            <Button 
+              variant="outline" 
+              onClick={() => setLocation('/quick-meetups')}
+              className=""
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+            
+            {/* Organizer Actions */}
+            {meetup && currentUser && meetup.organizerId === currentUser.id && (
+              <div className="flex gap-2">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="text-xs border-orange-300 text-orange-600 hover:bg-orange-50"
+                  onClick={() => {
+                    setEditForm({
+                      title: meetup.title,
+                      description: meetup.description || '',
+                    });
+                    setEditingMeetup(true);
+                  }}
+                  data-testid="button-edit-meetup"
+                >
+                  <Edit className="w-3 h-3 mr-1" />
+                  Edit
+                </Button>
+                
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button size="sm" variant="outline" className="h-8 w-8 p-0">
+                      <MoreHorizontal className="w-3 h-3" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem className="text-red-600 focus:text-red-600">
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <div className="flex items-center w-full cursor-pointer">
+                            <Trash2 className="w-3 h-3 mr-2" />
+                            Cancel Meetup
+                          </div>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Cancel "{meetup.title}"</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to cancel this meetup? This action cannot be undone and will remove all participants and chat history.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Keep Meetup</AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-red-600 hover:bg-red-700"
+                              onClick={() => deleteMeetupMutation.mutate(meetup.id)}
+                              disabled={deleteMeetupMutation.isPending}
+                            >
+                              {deleteMeetupMutation.isPending ? 'Canceling...' : 'Cancel Meetup'}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            )}
+          </div>
           
           {/* Meetup Info Header */}
           <Card className="border-orange-200 dark:border-orange-700">
@@ -480,6 +623,67 @@ function QuickMeetupChat() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Edit Meetup Dialog */}
+      <Dialog open={editingMeetup} onOpenChange={(open) => !open && setEditingMeetup(false)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit "{meetup?.title}"</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="edit-title">Title</Label>
+              <Input
+                id="edit-title"
+                value={editForm.title}
+                onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                placeholder="Quick meet title"
+                data-testid="input-edit-title"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="edit-description">Description</Label>
+              <Textarea
+                id="edit-description"
+                value={editForm.description}
+                onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                placeholder="Brief description (optional)"
+                className="min-h-[80px]"
+                data-testid="input-edit-description"
+              />
+            </div>
+            
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => setEditingMeetup(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="flex-1 bg-orange-500 hover:bg-orange-600"
+                onClick={() => {
+                  if (meetupId) {
+                    updateMeetupMutation.mutate({
+                      meetupId,
+                      updates: {
+                        title: editForm.title,
+                        description: editForm.description,
+                      }
+                    });
+                  }
+                }}
+                disabled={updateMeetupMutation.isPending || !editForm.title.trim()}
+                data-testid="button-save-edit"
+              >
+                {updateMeetupMutation.isPending ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
