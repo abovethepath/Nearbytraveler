@@ -807,8 +807,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [editFormData, setEditFormData] = useState({
     interests: [] as string[],
     activities: [] as string[],
-    events: [] as string[]
+    events: [] as string[],
+    privateInterests: [] as string[]
   });
+
+  // Tab state for simplified editing interface  
+  const [editingTab, setEditingTab] = useState<'public' | 'private'>('public');
 
   // Simple toggle function copied from signup
   const toggleArrayValue = (array: string[], value: string, setter: (newArray: string[]) => void) => {
@@ -4306,11 +4310,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         setEditingActivities(true);
                         setEditingEvents(true);
                         
-                        // Initialize form data
+                        // Initialize form data with all user preferences including private interests
                         setEditFormData({
                           interests: user?.interests || [],
                           activities: user?.activities || [],
-                          events: user?.events || []
+                          events: user?.events || [],
+                          privateInterests: user?.privateInterests ? 
+                            user.privateInterests.split(',').map(s => s.trim()).filter(s => s) : []
                         });
                       }}
                       className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm"
@@ -4387,7 +4393,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             setEditFormData({
                               interests: user?.interests || [],
                               activities: user?.activities || [],
-                              events: user?.events || []
+                              events: user?.events || [],
+                              privateInterests: user?.privateInterests ? 
+                                user.privateInterests.split(',').map(s => s.trim()).filter(s => s) : []
                             });
                           }}
                           className="border-orange-500 text-orange-600 hover:bg-orange-50 dark:border-orange-400 dark:text-orange-400 dark:hover:bg-orange-900/20 flex-1 sm:flex-none"
@@ -5680,7 +5688,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             setEditFormData({
                               interests: user?.interests || [],
                               activities: user?.activities || [],
-                              events: user?.events || []
+                              events: user?.events || [],
+                              privateInterests: user?.privateInterests ? 
+                                user.privateInterests.split(',').map(s => s.trim()).filter(s => s) : []
                             });
                           }}
                         >
