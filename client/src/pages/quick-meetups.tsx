@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useLocation } from 'wouter';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -59,6 +60,7 @@ function QuickMeetupsPage() {
   const actualUser = user || authStorage.getUser();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedMeetupId, setSelectedMeetupId] = useState<number | null>(null);
@@ -301,7 +303,7 @@ function QuickMeetupsPage() {
                 <div className="flex items-center gap-1 ml-1">
                   <span>• by</span>
                   <Avatar className="w-4 h-4 cursor-pointer hover:ring-2 hover:ring-orange-400 transition-all" 
-                          onClick={() => meetup.creator && (window.location.href = `/profile/${meetup.creator.id}`)}>
+                          onClick={() => meetup.creator && setLocation(`/profile/${meetup.creator.id}`)}>
                     <AvatarImage 
                       src={meetup.creator.profileImage || ''} 
                       alt={`${meetup.creator.username}'s profile`}
@@ -313,7 +315,7 @@ function QuickMeetupsPage() {
                   </Avatar>
                   <span 
                     className="cursor-pointer hover:text-orange-600 dark:hover:text-orange-400"
-                    onClick={() => meetup.creator && (window.location.href = `/profile/${meetup.creator.id}`)}
+                    onClick={() => meetup.creator && setLocation(`/profile/${meetup.creator.id}`)}
                   >
                     @{meetup.creator.username}
                   </span>
@@ -321,7 +323,7 @@ function QuickMeetupsPage() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        window.location.href = `/chat/${meetup.creator.id}`;
+                        setLocation(`/chat/${meetup.creator.id}`);
                       }}
                       className="ml-1 p-0.5 rounded-full hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors"
                       title="Send message"
@@ -340,7 +342,7 @@ function QuickMeetupsPage() {
               variant="outline" 
               className="text-xs h-7 border-blue-300 dark:border-blue-600 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 bg-white dark:bg-gray-800"
               onClick={() => {
-                window.location.href = `/quick-meetup-chat/${meetup.id}`;
+                setLocation(`/quick-meetup-chat/${meetup.id}`);
               }}
             >
               <MessageCircle className="w-3 h-3 mr-1" />
@@ -422,7 +424,7 @@ function QuickMeetupsPage() {
                     className="text-xs h-7 bg-blue-500 hover:bg-blue-600 text-white"
                     onClick={() => {
                       // Navigate to dedicated meetup management page
-                      window.location.href = `/quick-meetup-chat/${meetup.id}`;
+                      setLocation(`/quick-meetup-chat/${meetup.id}`);
                     }}
                   >
                     <UserCheck className="w-3 h-3 mr-1" />
