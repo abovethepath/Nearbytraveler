@@ -5624,11 +5624,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               
                               // Separate predefined vs custom entries for proper database storage
                               const predefinedInterests = [...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS].filter(opt => editFormData.interests.includes(opt));
-                              const predefinedActivities = getAllActivities().filter(opt => editFormData.activities.includes(opt));
+                              const predefinedActivities = getAllActivities().filter(opt => (editFormData.activities || []).includes(opt));
                               const predefinedEvents = getAllEvents().filter(opt => editFormData.events.includes(opt));
                               
                               const customInterests = editFormData.interests.filter(int => !MOST_POPULAR_INTERESTS.includes(int) && !ADDITIONAL_INTERESTS.includes(int));
-                              const customActivities = editFormData.activities.filter(act => !getAllActivities().includes(act));
+                              const customActivities = (editFormData.activities || []).filter(act => !getAllActivities().includes(act));
                               const customEvents = editFormData.events.filter(evt => !getAllEvents().includes(evt));
                               
                               const saveData = {
@@ -5824,8 +5824,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 type="button"
                                 onClick={() => {
                                   const newActivities = isSelected
-                                    ? editFormData.activities.filter((a: string) => a !== activity)
-                                    : [...editFormData.activities, activity];
+                                    ? (editFormData.activities || []).filter((a: string) => a !== activity)
+                                    : [...(editFormData.activities || []), activity];
                                   setEditFormData({ ...editFormData, activities: newActivities });
                                 }}
                                 className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
@@ -6021,11 +6021,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             
                             // Separate predefined vs custom entries for proper database storage
                             const predefinedInterests = [...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS].filter(opt => editFormData.interests.includes(opt));
-                            const predefinedActivities = getAllActivities().filter(opt => editFormData.activities.includes(opt));
+                            const predefinedActivities = getAllActivities().filter(opt => (editFormData.activities || []).includes(opt));
                             const predefinedEvents = getAllEvents().filter(opt => editFormData.events.includes(opt));
                             
                             const customInterests = editFormData.interests.filter(int => !MOST_POPULAR_INTERESTS.includes(int) && !ADDITIONAL_INTERESTS.includes(int));
-                            const customActivities = editFormData.activities.filter(act => !getAllActivities().includes(act));
+                            const customActivities = (editFormData.activities || []).filter(act => !getAllActivities().includes(act));
                             const customEvents = editFormData.events.filter(evt => !getAllEvents().includes(evt));
                             
                             const saveData = {
