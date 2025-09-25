@@ -57,6 +57,11 @@ const businessSignupSchema = z.object({
   currentLatitude: z.number().optional(),
   currentLongitude: z.number().optional(),
   locationSharingEnabled: z.boolean().default(true),
+  
+  // Community Pledge
+  pledgeAccepted: z.boolean().refine(val => val === true, {
+    message: "You must accept the NearbyTraveler Pledge to continue",
+  }),
 });
 
 type BusinessSignupData = z.infer<typeof businessSignupSchema>;
@@ -156,6 +161,7 @@ export default function SignupBusinessSimple() {
       currentLatitude: undefined,
       currentLongitude: undefined,
       locationSharingEnabled: true,
+      pledgeAccepted: false,
     },
   });
 
@@ -556,6 +562,44 @@ export default function SignupBusinessSimple() {
                         ✅ Location captured for proximity notifications
                       </div>
                     )}
+                  </div>
+                </div>
+
+                {/* Community Pledge */}
+                <div className="bg-gradient-to-r from-blue-50 to-orange-50 p-6 rounded-lg border-2 border-blue-200 space-y-4">
+                  <div className="flex items-start space-x-3">
+                    <div className="text-2xl">🌍</div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-bold text-gray-900 mb-3">The NearbyTraveler Pledge</h3>
+                      <div className="space-y-2 text-gray-800 mb-4">
+                        <p className="font-medium">I believe in real human connection.</p>
+                        <p className="font-medium">I will show up with kindness, respect, and openness.</p>
+                        <p className="font-medium">I will help make this a safe, welcoming community for travelers and locals everywhere.</p>
+                      </div>
+                      <FormField
+                        control={form.control}
+                        name="pledgeAccepted"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                            <FormControl>
+                              <input
+                                type="checkbox"
+                                checked={field.value}
+                                onChange={field.onChange}
+                                className="mt-1 w-5 h-5 text-blue-600 border-2 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                                data-testid="checkbox-pledge"
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel className="text-sm font-medium text-gray-900 cursor-pointer">
+                                I agree to the NearbyTraveler Pledge and commit to building authentic connections with kindness and respect.
+                              </FormLabel>
+                              <FormMessage />
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   </div>
                 </div>
 
