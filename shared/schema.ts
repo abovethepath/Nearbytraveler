@@ -191,6 +191,10 @@ export const users = pgTable("users", {
   // Email tracking
   welcomeEmailSent: boolean("welcome_email_sent").default(false), // Track if welcome email was sent to prevent duplicates
   
+  // Community Pledge
+  pledgeAccepted: boolean("pledge_accepted").default(false), // Track if user accepted the NearbyTraveler Community Pledge
+  pledgeAcceptedAt: timestamp("pledge_accepted_at"), // When the pledge was accepted
+  
   // Password reset fields
   resetPasswordToken: text("reset_password_token"),
   resetPasswordExpiry: timestamp("reset_password_expiry"),
