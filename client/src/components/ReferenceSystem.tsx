@@ -53,7 +53,7 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
     queryKey: [`/api/user-references/check`, user?.id, userId],
     queryFn: async () => {
       if (!user?.id || !userId || isOwnProfile) return { exists: false, reference: null };
-      const response = await fetch(`/api/user-references/check?reviewerId=${user.id}&revieweeId=${userId}`);
+      const response = await fetch(`/api/user-references/check/${user.id}/${userId}`);
       if (!response.ok) throw new Error('Failed to check existing reference');
       const data = await response.json();
       console.log('🔍 REFERENCE CHECK RESULT:', { 
@@ -196,7 +196,7 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
       return;
     }
 
-    if (existingReferenceData?.exists && existingReferenceData.reference) {
+    if (existingReferenceData?.hasReference && existingReferenceData.reference) {
       setIsEditingReference(true);
       setReferenceData({
         experience: existingReferenceData.reference.experience || 'positive',
@@ -251,10 +251,10 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
                   className="bg-gradient-to-r from-orange-500 to-blue-500 hover:from-orange-600 hover:to-blue-600"
                 >
                   {(() => {
-                    const buttonText = showWriteReference ? 'Cancel' : (existingReferenceData?.exists ? 'Edit Reference' : 'Write Reference');
+                    const buttonText = showWriteReference ? 'Cancel' : (existingReferenceData?.hasReference ? 'Edit Reference' : 'Write Reference');
                     console.log('🔧 BUTTON TEXT LOGIC:', { 
                       showWriteReference, 
-                      existsValue: existingReferenceData?.exists, 
+                      hasReferenceValue: existingReferenceData?.hasReference, 
                       existingData: existingReferenceData,
                       buttonText 
                     });
