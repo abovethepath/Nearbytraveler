@@ -319,7 +319,7 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
                 <select
                   value={referenceData.experience}
                   onChange={(e) => setReferenceData(prev => ({ ...prev, experience: e.target.value as any }))}
-                  className="w-full p-3 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white min-h-[48px]"
+                  className="w-full p-3 border rounded-md bg-white dark:bg-white dark:border-gray-300 dark:text-gray-900 min-h-[48px]"
                   required
                 >
                   <option value="positive">👍 Positive Experience</option>
@@ -335,7 +335,7 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
                 <textarea
                   value={referenceData.content}
                   onChange={(e) => setReferenceData(prev => ({ ...prev, content: e.target.value }))}
-                  className="w-full p-3 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white min-h-[120px] resize-none"
+                  className="w-full p-3 border rounded-md bg-white dark:bg-white dark:border-gray-300 dark:text-gray-900 min-h-[120px] resize-none"
                   placeholder="Share your experience with this person... (minimum 10 characters)"
                   required
                   minLength={10}
@@ -388,7 +388,7 @@ Private Reference to Support Team
                 <select
                   value={privateReferenceData.category}
                   onChange={(e) => setPrivateReferenceData(prev => ({ ...prev, category: e.target.value as any }))}
-                  className="w-full p-3 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white min-h-[48px]"
+                  className="w-full p-3 border rounded-md bg-white dark:bg-white dark:border-gray-300 dark:text-gray-900 min-h-[48px]"
                   required
                 >
                   <option value="feedback">💬 General Feedback</option>
@@ -406,7 +406,7 @@ Private Reference to Support Team
                 <textarea
                   value={privateReferenceData.content}
                   onChange={(e) => setPrivateReferenceData(prev => ({ ...prev, content: e.target.value }))}
-                  className="w-full p-3 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white min-h-[120px] resize-none"
+                  className="w-full p-3 border rounded-md bg-white dark:bg-white dark:border-gray-300 dark:text-gray-900 min-h-[120px] resize-none"
                   placeholder="Please describe your concern or feedback... (minimum 10 characters)"
                   required
                   minLength={10}
