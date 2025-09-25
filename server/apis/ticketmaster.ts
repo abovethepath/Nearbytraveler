@@ -1,6 +1,8 @@
 // Ticketmaster Discovery API Integration for City-Specific Events
 // Free tier: 5,000 calls/day, comprehensive event coverage
 
+import { resolveStateForCity } from '../../shared/cityStateResolver';
+
 interface TicketmasterEvent {
   id: string;
   name: string;
@@ -58,23 +60,8 @@ export async function fetchTicketmasterEvents(city: string = 'Los Angeles'): Pro
     const today = new Date();
     const startDateTime = today.toISOString().split('T')[0] + 'T00:00:00Z';
     
-    // City-specific search - determine state from city (case-insensitive)
-    const cityStateMapping: { [key: string]: string } = {
-      'austin': 'TX',
-      'los angeles': 'CA', 
-      'las vegas': 'NV',
-      'new york': 'NY',
-      'new york city': 'NY',
-      'nyc': 'NY',
-      'chicago': 'IL',
-      'miami': 'FL',
-      'san francisco': 'CA',
-      'seattle': 'WA',
-      'denver': 'CO',
-      'atlanta': 'GA'
-    };
-    
-    const stateCode = cityStateMapping[city.toLowerCase()] || 'TX'; // Default to TX if city not mapped
+    // City-specific search - determine state from city using shared resolver
+    const stateCode = resolveStateForCity(city);
     
     const params = new URLSearchParams({
       apikey: apiKey,
