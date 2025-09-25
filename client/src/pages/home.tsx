@@ -89,7 +89,9 @@ export default function Home() {
 
   // Fetch current user profile data
   const getCurrentUserId = () => {
-    return user?.id || JSON.parse(localStorage.getItem('travelconnect_user') || '{}')?.id;
+    return user?.id || 
+           JSON.parse(localStorage.getItem('user') || '{}')?.id ||
+           JSON.parse(localStorage.getItem('travelconnect_user') || '{}')?.id;
   };
 
   const getUserId = () => getCurrentUserId();
@@ -117,7 +119,9 @@ export default function Home() {
     }
     
     // Get the best available user data
-    const userData = currentUserProfile || user || JSON.parse(localStorage.getItem('travelconnect_user') || 'null');
+    const userData = currentUserProfile || user || 
+                    JSON.parse(localStorage.getItem('user') || 'null') ||
+                    JSON.parse(localStorage.getItem('travelconnect_user') || 'null');
     
     if (!userData?.id) {
       return null;
