@@ -2092,54 +2092,6 @@ export default function Home() {
               <QuickMeetupWidget currentUser={effectiveUser} />
             )}
             
-            {/* Priority Events Section */}
-            {loadedSections.has('events') && (
-              <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-sm" data-testid="events-section">
-                <div className="p-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                      <Calendar className="w-5 h-5 mr-2 text-blue-500" />
-                      Upcoming Events
-                    </h3>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => {
-                        // Stay on home page and show expanded local events
-                        const eventsSection = document.querySelector('[data-testid="events-section"]');
-                        if (eventsSection) {
-                          eventsSection.scrollIntoView({ behavior: 'smooth' });
-                        }
-                      }}
-                      className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                      data-testid="button-view-all-events"
-                    >
-                      <Sparkles className="w-4 h-4 mr-1" />
-                      Show Local Events
-                    </Button>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 gap-4">
-                    {userPriorityEvents
-                      ?.filter((event: any) => event.isAIGenerated || event.source)
-                      ?.slice(0, 6)
-                      ?.map((event: any) => (
-                        <Card key={event.id} className="hover:shadow-md transition-shadow bg-white dark:bg-gray-800 border-blue-100 dark:border-blue-800">
-                          <EventCard 
-                            event={event} 
-                            currentUser={effectiveUser}
-                          />
-                        </Card>
-                      )) || (
-                        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                          <Calendar className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                          <p>No upcoming events found.</p>
-                        </div>
-                      )}
-                  </div>
-                </div>
-              </Card>
-            )}
 
             {/* Business Deals Section - REMOVED: Focusing on travelers and locals */}
           </div>
