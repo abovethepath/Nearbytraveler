@@ -45,8 +45,8 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
     enabled: !!(userId)
   });
 
-  const references = referencesData?.references || [];
-  const referenceCounts = referencesData?.counts || { total: 0, positive: 0, negative: 0, neutral: 0 };
+  const references = (referencesData as any)?.references || [];
+  const referenceCounts = (referencesData as any)?.counts || { total: 0, positive: 0, negative: 0, neutral: 0 };
 
   // Check if user has already written a reference for this person
   const { data: existingReferenceData } = useQuery({
@@ -304,8 +304,8 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
           </div>
 
           {showWriteReference && (
-            <div className="space-y-4 p-6 border rounded-lg bg-white shadow-lg mb-6">
-              <h4 className="font-semibold text-lg">{isEditingReference ? 'Edit Your Reference' : 'Write a Reference'}</h4>
+            <div className="space-y-4 p-6 border rounded-lg bg-white dark:bg-white shadow-lg mb-6">
+              <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-900">{isEditingReference ? 'Edit Your Reference' : 'Write a Reference'}</h4>
               {isEditingReference && (
                 <p className="text-sm text-blue-600 dark:text-blue-400 mb-4">
                   You can only have one reference per person. Updating this will replace your previous reference.
@@ -313,7 +313,7 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
               )}
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-700 block">
                   Experience Type *
                 </label>
                 <select
@@ -329,7 +329,7 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-700 block">
                   Your Reference *
                 </label>
                 <textarea
@@ -341,7 +341,7 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
                   minLength={10}
                   maxLength={500}
                 />
-                <div className="text-xs text-gray-500 dark:text-gray-400 text-right">
+                <div className="text-xs text-gray-500 dark:text-gray-500 text-right">
                   {referenceData.content.length}/500 characters
                 </div>
               </div>
@@ -372,7 +372,7 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
           )}
 
           {showPrivateReference && (
-            <div className="space-y-4 p-6 border rounded-lg bg-white shadow-lg mb-6 border-orange-200">
+            <div className="space-y-4 p-6 border rounded-lg bg-white dark:bg-white shadow-lg mb-6 border-orange-200">
               <h4 className="font-semibold text-lg text-orange-700 dark:text-orange-300 flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5" />
 Private Reference to Support Team
@@ -382,7 +382,7 @@ Private Reference to Support Team
               </p>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-700 block">
                   Message Category *
                 </label>
                 <select
@@ -400,7 +400,7 @@ Private Reference to Support Team
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-700 block">
                   Your Message *
                 </label>
                 <textarea
@@ -412,7 +412,7 @@ Private Reference to Support Team
                   minLength={10}
                   maxLength={1000}
                 />
-                <div className="text-xs text-gray-500 dark:text-gray-400 text-right">
+                <div className="text-xs text-gray-500 dark:text-gray-500 text-right">
                   {privateReferenceData.content.length}/1000 characters
                 </div>
               </div>
