@@ -105,7 +105,6 @@ const CITY_STATE_MAP: { [key: string]: string } = {
   'murrieta': 'CA',
   'santa maria': 'CA',
   'el cajon': 'CA',
-  'richmond': 'CA',
   'berkeley': 'CA',
   'santa monica': 'CA',
   'venice': 'CA',
@@ -141,10 +140,8 @@ const CITY_STATE_MAP: { [key: string]: string } = {
   'glendora': 'CA',
   'la verne': 'CA',
   'claremont': 'CA',
-  'pomona': 'CA',
   'montclair': 'CA',
   'upland': 'CA',
-  'rancho cucamonga': 'CA',
   'redlands': 'CA',
   'yucaipa': 'CA',
   'calimesa': 'CA',
@@ -175,7 +172,7 @@ export function resolveStateForCity(cityName: string): string {
   const normalizedCity = cityName.toLowerCase().trim();
   
   // First check if it's in the LA Metro area
-  for (const metroArea of METRO_AREAS) {
+  for (const [key, metroArea] of Object.entries(METRO_AREAS)) {
     for (const city of metroArea.cities) {
       if (city.toLowerCase() === normalizedCity) {
         return 'CA'; // All LA Metro cities are in California
@@ -209,7 +206,7 @@ export function resolveStateForCity(cityName: string): string {
 export function isLAMetroCity(cityName: string): boolean {
   const normalizedCity = cityName.toLowerCase().trim();
   
-  for (const metroArea of METRO_AREAS) {
+  for (const [key, metroArea] of Object.entries(METRO_AREAS)) {
     for (const city of metroArea.cities) {
       if (city.toLowerCase() === normalizedCity) {
         return true;
