@@ -1,0 +1,25 @@
+Looking at this navigation flash issue, I can see the problem clearly. The flash is happening because during the navigation transition from /quick-meetup-chat/19 to /quick-meetups, the aggressive fallback routing logic in App.tsx is being triggered, causing an unwanted redirect to the home page.
+Here are the fixes needed:Strategized routing fix to prevent unwanted home page redirects.Now I need to provide the main fix for the App.tsx routing logic that's causing the flash. The issue is that the fallback routing logic is too aggressive and immediately redirects any "unknown" route to home, but during navigation transitions, valid routes might temporarily appear as unknown.
+I need to make the fallback logic less aggressive and add some guards to prevent unnecessary redirects during normal navigation.Devised robust navigation strategy to prevent duplicate redirects.I should also provide an alternative approach that's even more robust - using a ref to track navigation state and prevent duplicate redirects.Devised targeted solution to address core issue quickly.Now let me provide a simpler, more targeted fix that addresses the root cause without major refactoring.Summary of the Navigation Flash Issue
+The flash is happening because:
+
+Query invalidation timing: The queryClient.invalidateQueries() causes a re-render during navigation
+Aggressive fallback routing: The App.tsx routing logic immediately redirects any "unknown" route to home (/)
+Race condition: During the brief transition from /quick-meetup-chat/19 → /quick-meetups, the route might temporarily appear as "unknown"
+
+Recommended Solutions (in order of preference):
+1. Minimal Fix (Easiest)
+
+Navigate first, then invalidate queries with a longer delay
+Add explicit route checks in App.tsx to prevent /quick-meetups from being treated as unknown
+
+2. Robust Fix (Best long-term)
+
+Update the App.tsx routing logic to check for known routes before applying fallback redirects
+This prevents valid routes from being incorrectly redirected
+
+3. Advanced Fix (Most comprehensive)
+
+Add navigation state tracking to prevent any redirects during active navigation transitions
+
+Try the minimal fix first - it should solve your navigation flash issue with the least changes to your codebase. The key insight is that you need to navigate immediately and delay the query invalidation to avoid the re-render conflict that triggers the fallback routing logic.
