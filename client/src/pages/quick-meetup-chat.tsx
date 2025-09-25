@@ -277,16 +277,19 @@ function QuickMeetupChat() {
       return response.json();
     },
     onSuccess: () => {
+      // Navigate immediately, don't wait
+      setLocation('/quick-meetups');
+      
+      // Show toast after navigation starts
       toast({
         title: "Success!",
         description: "Meetup deleted successfully.",
       });
-      // Invalidate queries first to update the UI
-      queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
-      // Use a small delay to prevent navigation flash during re-render
+      
+      // Invalidate queries after navigation with a longer delay
       setTimeout(() => {
-        setLocation('/quick-meetups');
-      }, 100);
+        queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
+      }, 300);
     },
     onError: (error: Error) => {
       toast({

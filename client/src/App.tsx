@@ -1137,6 +1137,12 @@ function Router() {
           }
         }
 
+        // Add this check before the business user redirect:
+        if (location === '/quick-meetups' || location.startsWith('/quick-meetup')) {
+          // These are valid routes, don't redirect them
+          return null;
+        }
+
         // BUSINESS USER FIX: Only redirect business users to profile for specific routes
         // NOT for root path - root should always go to home for everyone
         if (user?.userType === 'business' && location !== '/') {
