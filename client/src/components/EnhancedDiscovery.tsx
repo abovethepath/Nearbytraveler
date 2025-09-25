@@ -18,7 +18,7 @@ interface EnhancedDiscoveryProps {
 export default function EnhancedDiscovery({ className = "" }: EnhancedDiscoveryProps) {
   const { user } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState("hometown");
-  const [sortBy, setSortBy] = useState<'compatibility' | 'recent' | 'closest_nearby' | 'travel_experience'>('compatibility');
+  const [sortBy, setSortBy] = useState<'compatibility' | 'recent' | 'closest_nearby' | 'travel_experience' | 'mutual_connections'>('compatibility');
   
   // Use localStorage user if context user is not ready yet
   const effectiveUser = user || (function() {
@@ -92,6 +92,37 @@ export default function EnhancedDiscovery({ className = "" }: EnhancedDiscoveryP
     enabled: !!activeLocation?.location,
   });
 
+  // Enhanced users with mutual connections data
+  const { data: usersWithMutualConnections, isLoading: mutualConnectionsLoading } = useQuery({
+    queryKey: ['/api/users-with-mutual-connections', userId, discoveredUsers?.map((u: any) => u.id)],
+    queryFn: async () => {
+      if (!discoveredUsers || !userId) return [];
+      
+      // Get mutual connections count for each user
+      const usersWithMutuals = await Promise.all(
+        discoveredUsers.map(async (user: any) => {
+          if (user.id === userId) return { ...user, mutualConnectionsCount: 0 };
+          
+          try {
+            const response = await fetch(`/api/mutual-connections/${userId}/${user.id}`);
+            const mutualConnections = await response.json();
+            return {
+              ...user,
+              mutualConnectionsCount: mutualConnections.length,
+              mutualConnections: mutualConnections
+            };
+          } catch (error) {
+            console.error(`Failed to fetch mutual connections for user ${user.id}:`, error);
+            return { ...user, mutualConnectionsCount: 0 };
+          }
+        })
+      );
+      
+      return usersWithMutuals;
+    },
+    enabled: !!(discoveredUsers && userId && discoveredUsers.length > 0),
+  });
+
   // Enhanced sorting algorithm
   const getSortedUsers = (users: User[]) => {
     if (!users || !effectiveUser) return [];
@@ -109,6 +140,16 @@ export default function EnhancedDiscovery({ className = "" }: EnhancedDiscoveryP
           const aTravelScore = (a.travelPlans?.length || 0) + (a.countries?.length || 0);
           const bTravelScore = (b.travelPlans?.length || 0) + (b.countries?.length || 0);
           return bTravelScore - aTravelScore;
+          
+        case 'mutual_connections':
+          // Sort by number of mutual connections (highest first)
+          const aMutualCount = (a as any).mutualConnectionsCount || 0;
+          const bMutualCount = (b as any).mutualConnectionsCount || 0;
+          if (aMutualCount !== bMutualCount) {
+            return bMutualCount - aMutualCount;
+          }
+          // If mutual counts are equal, fall back to compatibility
+          return calculateCompatibilityScore(b, effectiveUser) - calculateCompatibilityScore(a, effectiveUser);
           
         case 'closest_nearby':
           // Sort by location proximity

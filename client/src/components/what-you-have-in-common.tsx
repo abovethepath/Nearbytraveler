@@ -380,12 +380,14 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
       }
     }
 
-    // Add mutual connections to other commonalities
+    // Add mutual connections to other commonalities - make them prominent!
     if (mutualConnections && mutualConnections.length > 0) {
-      commonalities.otherCommonalities.push(`${mutualConnections.length} mutual connection${mutualConnections.length > 1 ? 's' : ''}`);
+      // Instead of just adding to other commonalities, we'll show mutual connections prominently at the top
+      commonalities.mutualConnections = mutualConnections;
+      commonalities.mutualConnectionsCount = mutualConnections.length;
     }
 
-    // Calculate total count
+    // Calculate total count including mutual connections as a major factor
     commonalities.totalCount = 
       commonalities.sharedInterests.length +
       commonalities.sharedActivities.length +
@@ -397,6 +399,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
       commonalities.sharedTravelDestinations.length +
       commonalities.overlappingTravelDates.length +
       commonalities.sharedTravelIntent.length +
+      (commonalities.mutualConnectionsCount || 0) + // Add mutual connections to total count
       commonalities.otherCommonalities.length;
 
     // Calculate ASYMMETRIC compatibility percentage based on CURRENT USER'S selections
@@ -728,13 +731,29 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
 
 
 
-        {/* Mutual Connections */}
+        {/* Special Travel Safety Notice for Mutual Friends */}
         {mutualConnections && mutualConnections.length > 0 && (
-          <div className="bg-gradient-to-r from-pink-50 to-rose-50 dark:bg-gradient-to-r dark:from-pink-900/30 dark:to-rose-900/30 rounded-lg p-3 border border-pink-200 dark:border-pink-600">
-            <h5 className="font-bold text-black dark:text-white mb-3 flex items-center gap-1 text-base">
-              <Users className="w-5 h-5 text-pink-500" />
-              Mutual Connections ({mutualConnections.length})
+          <div className="mb-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg p-3 border-l-4 border-green-400">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span className="text-green-700 dark:text-green-300 font-semibold text-sm">Travel Safety Boost</span>
+            </div>
+            <p className="text-green-600 dark:text-green-400 text-sm">
+              ✈️ Perfect for travelers! Having {mutualConnections.length} mutual friend{mutualConnections.length > 1 ? 's' : ''} makes this connection much safer and more trustworthy when exploring a new city together.
+            </p>
+          </div>
+        )}
+
+        {/* Mutual Connections - Enhanced for Travel Context */}
+        {mutualConnections && mutualConnections.length > 0 && (
+          <div className="bg-gradient-to-r from-pink-50 to-rose-50 dark:bg-gradient-to-r dark:from-pink-900/30 dark:to-rose-900/30 rounded-lg p-4 border-2 border-pink-300 dark:border-pink-500 shadow-lg">
+            <h5 className="font-bold text-black dark:text-white mb-3 flex items-center gap-2 text-lg">
+              <Users className="w-6 h-6 text-pink-500" />
+              🤝 Mutual Friends ({mutualConnections.length})
             </h5>
+            <div className="mb-3 text-sm text-pink-700 dark:text-pink-300 font-medium bg-pink-100 dark:bg-pink-900/50 rounded-lg p-2">
+              💫 You both know these people - perfect for introductions when meeting up!
+            </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {mutualConnections.map((connection: any, index: number) => (
                 <div key={`mutual-${connection.id}-${index}`} className="flex flex-col items-center text-center p-2 bg-white dark:bg-gray-800 rounded-lg border border-pink-200 dark:border-pink-700">
@@ -760,8 +779,18 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
                 </div>
               ))}
             </div>
-            <div className="mt-2 text-xs text-pink-600 dark:text-pink-400 text-center font-medium">
-              👥 Great icebreaker - you both know these people!
+            <div className="mt-3 text-center">
+              <div className="text-sm text-pink-700 dark:text-pink-300 font-semibold mb-2">
+                💬 Great conversation starters:
+              </div>
+              <div className="text-xs text-pink-600 dark:text-pink-400 italic">
+                "How do you know [friend's name]?" • "I see we both know [friend's name] from [location]!"
+              </div>
+              {mutualConnections.length >= 3 && (
+                <div className="mt-2 bg-pink-200 dark:bg-pink-800 rounded-lg p-2 text-xs text-pink-800 dark:text-pink-200 font-medium">
+                  ⭐ {mutualConnections.length} mutual friends - you're very well connected!
+                </div>
+              )}
             </div>
           </div>
         )}
