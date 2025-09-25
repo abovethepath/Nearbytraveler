@@ -725,7 +725,7 @@ function Router() {
       if (location.startsWith('/profile/')) {
         const userId = parseInt(location.split('/')[2]);
         console.log('🔍 UNAUTHENTICATED PROFILE ACCESS: Allowing profile access for userId:', userId);
-        return <ProfileComplete userId={userId.toString()} />;
+        return <ProfileComplete userId={userId} />;
       }
 
       // Show appropriate page for root path based on authentication
@@ -858,7 +858,7 @@ function Router() {
 
     if (location.startsWith('/profile/')) {
       const userId = parseInt(location.split('/')[2]);
-      return <ProfileComplete userId={userId.toString()} />;
+      return <ProfileComplete userId={userId} />;
     }
 
     if (location.startsWith('/quick-meetups/') && location.includes('/manage')) {
@@ -975,7 +975,7 @@ function Router() {
 
     if (location.startsWith('/business/')) {
       const businessId = location.split('/')[2];
-      return <ProfileComplete userId={businessId} />;
+      return <ProfileComplete userId={parseInt(businessId)} />;
     }
 
     // ✅ CRITICAL FIX: Handle dynamic routes BEFORE the switch statement
@@ -983,7 +983,7 @@ function Router() {
     if (location.startsWith('/profile/')) {
       const userId = parseInt(location.split('/')[2]);
       console.log('🔍 AUTHENTICATED PROFILE ROUTE WITH ID: userId:', userId, 'location:', location);
-      return <ProfileComplete userId={userId.toString()} />;
+      return <ProfileComplete userId={userId} />;
     }
 
     switch (location) {
@@ -1114,7 +1114,7 @@ function Router() {
         // Handle dynamic routes first before showing NotFound
         if (location.startsWith('/profile/')) {
           const userId = parseInt(location.split('/')[2]);
-          return <ProfileComplete userId={userId.toString()} />;
+          return <ProfileComplete userId={userId} />;
         }
         if (location.startsWith('/events/')) {
           const eventId = location.split('/')[2];
