@@ -337,7 +337,7 @@ import { BlockUserButton } from "@/components/block-user-button";
 
 import type { User, UserPhoto, PassportStamp, TravelPlan } from "@shared/schema";
 import { insertUserReferenceSchema } from "@shared/schema";
-import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS } from "../../../shared/base-options";
+import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections, getHometownInterests, getTravelInterests, getProfileInterests } from "../../../shared/base-options";
 import { getTopChoicesInterests } from "../lib/topChoicesUtils";
 
 // Extended user interface for additional properties
@@ -395,8 +395,8 @@ const safeGetAllInterests = () => {
   }
 };
 
-// Add missing constants
-const INTERESTS_OPTIONS = ADDITIONAL_INTERESTS;
+// Add missing constants - using profile interests for expanded profile editing
+const INTERESTS_OPTIONS = getProfileInterests();
 const ACTIVITIES_OPTIONS = safeGetAllActivities();
 const EVENTS_OPTIONS = safeGetAllEvents();
 
@@ -666,7 +666,7 @@ const getFilteredInterestsForProfile = (user: User, isOwnProfile: boolean) => {
   const interests = user.interests || [];
   
   // Popular interests that are displayed in their own section - exclude from main interests to avoid redundancy
-  const popularInterests = MOST_POPULAR_INTERESTS;
+  const popularInterests = [...getHometownInterests(), ...getTravelInterests()];
   
   // Travel-specific tags that should be filtered out when user is displayed as local in hometown
   const travelSpecificTags = [
@@ -1517,14 +1517,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         hometownCountry: user.hometownCountry
       });
       
-      // Initialize temp values for editing - EXCLUDE top choices from interests to prevent duplication
-      setTempInterests((user.interests || []).filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)));
+      // Initialize temp values for editing - EXCLUDE hometown/travel interests from profile interests to prevent duplication
+      const signupInterests = [...getHometownInterests(), ...getTravelInterests()];
+      setTempInterests((user.interests || []).filter(interest => !signupInterests.includes(interest)));
       setTempActivities(user.activities || []);
       setTempEvents(user.events || []);
       
-      // Initialize editFormData with current user preferences - EXCLUDE top choices from interests
+      // Initialize editFormData with current user preferences - EXCLUDE signup interests
       setEditFormData({
-        interests: (user.interests || []).filter(interest => !MOST_POPULAR_INTERESTS.includes(interest)),
+        interests: (user.interests || []).filter(interest => !signupInterests.includes(interest)),
         activities: user.activities || [],
         events: user.events || []
       });
@@ -1532,8 +1533,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       // Reset form with user type-specific data
       if (user.userType === 'business') {
         // Extract custom entries from the arrays (entries not in predefined lists)
+        const allPredefinedInterests = [...getHometownInterests(), ...getTravelInterests(), ...getProfileInterests()];
         const customInterests = (user.interests || [])
-          .filter((item: string) => !MOST_POPULAR_INTERESTS.includes(item) && !ADDITIONAL_INTERESTS.includes(item))
+          .filter((item: string) => !allPredefinedInterests.includes(item))
           .join(', ');
         const customActivities = (user.activities || [])
           .filter((item: string) => !safeGetAllActivities().includes(item))
@@ -1543,8 +1545,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           .join(', ');
         
         // Only include predefined entries in the checkbox arrays
+        const allPredefinedInterests = [...getHometownInterests(), ...getTravelInterests(), ...getProfileInterests()];
         const predefinedInterests = (user.interests || [])
-          .filter((item: string) => MOST_POPULAR_INTERESTS.includes(item) || ADDITIONAL_INTERESTS.includes(item));
+          .filter((item: string) => allPredefinedInterests.includes(item));
         const predefinedActivities = (user.activities || [])
           .filter((item: string) => safeGetAllActivities().includes(item));
         const predefinedEvents = (user.events || [])
@@ -1632,8 +1635,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       
       // For business users, extract and set custom fields
       if (user.userType === 'business') {
+        const allPredefinedInterests = [...getHometownInterests(), ...getTravelInterests(), ...getProfileInterests()];
         const customInterests = (user.interests || [])
-          .filter((item: string) => !MOST_POPULAR_INTERESTS.includes(item) && !ADDITIONAL_INTERESTS.includes(item))
+          .filter((item: string) => !allPredefinedInterests.includes(item))
           .join(', ');
         const customActivities = (user.activities || [])
           .filter((item: string) => !safeGetAllActivities().includes(item))
@@ -1642,8 +1646,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           .filter((item: string) => !safeGetAllEvents().includes(item))
           .join(', ');
         
+        const allPredefinedInterests = [...getHometownInterests(), ...getTravelInterests(), ...getProfileInterests()];
         const predefinedInterests = (user.interests || [])
-          .filter((item: string) => MOST_POPULAR_INTERESTS.includes(item) || ADDITIONAL_INTERESTS.includes(item));
+          .filter((item: string) => allPredefinedInterests.includes(item));
         const predefinedActivities = (user.activities || [])
           .filter((item: string) => safeGetAllActivities().includes(item));
         const predefinedEvents = (user.events || [])
@@ -5058,7 +5063,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               const predefinedActivities = safeGetAllActivities().filter(opt => (editFormData.activities || []).includes(opt));
                               const predefinedEvents = safeGetAllEvents().filter(opt => editFormData.events.includes(opt));
                               
-                              const customInterests = editFormData.interests.filter(int => !MOST_POPULAR_INTERESTS.includes(int) && !ADDITIONAL_INTERESTS.includes(int));
+                              const allPredefinedInterests = [...getHometownInterests(), ...getTravelInterests(), ...getProfileInterests()];
+                              const customInterests = editFormData.interests.filter(int => !allPredefinedInterests.includes(int));
                               const customActivities = (editFormData.activities || []).filter(act => !safeGetAllActivities().includes(act));
                               const customEvents = editFormData.events.filter(evt => !safeGetAllEvents().includes(evt));
                               
@@ -5147,7 +5153,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           Business Interests
                         </h4>
                         <div className="flex flex-wrap gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                          {[...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS].map((interest, index) => {
+                          {getProfileInterests().map((interest, index) => {
                             const isSelected = editFormData.interests.includes(interest);
                             console.log(`🔍 Interest "${interest}" is ${isSelected ? 'SELECTED' : 'not selected'} in:`, editFormData.interests);
                             return (
@@ -5212,11 +5218,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           </div>
 
                           {/* Display Custom Interests with Delete Option */}
-                          {editFormData.interests.filter(interest => !MOST_POPULAR_INTERESTS.includes(interest) && !ADDITIONAL_INTERESTS.includes(interest)).length > 0 && (
+                          {(() => {
+                            const allPredefinedInterests = [...getHometownInterests(), ...getTravelInterests(), ...getProfileInterests()];
+                            const customInterests = editFormData.interests.filter(interest => !allPredefinedInterests.includes(interest));
+                            return customInterests.length > 0 && (
                             <div className="mt-2">
                               <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Your Custom Interests (click X to remove):</p>
                               <div className="flex flex-wrap gap-2">
-                                {editFormData.interests.filter(interest => !MOST_POPULAR_INTERESTS.includes(interest) && !ADDITIONAL_INTERESTS.includes(interest)).map((interest, index) => (
+                                {customInterests.map((interest, index) => (
                                   <span
                                     key={`custom-interest-${index}`}
                                     className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-white text-black border border-black appearance-none select-none gap-1.5"
