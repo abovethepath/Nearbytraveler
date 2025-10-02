@@ -1545,7 +1545,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           .join(', ');
         
         // Only include predefined entries in the checkbox arrays
-        const allPredefinedInterests = [...getHometownInterests(), ...getTravelInterests(), ...getProfileInterests()];
         const predefinedInterests = (user.interests || [])
           .filter((item: string) => allPredefinedInterests.includes(item));
         const predefinedActivities = (user.activities || [])
@@ -1646,7 +1645,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           .filter((item: string) => !safeGetAllEvents().includes(item))
           .join(', ');
         
-        const allPredefinedInterests = [...getHometownInterests(), ...getTravelInterests(), ...getProfileInterests()];
         const predefinedInterests = (user.interests || [])
           .filter((item: string) => allPredefinedInterests.includes(item));
         const predefinedActivities = (user.activities || [])
@@ -5245,7 +5243,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 ))}
                               </div>
                             </div>
-                          )}
+                          );
+                          })()}
                         </div>
                       </div>
 
