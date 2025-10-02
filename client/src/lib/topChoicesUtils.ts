@@ -1,7 +1,7 @@
 // Utility function to identify "Top Choices for Most Locals and Travelers" interests
 // These popular interests should receive blue-orange gradient styling across the entire platform
 
-import { MOST_POPULAR_INTERESTS } from "../../../shared/base-options";
+import { MOST_POPULAR_INTERESTS } from "@shared/base-options";
 
 export const getTopChoicesInterests = (): string[] => {
   return MOST_POPULAR_INTERESTS;

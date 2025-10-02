@@ -14,8 +14,8 @@ import { apiRequest } from "@/lib/queryClient";
 import SmartLocationInput from "@/components/SmartLocationInput";
 import { User, Plane, Building, ArrowRight, ArrowLeft, Check } from "lucide-react";
 import Logo from "@/components/logo";
-import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, getAllActivities, getAllEvents, getAllLanguages, validateSelections } from "../../../shared/base-options";
-import { BASE_TRAVELER_TYPES } from "../../../shared/base-options";
+import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, getAllActivities, getAllEvents, getAllLanguages, validateSelections } from "@shared/base-options";
+import { BASE_TRAVELER_TYPES } from "@shared/base-options";
 
 interface SignupData {
   // Step 1
