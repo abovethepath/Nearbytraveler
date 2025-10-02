@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
-import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS } from "../../../shared/base-options";
+import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections, getHometownInterests } from "../../../shared/base-options";
 import { validateCustomInput, filterCustomEntries } from "@/lib/contentFilter";
 import { AuthContext } from "@/App";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
@@ -339,20 +339,23 @@ export default function SignupLocal() {
                 </div>
               </div>
 
-              {/* Top Choices - Same as traveling signup */}
+              {/* Hometown Interests */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-bold text-gray-900">Top Choices * (Choose at least 3)</h3>
+                  <h3 className="text-xl font-bold text-gray-900">🏠 Hometown Interests * (Choose at least 3)</h3>
                   <span className="text-sm text-gray-600">
-                    {getTotalSelections()}/3 minimum selected
+                    {formData.interests.length}/3 minimum selected
                   </span>
                 </div>
+                <p className="text-gray-700 text-sm">
+                  What do you enjoy doing in your hometown? Select at least 3 interests that represent your lifestyle at home.
+                </p>
 
                 <div className="bg-gray-50 p-4 rounded-lg space-y-4">
                   <div>
                     <Label className="text-gray-900 font-medium">🎯 What are you interested in?</Label>
                     <div className="flex flex-wrap gap-2 mt-2">
-                      {MOST_POPULAR_INTERESTS.map((interest) => (
+                      {getHometownInterests().map((interest) => (
                         <button
                           key={interest}
                           type="button"
@@ -368,6 +371,27 @@ export default function SignupLocal() {
                         </button>
                       ))}
                     </div>
+                  </div>
+
+                  {/* Custom Interests Input */}
+                  <div className="pt-4 border-t border-gray-200">
+                    <Label className="text-gray-900 font-medium">✨ Add Your Own Interests (Optional)</Label>
+                    <p className="text-sm text-gray-600 mb-2">
+                      Don't see what you're looking for? Add your own interests, separated by commas.
+                    </p>
+                    <Input
+                      type="text"
+                      value={formData.customInterests}
+                      onChange={(e) => setFormData(prev => ({ ...prev, customInterests: e.target.value }))}
+                      placeholder="e.g., Rock Climbing, Vintage Shopping, Board Games"
+                      className="w-full"
+                      data-testid="input-custom-interests"
+                    />
+                    {formData.customInterests && (
+                      <p className="text-xs text-blue-600 mt-1">
+                        Your custom interests will be added to your profile
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -404,7 +428,7 @@ export default function SignupLocal() {
               <div className="pt-6">
                 <Button
                   type="submit"
-                  disabled={isLoading || getTotalSelections() < 3 || !formData.pledgeAccepted}
+                  disabled={isLoading || formData.interests.length < 3 || !formData.pledgeAccepted}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 text-lg font-semibold rounded-lg shadow-lg disabled:bg-gray-400"
                   data-testid="button-complete-signup"
                 >
@@ -414,7 +438,7 @@ export default function SignupLocal() {
                       Creating Your Account...
                     </div>
                   ) : (
-                    `Complete Signup (${getTotalSelections()}/3 interests selected)`
+                    `Complete Signup (${formData.interests.length}/3 interests selected)`
                   )}
                 </Button>
                 {!formData.pledgeAccepted && (

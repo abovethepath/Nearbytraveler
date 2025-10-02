@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
-import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS } from "../../../shared/base-options";
+import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections, getHometownInterests, getTravelInterests } from "../../../shared/base-options";
 import { BASE_TRAVELER_TYPES } from "@/lib/travelOptions";
 import { validateCustomInput, filterCustomEntries } from "@/lib/contentFilter";
 import { AuthContext } from "@/App";
@@ -77,8 +77,13 @@ export default function SignupTraveling() {
     currentTripDestinationCountry: "",
     currentTripReturnDate: "", // 'YYYY-MM-DD'
 
-    // top choices (min 3) - travelers only need interests
+    // Hometown interests (saved to interests[])
     interests: [] as string[],
+    // Travel-specific interests (saved to travelInterests[])
+    travelInterests: [] as string[],
+    // Custom interests
+    customInterests: "",
+    
     activities: [] as string[], // kept for compatibility
     events: [] as string[], // kept for compatibility  
     languagesSpoken: [] as string[], // kept for compatibility
@@ -91,29 +96,28 @@ export default function SignupTraveling() {
   const [isLoading, setIsLoading] = useState(false);
   const [customEvent, setCustomEvent] = useState("");
 
-  // Helper functions to match local signup exactly
+  // Helper functions for total selections
   const getTotalSelections = () => {
-    return formData.interests.length + formData.activities.length + formData.events.length;
+    return formData.interests.length + formData.travelInterests.length;
   };
 
-  // Select All function for Top Choices sections
-  const selectAllTopChoices = () => {
-    setFormData(prev => {
-      // Get items not already selected
-      const newInterests = MOST_POPULAR_INTERESTS.filter(item => !prev.interests.includes(item));
-      
-      return {
-        ...prev,
-        interests: [...prev.interests, ...newInterests]
-      };
-    });
-  };
-
-  // Clear All function for Top Choices sections
-  const clearAllTopChoices = () => {
+  // Toggle hometown interest
+  const toggleHometownInterest = (interest: string) => {
     setFormData(prev => ({
       ...prev,
-      interests: prev.interests.filter(item => !MOST_POPULAR_INTERESTS.includes(item))
+      interests: prev.interests.includes(interest)
+        ? prev.interests.filter(i => i !== interest)
+        : [...prev.interests, interest]
+    }));
+  };
+
+  // Toggle travel interest
+  const toggleTravelInterest = (interest: string) => {
+    setFormData(prev => ({
+      ...prev,
+      travelInterests: prev.travelInterests.includes(interest)
+        ? prev.travelInterests.filter(i => i !== interest)
+        : [...prev.travelInterests, interest]
     }));
   };
 
@@ -257,8 +261,12 @@ export default function SignupTraveling() {
         currentCountry: formData.currentTripDestinationCountry?.trim() || "",
         travelStartDate: new Date().toISOString().split('T')[0], // Today for current travelers
 
-        // top choices (require at least 3)
+        // Hometown interests (saved to interests[])
         interests: formData.interests,
+        // Travel-specific interests (saved to travelInterests[])
+        travelInterests: formData.travelInterests,
+        // Custom interests (comma-separated)
+        customInterests: formData.customInterests.trim(),
         
         // languages
         languagesSpoken
@@ -277,8 +285,9 @@ export default function SignupTraveling() {
         errors.push("Hometown city and country are required.");
       }
 
-      if ((registrationData.interests?.length ?? 0) < 3) {
-        errors.push("Please choose at least 3 interests.");
+      const totalInterests = (registrationData.interests?.length ?? 0) + (registrationData.travelInterests?.length ?? 0);
+      if (totalInterests < 3) {
+        errors.push("Please choose at least 3 total interests (hometown + travel).");
       }
 
       if (registrationData.isCurrentlyTraveling) {
@@ -353,14 +362,6 @@ export default function SignupTraveling() {
     }
   };
 
-  const toggleInterest = (interest: string) => {
-    setFormData(prev => ({
-      ...prev,
-      interests: prev.interests.includes(interest)
-        ? prev.interests.filter(i => i !== interest)
-        : [...prev.interests, interest]
-    }));
-  };
 
   const { min: minDate, max: maxDate } = getDateInputConstraints();
 
@@ -499,56 +500,95 @@ export default function SignupTraveling() {
                 </div>
               </div>
 
-              {/* Top Choices - Same as local signup */}
+              {/* Hometown Interests */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-bold text-gray-900">Top Choices * (Choose at least 3)</h3>
+                  <h3 className="text-xl font-bold text-gray-900">🏠 Hometown Interests (Choose at least 3 total)</h3>
                   <div className="text-sm text-gray-600 font-medium">
-                    {formData.interests.length} selected
+                    {formData.interests.length} hometown selected
                   </div>
                 </div>
-                <p className="text-gray-700 mb-4">
-                  We ask you to choose at least 3 (much more if possible) from the list below, so we can start matching you with other Travelers and Locals. Once inside you can add more city specific interests and activities.
+                <p className="text-gray-700 text-sm">
+                  What do you enjoy at home? These help us match you with like-minded people.
                 </p>
 
-                {/* Quick action buttons */}
-                <div className="flex gap-2 mb-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={selectAllTopChoices}
-                    className="text-sm font-semibold bg-green-50 hover:bg-green-100 border-green-300 text-green-700"
-                  >
-                    Select All
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={clearAllTopChoices}
-                    className="text-sm font-semibold bg-red-50 hover:bg-red-100 border-red-300 text-red-700"
-                  >
-                    Clear All
-                  </Button>
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    {getHometownInterests().map((interest) => (
+                      <button
+                        key={interest}
+                        type="button"
+                        onClick={() => toggleHometownInterest(interest)}
+                        className={`p-3 rounded-lg border-2 text-sm font-medium text-center transition-all ${
+                          formData.interests.includes(interest)
+                            ? 'border-blue-500 bg-blue-50 text-blue-700'
+                            : 'border-gray-300 bg-white text-gray-900 hover:border-gray-400 hover:bg-gray-50'
+                        }`}
+                        data-testid={`hometown-interest-${interest}`}
+                      >
+                        {interest}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Travel-Specific Interests */}
+              <div className="space-y-4 bg-orange-50 p-4 rounded-lg border border-orange-200">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xl font-bold text-orange-900">✈️ Travel Interests (Optional but recommended)</h3>
+                  <div className="text-sm text-orange-700 font-medium">
+                    {formData.travelInterests.length} travel selected
+                  </div>
+                </div>
+                <p className="text-orange-800 text-sm">
+                  What activities are you interested in while traveling? These help us suggest local experiences.
+                </p>
+
+                <div className="bg-white p-4 rounded-lg">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    {getTravelInterests().map((interest) => (
+                      <button
+                        key={interest}
+                        type="button"
+                        onClick={() => toggleTravelInterest(interest)}
+                        className={`p-3 rounded-lg border-2 text-sm font-medium text-center transition-all ${
+                          formData.travelInterests.includes(interest)
+                            ? 'border-orange-500 bg-orange-50 text-orange-700'
+                            : 'border-gray-300 bg-white text-gray-900 hover:border-gray-400 hover:bg-gray-50'
+                        }`}
+                        data-testid={`travel-interest-${interest}`}
+                      >
+                        {interest}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  {MOST_POPULAR_INTERESTS.map((interest) => (
-                    <button
-                      key={interest}
-                      type="button"
-                      onClick={() => toggleInterest(interest)}
-                      className={`p-3 rounded-lg border-2 text-sm font-medium text-center transition-all ${
-                        formData.interests.includes(interest)
-                          ? 'border-blue-500 bg-blue-50 text-blue-700'
-                          : 'border-gray-300 bg-white text-gray-900 hover:border-gray-400 hover:bg-gray-50'
-                      }`}
-                    >
-                      {interest}
-                    </button>
-                  ))}
+                <div className="text-sm text-orange-700 font-medium mt-2">
+                  Total selections: {getTotalSelections()} (minimum 3 required)
                 </div>
+              </div>
+
+              {/* Custom Interests Input */}
+              <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                <Label className="text-purple-900 font-medium">✨ Add Your Own Interests (Optional)</Label>
+                <p className="text-sm text-purple-700 mb-2">
+                  Don't see what you're looking for? Add your own interests, separated by commas.
+                </p>
+                <Input
+                  type="text"
+                  value={formData.customInterests}
+                  onChange={(e) => setFormData(prev => ({ ...prev, customInterests: e.target.value }))}
+                  placeholder="e.g., Rock Climbing, Vintage Shopping, Board Games"
+                  className="w-full bg-white"
+                  data-testid="input-custom-interests"
+                />
+                {formData.customInterests && (
+                  <p className="text-xs text-purple-600 mt-1">
+                    Your custom interests will be added to your profile
+                  </p>
+                )}
               </div>
 
               {/* Community Pledge */}
@@ -583,14 +623,14 @@ export default function SignupTraveling() {
               <div className="pt-6">
                 <Button
                   type="submit"
-                  disabled={isLoading || formData.interests.length < 3 || !formData.pledgeAccepted}
+                  disabled={isLoading || getTotalSelections() < 3 || !formData.pledgeAccepted}
                   className="w-full py-4 text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white disabled:bg-gray-400"
                 >
-                  {isLoading ? 'Creating Account... (This may take a few moments)' : `Complete Registration (${formData.interests.length}/3)`}
+                  {isLoading ? 'Creating Account... (This may take a few moments)' : `Complete Registration (${getTotalSelections()}/3 total)`}
                 </Button>
-                {formData.interests.length < 3 && (
+                {getTotalSelections() < 3 && (
                   <p className="text-red-600 text-sm mt-2 text-center">
-                    Please select at least {3 - formData.interests.length} more interest{3 - formData.interests.length !== 1 ? 's' : ''} to continue
+                    Please select at least {3 - getTotalSelections()} more interest{3 - getTotalSelections() !== 1 ? 's' : ''} to continue
                   </p>
                 )}
                 {!formData.pledgeAccepted && (
