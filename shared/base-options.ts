@@ -3,56 +3,52 @@
 // USED ACROSS: All signup pages, profile editing, trip planning, advanced search, matching algorithms
 // DO NOT CREATE SEPARATE LISTS - ALWAYS IMPORT FROM HERE
 
-// Most Popular interests for travelers and locals - reordered for solo and younger travelers
-export const MOST_POPULAR_INTERESTS = [
-  // Solo/Dating first (top priority for younger solo travelers)
-  "Single and Looking",
-  
-  // Social/Nightlife second (key for young solo travelers)
+// ========================================
+// NEW TWO-PHASE INTEREST SYSTEM
+// ========================================
+
+// HOMETOWN INTERESTS (12 core) - Collected at signup for ALL users (locals & travelers)
+// These represent what users do/enjoy in their everyday life at home
+export const HOMETOWN_INTERESTS = [
+  "Happy Hours & Bars",
+  "Coffee Shops & Cafes",
+  "Restaurants & Food Scene",
+  "Live Music & Concerts",
+  "Hiking & Outdoors",
+  "Beach & Water Activities",
+  "Fitness & Sports",
+  "Museums & Culture",
   "Nightlife & Dancing",
-  "Meet Locals/Travelers",
-  "Craft Beer & Breweries",
-  "Cocktail Bars",
-  "Happy Hour Deals",
-  "Wine & Vineyards",
-  
-  // Food/Dining third (major social category)
-  "Local Food Specialties", 
-  "Cheap Eats",
-  "Fine Dining",
-  "Brunch Spots",
-  "Ethnic Cuisine",
-  "Food Tours / Trucks",
-  "Local Coffee Shops",
-  
-  // Cultural/Tourism fourth (popular with solo travelers)
-  "Museums",
-  "City Tours & Sightseeing",
-  "Historical / Walking Tours",
-  "Architecture",
-  "Art Galleries",
-  "Local Hidden Gems",
-  "Street Art",
-  "Cultural Sites",
-  "Photography",
-  
-  // Entertainment/Activities fifth (entertainment businesses)
-  "Festivals & Events",
-  "Live Music Venues",
-  
-  // Health/Fitness sixth (wellness businesses)
-  "Hiking & Nature",
-  "Beach Activities",
-  "Boat & Water Tours",
-  "Off the Path Adventures",
-  
-  // Family/Kids last (less relevant for solo/young travelers)
-  "Family Activities"
+  "Local Events & Festivals",
+  "Photography & Art",
+  "Meeting New People"
 ];
 
-// Additional interests - organized by similarity
-export const ADDITIONAL_INTERESTS = [
+// TRAVEL-SPECIFIC INTERESTS (6 items) - ONLY for travelers during signup
+// These represent travel-specific activities that travelers want to do on their trip
+export const TRAVEL_INTERESTS = [
+  "City Tours & Sightseeing",
+  "Local Hidden Gems",
+  "Historical Sites",
+  "Food Tours & Local Specialties",
+  "Adventure Activities",
+  "Cultural Experiences"
+];
+
+// PROFILE INTERESTS (40-50 optional) - Users can add these later in their profile
+// Niche interests, lifestyle preferences, and identity markers
+export const PROFILE_INTERESTS = [
+  // Dating/Social (renamed and repositioned)
+  "Open to Dating", // Renamed from "Single and Looking"
+  
+  // Lifestyle & Identity
+  "LGBTQIA+",
+  "Cannabis User",
+  
   // Party/Nightlife Extensions
+  "Craft Beer & Breweries",
+  "Cocktail Bars",
+  "Wine & Vineyards",
   "Techno EDM",
   "Pub Crawls & Bar Tours",
   "Rooftop Bars",
@@ -66,22 +62,35 @@ export const ADDITIONAL_INTERESTS = [
   "Escape Rooms",
   "Gaming & Esports",
   
-  
   // Family/Kids
+  "Family Activities",
   "Parent Meetups",
   
   // Food Extensions
+  "Local Food Specialties",
+  "Cheap Eats",
+  "Fine Dining",
+  "Brunch Spots",
+  "Ethnic Cuisine",
+  "Food Tours / Trucks",
   "Barbecue & Grilling",
   "Farm-to-Table",
   "Late Night Eats",
   "Cooking Classes",
   
   // Outdoor/Adventure
-  "Surfing", 
+  "Surfing",
   "Adventure Tours",
   "Wildlife & Nature",
   "Biking / Cycling",
+  "Boat & Water Tours",
+  "Off the Path Adventures",
   
+  // Cultural/Tourism
+  "Architecture",
+  "Art Galleries",
+  "Street Art",
+  "Cultural Sites",
   
   // Sports/Recreation
   "Sports & Recreation",
@@ -104,11 +113,41 @@ export const ADDITIONAL_INTERESTS = [
   "Astronomy"
 ];
 
-// Combined interests (Most Popular + Additional)
-export const ALL_INTERESTS = [...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS];
+// ========================================
+// LEGACY COMPATIBILITY (DEPRECATED)
+// ========================================
+// Keep these for backward compatibility but prefer new system above
+export const MOST_POPULAR_INTERESTS = [...HOMETOWN_INTERESTS, ...TRAVEL_INTERESTS, ...PROFILE_INTERESTS.slice(0, 20)];
+export const ADDITIONAL_INTERESTS = PROFILE_INTERESTS.slice(20);
+export const ALL_INTERESTS = [...HOMETOWN_INTERESTS, ...TRAVEL_INTERESTS, ...PROFILE_INTERESTS];
+
+// ========================================
+// HELPER FUNCTIONS - USE THESE IN COMPONENTS
+// ========================================
+
+// Get hometown interests (for ALL signups)
+export const getHometownInterests = () => HOMETOWN_INTERESTS;
+
+// Get travel interests (for TRAVELER signup only)
+export const getTravelInterests = () => TRAVEL_INTERESTS;
+
+// Get profile interests (for profile editing)
+export const getProfileInterests = () => PROFILE_INTERESTS;
+
+// Get signup interests based on user type
+export const getSignupInterests = (userType: 'local' | 'traveler') => {
+  if (userType === 'local') {
+    return HOMETOWN_INTERESTS; // 12 options
+  } else {
+    return [...HOMETOWN_INTERESTS, ...TRAVEL_INTERESTS]; // 18 options
+  }
+};
+
+// ========================================
+// ACTIVITIES & EVENTS (unchanged)
+// ========================================
 
 // GROUPED ACTIVITIES FOR EASIER SELECTION
-
 export const SOCIAL_ACTIVITIES = [
   "Local Connections",
   "Meetup Organizing",
@@ -134,7 +173,6 @@ export const ALL_ACTIVITIES = [
 ];
 
 // GROUPED EVENTS FOR EASIER SELECTION
-
 export const CULTURAL_COMMUNITY_EVENTS = [
   "Street Festivals",
   "Community Events",
@@ -187,7 +225,9 @@ export const ALL_LANGUAGES = [
   "Arabic", "Hebrew", "Turkish", "Greek", "Hindi", "Urdu", "Bengali"
 ];
 
-// MASTER EXPORT FUNCTIONS - USE THESE EVERYWHERE
+// ========================================
+// LEGACY EXPORT FUNCTIONS (DEPRECATED)
+// ========================================
 export const getMostPopularInterests = () => MOST_POPULAR_INTERESTS;
 export const getAdditionalInterests = () => ADDITIONAL_INTERESTS;
 export const getAllInterests = () => ALL_INTERESTS;
