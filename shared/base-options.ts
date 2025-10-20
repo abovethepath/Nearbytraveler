@@ -4,73 +4,22 @@
 // DO NOT CREATE SEPARATE LISTS - ALWAYS IMPORT FROM HERE
 
 // ========================================
-// NEW TWO-PHASE INTEREST SYSTEM
+// TOP CHOICES TO MEET TRAVELERS AND LOCALS
 // ========================================
+// ALL USERS (local, traveler, new to town) select from this EXACT SAME LIST during signup
+// This ensures everyone can be matched on the same interests
 
-// HOMETOWN INTERESTS (12 core) - Collected at signup for ALL users (locals & travelers)
-// These represent what users do/enjoy in their everyday life at home
-export const HOMETOWN_INTERESTS = [
-  "Happy Hours & Bars",
-  "Coffee Shops & Cafes",
+export const TOP_CHOICES = [
+  // Dating/Social
+  "Open to Dating",
+  "Meeting New People",
+  
+  // Food & Dining
   "Restaurants & Food Scene",
-  "Live Music & Concerts",
-  "Hiking & Outdoors",
-  "Beach & Water Activities",
-  "Fitness & Sports",
-  "Museums & Culture",
-  "Nightlife & Dancing",
-  "Local Events & Festivals",
-  "Photography & Art",
-  "Meeting New People"
-];
-
-// TRAVEL-SPECIFIC INTERESTS (6 items) - ONLY for travelers during signup
-// These represent travel-specific activities that travelers want to do on their trip
-export const TRAVEL_INTERESTS = [
-  "City Tours & Sightseeing",
-  "Local Hidden Gems",
-  "Historical Sites",
-  "Food Tours & Local Specialties",
-  "Adventure Activities",
-  "Cultural Experiences"
-];
-
-// PROFILE INTERESTS (40-50 optional) - Users can add these later in their profile
-// Niche interests, lifestyle preferences, and identity markers
-export const PROFILE_INTERESTS = [
-  // Dating/Social (renamed and repositioned)
-  "Open to Dating", // Renamed from "Single and Looking"
-  
-  // Lifestyle & Identity
-  "LGBTQIA+",
-  "Cannabis User",
-  
-  // Party/Nightlife Extensions
-  "Craft Beer & Breweries",
-  "Cocktail Bars",
-  "Wine & Vineyards",
-  "Techno EDM",
-  "Pub Crawls & Bar Tours",
-  "Rooftop Bars",
-  "Casinos",
-  "Poker",
-  
-  // Entertainment/Shows
-  "Comedy Shows",
-  "Theater & Performing Arts",
-  "Ghost Tours",
-  "Escape Rooms",
-  "Gaming & Esports",
-  
-  // Family/Kids
-  "Family Activities",
-  "Parent Meetups",
-  
-  // Food Extensions
-  "Local Food Specialties",
+  "Coffee Shops & Cafes",
+  "Brunch Spots",
   "Cheap Eats",
   "Fine Dining",
-  "Brunch Spots",
   "Ethnic Cuisine",
   "Food Tours / Trucks",
   "Barbecue & Grilling",
@@ -78,7 +27,26 @@ export const PROFILE_INTERESTS = [
   "Late Night Eats",
   "Cooking Classes",
   
-  // Outdoor/Adventure
+  // Nightlife & Bars
+  "Happy Hours & Bars",
+  "Nightlife & Dancing",
+  "Craft Beer & Breweries",
+  "Cocktail Bars",
+  "Wine & Vineyards",
+  "Pub Crawls & Bar Tours",
+  "Rooftop Bars",
+  
+  // Music & Entertainment
+  "Live Music & Concerts",
+  "Techno EDM",
+  "Comedy Shows",
+  "Theater & Performing Arts",
+  "Karaoke Nights",
+  "Club Nights",
+  
+  // Outdoor & Adventure
+  "Hiking & Outdoors",
+  "Beach & Water Activities",
   "Surfing",
   "Adventure Tours",
   "Wildlife & Nature",
@@ -86,61 +54,83 @@ export const PROFILE_INTERESTS = [
   "Boat & Water Tours",
   "Off the Path Adventures",
   
-  // Cultural/Tourism
-  "Architecture",
-  "Art Galleries",
-  "Street Art",
-  "Cultural Sites",
-  
-  // Sports/Recreation
+  // Fitness & Sports
+  "Fitness & Sports",
   "Sports & Recreation",
   "Golf",
   "Pickleball",
   "Bowling",
   
-  // Health/Wellness
+  // Culture & Tourism
+  "Museums & Culture",
+  "City Tours & Sightseeing",
+  "Local Hidden Gems",
+  "Historical Sites",
+  "Architecture",
+  "Art Galleries",
+  "Street Art",
+  "Cultural Sites",
+  "Cultural Experiences",
+  
+  // Events & Festivals
+  "Local Events & Festivals",
+  "Street Festivals",
+  "Community Events",
+  
+  // Creative & Hobbies
+  "Photography & Art",
+  "Gaming & Esports",
+  "Ghost Tours",
+  "Escape Rooms",
+  "Dance Classes and Events",
+  
+  // Family
+  "Family Activities",
+  "Parent Meetups",
+  
+  // Wellness & Lifestyle
   "Spa & Wellness",
   "Meditation & Mindfulness",
+  "Cannabis User",
   
-  // Creative/Learning
-  "Dance Classes and Events",
+  // Identity
+  "LGBTQIA+",
   "Digital Nomads",
   
-  // Shopping/Lifestyle
+  // Other
+  "Casinos",
+  "Poker",
   "Flea Markets",
-  
-  // Unique/Specialty
   "Astronomy"
 ];
+
+// DEPRECATED - kept for backward compatibility
+export const HOMETOWN_INTERESTS = TOP_CHOICES;
+export const TRAVEL_INTERESTS = [];
+export const PROFILE_INTERESTS = [];
 
 // ========================================
 // LEGACY COMPATIBILITY (DEPRECATED)
 // ========================================
-// Keep these for backward compatibility but prefer new system above
-export const MOST_POPULAR_INTERESTS = [...HOMETOWN_INTERESTS, ...TRAVEL_INTERESTS, ...PROFILE_INTERESTS.slice(0, 20)];
-export const ADDITIONAL_INTERESTS = PROFILE_INTERESTS.slice(20);
-export const ALL_INTERESTS = [...HOMETOWN_INTERESTS, ...TRAVEL_INTERESTS, ...PROFILE_INTERESTS];
+export const MOST_POPULAR_INTERESTS = TOP_CHOICES;
+export const ADDITIONAL_INTERESTS = [];
+export const ALL_INTERESTS = TOP_CHOICES;
 
 // ========================================
 // HELPER FUNCTIONS - USE THESE IN COMPONENTS
 // ========================================
 
-// Get hometown interests (for ALL signups)
-export const getHometownInterests = () => HOMETOWN_INTERESTS;
+// Get top choices (for ALL signups - locals, travelers, new to town)
+export const getTopChoices = () => TOP_CHOICES;
 
-// Get travel interests (for TRAVELER signup only)
-export const getTravelInterests = () => TRAVEL_INTERESTS;
+// DEPRECATED - use getTopChoices instead
+export const getHometownInterests = () => TOP_CHOICES;
+export const getTravelInterests = () => [];
+export const getProfileInterests = () => [];
 
-// Get profile interests (for profile editing)
-export const getProfileInterests = () => PROFILE_INTERESTS;
-
-// Get signup interests based on user type
+// Get signup interests - ALL users get the same list
 export const getSignupInterests = (userType: 'local' | 'traveler') => {
-  if (userType === 'local') {
-    return HOMETOWN_INTERESTS; // 12 options
-  } else {
-    return [...HOMETOWN_INTERESTS, ...TRAVEL_INTERESTS]; // 18 options
-  }
+  return TOP_CHOICES; // Same list for everyone
 };
 
 // ========================================

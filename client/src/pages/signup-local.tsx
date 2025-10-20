@@ -340,16 +340,16 @@ export default function SignupLocal() {
                 </div>
               </div>
 
-              {/* Hometown Interests */}
+              {/* Top Choices */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-bold text-gray-900">🏠 Hometown Interests * (Choose at least 3)</h3>
+                  <h3 className="text-xl font-bold text-gray-900">Top Choices to Meet Travelers and Locals * (Choose at least 3)</h3>
                   <span className="text-sm text-gray-600">
                     {formData.interests.length}/3 minimum selected
                   </span>
                 </div>
                 <p className="text-gray-700 text-sm">
-                  What do you enjoy doing in your hometown? Select at least 3 interests that represent your lifestyle at home.
+                  What are you interested in? Select at least 3 choices to help us match you with like-minded travelers and locals.
                 </p>
 
                 <div className="bg-gray-50 p-4 rounded-lg space-y-4">

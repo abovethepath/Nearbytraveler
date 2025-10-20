@@ -500,16 +500,16 @@ export default function SignupTraveling() {
                 </div>
               </div>
 
-              {/* Hometown Interests */}
+              {/* Top Choices */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-bold text-gray-900">🏠 Hometown Interests (Choose at least 3 total)</h3>
+                  <h3 className="text-xl font-bold text-gray-900">Top Choices to Meet Travelers and Locals * (Choose at least 3)</h3>
                   <div className="text-sm text-gray-600 font-medium">
-                    {formData.interests.length} hometown selected
+                    {formData.interests.length}/3 minimum selected
                   </div>
                 </div>
                 <p className="text-gray-700 text-sm">
-                  What do you enjoy at home? These help us match you with like-minded people.
+                  What are you interested in? Select at least 3 choices to help us match you with like-minded travelers and locals.
                 </p>
 
                 <div className="bg-gray-50 p-4 rounded-lg">
@@ -530,43 +530,6 @@ export default function SignupTraveling() {
                       </button>
                     ))}
                   </div>
-                </div>
-              </div>
-
-              {/* Travel-Specific Interests */}
-              <div className="space-y-4 bg-orange-50 p-4 rounded-lg border border-orange-200">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-bold text-orange-900">✈️ Travel Interests (Optional but recommended)</h3>
-                  <div className="text-sm text-orange-700 font-medium">
-                    {formData.travelInterests.length} travel selected
-                  </div>
-                </div>
-                <p className="text-orange-800 text-sm">
-                  What activities are you interested in while traveling? These help us suggest local experiences.
-                </p>
-
-                <div className="bg-white p-4 rounded-lg">
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {getTravelInterests().map((interest) => (
-                      <button
-                        key={interest}
-                        type="button"
-                        onClick={() => toggleTravelInterest(interest)}
-                        className={`p-3 rounded-lg border-2 text-sm font-medium text-center transition-all ${
-                          formData.travelInterests.includes(interest)
-                            ? 'border-orange-500 bg-orange-50 text-orange-700'
-                            : 'border-gray-300 bg-white text-gray-900 hover:border-gray-400 hover:bg-gray-50'
-                        }`}
-                        data-testid={`travel-interest-${interest}`}
-                      >
-                        {interest}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="text-sm text-orange-700 font-medium mt-2">
-                  Total selections: {getTotalSelections()} (minimum 3 required)
                 </div>
               </div>
 
