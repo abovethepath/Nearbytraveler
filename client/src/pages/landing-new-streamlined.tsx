@@ -40,7 +40,7 @@ export default function LandingStreamlined() {
   const headlines = [
     "Planning a Trip Soon? Skip The Tourist Traps.", // General travelers
     "Want to Expand Your Social Circle? Love Meeting Travelers?", // Locals who want to share their city
-    "Want Your Kids to Meet the World?" // Families
+    "Turn Family Trips Into Lifelong Memories." // Families
   ];
   
   const [currentSubtext, setCurrentSubtext] = useState(0);
