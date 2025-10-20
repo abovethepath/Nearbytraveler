@@ -160,6 +160,7 @@ export default function SignupAccount() {
     }
 
     // Store account data for profile completion
+    const isNewToTown = sessionStorage.getItem('isNewToTown') === 'true';
     const accountData = {
       name: formData.name,
       username: formData.username,
@@ -167,7 +168,8 @@ export default function SignupAccount() {
       confirmEmail: formData.confirmEmail.toLowerCase().trim(),
       phoneNumber: formData.phoneNumber,
       password: formData.password,
-      userType: userType
+      userType: userType,
+      isNewToTown: isNewToTown
     };
 
     sessionStorage.setItem('accountData', JSON.stringify(accountData));

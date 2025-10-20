@@ -135,6 +135,7 @@ export default function SignupLocal() {
         // SIMPLE: Just set as local 
         userType: "local",
         isCurrentlyTraveling: false,
+        isNewToTown: accountData.isNewToTown || false,
 
         // account data
         email: (finalFormData.email || "").toLowerCase().trim(),

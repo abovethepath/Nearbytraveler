@@ -9,6 +9,7 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
   name: text("name").notNull(),
   userType: text("user_type").notNull(), // 'traveler', 'local', 'business'
+  isNewToTown: boolean("is_new_to_town").default(false), // Track "New to Town" users (local users who recently moved)
   bio: text("bio"),
   location: text("location"),
   // NEARBY LOCAL HOMETOWN (never changes unless they move)
