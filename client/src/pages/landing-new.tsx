@@ -105,7 +105,7 @@ export default function LandingNew() {
                   Turn every trip into meaningful connections that last.
                 </h2>
                 <p className="text-base sm:text-lg text-gray-600 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                  Connect with locals and travelers before your trip begins — and create friendships that last a lifetime.
+                  Connect with locals and travelers before your trip begins — create friendships that last a lifetime.
                 </p>
                 
                 {/* CTA Buttons */}
