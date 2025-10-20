@@ -52,9 +52,12 @@ export default function LandingNavbar() {
             >
               Sign In
             </button>
-            <Link href="/join" className="bg-orange-500 dark:bg-orange-500 hover:bg-orange-600 dark:hover:bg-orange-600 text-white dark:text-white border-2 border-orange-500 dark:border-orange-500 px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap">
+            <button 
+              onClick={() => setLocation('/launching-soon')}
+              className="bg-orange-500 dark:bg-orange-500 hover:bg-orange-600 dark:hover:bg-orange-600 text-white dark:text-white border-2 border-orange-500 dark:border-orange-500 px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap"
+            >
               Join Now
-            </Link>
+            </button>
           </div>
 
           {/* Mobile Menu Button with Beta Badge */}
@@ -136,12 +139,15 @@ export default function LandingNavbar() {
           </div>
           <div className="pt-3 pb-4 border-t border-gray-200 dark:border-gray-700 px-4">
             <div className="flex flex-col space-y-2">
-              <Link href="/join" 
+              <button 
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setLocation('/launching-soon');
+                }}
                 className="bg-orange-500 dark:bg-orange-500 hover:bg-orange-600 dark:hover:bg-orange-600 text-white dark:text-white border-2 border-orange-500 dark:border-orange-500 text-center px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 active:scale-95 shadow-lg touch-manipulation mb-2"
-                onClick={() => setMobileMenuOpen(false)}
               >
                 Join Now
-              </Link>
+              </button>
               <button 
                 onClick={() => {
                   setMobileMenuOpen(false);
