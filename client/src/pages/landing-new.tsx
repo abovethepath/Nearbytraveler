@@ -98,7 +98,7 @@ export default function LandingNew() {
               {/* Left text side */}
               <div className="order-2 lg:order-1 text-center lg:text-left">
                 <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 mb-4 sm:mb-6">
-                  Planning a Trip Soon?<br className="hidden sm:block" />
+                  Planning a Trip Soon?<br />
                   <span className="text-blue-600">Skip The Tourist Traps.</span>
                 </h1>
                 <h2 className="text-lg sm:text-xl md:text-2xl text-gray-600 mb-6 sm:mb-8">
