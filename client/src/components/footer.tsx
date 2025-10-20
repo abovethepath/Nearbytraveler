@@ -46,7 +46,7 @@ export default function Footer() {
                   <p className="break-words">Aaron@thenearbytraveler.com</p>
                 </div>
                 <div className="flex flex-col space-y-1">
-                  <p>322 Gould Street</p>
+                  <p>32 Gould Street</p>
                   <p>Sheridan, WY 82801</p>
                 </div>
               </div>
