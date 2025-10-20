@@ -259,12 +259,12 @@ export default function EventsLanding() {
                 </div>
                 
                 <p className="text-gray-700 text-sm mb-4 flex-grow">Join locals dancing to live music at Venice Beach boardwalk. Experience the authentic LA beach culture with sunset vibes and great people.</p>
-                <a
-                  href="/join"
+                <button
+                  onClick={() => setLocation('/launching-soon')}
                   className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
                 >
                   JOIN THE PARTY
-                </a>
+                </button>
               </div>
             </div>
 
@@ -290,12 +290,12 @@ export default function EventsLanding() {
                 </div>
                 
                 <p className="text-gray-700 text-sm mb-4 flex-grow">Join Locals as they plan meals at awesome hidden food spots like top tacos for a buck, korean bbq, from ethepian to korean and where to find the best burgers in town.</p>
-                <a
-                  href="/join"
+                <button
+                  onClick={() => setLocation('/launching-soon')}
                   className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
                 >
                   JOIN FOOD TOUR
-                </a>
+                </button>
               </div>
             </div>
 
@@ -321,12 +321,12 @@ export default function EventsLanding() {
                 </div>
                 
                 <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Free outdoor movie screenings at Burton Chace Park in Marina del Rey. Bring a blanket, pack a picnic, and enjoy movies under the stars with locals and travelers.</p>
-                <a
-                  href="/join"
+                <button
+                  onClick={() => setLocation('/launching-soon')}
                   className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
                 >
                   JOIN MOVIE NIGHT
-                </a>
+                </button>
               </div>
             </div>
 
@@ -351,12 +351,12 @@ export default function EventsLanding() {
                 </div>
                 
                 <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Monthly gallery walk through the Arts District. Meet artists, see local work, and discuss creativity with fellow art lovers and travelers.</p>
-                <a
-                  href="/join"
+                <button
+                  onClick={() => setLocation('/launching-soon')}
                   className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
                 >
                   JOIN ART WALK
-                </a>
+                </button>
               </div>
             </div>
 
@@ -381,12 +381,12 @@ export default function EventsLanding() {
                 </div>
                 
                 <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Weekly karaoke night where locals and travelers sing, laugh, and bond over terrible singing voices. No talent required - just bring the energy!</p>
-                <a
-                  href="/join"
+                <button
+                  onClick={() => setLocation('/launching-soon')}
                   className="w-full bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
                 >
                   JOIN KARAOKE
-                </a>
+                </button>
               </div>
             </div>
 
@@ -411,12 +411,12 @@ export default function EventsLanding() {
                 </div>
                 
                 <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Explore the city's best neighborhoods on two wheels. Local guides show hidden spots, street art, and authentic culture you'd never find on your own.</p>
-                <a
-                  href="/join"
+                <button
+                  onClick={() => setLocation('/launching-soon')}
                   className="w-full bg-gradient-to-r from-teal-500 to-green-600 hover:from-teal-600 hover:to-green-700 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
                 >
                   JOIN BIKE TOUR
-                </a>
+                </button>
               </div>
             </div>
 
