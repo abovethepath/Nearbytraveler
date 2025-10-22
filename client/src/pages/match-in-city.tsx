@@ -381,7 +381,17 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     // Get user from localStorage if not in context
     const storedUser = localStorage.getItem('travelConnectUser');
     const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
-    const userId = actualUser?.id || 2; // Use actual user ID, fallback to valid user 2
+    
+    if (!actualUser?.id) {
+      toast({
+        title: "Please Sign In",
+        description: "You must be signed in to select activities",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    const userId = actualUser.id;
     console.log('🔧 TOGGLE: using userId =', userId, 'user object:', actualUser);
 
     const isCurrentlyActive = userActivities.some(ua => ua.activityId === activity.id);
@@ -433,14 +443,21 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   };
 
   const updateActivity = async () => {
-    // Force user ID to 1 for now to fix authentication issue
-    const userId = user?.id || 1;
+    if (!user?.id) {
+      toast({
+        title: "Please Sign In",
+        description: "You must be signed in to update activities",
+        variant: "destructive",
+      });
+      return;
+    }
     
     if (!editingActivity) {
       console.log('❌ UPDATE BLOCKED: no editingActivity');
       return;
     }
 
+    const userId = user.id;
     console.log('🔧 UPDATE: using userId =', userId);
     console.log('✏️ UPDATING ACTIVITY:', editingActivity.id, 'from:', editingActivity.activityName, 'to:', editActivityName);
 
@@ -501,13 +518,20 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   };
 
   const deleteActivity = async (activityId: number) => {
-    // Force user ID to 1 for now to fix authentication issue
-    const userId = user?.id || 1;
+    if (!user?.id) {
+      toast({
+        title: "Please Sign In",
+        description: "You must be signed in to delete activities",
+        variant: "destructive",
+      });
+      return;
+    }
 
     if (!confirm('Are you sure you want to delete this activity? This will remove it for everyone.')) {
       return;
     }
 
+    const userId = user.id;
     console.log('🔧 DELETE: using userId =', userId);
     console.log('🗑️ DELETING ACTIVITY:', activityId);
 
@@ -553,7 +577,17 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     // Get user from localStorage if not in context (same as toggle function)
     const storedUser = localStorage.getItem('travelConnectUser');
     const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
-    const userId = actualUser?.id || 2; // Use actual user ID, fallback to valid user 2
+    
+    if (!actualUser?.id) {
+      toast({
+        title: "Please Sign In",
+        description: "You must be signed in to add activities",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    const userId = actualUser.id;
     console.log('➕ ADDING ACTIVITY:', newActivity, 'userId:', userId);
 
     try {
@@ -624,7 +658,17 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     // Get user from localStorage if not in context
     const storedUser = localStorage.getItem('travelConnectUser');
     const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
-    const userId = actualUser?.id || 2; // Use actual user ID, fallback to valid user 2
+    
+    if (!actualUser?.id) {
+      toast({
+        title: "Please Sign In",
+        description: "You must be signed in to select activities",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    const userId = actualUser.id;
     const isCurrentlySelected = userActivities.some(ua => ua.activityId === activityId);
     
     console.log('🔄 TOGGLE ACTIVITY CLICKED!!!:', activityId, activityName, 'currently selected:', isCurrentlySelected);
@@ -705,7 +749,17 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     // Get user from localStorage if not in context  
     const storedUser = localStorage.getItem('travelConnectUser');
     const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
-    const userId = actualUser?.id || 2; // Use actual user ID, fallback to valid user 2
+    
+    if (!actualUser?.id) {
+      toast({
+        title: "Please Sign In",
+        description: "You must be signed in to manage activities",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    const userId = actualUser.id;
     
     try {
       const response = await fetch(`/api/user-city-interests/${userActivityId}`, {
@@ -1089,6 +1143,21 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           onClick={async () => {
                             console.log('🎯 Universal activity clicked:', activity);
                             
+                            // Get authenticated user
+                            const storedUser = localStorage.getItem('travelConnectUser');
+                            const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
+                            
+                            if (!actualUser?.id) {
+                              toast({
+                                title: "Please Sign In",
+                                description: "You must be signed in to select activities",
+                                variant: "destructive",
+                              });
+                              return;
+                            }
+                            
+                            const userId = actualUser.id;
+                            
                             // Create this as a city activity if it doesn't exist, then toggle
                             try {
                               if (!isSelected) {
@@ -1097,12 +1166,12 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                   method: 'POST',
                                   headers: {
                                     'Content-Type': 'application/json',
-                                    'x-user-id': '2'
+                                    'x-user-id': userId.toString()
                                   },
                                   body: JSON.stringify({
                                     cityName: selectedCity,
                                     activityName: activity,
-                                    createdByUserId: 2,
+                                    createdByUserId: userId,
                                     description: 'Universal activity',
                                     category: 'universal'
                                   })
@@ -1116,7 +1185,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                     method: 'POST',
                                     headers: {
                                       'Content-Type': 'application/json',
-                                      'x-user-id': '2'
+                                      'x-user-id': userId.toString()
                                     },
                                     body: JSON.stringify({
                                       activityId: newActivity.id,
