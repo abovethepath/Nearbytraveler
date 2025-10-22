@@ -4338,8 +4338,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               }}
                               className={`h-8 px-3 rounded-full text-sm font-medium transition-all ${
                                 isSelected
-                                  ? 'bg-blue-600 text-white'
-                                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                                  ? 'bg-gradient-to-r from-blue-500 to-orange-500 text-white shadow-md'
+                                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
                               }`}
                             >
                               {interest}
@@ -4368,8 +4368,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               }}
                               className={`h-8 px-3 rounded-full text-sm font-medium transition-all ${
                                 isSelected
-                                  ? 'bg-blue-600 text-white'
-                                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                                  ? 'bg-gradient-to-r from-blue-500 to-orange-500 text-white shadow-md'
+                                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
                               }`}
                             >
                               {interest}
@@ -4429,8 +4429,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               }}
                               className={`h-8 px-3 rounded-full text-sm font-medium transition-all ${
                                 isSelected
-                                  ? 'bg-green-600 text-white'
-                                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                                  ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-md'
+                                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
                               }`}
                             >
                               {activity}
@@ -4490,8 +4490,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               }}
                               className={`h-8 px-3 rounded-full text-sm font-medium transition-all ${
                                 isSelected
-                                  ? 'bg-purple-600 text-white'
-                                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-md'
+                                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
                               }`}
                             >
                               {event}
@@ -4593,12 +4593,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <div className="space-y-6">
                     
                     {/* TOP INTERESTS */}
-                    {user?.interests && user.interests.length > 0 && (
-                      <div>
-                        <h4 className="font-medium text-gray-800 dark:text-white mb-3 flex items-center gap-2">
-                          <Heart className="w-4 h-4 text-blue-500" />
-                          Top Interests
-                        </h4>
+                    <div>
+                      <h4 className="font-medium text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+                        <Heart className="w-4 h-4 text-blue-500" />
+                        Top Interests
+                      </h4>
+                      {user?.interests && user.interests.length > 0 ? (
                         <div className="flex flex-wrap gap-2">
                           {user.interests.map((interest, index) => (
                             <div 
@@ -4609,90 +4609,97 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             </div>
                           ))}
                         </div>
-                      </div>
-                    )}
+                      ) : (
+                        <p className="text-gray-500 dark:text-gray-400 italic text-sm">
+                          {isOwnProfile ? "Click Edit to add your top interests" : "No interests added yet"}
+                        </p>
+                      )}
+                    </div>
 
                     {/* OTHER INTERESTS */}
-                    {(() => {
-                      const allInterests = [...(user?.interests || []), ...(user?.customInterests ? user.customInterests.split(',').map(s => s.trim()).filter(Boolean) : [])];
-                      const otherInterests = allInterests.filter(i => !(user?.interests || []).includes(i));
-                      
-                      if (otherInterests.length > 0) {
-                        return (
-                          <div>
-                            <h4 className="font-medium text-gray-800 dark:text-white mb-3 flex items-center gap-2">
-                              <Heart className="w-4 h-4 text-blue-500" />
-                              Other Interests
-                            </h4>
-                            <div className="flex flex-wrap gap-2">
-                              {otherInterests.map((interest, index) => (
-                                <div 
-                                  key={`other-interest-${index}`} 
-                                  className="h-8 px-4 rounded-full text-sm font-medium bg-white text-black border border-black"
-                                >
-                                  {interest}
-                                </div>
-                              ))}
-                            </div>
+                    <div>
+                      <h4 className="font-medium text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+                        <Heart className="w-4 h-4 text-blue-500" />
+                        Other Interests
+                      </h4>
+                      {(() => {
+                        const allInterests = [...(user?.interests || []), ...(user?.customInterests ? user.customInterests.split(',').map(s => s.trim()).filter(Boolean) : [])];
+                        const otherInterests = allInterests.filter(i => !(user?.interests || []).includes(i));
+                        
+                        return otherInterests.length > 0 ? (
+                          <div className="flex flex-wrap gap-2">
+                            {otherInterests.map((interest, index) => (
+                              <div 
+                                key={`other-interest-${index}`} 
+                                className="h-8 px-4 rounded-full text-sm font-medium bg-white dark:bg-gray-700 text-black dark:text-white border border-black dark:border-gray-500"
+                              >
+                                {interest}
+                              </div>
+                            ))}
                           </div>
+                        ) : (
+                          <p className="text-gray-500 dark:text-gray-400 italic text-sm">
+                            {isOwnProfile ? "Click Edit to add more interests" : "No additional interests"}
+                          </p>
                         );
-                      }
-                      return null;
-                    })()}
+                      })()}
+                    </div>
 
                     {/* ACTIVITIES */}
-                    {(() => {
-                      const allActivities = [...(user?.activities || []), ...(user?.customActivities ? user.customActivities.split(',').map(s => s.trim()).filter(Boolean) : [])];
-                      
-                      if (allActivities.length > 0) {
-                        return (
-                          <div>
-                            <h4 className="font-medium text-gray-800 dark:text-white mb-3 flex items-center gap-2">
-                              <Zap className="w-4 h-4 text-green-500" />
-                              Activities
-                            </h4>
-                            <div className="flex flex-wrap gap-2">
-                              {allActivities.map((activity, index) => (
-                                <div 
-                                  key={`activity-${index}`} 
-                                  className="h-8 px-4 rounded-full text-sm font-medium bg-white text-black border border-black"
-                                >
-                                  {activity}
-                                </div>
-                              ))}
-                            </div>
+                    <div>
+                      <h4 className="font-medium text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+                        <Zap className="w-4 h-4 text-green-500" />
+                        Activities
+                      </h4>
+                      {(() => {
+                        const allActivities = [...(user?.activities || []), ...(user?.customActivities ? user.customActivities.split(',').map(s => s.trim()).filter(Boolean) : [])];
+                        
+                        return allActivities.length > 0 ? (
+                          <div className="flex flex-wrap gap-2">
+                            {allActivities.map((activity, index) => (
+                              <div 
+                                key={`activity-${index}`} 
+                                className="h-8 px-4 rounded-full text-sm font-medium bg-white dark:bg-gray-700 text-black dark:text-white border border-black dark:border-gray-500"
+                              >
+                                {activity}
+                              </div>
+                            ))}
                           </div>
+                        ) : (
+                          <p className="text-gray-500 dark:text-gray-400 italic text-sm">
+                            {isOwnProfile ? "Click Edit to add activities you enjoy" : "No activities added yet"}
+                          </p>
                         );
-                      }
-                      return null;
-                    })()}
+                      })()}
+                    </div>
 
                     {/* EVENTS */}
-                    {(() => {
-                      const allEvents = [...(user?.events || []), ...(user?.customEvents ? user.customEvents.split(',').map(s => s.trim()).filter(Boolean) : [])];
-                      
-                      if (allEvents.length > 0) {
-                        return (
-                          <div>
-                            <h4 className="font-medium text-gray-800 dark:text-white mb-3 flex items-center gap-2">
-                              <Calendar className="w-4 h-4 text-purple-500" />
-                              Events
-                            </h4>
-                            <div className="flex flex-wrap gap-2">
-                              {allEvents.map((event, index) => (
-                                <div 
-                                  key={`event-${index}`} 
-                                  className="h-8 px-4 rounded-full text-sm font-medium bg-white text-black border border-black"
-                                >
-                                  {event}
-                                </div>
-                              ))}
-                            </div>
+                    <div>
+                      <h4 className="font-medium text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-purple-500" />
+                        Events
+                      </h4>
+                      {(() => {
+                        const allEvents = [...(user?.events || []), ...(user?.customEvents ? user.customEvents.split(',').map(s => s.trim()).filter(Boolean) : [])];
+                        
+                        return allEvents.length > 0 ? (
+                          <div className="flex flex-wrap gap-2">
+                            {allEvents.map((event, index) => (
+                              <div 
+                                key={`event-${index}`} 
+                                className="h-8 px-4 rounded-full text-sm font-medium bg-white dark:bg-gray-700 text-black dark:text-white border border-black dark:border-gray-500"
+                              >
+                                {event}
+                              </div>
+                            ))}
                           </div>
+                        ) : (
+                          <p className="text-gray-500 dark:text-gray-400 italic text-sm">
+                            {isOwnProfile ? "Click Edit to add events you like" : "No events added yet"}
+                          </p>
                         );
-                      }
-                      return null;
-                    })()}
+                      })()}
+                    </div>
 
                   </div>
                 )}
