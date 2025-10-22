@@ -1040,13 +1040,58 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
               
               {/* Dynamic City Activities - Universal + City-Specific + AI */}
               <div className="space-y-8">
-                {/* Show activities for selected city */}
-                {cityActivities.length > 0 && (
-                  <div>
-                    <div className="text-center mb-6">
-                      <h3 className="text-2xl font-bold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent mb-2">{selectedCity}</h3>
-                      <div className="w-24 h-1 bg-gradient-to-r from-red-500 to-orange-500 mx-auto rounded-full"></div>
-                    </div>
+                {/* City-Specific AI Activities Section */}
+                <div>
+                  <div className="text-center mb-6">
+                    <h3 className="text-2xl font-bold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent mb-2">📍 {selectedCity} Specific Activities</h3>
+                    <p className="text-gray-600 text-sm mb-4">AI-generated activities unique to this city</p>
+                    <div className="w-24 h-1 bg-gradient-to-r from-red-500 to-orange-500 mx-auto rounded-full"></div>
+                    
+                    {/* AI Enhancement Button */}
+                    <Button
+                      onClick={async () => {
+                        try {
+                          setIsLoading(true);
+                          toast({
+                            title: "🤖 Generating AI Activities",
+                            description: `Creating unique activities for ${selectedCity}...`,
+                          });
+                          
+                          const response = await fetch(`/api/city-activities/${selectedCity}/enhance`, {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                          });
+                          
+                          if (response.ok) {
+                            toast({
+                              title: "✨ AI Activities Generated!",
+                              description: `Added unique ${selectedCity} activities`,
+                            });
+                            fetchCityActivities(); // Refresh the list
+                          } else {
+                            throw new Error('Failed to generate activities');
+                          }
+                        } catch (error) {
+                          toast({
+                            title: "Error",
+                            description: "Failed to generate AI activities",
+                            variant: "destructive",
+                          });
+                        } finally {
+                          setIsLoading(false);
+                        }
+                      }}
+                      className="mt-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+                      data-testid="button-enhance-ai-activities"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? '🤖 Generating...' : '🤖 Get More AI Activities'}
+                    </Button>
+                  </div>
+                  
+                  {cityActivities.length > 0 && (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                       {cityActivities.map((activity) => {
                         const isSelected = userActivities.some(ua => ua.activityId === activity.id);
@@ -1109,8 +1154,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         );
                       })}
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
 
                 {/* Universal Activities - Always show these for every city */}
                 <div className="mt-8">
