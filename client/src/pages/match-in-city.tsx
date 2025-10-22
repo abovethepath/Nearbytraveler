@@ -515,20 +515,14 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   };
 
   const deleteActivity = async (activityId: number) => {
-    if (!user?.id) {
-      toast({
-        title: "Please Sign In",
-        description: "You must be signed in to delete activities",
-        variant: "destructive",
-      });
-      return;
-    }
-
     if (!confirm('Are you sure you want to delete this activity? This will remove it for everyone.')) {
       return;
     }
 
-    const userId = user.id;
+    const storedUser = localStorage.getItem('travelConnectUser');
+    const authUser = localStorage.getItem('user');
+    const actualUser = user || (storedUser ? JSON.parse(storedUser) : null) || (authUser ? JSON.parse(authUser) : null);
+    const userId = actualUser?.id;
     console.log('🔧 DELETE: using userId =', userId);
     console.log('🗑️ DELETING ACTIVITY:', activityId);
 
@@ -573,18 +567,9 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     
     // Get user from localStorage if not in context (same as toggle function)
     const storedUser = localStorage.getItem('travelConnectUser');
-    const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
-    
-    if (!actualUser?.id) {
-      toast({
-        title: "Please Sign In",
-        description: "You must be signed in to add activities",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    const userId = actualUser.id;
+    const authUser = localStorage.getItem('user');
+    const actualUser = user || (storedUser ? JSON.parse(storedUser) : null) || (authUser ? JSON.parse(authUser) : null);
+    const userId = actualUser?.id;
     console.log('➕ ADDING ACTIVITY:', newActivity, 'userId:', userId);
 
     try {
@@ -654,18 +639,9 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const handleToggleActivity = async (activityId: number, activityName: string) => {
     // Get user from localStorage if not in context
     const storedUser = localStorage.getItem('travelConnectUser');
-    const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
-    
-    if (!actualUser?.id) {
-      toast({
-        title: "Please Sign In",
-        description: "You must be signed in to select activities",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    const userId = actualUser.id;
+    const authUser = localStorage.getItem('user');
+    const actualUser = user || (storedUser ? JSON.parse(storedUser) : null) || (authUser ? JSON.parse(authUser) : null);
+    const userId = actualUser?.id;
     const isCurrentlySelected = userActivities.some(ua => ua.activityId === activityId);
     
     console.log('🔄 TOGGLE ACTIVITY CLICKED!!!:', activityId, activityName, 'currently selected:', isCurrentlySelected);
