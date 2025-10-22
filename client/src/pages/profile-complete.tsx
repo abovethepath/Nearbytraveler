@@ -3664,9 +3664,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold text-black break-all">@{user.username}</h1>
                         
                         {/* ALWAYS show hometown - NEVER remove */}
-                        <div className="flex items-center gap-2 text-lg font-medium text-black">
+                        <div className="flex items-center gap-2 text-lg font-medium text-black flex-wrap">
                           <MapPin className="w-5 h-5 text-blue-600" />
                           <span>Nearby Local • {hometown}</span>
+                          {user.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100 border border-green-300 dark:border-green-600">
+                              New to Town
+                            </span>
+                          )}
                         </div>
                         
                         {/* ADDITIONAL travel status if currently traveling - shows BELOW hometown */}

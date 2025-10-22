@@ -4073,6 +4073,7 @@ Questions? Just reply to this message. Welcome aboard!
         userType,
         travelerTypes,
         militaryStatus,
+        newToTown,
         currentUserId: currentUserIdParam
       } = req.query;
 
@@ -4269,6 +4270,17 @@ Questions? Just reply to this message. Welcome aboard!
             )
           ));
         }
+      }
+
+      // New to Town filter - only show users with active newToTownUntil date
+      if (newToTown === 'true') {
+        whereConditions.push(
+          and(
+            sql`${users.newToTownUntil} IS NOT NULL`,
+            sql`${users.newToTownUntil} > NOW()`
+          )
+        );
+        if (process.env.NODE_ENV === 'development') console.log('🆕 NEW TO TOWN FILTER: Searching for users new to town');
       }
 
       // Top Choices filter (searches in interests field)  

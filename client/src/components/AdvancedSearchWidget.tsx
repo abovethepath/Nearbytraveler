@@ -44,7 +44,8 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
     location: "",
     userType: [] as string[],
     travelerTypes: [] as string[],
-    militaryStatus: [] as string[]
+    militaryStatus: [] as string[],
+    newToTown: false
   });
 
   // Location filter state for SmartLocationInput
@@ -64,7 +65,8 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
     interests: false,
     activities: false,
     events: false,
-    militaryStatus: false
+    militaryStatus: false,
+    newToTown: false
   });
 
   // State for search results
@@ -122,6 +124,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
       if (advancedFilters.userType.length > 0) params.append('userType', advancedFilters.userType.join(','));
       if (advancedFilters.travelerTypes.length > 0) params.append('travelerTypes', advancedFilters.travelerTypes.join(','));
       if (advancedFilters.militaryStatus.length > 0) params.append('militaryStatus', advancedFilters.militaryStatus.join(','));
+      if (advancedFilters.newToTown) params.append('newToTown', 'true');
       if (currentUser?.id) params.append('currentUserId', currentUser.id.toString());
 
       console.log('🔍 Search params:', params.toString());
@@ -173,7 +176,8 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
       location: "",
       userType: [],
       travelerTypes: [],
-      militaryStatus: []
+      militaryStatus: [],
+      newToTown: false
     });
     setLocationFilter({
       country: "",
@@ -577,6 +581,27 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                 ))}
               </CollapsibleContent>
             </Collapsible>
+
+            {/* New to Town Filter */}
+            <div className="flex items-center space-x-2 p-3 border rounded-lg bg-green-50 dark:bg-green-900/20">
+              <Checkbox
+                id="newToTown"
+                checked={advancedFilters.newToTown}
+                onCheckedChange={(checked) => {
+                  setAdvancedFilters(prev => ({
+                    ...prev,
+                    newToTown: checked as boolean
+                  }));
+                }}
+                data-testid="checkbox-new-to-town"
+              />
+              <Label htmlFor="newToTown" className="text-sm font-medium cursor-pointer flex items-center gap-2">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100 border border-green-300 dark:border-green-600">
+                  New to Town
+                </span>
+                <span className="text-gray-600 dark:text-gray-400">Show only people new to town</span>
+              </Label>
+            </div>
           </div>
 
           {/* Age Range */}
