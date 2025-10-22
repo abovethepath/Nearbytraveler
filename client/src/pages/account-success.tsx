@@ -96,9 +96,12 @@ export default function AccountSuccess() {
     window.location.href = '/';
   };
 
+  // Check if profile is ready (user data is loaded and bootstrap has started)
+  const isProfileReady = isAuthenticated && user && bootstrapTriggered;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
-      <div className="max-w-md mx-auto">
+      <div className="max-w-lg mx-auto">
         <Card className="shadow-2xl border-2 border-green-200 dark:border-green-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md">
           <CardHeader className="text-center bg-green-50 dark:bg-green-900/20 rounded-t-lg pb-8">
             <div className="flex justify-center mb-4">
@@ -115,19 +118,62 @@ export default function AccountSuccess() {
           </CardHeader>
 
           <CardContent className="p-6 space-y-6">
-            <div className="text-center">
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
-                You're now part of a community that connects travelers and locals worldwide. Complete your profile to start making connections!
-              </p>
+            {/* What you can do */}
+            <div className="space-y-4">
+              <h3 className="font-semibold text-gray-900 dark:text-white text-lg">What You Can Do:</h3>
+              
+              <div className="flex items-start gap-3">
+                <Users className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-1 flex-shrink-0" />
+                <div>
+                  <p className="font-medium text-gray-900 dark:text-white">Connect with Locals & Travelers</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Find people who share your interests and activities</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <MessageCircle className="w-5 h-5 text-orange-600 dark:text-orange-400 mt-1 flex-shrink-0" />
+                <div>
+                  <p className="font-medium text-gray-900 dark:text-white">Join City Chatrooms</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Meet locals and travelers in real-time conversations</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <MapPin className="w-5 h-5 text-purple-600 dark:text-purple-400 mt-1 flex-shrink-0" />
+                <div>
+                  <p className="font-medium text-gray-900 dark:text-white">Discover Events & Meetups</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Find activities and create authentic experiences</p>
+                </div>
+              </div>
             </div>
 
+            {/* Loading status */}
+            {!isProfileReady && (
+              <div className="flex items-center justify-center gap-2 text-gray-600 dark:text-gray-400 py-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span className="text-sm">Getting your profile ready...</span>
+              </div>
+            )}
+
+            {/* Continue button - turns orange when ready */}
             <Button
               onClick={handleContinue}
-              className="w-full bg-gradient-to-r from-orange-500 to-blue-500 hover:from-orange-600 hover:to-blue-600 text-white font-bold py-3 text-lg"
+              disabled={!isProfileReady}
+              className={`w-full font-bold py-3 text-lg transition-colors ${
+                isProfileReady
+                  ? 'bg-orange-600 hover:bg-orange-700 text-white'
+                  : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+              }`}
               data-testid="button-continue-welcome"
             >
-              Complete Your Profile
+              {isProfileReady ? 'Continue to Your Profile →' : 'Preparing Your Profile...'}
             </Button>
+
+            {isProfileReady && (
+              <p className="text-xs text-center text-gray-500 dark:text-gray-400">
+                ✓ Your profile is ready! Click above to complete it.
+              </p>
+            )}
           </CardContent>
         </Card>
       </div>
