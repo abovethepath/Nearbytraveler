@@ -1121,12 +1121,16 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
                     {[
-                      "Family Activities", "Local Food Specialties", "Museums",
-                      "Nightlife & Dancing", "Coffee Culture", "Craft Beer & Breweries",
-                      "City Tours", "Photography", "Hiking & Nature",
-                      "Live Music", "Beach Activities", "Art Galleries",
-                      "LGBTQ+ Friendly", "Brunch Spots", "Historical Tours",
-                      "Festivals & Events", "Shopping", "Local Markets"
+                      "Meet Locals", "Meet Travelers", "Single and Looking", "Open to Dating",
+                      "Family Activities", "Traveling with Children", "Local Food Specialties", "Restaurants & Dining",
+                      "Coffee Culture", "Craft Beer & Breweries", "Wine Tasting", "Cocktail Bars",
+                      "Museums", "Art Galleries", "Historical Tours", "Architecture",
+                      "City Tours & Sightseeing", "Walking Tours", "Bike Tours", "Photography",
+                      "Nightlife & Dancing", "Live Music & Concerts", "Theater & Shows", "Comedy Clubs",
+                      "Beach Activities", "Hiking & Nature", "Parks & Recreation", "Outdoor Adventures",
+                      "Shopping", "Local Markets", "Street Food", "Brunch Spots",
+                      "Festivals & Events", "Cultural Experiences", "LGBTQ+ Friendly", "Networking & Business",
+                      "Sports & Fitness", "Yoga & Wellness", "Volunteer Opportunities", "Language Exchange"
                     ].map((activity) => {
                       // Check if user already has this activity in their interests
                       const isSelected = userActivities.some(ua => ua.activityName === activity && ua.cityName === selectedCity);
