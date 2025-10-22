@@ -1,398 +1,200 @@
 // Generic activity toggle buttons that every city should have
+// NOTE: These are CITY-SPECIFIC activities that DO NOT overlap with the 39 universal frontend activities
+// Universal activities (Meet Locals, Single, Family Activities, etc.) are handled in frontend only
 export const GENERIC_CITY_ACTIVITIES = [
   {
-    name: "MEET LOCALS HERE",
-    description: "Connect with friendly local residents who know the area best",
-    category: "social"
-  },
-  {
-    name: "MEET OTHER TRAVELERS HERE", 
-    description: "Find fellow travelers exploring this destination",
-    category: "social"
-  },
-  {
-    name: "SINGLE",
-    description: "Looking to meet other single people in this city",
-    category: "dating"
-  },
-  {
-    name: "LOOKING FOR LGBTQ+ EVENTS",
-    description: "Interested in LGBTQ+ friendly events and community gatherings", 
-    category: "community"
-  },
-  {
-    name: "BUSINESS NETWORKING",
-    description: "Professional networking opportunities and business meetups",
-    category: "professional"
-  },
-  {
-    name: "FAMILY FRIENDLY ACTIVITIES",
-    description: "Activities suitable for families with children",
-    category: "family"
-  },
-  {
-    name: "SOLO TRAVELER MEETUPS",
-    description: "Events and meetups specifically for solo travelers",
-    category: "social"
-  },
-  {
-    name: "LOOKING FOR WORKOUT BUDDY",
-    description: "Find someone to exercise, run, or hit the gym with",
-    category: "fitness"
-  },
-  {
-    name: "LANGUAGE EXCHANGE",
-    description: "Practice languages with native speakers",
-    category: "education"
-  },
-  {
-    name: "DIGITAL NOMAD COWORKING",
-    description: "Meet other remote workers and digital nomads",
-    category: "professional"
-  },
-  {
-    name: "FOODIE ADVENTURES",
-    description: "Explore local cuisine and restaurant scene together",
+    name: "Local Food Specialties",
+    description: "Try signature dishes and local culinary traditions unique to this city",
     category: "food"
   },
   {
-    name: "PHOTOGRAPHY WALKS",
-    description: "Capture the city's beauty with fellow photographers",
-    category: "creative"
+    name: "Street Food Tours",
+    description: "Explore the best street food vendors and local markets",
+    category: "food"
   },
   {
-    name: "LOCAL MUSIC SCENE",
-    description: "Discover live music venues and local bands",
+    name: "Craft Beer Scene",
+    description: "Visit local breweries and craft beer taprooms",
+    category: "food"
+  },
+  {
+    name: "Coffee Shop Hopping",
+    description: "Discover the best local coffee roasters and cafes",
+    category: "food"
+  },
+  {
+    name: "Rooftop Bars",
+    description: "Enjoy drinks with city skyline views",
+    category: "nightlife"
+  },
+  {
+    name: "Hidden Speakeasies",
+    description: "Find secret bars and speakeasy-style venues",
+    category: "nightlife"
+  },
+  {
+    name: "Local Music Venues",
+    description: "Catch live performances at intimate music clubs",
     category: "entertainment"
   },
   {
-    name: "BUDGET TRAVELER TIPS",
-    description: "Share money-saving tips and affordable activities",
-    category: "budget"
+    name: "Stand-Up Comedy",
+    description: "Laugh at local comedy clubs and open mics",
+    category: "entertainment"
   },
   {
-    name: "LUXURY EXPERIENCES",
-    description: "Enjoy premium activities and upscale venues",
-    category: "luxury"
+    name: "Karaoke Bars",
+    description: "Sing your heart out at popular karaoke spots",
+    category: "entertainment"
   },
   {
-    name: "SOCIAL EVENTS",
-    description: "Join social gatherings and community events",
-    category: "social"
+    name: "Trivia Nights",
+    description: "Test your knowledge at local pub trivia",
+    category: "entertainment"
   },
   {
-    name: "HAPPY HOUR DEALS",
-    description: "Find the best happy hour specials in town",
-    category: "food"
-  },
-  {
-    name: "COFFEE MEETUPS",
-    description: "Meet over coffee at local cafes",
-    category: "social"
-  },
-  {
-    name: "HIKING GROUPS",
-    description: "Join hiking groups and outdoor adventures",
-    category: "fitness"
-  },
-  {
-    name: "BIKING GROUPS",
-    description: "Cycle with local biking enthusiasts",
-    category: "fitness"
-  },
-  {
-    name: "WALKING TOURS",
-    description: "Explore the city on guided walking tours",
-    category: "sightseeing"
-  },
-  {
-    name: "PARKS & GARDENS",
-    description: "Enjoy green spaces and botanical gardens",
-    category: "nature"
-  },
-  {
-    name: "BEACH ACTIVITIES",
-    description: "Beach sports, swimming, and coastal fun",
-    category: "outdoors"
-  },
-  {
-    name: "RUNNING GROUPS",
-    description: "Join running clubs and fitness groups",
-    category: "fitness"
-  },
-  {
-    name: "ROCK CLIMBING",
-    description: "Indoor and outdoor climbing activities",
-    category: "fitness"
-  },
-  {
-    name: "SWIMMING",
-    description: "Swimming pools and water activities",
-    category: "fitness"
-  },
-  {
-    name: "SKATEBOARDING",
-    description: "Skateparks and skating communities",
-    category: "fitness"
-  },
-  {
-    name: "TENNIS",
-    description: "Tennis courts and tennis partners",
-    category: "fitness"
-  },
-  {
-    name: "BASKETBALL",
-    description: "Basketball courts and pickup games",
-    category: "fitness"
-  },
-  {
-    name: "SOCCER/FOOTBALL",
-    description: "Football/soccer fields and teams",
-    category: "fitness"
-  },
-  {
-    name: "FISHING",
-    description: "Fishing spots and angling communities",
-    category: "outdoors"
-  },
-  {
-    name: "OUTDOOR FITNESS",
-    description: "Outdoor workout groups and boot camps",
-    category: "fitness"
-  },
-  {
-    name: "CAMPING",
-    description: "Camping sites and outdoor adventures",
-    category: "outdoors"
-  },
-  {
-    name: "NATURE WALKS",
-    description: "Nature trails and hiking paths",
-    category: "outdoors"
-  },
-  {
-    name: "LOCAL FOOD SCENE",
-    description: "Explore local restaurants and food culture",
-    category: "food"
-  },
-  {
-    name: "FOOD TOURS",
-    description: "Guided food tours and culinary experiences",
-    category: "food"
-  },
-  {
-    name: "COOKING CLASSES",
-    description: "Learn to cook local and international cuisine",
-    category: "food"
-  },
-  {
-    name: "WINE TASTING",
-    description: "Wine tours and tasting events",
-    category: "food"
-  },
-  {
-    name: "BEER GARDENS",
-    description: "Local breweries and beer gardens",
-    category: "food"
-  },
-  {
-    name: "BREAKFAST SPOTS",
-    description: "Best breakfast and brunch locations",
-    category: "food"
-  },
-  {
-    name: "LATE NIGHT EATS",
-    description: "Late night dining and food trucks",
-    category: "food"
-  },
-  {
-    name: "VEGETARIAN/VEGAN FOOD",
-    description: "Plant-based dining options",
-    category: "food"
-  },
-  {
-    name: "FOOD FESTIVALS",
-    description: "Food festivals and culinary events",
-    category: "food"
-  },
-  {
-    name: "COFFEE CULTURE",
-    description: "Specialty coffee shops and cafes",
-    category: "food"
-  },
-  {
-    name: "DESSERT PLACES",
-    description: "Sweet treats and dessert spots",
-    category: "food"
-  },
-  {
-    name: "PICNIC SPOTS",
-    description: "Perfect locations for outdoor dining",
-    category: "outdoors"
-  },
-  {
-    name: "MUSEUMS & GALLERIES",
-    description: "Art galleries and museums",
+    name: "Art Gallery Openings",
+    description: "Attend gallery openings and artist receptions",
     category: "culture"
   },
   {
-    name: "LIVE MUSIC",
-    description: "Live music venues and concerts",
-    category: "entertainment"
-  },
-  {
-    name: "LGBTQ+ FRIENDLY",
-    description: "LGBTQ+ friendly venues and events",
-    category: "community"
-  },
-  {
-    name: "THEATER & SHOWS",
-    description: "Theater performances and shows",
-    category: "entertainment"
-  },
-  {
-    name: "LOCAL FESTIVALS",
-    description: "Community festivals and celebrations",
+    name: "Street Art Tours",
+    description: "Explore urban murals and graffiti art",
     category: "culture"
   },
   {
-    name: "PHOTOGRAPHY WALKS",
-    description: "Photography meetups and photo walks",
-    category: "creative"
-  },
-  {
-    name: "HISTORICAL SITES",
-    description: "Historical landmarks and heritage sites",
-    category: "culture"
-  },
-  {
-    name: "ARCHITECTURE TOURS",
-    description: "Architectural tours and building heritage",
-    category: "culture"
-  },
-  {
-    name: "OPEN MIC NIGHTS",
-    description: "Open mic nights and amateur performances",
-    category: "entertainment"
-  },
-  {
-    name: "NIGHTLIFE",
-    description: "Bars, clubs, and nighttime entertainment",
-    category: "entertainment"
-  },
-  {
-    name: "ROOFTOP BARS",
-    description: "Rooftop venues with city views",
-    category: "entertainment"
-  },
-  {
-    name: "LIVE ENTERTAINMENT",
-    description: "Live shows and entertainment venues",
-    category: "entertainment"
-  },
-  {
-    name: "DANCING",
-    description: "Dance classes and dancing venues",
-    category: "entertainment"
-  },
-  {
-    name: "KARAOKE",
-    description: "Karaoke bars and singing venues",
-    category: "entertainment"
-  },
-  {
-    name: "COMEDY SHOWS",
-    description: "Stand-up comedy and humor events",
-    category: "entertainment"
-  },
-  {
-    name: "PUB CRAWLS",
-    description: "Bar hopping and pub crawl events",
-    category: "entertainment"
-  },
-  {
-    name: "TRIVIA NIGHTS",
-    description: "Quiz nights and trivia competitions",
-    category: "entertainment"
-  },
-  {
-    name: "VINTAGE & THRIFT",
-    description: "Vintage shops and thrift stores",
-    category: "shopping"
-  },
-  {
-    name: "FLEA MARKETS",
-    description: "Flea markets and antique fairs",
-    category: "shopping"
-  },
-  {
-    name: "SPA & WELLNESS",
-    description: "Spas and wellness centers",
-    category: "wellness"
-  },
-  {
-    name: "YOGA CLASSES",
-    description: "Yoga studios and classes",
-    category: "wellness"
-  },
-  {
-    name: "MEDITATION GROUPS",
-    description: "Meditation sessions and mindfulness groups",
-    category: "wellness"
-  },
-  {
-    name: "MASSAGE THERAPY",
-    description: "Massage parlors and therapeutic treatments",
-    category: "wellness"
-  },
-  {
-    name: "FITNESS CENTERS",
-    description: "Gyms and fitness facilities",
-    category: "fitness"
-  },
-  {
-    name: "PILATES CLASSES",
-    description: "Pilates studios and classes",
-    category: "wellness"
-  },
-  {
-    name: "LOCAL TOURS",
-    description: "Guided tours and city exploration",
+    name: "Historic Neighborhoods",
+    description: "Walk through historic districts and landmarks",
     category: "sightseeing"
   },
   {
-    name: "GHOST TOURS",
-    description: "Haunted tours and spooky experiences",
+    name: "Ghost Tours",
+    description: "Discover haunted locations and spooky stories",
     category: "sightseeing"
   },
   {
-    name: "ESCAPE ROOMS",
-    description: "Escape rooms and puzzle games",
-    category: "entertainment"
-  },
-  {
-    name: "LOCAL SPORTS",
-    description: "Local sports teams and games",
-    category: "fitness"
-  },
-  {
-    name: "SCAVENGER HUNTS",
-    description: "Scavenger hunts and treasure hunts",
-    category: "entertainment"
-  },
-  {
-    name: "BOAT TOURS",
-    description: "Boat tours and water activities",
-    category: "sightseeing"
-  },
-  {
-    name: "BIKE RENTALS",
-    description: "Bike rentals and cycling tours",
+    name: "Bike Share Rides",
+    description: "Use city bike sharing to explore neighborhoods",
     category: "transportation"
   },
   {
-    name: "WALKING GROUPS",
-    description: "Walking clubs and group walks",
+    name: "River/Harbor Cruises",
+    description: "See the city from the water on boat tours",
+    category: "sightseeing"
+  },
+  {
+    name: "Sunset Viewpoints",
+    description: "Find the best spots to watch sunset over the city",
+    category: "nature"
+  },
+  {
+    name: "Urban Gardens",
+    description: "Visit community gardens and green spaces",
+    category: "nature"
+  },
+  {
+    name: "Farmers Markets",
+    description: "Shop fresh produce at local farmers markets",
+    category: "shopping"
+  },
+  {
+    name: "Vintage Shopping",
+    description: "Hunt for treasures at vintage and thrift stores",
+    category: "shopping"
+  },
+  {
+    name: "Flea Markets",
+    description: "Browse antiques and collectibles at flea markets",
+    category: "shopping"
+  },
+  {
+    name: "Bookstore Browsing",
+    description: "Explore independent bookstores and reading nooks",
+    category: "shopping"
+  },
+  {
+    name: "Spa Day",
+    description: "Relax at local spas and wellness centers",
+    category: "wellness"
+  },
+  {
+    name: "Public Swimming Pools",
+    description: "Cool off at city pools and aquatic centers",
     category: "fitness"
+  },
+  {
+    name: "Skateparks",
+    description: "Skate at local skateparks and BMX spots",
+    category: "fitness"
+  },
+  {
+    name: "Tennis Courts",
+    description: "Find public tennis courts for pickup games",
+    category: "fitness"
+  },
+  {
+    name: "Basketball Courts",
+    description: "Join pickup basketball games at local courts",
+    category: "fitness"
+  },
+  {
+    name: "Soccer Fields",
+    description: "Play soccer at public fields and leagues",
+    category: "fitness"
+  },
+  {
+    name: "Rock Climbing Gyms",
+    description: "Try indoor climbing and bouldering",
+    category: "fitness"
+  },
+  {
+    name: "Escape Rooms",
+    description: "Solve puzzles in themed escape room challenges",
+    category: "entertainment"
+  },
+  {
+    name: "Board Game Cafes",
+    description: "Play tabletop games while enjoying food and drinks",
+    category: "entertainment"
+  },
+  {
+    name: "Cooking Classes",
+    description: "Learn to cook local cuisine with expert chefs",
+    category: "food"
+  },
+  {
+    name: "Wine Bars",
+    description: "Sample wines at cozy wine bars and bistros",
+    category: "food"
+  },
+  {
+    name: "Late Night Diners",
+    description: "Find 24-hour diners and late-night eats",
+    category: "food"
+  },
+  {
+    name: "Brunch Restaurants",
+    description: "Discover the best weekend brunch spots",
+    category: "food"
+  },
+  {
+    name: "Food Halls",
+    description: "Try multiple vendors at food hall markets",
+    category: "food"
+  },
+  {
+    name: "Vegan/Vegetarian Spots",
+    description: "Find plant-based dining options",
+    category: "food"
+  },
+  {
+    name: "Dessert Shops",
+    description: "Indulge in local bakeries and sweet treats",
+    category: "food"
+  },
+  {
+    name: "Ice Cream Parlors",
+    description: "Cool down with local ice cream and gelato",
+    category: "food"
   }
 ];
