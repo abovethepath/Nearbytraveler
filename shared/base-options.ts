@@ -65,9 +65,8 @@ export const ADDITIONAL_INTERESTS = [
   "Horseback Riding",
   
   // Food & Culinary
-  "Cooking Classes",
   "Food Tours",
-  "Vegetarian & Vegan",
+  "Vegetarian & Vegan Dining",
   "Street Food",
   "Farm-to-Table Dining",
   "Bakeries & Desserts",
@@ -83,7 +82,6 @@ export const ADDITIONAL_INTERESTS = [
   
   // Music & Entertainment
   "Jazz & Blues",
-  "Electronic Music",
   "Classical Music",
   "Indie Music Scene",
   "Karaoke",
@@ -148,11 +146,8 @@ export const ADDITIONAL_INTERESTS = [
   
   // Cultural Activities
   "Cooking & Baking",
-  "Wine Tasting",
-  "Brewery Tours",
   "Distillery Tours",
   "Tea Houses",
-  "Cultural Festivals",
   "Art Galleries",
   "Pottery & Ceramics",
   
@@ -184,8 +179,6 @@ export const ADDITIONAL_INTERESTS = [
   "Music Jam Sessions",
   
   // Food & Drinks
-  "Coffee Tasting",
-  "Brunch Culture",
   "Food Trucks",
   "Rooftop Dining",
   "Izakaya & Tapas",
@@ -197,9 +190,6 @@ export const ADDITIONAL_INTERESTS = [
   "Language Exchange",
   "Pub Quizzes",
   "Debate & Discussion",
-  "Improv Comedy",
-  "Stand-up Comedy",
-  "Poetry Readings",
   "Social Activism",
   
   // Nature & Animals
@@ -223,7 +213,6 @@ export const ADDITIONAL_INTERESTS = [
   "Pub Crawls",
   "Scavenger Hunts",
   "Walking Tours",
-  "Bike Tours",
   "Segway Tours",
   "Hot Air Balloons",
   "Parasailing",
@@ -398,7 +387,6 @@ export const FOOD_DRINK_EVENTS = [
   "Wine Tasting Events",
   "Beer Festivals",
   "Food Festivals",
-  "Cooking Competitions",
   "Restaurant Weeks",
   "Farmers Market Events",
   "Coffee Festivals"
@@ -449,7 +437,6 @@ export const WELLNESS_EVENTS = [
   "Meditation Workshops",
   "Wellness Fairs",
   "Health Expos",
-  "Fitness Challenges",
   "Running Events",
   "Charity Runs"
 ];
@@ -457,9 +444,7 @@ export const WELLNESS_EVENTS = [
 export const TECH_INNOVATION_EVENTS = [
   "Tech Conferences",
   "Startup Pitches",
-  "Hackathons",
   "Innovation Showcases",
-  "Coding Bootcamps",
   "VR/AR Demos",
   "Tech Networking"
 ];
@@ -475,13 +460,10 @@ export const ADVENTURE_EVENTS = [
 ];
 
 export const LEARNING_EVENTS = [
-  "Workshops",
-  "Seminars",
-  "Conferences",
-  "Lectures",
-  "Training Sessions",
+  "Guest Lectures",
   "Educational Tours",
-  "Skill Exchanges"
+  "Skill Exchanges",
+  "Panel Discussions"
 ];
 
 export const SPECIAL_EVENTS = [
