@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Bell, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { AuthContext } from "@/App";
@@ -98,18 +98,8 @@ export function MobileTopNav() {
             <Logo variant="navbar" />
           </div>
 
-          {/* Right: Bell + Avatar */}
+          {/* Right: Avatar */}
           <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="relative w-9 h-9 p-0"
-              onClick={() => go("/notifications")}
-            >
-              <Bell className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-gray-900" />
-            </Button>
-
             <Avatar
               className="w-9 h-9 cursor-pointer border-2 border-gray-200 dark:border-gray-700"
               onClick={() => {
