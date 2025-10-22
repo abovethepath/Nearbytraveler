@@ -1097,6 +1097,14 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         const isSelected = userActivities.some(ua => ua.activityId === activity.id);
                         const userActivity = userActivities.find(ua => ua.activityId === activity.id);
                         
+                        // Get current user ID - check multiple sources
+                        const storedUser = localStorage.getItem('travelConnectUser');
+                        const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
+                        const currentUserId = actualUser?.id;
+                        
+                        // Only show edit/delete for activities created by this user
+                        const isUserCreated = activity.createdByUserId === currentUserId;
+                        
                         return (
                           <div key={activity.id} className="group relative">
                             <button
@@ -1121,35 +1129,37 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                               )}
                             </button>
                             
-                            {/* Edit/Delete on hover - NOW FOR ALL ACTIVITIES */}
-                            <div className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-1">
-                              <button
-                                className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-blue-700"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  console.log('🔧 EDIT CLICKED for activity:', activity.activityName);
-                                  setEditingActivity({ id: userActivity?.id || activity.id, name: activity.activityName, activityId: activity.id });
-                                  setEditingActivityName(activity.activityName);
-                                }}
-                              >
-                                <Edit className="w-2.5 h-2.5" />
-                              </button>
-                              <button
-                                className="w-5 h-5 bg-red-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-700"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  console.log('🔧 DELETE CLICKED for activity:', activity.activityName);
-                                  if (userActivity) {
-                                    handleDeleteActivity(userActivity.id);
-                                  } else {
-                                    // Delete city activity if user hasn't selected it
-                                    handleDeleteCityActivity(activity.id);
-                                  }
-                                }}
-                              >
-                                <X className="w-2.5 h-2.5" />
-                              </button>
-                            </div>
+                            {/* Edit/Delete ONLY for user-created activities */}
+                            {isUserCreated && (
+                              <div className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-1">
+                                <button
+                                  className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-blue-700"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    console.log('🔧 EDIT CLICKED for activity:', activity.activityName);
+                                    setEditingActivity({ id: userActivity?.id || activity.id, name: activity.activityName, activityId: activity.id });
+                                    setEditingActivityName(activity.activityName);
+                                  }}
+                                >
+                                  <Edit className="w-2.5 h-2.5" />
+                                </button>
+                                <button
+                                  className="w-5 h-5 bg-red-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-700"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    console.log('🔧 DELETE CLICKED for activity:', activity.activityName);
+                                    if (userActivity) {
+                                      handleDeleteActivity(userActivity.id);
+                                    } else {
+                                      // Delete city activity if user hasn't selected it
+                                      handleDeleteCityActivity(activity.id);
+                                    }
+                                  }}
+                                >
+                                  <X className="w-2.5 h-2.5" />
+                                </button>
+                              </div>
+                            )}
                           </div>
                         );
                       })}
