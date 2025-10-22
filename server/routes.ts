@@ -3117,6 +3117,17 @@ Questions? Just reply to this message. Welcome to the community!
         processedData.travelEndDate = new Date(processedData.travelEndDate);
       }
 
+      // Calculate newToTownUntil date (9 months from now) if user checked isNewToTown
+      if (processedData.isNewToTown === true) {
+        const nineMonthsFromNow = new Date();
+        nineMonthsFromNow.setMonth(nineMonthsFromNow.getMonth() + 9);
+        processedData.newToTownUntil = nineMonthsFromNow;
+        if (process.env.NODE_ENV === 'development') console.log("🆕 NEW TO TOWN: Set expiration date to", nineMonthsFromNow);
+      } else {
+        processedData.newToTownUntil = null;
+        processedData.isNewToTown = false;
+      }
+
       // Apply location normalization to prevent community splitting
       if (processedData.hometownCity) {
         // Keep original data and just normalize the city name
