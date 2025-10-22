@@ -379,23 +379,9 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   };
 
   const toggleActivity = async (activity: any) => {
-    // Get user from localStorage if not in context
     const storedUser = localStorage.getItem('travelConnectUser');
     const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
-    
     const userId = actualUser?.id;
-    console.log('🔧 TOGGLE: using userId =', userId, 'user object:', actualUser);
-
-    // If not logged in, just allow browsing without saving
-    if (!userId) {
-      console.log('🔓 GUEST MODE: Activity clicked but not saving (no user logged in)');
-      // Show a gentle reminder but don't block them
-      toast({
-        title: "Browse freely!",
-        description: "Sign in to save your activity selections to your profile",
-      });
-      return;
-    }
 
     const isCurrentlyActive = userActivities.some(ua => ua.activityId === activity.id);
     console.log('🎯 TOGGLE ACTIVITY:', activity.activityName, 'isCurrentlyActive:', isCurrentlyActive);
@@ -446,21 +432,14 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   };
 
   const updateActivity = async () => {
-    if (!user?.id) {
-      toast({
-        title: "Please Sign In",
-        description: "You must be signed in to update activities",
-        variant: "destructive",
-      });
-      return;
-    }
-    
     if (!editingActivity) {
       console.log('❌ UPDATE BLOCKED: no editingActivity');
       return;
     }
 
-    const userId = user.id;
+    const storedUser = localStorage.getItem('travelConnectUser');
+    const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
+    const userId = actualUser?.id;
     console.log('🔧 UPDATE: using userId =', userId);
     console.log('✏️ UPDATING ACTIVITY:', editingActivity.id, 'from:', editingActivity.activityName, 'to:', editActivityName);
 
@@ -749,20 +728,9 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
   // Delete user activity function
   const handleDeleteActivity = async (userActivityId: number) => {
-    // Get user from localStorage if not in context  
     const storedUser = localStorage.getItem('travelConnectUser');
     const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
-    
-    if (!actualUser?.id) {
-      toast({
-        title: "Please Sign In",
-        description: "You must be signed in to manage activities",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    const userId = actualUser.id;
+    const userId = actualUser?.id;
     
     try {
       const response = await fetch(`/api/user-city-interests/${userActivityId}`, {
