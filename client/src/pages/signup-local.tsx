@@ -205,11 +205,11 @@ export default function SignupLocal() {
         const data = await response.json();
         
         if (response.ok) {
-          console.log('✅ Local registration successful:', data.username);
+          console.log('✅ Local registration successful:', data.user?.username);
           
           // Set user in auth context and storage immediately
-          authStorage.setUser(data);
-          setUser(data);
+          authStorage.setUser(data.user);
+          setUser(data.user);
           
           // Show success message
           toast({
