@@ -176,8 +176,8 @@ export default function SignupLocal() {
         errors.push("Hometown city and country are required.");
       }
 
-      if ((registrationData.interests?.length ?? 0) < 3) {
-        errors.push("Please choose at least 3 interests.");
+      if ((registrationData.interests?.length ?? 0) < 7) {
+        errors.push("Please choose at least 7 interests.");
       }
 
       if (errors.length) {
@@ -366,13 +366,13 @@ export default function SignupLocal() {
               {/* Top Choices */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-bold text-gray-900">Top Choices to Meet Travelers and Locals * (Choose at least 3)</h3>
+                  <h3 className="text-xl font-bold text-gray-900">Top Choices to Meet Travelers and Locals * (Choose at least 7)</h3>
                   <span className="text-sm text-gray-600">
-                    {formData.interests.length}/3 minimum selected
+                    {formData.interests.length}/7 minimum selected
                   </span>
                 </div>
                 <p className="text-gray-700 text-sm">
-                  What are you interested in? Select at least 3 choices to help us match you with like-minded travelers and locals.
+                  What are you interested in? Select at least 7 choices to help us match you with like-minded travelers and locals.
                 </p>
 
                 <div className="bg-gray-50 p-4 rounded-lg space-y-4">

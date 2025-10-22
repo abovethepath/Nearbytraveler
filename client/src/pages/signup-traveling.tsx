@@ -289,8 +289,8 @@ export default function SignupTraveling() {
       }
 
       const totalInterests = (registrationData.interests?.length ?? 0) + (registrationData.travelInterests?.length ?? 0);
-      if (totalInterests < 3) {
-        errors.push("Please choose at least 3 total interests (hometown + travel).");
+      if (totalInterests < 7) {
+        errors.push("Please choose at least 7 total interests (hometown + travel).");
       }
 
       if (registrationData.isCurrentlyTraveling) {
@@ -527,13 +527,13 @@ export default function SignupTraveling() {
               {/* Top Choices */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-bold text-gray-900">Top Choices to Meet Travelers and Locals * (Choose at least 3)</h3>
+                  <h3 className="text-xl font-bold text-gray-900">Top Choices to Meet Travelers and Locals * (Choose at least 7)</h3>
                   <div className="text-sm text-gray-600 font-medium">
-                    {formData.interests.length}/3 minimum selected
+                    {formData.interests.length}/7 minimum selected
                   </div>
                 </div>
                 <p className="text-gray-700 text-sm">
-                  What are you interested in? Select at least 3 choices to help us match you with like-minded travelers and locals.
+                  What are you interested in? Select at least 7 choices to help us match you with like-minded travelers and locals.
                 </p>
 
                 <div className="bg-gray-50 p-4 rounded-lg">
