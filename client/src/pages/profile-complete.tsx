@@ -4444,7 +4444,27 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
                 ) : null}
 
-
+                {/* TOP INTERESTS SECTION - Shows all Top Choices */}
+                {user?.interests && user.interests.length > 0 && (
+                  <div className="mb-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
+                        <Heart className="w-4 h-4 text-blue-500" />
+                        Top Interests ({user.interests.length})
+                      </h4>
+                    </div>
+                    <div className="flex flex-wrap gap-2 sm:gap-3">
+                      {user.interests.map((interest, index) => (
+                        <div 
+                          key={`top-interest-${index}`} 
+                          className="inline-flex items-center justify-center h-7 sm:h-8 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium whitespace-nowrap leading-none bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0"
+                        >
+                          {interest}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Interests */}
                 <div className="mb-6">
