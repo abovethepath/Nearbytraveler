@@ -18,10 +18,10 @@ if (!process.env.DATABASE_URL) {
 // More conservative connection pool settings to prevent connection issues
 export const pool = new Pool({ 
   connectionString: process.env.DATABASE_URL,
-  max: 5, // Reduce max connections to prevent overwhelming
-  idleTimeoutMillis: 10000, // Shorter idle timeout
-  connectionTimeoutMillis: 5000, // Longer connection timeout
-  allowExitOnIdle: true,
+  max: 10, // Increase max connections
+  idleTimeoutMillis: 30000, // Longer idle timeout (30 seconds)
+  connectionTimeoutMillis: 10000, // Longer connection timeout (10 seconds)
+  allowExitOnIdle: false, // Don't allow pool to exit while idle
 });
 
 // Add connection event handlers
