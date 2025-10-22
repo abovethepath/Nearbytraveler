@@ -8109,6 +8109,24 @@ Questions? Just reply to this message. Welcome aboard!
         otherActivities.includes(activity)
       );
 
+      // Get shared CITY-SPECIFIC activities from user_city_interests table
+      // CRITICAL: This finds users who selected same activities like "U2 Concert in July" in same city
+      const sharedCityActivitiesQuery = await db.execute(sql`
+        SELECT DISTINCT 
+          uci1.activity_name,
+          uci1.city_name
+        FROM user_city_interests uci1
+        JOIN user_city_interests uci2 ON uci1.activity_id = uci2.activity_id
+        WHERE uci1.user_id = ${currentUserId} 
+        AND uci2.user_id = ${otherUserId}
+        AND uci1.is_active = true
+        AND uci2.is_active = true
+      `);
+
+      const sharedCityActivities = (sharedCityActivitiesQuery.rows || []).map((row: any) => 
+        `${row.city_name}: ${row.activity_name}`
+      );
+
       // Get shared events from user_event_interests table
       const sharedEventsQuery = await db.execute(sql`
         SELECT DISTINCT e.title, e.city
@@ -8127,6 +8145,7 @@ Questions? Just reply to this message. Welcome aboard!
       const allSharedMatches = [
         ...sharedInterests,
         ...sharedActivities,
+        ...sharedCityActivities,  // NOW INCLUDING CITY-SPECIFIC ACTIVITIES!
         ...sharedEvents
       ];
 
@@ -8136,6 +8155,7 @@ Questions? Just reply to this message. Welcome aboard!
         console.log(`🤝 SHARED MATCHES BREAKDOWN:
           - Shared Interests: ${sharedInterests.length} (${sharedInterests.join(', ')})
           - Shared Activities: ${sharedActivities.length} (${sharedActivities.join(', ')})
+          - Shared City Activities: ${sharedCityActivities.length} (${sharedCityActivities.join(', ')})
           - Shared Events: ${sharedEvents.length} (${sharedEvents.join(', ')})
           - Total: ${totalSharedCount}`);
       }
@@ -8144,6 +8164,7 @@ Questions? Just reply to this message. Welcome aboard!
         totalSharedCount,
         sharedInterests,
         sharedActivities,
+        sharedCityActivities,  // Added to response
         sharedEvents,
         allSharedMatches: allSharedMatches.slice(0, 3) // Limit to top 3 for display
       });
