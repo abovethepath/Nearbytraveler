@@ -4287,6 +4287,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       onClick={() => {
                         // Open interests editing mode
                         setActiveEditSection('interests');
+                        setIsEditingPublicInterests(true);
                         
                         // Initialize form data with user interests
                         setEditFormData({
@@ -4297,6 +4298,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       }}
                       className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm"
                       size="sm"
+                      data-testid="button-edit-interests"
                     >
                       <Edit2 className="w-4 h-4 mr-1" />
                       Edit
