@@ -18,31 +18,45 @@ export const TOP_CHOICES = [
   "Restaurants & Food Scene",
   "Coffee Shops & Cafes",
   "Brunch Spots",
+  "Cheap Eats",
+  "Fine Dining",
   "Ethnic Cuisine",
   "Food Tours / Trucks",
+  "Barbecue & Grilling",
+  "Farm-to-Table",
+  "Late Night Eats",
   "Cooking Classes",
   
   // Nightlife & Bars
   "Happy Hours & Bars",
   "Nightlife & Dancing",
   "Craft Beer & Breweries",
+  "Cocktail Bars",
   "Wine & Vineyards",
+  "Pub Crawls & Bar Tours",
+  "Rooftop Bars",
   
   // Music & Entertainment
   "Live Music & Concerts",
+  "Techno EDM",
   "Comedy Shows",
   "Theater & Performing Arts",
   "Karaoke Nights",
+  "Club Nights",
   
   // Outdoor & Adventure
   "Hiking & Outdoors",
   "Beach & Water Activities",
+  "Surfing",
   "Adventure Tours",
   "Wildlife & Nature",
   "Biking / Cycling",
+  "Boat & Water Tours",
+  "Off the Path Adventures",
   
   // Fitness & Sports
   "Fitness & Sports",
+  "Sports & Recreation",
   "Golf",
   "Pickleball",
   "Bowling",
@@ -52,7 +66,10 @@ export const TOP_CHOICES = [
   "City Tours & Sightseeing",
   "Local Hidden Gems",
   "Historical Sites",
+  "Architecture",
   "Street Art",
+  "Cultural Sites",
+  "Cultural Experiences",
   
   // Events & Festivals
   "Local Events & Festivals",
@@ -61,6 +78,8 @@ export const TOP_CHOICES = [
   // Creative & Hobbies
   "Photography & Art",
   "Gaming & Esports",
+  "Ghost Tours",
+  "Escape Rooms",
   "Dance Classes and Events",
   
   // Family
@@ -68,6 +87,7 @@ export const TOP_CHOICES = [
   
   // Wellness & Lifestyle
   "Spa & Wellness",
+  "Meditation & Mindfulness",
   "Cannabis User",
   
   // Identity
@@ -76,7 +96,9 @@ export const TOP_CHOICES = [
   
   // Other
   "Casinos",
-  "Poker"
+  "Poker",
+  "Flea Markets",
+  "Astronomy"
 ];
 
 // DEPRECATED - kept for backward compatibility
