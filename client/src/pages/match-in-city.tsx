@@ -29,6 +29,9 @@ interface MatchInCityProps {
 
 export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [location, setLocation] = useLocation();
+  const { user } = useAuth();
+  const { toast } = useToast();
+  
   const [selectedCity, setSelectedCity] = useState<string>('');
   
   console.log('🔧 MATCH IN CITY RENDER - selectedCity:', selectedCity);
@@ -42,8 +45,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [cityActivities, setCityActivities] = useState<any[]>([]);
   const [matchingUsers, setMatchingUsers] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
-  const { user } = useAuth();
 
   const [allCities, setAllCities] = useState<any[]>([]);
   const [filteredCities, setFilteredCities] = useState<any[]>([]);
@@ -1163,12 +1164,9 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                             
                             console.log('🔧 AUTH CHECK:', { user, storedUser: !!storedUser, authStorageUser: !!authStorageUser, actualUser: !!actualUser });
                             
+                            // This should never happen due to page-level auth protection
                             if (!actualUser?.id) {
-                              toast({
-                                title: "Authentication Required",
-                                description: "Please refresh the page and try again",
-                                variant: "destructive",
-                              });
+                              console.error('❌ CRITICAL: No user ID found despite page-level auth');
                               return;
                             }
                             
