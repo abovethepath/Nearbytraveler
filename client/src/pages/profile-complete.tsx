@@ -45,7 +45,7 @@ import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/locationData";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { calculateAge, formatDateOfBirthForInput, validateDateInput, getDateInputConstraints } from "@/lib/ageUtils";
 import { isTopChoiceInterest } from "@/lib/topChoicesUtils";
-import { BUSINESS_TYPES, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS } from "@shared/base-options";
+import { BUSINESS_TYPES, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, ALL_ACTIVITIES, ALL_EVENTS } from "@shared/base-options";
 
 // Helper function to check if two cities are in the same metro area
 function areInSameMetroArea(city1: string, city2: string): boolean {
@@ -4286,15 +4286,43 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <Button
                       onClick={() => {
                         console.log('🔥 OPENING TABBED EDITOR');
+                        console.log('📊 User Data:', {
+                          interests: user?.interests,
+                          activities: user?.activities,
+                          events: user?.events,
+                          customInterests: user?.customInterests,
+                          customActivities: user?.customActivities,
+                          customEvents: user?.customEvents
+                        });
+                        
+                        // Combine predefined + custom for each category
+                        const userInterests = user?.interests || [];
+                        const customInterests = user?.customInterests ? user.customInterests.split(',').map((s: string) => s.trim()).filter(Boolean) : [];
+                        const allInterests = [...userInterests, ...customInterests];
+                        
+                        const userActivities = user?.activities || [];
+                        const customActivities = user?.customActivities ? user.customActivities.split(',').map((s: string) => s.trim()).filter(Boolean) : [];
+                        const allActivities = [...userActivities, ...customActivities];
+                        
+                        const userEvents = user?.events || [];
+                        const customEvents = user?.customEvents ? user.customEvents.split(',').map((s: string) => s.trim()).filter(Boolean) : [];
+                        const allEvents = [...userEvents, ...customEvents];
+                        
+                        console.log('✅ INITIALIZING WITH:', {
+                          interests: allInterests,
+                          activities: allActivities,
+                          events: allEvents
+                        });
+                        
                         // Start with Interests tab active
                         setActiveEditSection('interests');
                         setIsEditingPublicInterests(true);
                         
-                        // Initialize form data with user interests, activities, events
+                        // Initialize form data with COMBINED user data (predefined + custom)
                         setEditFormData({
-                          interests: user?.interests || [],
-                          activities: user?.activities || [],
-                          events: user?.events || []
+                          interests: allInterests,
+                          activities: allActivities,
+                          events: allEvents
                         });
                       }}
                       className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm"
@@ -4360,8 +4388,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               console.log('🔧 SAVING ALL DATA:', editFormData);
                               
                               const allInterests = [...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS];
-                              const allActivities = [...UNIVERSAL_ACTIVITIES];
-                              const allEvents = [...UNIVERSAL_EVENTS];
+                              const allActivities = ALL_ACTIVITIES;
+                              const allEvents = ALL_EVENTS;
                               
                               const predefinedInterests = editFormData.interests.filter(int => allInterests.includes(int));
                               const customInterests = editFormData.interests.filter(int => !allInterests.includes(int));
@@ -4406,11 +4434,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           onClick={() => {
                             setIsEditingPublicInterests(false);
                             setActiveEditSection(null);
-                            setEditFormData({
-                              interests: user?.interests || [],
-                              activities: user?.activities || [],
-                              events: user?.events || []
-                            });
                           }}
                           className="border-orange-500 text-orange-600 hover:bg-orange-50"
                           size="sm"
@@ -4425,6 +4448,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       {/* INTERESTS TAB */}
                       {activeEditSection === 'interests' && (
                         <div>
+                          <h4 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Interests</h4>
                           <div className="flex flex-wrap gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border">
                             {[...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS].map((interest) => {
                               const isSelected = editFormData.interests.includes(interest);
@@ -4433,6 +4457,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                   key={interest}
                                   type="button"
                                   onClick={() => {
+                                    console.log('🔵 Interest clicked:', interest, 'Currently selected:', isSelected);
                                     if (isSelected) {
                                       setEditFormData(prev => ({ ...prev, interests: prev.interests.filter(i => i !== interest) }));
                                     } else {
@@ -4487,14 +4512,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       {/* ACTIVITIES TAB */}
                       {activeEditSection === 'activities' && (
                         <div>
+                          <h4 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Activities</h4>
                           <div className="flex flex-wrap gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border">
-                            {UNIVERSAL_ACTIVITIES.map((activity) => {
+                            {ALL_ACTIVITIES.map((activity) => {
                               const isSelected = editFormData.activities.includes(activity);
                               return (
                                 <button
                                   key={activity}
                                   type="button"
                                   onClick={() => {
+                                    console.log('🟢 Activity clicked:', activity, 'Currently selected:', isSelected);
                                     if (isSelected) {
                                       setEditFormData(prev => ({ ...prev, activities: prev.activities.filter(a => a !== activity) }));
                                     } else {
@@ -4512,20 +4539,53 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               );
                             })}
                           </div>
+                          <div className="flex space-x-2 mt-3">
+                            <Input
+                              placeholder="Add custom activity..."
+                              value={customActivityInput}
+                              onChange={(e) => setCustomActivityInput(e.target.value)}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  const trimmed = customActivityInput.trim();
+                                  if (trimmed && !editFormData.activities.includes(trimmed)) {
+                                    setEditFormData(prev => ({ ...prev, activities: [...prev.activities, trimmed] }));
+                                    setCustomActivityInput('');
+                                  }
+                                }
+                              }}
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const trimmed = customActivityInput.trim();
+                                if (trimmed && !editFormData.activities.includes(trimmed)) {
+                                  setEditFormData(prev => ({ ...prev, activities: [...prev.activities, trimmed] }));
+                                  setCustomActivityInput('');
+                                }
+                              }}
+                            >
+                              <Plus className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </div>
                       )}
 
                       {/* EVENTS TAB */}
                       {activeEditSection === 'events' && (
                         <div>
+                          <h4 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Events</h4>
                           <div className="flex flex-wrap gap-2 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border">
-                            {UNIVERSAL_EVENTS.map((event) => {
+                            {ALL_EVENTS.map((event) => {
                               const isSelected = editFormData.events.includes(event);
                               return (
                                 <button
                                   key={event}
                                   type="button"
                                   onClick={() => {
+                                    console.log('🟣 Event clicked:', event, 'Currently selected:', isSelected);
                                     if (isSelected) {
                                       setEditFormData(prev => ({ ...prev, events: prev.events.filter(e => e !== event) }));
                                     } else {
@@ -4542,6 +4602,37 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 </button>
                               );
                             })}
+                          </div>
+                          <div className="flex space-x-2 mt-3">
+                            <Input
+                              placeholder="Add custom event..."
+                              value={customEventInput}
+                              onChange={(e) => setCustomEventInput(e.target.value)}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  const trimmed = customEventInput.trim();
+                                  if (trimmed && !editFormData.events.includes(trimmed)) {
+                                    setEditFormData(prev => ({ ...prev, events: [...prev.events, trimmed] }));
+                                    setCustomEventInput('');
+                                  }
+                                }
+                              }}
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const trimmed = customEventInput.trim();
+                                if (trimmed && !editFormData.events.includes(trimmed)) {
+                                  setEditFormData(prev => ({ ...prev, events: [...prev.events, trimmed] }));
+                                  setCustomEventInput('');
+                                }
+                              }}
+                            >
+                              <Plus className="w-4 h-4" />
+                            </Button>
                           </div>
                         </div>
                       )}
