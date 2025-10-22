@@ -1120,14 +1120,12 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
                     {[
-                      "Single and Looking", "Meet Locals/Travelers", "Family Activities",
-                      "Nightlife & Dancing", "Local Food Specialties", "Museums",
-                      "Coffee Culture", "Craft Beer & Breweries", "City Tours & Sightseeing",
-                      "Photography", "Hiking & Nature", "Live Music Venues",
-                      "Local Hidden Gems", "Beach Activities", "Art Galleries",
-                      "Brunch Spots", "Historical Tours", "Festivals & Events",
-                      "Shopping", "Street Art", "Local Markets", "Architecture",
-                      "Public Transportation", "Parks & Recreation"
+                      "Family Activities", "Local Food Specialties", "Museums",
+                      "Nightlife & Dancing", "Coffee Culture", "Craft Beer & Breweries",
+                      "City Tours", "Photography", "Hiking & Nature",
+                      "Live Music", "Beach Activities", "Art Galleries",
+                      "LGBTQ+ Friendly", "Brunch Spots", "Historical Tours",
+                      "Festivals & Events", "Shopping", "Local Markets"
                     ].map((activity) => {
                       // Check if user already has this activity in their interests
                       const isSelected = userActivities.some(ua => ua.activityName === activity && ua.cityName === selectedCity);
@@ -1143,20 +1141,39 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           onClick={async () => {
                             console.log('🎯 Universal activity clicked:', activity);
                             
-                            // Get authenticated user
+                            // Get authenticated user - check multiple sources
                             const storedUser = localStorage.getItem('travelConnectUser');
-                            const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
+                            const authStorageUser = localStorage.getItem('user');
+                            
+                            let actualUser = user;
+                            if (!actualUser && storedUser) {
+                              try {
+                                actualUser = JSON.parse(storedUser);
+                              } catch (e) {
+                                console.error('Failed to parse stored user:', e);
+                              }
+                            }
+                            if (!actualUser && authStorageUser) {
+                              try {
+                                actualUser = JSON.parse(authStorageUser);
+                              } catch (e) {
+                                console.error('Failed to parse auth storage user:', e);
+                              }
+                            }
+                            
+                            console.log('🔧 AUTH CHECK:', { user, storedUser: !!storedUser, authStorageUser: !!authStorageUser, actualUser: !!actualUser });
                             
                             if (!actualUser?.id) {
                               toast({
-                                title: "Please Sign In",
-                                description: "You must be signed in to select activities",
+                                title: "Authentication Required",
+                                description: "Please refresh the page and try again",
                                 variant: "destructive",
                               });
                               return;
                             }
                             
                             const userId = actualUser.id;
+                            console.log('🔧 Using userId:', userId);
                             
                             // Create this as a city activity if it doesn't exist, then toggle
                             try {
