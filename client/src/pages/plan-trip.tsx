@@ -909,7 +909,7 @@ export default function PlanTrip() {
                 <div className="text-center mb-4 sm:mb-6 overflow-hidden break-words">
                   <div className="text-2xl sm:text-3xl md:text-4xl mb-2 sm:mb-3">💫</div>
                   <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2 break-words">What Are You Into?</h2>
-                  <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-1 sm:mb-2 break-words">Pick at least 10 things to find your perfect matches!</p>
+                  <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-1 sm:mb-2 break-words">Pick at least 7 things to find your perfect matches!</p>
                   <div className="text-xs sm:text-sm text-purple-600 dark:text-purple-400 break-words">💡 These save as your defaults for faster setup next time</div>
                 </div>
                 

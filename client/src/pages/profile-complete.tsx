@@ -7446,7 +7446,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <strong>Connection Preferences for This Trip</strong> - Choose interests, activities, and events to find the right travel matches
                 </div>
                 <div className="text-sm text-orange-600 bg-orange-50 border border-orange-400 rounded-md p-3 dark:bg-orange-900/20 dark:border-orange-500 dark:text-orange-300">
-                  <strong>Minimum: To better match others on this site, choose at least 7 from the following next 4 lists (top choices, interests, activities, events)</strong>
+                  <strong>Minimum: To better match others on this site, choose at least 7 from the following lists (top choices, activities, events)</strong>
                 </div>
               </div>
 
