@@ -4408,6 +4408,36 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <Plus className="w-4 h-4" />
                         </Button>
                       </div>
+
+                      {/* Display Custom Interests with Delete Option */}
+                      {(() => {
+                        const allPredefinedInterests = [...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS];
+                        const customInterests = editFormData.interests.filter(interest => !allPredefinedInterests.includes(interest));
+                        return customInterests.length > 0 && (
+                          <div className="mt-2">
+                            <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Your Custom Interests (click X to remove):</p>
+                            <div className="flex flex-wrap gap-2">
+                              {customInterests.map((interest, index) => (
+                                <span
+                                  key={`custom-interest-${index}`}
+                                  className="inline-flex items-center justify-center h-8 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-gradient-to-r from-blue-400 to-orange-400 text-white shadow-md gap-1.5"
+                                >
+                                  {interest}
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setEditFormData(prev => ({ ...prev, interests: prev.interests.filter(i => i !== interest) }));
+                                    }}
+                                    className="ml-1 text-white hover:text-gray-200 font-bold"
+                                  >
+                                    ×
+                                  </button>
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })()}
                     </div>
 
                     {/* ACTIVITIES SECTION */}
@@ -4469,6 +4499,35 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <Plus className="w-4 h-4" />
                         </Button>
                       </div>
+
+                      {/* Display Custom Activities with Delete Option */}
+                      {(() => {
+                        const customActivities = editFormData.activities.filter(activity => !ALL_ACTIVITIES.includes(activity));
+                        return customActivities.length > 0 && (
+                          <div className="mt-2">
+                            <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Your Custom Activities (click X to remove):</p>
+                            <div className="flex flex-wrap gap-2">
+                              {customActivities.map((activity, index) => (
+                                <span
+                                  key={`custom-activity-${index}`}
+                                  className="inline-flex items-center justify-center h-8 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-md gap-1.5"
+                                >
+                                  {activity}
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setEditFormData(prev => ({ ...prev, activities: prev.activities.filter(a => a !== activity) }));
+                                    }}
+                                    className="ml-1 text-white hover:text-gray-200 font-bold"
+                                  >
+                                    ×
+                                  </button>
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })()}
                     </div>
 
                     {/* EVENTS SECTION */}
@@ -4530,6 +4589,35 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <Plus className="w-4 h-4" />
                         </Button>
                       </div>
+
+                      {/* Display Custom Events with Delete Option */}
+                      {(() => {
+                        const customEvents = editFormData.events.filter(event => !ALL_EVENTS.includes(event));
+                        return customEvents.length > 0 && (
+                          <div className="mt-2">
+                            <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Your Custom Events (click X to remove):</p>
+                            <div className="flex flex-wrap gap-2">
+                              {customEvents.map((event, index) => (
+                                <span
+                                  key={`custom-event-${index}`}
+                                  className="inline-flex items-center justify-center h-8 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-md gap-1.5"
+                                >
+                                  {event}
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setEditFormData(prev => ({ ...prev, events: prev.events.filter(e => e !== event) }));
+                                    }}
+                                    className="ml-1 text-white hover:text-gray-200 font-bold"
+                                  >
+                                    ×
+                                  </button>
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })()}
                     </div>
 
                     {/* SAVE/CANCEL BUTTONS */}
@@ -4631,7 +4719,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             {otherInterests.map((interest, index) => (
                               <div 
                                 key={`other-interest-${index}`} 
-                                className="h-8 px-4 rounded-full text-sm font-medium bg-white dark:bg-gray-700 text-black dark:text-white border border-black dark:border-gray-500"
+                                className="h-8 px-4 rounded-full text-sm font-medium bg-gradient-to-r from-blue-400 to-orange-400 text-white shadow-md"
                               >
                                 {interest}
                               </div>
@@ -4659,7 +4747,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             {allActivities.map((activity, index) => (
                               <div 
                                 key={`activity-${index}`} 
-                                className="h-8 px-4 rounded-full text-sm font-medium bg-white dark:bg-gray-700 text-black dark:text-white border border-black dark:border-gray-500"
+                                className="h-8 px-4 rounded-full text-sm font-medium bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-md"
                               >
                                 {activity}
                               </div>
@@ -4687,7 +4775,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             {allEvents.map((event, index) => (
                               <div 
                                 key={`event-${index}`} 
-                                className="h-8 px-4 rounded-full text-sm font-medium bg-white dark:bg-gray-700 text-black dark:text-white border border-black dark:border-gray-500"
+                                className="h-8 px-4 rounded-full text-sm font-medium bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-md"
                               >
                                 {event}
                               </div>
