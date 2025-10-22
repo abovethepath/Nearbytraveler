@@ -195,6 +195,21 @@ export default function SignupAccount() {
     }
   };
 
+  // Check if all fields are properly filled and valid
+  const isFormValid = 
+    formData.name.trim() !== "" &&
+    formData.username.trim() !== "" &&
+    formData.username.length >= 6 &&
+    formData.email.trim() !== "" &&
+    formData.confirmEmail.trim() !== "" &&
+    formData.email === formData.confirmEmail &&
+    formData.phoneNumber.trim() !== "" &&
+    formData.password.trim() !== "" &&
+    formData.password.length >= 8 &&
+    formData.confirmPassword.trim() !== "" &&
+    formData.password === formData.confirmPassword &&
+    usernameAvailable === true;
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
       <div className="max-w-md mx-auto">
@@ -368,7 +383,12 @@ export default function SignupAccount() {
               <Button
                 type="submit"
                 disabled={isLoading || usernameAvailable === false}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-base font-medium mt-6"
+                className={`w-full text-white py-3 text-base font-medium mt-6 transition-colors ${
+                  isFormValid 
+                    ? 'bg-orange-600 hover:bg-orange-700' 
+                    : 'bg-blue-600 hover:bg-blue-700'
+                }`}
+                data-testid="button-continue-profile"
               >
                 {isLoading ? "Creating..." : "Continue to Profile →"}
               </Button>
