@@ -383,17 +383,19 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     const storedUser = localStorage.getItem('travelConnectUser');
     const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
     
-    if (!actualUser?.id) {
+    const userId = actualUser?.id;
+    console.log('🔧 TOGGLE: using userId =', userId, 'user object:', actualUser);
+
+    // If not logged in, just allow browsing without saving
+    if (!userId) {
+      console.log('🔓 GUEST MODE: Activity clicked but not saving (no user logged in)');
+      // Show a gentle reminder but don't block them
       toast({
-        title: "Please Sign In",
-        description: "You must be signed in to select activities",
-        variant: "destructive",
+        title: "Browse freely!",
+        description: "Sign in to save your activity selections to your profile",
       });
       return;
     }
-    
-    const userId = actualUser.id;
-    console.log('🔧 TOGGLE: using userId =', userId, 'user object:', actualUser);
 
     const isCurrentlyActive = userActivities.some(ua => ua.activityId === activity.id);
     console.log('🎯 TOGGLE ACTIVITY:', activity.activityName, 'isCurrentlyActive:', isCurrentlyActive);
