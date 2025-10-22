@@ -67,7 +67,6 @@ export const TOP_CHOICES = [
   "Local Hidden Gems",
   "Historical Sites",
   "Architecture",
-  "Art Galleries",
   "Street Art",
   "Cultural Sites",
   "Cultural Experiences",
@@ -75,7 +74,6 @@ export const TOP_CHOICES = [
   // Events & Festivals
   "Local Events & Festivals",
   "Street Festivals",
-  "Community Events",
   
   // Creative & Hobbies
   "Photography & Art",
@@ -86,7 +84,6 @@ export const TOP_CHOICES = [
   
   // Family
   "Family Activities",
-  "Parent Meetups",
   
   // Wellness & Lifestyle
   "Spa & Wellness",
