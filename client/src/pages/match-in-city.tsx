@@ -1181,10 +1181,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                       "Coffee Culture", "Craft Beer & Breweries", "Wine Tasting", "Cocktail Bars",
                       "Museums", "Art Galleries", "Historical Tours", "Architecture",
                       "City Tours & Sightseeing", "Walking Tours", "Bike Tours", "Photography",
-                      "Nightlife & Dancing", "Live Music & Concerts", "Theater & Shows", "Comedy Clubs",
+                      "Nightlife & Dancing", "Live Music & Concerts", "LGBTQ+ Friendly", "Theater & Shows", "Comedy Clubs",
                       "Beach Activities", "Hiking & Nature", "Parks & Recreation", "Outdoor Adventures",
                       "Shopping", "Local Markets", "Street Food", "Brunch Spots",
-                      "Festivals & Events", "Cultural Experiences", "LGBTQ+ Friendly", "Networking & Business",
+                      "Festivals & Events", "Cultural Experiences", "Networking & Business",
                       "Sports & Fitness", "Yoga & Wellness", "Volunteer Opportunities", "Language Exchange"
                     ].map((activity) => {
                       // Check if user already has this activity in their interests
