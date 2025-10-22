@@ -1166,7 +1166,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
                     {[
-                      "Meet Locals", "Meet Travelers", "Single and Looking", "Open to Dating",
+                      "Meet Locals", "Meet Travelers", "Single and Looking",
                       "Family Activities", "Traveling with Children", "Local Food Specialties", "Restaurants & Dining",
                       "Coffee Culture", "Craft Beer & Breweries", "Wine Tasting", "Cocktail Bars",
                       "Museums", "Art Galleries", "Historical Tours", "Architecture",
