@@ -4172,6 +4172,8 @@ Questions? Just reply to this message. Welcome aboard!
               ilike(users.customInterests, `%${searchTerm}%`),
               ilike(users.customActivities, `%${searchTerm}%`),
               ilike(users.customEvents, `%${searchTerm}%`),
+              // City-specific activities search - CRITICAL for "Empire State Building" searches
+              sql`EXISTS (SELECT 1 FROM user_city_interests WHERE user_city_interests.user_id = ${users.id} AND user_city_interests.activity_name ILIKE ${`%${searchTerm}%`})`,
               ilike(users.gender, `%${searchTerm}%`),
               // Business profile fields
               ilike(users.businessName, `%${searchTerm}%`),
