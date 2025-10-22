@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
@@ -69,6 +70,7 @@ export default function SignupTraveling() {
     hometownCity: "",
     hometownState: "",
     hometownCountry: "",
+    isNewToTown: false,
 
     // travel (this is the traveling signup flow)
     isCurrentlyTraveling: true,
@@ -222,6 +224,7 @@ export default function SignupTraveling() {
         // SIMPLE: Just set as traveler 
         userType: "traveler",
         isCurrentlyTraveling: true,
+        isNewToTown: formData.isNewToTown,
 
         // account data
         email: (finalFormData.email || "").toLowerCase().trim(),
@@ -445,6 +448,27 @@ export default function SignupTraveling() {
                       </p>
                     </div>
                   )}
+                </div>
+
+                {/* New to Town Checkbox */}
+                <div className="flex items-start space-x-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <Checkbox
+                    id="isNewToTown"
+                    checked={formData.isNewToTown}
+                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isNewToTown: checked as boolean }))}
+                    data-testid="checkbox-new-to-town"
+                  />
+                  <div className="flex-1">
+                    <label
+                      htmlFor="isNewToTown"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                    >
+                      Are you new to {formData.hometownCity || 'this area'}?
+                    </label>
+                    <p className="text-xs text-gray-600 mt-1">
+                      Check this if you've recently moved here and want to meet locals and explore your new hometown
+                    </p>
+                  </div>
                 </div>
               </div>
 
