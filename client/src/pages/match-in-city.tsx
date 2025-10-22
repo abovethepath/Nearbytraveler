@@ -286,11 +286,26 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   };
 
   const fetchUserActivities = async () => {
-    // Get user from localStorage if not in context
+    // Get user from multiple storage locations
     const storedUser = localStorage.getItem('travelConnectUser');
-    const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
+    const authUser = localStorage.getItem('user');
     
-    // NEW USERS: Don't fallback to user 2 - show clean slate for new users
+    let actualUser = user;
+    if (!actualUser && storedUser) {
+      try {
+        actualUser = JSON.parse(storedUser);
+      } catch (e) {
+        console.error('Failed to parse travelConnectUser:', e);
+      }
+    }
+    if (!actualUser && authUser) {
+      try {
+        actualUser = JSON.parse(authUser);
+      } catch (e) {
+        console.error('Failed to parse user:', e);
+      }
+    }
+    
     if (!actualUser || !actualUser.id) {
       console.log('🔧 NEW USER: No user logged in, starting with clean slate');
       setUserActivities([]);
