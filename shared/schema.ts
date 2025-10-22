@@ -10,6 +10,7 @@ export const users = pgTable("users", {
   name: text("name").notNull(),
   userType: text("user_type").notNull(), // 'traveler', 'local', 'business'
   isNewToTown: boolean("is_new_to_town").default(false), // Track "New to Town" users (local users who recently moved)
+  newToTownUntil: timestamp("new_to_town_until"), // Timestamp when "New to Town" status expires (9 months from signup)
   bio: text("bio"),
   location: text("location"),
   // NEARBY LOCAL HOMETOWN (never changes unless they move)
