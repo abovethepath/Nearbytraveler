@@ -241,6 +241,11 @@ export const GENERIC_CITY_ACTIVITIES = [
     category: "entertainment"
   },
   {
+    name: "LGBTQ+ FRIENDLY",
+    description: "LGBTQ+ friendly venues and events",
+    category: "community"
+  },
+  {
     name: "THEATER & SHOWS",
     description: "Theater performances and shows",
     category: "entertainment"
@@ -389,10 +394,5 @@ export const GENERIC_CITY_ACTIVITIES = [
     name: "WALKING GROUPS",
     description: "Walking clubs and group walks",
     category: "fitness"
-  },
-  {
-    name: "LGBTQ+ FRIENDLY",
-    description: "LGBTQ+ friendly venues and events",
-    category: "community"
   }
 ];
