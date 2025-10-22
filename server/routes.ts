@@ -3516,8 +3516,21 @@ Questions? Just reply to this message. Welcome to the community!
         }
       }
 
-      // Check if user already exists by email
-      const existingUserByEmail = await storage.getUserByEmail(userData.email);
+      // Check if user already exists by email (with retry logic)
+      let existingUserByEmail;
+      let retryCount = 0;
+      while (retryCount < 3) {
+        try {
+          existingUserByEmail = await storage.getUserByEmail(userData.email);
+          break;
+        } catch (error: any) {
+          retryCount++;
+          if (retryCount >= 3 || !error?.message?.includes('Connection terminated')) {
+            throw error;
+          }
+          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+        }
+      }
       if (existingUserByEmail) {
         if (process.env.NODE_ENV === 'development') console.log("Registration failed: Email already exists", userData.email);
         return res.status(409).json({ 
@@ -3526,8 +3539,21 @@ Questions? Just reply to this message. Welcome to the community!
         });
       }
 
-      // Check if username already exists
-      const existingUserByUsername = await storage.getUserByUsername(userData.username);
+      // Check if username already exists (with retry logic)
+      let existingUserByUsername;
+      retryCount = 0;
+      while (retryCount < 3) {
+        try {
+          existingUserByUsername = await storage.getUserByUsername(userData.username);
+          break;
+        } catch (error: any) {
+          retryCount++;
+          if (retryCount >= 3 || !error?.message?.includes('Connection terminated')) {
+            throw error;
+          }
+          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+        }
+      }
       if (existingUserByUsername) {
         if (process.env.NODE_ENV === 'development') console.log("Registration failed: Username already exists", userData.username);
         return res.status(409).json({ 
