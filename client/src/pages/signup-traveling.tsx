@@ -266,8 +266,6 @@ export default function SignupTraveling() {
 
         // Hometown interests (saved to interests[])
         interests: formData.interests,
-        activities: formData.activities,
-        events: formData.events,
         // Travel-specific interests (saved to travelInterests[])
         travelInterests: formData.travelInterests,
         // Custom interests (comma-separated)
