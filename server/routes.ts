@@ -3117,12 +3117,19 @@ Questions? Just reply to this message. Welcome to the community!
         processedData.travelEndDate = new Date(processedData.travelEndDate);
       }
 
-      // Calculate newToTownUntil date (9 months from now) if user checked isNewToTown
+      // Calculate newToTownUntil date (9 months from now in UTC) if user checked isNewToTown
       if (processedData.isNewToTown === true) {
-        const nineMonthsFromNow = new Date();
-        nineMonthsFromNow.setMonth(nineMonthsFromNow.getMonth() + 9);
+        const now = new Date();
+        const nineMonthsFromNow = new Date(Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth() + 9,
+          now.getUTCDate(),
+          now.getUTCHours(),
+          now.getUTCMinutes(),
+          now.getUTCSeconds()
+        ));
         processedData.newToTownUntil = nineMonthsFromNow;
-        if (process.env.NODE_ENV === 'development') console.log("🆕 NEW TO TOWN: Set expiration date to", nineMonthsFromNow);
+        if (process.env.NODE_ENV === 'development') console.log("🆕 NEW TO TOWN: Set expiration date to (UTC)", nineMonthsFromNow.toISOString());
       } else {
         processedData.newToTownUntil = null;
         processedData.isNewToTown = false;
