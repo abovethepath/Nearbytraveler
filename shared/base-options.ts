@@ -51,8 +51,90 @@ export const PROFILE_INTERESTS = [];
 // LEGACY COMPATIBILITY (DEPRECATED)
 // ========================================
 export const MOST_POPULAR_INTERESTS = TOP_CHOICES;
-export const ADDITIONAL_INTERESTS = [];
-export const ALL_INTERESTS = TOP_CHOICES;
+export const ADDITIONAL_INTERESTS = [
+  // Outdoor & Adventure
+  "Camping & RV Travel",
+  "Rock Climbing",
+  "Surfing",
+  "Skiing & Snowboarding",
+  "Kayaking & Canoeing",
+  "Scuba Diving",
+  "Cycling & Biking",
+  "Sailing & Boating",
+  "Fishing",
+  "Horseback Riding",
+  
+  // Food & Culinary
+  "Cooking Classes",
+  "Food Tours",
+  "Vegetarian & Vegan",
+  "Street Food",
+  "Farm-to-Table Dining",
+  "Bakeries & Desserts",
+  
+  // Arts & Creativity
+  "Painting & Drawing",
+  "Crafts & DIY",
+  "Film & Cinema",
+  "Dance Classes",
+  "Writing & Poetry",
+  "Fashion & Style",
+  "Architecture",
+  
+  // Music & Entertainment
+  "Jazz & Blues",
+  "Electronic Music",
+  "Classical Music",
+  "Indie Music Scene",
+  "Karaoke",
+  
+  // Wellness & Self-Care
+  "Yoga & Meditation",
+  "Spa & Wellness",
+  "Spiritual Retreats",
+  "Healthy Living",
+  "Mindfulness",
+  
+  // Learning & Growth
+  "Book Clubs",
+  "Learning Languages",
+  "Philosophy & Discussion",
+  "Science & Technology",
+  "Entrepreneurship",
+  "Volunteering",
+  
+  // Shopping & Markets
+  "Vintage & Thrift Shopping",
+  "Local Markets & Bazaars",
+  "Antiques & Collectibles",
+  "Shopping Districts",
+  
+  // Nightlife & Social
+  "Rooftop Bars",
+  "Jazz Clubs",
+  "Sports Bars",
+  "Hookah Lounges",
+  "Late Night Eats",
+  
+  // Nature & Wildlife
+  "Bird Watching",
+  "National Parks",
+  "Botanical Gardens",
+  "Eco-Tourism",
+  
+  // Special Interests
+  "Luxury Experiences",
+  "Budget Travel",
+  "Off the Beaten Path",
+  "Road Trips",
+  "Train Travel",
+  "Cruises",
+  "Solo Adventures",
+  "Romantic Getaways",
+  "Religious & Spiritual Sites",
+  "Ghost Tours & Haunted Places"
+];
+export const ALL_INTERESTS = [...TOP_CHOICES, ...ADDITIONAL_INTERESTS];
 
 // ========================================
 // HELPER FUNCTIONS - USE THESE IN COMPONENTS
