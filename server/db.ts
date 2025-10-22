@@ -15,13 +15,13 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-// More conservative connection pool settings to prevent connection issues
+// Production-ready connection pool for high traffic events (100+ simultaneous users)
 export const pool = new Pool({ 
   connectionString: process.env.DATABASE_URL,
-  max: 10, // Increase max connections
-  idleTimeoutMillis: 30000, // Longer idle timeout (30 seconds)
-  connectionTimeoutMillis: 10000, // Longer connection timeout (10 seconds)
-  allowExitOnIdle: false, // Don't allow pool to exit while idle
+  max: 100, // Support 100 simultaneous connections for event signups
+  idleTimeoutMillis: 30000, // 30 seconds
+  connectionTimeoutMillis: 15000, // 15 seconds to establish connection
+  allowExitOnIdle: false, // Keep pool alive
 });
 
 // Add connection event handlers
