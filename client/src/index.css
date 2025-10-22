@@ -902,3 +902,14 @@ div[class*="bg-"][class*="text-"][class*="rounded"] {
 .animate-glow {
   animation: glow 2s ease-in-out infinite;
 }
+
+/* CRITICAL: Force avatar to be circular with proper image cropping */
+[role="img"], 
+img[alt*="avatar" i],
+img[alt*="profile" i],
+.avatar img,
+[class*="avatar"] img {
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  aspect-ratio: 1 / 1 !important;
+}
