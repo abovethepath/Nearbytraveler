@@ -4285,9 +4285,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   {isOwnProfile && !isEditingPublicInterests && (
                     <Button
                       onClick={() => {
-                        console.log('🔥 OPENING ALL EDITING SECTIONS');
-                        // Open ALL editing sections at once
-                        setActiveEditSection('all');
+                        console.log('🔥 OPENING TABBED EDITOR');
+                        // Start with Interests tab active
+                        setActiveEditSection('interests');
                         setIsEditingPublicInterests(true);
                         
                         // Initialize form data with user interests, activities, events
@@ -4309,18 +4309,56 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </CardHeader>
               <CardContent className="space-y-6 px-4 sm:px-6 pb-4 sm:pb-6 break-words overflow-hidden">
 
-                {/* INTERESTS EDIT INTERFACE */}
+                {/* TABBED EDIT INTERFACE - Interests, Activities, Events */}
                 {isOwnProfile && editingInterests ? (
-                  <div className="p-6 rounded-lg border bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-600">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Edit Interests, Activities & Events</h3>
-                      <div className="flex gap-2 w-full sm:w-auto">
+                  <div className="p-4 sm:p-6 rounded-lg border bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                    
+                    {/* TABS - Click to change section */}
+                    <div className="flex flex-col gap-4 mb-6">
+                      {/* Tab Headers */}
+                      <div className="flex border-b border-gray-200 dark:border-gray-600">
+                        <button
+                          onClick={() => setActiveEditSection('interests')}
+                          className={`px-4 py-3 font-medium text-sm transition-all ${
+                            activeEditSection === 'interests'
+                              ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400'
+                              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                          }`}
+                        >
+                          <Heart className="w-4 h-4 inline mr-2" />
+                          Interests
+                        </button>
+                        <button
+                          onClick={() => setActiveEditSection('activities')}
+                          className={`px-4 py-3 font-medium text-sm transition-all ${
+                            activeEditSection === 'activities'
+                              ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400'
+                              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                          }`}
+                        >
+                          <Zap className="w-4 h-4 inline mr-2" />
+                          Activities
+                        </button>
+                        <button
+                          onClick={() => setActiveEditSection('events')}
+                          className={`px-4 py-3 font-medium text-sm transition-all ${
+                            activeEditSection === 'events'
+                              ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400'
+                              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                          }`}
+                        >
+                          <Calendar className="w-4 h-4 inline mr-2" />
+                          Events
+                        </button>
+                      </div>
+
+                      {/* Save/Cancel Buttons */}
+                      <div className="flex gap-2">
                         <Button 
                           onClick={async () => {
                             try {
                               console.log('🔧 SAVING ALL DATA:', editFormData);
                               
-                              // Separate predefined vs custom entries for all three sections
                               const allInterests = [...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS];
                               const allActivities = [...UNIVERSAL_ACTIVITIES];
                               const allEvents = [...UNIVERSAL_EVENTS];
@@ -4350,7 +4388,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               });
                               if (!response.ok) throw new Error('Failed to save');
                               
-                              // Refresh data and close editing
                               queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
                               setIsEditingPublicInterests(false);
                               setActiveEditSection(null);
@@ -4359,9 +4396,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               console.error('❌ Failed to update preferences:', error);
                             }
                           }}
-                          className="bg-green-600 hover:bg-green-700 text-white flex-1 sm:flex-none"
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                          size="sm"
                         >
-                          Save All Changes
+                          Save All
                         </Button>
                         <Button 
                           variant="outline" 
@@ -4374,89 +4412,141 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               events: user?.events || []
                             });
                           }}
-                          className="border-orange-500 text-orange-600 hover:bg-orange-50 dark:border-orange-400 dark:text-orange-400 dark:hover:bg-orange-900/20 flex-1 sm:flex-none"
+                          className="border-orange-500 text-orange-600 hover:bg-orange-50"
+                          size="sm"
                         >
                           Cancel
                         </Button>
                       </div>
                     </div>
-                    
-                    {/* Interests content */}
-                    <div className="w-full">
 
-                      {/* Tab Content */}
-                      <div className="space-y-6">
-                        {/* Regular interests content */}
-                        {activeEditSection === 'interests' && (
-                          <div className="space-y-6">
-                            {/* Unified Interests Selection */}
-                            <div>
-                              <h4 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white flex items-center gap-2">
-                                <Heart className="w-5 h-5 text-blue-500" />
-                                Select Your Interests
-                              </h4>
-                              <div className="flex flex-wrap gap-2 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border">
-                                {[...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS].map((interest) => {
-                                  const isSelected = editFormData.interests.includes(interest);
-                                  return (
-                                    <button
-                                      key={interest}
-                                      type="button"
-                                      onClick={() => {
-                                        toggleArrayValue(editFormData.interests, interest, (newInterests) => 
-                                          setEditFormData({ ...editFormData, interests: newInterests })
-                                        );
-                                      }}
-                                      className={`inline-flex items-center justify-center h-8 rounded-full px-3 text-sm font-medium whitespace-nowrap transition-all ${
-                                        isSelected
-                                          ? 'bg-blue-600 text-white'
-                                          : 'bg-white text-black border border-gray-300 hover:bg-gray-50'
-                                      }`}
-                                    >
-                                      {interest}
-                                    </button>
-                                  );
-                                })}
-                              </div>
-                              <div className="flex space-x-2 mt-3">
-                                <Input
-                                  placeholder="Add custom interest..."
-                                  value={customInterestInput}
-                                  onChange={(e) => setCustomInterestInput(e.target.value)}
-                                  onKeyPress={(e) => {
-                                    if (e.key === 'Enter') {
-                                      e.preventDefault();
-                                      const trimmed = customInterestInput.trim();
-                                      if (trimmed && !editFormData.interests.includes(trimmed)) {
-                                        setEditFormData(prev => ({ ...prev, interests: [...prev.interests, trimmed] }));
-                                        setCustomInterestInput('');
-                                      }
-                                    }
-                                  }}
-                                />
-                                <Button
+                    {/* TAB CONTENT - Only shows active tab */}
+                    <div className="space-y-4">
+                      {/* INTERESTS TAB */}
+                      {activeEditSection === 'interests' && (
+                        <div>
+                          <div className="flex flex-wrap gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border">
+                            {[...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS].map((interest) => {
+                              const isSelected = editFormData.interests.includes(interest);
+                              return (
+                                <button
+                                  key={interest}
                                   type="button"
-                                  variant="outline"
-                                  size="sm"
                                   onClick={() => {
-                                    const trimmed = customInterestInput.trim();
-                                    if (trimmed && !editFormData.interests.includes(trimmed)) {
-                                      setEditFormData(prev => ({ ...prev, interests: [...prev.interests, trimmed] }));
-                                      setCustomInterestInput('');
+                                    if (isSelected) {
+                                      setEditFormData(prev => ({ ...prev, interests: prev.interests.filter(i => i !== interest) }));
+                                    } else {
+                                      setEditFormData(prev => ({ ...prev, interests: [...prev.interests, interest] }));
                                     }
                                   }}
+                                  className={`h-8 px-3 rounded-full text-sm font-medium transition-all ${
+                                    isSelected
+                                      ? 'bg-blue-600 text-white'
+                                      : 'bg-white text-black border border-gray-300 hover:bg-gray-50'
+                                  }`}
                                 >
-                                  <Plus className="w-4 h-4" />
-                                </Button>
-                              </div>
-                            </div>
-
-
+                                  {interest}
+                                </button>
+                              );
+                            })}
                           </div>
-                        )}
+                          <div className="flex space-x-2 mt-3">
+                            <Input
+                              placeholder="Add custom interest..."
+                              value={customInterestInput}
+                              onChange={(e) => setCustomInterestInput(e.target.value)}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  const trimmed = customInterestInput.trim();
+                                  if (trimmed && !editFormData.interests.includes(trimmed)) {
+                                    setEditFormData(prev => ({ ...prev, interests: [...prev.interests, trimmed] }));
+                                    setCustomInterestInput('');
+                                  }
+                                }
+                              }}
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const trimmed = customInterestInput.trim();
+                                if (trimmed && !editFormData.interests.includes(trimmed)) {
+                                  setEditFormData(prev => ({ ...prev, interests: [...prev.interests, trimmed] }));
+                                  setCustomInterestInput('');
+                                }
+                              }}
+                            >
+                              <Plus className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      )}
 
-                      </div>
+                      {/* ACTIVITIES TAB */}
+                      {activeEditSection === 'activities' && (
+                        <div>
+                          <div className="flex flex-wrap gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border">
+                            {UNIVERSAL_ACTIVITIES.map((activity) => {
+                              const isSelected = editFormData.activities.includes(activity);
+                              return (
+                                <button
+                                  key={activity}
+                                  type="button"
+                                  onClick={() => {
+                                    if (isSelected) {
+                                      setEditFormData(prev => ({ ...prev, activities: prev.activities.filter(a => a !== activity) }));
+                                    } else {
+                                      setEditFormData(prev => ({ ...prev, activities: [...prev.activities, activity] }));
+                                    }
+                                  }}
+                                  className={`h-8 px-3 rounded-full text-sm font-medium transition-all ${
+                                    isSelected
+                                      ? 'bg-green-600 text-white'
+                                      : 'bg-white text-black border border-gray-300 hover:bg-gray-50'
+                                  }`}
+                                >
+                                  {activity}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* EVENTS TAB */}
+                      {activeEditSection === 'events' && (
+                        <div>
+                          <div className="flex flex-wrap gap-2 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border">
+                            {UNIVERSAL_EVENTS.map((event) => {
+                              const isSelected = editFormData.events.includes(event);
+                              return (
+                                <button
+                                  key={event}
+                                  type="button"
+                                  onClick={() => {
+                                    if (isSelected) {
+                                      setEditFormData(prev => ({ ...prev, events: prev.events.filter(e => e !== event) }));
+                                    } else {
+                                      setEditFormData(prev => ({ ...prev, events: [...prev.events, event] }));
+                                    }
+                                  }}
+                                  className={`h-8 px-3 rounded-full text-sm font-medium transition-all ${
+                                    isSelected
+                                      ? 'bg-purple-600 text-white'
+                                      : 'bg-white text-black border border-gray-300 hover:bg-gray-50'
+                                  }`}
+                                >
+                                  {event}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
                     </div>
+
                   </div>
                 ) : null}
 
