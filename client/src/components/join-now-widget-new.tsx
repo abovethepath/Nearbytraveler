@@ -9,8 +9,13 @@ export default function JoinNowWidgetNew() {
   const { toast } = useToast();
   const [userType, setUserType] = useState("");
 
+  const handleUserTypeClick = (type: string) => {
+    console.log('🔥 JOIN WIDGET: User type clicked:', type);
+    setUserType(type);
+  };
+
   const handleUserTypeSelection = () => {
-    console.log('🔥 JOIN WIDGET: Button clicked, userType:', userType);
+    console.log('🔥 JOIN WIDGET: Continue button clicked, userType:', userType);
     
     if (!userType) {
       console.log('❌ JOIN WIDGET: No user type selected');
@@ -32,17 +37,18 @@ export default function JoinNowWidgetNew() {
 
   return (
     <div className="space-y-6">
-      {/* Step 1: User Type Selection - 2 Types */}
+      {/* User Type Selection - 3 Types */}
       <div className="space-y-4">
         <Label className="text-base md:text-lg font-semibold text-gray-900 dark:text-white">I am a...</Label>
         <div className="space-y-4">
           {/* Local */}
-          <div
-            onClick={() => setUserType("local")}
-            className={`cursor-pointer rounded-xl p-6 text-center transition-all shadow-md border-4 ${
+          <button
+            onClick={() => handleUserTypeClick("local")}
+            type="button"
+            className={`w-full cursor-pointer rounded-xl p-6 text-center transition-all shadow-md border-4 ${
               userType === "local" 
                 ? "border-blue-600 bg-blue-50 dark:bg-blue-900 dark:border-blue-400 shadow-2xl scale-105 ring-4 ring-blue-200 dark:ring-blue-800" 
-                : "border-gray-400 dark:border-gray-500 hover:border-blue-400 dark:hover:border-blue-500 bg-white dark:bg-gray-800 hover:shadow-xl hover:scale-102"
+                : "border-gray-400 dark:border-gray-500 hover:border-blue-400 dark:hover:border-blue-500 bg-white dark:bg-gray-800 hover:shadow-xl"
             }`}
             data-testid="button-select-local"
           >
@@ -52,15 +58,16 @@ export default function JoinNowWidgetNew() {
             <div className={`text-sm md:text-base ${userType === "local" ? "text-blue-700 dark:text-blue-100" : "text-gray-600 dark:text-gray-400"}`}>
               Not Traveling Now
             </div>
-          </div>
+          </button>
 
           {/* Traveler */}
-          <div
-            onClick={() => setUserType("traveler")}
-            className={`cursor-pointer rounded-xl p-6 text-center transition-all shadow-md border-4 ${
+          <button
+            onClick={() => handleUserTypeClick("traveler")}
+            type="button"
+            className={`w-full cursor-pointer rounded-xl p-6 text-center transition-all shadow-md border-4 ${
               userType === "traveler" 
                 ? "border-blue-600 bg-blue-50 dark:bg-blue-900 dark:border-blue-400 shadow-2xl scale-105 ring-4 ring-blue-200 dark:ring-blue-800" 
-                : "border-gray-400 dark:border-gray-500 hover:border-blue-400 dark:hover:border-blue-500 bg-white dark:bg-gray-800 hover:shadow-xl hover:scale-102"
+                : "border-gray-400 dark:border-gray-500 hover:border-blue-400 dark:hover:border-blue-500 bg-white dark:bg-gray-800 hover:shadow-xl"
             }`}
             data-testid="button-select-traveler"
           >
@@ -70,14 +77,35 @@ export default function JoinNowWidgetNew() {
             <div className={`text-sm md:text-base ${userType === "traveler" ? "text-blue-700 dark:text-blue-100" : "text-gray-600 dark:text-gray-400"}`}>
               Currently Traveling
             </div>
-          </div>
+          </button>
+
+          {/* Business */}
+          <button
+            onClick={() => handleUserTypeClick("business")}
+            type="button"
+            className={`w-full cursor-pointer rounded-xl p-6 text-center transition-all shadow-md border-4 ${
+              userType === "business" 
+                ? "border-blue-600 bg-blue-50 dark:bg-blue-900 dark:border-blue-400 shadow-2xl scale-105 ring-4 ring-blue-200 dark:ring-blue-800" 
+                : "border-gray-400 dark:border-gray-500 hover:border-blue-400 dark:hover:border-blue-500 bg-white dark:bg-gray-800 hover:shadow-xl"
+            }`}
+            data-testid="button-select-business"
+          >
+            <div className={`text-xl md:text-2xl font-bold mb-2 ${userType === "business" ? "text-blue-900 dark:text-white" : "text-gray-900 dark:text-white"}`}>
+              Nearby Business
+            </div>
+            <div className={`text-sm md:text-base ${userType === "business" ? "text-blue-700 dark:text-blue-100" : "text-gray-600 dark:text-gray-400"}`}>
+              Local Business Owner
+            </div>
+          </button>
         </div>
       </div>
 
       <div className="mt-6">
         <Button
           onClick={handleUserTypeSelection}
+          type="button"
           className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white py-3 text-base font-medium border-2 border-blue-600 dark:border-blue-500"
+          data-testid="button-continue"
         >
           Continue →
         </Button>
