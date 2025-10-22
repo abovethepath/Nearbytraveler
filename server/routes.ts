@@ -4167,6 +4167,11 @@ Questions? Just reply to this message. Welcome aboard!
               sql`array_to_string(${users.interests}, ',') ILIKE ${`%${searchTerm}%`}`,
               sql`array_to_string(${users.privateInterests}, ',') ILIKE ${`%${searchTerm}%`}`,
               sql`array_to_string(${users.activities}, ',') ILIKE ${`%${searchTerm}%`}`,
+              sql`array_to_string(${users.events}, ',') ILIKE ${`%${searchTerm}%`}`,
+              // Custom text fields search for user-entered interests/activities/events
+              ilike(users.customInterests, `%${searchTerm}%`),
+              ilike(users.customActivities, `%${searchTerm}%`),
+              ilike(users.customEvents, `%${searchTerm}%`),
               ilike(users.gender, `%${searchTerm}%`),
               // Business profile fields
               ilike(users.businessName, `%${searchTerm}%`),
@@ -4176,9 +4181,7 @@ Questions? Just reply to this message. Welcome aboard!
               ilike(users.location, `%${searchTerm}%`),
               ilike(users.hometownCity, `%${searchTerm}%`),
               ilike(users.hometownState, `%${searchTerm}%`),
-              ilike(users.hometownCountry, `%${searchTerm}%`),
-              // Search user's events field (array)
-              sql`array_to_string(${users.events}, ',') ILIKE ${`%${searchTerm}%`}`
+              ilike(users.hometownCountry, `%${searchTerm}%`)
             )
           );
         }
@@ -4262,26 +4265,28 @@ Questions? Just reply to this message. Welcome aboard!
         whereConditions.push(lte(users.age, parseInt(maxAge as string)));
       }
 
-      // Activities filter
+      // Activities filter - search both predefined and custom activities
       if (activities && typeof activities === 'string') {
         const activityList = activities.split(',').map(a => a.trim()).filter(Boolean);
         if (activityList.length > 0) {
           whereConditions.push(or(
-            ...activityList.map(activity => 
-              sql`array_to_string(${users.activities}, ',') ILIKE ${`%${activity}%`}`
-            )
+            ...activityList.flatMap(activity => [
+              sql`array_to_string(${users.activities}, ',') ILIKE ${`%${activity}%`}`,
+              ilike(users.customActivities, `%${activity}%`)
+            ])
           ));
         }
       }
 
-      // Events filter
+      // Events filter - search both predefined and custom events
       if (eventsFilter && typeof eventsFilter === 'string') {
         const eventsList = eventsFilter.split(',').map(e => e.trim()).filter(Boolean);
         if (eventsList.length > 0) {
           whereConditions.push(or(
-            ...eventsList.map(event => 
-              sql`array_to_string(${users.events}, ',') ILIKE ${`%${event}%`}`
-            )
+            ...eventsList.flatMap(event => [
+              sql`array_to_string(${users.events}, ',') ILIKE ${`%${event}%`}`,
+              ilike(users.customEvents, `%${event}%`)
+            ])
           ));
         }
       }
@@ -4309,7 +4314,7 @@ Questions? Just reply to this message. Welcome aboard!
         if (process.env.NODE_ENV === 'development') console.log('🆕 NEW TO TOWN FILTER: Searching for users new to town');
       }
 
-      // Top Choices filter (searches in interests field)  
+      // Top Choices filter - search both predefined and custom interests
       if (topChoices && typeof topChoices === 'string') {
         // Decode HTML entities and normalize
         const decodedTopChoices = topChoices.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
@@ -4317,14 +4322,15 @@ Questions? Just reply to this message. Welcome aboard!
         if (topChoicesList.length > 0) {
           if (process.env.NODE_ENV === 'development') console.log('⭐ TOP CHOICES FILTER: Searching for users with top choices:', topChoicesList);
           
-          // Use proper array matching with unnest for case-insensitive search
-          whereConditions.push(
-            sql`EXISTS (SELECT 1 FROM unnest(${users.interests}) AS interest WHERE lower(interest) = ANY(${sql.array(topChoicesList.map(c => c.toLowerCase()), 'text')}))`
-          );
+          // Search in both predefined interests array and custom interests text field
+          whereConditions.push(or(
+            sql`EXISTS (SELECT 1 FROM unnest(${users.interests}) AS interest WHERE lower(interest) = ANY(${sql.array(topChoicesList.map(c => c.toLowerCase()), 'text')}))`,
+            ...topChoicesList.map(choice => ilike(users.customInterests, `%${choice}%`))
+          ));
         }
       }
 
-      // Interests filter (fixed)
+      // Interests filter - search both predefined and custom interests
       if (interests && typeof interests === 'string') {
         // Decode HTML entities and normalize
         const decodedInterests = interests.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
@@ -4332,10 +4338,11 @@ Questions? Just reply to this message. Welcome aboard!
         if (interestsList.length > 0) {
           if (process.env.NODE_ENV === 'development') console.log('🎯 INTERESTS FILTER: Searching for users with interests:', interestsList);
           
-          // Use proper array matching with unnest for case-insensitive search
-          whereConditions.push(
-            sql`EXISTS (SELECT 1 FROM unnest(${users.interests}) AS interest WHERE lower(interest) = ANY(${sql.array(interestsList.map(i => i.toLowerCase()), 'text')}))`
-          );
+          // Search in both predefined interests array and custom interests text field
+          whereConditions.push(or(
+            sql`EXISTS (SELECT 1 FROM unnest(${users.interests}) AS interest WHERE lower(interest) = ANY(${sql.array(interestsList.map(i => i.toLowerCase()), 'text')}))`,
+            ...interestsList.map(interest => ilike(users.customInterests, `%${interest}%`))
+          ));
         }
       }
 
