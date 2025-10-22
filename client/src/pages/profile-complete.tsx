@@ -4281,15 +4281,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <Heart className="w-5 h-5 text-red-500" />
                     Interests
                   </CardTitle>
-                  {/* Edit Button - Opens editing for all categories */}
-                  {isOwnProfile && activeEditSection !== 'interests' && (
+                  {/* Edit Button - Opens editing for ALL categories at once */}
+                  {isOwnProfile && !isEditingPublicInterests && (
                     <Button
                       onClick={() => {
-                        // Open interests editing mode
-                        setActiveEditSection('interests');
+                        console.log('🔥 OPENING ALL EDITING SECTIONS');
+                        // Open ALL editing sections at once
+                        setActiveEditSection('all');
                         setIsEditingPublicInterests(true);
                         
-                        // Initialize form data with user interests
+                        // Initialize form data with user interests, activities, events
                         setEditFormData({
                           interests: user?.interests || [],
                           activities: user?.activities || [],
@@ -4312,22 +4313,34 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 {isOwnProfile && editingInterests ? (
                   <div className="p-6 rounded-lg border bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-600">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Edit Interests</h3>
+                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Edit Interests, Activities & Events</h3>
                       <div className="flex gap-2 w-full sm:w-auto">
                         <Button 
                           onClick={async () => {
                             try {
-                              console.log('🔧 SAVING DATA:', editFormData);
+                              console.log('🔧 SAVING ALL DATA:', editFormData);
                               
-                              // Separate predefined vs custom entries
+                              // Separate predefined vs custom entries for all three sections
                               const allInterests = [...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS];
+                              const allActivities = [...UNIVERSAL_ACTIVITIES];
+                              const allEvents = [...UNIVERSAL_EVENTS];
                               
                               const predefinedInterests = editFormData.interests.filter(int => allInterests.includes(int));
                               const customInterests = editFormData.interests.filter(int => !allInterests.includes(int));
                               
+                              const predefinedActivities = editFormData.activities.filter(act => allActivities.includes(act));
+                              const customActivities = editFormData.activities.filter(act => !allActivities.includes(act));
+                              
+                              const predefinedEvents = editFormData.events.filter(evt => allEvents.includes(evt));
+                              const customEvents = editFormData.events.filter(evt => !allEvents.includes(evt));
+                              
                               const saveData = {
                                 interests: predefinedInterests,
-                                customInterests: customInterests.join(', ')
+                                customInterests: customInterests.join(', '),
+                                activities: predefinedActivities,
+                                customActivities: customActivities.join(', '),
+                                events: predefinedEvents,
+                                customEvents: customEvents.join(', ')
                               };
                               
                               const response = await fetch(`/api/users/${user.id}`, {
@@ -4340,14 +4353,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               // Refresh data and close editing
                               queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
                               setIsEditingPublicInterests(false);
-                              console.log('✅ Successfully saved interests');
+                              setActiveEditSection(null);
+                              console.log('✅ Successfully saved all preferences');
                             } catch (error) {
                               console.error('❌ Failed to update preferences:', error);
                             }
                           }}
                           className="bg-green-600 hover:bg-green-700 text-white flex-1 sm:flex-none"
                         >
-                          Save Changes
+                          Save All Changes
                         </Button>
                         <Button 
                           variant="outline" 
@@ -4477,7 +4491,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </h4>
                   </div>
                   
-                  {editingInterests && !editingActivities && !editingEvents ? (
+                  {editingInterests ? (
                     <div className="space-y-4">
                       {/* All Interests */}
                       <div>
@@ -4610,7 +4624,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </h4>
                   </div>
                   
-                  {editingActivities && !editingInterests && !editingEvents ? (
+                  {editingInterests ? (
                     <div className="space-y-4">
                       <div className="text-sm text-blue-600 bg-blue-50 border border-blue-400 rounded-md p-3 mb-4 dark:bg-blue-900/20 dark:border-blue-600 dark:text-blue-300">
                         Your default preferences for trips and to match with Nearby Locals and Travelers. They can be added to and changed in the future for specific trips etc.
@@ -4752,7 +4766,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </h4>
                   </div>
                   
-                  {editingEvents && !editingInterests && !editingActivities ? (
+                  {editingInterests ? (
                     <div className="space-y-4">
                       {/* All Available Events */}
                       <div>
