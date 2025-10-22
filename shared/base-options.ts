@@ -132,7 +132,103 @@ export const ADDITIONAL_INTERESTS = [
   "Solo Adventures",
   "Romantic Getaways",
   "Religious & Spiritual Sites",
-  "Ghost Tours & Haunted Places"
+  "Ghost Tours & Haunted Places",
+  
+  // Sports & Recreation
+  "Tennis",
+  "Basketball",
+  "Soccer",
+  "Volleyball",
+  "Baseball & Softball",
+  "Ice Skating",
+  "Skateboarding",
+  "Paddleboarding",
+  "Table Tennis",
+  "Bowling",
+  
+  // Cultural Activities
+  "Cooking & Baking",
+  "Wine Tasting",
+  "Brewery Tours",
+  "Distillery Tours",
+  "Tea Houses",
+  "Cultural Festivals",
+  "Art Galleries",
+  "Pottery & Ceramics",
+  
+  // Entertainment & Games
+  "Board Games",
+  "Card Games",
+  "Arcade Games",
+  "Escape Rooms",
+  "Virtual Reality",
+  "Laser Tag",
+  "Mini Golf",
+  "Go-Kart Racing",
+  
+  // Outdoor Activities
+  "Geocaching",
+  "Stargazing",
+  "Beach Volleyball",
+  "Frisbee & Disc Golf",
+  "Park Picnics",
+  "Outdoor BBQ",
+  "Sunset Watching",
+  
+  // Music & Dance
+  "Salsa Dancing",
+  "Swing Dancing",
+  "Hip Hop Dance",
+  "DJ & Electronic Music",
+  "Acoustic Music",
+  "Music Jam Sessions",
+  
+  // Food & Drinks
+  "Coffee Tasting",
+  "Brunch Culture",
+  "Food Trucks",
+  "Rooftop Dining",
+  "Izakaya & Tapas",
+  "Farmers Markets",
+  "Cooking Competitions",
+  
+  // Social & Community
+  "Coworking Spaces",
+  "Language Exchange",
+  "Pub Quizzes",
+  "Debate & Discussion",
+  "Improv Comedy",
+  "Stand-up Comedy",
+  "Poetry Readings",
+  "Social Activism",
+  
+  // Nature & Animals
+  "Dog Parks",
+  "Pet Cafes",
+  "Aquariums",
+  "Zoos & Safari",
+  "Butterfly Gardens",
+  "Flower Markets",
+  
+  // Technology & Innovation
+  "Hackathons",
+  "Tech Meetups",
+  "Startup Events",
+  "3D Printing",
+  "Drone Flying",
+  "Coding Workshops",
+  
+  // Unique Experiences
+  "Food Challenges",
+  "Pub Crawls",
+  "Scavenger Hunts",
+  "Walking Tours",
+  "Bike Tours",
+  "Segway Tours",
+  "Hot Air Balloons",
+  "Parasailing",
+  "Bungee Jumping",
+  "Zip Lining"
 ];
 export const ALL_INTERESTS = [...TOP_CHOICES, ...ADDITIONAL_INTERESTS];
 
@@ -175,11 +271,92 @@ export const FITNESS_ACTIVITIES = [
   "Running & Jogging"
 ];
 
+export const ADVENTURE_ACTIVITIES = [
+  "Outdoor Adventures",
+  "Water Sports",
+  "Extreme Sports",
+  "Mountain Activities",
+  "Urban Exploration"
+];
+
+export const CREATIVE_ACTIVITIES = [
+  "Art & Crafts",
+  "Music Making",
+  "Dance Practice",
+  "Photography Walks",
+  "Creative Writing"
+];
+
+export const FOOD_ACTIVITIES = [
+  "Restaurant Hopping",
+  "Food Market Visits",
+  "Cooking Together",
+  "Baking Sessions",
+  "Wine & Spirits Tasting"
+];
+
+export const LEARNING_ACTIVITIES = [
+  "Workshop Attendance",
+  "Skill Sharing",
+  "Book Reading",
+  "Educational Tours",
+  "Study Groups"
+];
+
+export const ENTERTAINMENT_ACTIVITIES = [
+  "Movie Going",
+  "Concert Attendance",
+  "Theater Shows",
+  "Comedy Shows",
+  "Live Performances"
+];
+
+export const SPORTS_ACTIVITIES = [
+  "Team Sports",
+  "Individual Sports",
+  "Beach Sports",
+  "Indoor Sports",
+  "Outdoor Recreation"
+];
+
+export const WELLNESS_ACTIVITIES = [
+  "Yoga Practice",
+  "Meditation Sessions",
+  "Spa Visits",
+  "Nature Therapy",
+  "Wellness Workshops"
+];
+
+export const NIGHTLIFE_ACTIVITIES = [
+  "Bar Hopping",
+  "Club Dancing",
+  "Late Night Dining",
+  "Rooftop Lounging",
+  "Live Music Venues"
+];
+
+export const SOCIAL_HANGOUTS = [
+  "Coffee Shop Meetups",
+  "Park Gatherings",
+  "Beach Hangouts",
+  "Picnic Outings",
+  "Game Nights"
+];
+
 // Combined activities in logical order
 export const ALL_ACTIVITIES = [
   ...SOCIAL_ACTIVITIES,
   ...PLANNING_ACTIVITIES,
-  ...FITNESS_ACTIVITIES
+  ...FITNESS_ACTIVITIES,
+  ...ADVENTURE_ACTIVITIES,
+  ...CREATIVE_ACTIVITIES,
+  ...FOOD_ACTIVITIES,
+  ...LEARNING_ACTIVITIES,
+  ...ENTERTAINMENT_ACTIVITIES,
+  ...SPORTS_ACTIVITIES,
+  ...WELLNESS_ACTIVITIES,
+  ...NIGHTLIFE_ACTIVITIES,
+  ...SOCIAL_HANGOUTS
 ];
 
 // GROUPED EVENTS FOR EASIER SELECTION
@@ -217,6 +394,109 @@ export const FAMILY_EVENTS = [
   "Kid-Friendly Events"
 ];
 
+export const FOOD_DRINK_EVENTS = [
+  "Wine Tasting Events",
+  "Beer Festivals",
+  "Food Festivals",
+  "Cooking Competitions",
+  "Restaurant Weeks",
+  "Farmers Market Events",
+  "Coffee Festivals"
+];
+
+export const ARTS_CULTURE_EVENTS = [
+  "Art Exhibitions",
+  "Gallery Openings",
+  "Film Festivals",
+  "Book Fairs",
+  "Poetry Slams",
+  "Theater Premieres",
+  "Dance Performances"
+];
+
+export const MUSIC_EVENTS = [
+  "Music Festivals",
+  "Concert Series",
+  "DJ Nights",
+  "Jazz Sessions",
+  "Classical Concerts",
+  "Indie Music Shows",
+  "Music Workshops"
+];
+
+export const OUTDOOR_EVENTS = [
+  "Beach Parties",
+  "Park Events",
+  "Outdoor Concerts",
+  "Hiking Meetups",
+  "Camping Trips",
+  "Sunrise/Sunset Gatherings",
+  "Bike Rallies"
+];
+
+export const SEASONAL_EVENTS = [
+  "Holiday Markets",
+  "New Year Celebrations",
+  "Summer Festivals",
+  "Winter Events",
+  "Spring Celebrations",
+  "Autumn Festivals",
+  "Cultural Holidays"
+];
+
+export const WELLNESS_EVENTS = [
+  "Yoga Retreats",
+  "Meditation Workshops",
+  "Wellness Fairs",
+  "Health Expos",
+  "Fitness Challenges",
+  "Running Events",
+  "Charity Runs"
+];
+
+export const TECH_INNOVATION_EVENTS = [
+  "Tech Conferences",
+  "Startup Pitches",
+  "Hackathons",
+  "Innovation Showcases",
+  "Coding Bootcamps",
+  "VR/AR Demos",
+  "Tech Networking"
+];
+
+export const ADVENTURE_EVENTS = [
+  "Adventure Races",
+  "Obstacle Courses",
+  "Extreme Sports Events",
+  "Water Sports Competitions",
+  "Mountain Challenges",
+  "Urban Adventures",
+  "Treasure Hunts"
+];
+
+export const LEARNING_EVENTS = [
+  "Workshops",
+  "Seminars",
+  "Conferences",
+  "Lectures",
+  "Training Sessions",
+  "Educational Tours",
+  "Skill Exchanges"
+];
+
+export const SPECIAL_EVENTS = [
+  "Pride Celebrations",
+  "Cultural Parades",
+  "Fashion Shows",
+  "Car Shows",
+  "Pet Events",
+  "Market Days",
+  "Block Parties",
+  "Flash Sales",
+  "Auctions",
+  "Award Ceremonies"
+];
+
 // Combined events in logical order
 export const ALL_EVENTS = [
   ...CULTURAL_COMMUNITY_EVENTS,
@@ -224,7 +504,17 @@ export const ALL_EVENTS = [
   ...SPORTS_COMPETITION_EVENTS,
   ...SOCIAL_NETWORKING_EVENTS,
   ...ENTERTAINMENT_EVENTS,
-  ...FAMILY_EVENTS
+  ...FAMILY_EVENTS,
+  ...FOOD_DRINK_EVENTS,
+  ...ARTS_CULTURE_EVENTS,
+  ...MUSIC_EVENTS,
+  ...OUTDOOR_EVENTS,
+  ...SEASONAL_EVENTS,
+  ...WELLNESS_EVENTS,
+  ...TECH_INNOVATION_EVENTS,
+  ...ADVENTURE_EVENTS,
+  ...LEARNING_EVENTS,
+  ...SPECIAL_EVENTS
 ];
 
 // Languages available for selection
