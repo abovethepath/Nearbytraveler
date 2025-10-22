@@ -1049,7 +1049,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   
                   {cityActivities.length > 0 && (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                      {cityActivities.map((activity) => {
+                      {cityActivities.map((activity, index) => {
                         const isSelected = userActivities.some(ua => ua.activityId === activity.id);
                         const userActivity = userActivities.find(ua => ua.activityId === activity.id);
                         
@@ -1061,12 +1061,23 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         // Only show edit/delete for activities created by this user
                         const isUserCreated = activity.createdByUserId === currentUserId;
                         
+                        // Color variety for selected pills
+                        const colorOptions = [
+                          'bg-gradient-to-r from-green-500 to-emerald-600 text-white border-green-300',
+                          'bg-gradient-to-r from-purple-500 to-pink-600 text-white border-purple-300',
+                          'bg-gradient-to-r from-blue-500 to-cyan-600 text-white border-blue-300',
+                          'bg-gradient-to-r from-orange-500 to-red-600 text-white border-orange-300',
+                          'bg-gradient-to-r from-teal-500 to-blue-600 text-white border-teal-300',
+                          'bg-gradient-to-r from-pink-500 to-rose-600 text-white border-pink-300',
+                        ];
+                        const selectedColor = colorOptions[index % colorOptions.length];
+                        
                         return (
                           <div key={activity.id} className="group relative">
                             <button
                               className={`w-full px-5 py-4 rounded-2xl text-sm font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl border-2 ${
                                 isSelected 
-                                  ? 'bg-gradient-to-r from-blue-500 to-orange-500 text-white border-blue-300 shadow-blue-200' 
+                                  ? selectedColor
                                   : 'bg-gradient-to-r from-gray-50 to-white text-gray-700 border-gray-200 hover:border-blue-300 hover:shadow-blue-100'
                               }`}
                               onClick={() => {
@@ -1080,9 +1091,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                               style={{ pointerEvents: 'auto', zIndex: 1 }}
                             >
                               <span className="relative z-10">{activity.activityName}</span>
-                              {isSelected && (
-                                <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-orange-500/20 rounded-2xl animate-pulse"></div>
-                              )}
                             </button>
                             
                             {/* Edit/Delete ONLY for user-created activities */}
@@ -1142,16 +1150,29 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                       "Shopping", "Local Markets", "Street Food", "Brunch Spots",
                       "Festivals & Events", "Cultural Experiences", "Networking & Business",
                       "Sports & Fitness", "Yoga & Wellness", "Volunteer Opportunities", "Language Exchange"
-                    ].map((activity) => {
+                    ].map((activity, index) => {
                       // Check if user already has this activity in their interests
                       const isSelected = userActivities.some(ua => ua.activityName === activity && ua.cityName === selectedCity);
+                      
+                      // Color variety for different activities
+                      const colorOptions = [
+                        'bg-gradient-to-r from-green-500 to-emerald-600 text-white border-green-300',
+                        'bg-gradient-to-r from-purple-500 to-pink-600 text-white border-purple-300',
+                        'bg-gradient-to-r from-blue-500 to-cyan-600 text-white border-blue-300',
+                        'bg-gradient-to-r from-orange-500 to-red-600 text-white border-orange-300',
+                        'bg-gradient-to-r from-teal-500 to-green-600 text-white border-teal-300',
+                        'bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white border-pink-300',
+                        'bg-gradient-to-r from-indigo-500 to-purple-600 text-white border-indigo-300',
+                        'bg-gradient-to-r from-rose-500 to-pink-600 text-white border-rose-300',
+                      ];
+                      const selectedColor = colorOptions[index % colorOptions.length];
                       
                       return (
                         <button
                           key={activity}
                           className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border-2 ${
                             isSelected 
-                              ? 'bg-gradient-to-r from-blue-500 to-orange-500 text-white border-blue-300' 
+                              ? selectedColor
                               : 'bg-gradient-to-r from-gray-50 to-white text-gray-700 border-gray-200 hover:border-blue-300 hover:shadow-blue-100'
                           }`}
                           onClick={async () => {
