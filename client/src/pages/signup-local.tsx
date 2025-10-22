@@ -462,7 +462,7 @@ export default function SignupLocal() {
                       Creating Your Account...
                     </div>
                   ) : (
-                    `Complete Signup (${formData.interests.length}/3 interests selected)`
+                    `Complete Signup (${formData.interests.length}/7 interests selected)`
                   )}
                 </Button>
                 {!formData.pledgeAccepted && (
