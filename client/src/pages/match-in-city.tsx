@@ -223,14 +223,14 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           // Using colorful gradients instead of photos for easier management
           
           const gradientOptions = [
-            "from-orange-400/20 to-red-600/20",
-            "from-blue-400/20 to-purple-600/20",
-            "from-yellow-400/20 to-red-600/20", 
-            "from-pink-400/20 to-orange-600/20",
-            "from-green-400/20 to-blue-600/20",
-            "from-purple-400/20 to-pink-600/20",
-            "from-indigo-400/20 to-purple-600/20",
-            "from-teal-400/20 to-blue-600/20"
+            "from-orange-400/20 to-blue-600/20",
+            "from-blue-400/20 to-orange-600/20",
+            "from-blue-300/20 to-orange-500/20", 
+            "from-orange-300/20 to-blue-500/20",
+            "from-blue-500/20 to-orange-400/20",
+            "from-orange-500/20 to-blue-400/20",
+            "from-blue-600/20 to-orange-300/20",
+            "from-orange-600/20 to-blue-300/20"
           ];
           
           return {
@@ -676,11 +676,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           setTimeout(() => {
             fetchUserActivities();
           }, 100);
-          
-          toast({
-            title: "Activity Selected",
-            description: `Added "${activityName}" to your interests`,
-          });
         } else {
           const error = await response.json();
           toast({
@@ -825,7 +820,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   // Show city selection screen if no city is selected
   if (!selectedCity) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800">
+      <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-orange-900">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-white mb-4">🎯 Match in City</h1>
@@ -965,17 +960,17 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
         {/* Activity Selection Interface - GORGEOUS RESTORED DESIGN */}
         <div className="max-w-6xl mx-auto">
-          <div className="bg-gradient-to-br from-white via-blue-50 to-purple-50 border border-blue-200/50 rounded-2xl shadow-2xl backdrop-blur-sm">
+          <div className="bg-gradient-to-br from-white via-blue-50 to-orange-50 border border-blue-200/50 rounded-2xl shadow-2xl backdrop-blur-sm">
             <div className="p-8">
               <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">⭐ Discover Your Perfect {selectedCity} Experience</h2>
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent mb-4">⭐ Discover Your Perfect {selectedCity} Experience</h2>
                 <p className="text-lg text-gray-600">Select activities that inspire you and connect with fellow adventurers</p>
               </div>
 
               {/* Add new activity section - GORGEOUS DESIGN - MOVED TO TOP */}
-              <div className="mb-8 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl border border-purple-200/50 shadow-inner">
+              <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-orange-50 rounded-2xl border border-blue-200/50 shadow-inner">
                 <div className="text-center mb-4">
-                  <h4 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">✨ Create Your Own Experience</h4>
+                  <h4 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent mb-2">✨ Create Your Own Experience</h4>
                   <p className="text-gray-600 text-sm">Share something unique you want to do in {selectedCity}</p>
                 </div>
                 <div className="flex gap-3">
@@ -983,7 +978,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     placeholder="e.g., Taylor Swift November 8th, Pickleball Saturday Mornings..."
                     value={newActivity}
                     onChange={(e) => setNewActivity(e.target.value)}
-                    className="border-purple-200 bg-white/80 backdrop-blur-sm focus:border-purple-400 focus:ring-purple-200 rounded-xl text-gray-800 placeholder-gray-500 shadow-md"
+                    className="border-blue-200 bg-white/80 backdrop-blur-sm focus:border-blue-400 focus:ring-blue-200 rounded-xl text-gray-800 placeholder-gray-500 shadow-md"
                     onKeyPress={(e) => {
                       if (e.key === 'Enter') {
                         handleAddActivity();
@@ -992,7 +987,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   />
                   <Button 
                     onClick={handleAddActivity}
-                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                    className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
                   >
                     <Plus className="w-5 h-5" />
                   </Button>
@@ -1044,7 +1039,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           setIsLoading(false);
                         }
                       }}
-                      className="mt-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+                      className="mt-4 bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white"
                       data-testid="button-enhance-ai-activities"
                       disabled={isLoading}
                     >
@@ -1071,7 +1066,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                             <button
                               className={`w-full px-5 py-4 rounded-2xl text-sm font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl border-2 ${
                                 isSelected 
-                                  ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white border-emerald-300 shadow-emerald-200' 
+                                  ? 'bg-gradient-to-r from-blue-500 to-orange-500 text-white border-blue-300 shadow-blue-200' 
                                   : 'bg-gradient-to-r from-gray-50 to-white text-gray-700 border-gray-200 hover:border-blue-300 hover:shadow-blue-100'
                               }`}
                               onClick={() => {
@@ -1086,7 +1081,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                             >
                               <span className="relative z-10">{activity.activityName}</span>
                               {isSelected && (
-                                <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 to-green-500/20 rounded-2xl animate-pulse"></div>
+                                <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-orange-500/20 rounded-2xl animate-pulse"></div>
                               )}
                             </button>
                             
@@ -1131,9 +1126,9 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 {/* Universal Activities - Always show these for every city */}
                 <div className="mt-8">
                   <div className="text-center mb-6">
-                    <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent mb-2">🎯 Popular Activities & Interests</h3>
+                    <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-orange-500 bg-clip-text text-transparent mb-2">🎯 Popular Activities & Interests</h3>
                     <p className="text-gray-600 text-sm">Click to add to your "Things I Want To Do" profile</p>
-                    <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto rounded-full mt-2"></div>
+                    <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-orange-500 mx-auto rounded-full mt-2"></div>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
                     {[
@@ -1156,7 +1151,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           key={activity}
                           className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border-2 ${
                             isSelected 
-                              ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white border-emerald-300' 
+                              ? 'bg-gradient-to-r from-blue-500 to-orange-500 text-white border-blue-300' 
                               : 'bg-gradient-to-r from-gray-50 to-white text-gray-700 border-gray-200 hover:border-blue-300 hover:shadow-blue-100'
                           }`}
                           onClick={async () => {
@@ -1277,7 +1272,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 {matchingUsers.map((user) => (
                   <div key={user.id} className="bg-gray-50 p-4 rounded-lg border">
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center text-white font-bold">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-orange-600 flex items-center justify-center text-white font-bold">
                         {user.name.charAt(0)}
                       </div>
                       <div>
