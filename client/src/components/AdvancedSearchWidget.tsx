@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, Search, X, Users, Filter } from "lucide-react";
+import { ChevronDown, Search, X, Users, Filter, MapPin } from "lucide-react";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -82,10 +82,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
   // Connection mutation
   const connectionMutation = useMutation({
     mutationFn: async (userId: number) => {
-      return await apiRequest(`/api/connections/connect`, {
-        method: "POST",
-        body: { targetUserId: userId }
-      });
+      return await apiRequest("POST", `/api/connections/connect`, { targetUserId: userId });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/connections"] });
@@ -249,12 +246,15 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
 
         {/* Content */}
         <div className="p-6 space-y-6">
-          {/* Basic Search */}
+          {/* Keyword Search */}
           <div>
-            <Label htmlFor="search" className="text-black dark:text-white">Search by name or username</Label>
+            <Label htmlFor="keyword-search" className="text-black dark:text-white font-semibold">Keyword Search</Label>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+              Search across all profile fields: interests, activities, languages, countries, military status, travel preferences, and more
+            </p>
             <Input
-              id="search"
-              placeholder="Search people..."
+              id="keyword-search"
+              placeholder="Try: veteran, spanish, france, luxury, gay, kids, photographer..."
               value={advancedFilters.search}
               onChange={(e) => setAdvancedFilters(prev => ({ ...prev, search: e.target.value }))}
               onKeyDown={(e) => {
@@ -263,6 +263,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                 }
               }}
               className="mt-1"
+              data-testid="input-keyword-search"
             />
           </div>
 
