@@ -4124,7 +4124,7 @@ Questions? Just reply to this message. Welcome aboard!
 
       if (process.env.NODE_ENV === 'development') {
         console.log('🔍 ADVANCED SEARCH: Performing search with filters:', {
-          search, gender, sexualPreference, minAge, maxAge, topChoices, interests, privateInterests, activities, events: eventsFilter, location, userType, travelerTypes, militaryStatus, currentUserId
+          search, gender, sexualPreference, minAge, maxAge, topChoices, interests, privateInterests, activities, events: eventsFilter, location, userType, travelerTypes, militaryStatus, newToTown, currentUserId
         });
         console.log('🔍 SEARCH QUERY TYPE:', typeof search, 'value:', search);
       }
