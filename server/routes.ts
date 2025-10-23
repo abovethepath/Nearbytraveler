@@ -4158,34 +4158,44 @@ Questions? Just reply to this message. Welcome aboard!
         for (const searchTerm of searchTerms) {
           
           // Each search term must match somewhere in the user's profile (AND logic)
-          whereConditions.push(
-            or(
-              ilike(users.name, `%${searchTerm}%`),
-              ilike(users.username, `%${searchTerm}%`),
-              ilike(users.bio, `%${searchTerm}%`),
-              // Array fields search using array_to_string for partial matches
-              sql`array_to_string(${users.interests}, ',') ILIKE ${`%${searchTerm}%`}`,
-              sql`array_to_string(${users.privateInterests}, ',') ILIKE ${`%${searchTerm}%`}`,
-              sql`array_to_string(${users.activities}, ',') ILIKE ${`%${searchTerm}%`}`,
-              sql`array_to_string(${users.events}, ',') ILIKE ${`%${searchTerm}%`}`,
-              // Custom text fields search for user-entered interests/activities/events
-              ilike(users.customInterests, `%${searchTerm}%`),
-              ilike(users.customActivities, `%${searchTerm}%`),
-              ilike(users.customEvents, `%${searchTerm}%`),
-              // City-specific activities search - CRITICAL for "Empire State Building" searches
-              sql`EXISTS (SELECT 1 FROM user_city_interests WHERE user_city_interests.user_id = ${users.id} AND user_city_interests.activity_name ILIKE ${`%${searchTerm}%`})`,
-              ilike(users.gender, `%${searchTerm}%`),
-              // Business profile fields
-              ilike(users.businessName, `%${searchTerm}%`),
-              ilike(users.businessType, `%${searchTerm}%`),
-              ilike(users.businessDescription, `%${searchTerm}%`),
-              // Location-based keyword search
-              ilike(users.location, `%${searchTerm}%`),
-              ilike(users.hometownCity, `%${searchTerm}%`),
-              ilike(users.hometownState, `%${searchTerm}%`),
-              ilike(users.hometownCountry, `%${searchTerm}%`)
-            )
-          );
+          const searchConditions = [
+            ilike(users.name, `%${searchTerm}%`),
+            ilike(users.username, `%${searchTerm}%`),
+            ilike(users.bio, `%${searchTerm}%`),
+            // Array fields search using array_to_string for partial matches
+            sql`array_to_string(${users.interests}, ',') ILIKE ${`%${searchTerm}%`}`,
+            sql`array_to_string(${users.privateInterests}, ',') ILIKE ${`%${searchTerm}%`}`,
+            sql`array_to_string(${users.activities}, ',') ILIKE ${`%${searchTerm}%`}`,
+            sql`array_to_string(${users.events}, ',') ILIKE ${`%${searchTerm}%`}`,
+            // Custom text fields search for user-entered interests/activities/events
+            ilike(users.customInterests, `%${searchTerm}%`),
+            ilike(users.customActivities, `%${searchTerm}%`),
+            ilike(users.customEvents, `%${searchTerm}%`),
+            // City-specific activities search - CRITICAL for "Empire State Building" searches
+            sql`EXISTS (SELECT 1 FROM user_city_interests WHERE user_city_interests.user_id = ${users.id} AND user_city_interests.activity_name ILIKE ${`%${searchTerm}%`})`,
+            ilike(users.gender, `%${searchTerm}%`),
+            // Business profile fields
+            ilike(users.businessName, `%${searchTerm}%`),
+            ilike(users.businessType, `%${searchTerm}%`),
+            ilike(users.businessDescription, `%${searchTerm}%`),
+            // Location-based keyword search
+            ilike(users.location, `%${searchTerm}%`),
+            ilike(users.hometownCity, `%${searchTerm}%`),
+            ilike(users.hometownState, `%${searchTerm}%`),
+            ilike(users.hometownCountry, `%${searchTerm}%`)
+          ];
+          
+          // Special keyword: "new to town" should match users with isNewToTown status
+          if (searchTerm.includes('new') || searchTerm.includes('town')) {
+            searchConditions.push(
+              and(
+                sql`${users.isNewToTown} = true`,
+                sql`${users.newToTownUntil} > NOW()`
+              )
+            );
+          }
+          
+          whereConditions.push(or(...searchConditions));
         }
         
         if (process.env.NODE_ENV === 'development') {
