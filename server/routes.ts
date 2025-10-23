@@ -8143,11 +8143,26 @@ Questions? Just reply to this message. Welcome aboard!
         return [];
       };
 
+      // Parse all array fields
       const currentInterests = parseArray(currentUser.interests);
       const currentActivities = parseArray(currentUser.activities);
+      const currentEvents = parseArray(currentUser.events);
+      const currentSexualPreference = parseArray(currentUser.sexualPreference);
+      const currentTravelStyle = parseArray(currentUser.travelStyle);
+      const currentLanguages = parseArray(currentUser.languagesSpoken);
+      const currentCountries = parseArray(currentUser.countriesVisited);
+      const currentTravelWhat = parseArray(currentUser.travelWhat);
+      const currentDefaultInterests = parseArray(currentUser.defaultTravelInterests);
       
       const otherInterests = parseArray(otherUser.interests);
       const otherActivities = parseArray(otherUser.activities);
+      const otherEvents = parseArray(otherUser.events);
+      const otherSexualPreference = parseArray(otherUser.sexualPreference);
+      const otherTravelStyle = parseArray(otherUser.travelStyle);
+      const otherLanguages = parseArray(otherUser.languagesSpoken);
+      const otherCountries = parseArray(otherUser.countriesVisited);
+      const otherTravelWhat = parseArray(otherUser.travelWhat);
+      const otherDefaultInterests = parseArray(otherUser.defaultTravelInterests);
 
       // Calculate shared interests
       const sharedInterests = currentInterests.filter(interest => 
@@ -8158,6 +8173,96 @@ Questions? Just reply to this message. Welcome aboard!
       const sharedActivities = currentActivities.filter(activity => 
         otherActivities.includes(activity)
       );
+      
+      // Calculate shared event types
+      const sharedEventTypes = currentEvents.filter(event => 
+        otherEvents.includes(event)
+      );
+      
+      // Calculate shared sexual preferences
+      const sharedSexualPreferences = currentSexualPreference.filter(pref => 
+        otherSexualPreference.includes(pref)
+      );
+      
+      // Calculate shared travel styles
+      const sharedTravelStyles = currentTravelStyle.filter(style => 
+        otherTravelStyle.includes(style)
+      );
+      
+      // Calculate shared languages
+      const sharedLanguages = currentLanguages.filter(lang => 
+        otherLanguages.includes(lang)
+      );
+      
+      // Calculate shared countries visited
+      const sharedCountries = currentCountries.filter(country => 
+        otherCountries.includes(country)
+      );
+      
+      // Calculate shared travel interests (what they want to do)
+      const sharedTravelWhat = currentTravelWhat.filter(what => 
+        otherTravelWhat.includes(what)
+      );
+      
+      // Calculate shared default travel interests
+      const sharedDefaultInterests = currentDefaultInterests.filter(interest => 
+        otherDefaultInterests.includes(interest)
+      );
+      
+      // Text field comparisons (case-insensitive)
+      const sharedTextFields = [];
+      
+      // Gender match
+      if (currentUser.gender && otherUser.gender && 
+          currentUser.gender.toLowerCase() === otherUser.gender.toLowerCase()) {
+        sharedTextFields.push(`Gender: ${currentUser.gender}`);
+      }
+      
+      // Military status match
+      if (currentUser.militaryStatus && otherUser.militaryStatus && 
+          currentUser.militaryStatus.toLowerCase() === otherUser.militaryStatus.toLowerCase()) {
+        sharedTextFields.push(`Military: ${currentUser.militaryStatus}`);
+      }
+      
+      // Travel why match
+      if (currentUser.travelWhy && otherUser.travelWhy && 
+          currentUser.travelWhy.toLowerCase() === otherUser.travelWhy.toLowerCase()) {
+        sharedTextFields.push(`Travel Motivation: ${currentUser.travelWhy}`);
+      }
+      
+      // Travel how match
+      if (currentUser.travelHow && otherUser.travelHow && 
+          currentUser.travelHow.toLowerCase() === otherUser.travelHow.toLowerCase()) {
+        sharedTextFields.push(`Travel Style: ${currentUser.travelHow}`);
+      }
+      
+      // Travel budget match
+      if (currentUser.travelBudget && otherUser.travelBudget && 
+          currentUser.travelBudget.toLowerCase() === otherUser.travelBudget.toLowerCase()) {
+        sharedTextFields.push(`Budget: ${currentUser.travelBudget}`);
+      }
+      
+      // Traveling with children match
+      if (currentUser.travelingWithChildren && otherUser.travelingWithChildren) {
+        sharedTextFields.push('Both traveling with children');
+      }
+      
+      // New to town status match
+      if (currentUser.isNewToTown && otherUser.isNewToTown) {
+        sharedTextFields.push('Both new to town');
+      }
+      
+      // Hometown city match
+      if (currentUser.hometownCity && otherUser.hometownCity && 
+          currentUser.hometownCity.toLowerCase() === otherUser.hometownCity.toLowerCase()) {
+        sharedTextFields.push(`From: ${currentUser.hometownCity}`);
+      }
+      
+      // Destination city match
+      if (currentUser.destinationCity && otherUser.destinationCity && 
+          currentUser.destinationCity.toLowerCase() === otherUser.destinationCity.toLowerCase()) {
+        sharedTextFields.push(`Traveling to: ${currentUser.destinationCity}`);
+      }
 
       // Get shared CITY-SPECIFIC activities from user_city_interests table
       // CRITICAL: This finds users who selected same activities like "U2 Concert in July" in same city
@@ -8191,22 +8296,38 @@ Questions? Just reply to this message. Welcome aboard!
 
       const sharedEvents = (sharedEventsQuery.rows || []).map((row: any) => row.title);
 
-      // Combine all shared matches
+      // Combine ALL shared matches - comprehensive profile comparison
       const allSharedMatches = [
         ...sharedInterests,
         ...sharedActivities,
-        ...sharedCityActivities,  // NOW INCLUDING CITY-SPECIFIC ACTIVITIES!
-        ...sharedEvents
+        ...sharedEventTypes,
+        ...sharedCityActivities,
+        ...sharedEvents,
+        ...sharedSexualPreferences,
+        ...sharedTravelStyles,
+        ...sharedLanguages.map(lang => `Language: ${lang}`),
+        ...sharedCountries.map(country => `Visited: ${country}`),
+        ...sharedTravelWhat,
+        ...sharedDefaultInterests,
+        ...sharedTextFields
       ];
 
       const totalSharedCount = allSharedMatches.length;
 
       if (process.env.NODE_ENV === 'development') {
-        console.log(`🤝 SHARED MATCHES BREAKDOWN:
-          - Shared Interests: ${sharedInterests.length} (${sharedInterests.join(', ')})
-          - Shared Activities: ${sharedActivities.length} (${sharedActivities.join(', ')})
-          - Shared City Activities: ${sharedCityActivities.length} (${sharedCityActivities.join(', ')})
-          - Shared Events: ${sharedEvents.length} (${sharedEvents.join(', ')})
+        console.log(`🤝 COMPREHENSIVE SHARED MATCHES BREAKDOWN:
+          - Shared Interests: ${sharedInterests.length} (${sharedInterests.slice(0, 3).join(', ')})
+          - Shared Activities: ${sharedActivities.length} (${sharedActivities.slice(0, 3).join(', ')})
+          - Shared Event Types: ${sharedEventTypes.length} (${sharedEventTypes.slice(0, 3).join(', ')})
+          - Shared City Activities: ${sharedCityActivities.length} (${sharedCityActivities.slice(0, 3).join(', ')})
+          - Shared Events: ${sharedEvents.length} (${sharedEvents.slice(0, 3).join(', ')})
+          - Shared Sexual Preferences: ${sharedSexualPreferences.length}
+          - Shared Travel Styles: ${sharedTravelStyles.length} (${sharedTravelStyles.join(', ')})
+          - Shared Languages: ${sharedLanguages.length} (${sharedLanguages.join(', ')})
+          - Shared Countries: ${sharedCountries.length} (${sharedCountries.slice(0, 3).join(', ')})
+          - Shared Travel What: ${sharedTravelWhat.length}
+          - Shared Default Interests: ${sharedDefaultInterests.length}
+          - Shared Text Fields: ${sharedTextFields.length} (${sharedTextFields.join(', ')})
           - Total: ${totalSharedCount}`);
       }
 
@@ -8214,9 +8335,17 @@ Questions? Just reply to this message. Welcome aboard!
         totalSharedCount,
         sharedInterests,
         sharedActivities,
-        sharedCityActivities,  // Added to response
+        sharedEventTypes,
+        sharedCityActivities,
         sharedEvents,
-        allSharedMatches: allSharedMatches.slice(0, 3) // Limit to top 3 for display
+        sharedSexualPreferences,
+        sharedTravelStyles,
+        sharedLanguages,
+        sharedCountries,
+        sharedTravelWhat,
+        sharedDefaultInterests,
+        sharedTextFields,
+        allSharedMatches: allSharedMatches.slice(0, 5) // Show top 5 for display
       });
 
     } catch (error: any) {
