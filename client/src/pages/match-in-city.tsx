@@ -1061,23 +1061,12 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         // Only show edit/delete for activities created by this user
                         const isUserCreated = activity.createdByUserId === currentUserId;
                         
-                        // Color variety for selected pills - BOLD VIBRANT COLORS
-                        const colorOptions = [
-                          'bg-gradient-to-r from-green-600 to-emerald-700 text-white border-green-400',
-                          'bg-gradient-to-r from-purple-600 to-violet-700 text-white border-purple-400',
-                          'bg-gradient-to-r from-blue-600 to-indigo-700 text-white border-blue-400',
-                          'bg-gradient-to-r from-orange-600 to-red-700 text-white border-orange-400',
-                          'bg-gradient-to-r from-teal-600 to-cyan-700 text-white border-teal-400',
-                          'bg-gradient-to-r from-fuchsia-600 to-pink-700 text-white border-fuchsia-400',
-                        ];
-                        const selectedColor = colorOptions[index % colorOptions.length];
-                        
                         return (
                           <div key={activity.id} className="group relative">
                             <button
                               className={`w-full px-5 py-4 rounded-2xl text-sm font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl border-2 ${
                                 isSelected 
-                                  ? selectedColor
+                                  ? 'bg-gradient-to-r from-blue-600 to-orange-600 text-white border-blue-400 shadow-blue-200'
                                   : 'bg-gradient-to-r from-gray-50 to-white text-gray-700 border-gray-200 hover:border-blue-300 hover:shadow-blue-100'
                               }`}
                               onClick={() => {
@@ -1154,25 +1143,12 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                       // Check if user already has this activity in their interests
                       const isSelected = userActivities.some(ua => ua.activityName === activity && ua.cityName === selectedCity);
                       
-                      // Color variety for different activities - BOLD VIBRANT COLORS
-                      const colorOptions = [
-                        'bg-gradient-to-r from-green-600 to-emerald-700 text-white border-green-400',
-                        'bg-gradient-to-r from-purple-600 to-violet-700 text-white border-purple-400',
-                        'bg-gradient-to-r from-blue-600 to-indigo-700 text-white border-blue-400',
-                        'bg-gradient-to-r from-orange-600 to-red-700 text-white border-orange-400',
-                        'bg-gradient-to-r from-teal-600 to-cyan-700 text-white border-teal-400',
-                        'bg-gradient-to-r from-fuchsia-600 to-pink-700 text-white border-fuchsia-400',
-                        'bg-gradient-to-r from-indigo-600 to-purple-700 text-white border-indigo-400',
-                        'bg-gradient-to-r from-rose-600 to-red-700 text-white border-rose-400',
-                      ];
-                      const selectedColor = colorOptions[index % colorOptions.length];
-                      
                       return (
                         <button
                           key={activity}
                           className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border-2 ${
                             isSelected 
-                              ? selectedColor
+                              ? 'bg-gradient-to-r from-blue-600 to-orange-600 text-white border-blue-400 shadow-blue-200'
                               : 'bg-gradient-to-r from-gray-50 to-white text-gray-700 border-gray-200 hover:border-blue-300 hover:shadow-blue-100'
                           }`}
                           onClick={async () => {
