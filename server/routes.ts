@@ -4159,30 +4159,70 @@ Questions? Just reply to this message. Welcome aboard!
           
           // Each search term must match somewhere in the user's profile (AND logic)
           const searchConditions = [
+            // Basic profile fields
             ilike(users.name, `%${searchTerm}%`),
             ilike(users.username, `%${searchTerm}%`),
             ilike(users.bio, `%${searchTerm}%`),
-            // Array fields search using array_to_string for partial matches
+            ilike(users.gender, `%${searchTerm}%`),
+            
+            // Interests, Activities, Events - Standard arrays
             sql`array_to_string(${users.interests}, ',') ILIKE ${`%${searchTerm}%`}`,
             sql`array_to_string(${users.privateInterests}, ',') ILIKE ${`%${searchTerm}%`}`,
             sql`array_to_string(${users.activities}, ',') ILIKE ${`%${searchTerm}%`}`,
             sql`array_to_string(${users.events}, ',') ILIKE ${`%${searchTerm}%`}`,
-            // Custom text fields search for user-entered interests/activities/events
+            
+            // Custom text fields - User typed interests/activities/events
             ilike(users.customInterests, `%${searchTerm}%`),
             ilike(users.customActivities, `%${searchTerm}%`),
             ilike(users.customEvents, `%${searchTerm}%`),
-            // City-specific activities search - CRITICAL for "Empire State Building" searches
+            
+            // Sexual preference & relationship
+            sql`array_to_string(${users.sexualPreference}, ',') ILIKE ${`%${searchTerm}%`}`,
+            
+            // Military & veteran status
+            ilike(users.militaryStatus, `%${searchTerm}%`),
+            
+            // Travel style, languages, countries
+            sql`array_to_string(${users.travelStyle}, ',') ILIKE ${`%${searchTerm}%`}`,
+            sql`array_to_string(${users.languagesSpoken}, ',') ILIKE ${`%${searchTerm}%`}`,
+            sql`array_to_string(${users.countriesVisited}, ',') ILIKE ${`%${searchTerm}%`}`,
+            
+            // Family & children
+            ilike(users.childrenAges, `%${searchTerm}%`),
+            
+            // Travel intent fields (Why/What/How)
+            ilike(users.travelWhy, `%${searchTerm}%`),
+            sql`array_to_string(${users.travelWhat}, ',') ILIKE ${`%${searchTerm}%`}`,
+            ilike(users.travelHow, `%${searchTerm}%`),
+            ilike(users.travelBudget, `%${searchTerm}%`),
+            ilike(users.travelGroup, `%${searchTerm}%`),
+            
+            // Secret activities & special profile content
+            ilike(users.secretActivities, `%${searchTerm}%`),
+            
+            // Default travel preferences for all trips
+            sql`array_to_string(${users.defaultTravelInterests}, ',') ILIKE ${`%${searchTerm}%`}`,
+            sql`array_to_string(${users.defaultTravelActivities}, ',') ILIKE ${`%${searchTerm}%`}`,
+            sql`array_to_string(${users.defaultTravelEvents}, ',') ILIKE ${`%${searchTerm}%`}`,
+            
+            // City-specific activities search - CRITICAL for city-specific searches like "Empire State Building"
             sql`EXISTS (SELECT 1 FROM user_city_interests WHERE user_city_interests.user_id = ${users.id} AND user_city_interests.activity_name ILIKE ${`%${searchTerm}%`})`,
-            ilike(users.gender, `%${searchTerm}%`),
+            
             // Business profile fields
             ilike(users.businessName, `%${searchTerm}%`),
             ilike(users.businessType, `%${searchTerm}%`),
             ilike(users.businessDescription, `%${searchTerm}%`),
-            // Location-based keyword search
+            ilike(users.specialty, `%${searchTerm}%`),
+            sql`array_to_string(${users.tags}, ',') ILIKE ${`%${searchTerm}%`}`,
+            
+            // Location fields - hometown and current
             ilike(users.location, `%${searchTerm}%`),
             ilike(users.hometownCity, `%${searchTerm}%`),
             ilike(users.hometownState, `%${searchTerm}%`),
-            ilike(users.hometownCountry, `%${searchTerm}%`)
+            ilike(users.hometownCountry, `%${searchTerm}%`),
+            ilike(users.destinationCity, `%${searchTerm}%`),
+            ilike(users.destinationState, `%${searchTerm}%`),
+            ilike(users.destinationCountry, `%${searchTerm}%`)
           ];
           
           // Special keyword: "new to town" should match users with isNewToTown status
