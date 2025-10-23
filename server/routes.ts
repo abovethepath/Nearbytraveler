@@ -4138,10 +4138,8 @@ Questions? Just reply to this message. Welcome aboard!
       // Build WHERE conditions
       const whereConditions = [];
       
-      // ALWAYS exclude current user from search results
-      if (currentUserId) {
-        whereConditions.push(ne(users.id, currentUserId));
-      }
+      // NOTE: Current user IS included in search results so they can find themselves
+      // (e.g., searching "veteran" should show them if they're a veteran)
 
       // Multi-keyword search - supports comma-separated terms
       if (search && typeof search === 'string' && search.trim()) {
