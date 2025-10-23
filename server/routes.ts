@@ -4145,6 +4145,23 @@ Questions? Just reply to this message. Welcome aboard!
       if (search && typeof search === 'string' && search.trim()) {
         const searchInput = search.trim().toLowerCase();
         
+        // Special detection: If someone searches for "new to town", automatically apply the database filter
+        const newToTownVariations = ['new to town', 'new in town', 'newtotown', 'newintown', 'new 2 town'];
+        const isNewToTownSearch = newToTownVariations.some(variation => searchInput.includes(variation));
+        
+        if (isNewToTownSearch) {
+          // Apply the New to Town database filter
+          whereConditions.push(
+            and(
+              sql`${users.newToTownUntil} IS NOT NULL`,
+              sql`${users.newToTownUntil} > NOW()`
+            )
+          );
+          if (process.env.NODE_ENV === 'development') {
+            console.log('🆕 AUTO-DETECTED NEW TO TOWN SEARCH: Applying database filter for new_to_town_until');
+          }
+        }
+        
         // Split by comma and clean up each term
         const searchTerms = searchInput.split(',').map(term => term.trim()).filter(term => term.length > 0);
         
