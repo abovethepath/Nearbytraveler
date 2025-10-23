@@ -163,7 +163,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       console.log('🔄 Syncing activities to profile:', { selectedActivityNames, cityName });
       
       // Wait for profile query to be available, don't sync if loading
-      if (!userProfile && !userProfile?.activities) {
+      if (!userProfile) {
         console.log('⏳ Profile not loaded yet, skipping sync to prevent data loss');
         return;
       }
