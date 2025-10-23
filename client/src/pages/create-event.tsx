@@ -45,9 +45,7 @@ const PREDEFINED_TAGS = [
   "Solo Travelers Welcome",
   "Language Exchange",
   "Outdoor Event",
-  "Indoor Event", 
-  "Beginner Friendly",
-  "Advanced Level"
+  "Indoor Event"
 ];
 
 interface CreateEventProps {
@@ -156,7 +154,7 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
     mode: "onChange"
   });
 
-  // Load template data on component mount
+  // Load template data on component mount OR set default location from user profile
   React.useEffect(() => {
     const template = loadEventTemplate();
     if (template) {
@@ -189,6 +187,25 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
         title: "Template loaded!",
         description: "Using your previous event as a template. Just add new title and date!"
       });
+    } else {
+      // No template - set defaults from user's profile location
+      if (currentUser.hometownCity) {
+        setValue("city", currentUser.hometownCity);
+      }
+      if (currentUser.hometownState) {
+        setValue("state", currentUser.hometownState);
+        setSelectedState(currentUser.hometownState);
+      }
+      if (currentUser.hometownCountry) {
+        setValue("country", currentUser.hometownCountry);
+        setSelectedCountry(currentUser.hometownCountry);
+        if (currentUser.hometownCountry === "United States") {
+          setAvailableStates(Object.keys(US_CITIES_BY_STATE));
+          if (currentUser.hometownState && US_CITIES_BY_STATE[currentUser.hometownState]) {
+            setAvailableCities(US_CITIES_BY_STATE[currentUser.hometownState]);
+          }
+        }
+      }
     }
   }, []);
 

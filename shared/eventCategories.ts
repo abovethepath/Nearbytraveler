@@ -23,9 +23,7 @@ export const EVENT_TAGS = [
   "Solo Travelers Welcome",
   "Language Exchange",
   "Outdoor Event",
-  "Indoor Event",
-  "Beginner Friendly",
-  "Advanced Level"
+  "Indoor Event"
 ] as const;
 
 export type EventCategory = typeof EVENT_CATEGORIES[number];
