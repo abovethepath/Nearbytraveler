@@ -79,7 +79,7 @@ export default function EventsLanding() {
           }}
           className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
         >
-          JOIN NOW
+          Join Now
         </Button>
       </div>
 
@@ -110,7 +110,7 @@ export default function EventsLanding() {
                     className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200 w-full sm:w-auto"
                     data-testid="button-join-journey"
                   >
-                    JOIN NOW
+                    Join Now
                   </button>
                   <button 
                     onClick={() => {
@@ -154,6 +154,9 @@ export default function EventsLanding() {
                 <p className="mt-2 text-xs md:text-sm italic text-orange-600 text-center">
                   Where Shared Experiences Create Lifelong Bonds
                 </p>
+                <p className="mt-3 text-xs md:text-sm text-gray-600 dark:text-gray-400 text-center font-medium">
+                  Join 10,000+ travelers at 500+ weekly events worldwide
+                </p>
               </div>
             </div>
           ) : (
@@ -171,7 +174,7 @@ export default function EventsLanding() {
                 size="lg"
                 className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               >
-                JOIN NOW
+                Join Now
               </Button>
             </div>
           )}
@@ -217,24 +220,15 @@ export default function EventsLanding() {
         </div>
       </div>
 
-      {/* Quote Section */}
-      <div className="py-12 bg-white dark:bg-gray-900">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <p className="text-xl text-gray-800 dark:text-gray-300 leading-relaxed font-light">
-            "Thanks to Nearby Traveler, you can meet fellow travelers before local events. Every festival or gathering feels like a reunion, not a room full of strangers."
-          </p>
-          <div className="mt-6 text-center">
-            <p className="text-gray-600 dark:text-white text-base">— Real connections before you arrive</p>
-          </div>
-        </div>
-      </div>
-
       {/* Sample Events Section */}
       <div className="px-4 py-6 sm:py-12">
         <div className="max-w-6xl mx-auto mb-6 sm:mb-8">
-          <h2 className="text-2xl font-light mb-6 sm:mb-8 text-center text-gray-900 dark:text-white">
+          <h2 className="text-3xl font-bold mb-4 text-center text-gray-900 dark:text-white">
             Upcoming Local Events & Experiences
           </h2>
+          <p className="text-center text-gray-600 dark:text-gray-400 mb-8">
+            Sample events from our LA community. Events available in 50+ cities worldwide.
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-6 sm:mb-8">
             
             {/* Venice Beach Dance Party */}
@@ -425,37 +419,59 @@ export default function EventsLanding() {
 
         {/* What Makes Events Special Section */}
         <div className="mt-20 max-w-6xl mx-auto">
-          <h2 className="text-2xl font-light mb-6 sm:mb-8 text-center text-gray-900 dark:text-white">
+          <h2 className="text-3xl font-bold mb-8 text-center text-gray-900 dark:text-white">
             What Makes Our Events Special
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mb-20">
-            <div className="text-center">
-              <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Epic Experiences</h3>
-              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">From beach bonfires to rooftop parties - join unforgettable events created by passionate locals who know the best spots.</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <div className="bg-orange-200 dark:bg-orange-600 p-6 rounded-xl shadow-lg">
+              <div className="text-3xl mb-4">🎉</div>
+              <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-white">From $1 Taco Tours to Free Beach Parties</h3>
+              <p className="text-gray-700 dark:text-white text-sm leading-relaxed">Join unforgettable events created by passionate locals who know the best spots. Every experience is authentic and affordable.</p>
             </div>
-            <div className="text-center">
-              <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Instant Connections</h3>
-              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Meet amazing travelers and locals who share your interests. Every event is a chance to make lifelong friendships.</p>
+            <div className="bg-blue-200 dark:bg-blue-600 p-6 rounded-xl shadow-lg">
+              <div className="text-3xl mb-4">🤝</div>
+              <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-white">Meet 5-20 People Per Event</h3>
+              <p className="text-gray-700 dark:text-white text-sm leading-relaxed">Every event is a chance to make lifelong friendships. Small groups mean real connections, not anonymous crowds.</p>
             </div>
-            <div className="text-center">
-              <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Local Secrets</h3>
-              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Discover hidden gems and authentic experiences that tourists never find. Access the real side of every city.</p>
+            <div className="bg-teal-200 dark:bg-teal-600 p-6 rounded-xl shadow-lg">
+              <div className="text-3xl mb-4">🗺️</div>
+              <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-white">Hidden Spots Locals Actually Go To</h3>
+              <p className="text-gray-700 dark:text-white text-sm leading-relaxed">Discover experiences that tourists never find. Access the real side of every city through insider knowledge.</p>
             </div>
           </div>
         </div>
 
+        {/* Create Your Own Event Section */}
+        <div className="mt-16 mb-20 max-w-4xl mx-auto text-center px-4">
+          <h2 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">Have a Great Idea?</h2>
+          <h3 className="text-xl font-semibold mb-6 text-gray-700 dark:text-gray-300">Host Your Own Experience</h3>
+          <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
+            Share your passion with travelers and locals. From coffee meetups to hiking adventures—create the event you wish existed.
+          </p>
+          <Button
+            onClick={() => setLocation('/launching-soon')}
+            size="lg"
+            className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-8 py-3 rounded-lg mb-4"
+          >
+            Create an Event
+          </Button>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            2,000+ events created this month by our community
+          </p>
+        </div>
+
         {/* Get Started Section - Clean Airbnb Style */}
-        <div className="bg-white dark:bg-gradient-to-r dark:from-orange-600 dark:to-blue-600 py-20 border-t border-gray-200 dark:border-0 mb-6 sm:mb-8">
+        <div className="bg-gradient-to-r from-orange-500 to-blue-600 py-12 rounded-2xl shadow-lg mb-6 sm:mb-8">
           <div className="max-w-4xl mx-auto text-center px-6">
-            <h2 className="text-3xl font-light mb-6 text-gray-900 dark:text-white">Ready to Join Events Only The Nearby Traveler Community Knows About?</h2>
-            <p className="text-lg mb-10 text-gray-600 dark:text-white dark:opacity-90 font-light">Join others already creating unforgettable experiences together.</p>
+            <h2 className="text-3xl font-bold mb-6 text-white">Ready to Join Events Only The Nearby Traveler Community Knows About?</h2>
+            <p className="text-lg mb-8 text-white/90">Join others already creating unforgettable experiences together.</p>
             
             <Button
               onClick={() => setLocation('/launching-soon')}
               size="lg"
-              className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium text-lg px-10 py-3 rounded-lg transition-all duration-200"
+              className="bg-white hover:bg-gray-100 text-orange-600 font-bold px-10 py-3 rounded-lg transition-all duration-200"
             >
-              Join Nearby Traveler
+              Join Now
             </Button>
           </div>
         </div>
