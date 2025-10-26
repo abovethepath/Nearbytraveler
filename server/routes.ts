@@ -4549,8 +4549,12 @@ Questions? Just reply to this message. Welcome aboard!
       const updates = req.body;
 
       if (process.env.NODE_ENV === 'development') {
-        console.log(`🔧 BUSINESS PROFILE UPDATE: User ${userId} updating with keys:`, Object.keys(updates));
-        console.log(`🔧 BUSINESS PROFILE UPDATE: Full request body:`, JSON.stringify(updates, null, 2));
+        console.log(`🔧 USER UPDATE: User ${userId} updating with keys:`, Object.keys(updates));
+        console.log(`🏙️ LOCATION DATA RECEIVED:`, {
+          hometownCity: updates.hometownCity,
+          hometownState: updates.hometownState,
+          hometownCountry: updates.hometownCountry
+        });
       }
 
       // MAP USER FIELDS: Convert camelCase frontend fields to snake_case database fields
