@@ -119,12 +119,9 @@ export default function LandingStreamlined() {
               
               {/* Left text side */}
               <div className="order-2 lg:order-1 text-center lg:text-left">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 mb-4 sm:mb-6">
-                  Never Travel Alone Again
-                </h1>
-                <h2 className="text-lg sm:text-xl md:text-2xl text-blue-600 mb-6 sm:mb-8 font-semibold">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 mb-6 sm:mb-8">
                   Connect with Locals & Travelers Worldwide
-                </h2>
+                </h1>
                 <p className="text-base sm:text-lg text-gray-600 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
                   Nearby Traveler solves traveler loneliness by connecting you with locals and fellow travelers based on common interests, activities, demographics and events planned. Build real friendships that last a lifetime.
                 </p>
