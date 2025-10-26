@@ -1,5 +1,5 @@
-// CRITICAL Mobile Cache Busting Service Worker - v4-20250705
-const CACHE_NAME = 'mobile-layout-v4-20250705-CRITICAL-CHANGES';
+// CRITICAL Mobile Cache Busting Service Worker - v5-20251026
+const CACHE_NAME = 'mobile-layout-v5-20251026-IMAGE-FIX';
 
 self.addEventListener('install', function(event) {
   console.log('SW: Installing cache-busting v3');
