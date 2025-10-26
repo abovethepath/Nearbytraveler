@@ -13,13 +13,12 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
-import { Users, Heart, MapPin, Calendar as CalendarIcon, TrendingUp, ArrowLeft, Edit, Filter, ChevronDown, ChevronRight, Search, X, MessageCircle } from "lucide-react";
+import { Users, Heart, MapPin, Calendar as CalendarIcon, TrendingUp, ArrowLeft, Edit, ChevronDown, ChevronRight, X, MessageCircle } from "lucide-react";
 import { format } from "date-fns";
 import { apiRequest } from "@/lib/queryClient";
 import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections, getMostPopularInterests } from "../../../shared/base-options";
@@ -30,9 +29,7 @@ import { SEXUAL_PREFERENCE_OPTIONS } from "@/lib/formConstants";
 import { formatDateForDisplay } from "@/lib/dateUtils";
 import BackButton from "@/components/back-button";
 import ConnectModal from "@/components/connect-modal";
-import { AdvancedSearchWidget } from "@/components/AdvancedSearchWidget";
 import type { User, TravelPlan } from "@shared/schema";
-import { SmartLocationInput } from "@/components/SmartLocationInput";
 
 
 
@@ -44,27 +41,9 @@ export default function ConnectPage() {
   
   console.log('ConnectPage - user data:', user?.username, user?.location);
   
-  // Active tab state
-  const [activeTab, setActiveTab] = useState("location-search");
-  
   // Connect modal state - auto-open on page load
   const [showConnectModal, setShowConnectModal] = useState(true);
   const [connectModalMode, setConnectModalMode] = useState<'current' | 'hometown'>('current');
-  
-  // Advanced search modal state
-  const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
-
-  // Handle URL parameters for tab switching
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const tabParam = urlParams.get('tab');
-    if (tabParam === 'advanced-filters') {
-      setShowAdvancedSearch(true);
-      setShowConnectModal(false); // Close modal when going to advanced search
-      // Clean up URL
-      window.history.replaceState({}, '', '/connect');
-    }
-  }, []);
   
 
 
@@ -77,53 +56,6 @@ export default function ConnectPage() {
   const [hasSearched, setHasSearched] = useState(false);
   const [showStartCalendar, setShowStartCalendar] = useState(false);
   const [showEndCalendar, setShowEndCalendar] = useState(false);
-
-  // Advanced filters state
-  const [advancedFilters, setAdvancedFilters] = useState({
-    search: "",
-    gender: [] as string[],
-    sexualPreference: [] as string[],
-    minAge: undefined as number | undefined,
-    maxAge: undefined as number | undefined,
-    interests: [] as string[],
-    activities: [] as string[],
-    events: [] as string[],
-    location: "",
-    userType: [] as string[],
-    travelerTypes: [] as string[],
-    militaryStatus: [] as string[]
-  });
-
-  // Location filter state for SmartLocationInput
-  const [locationFilter, setLocationFilter] = useState({
-    country: "",
-    state: "",
-    city: ""
-  });
-
-  // Collapsible section states for advanced search
-  const [expandedSections, setExpandedSections] = useState({
-    topChoices: false,
-    gender: false,
-    sexualPreference: false,
-    userType: false,
-    ageRange: false,
-    travelerType: false,
-    interests: false,
-    activities: false,
-    events: false,
-    militaryStatus: false
-  });
-
-  const toggleSection = (section: keyof typeof expandedSections) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }));
-  };
-  const [advancedSearchResults, setAdvancedSearchResults] = useState<User[]>([]);
-  const [isAdvancedSearching, setIsAdvancedSearching] = useState(false);
-  const [hasAdvancedSearched, setHasAdvancedSearched] = useState(false);
 
   // User data queries with proper refetch configuration
   const { data: userTravelPlans = [], isLoading: isLoadingTravelPlans, refetch: refetchTravelPlans } = useQuery<TravelPlan[]>({
@@ -294,74 +226,6 @@ export default function ConnectPage() {
     setHasSearched(false);
   };
 
-  // Advanced search function
-  const handleAdvancedSearch = async () => {
-    setIsAdvancedSearching(true);
-    setHasAdvancedSearched(true);
-    
-    try {
-      console.log('Performing advanced search with filters:', advancedFilters);
-      
-      // Build query parameters for the search
-      const params = new URLSearchParams();
-      
-      if (advancedFilters.search) params.append('search', advancedFilters.search);
-      if (advancedFilters.gender.length > 0) params.append('gender', advancedFilters.gender.join(','));
-      if (advancedFilters.sexualPreference.length > 0) params.append('sexualPreference', advancedFilters.sexualPreference.join(','));
-      if (advancedFilters.minAge) params.append('minAge', advancedFilters.minAge.toString());
-      if (advancedFilters.maxAge) params.append('maxAge', advancedFilters.maxAge.toString());
-      if (advancedFilters.interests.length > 0) params.append('interests', advancedFilters.interests.join(','));
-      if (advancedFilters.activities.length > 0) params.append('activities', advancedFilters.activities.join(','));
-      if (advancedFilters.events.length > 0) params.append('events', advancedFilters.events.join(','));
-      if (advancedFilters.location) params.append('location', advancedFilters.location);
-      if (advancedFilters.userType.length > 0) params.append('userType', advancedFilters.userType.join(','));
-      if (advancedFilters.travelerTypes.length > 0) params.append('travelerTypes', advancedFilters.travelerTypes.join(','));
-      if (advancedFilters.militaryStatus.length > 0) params.append('militaryStatus', advancedFilters.militaryStatus.join(','));
-      
-      const response = await fetch(`/api/users/search?${params.toString()}`);
-      
-      const data = await response.json();
-      console.log('Advanced search results:', data);
-      setAdvancedSearchResults(data || []);
-      
-      toast({
-        title: "Search Complete",
-        description: `Found ${data?.length || 0} users matching your criteria`,
-      });
-    } catch (error) {
-      console.error('Advanced search error:', error);
-      toast({
-        title: "Search Error",
-        description: "Failed to search users. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsAdvancedSearching(false);
-    }
-  };
-
-  // Clear advanced filters
-  const clearAdvancedFilters = () => {
-    setAdvancedFilters({
-      search: "",
-      gender: [],
-      sexualPreference: [],
-      minAge: undefined,
-      maxAge: undefined,
-      interests: [],
-      activities: [],
-      events: [],
-      location: "",
-      userType: [],
-      travelerTypes: [],
-      militaryStatus: []
-    });
-    setAdvancedSearchResults([]);
-    setHasAdvancedSearched(false);
-  };
-
-
-
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -402,7 +266,6 @@ export default function ConnectPage() {
                       variant="outline"
                       onClick={(e) => {
                         e.stopPropagation();
-                        setActiveTab("location-search");
                         setSearchLocation(currentLocation);
                         setStartDate(undefined);
                         setEndDate(undefined);
@@ -427,7 +290,6 @@ export default function ConnectPage() {
                 <Button
                   variant="outline"
                   onClick={() => {
-                    setActiveTab("location-search");
                     setSearchLocation(getUserLocation('hometown'));
                     setStartDate(undefined);
                     setEndDate(undefined);
@@ -455,7 +317,6 @@ export default function ConnectPage() {
                     key={plan.id}
                     variant="outline"
                     onClick={() => {
-                      setActiveTab("location-search");
                       handleTravelPlanSelect(plan);
                       setTimeout(() => handleSearch(), 100);
                     }}
@@ -495,28 +356,9 @@ export default function ConnectPage() {
           </CardContent>
         </Card>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
-          <TabsList className="grid w-full grid-cols-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl border border-white/20 dark:border-gray-700/50 rounded-xl p-1 sm:p-2">
-            <TabsTrigger 
-              value="location-search" 
-              className="text-xs sm:text-sm rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-teal-600 data-[state=active]:text-white transition-all duration-300 px-2 sm:px-4 py-1.5 sm:py-2"
-            >
-              Location
-            </TabsTrigger>
-            <TabsTrigger 
-              value="advanced-filters" 
-              className="text-xs sm:text-sm rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-600 data-[state=active]:text-white transition-all duration-300 px-2 sm:px-4 py-1.5 sm:py-2"
-            >
-              Advanced
-            </TabsTrigger>
-          </TabsList>
-
-
-
-
-          {/* Location Search Tab */}
-          <TabsContent value="location-search" className="space-y-4 sm:space-y-6">
-            <Card>
+        {/* Location Search */}
+        <div className="space-y-4 sm:space-y-6">
+          <Card>
               <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6">
                 {/* Quick Select Buttons */}
                 <div>
@@ -692,8 +534,9 @@ export default function ConnectPage() {
                   onClick={handleSearch}
                   disabled={!searchLocation.trim() || isSearching}
                   className="w-full text-sm sm:text-base"
+                  data-testid="button-search-location"
                 >
-                  <Search className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
+                  <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                   {isSearching ? "Searching..." : "Find Locals and Travelers"}
                 </Button>
 
@@ -718,13 +561,6 @@ export default function ConnectPage() {
                   </div>
                 )}
 
-                {searchResults.length > 0 && (
-                  <ResponsiveUserGrid 
-                    users={searchResults as any}
-                    title={`Found ${searchResults.length} ${searchResults.length === 1 ? 'person' : 'people'} in ${searchLocation}`}
-                  />
-                )}
-
                 {hasSearched && searchResults.length === 0 && !isSearching && (
                   <Card>
                     <CardContent className="text-center py-12">
@@ -733,9 +569,9 @@ export default function ConnectPage() {
                       <p className="text-black dark:text-white mb-4">
                         No one is currently traveling to {searchLocation} during your selected dates.
                       </p>
-                      <Button variant="outline" onClick={() => setActiveTab("smart-matches")}>
-                        Try Smart Matches Instead
-                      </Button>
+                      <p className="text-sm text-gray-500">
+                        Try searching a different location or use the Search button in the bottom navigation for more filter options.
+                      </p>
                     </CardContent>
                   </Card>
                 )}
@@ -749,48 +585,8 @@ export default function ConnectPage() {
                 )}
               </CardContent>
             </Card>
-          </TabsContent>
-
-          {/* Advanced Search Tab - Using Proper Modal Interface */}
-          <TabsContent value="advanced-filters" className="space-y-4 sm:space-y-6">
-            <Card className="p-6 sm:p-8 bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-800 dark:to-gray-900 border-2 border-dashed border-blue-300 dark:border-blue-600">
-              <CardContent className="text-center space-y-6">
-                <div className="space-y-4">
-                  <div className="w-16 h-16 mx-auto bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center">
-                    <Filter className="w-8 h-8 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                      Advanced Search & Filters
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-                      Use comprehensive filters to find exactly who you're looking for - by location, demographics, interests, activities, and more.
-                    </p>
-                  </div>
-                </div>
-                
-                <Button
-                  onClick={() => setShowAdvancedSearch(true)}
-                  className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-semibold px-8 py-3 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
-                >
-                  <Search className="w-5 h-5 mr-2" />
-                  Open Advanced Search
-                </Button>
-                
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Filter by gender, age, interests, travel plans, location, and much more
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+        </div>
       </main>
-
-      {/* Advanced Search Modal */}
-      <AdvancedSearchWidget 
-        open={showAdvancedSearch}
-        onOpenChange={setShowAdvancedSearch}
-      />
 
       {/* Connect Modal Widget */}
       <ConnectModal 
