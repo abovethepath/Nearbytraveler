@@ -7,9 +7,9 @@ import { Users, MapPin, Globe, Coffee, Heart, Car, RefreshCw, Home, Shield } fro
 import { trackEvent } from "@/lib/analytics";
 import { useTheme } from "@/components/theme-provider";
 // Import images as URLs
-const localsHeaderImage = "/assets/beach travel_1754973619241.jpg";
-const travelersHeaderImage = "/assets/travelers together hugging_1754971726997.avif";
-const travelersHomeImage = "/assets/travelers coffee_1750995178947.png";
+const localsHeaderImage = "/assets/locals_1756777112458.png";
+const travelersHeaderImage = "/assets/travelers-hugging.avif";
+const travelersHomeImage = "/assets/travelers_1756778615408.jpg";
 
 export default function LandingStreamlined() {
   const [, setLocation] = useLocation();
