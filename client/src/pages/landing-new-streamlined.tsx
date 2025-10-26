@@ -189,7 +189,7 @@ export default function LandingStreamlined() {
 
         {/* Why Nearby Traveler */}
         <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="max-w-7xl mx-auto text-center">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-8 sm:mb-12">
               Why Nearby Traveler
             </h2>
@@ -197,7 +197,7 @@ export default function LandingStreamlined() {
               Whether you're traveling or at home, Nearby Traveler helps you create real connections that last.
             </p>
             
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
               <div className="text-center bg-white p-8 rounded-xl shadow-sm">
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Users className="w-8 h-8 text-gray-700" />
