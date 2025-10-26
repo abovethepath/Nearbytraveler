@@ -9,6 +9,7 @@ import { useTheme } from "@/components/theme-provider";
 // Import images as URLs
 const localsHeaderImage = "/assets/locals_1756777112458.png";
 const travelersHeaderImage = "/assets/travelers-hugging.avif";
+const travelersHomeImage = "/assets/travelers_1756778615408.jpg";
 
 export default function LandingStreamlined() {
   const [, setLocation] = useLocation();
@@ -19,12 +20,14 @@ export default function LandingStreamlined() {
   // Rotating images from locals and travelers landing pages
   const heroImages = [
     localsHeaderImage,
-    travelersHeaderImage
+    travelersHeaderImage,
+    travelersHomeImage
   ];
 
   const heroImageAlts = [
     "Locals sharing experiences and welcoming travelers",
-    "Nearby Traveler application interface"
+    "Travelers connecting with arms around each other",
+    "Travelers exploring together"
   ];
 
   useEffect(() => {
@@ -37,11 +40,11 @@ export default function LandingStreamlined() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Rotate images every 20 seconds
+  // Rotate images every 15 seconds
   useEffect(() => {
     const imageInterval = setInterval(() => {
       setCurrentImage(prev => (prev + 1) % heroImages.length);
-    }, 20000);
+    }, 15000);
 
     return () => clearInterval(imageInterval);
   }, [heroImages.length]);
