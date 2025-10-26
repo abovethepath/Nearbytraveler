@@ -47,7 +47,14 @@ export function MobileTopNav() {
 
   // close on profile updates
   useEffect(() => {
-    const handleUpdate = (e: any) => setCurrentUser(e?.detail ?? currentUser);
+    const handleUpdate = (e: any) => {
+      if (e?.detail) {
+        console.log('📸 Navbar received profile update:', { hasProfileImage: !!e.detail.profileImage });
+        setCurrentUser(e.detail);
+        // Also update localStorage to persist the change
+        localStorage.setItem('travelconnect_user', JSON.stringify(e.detail));
+      }
+    };
     window.addEventListener("profilePhotoUpdated", handleUpdate);
     window.addEventListener("userDataUpdated", handleUpdate);
     window.addEventListener("profileUpdated", handleUpdate);
@@ -56,7 +63,7 @@ export function MobileTopNav() {
       window.removeEventListener("userDataUpdated", handleUpdate);
       window.removeEventListener("profileUpdated", handleUpdate);
     };
-  }, [currentUser]);
+  }, []);
 
   // lock body scroll when menu open
   useEffect(() => {
