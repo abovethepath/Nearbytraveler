@@ -1,0 +1,85 @@
+Hero Section:
+
+Headline: "Travel Like a Local"
+Subheadline: "Connect with locals and travelers for authentic experiences"
+Supporting text: "The World Is Your Playground."
+CTA Button: "Start Exploring"
+
+
+Quote Section:
+
+"Travel doesn't change you. The people you meet do."
+Subtitle: "Where Local Experiences Meet Worldwide Connections"
+
+
+Founder Story Section:
+
+Title: "From the Founder"
+Quote: "After hosting 400+ travelers from 50 countries, I learned that one connection can change everything. Travelers spend billions on flights and hotels, yet the most valuable part—the people you meet—is left to chance. I built the solution I wished existed."
+Attribution: "— Aaron Lefkowitz, Founder, Nearby Traveler"
+
+
+What Makes Us Different (3 feature cards with bullet points):
+
+⚡ Instant Meetups - Create "meet now" events for instant connections
+• Spontaneous adventures
+• Skip the planning stress
+• Connect in real-time
+🌍 Local Connections - Connect with locals for authentic experiences
+• Skip tourist traps
+• Insider knowledge
+• Authentic cultural exchange
+💬 Real-Time Chat - Instant messaging with full features
+• Group conversations
+• Photo & location sharing
+• Coordinated meetups
+
+
+Why Choose Nearby Traveler? (7 benefit cards with icons):
+
+🎯 Quality Over Quantity - We focus on meaningful connections, not endless swiping. Every match is based on genuine compatibility and shared interests.
+🛡️ Safe & Verified - All users are verified for safety. Meet in public places and trust your instincts - we provide the tools for safe connections.
+🌍 Connect Before You Arrive - Meet locals and travelers before your trip starts. Plan meetups, get insider tips, and hit the ground running.
+📅 Know When Friends Are Nearby - Reconnect when paths cross again. See when someone you met in Barcelona shows up in Tokyo.
+🎉 Join Weekly Sponsored Events - Free and low-cost events every week. From beach bonfires to taco tours—authentic experiences hosted by passionate locals.
+💬 Real-Time Coordination - Full-featured chat with photos, location sharing, and group conversations. No more juggling apps.
+❤️ Friendships That Last - Build a global network of real connections. These aren't just travel buddies—they're lifelong friends.
+
+
+See Our Community in Action:
+
+Section title: "Join Authentic Experiences Every Week"
+Description: "Every week, Nearby Traveler sponsors authentic local experiences. From cultural adventures to food tours, these events bring our community together."
+
+3 Event Cards:
+
+Beach Bonfire & BBQ (Free)
+Sunset gathering with locals—authentic LA beach culture, music, and new friends.
+Taco Tuesday ($1.50)
+Weekly street taco adventure with fellow food lovers at the city's best Mexican spots.
+Hollywood Sign Hike (Free)
+Saturday morning hikes with locals and travelers—amazing views, great photos, real LA.
+
+
+How It Works (3 numbered steps):
+
+Step 1: Share Your Plans - Add travel dates, interests, and what you want to explore
+Step 2: Get Matched - Find compatible travelers and locals based on your interests
+Step 3: Connect & Explore - Join events, create meetups, and make lasting friendships
+
+
+Perfect For (5 audience cards with icons):
+
+🎒 Solo Travelers - Turn exploring alone into shared adventures
+👨‍👩‍👧 Families - Connect with local families and fellow travelers with kids
+💼 Business Travelers - Make work trips more than just meetings
+🆕 New in Town - Moving to a new city? Find your tribe fast
+🌍 Digital Nomads - Build community wherever you land
+
+
+Final CTA Section:
+
+Headline: "Ready to Travel Like a Local?"
+Description: "Join thousands of travelers who've turned solo trips into lifelong friendships. Your next adventure starts with the people you'll meet."
+Badge text: "✈️ Free to join • 🌍 Global community"
+CTA Button: "Join Now"
