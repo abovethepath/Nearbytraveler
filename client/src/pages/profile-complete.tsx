@@ -3505,20 +3505,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     // For regular users (travelers/locals) - GLOBAL FRIENDLY REQUIREMENTS
     // These fields work for ALL countries (unlike state which doesn't exist globally)
     const hasBio = user.bio && user.bio.trim().length > 0;
-    const hasSex = user.sex && user.sex.trim().length > 0;
-    const hasSexPreference = user.sexPreference && user.sexPreference.trim().length > 0;
+    const hasGender = user.gender && user.gender.trim().length > 0;
+    const hasSexualPreference = user.sexualPreference && Array.isArray(user.sexualPreference) && user.sexualPreference.length > 0;
     
-    const isIncomplete = !hasBio || !hasSex || !hasSexPreference;
+    const isIncomplete = !hasBio || !hasGender || !hasSexualPreference;
     
     // Debug logging to help identify what's missing
     if (isIncomplete && process.env.NODE_ENV === 'development') {
       console.log('🔴 PROFILE INCOMPLETE:', {
         hasBio,
         bioLength: user.bio?.length || 0,
-        hasSex,
-        sex: user.sex,
-        hasSexPreference,
-        sexPreference: user.sexPreference
+        hasGender,
+        gender: user.gender,
+        hasSexualPreference,
+        sexualPreference: user.sexualPreference
       });
     }
     
@@ -3581,7 +3581,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
                 <div className="min-w-0">
                   <p className="font-bold text-base sm:text-lg">PLEASE FILL OUT PROFILE NOW TO MATCH WELL WITH OTHERS</p>
-                  <p className="text-red-100 text-xs sm:text-sm">Complete your bio, sex, and sex preference to improve your compatibility with other travelers</p>
+                  <p className="text-red-100 text-xs sm:text-sm">Complete your bio, gender, and sexual preference to improve your compatibility with other travelers</p>
                 </div>
               </div>
               <Button
@@ -3670,9 +3670,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               ) : (
                 <div className="space-y-2 text-black w-full mt-2">
                   {(() => {
+                    // Show city + state + country, or just country if city is missing, or "Unknown" if nothing
                     const hometown = user.hometownCity ? 
                       `${user.hometownCity}${user.hometownState ? `, ${user.hometownState}` : ''}${user.hometownCountry ? `, ${user.hometownCountry}` : ''}` :
-                      'Unknown';
+                      user.hometownCountry || 'Unknown';
                     
                     return (
                       <>
