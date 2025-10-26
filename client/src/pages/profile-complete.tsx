@@ -8582,7 +8582,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <Button 
                   type="submit" 
                   disabled={editProfile.isPending}
-                  className="flex-1"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold border-2 border-blue-700 shadow-lg hover:shadow-xl transition-all"
                   onClick={() => {
                     console.log('🔥 SAVE BUTTON CLICKED');
                     console.log('🔥 Form errors:', profileForm.formState.errors);
