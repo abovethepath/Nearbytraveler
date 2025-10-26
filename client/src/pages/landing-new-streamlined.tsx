@@ -179,7 +179,7 @@ export default function LandingStreamlined() {
                     className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
                     data-testid="button-main-cta"
                   >
-                    Start Connecting Now
+                    Join Now
                   </Button>
                   <Button
                     onClick={() => {
