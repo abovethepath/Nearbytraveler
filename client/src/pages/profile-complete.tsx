@@ -7783,6 +7783,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   onClick={async () => {
                     if (!user?.id || !pendingLocationData) return;
                     
+                    console.log('🏙️ SENDING LOCATION DATA TO BACKEND:', pendingLocationData);
+                    
                     try {
                       const response = await fetch(`/api/users/${user.id}`, {
                         method: 'PUT',

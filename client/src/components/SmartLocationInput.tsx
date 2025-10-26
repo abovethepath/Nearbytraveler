@@ -84,6 +84,7 @@ export function SmartLocationInput({
       : placeholder?.state || "Select state/region";
 
   const emit = (loc: { city: string; state: string; country: string }) => {
+    console.log('📍 SmartLocationInput emitting:', loc);
     onLocationChange?.(loc);
     onLocationSelect?.(loc);
   };
