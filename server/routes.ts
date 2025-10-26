@@ -5084,29 +5084,13 @@ Questions? Just reply to this message. Welcome aboard!
   // CRITICAL: Get all users endpoint with FULL SEARCH FILTERING and LA Metro consolidation
   app.get("/api/users", async (req, res) => {
     try {
-      if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS: Getting all users`);
+      const { location, interests, userType, minAge, maxAge, gender, search } = req.query;
       
-      // Get all users with their travel plans for travel status detection
-      const allUsers = await db.select().from(users);
+      if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS: Getting users with filters:`, { location, interests, userType, minAge, maxAge, gender, search });
       
-      // Enrich each user with their travel plans for frontend travel detection
-      const enrichedUsers = await Promise.all(allUsers.map(async (user) => {
-        const userTravelPlans = await db.select().from(travelPlans).where(eq(travelPlans.userId, user.id));
-        
-        // Format travel plans to match frontend expectations
-        const formattedTravelPlans = userTravelPlans.map(plan => ({
-          ...plan,
-          destination: `${plan.destinationCity}${plan.destinationState ? `, ${plan.destinationState}` : ''}, ${plan.destinationCountry}`
-        }));
-        
-        return {
-          ...user,
-          travelPlans: formattedTravelPlans
-        };
-      }));
-      
-      if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS SEARCH RESULT: ${enrichedUsers.length} users found with travel plans`);
-      return res.json(enrichedUsers);
+      // Build query with filters
+      let query = db.select().from(users);
+      const conditions = [];
       
       // LOCATION FILTER with LA Metro consolidation
       if (location && typeof location === 'string' && location.trim() !== '' && location !== ', United States') {
@@ -5226,21 +5210,29 @@ Questions? Just reply to this message. Welcome aboard!
         return res.json([]);
       }
       
-      // Remove passwords and prepare response
-      const consolidatedUsers = filteredUsers.map(user => {
-        if (!user) return null;
+      // Enrich filtered users with their travel plans for frontend travel detection
+      const enrichedUsers = await Promise.all(filteredUsers.map(async (user) => {
+        const userTravelPlans = await db.select().from(travelPlans).where(eq(travelPlans.userId, user.id));
         
+        // Format travel plans to match frontend expectations
+        const formattedTravelPlans = userTravelPlans.map(plan => ({
+          ...plan,
+          destination: `${plan.destinationCity}${plan.destinationState ? `, ${plan.destinationState}` : ''}, ${plan.destinationCountry}`
+        }));
+        
+        // Remove password and add travel plans
         const { password: _, ...userWithoutPassword } = user;
         
         return {
           ...userWithoutPassword,
           hometownCity: user.hometownCity || '',
-          location: user.location
+          location: user.location,
+          travelPlans: formattedTravelPlans
         };
-      }).filter(Boolean);
+      }));
       
-      if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS SEARCH RESULT: ${consolidatedUsers.length} users found with filters`);
-      return res.json(consolidatedUsers);
+      if (process.env.NODE_ENV === 'development') console.log(`🔍 USERS SEARCH RESULT: ${enrichedUsers.length} users found with filters`);
+      return res.json(enrichedUsers);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching filtered users:", error);
       return res.json([]);
