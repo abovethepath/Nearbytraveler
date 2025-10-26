@@ -6,6 +6,8 @@ import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import { Users, MapPin, Globe, Coffee, Heart, Car, RefreshCw, Home, Shield } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useTheme } from "@/components/theme-provider";
+import localsHeaderImage from "../../assets/locals_1756777112458.png";
+import travelersHeaderImage from "../../assets/image_1758643547084.png";
 
 export default function LandingStreamlined() {
   const [, setLocation] = useLocation();
@@ -13,17 +15,15 @@ export default function LandingStreamlined() {
   const { setTheme } = useTheme();
   const [currentImage, setCurrentImage] = useState(0);
   
-  // Rotating images showing diverse travelers and locals connecting
+  // Rotating images from locals and travelers landing pages
   const heroImages = [
-    "/travelers together hugging_1754971726997.avif",
-    "/diverse travelers smiling dinner table_1754802253393.avif",
-    "/foreign tourist diverse locals laughing cafe_1754804060574.avif"
+    localsHeaderImage,
+    travelersHeaderImage
   ];
 
   const heroImageAlts = [
-    "Travelers connecting and building friendships",
-    "Diverse group sharing a meal together",
-    "Locals and travelers connecting at cafe"
+    "Locals sharing experiences and welcoming travelers",
+    "Nearby Traveler application interface"
   ];
 
   useEffect(() => {

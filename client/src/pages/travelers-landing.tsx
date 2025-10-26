@@ -74,16 +74,14 @@ export default function TravelersLanding() {
           </p>
         </div>
         
-        {/* Full-bleed large image for desktop */}
-        <div className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
-          <div className="flex justify-center">
-            <div className="w-[90vw] h-[80vh] rounded-2xl overflow-hidden shadow-2xl">
-              <img
-                src={travelersHeaderImage}
-                alt="Nearby Traveler application interface"
-                className="w-full h-full object-contain"
-              />
-            </div>
+        {/* Large image for desktop */}
+        <div className="flex justify-center max-w-4xl mx-auto">
+          <div className="w-full h-[400px] rounded-2xl overflow-hidden shadow-2xl">
+            <img
+              src={travelersHeaderImage}
+              alt="Nearby Traveler application interface"
+              className="w-full h-full object-cover"
+            />
           </div>
         </div>
         
@@ -118,11 +116,11 @@ export default function TravelersLanding() {
                   The people you meet do.
                 </p>
               </div>
-              <div className="overflow-hidden relative w-full max-w-lg sm:max-w-xl lg:max-w-2xl xl:max-w-4xl h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px] xl:h-[800px] rounded-2xl">
+              <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[200px] sm:h-[250px] md:h-[350px] rounded-2xl">
                 <img
                   src={travelersHeaderImage}
                   alt="Nearby Traveler application interface"
-                  className="absolute top-0 left-0 w-full h-full object-contain rounded-2xl shadow-lg"
+                  className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl shadow-lg"
                 />
               </div>
               <p className="mt-2 text-xs md:text-sm italic text-orange-600 text-center">
