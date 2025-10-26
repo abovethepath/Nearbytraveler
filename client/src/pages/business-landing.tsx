@@ -363,19 +363,19 @@ export default function BusinessLanding() {
               <div className="text-center mt-4">
                 <div className="text-5xl font-black text-green-600 mb-2">$0</div>
                 <div className="text-lg font-bold text-gray-900 mb-1">/month</div>
-                <div className="text-sm text-green-600 font-semibold mb-6">Lock in this rate forever</div>
+                <div className="text-sm text-green-600 font-semibold mb-6">During beta period</div>
               </div>
             </div>
             
             {/* Regular Price */}
             <div className="bg-white rounded-xl p-8 shadow-lg border-2 border-gray-300 relative opacity-75">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gray-500 text-white px-6 py-1 rounded-full font-bold text-sm">
-                SOON
+                AFTER BETA
               </div>
               <div className="text-center mt-4">
                 <div className="text-5xl font-black text-gray-700 mb-2">$75</div>
                 <div className="text-lg font-bold text-gray-900 mb-1">/month</div>
-                <div className="text-sm text-gray-600 font-semibold mb-6">Standard pricing after beta</div>
+                <div className="text-sm text-gray-600 font-semibold mb-6">Standard pricing for all businesses</div>
               </div>
             </div>
           </div>
@@ -414,9 +414,9 @@ export default function BusinessLanding() {
           {/* Beta Advantage */}
           <div className="text-center mb-6">
             <p className="text-lg font-bold text-gray-900 mb-3">
-              Beta members pay $0 forever. Once beta ends, new businesses pay $75/month. Lock in free access now.
+              Join during beta for free access. Once beta ends, pricing is $75/month for all businesses.
             </p>
-            <p className="text-sm text-orange-600 font-semibold mb-2">⏰ Limited spots available</p>
+            <p className="text-sm text-orange-600 font-semibold mb-2">⏰ Limited beta spots available</p>
             <p className="text-sm text-gray-600 mb-4">Join 500+ local businesses already connecting with travelers</p>
             <p className="text-sm text-gray-700 italic">
               Book just 1-2 customers per month and this pays for itself. Most businesses book 10-20.
@@ -426,15 +426,15 @@ export default function BusinessLanding() {
           <div className="text-center">
             <Button
               onClick={() => {
-                trackEvent('signup_cta_click', 'business_landing', 'pricing_lock_in_free');
+                trackEvent('signup_cta_click', 'business_landing', 'pricing_claim_beta');
                 setLocation('/launching-soon');
               }}
               size="lg"
               className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold text-xl px-12 py-4 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200"
-              data-testid="button-lock-in-free"
+              data-testid="button-claim-beta-pricing"
             >
               <Zap className="w-6 h-6 mr-2" />
-              Lock In Free Access Forever
+              Claim Your Free Beta Access
             </Button>
           </div>
         </div>
