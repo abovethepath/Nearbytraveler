@@ -69,7 +69,7 @@ export default function TravelersLanding() {
             {wisdomSayings[currentWisdom]}
           </p>
           <p className="text-2xl font-bold text-zinc-800 italic mb-8">
-            Travel doesn't change you<br />
+            Travel doesn't change you.<br />
             The people you meet do.
           </p>
         </div>
@@ -112,7 +112,7 @@ export default function TravelersLanding() {
                   {wisdomSayings[currentWisdom]}
                 </p>
                 <p className="text-sm md:text-lg font-bold text-zinc-800 italic px-2 mt-1">
-                  Travel doesn't change you<br />
+                  Travel doesn't change you.<br />
                   The people you meet do.
                 </p>
               </div>

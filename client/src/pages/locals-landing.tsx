@@ -118,7 +118,7 @@ export default function LocalsLanding() {
                 {/* Static powerful quote */}
                 <div className="mb-2 text-center w-full">
                   <p className="text-sm md:text-lg lg:text-xl font-bold text-zinc-800 dark:text-zinc-200 italic px-2">
-                    Travel doesn't change you<br />
+                    Travel doesn't change you.<br />
                     The people you meet do.
                   </p>
                 </div>

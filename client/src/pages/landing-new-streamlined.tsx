@@ -156,7 +156,7 @@ export default function LandingStreamlined() {
                 {/* Static powerful quote */}
                 <div className="mb-4 sm:mb-6 text-center w-full">
                   <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 italic px-2">
-                    Travel doesn't change you<br />
+                    Travel doesn't change you.<br />
                     The people you meet do.
                   </p>
                 </div>
