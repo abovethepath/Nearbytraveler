@@ -6,10 +6,10 @@ import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import { Users, MapPin, Globe, Coffee, Heart, Car, RefreshCw, Home, Shield } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useTheme } from "@/components/theme-provider";
-// Import images as URLs
+// Import images as URLs - using JPG/PNG for iPhone compatibility
 const localsHeaderImage = "/assets/locals_1756777112458.png";
-const travelersHeaderImage = "/assets/travelers-hugging.avif";
-const travelersHomeImage = "/assets/travelers_1756778615408.jpg";
+const travelersHeaderImage = "/assets/travelers_1756778615408.jpg";
+const travelersHomeImage = "/assets/locals_1756777112458.png";
 
 export default function LandingStreamlined() {
   const [, setLocation] = useLocation();
