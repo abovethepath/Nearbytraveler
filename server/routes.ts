@@ -4901,27 +4901,28 @@ Questions? Just reply to this message. Welcome aboard!
       // MAP USER FIELDS: Handle travel intent fields specifically
       const mappedUpdates = { ...updates };
 
-      // HOMETOWN CHANGE DETECTION: If hometown changes, automatically set "new to town"
-      if (updates.hometownCity || updates.hometownState || updates.hometownCountry) {
+      // HOMETOWN CHANGE DETECTION: Check using snake_case field names (after field mapping)
+      if (updates.hometown_city || updates.hometown_state || updates.hometown_country) {
         // Get current user to compare
         const currentUser = await storage.getUser(userId);
         
         if (currentUser) {
           const hometownChanged = 
-            (updates.hometownCity && updates.hometownCity !== currentUser.hometownCity) ||
-            (updates.hometownState && updates.hometownState !== currentUser.hometownState) ||
-            (updates.hometownCountry && updates.hometownCountry !== currentUser.hometownCountry);
+            (updates.hometown_city && updates.hometown_city !== currentUser.hometownCity) ||
+            (updates.hometown_state && updates.hometown_state !== currentUser.hometownState) ||
+            (updates.hometown_country && updates.hometown_country !== currentUser.hometownCountry);
           
           if (hometownChanged) {
             // Automatically set "new to town" for 9 months
             const newToTownUntil = new Date();
             newToTownUntil.setMonth(newToTownUntil.getMonth() + 9);
             
-            mappedUpdates.isNewToTown = true;
-            mappedUpdates.newToTownUntil = newToTownUntil.toISOString();
+            updates.is_new_to_town = true;
+            updates.new_to_town_until = newToTownUntil.toISOString();
             
             if (process.env.NODE_ENV === 'development') {
               console.log(`🆕 HOMETOWN CHANGED: Automatically setting user ${userId} as "new to town" until ${newToTownUntil.toLocaleDateString()}`);
+              console.log(`🆕 New hometown: ${updates.hometown_city}, ${updates.hometown_state}, ${updates.hometown_country}`);
             }
           }
         }
