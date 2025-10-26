@@ -38,99 +38,93 @@ export default function TravelersLanding() {
   }, [currentWisdom, wisdomSayings.length]);
 
   return (
-    <div className="bg-white dark:bg-gray-900 font-sans" key="travelers-landing-optimized">
-      {/* Fixed CTA Button - Mobile Only */}
-      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50 sm:hidden">
+    <div className="bg-white font-sans">
+      {/* Fixed CTA Button */}
+      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
         <Button 
           onClick={() => {
             trackEvent('signup_cta_click', 'travelers_landing', 'floating_join_now');
             setLocation('/launching-soon');
           }}
-          className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
-          data-testid="button-mobile-cta"
+          className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 sm:px-6 sm:py-3 rounded-lg shadow-sm transition-all duration-200 text-sm sm:text-base"
+          data-testid="button-floating-join-now"
         >
-          Start Exploring
+          Join Now
         </Button>
       </div>
       
       <LandingHeader />
       <LandingHeaderSpacer />
       
-      {/* DESKTOP FULL-BLEED HERO - Much Larger Image */}
-      <div className="hidden lg:block bg-white dark:bg-gray-900 py-8">
-        <div className="text-center mb-8">
-          <div className="text-3xl lg:text-4xl xl:text-5xl font-bold text-zinc-900 dark:text-white mb-4">
-            <h1>Travel Like a Local</h1>
-          </div>
-          <div className="text-xl lg:text-2xl text-zinc-600 dark:text-zinc-300 mb-6">
-            <p>Connect with locals and travelers for authentic experiences</p>
-          </div>
-          <p className="text-lg font-medium text-zinc-800 italic mb-2">
-            {wisdomSayings[currentWisdom]}
-          </p>
-          <p className="text-2xl font-bold text-zinc-800 italic mb-8">
-            Travel doesn't change you.<br />
-            The people you meet do.
-          </p>
-        </div>
+      <div className="w-full">
         
-        {/* Large image for desktop */}
-        <div className="flex justify-center max-w-4xl mx-auto">
-          <div className="w-full h-[400px] rounded-2xl overflow-hidden shadow-2xl">
-            <img
-              src={travelersHeaderImage}
-              alt="Nearby Traveler application interface"
-              className="w-full h-full object-cover"
-            />
-          </div>
-        </div>
-        
-        <p className="text-center text-lg italic text-orange-600 mt-8">
-          Where Local Experiences Meet Worldwide Connections
-        </p>
-      </div>
-
-      {/* MOBILE/TABLET HERO - Original smaller version */}
-      <div className="block lg:hidden max-w-6xl mx-auto px-4 sm:px-6">
         {/* HERO SECTION */}
-        <div className="pt-2 pb-4 sm:pt-4 sm:pb-6 bg-white dark:bg-gray-900">
-          <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 py-1 sm:py-2 md:py-4 grid gap-2 sm:gap-3 md:gap-4 md:grid-cols-5 items-center">
-            {/* Left text side - wider */}
-            <div className="md:col-span-3">
-              <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white">
-                <h1>Travel Like a Local</h1>
-              </div>
-              <div className="mt-3 sm:mt-4 max-w-xl text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300">
-                <p>Connect with locals and travelers for authentic experiences</p>
-              </div>
-            </div>
-          
-            {/* Right image side */}
-            <div className="md:col-span-2 flex flex-col items-center order-first md:order-last">
-              <div className="mb-2 text-center w-full">
-                <p className="text-xs md:text-sm font-medium text-zinc-800 italic px-2">
-                  {wisdomSayings[currentWisdom]}
+        <div className="pt-4 pb-8 sm:pt-8 sm:pb-12 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid gap-6 md:gap-8 lg:gap-12 lg:grid-cols-2 items-center">
+              
+              {/* Left text side */}
+              <div className="order-2 lg:order-1 text-center lg:text-left">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 mb-6 sm:mb-8">
+                  Travel Like a Local
+                </h1>
+                <p className="text-base sm:text-lg text-gray-600 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                  Connect with locals and travelers for authentic experiences. Build real friendships that last a lifetime.
                 </p>
-                <p className="text-sm md:text-lg font-bold text-zinc-800 italic px-2 mt-1">
-                  Travel doesn't change you.<br />
-                  The people you meet do.
+                
+                {/* CTA Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                  <Button
+                    onClick={() => {
+                      trackEvent('signup_cta_click', 'travelers_landing', 'main_cta');
+                      setLocation('/launching-soon');
+                    }}
+                    size="lg"
+                    className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                    data-testid="button-main-cta"
+                  >
+                    Join Now
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      trackEvent('learn_more_click', 'travelers_landing', 'see_how_it_works');
+                      document.querySelector('#how-it-works')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    variant="outline"
+                    size="lg"
+                    className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-4 rounded-xl text-lg font-medium transition-all duration-200"
+                    data-testid="button-learn-more"
+                  >
+                    See How It Works
+                  </Button>
+                </div>
+              </div>
+
+              {/* Right image side */}
+              <div className="order-1 lg:order-2 flex flex-col items-center">
+                <div className="mb-4 sm:mb-6 text-center w-full">
+                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 italic px-2">
+                    Travel doesn't change you.<br />
+                    The people you meet do.
+                  </p>
+                </div>
+                
+                <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-2xl shadow-lg">
+                  <img
+                    src={travelersHeaderImage}
+                    alt="Travelers connecting with arms around each other"
+                    className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl"
+                  />
+                </div>
+                
+                <p className="mt-3 sm:mt-4 text-sm sm:text-base italic text-orange-600 text-center font-medium">
+                  Where Local Experiences Meet Worldwide Connections
                 </p>
               </div>
-              <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[200px] sm:h-[250px] md:h-[350px] rounded-2xl">
-                <img
-                  src={travelersHeaderImage}
-                  alt="Nearby Traveler application interface"
-                  className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl shadow-lg"
-                />
-              </div>
-              <p className="mt-2 text-xs md:text-sm italic text-orange-600 text-center">
-                Where Local Experiences Meet Worldwide Connections
-              </p>
             </div>
           </div>
         </div>
       </div>
-
 
       <main className="flex-1 px-4 py-6">
 
