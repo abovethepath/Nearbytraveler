@@ -11,8 +11,20 @@ export default function LandingStreamlined() {
   const [, setLocation] = useLocation();
   const [isMobile, setIsMobile] = useState(false);
   const { setTheme } = useTheme();
+  const [currentImage, setCurrentImage] = useState(0);
   
-  // REMOVED ROTATING CONTENT - Single clear message instead
+  // Rotating images showing diverse travelers and locals connecting
+  const heroImages = [
+    "/travelers together hugging_1754971726997.avif",
+    "/diverse travelers smiling dinner table_1754802253393.avif",
+    "/foreign tourist diverse locals laughing cafe_1754804060574.avif"
+  ];
+
+  const heroImageAlts = [
+    "Travelers connecting and building friendships",
+    "Diverse group sharing a meal together",
+    "Locals and travelers connecting at cafe"
+  ];
 
   useEffect(() => {
     const checkMobile = () => {
@@ -23,6 +35,15 @@ export default function LandingStreamlined() {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Rotate images every 5 seconds
+  useEffect(() => {
+    const imageInterval = setInterval(() => {
+      setCurrentImage(prev => (prev + 1) % heroImages.length);
+    }, 5000);
+
+    return () => clearInterval(imageInterval);
+  }, [heroImages.length]);
 
   // FORCE LIGHT MODE for landing page - user requirement
   useEffect(() => {
@@ -71,7 +92,7 @@ export default function LandingStreamlined() {
                   Connect with Locals & Travelers Worldwide
                 </h2>
                 <p className="text-base sm:text-lg text-gray-600 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                  Nearby Traveler solves traveler loneliness by connecting you with locals and fellow travelers before your trip even begins. Build real friendships that last a lifetime.
+                  Nearby Traveler solves traveler loneliness by connecting you with locals and fellow travelers based on common interests, activities, demographics and events planned. Build real friendships that last a lifetime.
                 </p>
                 
                 {/* CTA Buttons */}
@@ -109,12 +130,13 @@ export default function LandingStreamlined() {
                   </p>
                 </div>
                 
-                {/* Hero Image - Static */}
+                {/* Hero Image - Rotating */}
                 <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-2xl shadow-lg">
                   <img
-                    src="/travelers together hugging_1754971726997.avif"
-                    alt="Travelers connecting and building friendships"
-                    className="w-full h-full object-cover rounded-2xl"
+                    key={currentImage}
+                    src={heroImages[currentImage]}
+                    alt={heroImageAlts[currentImage]}
+                    className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl animate-in fade-in duration-700"
                   />
                 </div>
                 
