@@ -4181,10 +4181,10 @@ Questions? Just reply to this message. Welcome aboard!
             ilike(users.gender, `%${searchTerm}%`),
             
             // Interests, Activities, Events - Standard arrays
-            sql`array_to_string(${users.interests}, ',') ILIKE ${`%${searchTerm}%`}`,
-            sql`array_to_string(${users.privateInterests}, ',') ILIKE ${`%${searchTerm}%`}`,
-            sql`array_to_string(${users.activities}, ',') ILIKE ${`%${searchTerm}%`}`,
-            sql`array_to_string(${users.events}, ',') ILIKE ${`%${searchTerm}%`}`,
+            sql`array_to_string(${users.interests}, ',') ILIKE ${'%' + searchTerm + '%'}`,
+            sql`array_to_string(${users.privateInterests}, ',') ILIKE ${'%' + searchTerm + '%'}`,
+            sql`array_to_string(${users.activities}, ',') ILIKE ${'%' + searchTerm + '%'}`,
+            sql`array_to_string(${users.events}, ',') ILIKE ${'%' + searchTerm + '%'}`,
             
             // Custom text fields - User typed interests/activities/events
             ilike(users.customInterests, `%${searchTerm}%`),
@@ -4192,22 +4192,22 @@ Questions? Just reply to this message. Welcome aboard!
             ilike(users.customEvents, `%${searchTerm}%`),
             
             // Sexual preference & relationship
-            sql`array_to_string(${users.sexualPreference}, ',') ILIKE ${`%${searchTerm}%`}`,
+            sql`array_to_string(${users.sexualPreference}, ',') ILIKE ${'%' + searchTerm + '%'}`,
             
             // Military & veteran status
             ilike(users.militaryStatus, `%${searchTerm}%`),
             
             // Travel style, languages, countries
-            sql`array_to_string(${users.travelStyle}, ',') ILIKE ${`%${searchTerm}%`}`,
-            sql`array_to_string(${users.languagesSpoken}, ',') ILIKE ${`%${searchTerm}%`}`,
-            sql`array_to_string(${users.countriesVisited}, ',') ILIKE ${`%${searchTerm}%`}`,
+            sql`array_to_string(${users.travelStyle}, ',') ILIKE ${'%' + searchTerm + '%'}`,
+            sql`array_to_string(${users.languagesSpoken}, ',') ILIKE ${'%' + searchTerm + '%'}`,
+            sql`array_to_string(${users.countriesVisited}, ',') ILIKE ${'%' + searchTerm + '%'}`,
             
             // Family & children
             ilike(users.childrenAges, `%${searchTerm}%`),
             
             // Travel intent fields (Why/What/How)
             ilike(users.travelWhy, `%${searchTerm}%`),
-            sql`array_to_string(${users.travelWhat}, ',') ILIKE ${`%${searchTerm}%`}`,
+            sql`array_to_string(${users.travelWhat}, ',') ILIKE ${'%' + searchTerm + '%'}`,
             ilike(users.travelHow, `%${searchTerm}%`),
             ilike(users.travelBudget, `%${searchTerm}%`),
             ilike(users.travelGroup, `%${searchTerm}%`),
@@ -4216,19 +4216,19 @@ Questions? Just reply to this message. Welcome aboard!
             ilike(users.secretActivities, `%${searchTerm}%`),
             
             // Default travel preferences for all trips
-            sql`array_to_string(${users.defaultTravelInterests}, ',') ILIKE ${`%${searchTerm}%`}`,
-            sql`array_to_string(${users.defaultTravelActivities}, ',') ILIKE ${`%${searchTerm}%`}`,
-            sql`array_to_string(${users.defaultTravelEvents}, ',') ILIKE ${`%${searchTerm}%`}`,
+            sql`array_to_string(${users.defaultTravelInterests}, ',') ILIKE ${'%' + searchTerm + '%'}`,
+            sql`array_to_string(${users.defaultTravelActivities}, ',') ILIKE ${'%' + searchTerm + '%'}`,
+            sql`array_to_string(${users.defaultTravelEvents}, ',') ILIKE ${'%' + searchTerm + '%'}`,
             
             // City-specific activities search - CRITICAL for city-specific searches like "Empire State Building"
-            sql`EXISTS (SELECT 1 FROM user_city_interests WHERE user_city_interests.user_id = ${users.id} AND user_city_interests.activity_name ILIKE ${`%${searchTerm}%`})`,
+            sql`EXISTS (SELECT 1 FROM user_city_interests WHERE user_city_interests.user_id = ${users.id} AND user_city_interests.activity_name ILIKE ${'%' + searchTerm + '%'})`,
             
             // Business profile fields
             ilike(users.businessName, `%${searchTerm}%`),
             ilike(users.businessType, `%${searchTerm}%`),
             ilike(users.businessDescription, `%${searchTerm}%`),
             ilike(users.specialty, `%${searchTerm}%`),
-            sql`array_to_string(${users.tags}, ',') ILIKE ${`%${searchTerm}%`}`,
+            sql`array_to_string(${users.tags}, ',') ILIKE ${'%' + searchTerm + '%'}`,
             
             // Location fields - hometown and current
             ilike(users.location, `%${searchTerm}%`),
@@ -4391,7 +4391,7 @@ Questions? Just reply to this message. Welcome aboard!
           
           // Search in both predefined interests array and custom interests text field
           whereConditions.push(or(
-            sql`EXISTS (SELECT 1 FROM unnest(${users.interests}) AS interest WHERE lower(interest) = ANY(${sql.array(topChoicesList.map(c => c.toLowerCase()), 'text')}))`,
+            ...topChoicesList.map(choice => sql`array_to_string(${users.interests}, ',') ILIKE ${'%' + choice + '%'}`),
             ...topChoicesList.map(choice => ilike(users.customInterests, `%${choice}%`))
           ));
         }
@@ -4407,7 +4407,7 @@ Questions? Just reply to this message. Welcome aboard!
           
           // Search in both predefined interests array and custom interests text field
           whereConditions.push(or(
-            sql`EXISTS (SELECT 1 FROM unnest(${users.interests}) AS interest WHERE lower(interest) = ANY(${sql.array(interestsList.map(i => i.toLowerCase()), 'text')}))`,
+            ...interestsList.map(interest => sql`array_to_string(${users.interests}, ',') ILIKE ${'%' + interest + '%'}`),
             ...interestsList.map(interest => ilike(users.customInterests, `%${interest}%`))
           ));
         }
@@ -4421,7 +4421,7 @@ Questions? Just reply to this message. Welcome aboard!
           
           whereConditions.push(or(
             ...privateInterestsList.map(privateInterest => 
-              sql`array_to_string(${users.privateInterests}, ',') ILIKE ${`%${privateInterest}%`}`
+              sql`array_to_string(${users.privateInterests}, ',') ILIKE ${'%' + privateInterest + '%'}`
             )
           ));
         }
