@@ -6,16 +6,25 @@ import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import { Users, MapPin, Globe, Coffee, Heart, Car, RefreshCw, Home, Shield } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useTheme } from "@/components/theme-provider";
-import localsImage from "../../assets/locals_1756777112458.png";
-import travelersImage from "@assets/image_1758643547084.png";
+import localsHeaderImage from "../../assets/locals_1756777112458.png";
+import travelersHeaderImage from "../../assets/image_1758643547084.png";
 
 export default function LandingStreamlined() {
   const [, setLocation] = useLocation();
   const [isMobile, setIsMobile] = useState(false);
   const { setTheme } = useTheme();
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [currentImage, setCurrentImage] = useState(0);
   
-  const images = [localsImage, travelersImage];
+  // Rotating images from locals and travelers landing pages
+  const heroImages = [
+    localsHeaderImage,
+    travelersHeaderImage
+  ];
+
+  const heroImageAlts = [
+    "Locals sharing experiences and welcoming travelers",
+    "Nearby Traveler application interface"
+  ];
 
   useEffect(() => {
     const checkMobile = () => {
@@ -29,11 +38,12 @@ export default function LandingStreamlined() {
 
   // Rotate images every 5 seconds
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % images.length);
+    const imageInterval = setInterval(() => {
+      setCurrentImage(prev => (prev + 1) % heroImages.length);
     }, 5000);
-    return () => clearInterval(interval);
-  }, [images.length]);
+
+    return () => clearInterval(imageInterval);
+  }, [heroImages.length]);
 
   // FORCE LIGHT MODE for landing page - user requirement
   useEffect(() => {
@@ -120,13 +130,13 @@ export default function LandingStreamlined() {
                   </p>
                 </div>
                 
-                {/* Hero Image - Rotating every 5 seconds */}
+                {/* Hero Image - Rotating */}
                 <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-2xl shadow-lg">
                   <img
-                    key={currentImageIndex}
-                    src={images[currentImageIndex]}
-                    alt="Nearby Traveler connecting locals and travelers"
-                    className="w-full h-full object-cover rounded-2xl transition-opacity duration-1000"
+                    key={currentImage}
+                    src={heroImages[currentImage]}
+                    alt={heroImageAlts[currentImage]}
+                    className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl animate-in fade-in duration-700"
                   />
                 </div>
                 
