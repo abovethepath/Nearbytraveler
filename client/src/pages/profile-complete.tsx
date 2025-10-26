@@ -3507,7 +3507,23 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     const hasInterests = user.interests && Array.isArray(user.interests) && user.interests.length >= 3;
     const hasLocation = user.hometownCity && user.hometownState && user.hometownCountry;
     
-    return !hasBasicInfo || !hasInterests || !hasLocation;
+    const isIncomplete = !hasBasicInfo || !hasInterests || !hasLocation;
+    
+    // Debug logging to help identify what's missing
+    if (isIncomplete && process.env.NODE_ENV === 'development') {
+      console.log('🔴 PROFILE INCOMPLETE:', {
+        hasBasicInfo,
+        bio: user.bio?.substring(0, 50),
+        hasInterests,
+        interestCount: user.interests?.length || 0,
+        hasLocation,
+        hometownCity: user.hometownCity,
+        hometownState: user.hometownState,
+        hometownCountry: user.hometownCountry
+      });
+    }
+    
+    return isIncomplete;
   };
 
 
