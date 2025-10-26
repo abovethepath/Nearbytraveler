@@ -864,6 +864,50 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
                   </Button>
                 </div>
               </div>
+              
+              {/* Search Button at bottom of filters */}
+              <Button 
+                onClick={handleSearch}
+                disabled={!searchLocation.trim() || isSearching}
+                className="w-full bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white"
+                size="lg"
+                data-testid="button-search-with-filters"
+              >
+                <Search className="w-5 h-5 mr-2" />
+                {isSearching ? "Searching..." : searchFilters.interests.length > 0 || searchFilters.activities.length > 0 || searchFilters.events.length > 0 || searchFilters.languages.length > 0 ? "Search with Filters" : "Find Locals and Travelers"}
+              </Button>
+              
+              {/* Clear Filters Button */}
+              {(searchFilters.interests.length > 0 || searchFilters.activities.length > 0 || searchFilters.events.length > 0 || searchFilters.languages.length > 0) && (
+                <Button 
+                  onClick={() => {
+                    setSearchFilters({
+                      gender: [],
+                      sexualPreference: [],
+                      minAge: "",
+                      maxAge: "",
+                      interests: [],
+                      activities: [],
+                      events: [],
+                      userType: [],
+                      travelerTypes: [],
+                      militaryStatus: [],
+                      languages: []
+                    });
+                    setCustomInputs({
+                      interests: "",
+                      activities: "",
+                      events: "",
+                      languages: ""
+                    });
+                  }}
+                  variant="outline"
+                  className="w-full"
+                  data-testid="button-clear-filters"
+                >
+                  Clear All Filters
+                </Button>
+              )}
               </div>
             )}
 
