@@ -12,62 +12,7 @@ export default function LandingStreamlined() {
   const [isMobile, setIsMobile] = useState(false);
   const { setTheme } = useTheme();
   
-  // Rotating headlines for different user types (no business content)
-  const [currentHeadline, setCurrentHeadline] = useState(0);
-  
-  // Rotating wisdom sayings above the photo
-  const [currentWisdom, setCurrentWisdom] = useState(0);
-  const wisdomSayings = [
-    "The Life You Want Is One Connection Away.",
-    "Your Next Adventure Starts With Hello.",
-    "One Conversation Can Change Everything.",
-    "Where Strangers Become Friends.",
-    "Because No One Should Explore Alone.",
-    "The People You Meet Are the Real Destination."
-  ];
-  
-  // Mobile-friendly shorter versions
-  const wisdomSayingsMobile = [
-    "One Connection Changes Everything.",
-    "Adventure Starts With Hello.",
-    "Conversations Change Everything.",
-    "Strangers Become Friends.",
-    "Never Explore Alone.",
-    "People Are the Real Destination."
-  ];
-
-  // User-focused headlines only (removed business content)
-  const headlines = [
-    "Planning a Trip Soon? Skip The Tourist Traps.", // General travelers
-    "Want to Expand Your Social Circle? Love Meeting Travelers?", // Locals who want to share their city
-    "Turn Family Trips Into Lifelong Memories." // Families
-  ];
-  
-  const [currentSubtext, setCurrentSubtext] = useState(0);
-  const subtexts = [
-    "Turn every trip into meaningful connections that last.", // General travelers
-    "Show your city to nearby travelers.", // Locals who want to share their city
-    "Connect with families everywhere." // Families
-  ];
-  
-  const descriptions = [
-    "Connect with locals and travelers before your trip begins— and create friendships that last a lifetime.", // General
-    "Meet travelers at coffee shops, events, and local experiences. Show off your city's hidden gems to curious visitors.", // Locals who want to share their city
-    "Help your family build global friendships through safe, public meetups and cultural exchanges." // Families
-  ];
-
-  // User-focused rotating images (removed business photo)
-  const heroImages = [
-    "/travelers together hugging_1754971726997.avif", // General travelers - people with arms around each other
-    "/Image-Social-Travel-with-Contiki-photo-courtesy-Co_1756483970192.webp", // Locals sharing experiences - group adventure
-    "/image_1756483833676.png" // Families - family at airport watching plane
-  ];
-
-  const heroImageAlts = [
-    "Travelers with arms around each other - true connections", // General
-    "Locals sharing city experiences with travelers", // Locals
-    "Families traveling together and exploring the world" // Families
-  ];
+  // REMOVED ROTATING CONTENT - Single clear message instead
 
   useEffect(() => {
     const checkMobile = () => {
@@ -78,33 +23,6 @@ export default function LandingStreamlined() {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-
-  // Rotating headlines effect - "Planning a Trip Soon?" stays longer
-  useEffect(() => {
-    const rotate = () => {
-      setCurrentHeadline((prev) => {
-        const next = (prev + 1) % headlines.length;
-        return next;
-      });
-      setCurrentSubtext((prev) => (prev + 1) % subtexts.length);
-    };
-
-    // First headline ("Planning a Trip Soon?") shows for 25 seconds, others for 20 seconds
-    const getDelay = () => currentHeadline === 0 ? 25000 : 20000;
-    
-    const timeout = setTimeout(rotate, getDelay());
-    return () => clearTimeout(timeout);
-  }, [currentHeadline, headlines.length, subtexts.length]);
-
-  // Rotating wisdom sayings effect - independent timer
-  useEffect(() => {
-    const rotateWisdom = () => {
-      setCurrentWisdom((prev) => (prev + 1) % wisdomSayings.length);
-    };
-
-    const timeout = setTimeout(rotateWisdom, 8000); // 8 seconds for wisdom sayings
-    return () => clearTimeout(timeout);
-  }, [currentWisdom, wisdomSayings.length]);
 
   // FORCE LIGHT MODE for landing page - user requirement
   useEffect(() => {
@@ -146,30 +64,15 @@ export default function LandingStreamlined() {
               
               {/* Left text side */}
               <div className="order-2 lg:order-1 text-center lg:text-left">
-                <div className="overflow-hidden relative min-h-[120px] sm:min-h-[140px] md:min-h-[160px] lg:min-h-[180px]">
-                  <h1 
-                    key={currentHeadline}
-                    className="absolute top-0 left-0 w-full text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 mb-4 sm:mb-6 animate-in slide-in-from-left-full fade-in duration-700"
-                  >
-                    {headlines[currentHeadline]}
-                  </h1>
-                </div>
-                <div className="overflow-hidden relative min-h-[60px] sm:min-h-[70px] md:min-h-[80px]">
-                  <h2 
-                    key={currentSubtext}
-                    className="absolute top-0 left-0 w-full text-lg sm:text-xl md:text-2xl text-blue-600 mb-6 sm:mb-8 font-semibold animate-in slide-in-from-left-full fade-in duration-700"
-                  >
-                    {subtexts[currentSubtext]}
-                  </h2>
-                </div>
-                <div className="overflow-hidden relative min-h-[80px] sm:min-h-[100px] md:min-h-[120px] mt-4">
-                  <p 
-                    key={currentSubtext}
-                    className="absolute top-0 left-0 w-full text-base sm:text-lg text-gray-600 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0 animate-in slide-in-from-left-full fade-in duration-700"
-                  >
-                    {descriptions[currentSubtext]}
-                  </p>
-                </div>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 mb-4 sm:mb-6">
+                  Never Travel Alone Again
+                </h1>
+                <h2 className="text-lg sm:text-xl md:text-2xl text-blue-600 mb-6 sm:mb-8 font-semibold">
+                  Connect with Locals & Travelers Worldwide
+                </h2>
+                <p className="text-base sm:text-lg text-gray-600 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                  Nearby Traveler solves traveler loneliness by connecting you with locals and fellow travelers before your trip even begins. Build real friendships that last a lifetime.
+                </p>
                 
                 {/* CTA Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
@@ -198,16 +101,6 @@ export default function LandingStreamlined() {
 
               {/* Right image side */}
               <div className="order-1 lg:order-2 flex flex-col items-center">
-                {/* Rotating wisdom sayings above photo */}
-                <div className="mb-3 sm:mb-4 text-center w-full overflow-hidden relative h-[50px] sm:h-[60px]">
-                  <p 
-                    key={currentWisdom}
-                    className="absolute top-0 left-0 w-full text-sm sm:text-base md:text-lg font-medium text-gray-800 italic animate-in slide-in-from-right-full fade-in duration-700 px-2"
-                  >
-                    {isMobile ? wisdomSayingsMobile[currentWisdom] : wisdomSayings[currentWisdom]}
-                  </p>
-                </div>
-                
                 {/* Static powerful quote */}
                 <div className="mb-4 sm:mb-6 text-center w-full">
                   <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 italic px-2">
@@ -216,13 +109,12 @@ export default function LandingStreamlined() {
                   </p>
                 </div>
                 
-                {/* Hero Image - Rotating */}
+                {/* Hero Image - Static */}
                 <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-2xl shadow-lg">
                   <img
-                    key={currentHeadline}
-                    src={heroImages[currentHeadline]}
-                    alt={heroImageAlts[currentHeadline]}
-                    className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl animate-in slide-in-from-right-full fade-in duration-700"
+                    src="/travelers together hugging_1754971726997.avif"
+                    alt="Travelers connecting and building friendships"
+                    className="w-full h-full object-cover rounded-2xl"
                   />
                 </div>
                 
