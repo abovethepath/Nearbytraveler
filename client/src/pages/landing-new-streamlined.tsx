@@ -6,16 +6,24 @@ import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import { Users, MapPin, Globe, Coffee, Heart, Car, RefreshCw, Home, Shield } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useTheme } from "@/components/theme-provider";
+import localsHeaderImage from "../../assets/locals_1756777112458.png";
+import travelersHeaderImage from "../../assets/image_1758643547084.png";
+
 export default function LandingStreamlined() {
   const [, setLocation] = useLocation();
   const [isMobile, setIsMobile] = useState(false);
   const { setTheme } = useTheme();
-  const [currentGradient, setCurrentGradient] = useState(0);
+  const [currentImage, setCurrentImage] = useState(0);
   
-  // Rotating gradient backgrounds (temporary until images load)
-  const heroGradients = [
-    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-    "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
+  // Rotating images from locals and travelers landing pages
+  const heroImages = [
+    localsHeaderImage,
+    travelersHeaderImage
+  ];
+
+  const heroImageAlts = [
+    "Locals sharing experiences and welcoming travelers",
+    "Nearby Traveler application interface"
   ];
 
   useEffect(() => {
@@ -28,14 +36,14 @@ export default function LandingStreamlined() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Rotate gradients every 5 seconds
+  // Rotate images every 5 seconds
   useEffect(() => {
-    const gradientInterval = setInterval(() => {
-      setCurrentGradient(prev => (prev + 1) % heroGradients.length);
+    const imageInterval = setInterval(() => {
+      setCurrentImage(prev => (prev + 1) % heroImages.length);
     }, 5000);
 
-    return () => clearInterval(gradientInterval);
-  }, [heroGradients.length]);
+    return () => clearInterval(imageInterval);
+  }, [heroImages.length]);
 
   // FORCE LIGHT MODE for landing page - user requirement
   useEffect(() => {
@@ -122,16 +130,14 @@ export default function LandingStreamlined() {
                   </p>
                 </div>
                 
-                {/* Hero Gradient - Rotating */}
-                <div 
-                  className="overflow-hidden relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-2xl shadow-lg transition-all duration-1000"
-                  style={{ 
-                    background: heroGradients[currentGradient]
-                  }}
-                >
-                  <div className="absolute inset-0 flex items-center justify-center text-white text-2xl sm:text-3xl font-bold p-8 text-center">
-                    Connect with Locals & Travelers
-                  </div>
+                {/* Hero Image - Rotating */}
+                <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-2xl shadow-lg">
+                  <img
+                    key={currentImage}
+                    src={heroImages[currentImage]}
+                    alt={heroImageAlts[currentImage]}
+                    className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl animate-in fade-in duration-700"
+                  />
                 </div>
                 
                 <p className="mt-3 sm:mt-4 text-sm sm:text-base italic text-orange-600 text-center font-medium">
