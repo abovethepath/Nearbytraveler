@@ -197,7 +197,7 @@ export default function LandingStreamlined() {
               Whether you're traveling or at home, Nearby Traveler helps you create real connections that last.
             </p>
             
-            <div className="space-y-8 sm:space-y-10">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
               <div className="text-center bg-white p-8 rounded-xl shadow-sm">
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Users className="w-8 h-8 text-gray-700" />
