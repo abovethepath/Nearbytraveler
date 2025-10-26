@@ -6,8 +6,9 @@ import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import { Users, MapPin, Globe, Coffee, Heart, Car, RefreshCw, Home, Shield } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useTheme } from "@/components/theme-provider";
-import localsHeaderImage from "@assets/locals_1756777112458.png";
-import travelersHeaderImage from "@assets/image_1758643547084.png";
+// Import images as URLs
+const localsHeaderImage = "/assets/locals_1756777112458.png";
+const travelersHeaderImage = "/assets/image_1758643547084.png";
 
 export default function LandingStreamlined() {
   const [, setLocation] = useLocation();
