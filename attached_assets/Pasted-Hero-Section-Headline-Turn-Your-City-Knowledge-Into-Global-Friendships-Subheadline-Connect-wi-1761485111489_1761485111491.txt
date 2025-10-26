@@ -1,0 +1,67 @@
+Hero Section:
+
+Headline: "Turn Your City Knowledge Into Global Friendships"
+Subheadline: "Connect with curious travelers and like-minded locals while sharing what makes your city special"
+Supporting text: "Share Local Secrets."
+CTA Button: "Start Connecting"
+
+
+Quote Section:
+
+"Travel doesn't change you. The people you meet do."
+Subtitle: "Where Local Experiences Meet Worldwide Connections"
+
+
+Founder Story Section:
+
+Title: "From the Founder"
+Quote: "I have friends spanning across the globe now. Connect with genuine travelers who want authentic local experiences, not tourist traps. Be the local friend you'd want to meet."
+Attribution: "— Aaron Lefkowitz, Founder, Nearby Traveler"
+
+
+Section Header:
+
+Title: "Real Locals, Real Connections"
+Subtitle: "Build Your Local Community & Welcome Travelers"
+Description: "Connect with neighbors. Welcome visitors. Share your city's best secrets."
+
+
+Why Locals Choose Nearby Traveler (5 benefit cards with icons):
+
+🤝 Real Friendships & Connections - Meet people who share your interests and travel style — friendships that last beyond the trip.
+🎉 Host or Join Events - Create or join activities you love — from rooftop parties and food tours to hikes and art walks.
+🎯 Interest-Based Matching - Connect with travelers who share your hobbies and interests. Find hiking buddies, food lovers, art enthusiasts, and adventure seekers in your city.
+📅 Stay Connected Globally - Keep friendships alive as your traveler friends move to new cities around the world.
+🎟️ Weekly Sponsored Events - Every week, Nearby Traveler sponsors authentic local experiences. Host sponsored events or join curated activities that bring our community together.
+
+
+How Locals Connect with Amazing Travelers:
+
+Section title: "Turn your city knowledge into amazing friendships"
+🗺️ Share Your Secret Spots - Show off those hidden gems only locals know. From secret viewpoints to hole-in-the-wall restaurants - share what makes your city special.
+🌍 Meet Amazing People - Connect with curious travelers AND like-minded locals. Build friendships that span the globe while discovering your own city.
+⚡ Instant Social Life - Create "meet now" events when you want to hang out. Always have someone interesting to explore your city with.
+
+
+How It Works (3 numbered steps):
+
+Step 1: Create Your Local Profile - Share your interests, favorite spots, and what makes you the perfect local connection.
+Step 2: Host Experiences - Organize meetups, share hidden gems, or create local adventures that showcase the real side of your city.
+Step 3: Build Global Friendships - Connect with amazing travelers and locals — friendships that span the globe while you discover your own city.
+
+
+Perfect For (5 audience cards with icons):
+
+🏙️ City Enthusiasts - Show off your knowledge and meet people who appreciate the real local scene
+🌎 Social Locals - Expand your friend circle with interesting people from around the world
+🆕 New Residents - Share what you're discovering while meeting established locals and fellow newcomers
+💼 Business Hosts - Welcome colleagues and clients with authentic local experiences
+🎒 Adventure Seekers - Find people to try new restaurants, events, and activities in your own city
+
+
+Final CTA Section:
+
+Headline: "Ready to Share Your City?"
+Description: "Be part of a new way for locals to build global friendships while sharing what they love about their city."
+Badge text: "🏠 Free to join • 🌍 Global community"
+CTA Button: "Join Now"

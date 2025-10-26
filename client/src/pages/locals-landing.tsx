@@ -74,7 +74,7 @@ export default function LocalsLanding() {
           }}
           className="bg-blue-500 hover:bg-blue-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
         >
-          JOIN NOW
+          Start Connecting
         </Button>
       </div>
 
@@ -149,7 +149,7 @@ export default function LocalsLanding() {
                 size="lg"
                 className="bg-blue-500 hover:bg-blue-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               >
-                JOIN NOW
+                Start Connecting
               </Button>
             </div>
           )}
@@ -247,13 +247,6 @@ export default function LocalsLanding() {
               Why Locals Choose Nearby Traveler
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch">
-              <div className="bg-emerald-200 dark:bg-emerald-600 p-6 rounded-xl shadow-lg text-gray-800 dark:text-white flex flex-col h-full">
-                <div className="text-4xl mb-4">🌍</div>
-                <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-800 dark:text-white leading-tight">Authentic Local Experiences</h3>
-                <p className="text-gray-700 dark:text-white text-sm leading-relaxed flex-grow">
-                  Skip tourist traps and discover hidden gems with locals who know the city best.
-                </p>
-              </div>
               <div className="bg-teal-200 dark:bg-teal-600 p-6 rounded-xl shadow-lg text-gray-800 dark:text-white flex flex-col h-full">
                 <div className="text-4xl mb-4">🤝</div>
                 <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-800 dark:text-white leading-tight">Real Friendships & Connections</h3>
@@ -277,16 +270,9 @@ export default function LocalsLanding() {
               </div>
               <div className="bg-blue-200 dark:bg-blue-600 p-6 rounded-xl shadow-lg text-gray-800 dark:text-white flex flex-col h-full">
                 <div className="text-4xl mb-4">📅</div>
-                <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-800 dark:text-white leading-tight">Your Social Travel Calendar</h3>
+                <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-800 dark:text-white leading-tight">Stay Connected Globally</h3>
                 <p className="text-gray-700 dark:text-white text-sm leading-relaxed flex-grow">
-                  Sync trips, events, and connections into one calendar so you never miss a chance to meet up.
-                </p>
-              </div>
-              <div className="bg-rose-200 dark:bg-rose-600 p-6 rounded-xl shadow-lg text-gray-800 dark:text-white flex flex-col h-full">
-                <div className="text-4xl mb-4">💕</div>
-                <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-800 dark:text-white leading-tight">Lasting Memories & Stories</h3>
-                <p className="text-gray-700 dark:text-white text-sm leading-relaxed flex-grow">
-                  Create unforgettable moments and collect amazing stories from every connection you make around the world.
+                  Keep friendships alive as your traveler friends move to new cities around the world.
                 </p>
               </div>
               <div className="bg-yellow-200 dark:bg-yellow-600 p-6 rounded-xl shadow-lg text-gray-800 dark:text-white flex flex-col h-full">
@@ -382,22 +368,27 @@ export default function LocalsLanding() {
             <h3 className="text-3xl font-bold text-gray-900 dark:text-white text-center mb-8">Perfect For</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+                <div className="text-3xl mb-3">🏙️</div>
                 <h4 className="font-bold text-gray-900 dark:text-white mb-2">City Enthusiasts</h4>
                 <p className="text-gray-600 dark:text-gray-300 text-sm">Show off your knowledge and meet people who appreciate the real local scene</p>
               </div>
               <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+                <div className="text-3xl mb-3">🌎</div>
                 <h4 className="font-bold text-gray-900 dark:text-white mb-2">Social Locals</h4>
                 <p className="text-gray-600 dark:text-gray-300 text-sm">Expand your friend circle with interesting people from around the world</p>
               </div>
               <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+                <div className="text-3xl mb-3">🆕</div>
                 <h4 className="font-bold text-gray-900 dark:text-white mb-2">New Residents</h4>
                 <p className="text-gray-600 dark:text-gray-300 text-sm">Share what you're discovering while meeting established locals and fellow newcomers</p>
               </div>
               <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+                <div className="text-3xl mb-3">💼</div>
                 <h4 className="font-bold text-gray-900 dark:text-white mb-2">Business Hosts</h4>
                 <p className="text-gray-600 dark:text-gray-300 text-sm">Welcome colleagues and clients with authentic local experiences</p>
               </div>
               <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
+                <div className="text-3xl mb-3">🎒</div>
                 <h4 className="font-bold text-gray-900 dark:text-white mb-2">Adventure Seekers</h4>
                 <p className="text-gray-600 dark:text-gray-300 text-sm">Find people to try new restaurants, events, and activities in your own city</p>
               </div>
@@ -441,7 +432,7 @@ BECOME A NEARBY LOCAL NOW
                 boxShadow: '0 15px 50px rgba(0,0,0,0.3)',
               }}
             >
-              BECOME A NEARBY LOCAL
+              Join Now
             </Button>
           </div>
           
