@@ -6,25 +6,11 @@ import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import { Users, MapPin, Globe, Coffee, Heart, Car, RefreshCw, Home, Shield } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useTheme } from "@/components/theme-provider";
-import localsHeaderImage from "../../assets/locals_1756777112458.png";
-import travelersHeaderImage from "../../assets/image_1758643547084.png";
 
 export default function LandingStreamlined() {
   const [, setLocation] = useLocation();
   const [isMobile, setIsMobile] = useState(false);
   const { setTheme } = useTheme();
-  const [currentImage, setCurrentImage] = useState(0);
-  
-  // Rotating images from locals and travelers landing pages
-  const heroImages = [
-    localsHeaderImage,
-    travelersHeaderImage
-  ];
-
-  const heroImageAlts = [
-    "Locals sharing experiences and welcoming travelers",
-    "Nearby Traveler application interface"
-  ];
 
   useEffect(() => {
     const checkMobile = () => {
@@ -36,14 +22,6 @@ export default function LandingStreamlined() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Rotate images every 5 seconds
-  useEffect(() => {
-    const imageInterval = setInterval(() => {
-      setCurrentImage(prev => (prev + 1) % heroImages.length);
-    }, 5000);
-
-    return () => clearInterval(imageInterval);
-  }, [heroImages.length]);
 
   // FORCE LIGHT MODE for landing page - user requirement
   useEffect(() => {
@@ -130,14 +108,12 @@ export default function LandingStreamlined() {
                   </p>
                 </div>
                 
-                {/* Hero Image - Rotating */}
-                <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-2xl shadow-lg">
-                  <img
-                    key={currentImage}
-                    src={heroImages[currentImage]}
-                    alt={heroImageAlts[currentImage]}
-                    className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl animate-in fade-in duration-700"
-                  />
+                {/* Hero Visual - Blue to Orange Gradient */}
+                <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-2xl shadow-lg bg-gradient-to-br from-blue-500 to-orange-500 flex items-center justify-center">
+                  <div className="text-white text-center p-8">
+                    <Users className="w-20 h-20 mx-auto mb-4 opacity-90" />
+                    <p className="text-xl sm:text-2xl font-semibold">Connect with Travelers & Locals</p>
+                  </div>
                 </div>
                 
                 <p className="mt-3 sm:mt-4 text-sm sm:text-base italic text-orange-600 text-center font-medium">
