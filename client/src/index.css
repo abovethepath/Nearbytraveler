@@ -73,6 +73,26 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Smooth scroll animation for landing page */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-on-scroll {
+  opacity: 0;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
 /* ADAPTIVE DARK/LIGHT MODE SMOOTH TRANSITIONS */
 :root {
   --theme-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

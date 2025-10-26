@@ -55,6 +55,36 @@ export default function LandingStreamlined() {
     setTheme('light');
   }, [setTheme]);
 
+  // Smooth scroll behavior
+  useEffect(() => {
+    document.documentElement.style.scrollBehavior = 'smooth';
+    return () => {
+      document.documentElement.style.scrollBehavior = '';
+    };
+  }, []);
+
+  // Intersection Observer for fade-in animations
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-fade-in-up');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    const elements = document.querySelectorAll('.animate-on-scroll');
+    elements.forEach(el => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+
   const handleGetStarted = () => {
     trackEvent('landing_page_cta_clicked', 'hero_section', 'Start Connecting Now');
     setLocation('/launching-soon');
@@ -161,7 +191,7 @@ export default function LandingStreamlined() {
         </div>
 
         {/* Why Nearby Traveler */}
-        <section className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
+        <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-8 sm:mb-12">
               Why Nearby Traveler
@@ -235,7 +265,7 @@ export default function LandingStreamlined() {
         </section>
 
         {/* From the Founder */}
-        <section className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 to-orange-500">
+        <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 to-orange-500">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-8 sm:mb-12">From the Founder</h2>
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 sm:p-8 lg:p-10 text-white">
@@ -250,7 +280,7 @@ export default function LandingStreamlined() {
         </section>
 
         {/* When Travelers Meet Locals */}
-        <section className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-white">
+        <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-white">
           <div className="max-w-6xl mx-auto text-center">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-8 sm:mb-12">
               When Travelers Meet Locals, Magic Happens
@@ -290,7 +320,7 @@ export default function LandingStreamlined() {
         </section>
 
         {/* How It Works */}
-        <section id="how-it-works" className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
+        <section id="how-it-works" className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center text-gray-900 mb-12 sm:mb-16">
               How It Works
@@ -331,7 +361,7 @@ export default function LandingStreamlined() {
         </section>
 
         {/* Community in Action */}
-        <section className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-white">
+        <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-white">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center text-gray-900 mb-8 sm:mb-12">
               See Our Community in Action
@@ -375,7 +405,7 @@ export default function LandingStreamlined() {
         </section>
 
         {/* Everyone's Welcome */}
-        <section className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-white">
+        <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-white">
           <div className="max-w-6xl mx-auto text-center">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-12 sm:mb-16">
               Everyone's Welcome
@@ -407,7 +437,7 @@ export default function LandingStreamlined() {
         </section>
 
         {/* Final CTA */}
-        <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white">
+        <section className="animate-on-scroll py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white">
           <div className="max-w-4xl mx-auto text-center">
             <p className="text-xl sm:text-2xl lg:text-3xl text-gray-600 mb-8 sm:mb-12 leading-relaxed font-bold">
               Be part of a new way to travel where weekly events and instant connections mean you're never really traveling alone.
