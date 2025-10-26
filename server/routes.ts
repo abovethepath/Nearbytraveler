@@ -4258,7 +4258,7 @@ Questions? Just reply to this message. Welcome aboard!
         }
       } else {
         // If no search term provided, require at least one other filter
-        if (!location && !userType && !gender && !interests && !activities && !eventsFilter) {
+        if (!location && !userType && !gender && !interests && !activities && !eventsFilter && !topChoices && !sexualPreference && !militaryStatus && !newToTown) {
           return res.json({
             users: [],
             total: 0,
