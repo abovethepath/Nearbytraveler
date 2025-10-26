@@ -3502,24 +3502,23 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return !hasBusinessInfo || !hasBusinessLocation || !hasBusinessInterests;
     }
     
-    // For regular users (travelers/locals)
-    const hasBasicInfo = user.bio && user.bio.trim().length > 0;
-    const hasInterests = user.interests && Array.isArray(user.interests) && user.interests.length >= 3;
-    const hasLocation = user.hometownCity && user.hometownState && user.hometownCountry;
+    // For regular users (travelers/locals) - GLOBAL FRIENDLY REQUIREMENTS
+    // These fields work for ALL countries (unlike state which doesn't exist globally)
+    const hasBio = user.bio && user.bio.trim().length > 0;
+    const hasSex = user.sex && user.sex.trim().length > 0;
+    const hasSexPreference = user.sexPreference && user.sexPreference.trim().length > 0;
     
-    const isIncomplete = !hasBasicInfo || !hasInterests || !hasLocation;
+    const isIncomplete = !hasBio || !hasSex || !hasSexPreference;
     
     // Debug logging to help identify what's missing
     if (isIncomplete && process.env.NODE_ENV === 'development') {
       console.log('🔴 PROFILE INCOMPLETE:', {
-        hasBasicInfo,
-        bio: user.bio?.substring(0, 50),
-        hasInterests,
-        interestCount: user.interests?.length || 0,
-        hasLocation,
-        hometownCity: user.hometownCity,
-        hometownState: user.hometownState,
-        hometownCountry: user.hometownCountry
+        hasBio,
+        bioLength: user.bio?.length || 0,
+        hasSex,
+        sex: user.sex,
+        hasSexPreference,
+        sexPreference: user.sexPreference
       });
     }
     
@@ -3582,7 +3581,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
                 <div className="min-w-0">
                   <p className="font-bold text-base sm:text-lg">PLEASE FILL OUT PROFILE NOW TO MATCH WELL WITH OTHERS</p>
-                  <p className="text-red-100 text-xs sm:text-sm">Complete your bio, interests, and location to improve your compatibility with other travelers</p>
+                  <p className="text-red-100 text-xs sm:text-sm">Complete your bio, sex, and sex preference to improve your compatibility with other travelers</p>
                 </div>
               </div>
               <Button
