@@ -39,15 +39,15 @@ export default function BusinessLanding() {
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
       
-      {/* Fixed CTA Button - Mobile Only */}
-      <div className="fixed bottom-4 right-4 z-50 sm:hidden">
+      {/* Fixed CTA Button */}
+      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
         <Button 
           onClick={() => {
             trackEvent('signup_cta_click', 'business_landing', 'floating_join_now');
             setLocation('/launching-soon');
           }}
-          className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold px-6 py-3 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200"
-          data-testid="button-mobile-cta"
+          className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 sm:px-6 sm:py-3 rounded-lg shadow-sm transition-all duration-200 text-sm sm:text-base"
+          data-testid="button-floating-join-now"
         >
           Join Now
         </Button>
@@ -56,66 +56,75 @@ export default function BusinessLanding() {
       <LandingHeader />
       <LandingHeaderSpacer />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <div className="w-full">
         
         {/* HERO SECTION */}
-        <div className="pt-2 pb-4 sm:pt-4 sm:pb-6 bg-white dark:bg-gray-900">
-          <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 py-2 sm:py-4 md:py-6 grid gap-3 sm:gap-4 md:gap-6 md:grid-cols-5 items-center">
-            {/* Left text side - wider */}
-            <div className="md:col-span-3">
-              <div className="inline-block bg-gradient-to-r from-orange-100 to-blue-100 px-4 py-2 rounded-full mb-4">
-                <span className="text-sm font-bold text-orange-600">💰 REVENUE MULTIPLIER</span>
-              </div>
+        <div className="pt-4 pb-8 sm:pt-8 sm:pb-12 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid gap-6 md:gap-8 lg:gap-12 lg:grid-cols-2 items-center">
               
-              <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white">
-                <h1>Turn Travelers Into Customers</h1>
-              </div>
-              <div className="mt-3 sm:mt-4 max-w-xl text-sm md:text-base lg:text-lg text-zinc-600 dark:text-zinc-300">
-                <p>Direct access to travelers seeking your services.</p>
-              </div>
-              
-              {/* Desktop CTAs */}
-              <div className="hidden sm:flex mt-4 flex-col sm:flex-row gap-4">
-                <button 
-                  onClick={() => {
-                    trackEvent('signup_cta_click', 'business_landing', 'claim_beta');
-                    setLocation('/launching-soon');
-                  }}
-                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold px-8 py-3 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200 w-full sm:w-auto"
-                  data-testid="button-claim-beta"
-                >
-                  <Zap className="w-5 h-5 mr-2 inline" />
-                  Claim Free Beta Access
-                </button>
-                <button 
-                  onClick={() => {
-                    document.querySelector('#problem-section')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold px-8 py-3 rounded-lg transition-all duration-200 w-full sm:w-auto"
-                  data-testid="button-see-how-it-works"
-                >
-                  See How It Works
-                </button>
-              </div>
-            </div>
-
-            {/* Right image side */}
-            <div className="md:col-span-2 flex flex-col items-center order-first md:order-last">
-              <div className="mb-2 text-center w-full">
-                <p className="text-sm md:text-lg font-bold text-zinc-800 italic px-2">
+              {/* Left text side */}
+              <div className="order-2 lg:order-1 text-center lg:text-left">
+                <div className="inline-block bg-gradient-to-r from-orange-100 to-blue-100 px-4 py-2 rounded-full mb-4">
+                  <span className="text-sm font-bold text-orange-600">💰 REVENUE MULTIPLIER</span>
+                </div>
+                
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 mb-6 sm:mb-8">
                   Turn Travelers Into Customers
+                </h1>
+                <p className="text-base sm:text-lg text-gray-600 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                  Direct access to travelers seeking your services. Connect with potential customers before they even arrive.
+                </p>
+                
+                {/* CTA Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                  <Button
+                    onClick={() => {
+                      trackEvent('signup_cta_click', 'business_landing', 'main_cta');
+                      setLocation('/launching-soon');
+                    }}
+                    size="lg"
+                    className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                    data-testid="button-main-cta"
+                  >
+                    Join Now
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      trackEvent('learn_more_click', 'business_landing', 'see_how_it_works');
+                      document.querySelector('#problem-section')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    variant="outline"
+                    size="lg"
+                    className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-4 rounded-xl text-lg font-medium transition-all duration-200"
+                    data-testid="button-learn-more"
+                  >
+                    See How It Works
+                  </Button>
+                </div>
+              </div>
+
+              {/* Right image side */}
+              <div className="order-1 lg:order-2 flex flex-col items-center">
+                <div className="mb-4 sm:mb-6 text-center w-full">
+                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 italic px-2">
+                    Travel doesn't change you.<br />
+                    The people you meet do.
+                  </p>
+                </div>
+                
+                <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-2xl shadow-lg">
+                  <img
+                    src={businessHeaderPhoto}
+                    alt="Successful business owner connecting with customers"
+                    className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl"
+                  />
+                </div>
+                
+                <p className="mt-3 sm:mt-4 text-sm sm:text-base italic text-orange-600 text-center font-medium">
+                  Where Authentic Experiences Meet Local Business
                 </p>
               </div>
-              <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[200px] sm:h-[250px] md:h-[350px] rounded-2xl">
-                <img
-                  src={businessHeaderPhoto}
-                  alt="Successful business owner connecting with customers"
-                  className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl shadow-lg"
-                />
-              </div>
-              <p className="mt-2 text-xs md:text-sm italic text-orange-600 text-center">
-                Where Authentic Experiences Meet Local Business
-              </p>
             </div>
           </div>
         </div>
