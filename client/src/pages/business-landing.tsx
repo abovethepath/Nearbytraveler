@@ -394,7 +394,7 @@ export default function BusinessLanding() {
               </div>
               <div className="flex items-center text-sm text-gray-700">
                 <span className="text-green-500 mr-2 text-lg">✓</span>
-                Unlimited event promotion
+                Event promotion
               </div>
               <div className="flex items-center text-sm text-gray-700">
                 <span className="text-green-500 mr-2 text-lg">✓</span>
