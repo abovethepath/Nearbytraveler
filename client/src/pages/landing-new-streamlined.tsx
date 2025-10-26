@@ -8,7 +8,7 @@ import { trackEvent } from "@/lib/analytics";
 import { useTheme } from "@/components/theme-provider";
 // Import images as URLs
 const localsHeaderImage = "/assets/locals_1756777112458.png";
-const travelersHeaderImage = "/assets/image_1758643547084.png";
+const travelersHeaderImage = "/assets/travelers-hugging.avif";
 
 export default function LandingStreamlined() {
   const [, setLocation] = useLocation();
