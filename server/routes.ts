@@ -4895,11 +4895,37 @@ Questions? Just reply to this message. Welcome aboard!
       const updates = req.body;
 
       if (process.env.NODE_ENV === 'development') {
-        console.log(`🔧 TRAVEL INTENT UPDATE: User ${userId} saving travel preferences:`, Object.keys(updates).join(', '));
+        console.log(`🔧 USER UPDATE: User ${userId} saving updates:`, Object.keys(updates).join(', '));
       }
 
       // MAP USER FIELDS: Handle travel intent fields specifically
       const mappedUpdates = { ...updates };
+
+      // HOMETOWN CHANGE DETECTION: If hometown changes, automatically set "new to town"
+      if (updates.hometownCity || updates.hometownState || updates.hometownCountry) {
+        // Get current user to compare
+        const currentUser = await storage.getUser(userId);
+        
+        if (currentUser) {
+          const hometownChanged = 
+            (updates.hometownCity && updates.hometownCity !== currentUser.hometownCity) ||
+            (updates.hometownState && updates.hometownState !== currentUser.hometownState) ||
+            (updates.hometownCountry && updates.hometownCountry !== currentUser.hometownCountry);
+          
+          if (hometownChanged) {
+            // Automatically set "new to town" for 9 months
+            const newToTownUntil = new Date();
+            newToTownUntil.setMonth(newToTownUntil.getMonth() + 9);
+            
+            mappedUpdates.isNewToTown = true;
+            mappedUpdates.newToTownUntil = newToTownUntil.toISOString();
+            
+            if (process.env.NODE_ENV === 'development') {
+              console.log(`🆕 HOMETOWN CHANGED: Automatically setting user ${userId} as "new to town" until ${newToTownUntil.toLocaleDateString()}`);
+            }
+          }
+        }
+      }
 
       // Remove password from response
       const updatedUser = await storage.updateUser(userId, mappedUpdates);
@@ -4910,20 +4936,15 @@ Questions? Just reply to this message. Welcome aboard!
 
       const { password: _, ...userWithoutPassword } = updatedUser;
 
-      if (process.env.NODE_ENV === 'development') console.log(`✓ Travel intent data updated for user ${userId}:`, {
-        travelWhy: updatedUser.travelWhy,
-        travelHow: updatedUser.travelHow,
-        travelBudget: updatedUser.travelBudget,
-        travelGroup: updatedUser.travelGroup
-      });
+      if (process.env.NODE_ENV === 'development') console.log(`✓ User ${userId} updated successfully`);
       return res.json(userWithoutPassword);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') {
-        console.error("🔴 CRITICAL ERROR updating travel intent:", error);
+        console.error("🔴 CRITICAL ERROR updating user:", error);
         console.error("🔴 Error message:", error.message);
       }
       return res.status(500).json({ 
-        message: "Failed to update user travel intent", 
+        message: "Failed to update user", 
         error: error.message
       });
     }
