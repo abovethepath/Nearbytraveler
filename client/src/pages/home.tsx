@@ -9,7 +9,6 @@ import MessagePreview from "@/components/message-preview";
 // MobileNav removed - using global mobile navigation
 import DestinationModal from "@/components/destination-modal";
 import ConnectModal from "@/components/connect-modal";
-import { AdvancedSearchWidget } from "@/components/AdvancedSearchWidget";
 import Recommendations from "@/components/recommendations";
 import AIChatBot from "@/components/ai-chat-bot";
 import NotificationBell from "@/components/notification-bell";
@@ -71,7 +70,6 @@ export default function Home() {
   const [activeLocationFilter, setActiveLocationFilter] = useState<string>("");
   const [connectModalMode, setConnectModalMode] = useState<'current' | 'hometown'>('current');
   const [connectTargetUser, setConnectTargetUser] = useState<any>(null);
-  const [showAdvancedSearchWidget, setShowAdvancedSearchWidget] = useState(false);
   const [showAllUsers, setShowAllUsers] = useState(false);
   const [sortBy, setSortBy] = useState<'recent' | 'active' | 'compatibility' | 'travel_experience' | 'closest_nearby' | 'aura' | 'references' | 'alphabetical'>('recent');
   
@@ -628,149 +626,8 @@ export default function Home() {
   React.useEffect(() => {
     checkImageExists(staticHeroImage);
   }, []);
-
-  // Check for URL parameter to auto-open advanced search
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('filters') === 'open') {
-      setShowAdvancedSearchWidget(true);
-      // Scroll to filters section after a brief delay
-      setTimeout(() => {
-        if (filtersRef.current) {
-          filtersRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 100);
-      // Clean up URL without refreshing page
-      window.history.replaceState({}, '', window.location.pathname);
-    }
-  }, []);
-
-  // Helper function to handle search widget closing with return navigation
-  const handleCloseSearchWidget = () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const returnUrl = urlParams.get('return');
-    
-    if (returnUrl) {
-      // Navigate back to the return URL
-      setLocation(returnUrl);
-    } else {
-      // Just close search widget normally
-      setShowAdvancedSearchWidget(false);
-    }
-  };
-
-  // Add missing handleCloseFilters function
-  const handleCloseFilters = () => {
-    console.log('🔄 Closing filters');
-    setShowAdvancedSearchWidget(false);
-  };
-
-  // AdvancedSearchWidget handles its own state - no manual population needed
   const { toast } = useToast();
   const [, setLocation] = useLocation();
-  const filtersRef = useRef<HTMLDivElement>(null);
-
-  // Close filters when clicking outside - enhanced version to prevent closing on scroll
-  useEffect(() => {
-    let isScrolling = false;
-    let isDragging = false;
-    let scrollTimer: NodeJS.Timeout;
-
-    const handleScroll = () => {
-      isScrolling = true;
-      clearTimeout(scrollTimer);
-      scrollTimer = setTimeout(() => {
-        isScrolling = false;
-      }, 150);
-    };
-
-    const handleMouseMove = (event: MouseEvent) => {
-      if (event.buttons > 0) {
-        isDragging = true;
-        setTimeout(() => {
-          isDragging = false;
-        }, 100);
-      }
-    };
-
-    const handleClickOutside = (event: MouseEvent) => {
-      // Don't close if currently scrolling or dragging
-      if (isScrolling || isDragging) return;
-
-      // Check if the click target is within the filters panel
-      if (filtersRef.current && !filtersRef.current.contains(event.target as Node)) {
-        // Additional checks to prevent closing on scroll-related interactions
-        const target = event.target as HTMLElement;
-
-        // Don't close if clicking on scrollbars, scroll areas, or within the filters
-        if (target && (
-          target.closest('[data-radix-scroll-area-viewport]') ||
-          target.closest('.overflow-y-auto') ||
-          target.closest('.overflow-auto') ||
-          target.classList.contains('scrollbar-thumb') ||
-          target.classList.contains('scrollbar-track') ||
-          target.closest('.bg-gray-50') || // The filters card background
-          target.tagName === 'HTML' || // Clicking on page scroll area
-          target.tagName === 'BODY'   // Clicking on page scroll area
-        )) {
-          return;
-        }
-
-        // Only close if it's a genuine click outside the component
-        handleCloseFilters();
-      }
-    };
-
-    const handleEscapeKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        handleCloseFilters();
-      }
-    };
-
-    if (showAdvancedSearchWidget) {
-      // Use capture phase to catch scroll events early
-      document.addEventListener('scroll', handleScroll, { capture: true, passive: true });
-      window.addEventListener('scroll', handleScroll, { passive: true });
-      document.addEventListener('wheel', handleScroll, { passive: true });
-      document.addEventListener('touchmove', handleScroll, { passive: true });
-      document.addEventListener('mousemove', handleMouseMove, { passive: true });
-
-      // Delay adding click listener to avoid immediate closure
-      const clickTimer = setTimeout(() => {
-        document.addEventListener('mousedown', handleClickOutside);
-      }, 100);
-
-      // Also listen for scroll events on the filters panel itself
-      if (filtersRef.current) {
-        filtersRef.current.addEventListener('scroll', handleScroll, { passive: true });
-      }
-
-      document.addEventListener('keydown', handleEscapeKey);
-
-      return () => {
-        clearTimeout(clickTimer);
-        clearTimeout(scrollTimer);
-        document.removeEventListener('scroll', handleScroll, true);
-        window.removeEventListener('scroll', handleScroll);
-        document.removeEventListener('wheel', handleScroll);
-        document.removeEventListener('touchmove', handleScroll);
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mousedown', handleClickOutside);
-        document.removeEventListener('keydown', handleEscapeKey);
-
-        if (filtersRef.current) {
-          filtersRef.current.removeEventListener('scroll', handleScroll);
-        }
-      };
-    }
-
-    // Return cleanup function for the case where showAdvancedSearchWidget is false
-    return () => {};
-  }, [showAdvancedSearchWidget]);
-
-
-
-
 
   // Scroll to top when home page loads
   useEffect(() => {
@@ -1558,18 +1415,6 @@ export default function Home() {
         )}
       </h1>
       
-      {/* Mobile Search CTA */}
-      <div className="mb-6 px-4">
-        <Button 
-          onClick={() => setShowAdvancedSearchWidget(true)}
-          className="w-full bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white py-4 px-6 rounded-xl font-semibold text-lg shadow-lg transition-all duration-200 transform hover:scale-105"
-          data-testid="button-search-cta"
-        >
-          <Search className="w-5 h-5 mr-2" />
-          Find Your Perfect Travel Match
-        </Button>
-      </div>
-      
       <div className="mb-6 flex justify-center px-4">
         <div className="relative w-full max-w-sm rounded-xl overflow-hidden shadow-xl">
           <img 
@@ -1840,16 +1685,6 @@ export default function Home() {
       <main className="pt-2 sm:pt-4 pb-24 md:pb-8 lg:pb-4">
         <div className="w-full max-w-full px-2 sm:px-4 lg:px-6">
 
-
-
-        {/* FIXED: Using the SAME comprehensive AdvancedSearchWidget everywhere */}
-        {showAdvancedSearchWidget && (
-          <AdvancedSearchWidget
-            open={showAdvancedSearchWidget}
-            onOpenChange={(open) => !open && handleCloseSearchWidget()}
-          />
-        )}
-
         {/* Main Content - Standard three-column layout */}
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-6 px-2 sm:px-4 lg:px-8 mt-2 sm:mt-0">
           
@@ -1934,19 +1769,6 @@ export default function Home() {
                     <SelectItem value="alphabetical">A-Z</SelectItem>
                   </SelectContent>
                 </Select>
-
-                {/* Advanced Search Button */}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowAdvancedSearchWidget(true)}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-none rounded-xl shadow-md"
-                  data-testid="button-advanced-search"
-                >
-                  <Search className="w-4 h-4 mr-2" />
-                  <span className="hidden sm:inline">Search</span>
-                  <span className="sm:hidden">Search</span>
-                </Button>
               </div>
             </div>
 
