@@ -6,11 +6,16 @@ import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import { Users, MapPin, Globe, Coffee, Heart, Car, RefreshCw, Home, Shield } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useTheme } from "@/components/theme-provider";
+import localsImage from "../../assets/locals_1756777112458.png";
+import travelersImage from "@assets/image_1758643547084.png";
 
 export default function LandingStreamlined() {
   const [, setLocation] = useLocation();
   const [isMobile, setIsMobile] = useState(false);
   const { setTheme } = useTheme();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  const images = [localsImage, travelersImage];
 
   useEffect(() => {
     const checkMobile = () => {
@@ -22,6 +27,13 @@ export default function LandingStreamlined() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Rotate images every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % images.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [images.length]);
 
   // FORCE LIGHT MODE for landing page - user requirement
   useEffect(() => {
@@ -108,12 +120,14 @@ export default function LandingStreamlined() {
                   </p>
                 </div>
                 
-                {/* Hero Visual - Blue to Orange Gradient */}
-                <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-2xl shadow-lg bg-gradient-to-br from-blue-500 to-orange-500 flex items-center justify-center">
-                  <div className="text-white text-center p-8">
-                    <Users className="w-20 h-20 mx-auto mb-4 opacity-90" />
-                    <p className="text-xl sm:text-2xl font-semibold">Connect with Travelers & Locals</p>
-                  </div>
+                {/* Hero Image - Rotating every 5 seconds */}
+                <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-2xl shadow-lg">
+                  <img
+                    key={currentImageIndex}
+                    src={images[currentImageIndex]}
+                    alt="Nearby Traveler connecting locals and travelers"
+                    className="w-full h-full object-cover rounded-2xl transition-opacity duration-1000"
+                  />
                 </div>
                 
                 <p className="mt-3 sm:mt-4 text-sm sm:text-base italic text-orange-600 text-center font-medium">
