@@ -1,225 +1,170 @@
 // ⭐ MASTER BASE OPTIONS - SITE-WIDE CONSISTENCY SYSTEM ⭐
-// THIS IS THE SINGLE SOURCE OF TRUTH FOR ALL INTERESTS/ACTIVITIES/EVENTS/LANGUAGES
+// THIS IS THE SINGLE SOURCE OF TRUTH FOR ALL INTERESTS/ACTIVITIES/TOP CHOICES
 // USED ACROSS: All signup pages, profile editing, trip planning, advanced search, matching algorithms
 // DO NOT CREATE SEPARATE LISTS - ALWAYS IMPORT FROM HERE
 
 // ========================================
-// TOP CHOICES TO MEET TRAVELERS AND LOCALS
+// TOP CHOICES (30 items)
 // ========================================
-// ALL USERS (local, traveler, new to town) select from this EXACT SAME LIST during signup
-// This ensures everyone can be matched on the same interests
+// Primary categories for meeting travelers and locals
+// Users select from this list to indicate their main interests
 
 export const TOP_CHOICES = [
-  "Open to Dating",
-  "Meeting New People",
   "Restaurants & Food Scene",
-  "Coffee Shops & Cafes",
   "Brunch Spots",
-  "Ethnic Cuisine",
-  "Happy Hours & Bars",
-  "Nightlife & Dancing",
+  "Street Food",
+  "Coffee Shops & Cafes",
+  "Late Night Eats",
+  "Vegan/Vegetarian",
+  "Happy Hour",
+  "Cocktail Bars & Speakeasies",
   "Craft Beer & Breweries",
-  "Wine & Vineyards",
+  "Wine Bars & Vineyards",
+  "Rooftop Bars",
+  "Nightlife & Dancing",
   "Live Music & Concerts",
+  "Karaoke",
   "Comedy Shows",
-  "Theater & Performing Arts",
-  "Hiking & Outdoors",
+  "Local Hidden Gems",
+  "Historical Sites & Tours",
+  "Museums & Culture",
+  "Photography & Scenic Spots",
+  "Local Markets & Bazaars",
   "Beach & Water Activities",
-  "Adventure Tours",
-  "Wildlife & Nature",
-  "Fitness & Sports",
+  "Hiking & Nature",
+  "Fitness & Workouts",
   "Golf",
   "Pickleball",
-  "Museums & Culture",
-  "City Tours & Sightseeing",
-  "Local Hidden Gems",
-  "Historical Sites",
-  "Local Events & Festivals",
-  "Photography & Art",
-  "Gaming & Esports",
-  "Family Activities",
+  "Meeting New People",
+  "Open to Dating",
   "LGBTQIA+",
+  "Family-Oriented",
   "Digital Nomads"
 ];
 
-// DEPRECATED - kept for backward compatibility
-export const HOMETOWN_INTERESTS = TOP_CHOICES;
-export const TRAVEL_INTERESTS = [];
-export const PROFILE_INTERESTS = [];
+// ========================================
+// INTERESTS (67 items)
+// ========================================
+// Extended interests for deeper user matching and personalization
 
-// ========================================
-// LEGACY COMPATIBILITY (DEPRECATED)
-// ========================================
-export const MOST_POPULAR_INTERESTS = TOP_CHOICES;
-export const ADDITIONAL_INTERESTS = [
-  // Outdoor & Adventure
+export const INTERESTS = [
+  "Sober/Alcohol-Free Lifestyle",
+  "420-Friendly",
+  "Religious & Spiritual Sites",
+  "Wellness & Mindfulness",
+  "Volunteering & Activism",
+  "Pet Lovers",
+  "Luxury Experiences",
+  "Budget Travel",
+  "Non-Drinker Social Scene",
+  "Smoke-Free Environments",
+  "Health-Conscious/Vaccinated",
+  "Hookah Lounges",
+  "Food Tours",
+  "Bakeries & Desserts",
+  "Ethnic Cuisine",
+  "Farm-to-Table Dining",
+  "Farmers Markets",
+  "Food Trucks",
+  "Food & Wine Festivals",
+  "Beer Festivals",
+  "Pop-up Restaurants",
+  "Jazz Clubs",
+  "Theater & Performing Arts",
+  "Film & Cinema",
+  "Gaming",
+  "Electronic/DJ Scene",
+  "Ghost Tours",
+  "City Tours",
+  "Architecture",
+  "Street Art",
+  "Trivia Nights",
+  "Sports Events",
+  "Street Festivals & Community Events",
+  "Tennis",
+  "Running & Jogging",
+  "Team Sports",
+  "Yoga & Meditation",
+  "Extreme Sports",
   "Camping & RV Travel",
   "Rock Climbing",
   "Surfing",
   "Skiing & Snowboarding",
-  "Kayaking & Canoeing",
   "Scuba Diving",
   "Cycling & Biking",
   "Sailing & Boating",
+  "Kayaking & Canoeing",
   "Fishing",
-  "Horseback Riding",
-  
-  // Food & Culinary
-  "Food Tours",
-  "Vegetarian & Vegan Dining",
-  "Street Food",
-  "Farm-to-Table Dining",
-  "Bakeries & Desserts",
-  
-  // Arts & Creativity
-  "Painting & Drawing",
-  "Crafts & DIY",
-  "Film & Cinema",
-  "Dance Classes",
-  "Writing & Poetry",
+  "Kid-Friendly Activities",
+  "Parenting Meetups",
+  "Family Travel",
+  "Children's Museums & Events",
+  "Playground Hangouts",
+  "Family Dining",
+  "Educational Activities for Kids",
+  "Arts & Crafts",
   "Fashion & Style",
-  "Architecture",
-  
-  // Music & Entertainment
+  "Writing & Book Clubs",
   "Jazz & Blues",
   "Classical Music",
   "Indie Music Scene",
-  "Karaoke",
-  
-  // Wellness & Self-Care
-  "Yoga & Meditation",
-  "Spa & Wellness",
-  "Spiritual Retreats",
-  "Healthy Living",
-  "Mindfulness",
-  
-  // Learning & Growth
-  "Book Clubs",
-  "Learning Languages",
-  "Philosophy & Discussion",
-  "Science & Technology",
-  "Entrepreneurship",
-  "Volunteering",
-  
-  // Shopping & Markets
   "Vintage & Thrift Shopping",
-  "Local Markets & Bazaars",
   "Antiques & Collectibles",
-  "Shopping Districts",
-  
-  // Nightlife & Social
-  "Rooftop Bars",
-  "Jazz Clubs",
-  "Sports Bars",
-  "Hookah Lounges",
-  "Late Night Eats",
-  
-  // Nature & Wildlife
-  "Bird Watching",
-  "National Parks",
-  "Botanical Gardens",
-  "Eco-Tourism",
-  
-  // Special Interests
-  "Luxury Experiences",
-  "Budget Travel",
-  "Off the Beaten Path",
-  "Road Trips",
-  "Train Travel",
-  "Cruises",
-  "Solo Adventures",
-  "Romantic Getaways",
-  "Religious & Spiritual Sites",
-  "Ghost Tours & Haunted Places",
-  
-  // Sports & Recreation
-  "Tennis",
-  "Basketball",
-  "Soccer",
-  "Volleyball",
-  "Baseball & Softball",
-  "Ice Skating",
-  "Skateboarding",
-  "Paddleboarding",
-  "Table Tennis",
-  "Bowling",
-  
-  // Cultural Activities
-  "Cooking & Baking",
-  "Distillery Tours",
-  "Tea Houses",
-  "Art Galleries",
-  "Pottery & Ceramics",
-  
-  // Entertainment & Games
-  "Board Games",
-  "Card Games",
-  "Arcade Games",
-  "Escape Rooms",
-  "Virtual Reality",
-  "Laser Tag",
-  "Mini Golf",
-  "Go-Kart Racing",
-  
-  // Outdoor Activities
-  "Geocaching",
-  "Stargazing",
-  "Beach Volleyball",
-  "Frisbee & Disc Golf",
-  "Park Picnics",
-  "Outdoor BBQ",
-  "Sunset Watching",
-  
-  // Music & Dance
-  "Salsa Dancing",
-  "Swing Dancing",
-  "Hip Hop Dance",
-  "DJ & Electronic Music",
-  "Acoustic Music",
-  "Music Jam Sessions",
-  
-  // Food & Drinks
-  "Food Trucks",
-  "Rooftop Dining",
-  "Izakaya & Tapas",
-  "Farmers Markets",
-  "Cooking Competitions",
-  
-  // Social & Community
-  "Coworking Spaces",
   "Language Exchange",
-  "Pub Quizzes",
-  "Debate & Discussion",
-  "Social Activism",
-  
-  // Nature & Animals
-  "Dog Parks",
-  "Pet Cafes",
-  "Aquariums",
-  "Zoos & Safari",
-  "Butterfly Gardens",
-  "Flower Markets",
-  
-  // Technology & Innovation
-  "Hackathons",
-  "Tech Meetups",
-  "Startup Events",
-  "3D Printing",
-  "Drone Flying",
-  "Coding Workshops",
-  
-  // Unique Experiences
-  "Food Challenges",
-  "Pub Crawls",
-  "Scavenger Hunts",
-  "Walking Tours",
-  "Segway Tours",
-  "Hot Air Balloons",
-  "Parasailing",
-  "Bungee Jumping",
-  "Zip Lining"
+  "Book Clubs & Reading",
+  "Tech & Innovation",
+  "Coworking & Networking",
+  "Sunset Viewpoints",
+  "Hot Air Balloons"
 ];
-export const ALL_INTERESTS = [...TOP_CHOICES, ...ADDITIONAL_INTERESTS];
+
+// ========================================
+// ACTIVITIES (18 items)
+// ========================================
+// Concrete activities users want to do together
+
+export const ACTIVITIES = [
+  "Family Outings",
+  "Kids' Playgrounds & Parks",
+  "Zoo & Aquarium Visits",
+  "Restaurant Hopping",
+  "Alcohol-Free Hangouts",
+  "Bar Hopping",
+  "Working Out Together",
+  "Outdoor Adventures",
+  "Water Sports",
+  "Beach Hangouts",
+  "Sports & Recreation",
+  "Creative Sessions",
+  "Cooking Together",
+  "Photography Walks",
+  "Game Nights",
+  "Walking Tours",
+  "Exploring Local Spots",
+  "Late Night Adventures",
+  "Wellness Activities"
+];
+
+// ========================================
+// COMBINED ARRAYS
+// ========================================
+
+// All interests combined (Top Choices + Interests)
+export const ALL_INTERESTS = [...TOP_CHOICES, ...INTERESTS];
+
+// All activities (just the ACTIVITIES array)
+export const ALL_ACTIVITIES = [...ACTIVITIES];
+
+// ========================================
+// DEPRECATED - Kept for backward compatibility
+// ========================================
+
+// Legacy aliases that point to new structure
+export const HOMETOWN_INTERESTS = TOP_CHOICES;
+export const TRAVEL_INTERESTS = [];
+export const PROFILE_INTERESTS = [];
+export const MOST_POPULAR_INTERESTS = TOP_CHOICES;
+export const ADDITIONAL_INTERESTS = INTERESTS;
 
 // ========================================
 // HELPER FUNCTIONS - USE THESE IN COMPONENTS
@@ -228,10 +173,18 @@ export const ALL_INTERESTS = [...TOP_CHOICES, ...ADDITIONAL_INTERESTS];
 // Get top choices (for ALL signups - locals, travelers, new to town)
 export const getTopChoices = () => TOP_CHOICES;
 
+// Get all interests
+export const getAllInterests = () => ALL_INTERESTS;
+
+// Get all activities
+export const getAllActivities = () => ALL_ACTIVITIES;
+
 // DEPRECATED - use getTopChoices instead
 export const getHometownInterests = () => TOP_CHOICES;
 export const getTravelInterests = () => [];
 export const getProfileInterests = () => [];
+export const getMostPopularInterests = () => MOST_POPULAR_INTERESTS;
+export const getAdditionalInterests = () => ADDITIONAL_INTERESTS;
 
 // Get signup interests - ALL users get the same list
 export const getSignupInterests = (userType: 'local' | 'traveler') => {
@@ -239,265 +192,8 @@ export const getSignupInterests = (userType: 'local' | 'traveler') => {
 };
 
 // ========================================
-// ACTIVITIES & EVENTS (unchanged)
+// LANGUAGES
 // ========================================
-
-// GROUPED ACTIVITIES FOR EASIER SELECTION
-export const SOCIAL_ACTIVITIES = [
-  "Local Connections",
-  "Meetup Organizing",
-  "Language Practice"
-];
-
-export const PLANNING_ACTIVITIES = [
-  "Cultural Learning",
-  "Blogging"
-];
-
-export const FITNESS_ACTIVITIES = [
-  "Fitness Challenges",
-  "Working out at Gym",
-  "Running & Jogging"
-];
-
-export const ADVENTURE_ACTIVITIES = [
-  "Outdoor Adventures",
-  "Water Sports",
-  "Extreme Sports",
-  "Mountain Activities",
-  "Urban Exploration"
-];
-
-export const CREATIVE_ACTIVITIES = [
-  "Art & Crafts",
-  "Music Making",
-  "Dance Practice",
-  "Photography Walks",
-  "Creative Writing"
-];
-
-export const FOOD_ACTIVITIES = [
-  "Restaurant Hopping",
-  "Food Market Visits",
-  "Cooking Together",
-  "Baking Sessions",
-  "Wine & Spirits Tasting"
-];
-
-export const LEARNING_ACTIVITIES = [
-  "Workshop Attendance",
-  "Skill Sharing",
-  "Book Reading",
-  "Educational Tours",
-  "Study Groups"
-];
-
-export const ENTERTAINMENT_ACTIVITIES = [
-  "Movie Going",
-  "Concert Attendance",
-  "Theater Shows",
-  "Comedy Shows",
-  "Live Performances"
-];
-
-export const SPORTS_ACTIVITIES = [
-  "Team Sports",
-  "Individual Sports",
-  "Beach Sports",
-  "Indoor Sports",
-  "Outdoor Recreation"
-];
-
-export const WELLNESS_ACTIVITIES = [
-  "Yoga Practice",
-  "Meditation Sessions",
-  "Spa Visits",
-  "Nature Therapy",
-  "Wellness Workshops"
-];
-
-export const NIGHTLIFE_ACTIVITIES = [
-  "Bar Hopping",
-  "Club Dancing",
-  "Late Night Dining",
-  "Rooftop Lounging",
-  "Live Music Venues"
-];
-
-export const SOCIAL_HANGOUTS = [
-  "Coffee Shop Meetups",
-  "Park Gatherings",
-  "Beach Hangouts",
-  "Picnic Outings",
-  "Game Nights"
-];
-
-// Combined activities in logical order
-export const ALL_ACTIVITIES = [
-  ...SOCIAL_ACTIVITIES,
-  ...PLANNING_ACTIVITIES,
-  ...FITNESS_ACTIVITIES,
-  ...ADVENTURE_ACTIVITIES,
-  ...CREATIVE_ACTIVITIES,
-  ...FOOD_ACTIVITIES,
-  ...LEARNING_ACTIVITIES,
-  ...ENTERTAINMENT_ACTIVITIES,
-  ...SPORTS_ACTIVITIES,
-  ...WELLNESS_ACTIVITIES,
-  ...NIGHTLIFE_ACTIVITIES,
-  ...SOCIAL_HANGOUTS
-];
-
-// GROUPED EVENTS FOR EASIER SELECTION
-export const CULTURAL_COMMUNITY_EVENTS = [
-  "Street Festivals",
-  "Community Events",
-  "Charity Events"
-];
-
-export const PARTY_NIGHTLIFE_EVENTS = [
-  "Club Nights",
-  "Karaoke Nights"
-];
-
-export const SPORTS_COMPETITION_EVENTS = [
-  "Sports Events",
-  "Game Nights",
-  "Trivia Nights"
-];
-
-export const SOCIAL_NETWORKING_EVENTS = [
-  "Networking Events",
-  "Meet & Greets",
-  "Speed Dating Events",
-  "Flash Mobs"
-];
-
-export const ENTERTAINMENT_EVENTS = [
-  "Pop-up Restaurants",
-  "Outdoor Movies",
-  "Open Mic Nights"
-];
-
-export const FAMILY_EVENTS = [
-  "Kid-Friendly Events"
-];
-
-export const FOOD_DRINK_EVENTS = [
-  "Wine Tasting Events",
-  "Beer Festivals",
-  "Food Festivals",
-  "Restaurant Weeks",
-  "Farmers Market Events",
-  "Coffee Festivals"
-];
-
-export const ARTS_CULTURE_EVENTS = [
-  "Art Exhibitions",
-  "Gallery Openings",
-  "Film Festivals",
-  "Book Fairs",
-  "Poetry Slams",
-  "Theater Premieres",
-  "Dance Performances"
-];
-
-export const MUSIC_EVENTS = [
-  "Music Festivals",
-  "Concert Series",
-  "DJ Nights",
-  "Jazz Sessions",
-  "Classical Concerts",
-  "Indie Music Shows",
-  "Music Workshops"
-];
-
-export const OUTDOOR_EVENTS = [
-  "Beach Parties",
-  "Park Events",
-  "Outdoor Concerts",
-  "Hiking Meetups",
-  "Camping Trips",
-  "Sunrise/Sunset Gatherings",
-  "Bike Rallies"
-];
-
-export const SEASONAL_EVENTS = [
-  "Holiday Markets",
-  "New Year Celebrations",
-  "Summer Festivals",
-  "Winter Events",
-  "Spring Celebrations",
-  "Autumn Festivals",
-  "Cultural Holidays"
-];
-
-export const WELLNESS_EVENTS = [
-  "Yoga Retreats",
-  "Meditation Workshops",
-  "Wellness Fairs",
-  "Health Expos",
-  "Running Events",
-  "Charity Runs"
-];
-
-export const TECH_INNOVATION_EVENTS = [
-  "Tech Conferences",
-  "Startup Pitches",
-  "Innovation Showcases",
-  "VR/AR Demos",
-  "Tech Networking"
-];
-
-export const ADVENTURE_EVENTS = [
-  "Adventure Races",
-  "Obstacle Courses",
-  "Extreme Sports Events",
-  "Water Sports Competitions",
-  "Mountain Challenges",
-  "Urban Adventures",
-  "Treasure Hunts"
-];
-
-export const LEARNING_EVENTS = [
-  "Guest Lectures",
-  "Educational Tours",
-  "Skill Exchanges",
-  "Panel Discussions"
-];
-
-export const SPECIAL_EVENTS = [
-  "Pride Celebrations",
-  "Cultural Parades",
-  "Fashion Shows",
-  "Car Shows",
-  "Pet Events",
-  "Market Days",
-  "Block Parties",
-  "Flash Sales",
-  "Auctions",
-  "Award Ceremonies"
-];
-
-// Combined events in logical order
-export const ALL_EVENTS = [
-  ...CULTURAL_COMMUNITY_EVENTS,
-  ...PARTY_NIGHTLIFE_EVENTS,
-  ...SPORTS_COMPETITION_EVENTS,
-  ...SOCIAL_NETWORKING_EVENTS,
-  ...ENTERTAINMENT_EVENTS,
-  ...FAMILY_EVENTS,
-  ...FOOD_DRINK_EVENTS,
-  ...ARTS_CULTURE_EVENTS,
-  ...MUSIC_EVENTS,
-  ...OUTDOOR_EVENTS,
-  ...SEASONAL_EVENTS,
-  ...WELLNESS_EVENTS,
-  ...TECH_INNOVATION_EVENTS,
-  ...ADVENTURE_EVENTS,
-  ...LEARNING_EVENTS,
-  ...SPECIAL_EVENTS
-];
 
 // Languages available for selection
 export const ALL_LANGUAGES = [
@@ -507,25 +203,26 @@ export const ALL_LANGUAGES = [
   "Arabic", "Hebrew", "Turkish", "Greek", "Hindi", "Urdu", "Bengali"
 ];
 
-// ========================================
-// LEGACY EXPORT FUNCTIONS (DEPRECATED)
-// ========================================
-export const getMostPopularInterests = () => MOST_POPULAR_INTERESTS;
-export const getAdditionalInterests = () => ADDITIONAL_INTERESTS;
-export const getAllInterests = () => ALL_INTERESTS;
-export const getAllActivities = () => ALL_ACTIVITIES; 
-export const getAllEvents = () => ALL_EVENTS;
 export const getAllLanguages = () => ALL_LANGUAGES;
 
+// ========================================
+// VALIDATION FUNCTIONS
+// ========================================
+
 // Validation function to ensure consistent total selections
-export const validateSelections = (interests: string[], activities: string[], events: string[], languages: string[]) => {
-  const total = interests.length + activities.length + events.length + languages.length;
+// Note: Events parameter removed as events are no longer part of user profiles
+export const validateSelections = (interests: string[], activities: string[], languages: string[]) => {
+  const total = interests.length + activities.length + languages.length;
   return {
     total,
     isValid: total >= 7,
     needed: Math.max(0, 7 - total)
   };
 };
+
+// ========================================
+// USER TYPE OPTIONS
+// ========================================
 
 // BASE_TRAVELER_TYPES for consistency across signup forms
 export const BASE_TRAVELER_TYPES = [
@@ -572,3 +269,12 @@ export const SEXUAL_PREFERENCE_OPTIONS = [
 
 // Export function for sexual preferences
 export const getSexualPreferenceOptions = () => SEXUAL_PREFERENCE_OPTIONS;
+
+// ========================================
+// SUMMARY
+// ========================================
+// Total taxonomy: 115 items
+// - TOP_CHOICES: 30 items
+// - INTERESTS: 67 items  
+// - ACTIVITIES: 18 items
+// Events have been removed from user profiles - they now only exist as community events that users can create/attend
