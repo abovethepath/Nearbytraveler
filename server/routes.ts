@@ -14748,6 +14748,42 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // ========================================
+  // ADMIN ROUTES
+  // ========================================
+
+  // Get all users for admin dashboard (excluding passwords)
+  app.get("/api/admin/users", async (req, res) => {
+    try {
+      const allUsers = await db.select({
+        id: users.id,
+        username: users.username,
+        email: users.email,
+        name: users.name,
+        userType: users.userType,
+        bio: users.bio,
+        location: users.location,
+        hometownCity: users.hometownCity,
+        hometownState: users.hometownState,
+        hometownCountry: users.hometownCountry,
+        destinationCity: users.destinationCity,
+        destinationState: users.destinationState,
+        destinationCountry: users.destinationCountry,
+        profileImage: users.profileImage,
+        dateOfBirth: users.dateOfBirth,
+        age: users.age,
+        gender: users.gender,
+        phoneNumber: users.phoneNumber,
+        createdAt: users.createdAt,
+      }).from(users).orderBy(desc(users.createdAt));
+
+      res.json(allUsers);
+    } catch (error: any) {
+      console.error('Error fetching users for admin:', error);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  // ========================================
   // AUTHENTICATION ROUTES
   // ========================================
 
