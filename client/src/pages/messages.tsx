@@ -212,6 +212,7 @@ export default function Messages() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/messages/${user?.id}/unread-count`] });
+      queryClient.refetchQueries({ queryKey: [`/api/messages/${user?.id}/unread-count`] });
     },
   });
 
