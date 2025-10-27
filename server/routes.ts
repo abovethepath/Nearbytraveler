@@ -13833,6 +13833,39 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // GET all user city interests for a specific user (across all cities)
+  app.get("/api/user-city-interests/:userId", async (req, res) => {
+    try {
+      const { userId } = req.params;
+      if (process.env.NODE_ENV === 'development') console.log(`💡 USER INTERESTS GET ALL: Fetching ALL interests for user ${userId}`);
+      
+      const interests = await db
+        .select({
+          id: userCityInterests.id,
+          userId: userCityInterests.userId,
+          activityId: userCityInterests.activityId,
+          activityName: userCityInterests.activityName,
+          cityName: userCityInterests.cityName,
+          isActive: userCityInterests.isActive,
+          createdAt: userCityInterests.createdAt
+        })
+        .from(userCityInterests)
+        .where(
+          and(
+            eq(userCityInterests.userId, parseInt(userId)),
+            eq(userCityInterests.isActive, true)
+          )
+        )
+        .orderBy(desc(userCityInterests.createdAt));
+      
+      if (process.env.NODE_ENV === 'development') console.log(`✅ USER INTERESTS GET ALL: Found ${interests.length} total interests for user ${userId} across all cities`);
+      res.json(interests);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error('Error fetching all user city interests:', error);
+      res.status(500).json({ error: 'Failed to fetch user city interests' });
+    }
+  });
+
   // GET user city interests for a specific user and city
   app.get("/api/user-city-interests/:userId/:cityName", async (req, res) => {
     try {
