@@ -640,12 +640,12 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                           {user.profileImage ? (
                             <img 
                               src={user.profileImage} 
-                              alt={user.name || user.username}
+                              alt={user.username}
                               className="w-16 h-16 rounded-full object-cover border-2 border-gray-200"
                             />
                           ) : (
                             <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500 to-orange-500 flex items-center justify-center text-white font-bold text-xl">
-                              {(user.name || user.username)?.charAt(0)?.toUpperCase()}
+                              {user.username?.charAt(0)?.toUpperCase()}
                             </div>
                           )}
                         </div>
@@ -654,7 +654,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
                             <h4 className="font-semibold text-black dark:text-white text-lg">
-                              {user.name || user.username}
+                              {user.username}
                             </h4>
                             {user.userType && (
                               <Badge variant="secondary" className="text-xs">
@@ -662,9 +662,11 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                               </Badge>
                             )}
                           </div>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                            @{user.username}
-                          </p>
+                          {user.name && (
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                              {user.name}
+                            </p>
+                          )}
                           {user.location && (
                             <p className="text-sm text-gray-500 dark:text-gray-500 mb-2 flex items-center gap-1">
                               <MapPin className="w-3 h-3" />
