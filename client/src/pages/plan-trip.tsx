@@ -15,14 +15,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar, MapPin, Users, Building2, Heart, MessageCircle, Star, ArrowLeft, Home, User, Plus, X, Compass, Sparkles, Camera, Coffee, Utensils, Palette, Music, TreePine, ChevronDown } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS } from "@shared/base-options";
+import { getAllInterests, getAllActivities, getAllLanguages, validateSelections, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS } from "@shared/base-options";
 import { BASE_TRAVELER_TYPES } from "@shared/base-options";
 import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/locationData";
 import { US_CITIES_BY_STATE } from "@shared/locationData";
 import UserCard from "@/components/user-card";
 import BackButton from "@/components/back-button";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
-import { getInterestStyle, getActivityStyle, getEventStyle } from "@/lib/topChoicesUtils";
+import { getInterestStyle, getActivityStyle } from "@/lib/topChoicesUtils";
 import type { TravelPlan, InsertTravelPlan } from "@shared/schema";
 
 interface TripPlan {
@@ -34,7 +34,6 @@ interface TripPlan {
   endDate: string;
   interests: string[];
   activities: string[];
-  events: string[];
   travelerTypes: string[];
   accommodation: string;
   transportation: string;
@@ -103,7 +102,6 @@ export default function PlanTrip() {
     endDate: "",
     interests: [], // Start empty - user should select what they want for this specific trip
     activities: [], // Start empty - user should select what they want for this specific trip
-    events: [], // Start empty - user should select what they want for this specific trip
     travelerTypes: [],
     accommodation: "",
     transportation: "",
@@ -209,7 +207,7 @@ export default function PlanTrip() {
         endDate: existingPlan?.endDate ? existingPlan.endDate.split('T')[0] : '',
         interests: Array.isArray(existingPlan?.interests) ? existingPlan.interests : [],
         activities: Array.isArray(existingPlan?.activities) ? existingPlan.activities : [],
-        events: Array.isArray(existingPlan?.events) ? existingPlan.events : [],
+        
         travelerTypes: Array.isArray(existingPlan?.travelStyle) ? existingPlan.travelStyle : [],
         accommodation: existingPlan?.accommodation || '',
         transportation: existingPlan?.transportation || '',
@@ -232,7 +230,6 @@ export default function PlanTrip() {
       console.log('=== TRIP PLAN LOADED FOR EDITING ===');
       console.log('Loaded interests:', existingPlan.interests);
       console.log('Loaded activities:', existingPlan.activities);
-      console.log('Loaded events:', existingPlan.events);
       console.log('Loaded travel style:', existingPlan.travelStyle);
       console.log('Loaded accommodation:', existingPlan.accommodation);
       console.log('Loaded notes:', existingPlan.notes);
@@ -254,13 +251,11 @@ export default function PlanTrip() {
       console.log('User data for defaults:', userData);
       console.log('User interests from signup:', userData?.interests);
       console.log('User activities from signup:', userData?.activities);
-      console.log('User events from signup:', userData?.events);
       
       setTripPlan(prev => ({
         ...prev,
         interests: userData?.defaultTravelInterests || userData?.interests || [],
         activities: userData?.defaultTravelActivities || userData?.activities || userData?.localActivities || [],
-        events: userData?.defaultTravelEvents || userData?.events || userData?.localEvents || [],
         travelerTypes: userData?.travelStyle || []
       }));
       setHasInitialized(true);
@@ -409,7 +404,6 @@ export default function PlanTrip() {
         endDate: plan.endDate ? new Date(plan.endDate).toISOString() : null,
         interests: plan.interests || [],
         activities: plan.activities || [],
-        events: plan.events || [],
         travelerTypes: plan.travelerTypes || [], // This gets mapped to travelStyle on server
         accommodation: plan.accommodation || '',
         transportation: plan.transportation || '',
@@ -456,7 +450,6 @@ export default function PlanTrip() {
         endDate: "",
         interests: [],
         activities: [],
-        events: [],
         travelerTypes: [],
         accommodation: "",
         transportation: "",
@@ -489,7 +482,7 @@ export default function PlanTrip() {
       const response = await apiRequest("PUT", `/api/users/${user?.id}/defaults`, {
         defaultTravelInterests: tripPlan.interests,
         defaultTravelActivities: tripPlan.activities,
-        defaultTravelEvents: tripPlan.events
+        defaultTravelEvents: []
       });
       return response;
     },
@@ -587,8 +580,8 @@ export default function PlanTrip() {
     console.log('Selection counts:', { 
       interests: tripPlan.interests.length, 
       activities: tripPlan.activities.length, 
-      events: tripPlan.events.length,
-      total: tripPlan.interests.length + tripPlan.activities.length + tripPlan.events.length 
+      events: 0,
+      total: tripPlan.interests.length + tripPlan.activities.length + 0 
     });
     
     if (!tripPlan.destinationCity.trim()) {
@@ -609,7 +602,7 @@ export default function PlanTrip() {
     }
 
     // Validate minimum selections (reduced to 1 total for easier trip planning)
-    const totalSelections = tripPlan.interests.length + tripPlan.activities.length + tripPlan.events.length;
+    const totalSelections = tripPlan.interests.length + tripPlan.activities.length + 0;
     if (totalSelections < 1) {
       toast({
         title: "Selection Required",
@@ -1086,51 +1079,6 @@ export default function PlanTrip() {
                 
               </div>
 
-              {/* Events & Experiences Section */}
-              <div className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border border-orange-200 dark:border-orange-700 rounded-lg p-6">
-                <div className="text-center mb-6">
-                  <Calendar className="w-8 h-8 mx-auto text-orange-600 mb-2" />
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">What Events Sound Cool? 🎉</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">Pick the vibes you're into!</p>
-                </div>
-                
-                <div className="bg-white dark:bg-gray-700 rounded-lg p-4 border border-orange-200 dark:border-orange-600 mb-4">
-                  <div className="flex flex-wrap gap-2">
-                    {getAllEvents().map((event, index) => {
-                      const isSelected = tripPlan.events.includes(event);
-                      
-                      return (
-                        <Button
-                          key={`event-${index}`}
-                          variant={isSelected ? "default" : "outline"}
-                          size="sm"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setTripPlan(prev => {
-                              const newEvents = prev.events.includes(event)
-                                ? prev.events.filter(evt => evt !== event)
-                                : [...prev.events, event];
-                              return { ...prev, events: newEvents };
-                            });
-                          }}
-                          className={`h-8 px-3 text-xs transition-all ${
-                            isSelected 
-                              ? "bg-orange-600 hover:bg-orange-700 text-white border-orange-600" 
-                              : "bg-white hover:bg-orange-50 text-orange-700 border-orange-300 dark:bg-gray-700 dark:text-orange-300 dark:border-orange-600 dark:hover:bg-orange-900/30"
-                          }`}
-                        >
-                          {event}
-                        </Button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                
-              </div>
-
-
 
               {/* City Activities Information - Mobile Responsive */}
               <div className="mb-3 sm:mb-4 bg-gradient-to-r from-blue-600 to-green-600 p-4 sm:p-6 rounded-lg border-2 border-blue-400 overflow-hidden break-words">
@@ -1216,7 +1164,7 @@ export default function PlanTrip() {
 
               {/* Action Buttons - Mobile Responsive */}
               <div className="space-y-2 sm:space-y-3 overflow-hidden break-words">
-                {(tripPlan.interests.length > 0 || tripPlan.activities.length > 0 || tripPlan.events.length > 0) && (
+                {(tripPlan.interests.length > 0 || tripPlan.activities.length > 0 || 0 > 0) && (
                   <Button 
                     type="button" 
                     className="w-full bg-red-600 text-white hover:bg-red-700 text-xs sm:text-sm md:text-base py-3 sm:py-4 h-12 sm:h-14 break-words" 

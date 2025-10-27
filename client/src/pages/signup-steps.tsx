@@ -14,7 +14,7 @@ import { apiRequest } from "@/lib/queryClient";
 import SmartLocationInput from "@/components/SmartLocationInput";
 import { User, Plane, Building, ArrowRight, ArrowLeft, Check } from "lucide-react";
 import Logo from "@/components/logo";
-import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, getAllActivities, getAllEvents, getAllLanguages, validateSelections } from "@shared/base-options";
+import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, getAllActivities, getAllLanguages, validateSelections } from "@shared/base-options";
 import { BASE_TRAVELER_TYPES } from "@shared/base-options";
 
 interface SignupData {
@@ -783,7 +783,7 @@ export default function SignupSteps() {
                 <div>
                   <h4 className="text-lg font-medium mb-3 text-gray-900">Events</h4>
                   <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-orange-50 mb-4">
-                    {getAllEvents().map((event) => (
+                    {().map((event) => (
                       <div key={event} className="flex items-center space-x-1">
                         <Checkbox
                           id={`event-${event}`}
@@ -808,7 +808,7 @@ export default function SignupSteps() {
                 <div>
                   <h3 className="text-lg font-medium mb-4 text-teal-700">Events</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
-                    {getAllEvents().map((event) => (
+                    {().map((event) => (
                       <div key={event} className="flex items-center space-x-2">
                         <Checkbox
                           id={`event-${event}`}

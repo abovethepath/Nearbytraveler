@@ -21,7 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Users, Heart, MapPin, Calendar as CalendarIcon, TrendingUp, ArrowLeft, Edit, ChevronDown, ChevronRight, X, MessageCircle } from "lucide-react";
 import { format } from "date-fns";
 import { apiRequest } from "@/lib/queryClient";
-import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages, validateSelections, getMostPopularInterests } from "../../../shared/base-options";
+import { getAllInterests, getAllActivities, getAllLanguages, validateSelections, getMostPopularInterests } from "../../../shared/base-options";
 import { BASE_TRAVELER_TYPES } from "../../../shared/base-options";
 import { getInterestStyle, getActivityStyle, getEventStyle } from "@/lib/topChoicesUtils";
 import { SEXUAL_PREFERENCE_OPTIONS } from "@/lib/formConstants";

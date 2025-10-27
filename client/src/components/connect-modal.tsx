@@ -19,7 +19,7 @@ import { format } from "date-fns";
 import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { authStorage } from "@/lib/auth";
-import { getAllInterests, getAllActivities, getAllEvents, getAllLanguages } from "../../../shared/base-options";
+import { getAllInterests, getAllActivities, getAllLanguages } from "../../../shared/base-options";
 import { GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS, USER_TYPE_OPTIONS, TRAVELER_TYPE_OPTIONS, MILITARY_STATUS_OPTIONS } from "@/lib/formConstants";
 import { BASE_TRAVELER_TYPES } from "../../../shared/base-options";
 import ConnectButton from "@/components/ConnectButton";

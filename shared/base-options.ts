@@ -104,7 +104,6 @@ export const INTERESTS = [
   "Educational Activities for Kids",
   "Arts & Crafts",
   "Fashion & Style",
-  "Writing & Book Clubs",
   "Jazz & Blues",
   "Classical Music",
   "Indie Music Scene",

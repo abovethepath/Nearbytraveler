@@ -15,7 +15,7 @@ import EventCard from "@/components/event-card";
 import { Calendar, UserPlus } from "lucide-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { authStorage } from "@/lib/auth";
-import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, getAllActivities, getAllEvents } from "@shared/base-options";
+import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, getAllActivities } from "@shared/base-options";
 import { GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS, MILITARY_STATUS_OPTIONS } from "@/lib/formConstants";
 import { InterestPills } from "@/components/InterestPills";
 
@@ -40,7 +40,6 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
     topChoices: [] as string[],
     interests: [] as string[],
     activities: [] as string[],
-    events: [] as string[],
     location: "",
     userType: [] as string[],
     travelerTypes: [] as string[],
@@ -116,7 +115,6 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
       if (advancedFilters.topChoices.length > 0) params.append('topChoices', advancedFilters.topChoices.join(','));
       if (advancedFilters.interests.length > 0) params.append('interests', advancedFilters.interests.join(','));
       if (advancedFilters.activities.length > 0) params.append('activities', advancedFilters.activities.join(','));
-      if (advancedFilters.events.length > 0) params.append('events', advancedFilters.events.join(','));
       if (advancedFilters.location) params.append('location', advancedFilters.location);
       if (advancedFilters.userType.length > 0) params.append('userType', advancedFilters.userType.join(','));
       if (advancedFilters.travelerTypes.length > 0) params.append('travelerTypes', advancedFilters.travelerTypes.join(','));
@@ -169,7 +167,6 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
       topChoices: [],
       interests: [],
       activities: [],
-      events: [],
       location: "",
       userType: [],
       travelerTypes: [],
@@ -203,7 +200,6 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
   const topChoicesOptions = MOST_POPULAR_INTERESTS;
   const interestOptions = ADDITIONAL_INTERESTS;
   const activityOptions = getAllActivities();
-  const eventOptions = getAllEvents();
 
 
   if (!open) return null;
@@ -484,39 +480,6 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                         }}
                       />
                       <Label htmlFor={`activity-${option}`} className="text-sm cursor-pointer">
-                        {option}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-
-            {/* Events Filter */}
-            <Collapsible open={expandedSections.events} onOpenChange={() => toggleSection('events')}>
-              <CollapsibleTrigger asChild>
-                <Button variant="outline" className="w-full justify-between">
-                  <span>Events {advancedFilters.events.length > 0 && `(${advancedFilters.events.length})`}</span>
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="space-y-2 pt-2">
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-60 overflow-y-auto">
-                  {eventOptions.map((option) => (
-                    <div key={option} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`event-${option}`}
-                        checked={advancedFilters.events.includes(option)}
-                        onCheckedChange={(checked) => {
-                          setAdvancedFilters(prev => ({
-                            ...prev,
-                            events: checked 
-                              ? [...prev.events, option]
-                              : prev.events.filter(e => e !== option)
-                          }));
-                        }}
-                      />
-                      <Label htmlFor={`event-${option}`} className="text-sm cursor-pointer">
                         {option}
                       </Label>
                     </div>
