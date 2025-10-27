@@ -4902,31 +4902,67 @@ Questions? Just reply to this message. Welcome aboard!
         console.log(`🔧 USER UPDATE: User ${userId} saving updates:`, Object.keys(updates).join(', '));
       }
 
-      // MAP USER FIELDS: Handle travel intent fields specifically
+      // MAP USER FIELDS: Convert camelCase to snake_case for database
       const mappedUpdates = { ...updates };
 
+      // MAP HOMETOWN FIELDS FIRST
+      if (updates.hometownCity !== undefined) {
+        mappedUpdates.hometown_city = updates.hometownCity;
+        delete mappedUpdates.hometownCity;
+      }
+      if (updates.hometownState !== undefined) {
+        mappedUpdates.hometown_state = updates.hometownState;
+        delete mappedUpdates.hometownState;
+      }
+      if (updates.hometownCountry !== undefined) {
+        mappedUpdates.hometown_country = updates.hometownCountry;
+        delete mappedUpdates.hometownCountry;
+      }
+
+      // SYNC LOCATION FIELD when hometown changes
+      if (mappedUpdates.hometown_city || mappedUpdates.hometown_state || mappedUpdates.hometown_country) {
+        const currentUser = await storage.getUserById(userId);
+        
+        const cityToUse = mappedUpdates.hometown_city || currentUser?.hometownCity || '';
+        const stateToUse = mappedUpdates.hometown_state || currentUser?.hometownState || '';
+        const countryToUse = mappedUpdates.hometown_country || currentUser?.hometownCountry || '';
+        
+        // Update location field to match new hometown 
+        if (cityToUse && stateToUse && countryToUse) {
+          mappedUpdates.location = `${cityToUse}, ${stateToUse}, ${countryToUse}`;
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`🔄 LOCATION SYNC: Updated location field to "${mappedUpdates.location}" for user ${userId}`);
+          }
+        } else if (cityToUse && stateToUse) {
+          mappedUpdates.location = `${cityToUse}, ${stateToUse}`;
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`🔄 LOCATION SYNC: Updated location field to "${mappedUpdates.location}" for user ${userId}`);
+          }
+        }
+      }
+
       // HOMETOWN CHANGE DETECTION: Check using snake_case field names (after field mapping)
-      if (updates.hometown_city || updates.hometown_state || updates.hometown_country) {
+      if (mappedUpdates.hometown_city || mappedUpdates.hometown_state || mappedUpdates.hometown_country) {
         // Get current user to compare
         const currentUser = await storage.getUser(userId);
         
         if (currentUser) {
           const hometownChanged = 
-            (updates.hometown_city && updates.hometown_city !== currentUser.hometownCity) ||
-            (updates.hometown_state && updates.hometown_state !== currentUser.hometownState) ||
-            (updates.hometown_country && updates.hometown_country !== currentUser.hometownCountry);
+            (mappedUpdates.hometown_city && mappedUpdates.hometown_city !== currentUser.hometownCity) ||
+            (mappedUpdates.hometown_state && mappedUpdates.hometown_state !== currentUser.hometownState) ||
+            (mappedUpdates.hometown_country && mappedUpdates.hometown_country !== currentUser.hometownCountry);
           
           if (hometownChanged) {
             // Automatically set "new to town" for 9 months
             const newToTownUntil = new Date();
             newToTownUntil.setMonth(newToTownUntil.getMonth() + 9);
             
-            updates.is_new_to_town = true;
-            updates.new_to_town_until = newToTownUntil.toISOString();
+            mappedUpdates.is_new_to_town = true;
+            mappedUpdates.new_to_town_until = newToTownUntil.toISOString();
             
             if (process.env.NODE_ENV === 'development') {
               console.log(`🆕 HOMETOWN CHANGED: Automatically setting user ${userId} as "new to town" until ${newToTownUntil.toLocaleDateString()}`);
-              console.log(`🆕 New hometown: ${updates.hometown_city}, ${updates.hometown_state}, ${updates.hometown_country}`);
+              console.log(`🆕 New hometown: ${mappedUpdates.hometown_city}, ${mappedUpdates.hometown_state}, ${mappedUpdates.hometown_country}`);
             }
           }
         }

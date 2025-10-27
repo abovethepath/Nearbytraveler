@@ -208,7 +208,7 @@ export default function Messages() {
   // Mark messages as read mutation
   const markAsReadMutation = useMutation({
     mutationFn: async (senderId: number) => {
-      return apiRequest(`/api/messages/${user?.id}/mark-read`, 'POST', { senderId });
+      return apiRequest('POST', `/api/messages/${user?.id}/mark-read`, { senderId });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/messages/${user?.id}/unread-count`] });
