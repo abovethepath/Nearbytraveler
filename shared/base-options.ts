@@ -141,8 +141,7 @@ export const ACTIVITIES = [
   "Game Nights",
   "Walking Tours",
   "Exploring Local Spots",
-  "Late Night Adventures",
-  "Wellness Activities"
+  "Late Night Adventures"
 ];
 
 // ========================================
