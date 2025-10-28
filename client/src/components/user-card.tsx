@@ -76,28 +76,50 @@ export default function UserCard({
     return user.location || "Location not set";
   };
 
+  // Get LinkedIn-style subtitle
+  const getUserSubtitle = () => {
+    // Check if user is actively traveling
+    if (user.isCurrentlyTraveling && user.travelDestination) {
+      const city = user.travelDestination.split(',')[0];
+      return `Nearby Traveler • ${city}`;
+    }
+    // Default to Local with hometown
+    if (user.hometownCity) {
+      return `Nearby Local • ${user.hometownCity}`;
+    }
+    return 'Nearby User';
+  };
+
   return (
     <Card 
-      className="user-card border-gray-200 dark:border-gray-700 shadow-md bg-white dark:bg-gray-800 overflow-hidden cursor-pointer transition-shadow hover:shadow-lg h-full"
+      className="user-card border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-2xl h-full"
       onClick={handleCardClick}
       data-testid={`user-card-${user.id}`}
     >
-      <CardContent className="p-4 pt-4 h-full flex flex-col">
+      {/* LinkedIn-style Gradient Cover Banner */}
+      <div className="h-20 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500"></div>
+      
+      <CardContent className="px-4 pb-4 -mt-10 h-full flex flex-col">
         {/* User Info */}
-        <div className="space-y-3 flex-1 flex flex-col justify-between">
-          {/* Responsive Avatar - Large on mobile, normal on desktop */}
+        <div className="space-y-3 flex-1 flex flex-col">
+          {/* Large Circular Avatar - LinkedIn style */}
           <div className="flex justify-center">
             <SimpleAvatar 
               user={user} 
               size="lg" 
-              className="border-2 sm:border-4 border-gray-200 dark:border-gray-600 shadow-lg w-24 h-24 sm:w-28 sm:h-28"
+              className="ring-4 ring-white dark:ring-gray-800 shadow-xl w-20 h-20"
             />
           </div>
           
+          {/* Username - LinkedIn style */}
           <div className="text-center">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
+            <h3 className="text-base font-bold text-gray-900 dark:text-white truncate">
               @{user.username}
             </h3>
+            {/* Subtitle - LinkedIn job title position */}
+            <p className="text-sm text-gray-600 dark:text-gray-400 font-medium mt-1">
+              {getUserSubtitle()}
+            </p>
           </div>
           
           {/* Location and Travel Info */}
