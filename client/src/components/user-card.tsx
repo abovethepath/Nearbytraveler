@@ -16,6 +16,8 @@ export interface User {
   interests?: string[];
   isCurrentlyTraveling?: boolean;
   travelDestination?: string;
+  avatarGradient?: string;
+  avatarColor?: string;
 }
 
 interface UserCardProps {
@@ -76,21 +78,36 @@ export default function UserCard({
     return user.location || "Location not set";
   };
 
+  // Get user's individual gradient or fallback to default
+  const getUserGradient = () => {
+    if (user.avatarGradient) {
+      return user.avatarGradient;
+    }
+    // Default gradient if user hasn't set one
+    return 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+  };
+
   return (
     <Card 
       className="user-card border-gray-200 dark:border-gray-700 shadow-md bg-white dark:bg-gray-800 overflow-hidden cursor-pointer transition-shadow hover:shadow-lg h-full"
       onClick={handleCardClick}
       data-testid={`user-card-${user.id}`}
     >
-      <CardContent className="p-4 pt-4 h-full flex flex-col">
+      {/* Individual User Gradient Banner */}
+      <div 
+        className="h-20" 
+        style={{ background: getUserGradient() }}
+      ></div>
+      
+      <CardContent className="p-4 pb-4 -mt-10 h-full flex flex-col">
         {/* User Info */}
         <div className="space-y-3 flex-1 flex flex-col justify-between">
-          {/* Responsive Avatar - Large on mobile, normal on desktop */}
+          {/* Large Circular Avatar with white ring */}
           <div className="flex justify-center">
             <SimpleAvatar 
               user={user} 
               size="lg" 
-              className="border-2 sm:border-4 border-gray-200 dark:border-gray-600 shadow-lg w-24 h-24 sm:w-28 sm:h-28"
+              className="ring-4 ring-white dark:ring-gray-800 shadow-xl w-20 h-20"
             />
           </div>
           
