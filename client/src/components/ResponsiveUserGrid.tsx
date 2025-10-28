@@ -53,88 +53,103 @@ export default function ResponsiveUserGrid({
     );
   };
 
-  // Desktop Card Component - MODERN 2025 GLASS MORPHISM DESIGN
+  // Desktop Card Component - LINKEDIN INSPIRED PROFESSIONAL DESIGN
   const DesktopUserCard = ({ user }: { user: User }) => (
     <Card 
-      className="group relative p-6 cursor-pointer bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl border-2 border-white/20 dark:border-gray-700/20 hover:border-blue-500/30 dark:hover:border-orange-500/30 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1"
+      className="group cursor-pointer bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all duration-200 overflow-hidden"
       onClick={() => setLocation(`/profile/${user.id}`)}
     >
-      {/* Subtle gradient glow on hover */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-orange-500/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      {/* Cover Background */}
+      <div className="h-16 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500"></div>
       
-      <div className="relative flex items-start space-x-4">
-        <div className="relative flex-shrink-0">
-          {/* Avatar glow effect */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-orange-400 rounded-full blur-md opacity-0 group-hover:opacity-50 transition-opacity duration-300"></div>
-          <SimpleAvatar 
-            user={user} 
-            size="lg" 
-            className="relative ring-2 ring-white/50 dark:ring-gray-700/50"
-          />
-        </div>
-        <div className="flex-1 min-w-0">
-          <h3 className="font-bold text-lg truncate bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent group-hover:from-blue-600 group-hover:to-orange-500 transition-all duration-300">
-            @{user.username}
-          </h3>
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-3">
-            <MapPin className="w-4 h-4 text-blue-500" />
-            <span className="truncate font-medium">{getLocation(user)}</span>
-          </div>
-          {user.bio && (
-            <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3 mb-3 leading-relaxed">
-              {user.bio}
-            </p>
-          )}
-          <div className="flex items-center justify-between">
-            {getInterestsBadge(user)}
-            {user.aura && user.aura > 0 && (
-              <div className="flex items-center gap-1 bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30 px-3 py-1 rounded-full">
-                <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                <span className="text-sm font-bold text-gray-900 dark:text-gray-100">{user.aura}</span>
-              </div>
-            )}
+      {/* Content */}
+      <div className="px-6 pb-6 -mt-12 text-center">
+        {/* Large Circular Avatar with white ring */}
+        <div className="flex justify-center mb-4">
+          <div className="relative">
+            <div className="w-24 h-24 rounded-full bg-white dark:bg-gray-800 p-1.5 shadow-lg">
+              <SimpleAvatar 
+                user={user} 
+                size="xl" 
+                className="w-full h-full"
+              />
+            </div>
           </div>
         </div>
+        
+        {/* User Info */}
+        <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-1 truncate">
+          {user.username}
+        </h3>
+        
+        {/* Location */}
+        <div className="flex items-center justify-center gap-1 text-sm text-gray-600 dark:text-gray-400 mb-3">
+          <MapPin className="w-4 h-4" />
+          <span className="truncate">{getLocation(user)}</span>
+        </div>
+        
+        {/* Bio */}
+        {user.bio && (
+          <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2 mb-4 px-2">
+            {user.bio}
+          </p>
+        )}
+        
+        {/* Interests Badge */}
+        <div className="flex justify-center mb-4">
+          {getInterestsBadge(user)}
+        </div>
+        
+        {/* Connect Button - LinkedIn style */}
+        <button 
+          className="w-full py-2 px-4 border-2 border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-400 rounded-full font-semibold hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+          onClick={(e) => {
+            e.stopPropagation();
+            setLocation(`/profile/${user.id}`);
+          }}
+        >
+          View Profile
+        </button>
       </div>
     </Card>
   );
 
-  // Mobile Card Component - MODERN 2025 GLASS MORPHISM DESIGN
+  // Mobile Card Component - LINKEDIN INSPIRED PROFESSIONAL DESIGN
   const MobileUserCard = ({ user }: { user: User }) => (
     <Card 
-      className="group relative p-4 cursor-pointer bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border-2 border-white/30 dark:border-gray-700/30 hover:border-blue-500/40 dark:hover:border-orange-500/40 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.05] h-full"
+      className="cursor-pointer bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all duration-200 overflow-hidden h-full"
       onClick={() => setLocation(`/profile/${user.id}`)}
     >
-      {/* Gradient glow on hover */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-orange-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      {/* Gradient Cover - smaller for mobile */}
+      <div className="h-12 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500"></div>
       
-      <div className="relative flex flex-col items-center text-center space-y-3">
-        <div className="relative">
-          {/* Avatar glow */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-orange-400 rounded-lg blur-lg opacity-0 group-hover:opacity-60 transition-opacity duration-300"></div>
-          <SimpleAvatar 
-            user={user} 
-            size="xl" 
-            className="relative w-20 h-20 rounded-xl ring-2 ring-white/50 dark:ring-gray-700/50"
-          />
+      {/* Content */}
+      <div className="px-3 pb-4 -mt-8 text-center">
+        {/* Circular Avatar with white ring */}
+        <div className="flex justify-center mb-3">
+          <div className="w-16 h-16 rounded-full bg-white dark:bg-gray-800 p-1 shadow-lg">
+            <SimpleAvatar 
+              user={user} 
+              size="xl" 
+              className="w-full h-full"
+            />
+          </div>
         </div>
-        <div className="w-full space-y-2">
-          <h3 className="font-bold text-base truncate bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent group-hover:from-blue-600 group-hover:to-orange-500 transition-all duration-300">
-            @{user.username}
-          </h3>
-          <div className="flex items-center justify-center gap-1 text-xs text-gray-600 dark:text-gray-400">
-            <MapPin className="w-3 h-3 text-blue-500" />
-            <span className="truncate font-medium">{getLocation(user)}</span>
-          </div>
-          <div className="scale-90">
-            {getInterestsBadge(user)}
-          </div>
-          {user.aura && user.aura > 0 && (
-            <div className="flex items-center justify-center gap-1 bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30 px-2 py-1 rounded-full">
-              <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-              <span className="text-xs font-bold text-gray-900 dark:text-gray-100">{user.aura}</span>
-            </div>
-          )}
+        
+        {/* Username */}
+        <h3 className="font-bold text-sm text-gray-900 dark:text-white mb-1 truncate px-1">
+          {user.username}
+        </h3>
+        
+        {/* Location */}
+        <div className="flex items-center justify-center gap-1 text-xs text-gray-600 dark:text-gray-400 mb-3">
+          <MapPin className="w-3 h-3" />
+          <span className="truncate text-xs">{getLocation(user)}</span>
+        </div>
+        
+        {/* Interests Badge - smaller */}
+        <div className="flex justify-center scale-75">
+          {getInterestsBadge(user)}
         </div>
       </div>
     </Card>
