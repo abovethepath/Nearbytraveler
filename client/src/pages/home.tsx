@@ -1424,40 +1424,74 @@ export default function Home() {
   </div>
 )}
 
-{/* HERO SECTION — Airbnb Style Layout (Landing Page Layout) */}
+{/* HERO SECTION — Modern Glass Morphism Design 2025 */}
 {isHeroVisible && (
-<section className="bg-white dark:bg-gray-900 py-8 sm:py-12 lg:py-16 relative">
+<section className="relative py-8 sm:py-12 lg:py-20 overflow-hidden">
+  {/* Animated gradient background */}
+  <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900"></div>
+  
+  {/* Floating orbs - animated background elements */}
+  <div className="absolute inset-0 opacity-40 dark:opacity-20 pointer-events-none">
+    <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full blur-3xl animate-float-slow"></div>
+    <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-orange-400 to-pink-400 rounded-full blur-3xl animate-float-slower"></div>
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-purple-300 to-indigo-300 rounded-full blur-3xl animate-float"></div>
+  </div>
+
   {isMobile ? (
-    // Mobile: Keep vertical layout
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h1 className="text-2xl sm:text-3xl font-bold text-black dark:text-white leading-tight mb-6 px-2">
+    // Mobile: Modern vertical layout with glass morphism
+    <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
+      {/* Glass morphism badge */}
+      <div className="inline-flex items-center gap-2 bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl border border-white/20 dark:border-gray-700/20 rounded-full px-6 py-2 mb-6 shadow-lg">
+        <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full animate-pulse"></div>
+        <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Connect • Discover • Experience</span>
+      </div>
+
+      <h1 className="text-3xl sm:text-4xl font-black text-black dark:text-white leading-tight mb-6 px-2">
         {effectiveUser?.userType === "business" ? (
           <>
-            <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Nearby Traveler</span>
+            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent animate-gradient">Nearby Traveler</span>
             <br />
-            Connect Your Business with Travelers & Locals
+            <span className="text-2xl sm:text-3xl">Connect Your Business</span>
+            <br />
+            <span className="text-2xl sm:text-3xl">with Travelers & Locals</span>
           </>
         ) : (
           <>
-            <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Nearby Traveler</span>
+            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent animate-gradient">Nearby Traveler</span>
             <br />
-            Connect with Travelers & Locals Worldwide
+            <span className="text-2xl sm:text-3xl">Connect with Travelers</span>
+            <br />
+            <span className="text-2xl sm:text-3xl">& Locals Worldwide</span>
           </>
         )}
       </h1>
       
-      <div className="mb-6 flex justify-center px-4">
-        <div className="relative w-full max-w-sm rounded-xl overflow-hidden shadow-xl">
-          <img 
-            src={staticHeroImage}
-            alt="Travelers connecting at coffee shop"
-            className="w-full h-auto object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+      {/* Glass morphism image container */}
+      <div className="mb-8 flex justify-center px-4">
+        <div className="relative w-full max-w-sm group">
+          {/* Glow effect behind */}
+          <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500 rounded-2xl opacity-75 blur-lg group-hover:opacity-100 transition duration-500"></div>
+          
+          {/* Main image with glass morphism overlay */}
+          <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/20">
+            <img 
+              src={staticHeroImage}
+              alt="Travelers connecting at coffee shop"
+              className="w-full h-auto object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+            
+            {/* Glassmorphism text overlay */}
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-white/10 dark:bg-black/20 backdrop-blur-md border-t border-white/20">
+              <p className="text-white font-semibold text-sm text-center drop-shadow-lg">
+                "Where Local Experiences Meet Worldwide Connections"
+              </p>
+            </div>
+          </div>
         </div>
       </div>
       
-      <p className="text-base text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl mx-auto px-4">
+      <p className="text-lg text-gray-700 dark:text-gray-200 leading-relaxed max-w-2xl mx-auto px-4 font-medium">
         {effectiveUser?.userType === "business"
           ? "Reach customers through interest-based matching, business notifications, and location-targeted discovery."
           : "Discover amazing people & make meaningful connections based on demographics, activities, interests, and events."}
@@ -1467,7 +1501,7 @@ export default function Home() {
         <div className="flex flex-col gap-4 justify-center pt-8">
           <Button
             size="lg"
-            className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-8 py-3 text-lg shadow-lg"
+            className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-8 py-3 text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
             onClick={() => setLocation("/business-dashboard")}
           >
             <Store className="w-5 h-5 mr-2" />
@@ -1476,7 +1510,7 @@ export default function Home() {
           <Button
             size="lg"
             variant="outline"
-            className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-3 text-lg"
+            className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-3 text-lg transform hover:scale-105 transition-all duration-300"
             onClick={() => {
               setConnectModalMode("current");
               setShowConnectModal(true);
@@ -1489,25 +1523,20 @@ export default function Home() {
       )}
     </div>
   ) : (
-    // Desktop: Enhanced engaging layout
-    <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 py-8 sm:py-12 md:py-16 relative overflow-hidden">
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 opacity-5 pointer-events-none">
-        <div className="absolute top-20 left-10 w-32 h-32 bg-blue-500 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-10 w-40 h-40 bg-orange-500 rounded-full blur-3xl"></div>
-      </div>
+    // Desktop: Modern glass morphism layout with enhanced visuals
+    <div className="relative mx-auto max-w-7xl px-2 sm:px-4 md:px-6 py-12 sm:py-16 md:py-24 z-10">
       
       <div className="grid gap-8 md:gap-12 md:grid-cols-5 items-center relative z-10">
         {/* Left text side - wider and enhanced */}
         <div className="md:col-span-3">
-          {/* Premium badge */}
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100/80 to-orange-100/80 dark:from-blue-900/20 dark:to-orange-900/20 border border-blue-200 dark:border-blue-700/50 rounded-full px-4 py-2 mb-6">
-            <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Connect • Discover • Experience</span>
+          {/* Glass morphism premium badge */}
+          <div className="inline-flex items-center gap-2 bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl border border-white/20 dark:border-gray-700/20 rounded-full px-6 py-2.5 mb-8 shadow-lg hover:shadow-xl transition-all duration-300">
+            <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full animate-pulse"></div>
+            <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Connect • Discover • Experience</span>
           </div>
 
-          <div className="space-y-6">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight leading-tight">
+          <div className="space-y-8">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight leading-[1.1]">
               {effectiveUser?.userType === "business" ? (
                 <>
                   <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl">
