@@ -211,8 +211,11 @@ export default function Messages() {
       return apiRequest('POST', `/api/messages/${user?.id}/mark-read`, { senderId });
     },
     onSuccess: () => {
+      // Invalidate and refetch BOTH the unread count AND the messages list
       queryClient.invalidateQueries({ queryKey: [`/api/messages/${user?.id}/unread-count`] });
       queryClient.refetchQueries({ queryKey: [`/api/messages/${user?.id}/unread-count`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/messages/${user?.id}`] });
+      queryClient.refetchQueries({ queryKey: [`/api/messages/${user?.id}`] });
     },
   });
 
