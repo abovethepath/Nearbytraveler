@@ -1175,7 +1175,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   
                   {cityActivities.length > 0 && (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                      {cityActivities.map((activity, index) => {
+                      {cityActivities.filter(activity => activity.category !== 'universal').map((activity, index) => {
                         const isSelected = userActivities.some(ua => ua.activityId === activity.id);
                         const userActivity = userActivities.find(ua => ua.activityId === activity.id);
                         
