@@ -48,15 +48,25 @@ export default function ResponsiveUserGrid({
     return "Location not set";
   };
 
-  // Get LinkedIn-style subtitle: "Local in City" or "Traveler in City"
+  // Get LinkedIn-style subtitle: "Nearby Local" or "Nearby Traveler"
   const getUserSubtitle = (user: User) => {
-    if (user.isCurrentlyTraveling && user.destinationCity) {
-      return `Traveler in ${user.destinationCity}`;
+    // Business users
+    if (user.userType === 'business') {
+      return 'Business User';
     }
+    
+    // Check if user is actively traveling (has destination)
+    if (user.destinationCity) {
+      return `Nearby Traveler • ${user.destinationCity}`;
+    }
+    
+    // Default to Local with hometown
     if (user.hometownCity) {
-      return `Local in ${user.hometownCity}`;
+      return `Nearby Local • ${user.hometownCity}`;
     }
-    return user.userType === 'business' ? 'Business User' : 'Nearby User';
+    
+    // Fallback
+    return user.userType === 'traveler' ? 'Nearby Traveler' : 'Nearby Local';
   };
 
   const getInterestsBadge = (user: User) => {
