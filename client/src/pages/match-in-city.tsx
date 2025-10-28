@@ -1175,7 +1175,37 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   
                   {cityActivities.length > 0 && (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                      {cityActivities.filter(activity => activity.category !== 'universal').map((activity, index) => {
+                      {(() => {
+                        // Universal activities list for comparison
+                        const universalActivities = [
+                          "Meet Locals", "Meet Travelers", "Single and Looking",
+                          "Family Activities", "Traveling with Children", "Local Food Specialties", "Restaurants & Dining",
+                          "Coffee Culture", "Craft Beer & Breweries", "Wine Tasting", "Cocktail Bars",
+                          "Museums", "Art Galleries", "Historical Tours", "Architecture",
+                          "City Tours & Sightseeing", "Walking Tours", "Bike Tours", "Photography",
+                          "Nightlife & Dancing", "Live Music & Concerts", "LGBTQ+ Friendly", "Theater & Shows", "Comedy Clubs",
+                          "Beach Activities", "Hiking & Nature", "Parks & Recreation", "Outdoor Adventures",
+                          "Shopping", "Local Markets", "Street Food", "Brunch Spots",
+                          "Festivals & Events", "Cultural Experiences", "Networking & Business",
+                          "Sports & Fitness", "Yoga & Wellness", "Volunteer Opportunities", "Language Exchange"
+                        ];
+                        
+                        // Check if a city activity is too similar to a universal activity
+                        const isSimilarToUniversal = (activityName: string) => {
+                          const normalized = activityName.toLowerCase().trim();
+                          return universalActivities.some(universal => {
+                            const universalNormalized = universal.toLowerCase().trim();
+                            // Check for exact match or if one contains the other
+                            return normalized === universalNormalized || 
+                                   normalized.includes(universalNormalized) || 
+                                   universalNormalized.includes(normalized);
+                          });
+                        };
+                        
+                        // Filter out universal category AND activities similar to universal ones
+                        return cityActivities
+                          .filter(activity => activity.category !== 'universal' && !isSimilarToUniversal(activity.activityName))
+                          .map((activity, index) => {
                         const isSelected = userActivities.some(ua => ua.activityId === activity.id);
                         const userActivity = userActivities.find(ua => ua.activityId === activity.id);
                         
@@ -1243,7 +1273,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                             </div>
                           </div>
                         );
-                      })}
+                      });
+                    })()}
                     </div>
                   )}
                 </div>
@@ -1256,18 +1287,24 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-orange-500 mx-auto rounded-full mt-2"></div>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
-                    {[
-                      "Meet Locals", "Meet Travelers", "Single and Looking",
-                      "Family Activities", "Traveling with Children", "Local Food Specialties", "Restaurants & Dining",
-                      "Coffee Culture", "Craft Beer & Breweries", "Wine Tasting", "Cocktail Bars",
-                      "Museums", "Art Galleries", "Historical Tours", "Architecture",
-                      "City Tours & Sightseeing", "Walking Tours", "Bike Tours", "Photography",
-                      "Nightlife & Dancing", "Live Music & Concerts", "LGBTQ+ Friendly", "Theater & Shows", "Comedy Clubs",
-                      "Beach Activities", "Hiking & Nature", "Parks & Recreation", "Outdoor Adventures",
-                      "Shopping", "Local Markets", "Street Food", "Brunch Spots",
-                      "Festivals & Events", "Cultural Experiences", "Networking & Business",
-                      "Sports & Fitness", "Yoga & Wellness", "Volunteer Opportunities", "Language Exchange"
-                    ].map((activity, index) => {
+                    {(() => {
+                      const universalActivities = [
+                        "Meet Locals", "Meet Travelers", "Single and Looking",
+                        "Family Activities", "Traveling with Children", "Local Food Specialties", "Restaurants & Dining",
+                        "Coffee Culture", "Craft Beer & Breweries", "Wine Tasting", "Cocktail Bars",
+                        "Museums", "Art Galleries", "Historical Tours", "Architecture",
+                        "City Tours & Sightseeing", "Walking Tours", "Bike Tours", "Photography",
+                        "Nightlife & Dancing", "Live Music & Concerts", "LGBTQ+ Friendly", "Theater & Shows", "Comedy Clubs",
+                        "Beach Activities", "Hiking & Nature", "Parks & Recreation", "Outdoor Adventures",
+                        "Shopping", "Local Markets", "Street Food", "Brunch Spots",
+                        "Festivals & Events", "Cultural Experiences", "Networking & Business",
+                        "Sports & Fitness", "Yoga & Wellness", "Volunteer Opportunities", "Language Exchange"
+                      ];
+                      
+                      // Remove duplicates - keep only unique values
+                      const uniqueActivities = [...new Set(universalActivities)];
+                      
+                      return uniqueActivities.map((activity, index) => {
                       // Check if user already has this activity in their interests
                       const isSelected = userActivities.some(ua => ua.activityName === activity && ua.cityName === selectedCity);
                       
@@ -1378,7 +1415,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           {activity}
                         </button>
                       );
-                    })}
+                    });
+                    })()}
                   </div>
                 </div>
 
