@@ -90,22 +90,22 @@ export default function UserCard({
 
   return (
     <Card 
-      className="user-card backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border border-gray-300/50 dark:border-gray-600/50 shadow-xl hover:shadow-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:bg-white/90 dark:hover:bg-gray-800/90"
+      className="user-card h-full flex flex-col backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border border-gray-300/50 dark:border-gray-600/50 shadow-xl hover:shadow-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:bg-white/90 dark:hover:bg-gray-800/90"
       onClick={handleCardClick}
       data-testid={`user-card-${user.id}`}
     >
       {/* Individual User Gradient Banner - keeps user's personal color */}
       <div 
-        className="h-24 relative overflow-hidden" 
+        className="h-24 relative overflow-hidden flex-shrink-0" 
         style={{ background: getUserGradient() }}
       >
         {/* Subtle overlay for depth */}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10"></div>
       </div>
       
-      <CardContent className="p-4 pb-5 -mt-12 flex flex-col">
+      <CardContent className="p-4 pb-5 -mt-12 flex flex-col flex-grow">
         {/* User Info */}
-        <div className="space-y-3 flex flex-col">
+        <div className="space-y-3 flex flex-col flex-grow">
           {/* Large Circular Avatar with enhanced ring */}
           <div className="flex justify-center">
             <SimpleAvatar 
