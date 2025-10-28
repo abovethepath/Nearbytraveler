@@ -131,7 +131,7 @@ export default function UserCard({
                   return (
                     <div className="flex items-center justify-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-lg">
                       {currentOrNextTrip.isCurrent ? '🧳' : '✈️'} 
-                      <span className="truncate">
+                      <span className="text-center">
                         {currentOrNextTrip.isCurrent ? 'Traveling to' : 'Next trip to'} {currentOrNextTrip.destination.split(',')[0]}
                       </span>
                     </div>
@@ -143,7 +143,7 @@ export default function UserCard({
               if (user.isCurrentlyTraveling && user.travelDestination) {
                 return (
                   <div className="flex items-center justify-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-lg">
-                    🧳 <span className="truncate">Traveling to {user.travelDestination.split(',')[0]}</span>
+                    🧳 <span className="text-center">Traveling to {user.travelDestination.split(',')[0]}</span>
                   </div>
                 );
               }
@@ -151,7 +151,7 @@ export default function UserCard({
               return null;
             })() as React.ReactNode}
             <div className="flex items-center justify-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700/30 px-3 py-1.5 rounded-lg">
-              🏠 <span className="truncate">Local in {user.hometownCity ? user.hometownCity.split(',')[0] : getLocation()}</span>
+              🏠 <span className="text-center">Local in {user.hometownCity ? user.hometownCity.split(',')[0] : getLocation()}</span>
             </div>
           </div>
           
