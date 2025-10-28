@@ -2,6 +2,7 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { SimpleAvatar } from "./simple-avatar";
 import { InterestPills } from "./InterestPills";
+import ConnectButton from "./ConnectButton";
 
 export interface User {
   id: number;
@@ -189,7 +190,19 @@ export default function UserCard({
             ) : null;
           })()}
           
-          {/* Interests section removed - only showing "Things in Common" count */}
+          {/* Connect Button - only show if not current user */}
+          {!isCurrentUser && currentUserId && (
+            <div className="pt-3 mt-auto">
+              <ConnectButton
+                currentUserId={currentUserId}
+                targetUserId={user.id}
+                targetUsername={user.username}
+                targetName={user.name}
+                className="w-full bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+                size="default"
+              />
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
