@@ -1024,20 +1024,20 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <Button 
             variant="ghost" 
             onClick={() => setSelectedCity('')}
-            className="text-gray-600 hover:bg-gray-100"
+            className="text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Cities
           </Button>
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900">{selectedCity}</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{selectedCity}</h1>
           </div>
           <div className="w-20" />
         </div>
@@ -1061,20 +1061,20 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         {/* Instructions */}
         {isHeroVisible && (
           <div className="max-w-4xl mx-auto mb-6 relative">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
               <div className="absolute top-2 right-2">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={toggleHeroVisibility}
-                  className="text-gray-600 hover:text-gray-900 h-6 w-6 p-0"
+                  className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white h-6 w-6 p-0"
                   data-testid="button-hide-match-hero"
                 >
                   <X className="w-4 h-4" />
                 </Button>
               </div>
-              <h3 className="text-lg font-semibold text-blue-900 mb-2">🎯 How City Matching Works</h3>
-              <div className="text-sm text-blue-800 space-y-1">
+              <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-200 mb-2">🎯 How City Matching Works</h3>
+              <div className="text-sm text-blue-800 dark:text-blue-300 space-y-1">
                 <p>• <strong>Choose activities you want to do</strong> → Get matched with others who share your interests</p>
                 <p>• <strong>Add your own activities</strong> → Help others discover new experiences</p>
                 <p>• <strong>Connect with locals & travelers</strong> → Plan meetups and explore together</p>
@@ -1086,25 +1086,25 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
         {/* Activity Selection Interface - GORGEOUS RESTORED DESIGN */}
         <div className="max-w-6xl mx-auto">
-          <div className="bg-gradient-to-br from-white via-blue-50 to-orange-50 border border-blue-200/50 rounded-2xl shadow-2xl backdrop-blur-sm">
+          <div className="bg-gradient-to-br from-white via-blue-50 to-orange-50 dark:from-gray-800 dark:via-blue-900/30 dark:to-orange-900/30 border border-blue-200/50 dark:border-blue-700/50 rounded-2xl shadow-2xl backdrop-blur-sm">
             <div className="p-8">
               <div className="text-center mb-8">
                 <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent mb-4">⭐ Discover Your Perfect {selectedCity} Experience</h2>
-                <p className="text-lg text-gray-600">Select activities that inspire you and connect with fellow adventurers</p>
+                <p className="text-lg text-gray-600 dark:text-gray-300">Select activities that inspire you and connect with fellow adventurers</p>
               </div>
 
               {/* Add new activity section - GORGEOUS DESIGN - MOVED TO TOP */}
-              <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-orange-50 rounded-2xl border border-blue-200/50 shadow-inner">
+              <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-2xl border border-blue-200/50 dark:border-blue-700/50 shadow-inner">
                 <div className="text-center mb-4">
                   <h4 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent mb-2">✨ Create Your Own Experience</h4>
-                  <p className="text-gray-600 text-sm">Share something unique you want to do in {selectedCity}</p>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">Share something unique you want to do in {selectedCity}</p>
                 </div>
                 <div className="flex gap-3">
                   <Input
                     placeholder="e.g., Taylor Swift November 8th, Pickleball Saturday Mornings..."
                     value={newActivity}
                     onChange={(e) => setNewActivity(e.target.value)}
-                    className="border-blue-200 bg-white/80 backdrop-blur-sm focus:border-blue-400 focus:ring-blue-200 rounded-xl text-gray-800 placeholder-gray-500 shadow-md"
+                    className="border-blue-200 dark:border-blue-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm focus:border-blue-400 dark:focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800 rounded-xl text-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 shadow-md"
                     onKeyPress={(e) => {
                       if (e.key === 'Enter') {
                         handleAddActivity();
@@ -1126,7 +1126,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 <div>
                   <div className="text-center mb-6">
                     <h3 className="text-2xl font-bold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent mb-2">📍 {selectedCity} Specific Activities</h3>
-                    <p className="text-gray-600 text-sm mb-4">AI-generated activities unique to this city</p>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">AI-generated activities unique to this city</p>
                     <div className="w-24 h-1 bg-gradient-to-r from-red-500 to-orange-500 mx-auto rounded-full"></div>
                     
                     {/* AI Enhancement Button */}
@@ -1283,7 +1283,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 <div className="mt-8">
                   <div className="text-center mb-6">
                     <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-orange-500 bg-clip-text text-transparent mb-2">🎯 Popular Activities & Interests</h3>
-                    <p className="text-gray-600 text-sm">Click to add to your "Things I Want To Do" profile</p>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm">Click to add to your "Things I Want To Do" profile</p>
                     <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-orange-500 mx-auto rounded-full mt-2"></div>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
@@ -1427,30 +1427,30 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
         {/* Matching Users */}
         {matchingUsers.length > 0 && (
-          <Card className="bg-white border border-gray-200 shadow-sm mt-8">
+          <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm mt-8">
             <CardContent className="p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">🤝 People Who Match</h2>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">🤝 People Who Match</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {matchingUsers.map((user) => (
-                  <div key={user.id} className="bg-gray-50 p-4 rounded-lg border">
+                  <div key={user.id} className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
                     <div className="flex items-center gap-3 mb-3">
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-orange-600 flex items-center justify-center text-white font-bold">
                         {user.name.charAt(0)}
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900">{user.name}</h3>
-                        <p className="text-gray-600 text-sm">@{user.username}</p>
+                        <h3 className="font-semibold text-gray-900 dark:text-white">{user.name}</h3>
+                        <p className="text-gray-600 dark:text-gray-300 text-sm">@{user.username}</p>
                       </div>
                     </div>
                     
                     <div className="space-y-2">
-                      <h4 className="text-gray-700 font-medium text-sm">Shared Interests:</h4>
+                      <h4 className="text-gray-700 dark:text-gray-200 font-medium text-sm">Shared Interests:</h4>
                       <div className="flex flex-wrap gap-1">
                         {user.sharedActivities.map((activity: string, index: number) => (
                           <span 
                             key={index}
-                            className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs"
+                            className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded text-xs"
                           >
                             {activity}
                           </span>
@@ -1467,13 +1467,13 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
       {/* Edit Activity Modal */}
       {editingActivity && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold mb-4">Edit Activity</h3>
+        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md border border-gray-200 dark:border-gray-700">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Edit Activity</h3>
             <Input
               value={editingActivityName}
               onChange={(e) => setEditingActivityName(e.target.value)}
-              className="mb-4"
+              className="mb-4 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
               placeholder="Activity name"
             />
             <div className="flex gap-2 justify-end">
@@ -1483,6 +1483,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   setEditingActivity(null);
                   setEditingActivityName('');
                 }}
+                className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300"
               >
                 Cancel
               </Button>
