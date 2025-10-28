@@ -77,6 +77,18 @@ export default function Home() {
   const [loadedSections, setLoadedSections] = useState<Set<string>>(new Set(['hero', 'users', 'events', 'messages', 'weather', 'quickMeets'])); // Load all sections immediately
   const [activeSection, setActiveSection] = useState<string>('hero');
 
+  // Hero section visibility state
+  const [isHeroVisible, setIsHeroVisible] = useState<boolean>(() => {
+    const saved = localStorage.getItem('hideHeroSection');
+    return saved !== 'true'; // Default to visible
+  });
+
+  const toggleHeroVisibility = () => {
+    const newValue = !isHeroVisible;
+    setIsHeroVisible(newValue);
+    localStorage.setItem('hideHeroSection', String(!newValue));
+  };
+
   const { user, setUser } = useContext(AuthContext);
 
   // Function to handle section loading
@@ -1394,8 +1406,27 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
 
+{/* Hero Toggle Button */}
+{!isHeroVisible && (
+  <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+    <div className="max-w-7xl mx-auto px-4 py-3">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={toggleHeroVisibility}
+        className="text-sm"
+        data-testid="button-show-hero"
+      >
+        <ChevronDown className="w-4 h-4 mr-2" />
+        Show Welcome Message
+      </Button>
+    </div>
+  </div>
+)}
+
 {/* HERO SECTION — Airbnb Style Layout (Landing Page Layout) */}
-<section className="bg-white dark:bg-gray-900 py-8 sm:py-12 lg:py-16">
+{isHeroVisible && (
+<section className="bg-white dark:bg-gray-900 py-8 sm:py-12 lg:py-16 relative">
   {isMobile ? (
     // Mobile: Keep vertical layout
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -1680,7 +1711,22 @@ export default function Home() {
       </div>
     </div>
   )}
+  
+  {/* Hide Hero Button */}
+  <div className="absolute top-4 right-4 z-10">
+    <Button
+      variant="ghost"
+      size="sm"
+      onClick={toggleHeroVisibility}
+      className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+      data-testid="button-hide-hero"
+    >
+      <X className="w-4 h-4 mr-1" />
+      Hide
+    </Button>
+  </div>
 </section>
+)}
 
       <main className="pt-2 sm:pt-4 pb-24 md:pb-8 lg:pb-4">
         <div className="w-full max-w-full px-2 sm:px-4 lg:px-6">
