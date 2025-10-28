@@ -797,7 +797,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
                     </div>
                   )}
                   <div className="text-xs font-medium text-gray-900 dark:text-white truncate max-w-full">
-                    {connection.name || connection.username}
+                    {connection.username}
                   </div>
                   {connection.hometownCity && connection.hometownCountry && (
                     <div className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-full">
@@ -806,19 +806,6 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
                   )}
                 </div>
               ))}
-            </div>
-            <div className="mt-3 text-center">
-              <div className="text-sm text-pink-700 dark:text-pink-300 font-semibold mb-2">
-                💬 Great conversation starters:
-              </div>
-              <div className="text-xs text-pink-600 dark:text-pink-400 italic">
-                "How do you know [friend's name]?" • "I see we both know [friend's name] from [location]!"
-              </div>
-              {mutualConnections.length >= 3 && (
-                <div className="mt-2 bg-pink-200 dark:bg-pink-800 rounded-lg p-2 text-xs text-pink-800 dark:text-pink-200 font-medium">
-                  ⭐ {mutualConnections.length} mutual friends - you're very well connected!
-                </div>
-              )}
             </div>
           </div>
         )}
