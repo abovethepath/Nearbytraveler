@@ -262,17 +262,12 @@ export default function Messages() {
 
   // Mark messages as read when conversation is selected
   useEffect(() => {
-    if (selectedConversation && user?.id && conversationMessages.length > 0) {
-      // Check if there are unread messages from the selected user
-      const unreadFromSelected = conversationMessages.some((msg: any) => 
-        msg.senderId === selectedConversation && !msg.isRead
-      );
-      
-      if (unreadFromSelected) {
-        markAsReadMutation.mutate(selectedConversation);
-      }
+    if (selectedConversation && user?.id) {
+      console.log('📬 MARKING MESSAGES AS READ for conversation:', selectedConversation);
+      // Always mark as read when opening a conversation (even if already read)
+      markAsReadMutation.mutate(selectedConversation);
     }
-  }, [selectedConversation, user?.id, conversationMessages.length]);
+  }, [selectedConversation, user?.id]);
 
   // Handle typing indicators
   const handleTyping = (value: string) => {
