@@ -431,6 +431,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           setUserActivities(prev => prev.filter(ua => ua.activityId !== activity.id));
           // Refresh to sync with database
           await fetchUserActivities();
+          // CRITICAL: Invalidate profile page cache so changes appear immediately
+          queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
         } else {
           const error = await response.json();
           console.error('❌ DELETE failed:', error);
@@ -460,6 +462,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           setUserActivities(prev => [...prev, newInterest]);
           // Refresh to sync with database
           await fetchUserActivities();
+          // CRITICAL: Invalidate profile page cache so changes appear immediately
+          queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
         } else {
           const error = await response.json();
           console.error('❌ POST failed:', error);
