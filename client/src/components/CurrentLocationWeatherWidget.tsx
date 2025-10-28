@@ -201,78 +201,106 @@ export default function CurrentLocationWeatherWidget() {
 
   if (!currentCity || !currentCountry) {
     return (
-      <Card className="w-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center text-gray-900 dark:text-white">
-            <MapPin className="w-5 h-5 mr-2" />
-            Current Weather
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-4">
-            <p className="text-sm text-gray-600 dark:text-gray-300">
-              Set your location in profile to see weather
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="w-full relative overflow-hidden rounded-3xl" data-testid="weather-widget">
+        {/* Animated Gradient Orbs Background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-20 -left-20 w-40 h-40 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-30 blur-3xl animate-float"></div>
+          <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full opacity-30 blur-3xl animate-float-slow"></div>
+        </div>
+        
+        {/* Glass Morphism Card */}
+        <Card className="relative backdrop-blur-sm bg-white/60 dark:bg-gray-900/60 border border-white/30 dark:border-gray-700/30 shadow-2xl">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent font-bold">
+              <MapPin className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" />
+              Current Weather
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-4">
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                Set your location in profile to see weather
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   if (isLoading) {
     return (
-      <Card className="w-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center text-gray-900 dark:text-white">
-            <MapPin className="w-5 h-5 mr-2" />
-            Current Weather
-          </CardTitle>
-          <CardDescription>
-            <Badge variant={getLocationBadgeColor()}>
-              {getLocationLabel()}
-            </Badge>
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-4">
-            <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full mx-auto mb-2"></div>
-            <p className="text-sm text-gray-600 dark:text-gray-300">Loading weather...</p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="w-full relative overflow-hidden rounded-3xl" data-testid="weather-widget">
+        {/* Animated Gradient Orbs Background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-20 -left-20 w-40 h-40 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-30 blur-3xl animate-float"></div>
+          <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full opacity-30 blur-3xl animate-float-slow"></div>
+        </div>
+        
+        {/* Glass Morphism Card */}
+        <Card className="relative backdrop-blur-sm bg-white/60 dark:bg-gray-900/60 border border-white/30 dark:border-gray-700/30 shadow-2xl">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent font-bold">
+              <MapPin className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" />
+              Current Weather
+            </CardTitle>
+            <CardDescription>
+              <Badge variant={getLocationBadgeColor()} className="bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0">
+                {getLocationLabel()}
+              </Badge>
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-4">
+              <div className="animate-spin w-6 h-6 border-2 border-gradient-to-r from-blue-500 to-purple-500 border-t-transparent rounded-full mx-auto mb-2"></div>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Loading weather...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   if (error || !weatherData) {
     return (
-      <Card className="w-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center text-gray-900 dark:text-white">
-            <MapPin className="w-5 h-5 mr-2" />
-            Current Weather
-          </CardTitle>
-          <CardDescription>
-            <Badge variant={getLocationBadgeColor()}>
-              {getLocationLabel()}
-            </Badge>
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-4">
-            <Cloud className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
-              Weather unavailable for {currentCity}
-            </p>
-            <button 
-              onClick={() => refetch()}
-              className="text-xs text-blue-600 hover:text-blue-800 flex items-center mx-auto"
-            >
-              <RefreshCw className="w-3 h-3 mr-1" />
-              Try again
-            </button>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="w-full relative overflow-hidden rounded-3xl" data-testid="weather-widget">
+        {/* Animated Gradient Orbs Background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-20 -left-20 w-40 h-40 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-30 blur-3xl animate-float"></div>
+          <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full opacity-30 blur-3xl animate-float-slow"></div>
+        </div>
+        
+        {/* Glass Morphism Card */}
+        <Card className="relative backdrop-blur-sm bg-white/60 dark:bg-gray-900/60 border border-white/30 dark:border-gray-700/30 shadow-2xl">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent font-bold">
+              <MapPin className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" />
+              Current Weather
+            </CardTitle>
+            <CardDescription>
+              <Badge variant={getLocationBadgeColor()} className="bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0">
+                {getLocationLabel()}
+              </Badge>
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-4">
+              <Cloud className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
+                Weather unavailable for {currentCity}
+              </p>
+              <button 
+                onClick={() => refetch()}
+                className="text-xs bg-gradient-to-r from-blue-600 to-purple-600 text-white px-3 py-1.5 rounded-full hover:shadow-lg transition-all flex items-center mx-auto"
+                data-testid="button-refresh-weather"
+              >
+                <RefreshCw className="w-3 h-3 mr-1" />
+                Try again
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
@@ -281,39 +309,54 @@ export default function CurrentLocationWeatherWidget() {
   const condition = weatherData?.current?.condition?.text;
 
   return (
-    <Card className="w-full bg-white dark:bg-gray-800">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg flex items-center justify-between text-gray-900 dark:text-white">
-          <div className="flex items-center">
-            <MapPin className="w-5 h-5 mr-2" />
-            Current Weather
-          </div>
-          <button 
-            onClick={() => refetch()}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-            title="Refresh weather"
-          >
-            <RefreshCw className="w-4 h-4" />
-          </button>
-        </CardTitle>
-        <CardDescription className="text-sm text-gray-600 dark:text-gray-300">
-          {currentCity}{currentCountry && `, ${currentCountry}`}
-        </CardDescription>
-      </CardHeader>
+    <div className="w-full relative overflow-hidden rounded-3xl group" data-testid="weather-widget">
+      {/* Animated Gradient Orbs Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-20 -left-20 w-40 h-40 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-30 blur-3xl animate-float"></div>
+        <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full opacity-30 blur-3xl animate-float-slow"></div>
+      </div>
       
-      <CardContent className="pt-0">
-        <div className="flex items-center space-x-3">
-          {getWeatherIcon(condition || 'sunny')}
-          <div>
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">
-              {temperature ? `${Math.round(temperature)}°F / ${Math.round((temperature - 32) * 5/9)}°C` : '--'}
+      {/* Glass Morphism Card with Hover Effect */}
+      <Card className="relative backdrop-blur-sm bg-white/60 dark:bg-gray-900/60 border border-white/30 dark:border-gray-700/30 shadow-2xl transition-all duration-300 group-hover:shadow-3xl group-hover:bg-white/70 dark:group-hover:bg-gray-900/70">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg flex items-center justify-between">
+            <div className="flex items-center bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent font-bold">
+              <MapPin className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" />
+              Current Weather
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-300 capitalize">
-              {condition || 'Unknown'}
+            <button 
+              onClick={() => refetch()}
+              className="text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors p-1.5 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30"
+              title="Refresh weather"
+              data-testid="button-refresh-weather"
+            >
+              <RefreshCw className="w-4 h-4" />
+            </button>
+          </CardTitle>
+          <CardDescription className="text-sm font-medium text-gray-700 dark:text-gray-200">
+            {currentCity}{currentCountry && `, ${currentCountry}`}
+          </CardDescription>
+        </CardHeader>
+        
+        <CardContent className="pt-0">
+          <div className="flex items-center space-x-4">
+            <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30">
+              {getWeatherIcon(condition || 'sunny')}
+            </div>
+            <div className="flex-1">
+              <div className="text-3xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                {temperature ? `${Math.round(temperature)}°F` : '--'}
+              </div>
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                {temperature ? `${Math.round((temperature - 32) * 5/9)}°C` : ''}
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-300 capitalize mt-1">
+                {condition || 'Unknown'}
+              </div>
             </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

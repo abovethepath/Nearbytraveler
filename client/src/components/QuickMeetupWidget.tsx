@@ -278,21 +278,36 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
 
   if (isLoading) {
     return (
-      <Card className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 w-full">
-        <CardContent className="p-4 bg-transparent">
-          <div className="flex items-center gap-2">
-            <Zap className="h-4 w-4 text-orange-500" />
-            <span className="text-sm text-gray-900 dark:text-white">Loading quick meetups...</span>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="w-full relative overflow-hidden rounded-3xl" data-testid="quick-meetup-widget">
+        {/* Animated Gradient Orbs Background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-20 -left-20 w-40 h-40 bg-gradient-to-br from-orange-400 to-red-500 rounded-full opacity-30 blur-3xl animate-float"></div>
+        </div>
+        
+        {/* Glass Morphism Card */}
+        <Card className="relative backdrop-blur-sm bg-white/60 dark:bg-gray-900/60 border border-white/30 dark:border-gray-700/30 shadow-2xl">
+          <CardContent className="p-4 bg-transparent">
+            <div className="flex items-center gap-2">
+              <Zap className="h-4 w-4 text-orange-500 animate-pulse" />
+              <span className="text-sm font-medium bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">Loading quick meetups...</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full relative overflow-hidden rounded-3xl group" data-testid="quick-meetup-widget">
+      {/* Animated Gradient Orbs Background - Energetic Orange/Red Theme */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-24 -right-24 w-56 h-56 bg-gradient-to-br from-orange-400 via-red-500 to-pink-500 rounded-full opacity-40 blur-3xl animate-float"></div>
+        <div className="absolute -bottom-24 -left-24 w-56 h-56 bg-gradient-to-br from-pink-400 to-orange-500 rounded-full opacity-40 blur-3xl animate-float-slow"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-gradient-to-br from-red-400 to-orange-400 rounded-full opacity-30 blur-3xl animate-float-slower"></div>
+      </div>
+      
       {/* ENERGETIC PRIMARY CTA - LETS MEET NOW! */}
-      <Card className="border-2 border-orange-400 dark:border-orange-600 bg-gradient-to-br from-orange-100 via-red-50 to-pink-100 dark:from-orange-900/40 dark:via-red-900/30 dark:to-pink-900/40 hover:shadow-xl hover:shadow-orange-200 dark:hover:shadow-orange-900/30 transition-all duration-300 w-full max-h-[90vh] overflow-hidden animate-pulse-slow">
+      <Card className="relative backdrop-blur-sm bg-white/70 dark:bg-gray-900/70 border-2 border-orange-400/50 dark:border-orange-600/50 shadow-2xl hover:shadow-3xl hover:border-orange-500/60 dark:hover:border-orange-500/60 transition-all duration-300 w-full max-h-[90vh] overflow-hidden group-hover:bg-white/80 dark:group-hover:bg-gray-900/80">
         <CardContent className="p-6 bg-transparent">
           {!showCreateForm ? (
             <div className="text-center space-y-4">
@@ -499,7 +514,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
 
       {/* Existing Quick Meetups - Only show ACTIVE meetups */}
       {quickMeetups && quickMeetups.length > 0 && (
-        <div className="grid gap-3">
+        <div className="grid gap-3 mt-4">
           {quickMeetups
             .filter((meetup: any) => new Date(meetup.expiresAt).getTime() > Date.now())
             .slice(0, 3)
@@ -524,8 +539,9 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
               return (
                 <Card 
                   key={meetup.id} 
-                  className="bg-white dark:bg-gray-800 border border-orange-200 dark:border-orange-800 overflow-visible cursor-pointer hover:shadow-md hover:border-orange-300 dark:hover:border-orange-700 transition-all duration-200"
+                  className="backdrop-blur-sm bg-white/70 dark:bg-gray-800/70 border border-orange-300/50 dark:border-orange-700/50 overflow-visible cursor-pointer hover:shadow-xl hover:border-orange-400/60 dark:hover:border-orange-600/60 hover:bg-white/80 dark:hover:bg-gray-800/80 transition-all duration-300"
                   onClick={() => window.location.href = `/quick-meetup-chat/${meetup.id}`}
+                  data-testid={`quick-meetup-card-${meetup.id}`}
                 >
                   <CardContent className="p-3 space-y-3 overflow-visible">
                     {/* Top row: avatar + author + countdown (wraps on small) */}

@@ -25,23 +25,32 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
   });
 
   return (
-    <Card 
-      className="bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-blue-900/20 dark:via-gray-800 dark:to-orange-900/20 hover:shadow-2xl transition-all duration-300 border-2 border-blue-200 dark:border-blue-600/30 hover:border-orange-300 dark:hover:border-orange-500/40"
-    >
-      <CardContent className="p-6">
+    <div className="w-full relative overflow-hidden rounded-3xl group" data-testid="messages-widget">
+      {/* Animated Gradient Orbs Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full opacity-30 blur-3xl animate-float"></div>
+        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-30 blur-3xl animate-float-slow"></div>
+      </div>
+      
+      {/* Glass Morphism Card */}
+      <Card className="relative backdrop-blur-sm bg-white/60 dark:bg-gray-900/60 border border-white/30 dark:border-gray-700/30 shadow-2xl transition-all duration-300 group-hover:shadow-3xl group-hover:bg-white/70 dark:group-hover:bg-gray-900/70">
+        <CardContent className="p-6">
         <div className="mb-4">
-          <div className="flex items-center gap-2 mb-2">
-            <MessageCircle className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-            <h3 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Messages</h3>
+          <div className="flex items-center gap-2 mb-3">
+            <div className="p-2 rounded-xl bg-gradient-to-br from-orange-100 to-pink-100 dark:from-orange-900/30 dark:to-pink-900/30">
+              <MessageCircle className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+            </div>
+            <h3 className="text-2xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent">Messages</h3>
           </div>
           <Button 
             variant="outline" 
             size="sm" 
-            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white border-0 transition-all duration-300 shadow-md hover:shadow-lg font-semibold"
+            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 transition-all duration-300 shadow-lg hover:shadow-xl font-semibold rounded-full px-4"
             onClick={(e) => {
               e.stopPropagation();
               setLocation("/requests");
             }}
+            data-testid="button-view-requests"
           >
             View Connection Requests
           </Button>
@@ -91,25 +100,26 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
                       setLocation(`/messages?user=${otherUser.id}`);
                     }
                   }}
-                  className={`cursor-pointer hover:bg-gradient-to-r hover:from-blue-50 hover:to-orange-50 dark:hover:from-blue-900/30 dark:hover:to-orange-900/30 rounded-xl p-4 transition-all duration-300 border-2 ${
+                  className={`cursor-pointer rounded-2xl p-4 transition-all duration-300 ${
                     isYourTurn 
-                      ? 'border-orange-300 dark:border-orange-500/50 bg-gradient-to-r from-orange-50 via-white to-orange-50 dark:from-orange-900/20 dark:via-gray-800 dark:to-orange-900/20' 
-                      : 'border-blue-100 dark:border-blue-700/50 bg-gradient-to-r from-white via-blue-50/30 to-orange-50/30 dark:from-gray-800/50 dark:via-blue-900/10 dark:to-orange-900/10'
-                  } hover:border-orange-200 dark:hover:border-orange-600/50 hover:shadow-lg`}
+                      ? 'bg-gradient-to-r from-orange-50/80 to-pink-50/80 dark:from-orange-900/30 dark:to-pink-900/30 border-2 border-orange-300 dark:border-orange-500/50 hover:shadow-xl hover:border-orange-400 dark:hover:border-orange-400/60' 
+                      : 'bg-gradient-to-r from-blue-50/60 to-purple-50/60 dark:from-blue-900/20 dark:to-purple-900/20 border border-blue-200/50 dark:border-blue-700/30 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600/50'
+                  } backdrop-blur-sm`}
+                  data-testid={`message-preview-${index}`}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex flex-col">
                       {isYourTurn && (
-                        <span className="text-xs font-bold text-orange-600 dark:text-orange-400 mb-1">
+                        <span className="text-xs font-black text-orange-600 dark:text-orange-400 mb-1 bg-orange-100 dark:bg-orange-900/50 px-2 py-0.5 rounded-full w-fit">
                           YOUR TURN
                         </span>
                       )}
-                      <span className="text-sm font-bold text-blue-700 dark:text-blue-300">
+                      <span className="text-sm font-bold bg-gradient-to-r from-blue-700 to-purple-700 dark:from-blue-300 dark:to-purple-300 bg-clip-text text-transparent">
                         {isFromMe ? `To: ${otherUser?.username || "Unknown"}` : `From: ${otherUser?.username || "Unknown"}`}
                       </span>
                     </div>
                     {message.createdAt && (
-                      <span className="text-xs font-medium text-orange-600 dark:text-orange-400">
+                      <span className="text-xs font-semibold text-gray-600 dark:text-gray-400">
                         {new Date(message.createdAt).toLocaleDateString('en-US', { 
                           month: 'short', 
                           day: 'numeric',
@@ -119,7 +129,7 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-gray-800 dark:text-gray-200 line-clamp-2 font-medium">
+                  <p className="text-sm text-gray-700 dark:text-gray-200 line-clamp-2 font-medium">
                     {message.content && message.content.length > 100 
                       ? `${message.content.substring(0, 100)}...` 
                       : message.content}
@@ -137,13 +147,14 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
             ).size;
             return conversationCount === 0;
           })() && (
-            <div className="text-center py-4">
+            <div className="text-center py-6">
               <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 font-medium">No recent messages</p>
               <Button 
                 variant="outline" 
                 size="sm"
                 onClick={() => setLocation("/messages")}
-                className="bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white border-0 shadow-md hover:shadow-lg font-semibold transition-all duration-300"
+                className="bg-gradient-to-r from-orange-600 to-pink-600 hover:from-orange-700 hover:to-pink-700 text-white border-0 shadow-lg hover:shadow-xl font-semibold transition-all duration-300 rounded-full px-4"
+                data-testid="button-start-chatting"
               >
                 Start Chatting
               </Button>
@@ -152,6 +163,7 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
         </div>
       </CardContent>
     </Card>
+    </div>
   );
 }
 

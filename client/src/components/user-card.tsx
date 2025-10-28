@@ -89,30 +89,33 @@ export default function UserCard({
 
   return (
     <Card 
-      className="user-card border-gray-200 dark:border-gray-700 shadow-md bg-white dark:bg-gray-800 overflow-hidden cursor-pointer transition-shadow hover:shadow-lg h-full"
+      className="user-card backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border border-gray-300/50 dark:border-gray-600/50 shadow-xl hover:shadow-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:bg-white/90 dark:hover:bg-gray-800/90 h-full"
       onClick={handleCardClick}
       data-testid={`user-card-${user.id}`}
     >
-      {/* Individual User Gradient Banner */}
+      {/* Individual User Gradient Banner - keeps user's personal color */}
       <div 
-        className="h-20" 
+        className="h-24 relative overflow-hidden" 
         style={{ background: getUserGradient() }}
-      ></div>
+      >
+        {/* Subtle overlay for depth */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10"></div>
+      </div>
       
-      <CardContent className="p-4 pb-4 -mt-10 h-full flex flex-col">
+      <CardContent className="p-4 pb-4 -mt-12 h-full flex flex-col">
         {/* User Info */}
         <div className="space-y-3 flex-1 flex flex-col justify-between">
-          {/* Large Circular Avatar with white ring */}
+          {/* Large Circular Avatar with enhanced ring */}
           <div className="flex justify-center">
             <SimpleAvatar 
               user={user} 
               size="lg" 
-              className="ring-4 ring-white dark:ring-gray-800 shadow-xl w-20 h-20"
+              className="ring-4 ring-white dark:ring-gray-800 shadow-2xl w-24 h-24 border-2 border-white/50 dark:border-gray-700/50"
             />
           </div>
           
           <div className="text-center">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white truncate bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text">
               @{user.username}
             </h3>
           </div>
@@ -125,7 +128,7 @@ export default function UserCard({
                 const currentOrNextTrip = getCurrentOrNextTrip((user as any).travelPlans);
                 if (currentOrNextTrip) {
                   return (
-                    <div className="flex items-center justify-center gap-2 text-sm text-blue-600 dark:text-blue-400">
+                    <div className="flex items-center justify-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-lg">
                       {currentOrNextTrip.isCurrent ? '🧳' : '✈️'} 
                       <span className="truncate">
                         {currentOrNextTrip.isCurrent ? 'Traveling to' : 'Next trip to'} {currentOrNextTrip.destination.split(',')[0]}
@@ -138,7 +141,7 @@ export default function UserCard({
               // Fallback to existing logic for backward compatibility
               if (user.isCurrentlyTraveling && user.travelDestination) {
                 return (
-                  <div className="flex items-center justify-center gap-2 text-sm text-blue-600 dark:text-blue-400">
+                  <div className="flex items-center justify-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-lg">
                     🧳 <span className="truncate">Traveling to {user.travelDestination.split(',')[0]}</span>
                   </div>
                 );
@@ -146,7 +149,7 @@ export default function UserCard({
               
               return null;
             })() as React.ReactNode}
-            <div className="flex items-center justify-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+            <div className="flex items-center justify-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700/30 px-3 py-1.5 rounded-lg">
               🏠 <span className="truncate">Local in {user.hometownCity ? user.hometownCity.split(',')[0] : getLocation()}</span>
             </div>
           </div>
@@ -160,13 +163,13 @@ export default function UserCard({
               .trim(); // Remove leading/trailing whitespace
             
             return cleanBio ? (
-              <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2 leading-relaxed text-center">
+              <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2 leading-relaxed text-center font-medium">
                 {cleanBio}
               </p>
             ) : null;
           })()}
           
-          {/* Things in Common Badge - simplified to match backend algorithm */}
+          {/* Things in Common Badge - modernized with gradient */}
           {compatibilityData && (() => {
             const data = compatibilityData as any;
             // Use the same simple calculation as the backend algorithm
@@ -179,7 +182,7 @@ export default function UserCard({
             
             return totalCommon > 0 ? (
               <div className="flex justify-center">
-                <div className="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full dark:bg-blue-900/30 dark:text-blue-400 inline-block">
+                <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg inline-block">
                   {totalCommon} Things in Common • {matchPercentage}% Match
                 </div>
               </div>

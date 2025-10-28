@@ -1777,26 +1777,26 @@ export default function Home() {
           {/* Main Content - Center column */}
           <div className="col-span-1 lg:col-span-2 space-y-3 sm:space-y-4 md:space-y-8 min-w-0 relative">
             
-            {/* Modern Animated Orb Background - Subtle version for content area */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10 rounded-3xl">
+            {/* Modern Animated Orb Background - More visible version for content area */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-3xl">
               {/* Orb 1 - Top Left - Blue/Purple */}
-              <div className="absolute -top-32 -left-32 w-96 h-96 bg-gradient-to-br from-blue-400 via-blue-500 to-purple-600 rounded-full opacity-25 blur-3xl animate-float"></div>
+              <div className="absolute -top-32 -left-32 w-96 h-96 bg-gradient-to-br from-blue-400 via-blue-500 to-purple-600 rounded-full opacity-50 blur-3xl animate-float"></div>
               
               {/* Orb 2 - Top Right - Purple/Pink */}
-              <div className="absolute -top-20 -right-40 w-80 h-80 bg-gradient-to-br from-purple-400 via-pink-500 to-orange-500 rounded-full opacity-30 blur-3xl animate-float-slow"></div>
+              <div className="absolute -top-20 -right-40 w-80 h-80 bg-gradient-to-br from-purple-400 via-pink-500 to-orange-500 rounded-full opacity-60 blur-3xl animate-float-slow"></div>
               
               {/* Orb 3 - Center - Orange glow */}
-              <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-72 h-72 bg-gradient-to-br from-orange-400 to-red-500 rounded-full opacity-20 blur-3xl animate-float-slower"></div>
+              <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-72 h-72 bg-gradient-to-br from-orange-400 to-red-500 rounded-full opacity-40 blur-3xl animate-float-slower"></div>
               
               {/* Orb 4 - Bottom Left - Blue */}
-              <div className="absolute -bottom-32 -left-20 w-64 h-64 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-full opacity-25 blur-3xl animate-float hidden lg:block"></div>
+              <div className="absolute -bottom-32 -left-20 w-64 h-64 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-full opacity-50 blur-3xl animate-float hidden lg:block"></div>
               
               {/* Orb 5 - Bottom Right - Purple */}
-              <div className="absolute -bottom-20 -right-32 w-56 h-56 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full opacity-30 blur-3xl animate-float-slow hidden lg:block"></div>
+              <div className="absolute -bottom-20 -right-32 w-56 h-56 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full opacity-60 blur-3xl animate-float-slow hidden lg:block"></div>
             </div>
 
-            {/* Glass Morphism Content Panel */}
-            <div className="relative backdrop-blur-sm bg-white/40 dark:bg-gray-900/40 rounded-3xl p-4 sm:p-6 border border-white/20 dark:border-gray-700/20 shadow-2xl">
+            {/* Glass Morphism Content Panel - Now in FRONT of orbs with lighter backdrop */}
+            <div className="relative z-10 backdrop-blur-sm bg-white/60 dark:bg-gray-900/60 rounded-3xl p-4 sm:p-6 border border-white/30 dark:border-gray-700/30 shadow-2xl">
             
             <div className="flex items-center justify-between mb-6" data-testid="discover-people-section">
               <div className="flex items-center gap-2 sm:gap-4">
