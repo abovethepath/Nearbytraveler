@@ -90,7 +90,7 @@ export default function UserCard({
 
   return (
     <Card 
-      className="user-card backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border border-gray-300/50 dark:border-gray-600/50 shadow-xl hover:shadow-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:bg-white/90 dark:hover:bg-gray-800/90 h-full"
+      className="user-card backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border border-gray-300/50 dark:border-gray-600/50 shadow-xl hover:shadow-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:bg-white/90 dark:hover:bg-gray-800/90"
       onClick={handleCardClick}
       data-testid={`user-card-${user.id}`}
     >
@@ -103,9 +103,9 @@ export default function UserCard({
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10"></div>
       </div>
       
-      <CardContent className="p-4 pb-4 -mt-12 h-full flex flex-col">
+      <CardContent className="p-4 pb-5 -mt-12 flex flex-col">
         {/* User Info */}
-        <div className="space-y-3 flex-1 flex flex-col justify-between">
+        <div className="space-y-3 flex flex-col">
           {/* Large Circular Avatar with enhanced ring */}
           <div className="flex justify-center">
             <SimpleAvatar 
@@ -192,7 +192,7 @@ export default function UserCard({
           
           {/* Connect Button - only show if not current user */}
           {!isCurrentUser && currentUserId && (
-            <div className="pt-3 mt-auto">
+            <div className="pt-4">
               <ConnectButton
                 currentUserId={currentUserId}
                 targetUserId={user.id}
