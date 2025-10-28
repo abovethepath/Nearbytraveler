@@ -14,7 +14,7 @@ import { apiRequest } from "@/lib/queryClient";
 import SmartLocationInput from "@/components/SmartLocationInput";
 import { User, Plane, Building, ArrowRight, ArrowLeft, Check } from "lucide-react";
 import Logo from "@/components/logo";
-import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, getAllActivities, getAllLanguages, validateSelections } from "@shared/base-options";
+import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, TOP_CHOICES, getAllActivities, getAllLanguages, validateSelections } from "@shared/base-options";
 import { BASE_TRAVELER_TYPES } from "@shared/base-options";
 
 interface SignupData {
@@ -89,17 +89,6 @@ const calculateAge = (dateString: string): number => {
 };
 
 const BASE_LANGUAGES = getAllLanguages();
-
-// Define the top choices that appear in the special section
-const TOP_CHOICES = [
-  "Single and Looking", "Coffee Culture", "Nightlife & Dancing", "Photography", 
-  "Meet Locals/Travelers", "Craft Beer & Breweries", "Local Food Specialties", "Hiking & Nature",
-  "City Tours & Sightseeing", "Street Art", "Cocktails & Bars", "Adventure Tours",
-  "Food Tours / Trucks", "Museums", "Rooftop Bars", "Local Hidden Gems",
-  "Beach Activities", "Fine Dining", "Yoga & Wellness", "Pub Crawls & Bar Tours",
-  "Walking Tours", "Happy Hour Deals", "Boat & Water Tours", "Brunch Spots",
-  "Live Music Venues", "Historical Tours", "Festivals & Events"
-];
 
 export default function SignupSteps() {
   const [, setLocation] = useLocation();
