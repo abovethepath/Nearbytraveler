@@ -114,7 +114,10 @@ export class TravelMatchingService {
     const sharedInterests = this.getSharedInterests(user1, user2);
     const sharedActivities = this.getSharedActivities(user1, user2);
     const sharedEvents = await this.getSharedEvents(user1, user2);
-    const totalSharedItems = sharedInterests.length + sharedActivities.length + sharedEvents.length;
+    const sharedCityActivities = await this.getSharedCityActivities(user1, user2);
+    
+    // Prioritize city-specific activities over general interests
+    const totalSharedItems = sharedInterests.length + sharedActivities.length + sharedEvents.length + sharedCityActivities.length;
 
     // Compatibility calculation complete
 
@@ -125,6 +128,21 @@ export class TravelMatchingService {
     
     if (totalSharedItems > 0) {
       reasons.push(`${totalSharedItems} things in common`);
+      
+      // PRIORITIZE city-specific activities (Things I Want To Do) - show these FIRST with city names
+      if (sharedCityActivities.length > 0) {
+        // Group by city for better display
+        const cityCounts: { [city: string]: number } = {};
+        sharedCityActivities.forEach(item => {
+          cityCounts[item.city] = (cityCounts[item.city] || 0) + 1;
+        });
+        
+        // Show city-specific matches prominently
+        Object.entries(cityCounts).forEach(([city, count]) => {
+          reasons.push(`${count} shared interests in ${city}`);
+        });
+      }
+      
       if (sharedInterests.length > 0) {
         reasons.push(`${sharedInterests.length} shared interests: ${sharedInterests.slice(0, 3).join(', ')}`);
       }
@@ -878,6 +896,33 @@ export class TravelMatchingService {
         this.areInterestsSimilar(event, otherEvent)
       )
     );
+  }
+
+  /**
+   * Get shared city-specific activities (Things I Want To Do) with city context
+   */
+  private async getSharedCityActivities(user1: User, user2: User): Promise<{activity: string, city: string}[]> {
+    // Get city-specific activities from userCityInterests table
+    const user1CityInterests = await storage.getUserActivityMatches(user1.id);
+    const user2CityInterests = await storage.getUserActivityMatches(user2.id);
+    
+    const sharedActivities: {activity: string, city: string}[] = [];
+    
+    // Find activities they both have in the same cities
+    for (const interest1 of user1CityInterests) {
+      for (const interest2 of user2CityInterests) {
+        // Check if it's the same city and same or similar activity
+        if (interest1.cityName === interest2.cityName && 
+            this.areInterestsSimilar(interest1.activityName, interest2.activityName)) {
+          sharedActivities.push({
+            activity: interest1.activityName,
+            city: interest1.cityName
+          });
+        }
+      }
+    }
+    
+    return sharedActivities;
   }
 
   private getCompatibilityLevel(score: number): 'high' | 'medium' | 'low' {
