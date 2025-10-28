@@ -10,11 +10,16 @@ interface User {
   profileImage?: string | null;
   bio?: string | null;
   hometownCity?: string | null;
+  hometownState?: string | null;
   hometownCountry?: string | null;
+  destinationCity?: string | null;
+  destinationState?: string | null;
+  destinationCountry?: string | null;
   location?: string | null;
   interests?: string[];
   userType?: string;
   aura?: number;
+  isCurrentlyTraveling?: boolean;
 }
 
 interface ResponsiveUserGridProps {
@@ -41,6 +46,17 @@ export default function ResponsiveUserGrid({
       return `${user.hometownCity}, ${user.hometownCountry}`;
     }
     return "Location not set";
+  };
+
+  // Get LinkedIn-style subtitle: "Local in City" or "Traveler in City"
+  const getUserSubtitle = (user: User) => {
+    if (user.isCurrentlyTraveling && user.destinationCity) {
+      return `Traveler in ${user.destinationCity}`;
+    }
+    if (user.hometownCity) {
+      return `Local in ${user.hometownCity}`;
+    }
+    return user.userType === 'business' ? 'Business User' : 'Nearby User';
   };
 
   const getInterestsBadge = (user: User) => {
@@ -82,11 +98,10 @@ export default function ResponsiveUserGrid({
           {user.username}
         </h3>
         
-        {/* Location */}
-        <div className="flex items-center justify-center gap-1 text-sm text-gray-600 dark:text-gray-400 mb-3">
-          <MapPin className="w-4 h-4" />
-          <span className="truncate">{getLocation(user)}</span>
-        </div>
+        {/* Subtitle - LinkedIn style "Local in/Traveler in" */}
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 font-medium">
+          {getUserSubtitle(user)}
+        </p>
         
         {/* Bio */}
         {user.bio && (
@@ -141,11 +156,10 @@ export default function ResponsiveUserGrid({
           {user.username}
         </h3>
         
-        {/* Location */}
-        <div className="flex items-center justify-center gap-1 text-xs text-gray-600 dark:text-gray-400 mb-3">
-          <MapPin className="w-3 h-3" />
-          <span className="truncate text-xs">{getLocation(user)}</span>
-        </div>
+        {/* Subtitle - LinkedIn style */}
+        <p className="text-xs text-gray-600 dark:text-gray-400 mb-3 font-medium">
+          {getUserSubtitle(user)}
+        </p>
         
         {/* Interests Badge - smaller */}
         <div className="flex justify-center scale-75">
