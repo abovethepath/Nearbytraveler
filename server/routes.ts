@@ -13792,6 +13792,17 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(400).json({ error: 'Invalid activity ID' });
       }
 
+      // Check if this is a static/system activity (createdByUserId === 1)
+      const activity = await db
+        .select()
+        .from(cityActivities)
+        .where(eq(cityActivities.id, activityId))
+        .limit(1);
+      
+      if (activity.length > 0 && activity[0].createdByUserId === 1) {
+        return res.status(403).json({ error: 'Cannot delete static city activities' });
+      }
+
       await db.delete(cityActivities).where(eq(cityActivities.id, activityId));
       
       if (process.env.NODE_ENV === 'development') console.log(`🗑️ DELETED CITY ACTIVITY: ID ${activityId}`);

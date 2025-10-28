@@ -1238,39 +1238,41 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                               <span className="relative z-10">{activity.activityName}</span>
                             </button>
                             
-                            {/* Edit/Delete buttons - DELETE available to ALL users for community moderation */}
-                            <div className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-1">
-                              {/* EDIT button - only for activity creator */}
-                              {isUserCreated && (
+                            {/* Edit/Delete buttons - Only show for user-created activities (not static/system activities) */}
+                            {activity.createdByUserId !== 1 && (
+                              <div className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-1">
+                                {/* EDIT button - only for activity creator */}
+                                {isUserCreated && (
+                                  <button
+                                    className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-blue-700"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      console.log('🔧 EDIT CLICKED for activity:', activity.activityName);
+                                      setEditingActivity({ id: userActivity?.id || activity.id, name: activity.activityName, activityId: activity.id });
+                                      setEditingActivityName(activity.activityName);
+                                    }}
+                                  >
+                                    <Edit className="w-2.5 h-2.5" />
+                                  </button>
+                                )}
+                                {/* DELETE button - available to ALL users for community moderation (except static activities) */}
                                 <button
-                                  className="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-blue-700"
+                                  className="w-5 h-5 bg-red-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-700"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    console.log('🔧 EDIT CLICKED for activity:', activity.activityName);
-                                    setEditingActivity({ id: userActivity?.id || activity.id, name: activity.activityName, activityId: activity.id });
-                                    setEditingActivityName(activity.activityName);
+                                    console.log('🔧 DELETE CLICKED for activity:', activity.activityName);
+                                    if (userActivity) {
+                                      handleDeleteActivity(userActivity.id);
+                                    } else {
+                                      // Delete city activity if user hasn't selected it
+                                      handleDeleteCityActivity(activity.id);
+                                    }
                                   }}
                                 >
-                                  <Edit className="w-2.5 h-2.5" />
+                                  <X className="w-2.5 h-2.5" />
                                 </button>
-                              )}
-                              {/* DELETE button - available to ALL users for community moderation */}
-                              <button
-                                className="w-5 h-5 bg-red-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-700"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  console.log('🔧 DELETE CLICKED for activity:', activity.activityName);
-                                  if (userActivity) {
-                                    handleDeleteActivity(userActivity.id);
-                                  } else {
-                                    // Delete city activity if user hasn't selected it
-                                    handleDeleteCityActivity(activity.id);
-                                  }
-                                }}
-                              >
-                                <X className="w-2.5 h-2.5" />
-                              </button>
-                            </div>
+                              </div>
+                            )}
                           </div>
                         );
                       });
