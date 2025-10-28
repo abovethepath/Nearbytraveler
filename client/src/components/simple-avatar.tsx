@@ -79,7 +79,6 @@ export function SimpleAvatar({ user, size = 'md', className = '', clickable = tr
           alt={`${user?.username} avatar`}
           className={`${baseClasses} object-cover`}
           onClick={handleClick}
-          title={clickable ? `View ${user?.username}'s profile` : undefined}
           onError={(e) => {
             // Hide image on error to show letter fallback
             e.currentTarget.style.display = 'none';
@@ -91,7 +90,6 @@ export function SimpleAvatar({ user, size = 'md', className = '', clickable = tr
       <div 
         className={`${baseClasses} ${avatarData.bgColor} text-white ${avatarData.hasImage ? 'absolute inset-0' : ''}`}
         onClick={handleClick}
-        title={clickable ? `View ${user?.username || 'User'}'s profile` : undefined}
         style={{ display: avatarData.hasImage ? 'none' : 'flex' }}
       >
         <span className="font-bold">{avatarData.letter}</span>
