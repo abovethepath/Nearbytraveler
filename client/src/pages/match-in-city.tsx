@@ -795,10 +795,15 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   // Delete user activity function
   const handleDeleteActivity = async (userActivityId: number) => {
     const storedUser = localStorage.getItem('travelConnectUser');
-    const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
+    const authUser = localStorage.getItem('user');
+    const travelconnectUser = localStorage.getItem('travelconnect_user');
+    const actualUser = user || 
+      (storedUser ? JSON.parse(storedUser) : null) || 
+      (authUser ? JSON.parse(authUser) : null) ||
+      (travelconnectUser ? JSON.parse(travelconnectUser) : null);
     const userId = actualUser?.id;
     
-    console.log('🗑️ DELETE ACTIVITY: userActivityId:', userActivityId, 'userId:', userId);
+    console.log('🗑️ DELETE ACTIVITY: userActivityId:', userActivityId, 'userId:', userId, 'actualUser:', actualUser);
     
     try {
       const response = await fetch(`/api/user-city-interests/${userActivityId}`, {
@@ -1191,7 +1196,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                   : 'bg-gradient-to-r from-gray-50 to-white text-gray-700 border-gray-200 hover:border-blue-300 hover:shadow-blue-100'
                               }`}
                               onClick={() => {
-                                handleToggleActivity(activity.id, activity.activityName);
+                                toggleActivity(activity);
                               }}
                               onMouseDown={(e) => {
                                 console.log('🖱️ PILL MOUSE DOWN!', activity.activityName);
