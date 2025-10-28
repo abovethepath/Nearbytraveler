@@ -1223,7 +1223,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                               className={`w-full px-5 py-4 rounded-2xl text-sm font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl border-2 ${
                                 isSelected 
                                   ? 'bg-gradient-to-r from-blue-600 to-orange-600 text-white border-blue-400 shadow-blue-200'
-                                  : 'bg-gradient-to-r from-gray-50 to-white text-gray-700 border-gray-200 hover:border-blue-300 hover:shadow-blue-100'
+                                  : 'bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-100 border-gray-200 dark:border-gray-500 hover:border-blue-300 dark:hover:border-blue-400 hover:shadow-blue-100 dark:hover:shadow-blue-900/50'
                               }`}
                               onClick={() => {
                                 toggleActivity(activity);
@@ -1314,7 +1314,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border-2 ${
                             isSelected 
                               ? 'bg-gradient-to-r from-blue-600 to-orange-600 text-white border-blue-400 shadow-blue-200'
-                              : 'bg-gradient-to-r from-gray-50 to-white text-gray-700 border-gray-200 hover:border-blue-300 hover:shadow-blue-100'
+                              : 'bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-100 border-gray-200 dark:border-gray-500 hover:border-blue-300 dark:hover:border-blue-400 hover:shadow-blue-100 dark:hover:shadow-blue-900/50'
                           }`}
                           onClick={async () => {
                             console.log('🎯 Universal activity clicked:', activity);
