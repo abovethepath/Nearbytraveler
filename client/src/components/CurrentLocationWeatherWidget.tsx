@@ -204,8 +204,8 @@ export default function CurrentLocationWeatherWidget() {
       <div className="w-full relative overflow-hidden rounded-3xl" data-testid="weather-widget">
         {/* Animated Gradient Orbs Background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-20 -left-20 w-40 h-40 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-30 blur-3xl animate-float"></div>
-          <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full opacity-30 blur-3xl animate-float-slow"></div>
+          <div className="absolute -top-20 -left-20 w-40 h-40 bg-gradient-to-br from-blue-300 to-cyan-400 rounded-full opacity-25 blur-3xl animate-float"></div>
+          <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-gradient-to-br from-orange-300 to-amber-400 rounded-full opacity-25 blur-3xl animate-float-slow"></div>
         </div>
         
         {/* Glass Morphism Card */}
@@ -233,8 +233,8 @@ export default function CurrentLocationWeatherWidget() {
       <div className="w-full relative overflow-hidden rounded-3xl" data-testid="weather-widget">
         {/* Animated Gradient Orbs Background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-20 -left-20 w-40 h-40 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-30 blur-3xl animate-float"></div>
-          <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full opacity-30 blur-3xl animate-float-slow"></div>
+          <div className="absolute -top-20 -left-20 w-40 h-40 bg-gradient-to-br from-blue-300 to-cyan-400 rounded-full opacity-25 blur-3xl animate-float"></div>
+          <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-gradient-to-br from-orange-300 to-amber-400 rounded-full opacity-25 blur-3xl animate-float-slow"></div>
         </div>
         
         {/* Glass Morphism Card */}
@@ -266,8 +266,8 @@ export default function CurrentLocationWeatherWidget() {
       <div className="w-full relative overflow-hidden rounded-3xl" data-testid="weather-widget">
         {/* Animated Gradient Orbs Background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-20 -left-20 w-40 h-40 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-30 blur-3xl animate-float"></div>
-          <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full opacity-30 blur-3xl animate-float-slow"></div>
+          <div className="absolute -top-20 -left-20 w-40 h-40 bg-gradient-to-br from-blue-300 to-cyan-400 rounded-full opacity-25 blur-3xl animate-float"></div>
+          <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-gradient-to-br from-orange-300 to-amber-400 rounded-full opacity-25 blur-3xl animate-float-slow"></div>
         </div>
         
         {/* Glass Morphism Card */}
@@ -340,11 +340,11 @@ export default function CurrentLocationWeatherWidget() {
         
         <CardContent className="pt-0">
           <div className="flex items-center space-x-4">
-            <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30">
+            <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30">
               {getWeatherIcon(condition || 'sunny')}
             </div>
             <div className="flex-1">
-              <div className="text-3xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <div className="text-3xl font-black bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
                 {temperature ? `${Math.round(temperature)}°F` : '--'}
               </div>
               <div className="text-sm font-medium text-gray-600 dark:text-gray-300">

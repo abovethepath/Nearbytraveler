@@ -281,7 +281,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
       <div className="w-full relative overflow-hidden rounded-3xl" data-testid="quick-meetup-widget">
         {/* Animated Gradient Orbs Background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-20 -left-20 w-40 h-40 bg-gradient-to-br from-orange-400 to-red-500 rounded-full opacity-30 blur-3xl animate-float"></div>
+          <div className="absolute -top-20 -left-20 w-40 h-40 bg-gradient-to-br from-orange-300 to-amber-400 rounded-full opacity-25 blur-3xl animate-float"></div>
         </div>
         
         {/* Glass Morphism Card */}
@@ -299,11 +299,11 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
 
   return (
     <div className="w-full relative overflow-hidden rounded-3xl group" data-testid="quick-meetup-widget">
-      {/* Animated Gradient Orbs Background - Energetic Orange/Red Theme */}
+      {/* Animated Gradient Orbs Background - Blue-Orange Brand Theme */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-24 -right-24 w-56 h-56 bg-gradient-to-br from-orange-400 via-red-500 to-pink-500 rounded-full opacity-40 blur-3xl animate-float"></div>
-        <div className="absolute -bottom-24 -left-24 w-56 h-56 bg-gradient-to-br from-pink-400 to-orange-500 rounded-full opacity-40 blur-3xl animate-float-slow"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-gradient-to-br from-red-400 to-orange-400 rounded-full opacity-30 blur-3xl animate-float-slower"></div>
+        <div className="absolute -top-24 -right-24 w-56 h-56 bg-gradient-to-br from-orange-300 via-amber-400 to-orange-400 rounded-full opacity-30 blur-3xl animate-float"></div>
+        <div className="absolute -bottom-24 -left-24 w-56 h-56 bg-gradient-to-br from-blue-300 to-cyan-400 rounded-full opacity-30 blur-3xl animate-float-slow"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-gradient-to-br from-orange-400 to-amber-400 rounded-full opacity-25 blur-3xl animate-float-slower"></div>
       </div>
       
       {/* ENERGETIC PRIMARY CTA - LETS MEET NOW! */}
@@ -316,7 +316,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                 <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-red-500 rounded-full blur-xl opacity-20 animate-pulse"></div>
                 <div className="relative flex items-center justify-center gap-3">
                   <Zap className="h-8 w-8 text-orange-600 dark:text-orange-400 animate-bounce" />
-                  <h3 className="font-black text-2xl bg-gradient-to-r from-orange-600 via-red-600 to-pink-600 bg-clip-text text-transparent">
+                  <h3 className="font-black text-2xl bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
                     LET'S MEET NOW!
                   </h3>
                   <Zap className="h-8 w-8 text-orange-600 dark:text-orange-400 animate-bounce" style={{ animationDelay: '0.2s' }} />
@@ -342,7 +342,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                     setShowCreateForm(true);
                     console.log('🔥 FORM STATE CHANGED TO TRUE');
                   }}
-                  className="w-full text-xl font-black py-6 h-16 bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-orange-600 hover:via-red-600 hover:to-pink-600 text-white border-0 rounded-xl shadow-2xl hover:shadow-orange-300 dark:hover:shadow-orange-900/50 transform hover:scale-105 transition-all duration-300 relative overflow-hidden"
+                  className="w-full text-xl font-black py-6 h-16 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0 rounded-xl shadow-2xl hover:shadow-orange-300 dark:hover:shadow-orange-900/50 transform hover:scale-105 transition-all duration-300 relative overflow-hidden"
                 >
                   <span className="relative z-10 flex items-center justify-center gap-2">
                     🎯 LETS MEET NOW!
@@ -498,7 +498,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
               <Button
                 onClick={handleCreateMeetup}
                 disabled={createMutation.isPending}
-                className="w-full text-lg font-black py-4 h-14 bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 hover:from-orange-600 hover:via-red-600 hover:to-pink-600 text-white border-0 rounded-xl shadow-2xl hover:scale-105 transition-all duration-300 relative overflow-hidden"
+                className="w-full text-lg font-black py-4 h-14 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0 rounded-xl shadow-2xl hover:scale-105 transition-all duration-300 relative overflow-hidden"
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
                   {createMutation.isPending ? '🚀 POSTING...' : '🎯 LETS MEET NOW!'}

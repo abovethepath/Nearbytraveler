@@ -182,7 +182,7 @@ export default function UserCard({
             
             return totalCommon > 0 ? (
               <div className="flex justify-center">
-                <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg inline-block">
+                <div className="bg-gradient-to-r from-blue-500 to-orange-500 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg inline-block">
                   {totalCommon} Things in Common • {matchPercentage}% Match
                 </div>
               </div>

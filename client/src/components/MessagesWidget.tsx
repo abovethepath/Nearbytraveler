@@ -28,8 +28,8 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
     <div className="w-full relative overflow-hidden rounded-3xl group" data-testid="messages-widget">
       {/* Animated Gradient Orbs Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full opacity-30 blur-3xl animate-float"></div>
-        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-30 blur-3xl animate-float-slow"></div>
+        <div className="absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-br from-orange-300 to-amber-400 rounded-full opacity-25 blur-3xl animate-float"></div>
+        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-gradient-to-br from-blue-300 to-cyan-400 rounded-full opacity-25 blur-3xl animate-float-slow"></div>
       </div>
       
       {/* Glass Morphism Card */}
@@ -37,15 +37,15 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
         <CardContent className="p-6">
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-3">
-            <div className="p-2 rounded-xl bg-gradient-to-br from-orange-100 to-pink-100 dark:from-orange-900/30 dark:to-pink-900/30">
+            <div className="p-2 rounded-xl bg-gradient-to-br from-orange-100 to-amber-100 dark:from-orange-900/30 dark:to-amber-900/30">
               <MessageCircle className="w-5 h-5 text-orange-600 dark:text-orange-400" />
             </div>
-            <h3 className="text-2xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent">Messages</h3>
+            <h3 className="text-2xl font-black bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Messages</h3>
           </div>
           <Button 
             variant="outline" 
             size="sm" 
-            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-0 transition-all duration-300 shadow-lg hover:shadow-xl font-semibold rounded-full px-4"
+            className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0 transition-all duration-300 shadow-lg hover:shadow-xl font-semibold rounded-full px-4"
             onClick={(e) => {
               e.stopPropagation();
               setLocation("/requests");
@@ -102,8 +102,8 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
                   }}
                   className={`cursor-pointer rounded-2xl p-4 transition-all duration-300 ${
                     isYourTurn 
-                      ? 'bg-gradient-to-r from-orange-50/80 to-pink-50/80 dark:from-orange-900/30 dark:to-pink-900/30 border-2 border-orange-300 dark:border-orange-500/50 hover:shadow-xl hover:border-orange-400 dark:hover:border-orange-400/60' 
-                      : 'bg-gradient-to-r from-blue-50/60 to-purple-50/60 dark:from-blue-900/20 dark:to-purple-900/20 border border-blue-200/50 dark:border-blue-700/30 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600/50'
+                      ? 'bg-gradient-to-r from-orange-50/80 to-amber-50/80 dark:from-orange-900/30 dark:to-amber-900/30 border-2 border-orange-300 dark:border-orange-500/50 hover:shadow-xl hover:border-orange-400 dark:hover:border-orange-400/60' 
+                      : 'bg-gradient-to-r from-blue-50/60 to-cyan-50/60 dark:from-blue-900/20 dark:to-cyan-900/20 border border-blue-200/50 dark:border-blue-700/30 hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600/50'
                   } backdrop-blur-sm`}
                   data-testid={`message-preview-${index}`}
                 >
@@ -114,7 +114,7 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
                           YOUR TURN
                         </span>
                       )}
-                      <span className="text-sm font-bold bg-gradient-to-r from-blue-700 to-purple-700 dark:from-blue-300 dark:to-purple-300 bg-clip-text text-transparent">
+                      <span className="text-sm font-bold bg-gradient-to-r from-blue-700 to-orange-600 dark:from-blue-300 dark:to-orange-300 bg-clip-text text-transparent">
                         {isFromMe ? `To: ${otherUser?.username || "Unknown"}` : `From: ${otherUser?.username || "Unknown"}`}
                       </span>
                     </div>
