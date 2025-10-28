@@ -35,6 +35,18 @@ export default function CityPage({ cityName }: CityPageProps) {
   const [showAllEvents, setShowAllEvents] = useState(false);
   const [sortBy, setSortBy] = useState("recent");
   
+  // Hero section visibility state
+  const [isHeroVisible, setIsHeroVisible] = useState<boolean>(() => {
+    const saved = localStorage.getItem('hideCityHero');
+    return saved !== 'true'; // Default to visible
+  });
+
+  const toggleHeroVisibility = () => {
+    const newValue = !isHeroVisible;
+    setIsHeroVisible(newValue);
+    localStorage.setItem('hideCityHero', String(!newValue));
+  };
+  
   // Remove lazy loading - load all widgets immediately
   const loadedWidgets = new Set(['stats', 'secrets', 'tips', 'map']);
   const { isAuthenticated } = useAuth();
@@ -256,34 +268,63 @@ export default function CityPage({ cityName }: CityPageProps) {
         </button>
       </div>
       
+      {/* Hero Toggle Button */}
+      {!isHeroVisible && (
+        <div className="mx-4 mt-2 mb-6">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleHeroVisibility}
+            className="text-sm"
+            data-testid="button-show-city-hero"
+          >
+            <ChevronDown className="w-4 h-4 mr-2" />
+            Show City Header
+          </Button>
+        </div>
+      )}
+
       {/* City Header with Griffith Observatory Background */}
-      <div 
-        className="relative mx-4 mt-2 mb-6 rounded-xl overflow-hidden"
-        style={{
-          backgroundRepeat: 'no-repeat'
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
-        <div className="relative z-10 p-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-            <div className="flex-1 min-w-0">
-              {isLAArea && (
-                <Badge className="bg-orange-500 text-white text-xs mb-2">
-                  🌟 Beta Launch City
-                </Badge>
-              )}
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight drop-shadow-lg">
-                {decodedCityName}
-              </h1>
-              <p className="text-white/90 mt-2">Discover everything happening in this amazing city</p>
+      {isHeroVisible && (
+        <div 
+          className="relative mx-4 mt-2 mb-6 rounded-xl overflow-hidden"
+          style={{
+            backgroundRepeat: 'no-repeat'
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
+          <div className="relative z-10 p-6">
+            <div className="absolute top-2 right-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleHeroVisibility}
+                className="text-white/80 hover:text-white hover:bg-white/20 h-8 w-8 p-0"
+                data-testid="button-hide-city-hero"
+              >
+                <X className="w-4 h-4" />
+              </Button>
             </div>
-            <div className="flex items-center gap-2 text-white/90 flex-shrink-0">
-              <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="text-sm sm:text-base">{parsedCityName}</span>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+              <div className="flex-1 min-w-0">
+                {isLAArea && (
+                  <Badge className="bg-orange-500 text-white text-xs mb-2">
+                    🌟 Beta Launch City
+                  </Badge>
+                )}
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight drop-shadow-lg">
+                  {decodedCityName}
+                </h1>
+                <p className="text-white/90 mt-2">Discover everything happening in this amazing city</p>
+              </div>
+              <div className="flex items-center gap-2 text-white/90 flex-shrink-0">
+                <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="text-sm sm:text-base">{parsedCityName}</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Content */}
       <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">

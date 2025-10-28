@@ -52,6 +52,18 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [newActivity, setNewActivity] = useState('');
   const [editingActivityName, setEditingActivityName] = useState('');
 
+  // Hero section visibility state
+  const [isHeroVisible, setIsHeroVisible] = useState<boolean>(() => {
+    const saved = localStorage.getItem('hideMatchInCityHero');
+    return saved !== 'true'; // Default to visible
+  });
+
+  const toggleHeroVisibility = () => {
+    const newValue = !isHeroVisible;
+    setIsHeroVisible(newValue);
+    localStorage.setItem('hideMatchInCityHero', String(!newValue));
+  };
+
   // Fetch all cities on component mount
   useEffect(() => {
     // FORCE RESET - ensure we start with no city selected
@@ -1025,18 +1037,47 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           <div className="w-20" />
         </div>
 
+        {/* Hero Toggle Button */}
+        {!isHeroVisible && (
+          <div className="max-w-4xl mx-auto mb-6">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleHeroVisibility}
+              className="text-sm"
+              data-testid="button-show-match-hero"
+            >
+              <ChevronDown className="w-4 h-4 mr-2" />
+              Show Instructions
+            </Button>
+          </div>
+        )}
+
         {/* Instructions */}
-        <div className="max-w-4xl mx-auto mb-6">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-blue-900 mb-2">🎯 How City Matching Works</h3>
-            <div className="text-sm text-blue-800 space-y-1">
-              <p>• <strong>Choose activities you want to do</strong> → Get matched with others who share your interests</p>
-              <p>• <strong>Add your own activities</strong> → Help others discover new experiences</p>
-              <p>• <strong>Connect with locals & travelers</strong> → Plan meetups and explore together</p>
-              <p>• <strong>Edit or delete outdated activities</strong> → Keep your interests current and relevant</p>
+        {isHeroVisible && (
+          <div className="max-w-4xl mx-auto mb-6 relative">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="absolute top-2 right-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={toggleHeroVisibility}
+                  className="text-gray-600 hover:text-gray-900 h-6 w-6 p-0"
+                  data-testid="button-hide-match-hero"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+              <h3 className="text-lg font-semibold text-blue-900 mb-2">🎯 How City Matching Works</h3>
+              <div className="text-sm text-blue-800 space-y-1">
+                <p>• <strong>Choose activities you want to do</strong> → Get matched with others who share your interests</p>
+                <p>• <strong>Add your own activities</strong> → Help others discover new experiences</p>
+                <p>• <strong>Connect with locals & travelers</strong> → Plan meetups and explore together</p>
+                <p>• <strong>Edit or delete outdated activities</strong> → Keep your interests current and relevant</p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Activity Selection Interface - GORGEOUS RESTORED DESIGN */}
         <div className="max-w-6xl mx-auto">
