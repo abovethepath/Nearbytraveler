@@ -395,11 +395,22 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
   const toggleActivity = async (activity: any) => {
     const storedUser = localStorage.getItem('travelConnectUser');
-    const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
+    const authUser = localStorage.getItem('user');
+    const actualUser = user || (storedUser ? JSON.parse(storedUser) : null) || (authUser ? JSON.parse(authUser) : null);
     const userId = actualUser?.id;
 
+    if (!userId) {
+      console.error('❌ No user ID found');
+      toast({
+        title: "Error",
+        description: "Please log in to manage activities",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const isCurrentlyActive = userActivities.some(ua => ua.activityId === activity.id);
-    console.log('🎯 TOGGLE ACTIVITY:', activity.activityName, 'isCurrentlyActive:', isCurrentlyActive);
+    console.log('🎯 TOGGLE ACTIVITY:', activity.activityName, 'isCurrentlyActive:', isCurrentlyActive, 'userId:', userId);
 
     try {
       if (isCurrentlyActive) {
@@ -407,6 +418,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         const userActivityRecord = userActivities.find(ua => ua.activityId === activity.id);
         if (!userActivityRecord) {
           console.error('❌ Could not find user activity record for activityId:', activity.id);
+          console.error('❌ User activities:', userActivities);
           toast({
             title: "Error",
             description: "Could not find activity record to remove",
@@ -415,7 +427,17 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           return;
         }
         
-        console.log('🗑️ REMOVING: userActivityRecord.id =', userActivityRecord.id, 'activityId =', activity.id);
+        if (!userActivityRecord.id) {
+          console.error('❌ userActivityRecord has no ID:', userActivityRecord);
+          toast({
+            title: "Error",
+            description: "Invalid activity record - missing ID",
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        console.log('🗑️ REMOVING: userActivityRecord.id =', userActivityRecord.id, 'activityId =', activity.id, 'userId =', userId);
         
         // Remove activity using the correct user_city_interests ID
         const response = await fetch(`/api/user-city-interests/${userActivityRecord.id}`, {
@@ -425,6 +447,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           }
         });
         
+        console.log('🗑️ DELETE response status:', response.status, 'ok:', response.ok);
+        
         if (response.ok) {
           console.log('✅ Successfully removed activity');
           // Immediately update local state
@@ -433,8 +457,13 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           await fetchUserActivities();
           // CRITICAL: Invalidate profile page cache so changes appear immediately
           queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
+          
+          toast({
+            title: "Activity Removed",
+            description: `Removed "${activity.activityName}" from your interests`,
+          });
         } else {
-          const error = await response.json();
+          const error = await response.json().catch(() => ({ error: 'Unknown error' }));
           console.error('❌ DELETE failed:', error);
           toast({
             title: "Error",
