@@ -377,22 +377,27 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
               
               <div className="space-y-2 flex-1">
                 {/* HOUR DROPDOWN - MOVED TO TOP FOR VISIBILITY */}
-                <Select 
-                  value={newMeetup.responseTime}
-                  onValueChange={(value) => setNewMeetup(prev => ({ ...prev, responseTime: value }))}
-                >
-                  <SelectTrigger className="h-8 text-xs bg-orange-50 dark:bg-orange-900/20 border-orange-300 dark:border-orange-600 text-gray-900 dark:text-white font-medium">
-                    <SelectValue placeholder="Available for how long?" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
-                    <SelectItem value="1hour">⏰ 1 hour</SelectItem>
-                    <SelectItem value="2hours">⏰ 2 hours</SelectItem>
-                    <SelectItem value="3hours">⏰ 3 hours</SelectItem>
-                    <SelectItem value="6hours">⏰ 6 hours</SelectItem>
-                    <SelectItem value="12hours">⏰ 12 hours</SelectItem>
-                    <SelectItem value="24hours">⏰ Today (24 hours)</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-orange-700 dark:text-orange-400 px-1 flex items-center gap-1">
+                    ⏰ Choose time period:
+                  </label>
+                  <Select 
+                    value={newMeetup.responseTime}
+                    onValueChange={(value) => setNewMeetup(prev => ({ ...prev, responseTime: value }))}
+                  >
+                    <SelectTrigger className="h-12 text-sm bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/30 dark:to-amber-900/30 border-2 border-orange-400/80 dark:border-orange-500/80 text-gray-900 dark:text-white font-bold hover:border-orange-500 dark:hover:border-orange-400 transition-all shadow-md hover:shadow-lg">
+                      <SelectValue placeholder="Available for how long?" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+                      <SelectItem value="1hour">⏰ 1 hour</SelectItem>
+                      <SelectItem value="2hours">⏰ 2 hours</SelectItem>
+                      <SelectItem value="3hours">⏰ 3 hours</SelectItem>
+                      <SelectItem value="6hours">⏰ 6 hours</SelectItem>
+                      <SelectItem value="12hours">⏰ 12 hours</SelectItem>
+                      <SelectItem value="24hours">⏰ Today (24 hours)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
                 <Select 
                   value={isCustomActivity ? "custom" : (newMeetup.title || "custom")}
