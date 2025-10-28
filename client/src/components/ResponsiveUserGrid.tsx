@@ -85,10 +85,8 @@ export default function ResponsiveUserGrid({
       className="group cursor-pointer bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all duration-200 overflow-hidden"
       onClick={() => setLocation(`/profile/${user.id}`)}
     >
-      {/* BRIGHT RED TEST BANNER - This should be VERY visible */}
-      <div className="h-24 bg-gradient-to-r from-red-600 via-pink-600 to-orange-600 flex items-center justify-center">
-        <span className="text-white font-black text-2xl">NEW DESIGN</span>
-      </div>
+      {/* Cover Background */}
+      <div className="h-16 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500"></div>
       
       {/* Content */}
       <div className="px-6 pb-6 -mt-12 text-center">
