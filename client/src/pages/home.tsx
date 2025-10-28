@@ -1776,9 +1776,9 @@ export default function Home() {
           
           {/* Main Content - Center column */}
           <div className="col-span-1 lg:col-span-2 space-y-3 sm:space-y-4 md:space-y-8 min-w-0">
-            <div className="flex items-center justify-between" data-testid="discover-people-section">
+            <div className="flex items-center justify-between mb-6" data-testid="discover-people-section">
               <div className="flex items-center gap-2 sm:gap-4">
-                <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent">
                   {activeFilter === "travel-dates" 
                     ? `Travel Connections to ${user?.travelDestination}` 
                     : "Discover People"
