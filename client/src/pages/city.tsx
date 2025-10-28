@@ -287,12 +287,12 @@ export default function CityPage({ cityName }: CityPageProps) {
       {/* City Header with Griffith Observatory Background */}
       {isHeroVisible && (
         <div 
-          className="relative mx-4 mt-2 mb-6 rounded-xl overflow-hidden"
+          className="relative mx-4 mt-2 mb-6 rounded-xl overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-700 to-orange-600 dark:from-blue-900 dark:via-indigo-900 dark:to-orange-900"
           style={{
             backgroundRepeat: 'no-repeat'
           }}
         >
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent dark:from-black/80 dark:via-black/50 dark:to-black/20" />
           <div className="relative z-10 p-6">
             <div className="absolute top-2 right-2">
               <Button
