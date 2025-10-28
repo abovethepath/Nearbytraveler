@@ -131,6 +131,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
       sharedActivities: string[];
       sharedEvents: string[];
       sharedCityActivities: string[];
+      sharedCityActivitiesWithCity?: { activity: string; city: string }[];
       sharedSexualPreferences: string[];
       bothVeterans: boolean;
       bothActiveDuty: boolean;
@@ -144,6 +145,8 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
       sameGender: boolean;
       sameTravelStyle: boolean;
       otherCommonalities: string[];
+      mutualConnections?: any[];
+      mutualConnectionsCount?: number;
       totalCount: number;
       compatibilityPercentage: number;
     } = {
@@ -151,6 +154,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
       sharedActivities: [],
       sharedEvents: [],
       sharedCityActivities: [],
+      sharedCityActivitiesWithCity: [],
       sharedSexualPreferences: [],
       bothVeterans: false,
       bothActiveDuty: false,
@@ -189,14 +193,26 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
       );
     }
 
-    // Shared city activities
-    const currentCityActivities = Array.isArray(currentUserCityInterests) ? 
-      currentUserCityInterests.map((interest: any) => interest.activityName) : [];
-    const otherCityActivities = Array.isArray(otherUserCityInterests) ? 
-      otherUserCityInterests.map((interest: any) => interest.activityName) : [];
-    commonalities.sharedCityActivities = currentCityActivities.filter(activity =>
-      otherCityActivities.includes(activity)
-    );
+    // Shared city activities - preserve city context
+    const sharedCityActivitiesWithCity: { activity: string; city: string }[] = [];
+    
+    if (Array.isArray(currentUserCityInterests) && Array.isArray(otherUserCityInterests)) {
+      currentUserCityInterests.forEach((currentInterest: any) => {
+        otherUserCityInterests.forEach((otherInterest: any) => {
+          // Check if it's the same city and same activity
+          if (currentInterest.cityName === otherInterest.cityName && 
+              currentInterest.activityName === otherInterest.activityName) {
+            sharedCityActivitiesWithCity.push({
+              activity: currentInterest.activityName,
+              city: currentInterest.cityName
+            });
+          }
+        });
+      });
+    }
+    
+    commonalities.sharedCityActivities = sharedCityActivitiesWithCity.map(item => item.activity);
+    commonalities.sharedCityActivitiesWithCity = sharedCityActivitiesWithCity;
 
     // Shared sexual preferences
     if (currentUser.sexualPreference && otherUser.sexualPreference) {
@@ -408,7 +424,8 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
     const currentUserInterests = Math.max((currentUser.interests?.length || 0), 1);
     const currentUserActivities = Math.max((currentUser.activities?.length || 0), 1);
     const currentUserEvents = Math.max((currentUser.events?.length || 0), 1);
-    const currentUserCityActivities = Math.max(currentCityActivities.length, 1);
+    const currentUserCityActivitiesCount = Array.isArray(currentUserCityInterests) ? currentUserCityInterests.length : 1;
+    const currentUserCityActivities = Math.max(currentUserCityActivitiesCount, 1);
 
     // Weighted compatibility score calculation (from current user's perspective)
     const interestScore = (commonalities.sharedInterests.length / currentUserInterests) * 30;
@@ -573,22 +590,33 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
           </div>
         )}
 
-        {/* Shared City Activities */}
-        {commonalities.sharedCityActivities.length > 0 && (
-          <div className="bg-gradient-to-r from-orange-50 to-yellow-50 dark:bg-gradient-to-r dark:from-orange-900/30 dark:to-yellow-900/30 rounded-lg p-3 border border-orange-200 dark:border-orange-600">
-            <h5 className="font-bold text-black dark:text-white mb-3 flex items-center gap-1 text-base">
-              <MapPin className="w-5 h-5 text-orange-500" />
-              Things You Both Want to Do ({commonalities.sharedCityActivities.length})
-            </h5>
-            <div className="flex flex-wrap gap-2">
-              {commonalities.sharedCityActivities.map((activity, index) => (
-                <Badge key={`shared-city-activity-${activity}-${index}`} className="bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-900 dark:text-orange-200 dark:border-orange-700 font-medium">
-                  ✓ {activity}
-                </Badge>
-              ))}
+        {/* Shared City Activities - Grouped by City */}
+        {commonalities.sharedCityActivities.length > 0 && commonalities.sharedCityActivitiesWithCity && (() => {
+          // Group activities by city
+          const activitiesByCity: { [city: string]: string[] } = {};
+          commonalities.sharedCityActivitiesWithCity.forEach(item => {
+            if (!activitiesByCity[item.city]) {
+              activitiesByCity[item.city] = [];
+            }
+            activitiesByCity[item.city].push(item.activity);
+          });
+          
+          return Object.entries(activitiesByCity).map(([city, activities]) => (
+            <div key={`city-${city}`} className="bg-gradient-to-r from-orange-50 to-yellow-50 dark:bg-gradient-to-r dark:from-orange-900/30 dark:to-yellow-900/30 rounded-lg p-3 border border-orange-200 dark:border-orange-600">
+              <h5 className="font-bold text-black dark:text-white mb-3 flex items-center gap-1 text-base">
+                <MapPin className="w-5 h-5 text-orange-500" />
+                Things You Both Want to Do in {city} ({activities.length})
+              </h5>
+              <div className="flex flex-wrap gap-2">
+                {activities.map((activity, index) => (
+                  <Badge key={`shared-city-activity-${city}-${activity}-${index}`} className="bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-900 dark:text-orange-200 dark:border-orange-700 font-medium">
+                    ✓ {activity}
+                  </Badge>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          ));
+        })()}
 
         {/* Shared Events */}
         {commonalities.sharedEvents.length > 0 && (
