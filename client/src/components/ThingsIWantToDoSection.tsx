@@ -336,7 +336,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                   {/* Activity Pills */}
                   {cityData.activities.map((activity) => (
                     <div key={`act-${activity.id}`} className="relative group">
-                      <div className="inline-flex items-center justify-center rounded-full px-3 py-1 text-xs font-medium bg-white text-black border border-black h-6 min-w-[4rem] leading-none whitespace-nowrap">
+                      <div className="inline-flex items-center justify-center rounded-full px-4 py-1.5 text-xs font-medium bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-100 border border-gray-300 dark:border-gray-500 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm">
                         {activity.activityName}
                       </div>
                       {isOwnProfile && (
@@ -354,7 +354,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                   {/* Event Pills */}
                   {cityData.events.map((event) => (
                     <div key={`evt-${event.id}`} className="relative group">
-                      <div className="inline-flex items-center justify-center rounded-full px-3 py-1 text-xs font-medium bg-white text-black border border-black h-6 min-w-[4rem] leading-none whitespace-nowrap">
+                      <div className="inline-flex items-center justify-center rounded-full px-4 py-1.5 text-xs font-medium bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-100 border border-gray-300 dark:border-gray-500 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm">
                         📅 {event.eventTitle || (event as any).title}
                       </div>
                       {isOwnProfile && (
