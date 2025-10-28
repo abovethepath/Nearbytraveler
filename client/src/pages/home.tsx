@@ -1428,7 +1428,7 @@ export default function Home() {
 {isHeroVisible && (
 <section className="relative py-8 sm:py-12 lg:py-20 overflow-hidden">
   {/* Dramatic animated gradient background */}
-  <div className="absolute inset-0 bg-gradient-to-br from-blue-100 via-purple-50 to-orange-100 dark:from-gray-900 dark:via-indigo-950 dark:to-gray-900"></div>
+  <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-orange-100 dark:from-gray-900 dark:to-gray-900"></div>
   
   {/* DRAMATIC Floating orbs - highly visible animated background */}
   <div className="absolute inset-0 opacity-70 dark:opacity-60 pointer-events-none overflow-hidden">
@@ -1436,16 +1436,16 @@ export default function Home() {
     <div className="absolute -top-20 -left-20 w-[500px] h-[500px] bg-gradient-to-br from-blue-500 via-cyan-400 to-blue-600 rounded-full blur-3xl animate-float-slow opacity-80"></div>
     
     {/* Huge orange orb - bottom right */}
-    <div className="absolute -bottom-32 -right-32 w-[600px] h-[600px] bg-gradient-to-br from-orange-500 via-pink-500 to-red-500 rounded-full blur-3xl animate-float-slower opacity-75"></div>
+    <div className="absolute -bottom-32 -right-32 w-[600px] h-[600px] bg-gradient-to-br from-orange-400 via-amber-400 to-orange-500 rounded-full blur-3xl animate-float-slower opacity-60"></div>
     
-    {/* Medium purple orb - center */}
-    <div className="absolute top-1/3 left-1/3 w-[400px] h-[400px] bg-gradient-to-br from-purple-500 via-indigo-400 to-purple-600 rounded-full blur-3xl animate-float opacity-70"></div>
+    {/* Medium cyan orb - center */}
+    <div className="absolute top-1/3 left-1/3 w-[400px] h-[400px] bg-gradient-to-br from-cyan-400 via-blue-400 to-cyan-500 rounded-full blur-3xl animate-float opacity-50"></div>
     
     {/* Small accent orb - top right */}
     <div className="absolute top-10 right-20 w-[300px] h-[300px] bg-gradient-to-br from-cyan-400 via-blue-300 to-cyan-500 rounded-full blur-2xl animate-float-slow opacity-60"></div>
     
     {/* Small accent orb - bottom left */}
-    <div className="absolute bottom-10 left-20 w-[350px] h-[350px] bg-gradient-to-br from-pink-400 via-orange-300 to-pink-500 rounded-full blur-2xl animate-float-slower opacity-65"></div>
+    <div className="absolute bottom-10 left-20 w-[350px] h-[350px] bg-gradient-to-br from-amber-300 via-orange-300 to-amber-400 rounded-full blur-2xl animate-float-slower opacity-50"></div>
   </div>
 
   {isMobile ? (
@@ -1454,13 +1454,13 @@ export default function Home() {
       {/* DRAMATIC Glass morphism badge */}
       <div className="inline-flex items-center gap-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-2 border-blue-500/30 dark:border-orange-500/30 rounded-full px-8 py-3 mb-8 shadow-2xl">
         <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full animate-pulse shadow-lg shadow-blue-500/50"></div>
-        <span className="text-base font-black bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent">Connect • Discover • Experience</span>
+        <span className="text-base font-black bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Connect • Discover • Experience</span>
       </div>
 
       <h1 className="text-4xl sm:text-5xl font-black leading-tight mb-8 px-2 drop-shadow-2xl">
         {effectiveUser?.userType === "business" ? (
           <>
-            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent animate-gradient drop-shadow-xl">Nearby Traveler</span>
+            <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent animate-gradient drop-shadow-xl">Nearby Traveler</span>
             <br />
             <span className="text-3xl sm:text-4xl text-gray-900 dark:text-white drop-shadow-lg">Connect Your Business</span>
             <br />
@@ -1468,7 +1468,7 @@ export default function Home() {
           </>
         ) : (
           <>
-            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent animate-gradient drop-shadow-xl">Nearby Traveler</span>
+            <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent animate-gradient drop-shadow-xl">Nearby Traveler</span>
             <br />
             <span className="text-3xl sm:text-4xl text-gray-900 dark:text-white drop-shadow-lg">Connect with Travelers</span>
             <br />
@@ -1481,7 +1481,7 @@ export default function Home() {
       <div className="mb-8 flex justify-center px-4">
         <div className="relative w-full max-w-sm group">
           {/* Glow effect behind */}
-          <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500 rounded-2xl opacity-75 blur-lg group-hover:opacity-100 transition duration-500"></div>
+          <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-orange-500 rounded-2xl opacity-75 blur-lg group-hover:opacity-100 transition duration-500"></div>
           
           {/* Main image with glass morphism overlay */}
           <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/20">
@@ -1616,7 +1616,7 @@ export default function Home() {
                 </div>
                 
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
+                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
                     <MessageCircle className="w-6 h-6 text-white" />
                   </div>
                   <div>
@@ -1672,7 +1672,7 @@ export default function Home() {
                 </div>
                 
                 <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
+                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
                     <MessageCircle className="w-6 h-6 text-white" />
                   </div>
                   <div>
@@ -1708,7 +1708,7 @@ export default function Home() {
             {/* Enhanced image container */}
             <div className="relative">
               {/* Subtle background glow */}
-              <div className="absolute -inset-3 bg-gradient-to-r from-blue-200/30 via-purple-200/30 to-orange-200/30 dark:from-blue-900/20 dark:via-purple-900/20 dark:to-orange-900/20 rounded-3xl blur-lg"></div>
+              <div className="absolute -inset-3 bg-gradient-to-r from-blue-200/30 to-orange-200/30 dark:from-blue-900/20 dark:to-orange-900/20 rounded-3xl blur-lg"></div>
               
               {/* Main image - standardized height matching landing page */}
               <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-xl overflow-hidden shadow-xl border border-gray-200/50 dark:border-gray-700/50 transform group-hover:scale-[1.02] transition-all duration-300">

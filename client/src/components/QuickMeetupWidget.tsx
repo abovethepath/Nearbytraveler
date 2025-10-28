@@ -289,7 +289,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
           <CardContent className="p-4 bg-transparent">
             <div className="flex items-center gap-2">
               <Zap className="h-4 w-4 text-orange-500 animate-pulse" />
-              <span className="text-sm font-medium bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">Loading quick meetups...</span>
+              <span className="text-sm font-medium bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Loading quick meetups...</span>
             </div>
           </CardContent>
         </Card>
@@ -313,7 +313,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
             <div className="text-center space-y-4">
               <div className="relative">
                 {/* Animated background effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-red-500 rounded-full blur-xl opacity-20 animate-pulse"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-orange-400 rounded-full blur-xl opacity-20 animate-pulse"></div>
                 <div className="relative flex items-center justify-center gap-3">
                   <Zap className="h-8 w-8 text-orange-600 dark:text-orange-400 animate-bounce" />
                   <h3 className="font-black text-2xl bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
@@ -363,7 +363,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Zap className="h-6 w-6 text-orange-500 animate-bounce" />
-                  <h4 className="font-bold text-lg bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">🚀 LET'S DO THIS!</h4>
+                  <h4 className="font-bold text-lg bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">🚀 LET'S DO THIS!</h4>
                 </div>
                 <Button
                   onClick={() => setShowCreateForm(false)}
