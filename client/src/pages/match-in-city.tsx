@@ -718,6 +718,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
     const userId = actualUser?.id;
     
+    console.log('🗑️ DELETE ACTIVITY: userActivityId:', userActivityId, 'userId:', userId);
+    
     try {
       const response = await fetch(`/api/user-city-interests/${userActivityId}`, {
         method: 'DELETE',
@@ -725,6 +727,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           'x-user-id': userId.toString()
         }
       });
+
+      console.log('🗑️ DELETE RESPONSE:', response.status, response.ok);
 
       if (response.ok) {
         setUserActivities(prev => prev.filter(ua => ua.id !== userActivityId));
@@ -745,6 +749,14 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         toast({
           title: "Activity Removed",
           description: "Removed from your interests",
+        });
+      } else {
+        const error = await response.json();
+        console.error('🗑️ DELETE FAILED:', error);
+        toast({
+          title: "Error",
+          description: error.error || "Failed to remove activity",
+          variant: "destructive",
         });
       }
     } catch (error) {
