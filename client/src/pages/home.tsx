@@ -1427,41 +1427,52 @@ export default function Home() {
 {/* HERO SECTION — Modern Glass Morphism Design 2025 */}
 {isHeroVisible && (
 <section className="relative py-8 sm:py-12 lg:py-20 overflow-hidden">
-  {/* Animated gradient background */}
-  <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900"></div>
+  {/* Dramatic animated gradient background */}
+  <div className="absolute inset-0 bg-gradient-to-br from-blue-100 via-purple-50 to-orange-100 dark:from-gray-900 dark:via-indigo-950 dark:to-gray-900"></div>
   
-  {/* Floating orbs - animated background elements */}
-  <div className="absolute inset-0 opacity-40 dark:opacity-20 pointer-events-none">
-    <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full blur-3xl animate-float-slow"></div>
-    <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-orange-400 to-pink-400 rounded-full blur-3xl animate-float-slower"></div>
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-purple-300 to-indigo-300 rounded-full blur-3xl animate-float"></div>
+  {/* DRAMATIC Floating orbs - highly visible animated background */}
+  <div className="absolute inset-0 opacity-70 dark:opacity-60 pointer-events-none overflow-hidden">
+    {/* Large blue orb - top left */}
+    <div className="absolute -top-20 -left-20 w-[500px] h-[500px] bg-gradient-to-br from-blue-500 via-cyan-400 to-blue-600 rounded-full blur-3xl animate-float-slow opacity-80"></div>
+    
+    {/* Huge orange orb - bottom right */}
+    <div className="absolute -bottom-32 -right-32 w-[600px] h-[600px] bg-gradient-to-br from-orange-500 via-pink-500 to-red-500 rounded-full blur-3xl animate-float-slower opacity-75"></div>
+    
+    {/* Medium purple orb - center */}
+    <div className="absolute top-1/3 left-1/3 w-[400px] h-[400px] bg-gradient-to-br from-purple-500 via-indigo-400 to-purple-600 rounded-full blur-3xl animate-float opacity-70"></div>
+    
+    {/* Small accent orb - top right */}
+    <div className="absolute top-10 right-20 w-[300px] h-[300px] bg-gradient-to-br from-cyan-400 via-blue-300 to-cyan-500 rounded-full blur-2xl animate-float-slow opacity-60"></div>
+    
+    {/* Small accent orb - bottom left */}
+    <div className="absolute bottom-10 left-20 w-[350px] h-[350px] bg-gradient-to-br from-pink-400 via-orange-300 to-pink-500 rounded-full blur-2xl animate-float-slower opacity-65"></div>
   </div>
 
   {isMobile ? (
     // Mobile: Modern vertical layout with glass morphism
     <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
-      {/* Glass morphism badge */}
-      <div className="inline-flex items-center gap-2 bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl border border-white/20 dark:border-gray-700/20 rounded-full px-6 py-2 mb-6 shadow-lg">
-        <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full animate-pulse"></div>
-        <span className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Connect • Discover • Experience</span>
+      {/* DRAMATIC Glass morphism badge */}
+      <div className="inline-flex items-center gap-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-2 border-blue-500/30 dark:border-orange-500/30 rounded-full px-8 py-3 mb-8 shadow-2xl">
+        <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full animate-pulse shadow-lg shadow-blue-500/50"></div>
+        <span className="text-base font-black bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent">Connect • Discover • Experience</span>
       </div>
 
-      <h1 className="text-3xl sm:text-4xl font-black text-black dark:text-white leading-tight mb-6 px-2">
+      <h1 className="text-4xl sm:text-5xl font-black leading-tight mb-8 px-2 drop-shadow-2xl">
         {effectiveUser?.userType === "business" ? (
           <>
-            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent animate-gradient">Nearby Traveler</span>
+            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent animate-gradient drop-shadow-xl">Nearby Traveler</span>
             <br />
-            <span className="text-2xl sm:text-3xl">Connect Your Business</span>
+            <span className="text-3xl sm:text-4xl text-gray-900 dark:text-white drop-shadow-lg">Connect Your Business</span>
             <br />
-            <span className="text-2xl sm:text-3xl">with Travelers & Locals</span>
+            <span className="text-3xl sm:text-4xl text-gray-900 dark:text-white drop-shadow-lg">with Travelers & Locals</span>
           </>
         ) : (
           <>
-            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent animate-gradient">Nearby Traveler</span>
+            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent animate-gradient drop-shadow-xl">Nearby Traveler</span>
             <br />
-            <span className="text-2xl sm:text-3xl">Connect with Travelers</span>
+            <span className="text-3xl sm:text-4xl text-gray-900 dark:text-white drop-shadow-lg">Connect with Travelers</span>
             <br />
-            <span className="text-2xl sm:text-3xl">& Locals Worldwide</span>
+            <span className="text-3xl sm:text-4xl text-gray-900 dark:text-white drop-shadow-lg">& Locals Worldwide</span>
           </>
         )}
       </h1>
