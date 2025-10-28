@@ -403,17 +403,42 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
     try {
       if (isCurrentlyActive) {
-        // Remove activity
-        const response = await fetch(`/api/user-city-interests/${activity.id}`, {
+        // Find the user_city_interests record ID (not the activity ID!)
+        const userActivityRecord = userActivities.find(ua => ua.activityId === activity.id);
+        if (!userActivityRecord) {
+          console.error('❌ Could not find user activity record for activityId:', activity.id);
+          toast({
+            title: "Error",
+            description: "Could not find activity record to remove",
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        console.log('🗑️ REMOVING: userActivityRecord.id =', userActivityRecord.id, 'activityId =', activity.id);
+        
+        // Remove activity using the correct user_city_interests ID
+        const response = await fetch(`/api/user-city-interests/${userActivityRecord.id}`, {
           method: 'DELETE',
           headers: {
             'x-user-id': userId.toString()
           }
         });
+        
         if (response.ok) {
-          // Toast removed - silent toggle as requested
+          console.log('✅ Successfully removed activity');
           // Immediately update local state
           setUserActivities(prev => prev.filter(ua => ua.activityId !== activity.id));
+          // Refresh to sync with database
+          await fetchUserActivities();
+        } else {
+          const error = await response.json();
+          console.error('❌ DELETE failed:', error);
+          toast({
+            title: "Error",
+            description: error.error || "Failed to remove activity",
+            variant: "destructive",
+          });
         }
       } else {
         // Add activity
@@ -430,9 +455,19 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         });
         if (response.ok) {
           const newInterest = await response.json();
-          // Toast removed - silent toggle as requested
+          console.log('✅ Successfully added activity:', newInterest);
           // Immediately update local state
           setUserActivities(prev => [...prev, newInterest]);
+          // Refresh to sync with database
+          await fetchUserActivities();
+        } else {
+          const error = await response.json();
+          console.error('❌ POST failed:', error);
+          toast({
+            title: "Error",
+            description: error.error || "Failed to add activity",
+            variant: "destructive",
+          });
         }
       }
       fetchMatchingUsers();
