@@ -13,11 +13,16 @@ export const STATIC_CITY_ACTIVITIES: Record<string, Array<{name: string, descrip
     { name: "Staten Island Ferry", description: "Free ride with Statue of Liberty views", category: "transport" },
     { name: "Museum Hopping", description: "Visit world-renowned museums like MoMA, Met", category: "culture" },
     { name: "Little Italy Food Tour", description: "Taste authentic Italian-American cuisine", category: "food" },
+    { name: "Lower East Side Food Tour", description: "Explore Jewish delis, trendy eateries, and cultural history", category: "food" },
     { name: "Chinatown Exploration", description: "Discover authentic Asian culture and food", category: "culture" },
     { name: "Wall Street & Financial District", description: "See the heart of American finance", category: "business" },
+    { name: "Rockefeller Center", description: "Top of the Rock observation deck and iconic plaza", category: "landmarks" },
     { name: "TKTS Booth", description: "Get discounted Broadway show tickets", category: "entertainment" },
     { name: "Williamsburg Bridge Walk", description: "Cross between Manhattan and Brooklyn", category: "outdoor" },
-    { name: "Battery Park City Walk", description: "Waterfront parks with harbor views", category: "outdoor" }
+    { name: "Battery Park City Walk", description: "Waterfront parks with harbor views", category: "outdoor" },
+    { name: "One World Observatory", description: "Stunning views from tallest building in Western Hemisphere", category: "landmarks" },
+    { name: "Hudson Yards & The Vessel", description: "Modern architectural marvel and shopping destination", category: "landmarks" },
+    { name: "SoHo Shopping", description: "Cobblestone streets with designer boutiques and art galleries", category: "shopping" }
   ],
 
   "Los Angeles": [
@@ -48,9 +53,11 @@ export const STATIC_CITY_ACTIVITIES: Record<string, Array<{name: string, descrip
     // CULTURAL ATTRACTIONS
     { name: "Getty Center", description: "World-class art museum with architecture and stunning city views", category: "culture" },
     { name: "Getty Villa", description: "Ancient art in a stunning recreated Roman villa", category: "culture" },
+    { name: "The Broad Museum", description: "Contemporary art museum with Yayoi Kusama infinity rooms", category: "culture" },
     { name: "Los Angeles County Museum of Art", description: "Largest art museum in the western United States", category: "culture" },
     { name: "Griffith Observatory", description: "Iconic observatory with planetarium and Hollywood Sign views", category: "landmarks" },
     { name: "Walt Disney Concert Hall", description: "Frank Gehry's architectural masterpiece and home to LA Phil", category: "culture" },
+    { name: "Museum of Contemporary Art", description: "MOCA showcases cutting-edge modern art", category: "culture" },
     
     // SHOPPING & LUXURY
     { name: "Rodeo Drive", description: "World-famous luxury shopping street in Beverly Hills", category: "shopping" },
