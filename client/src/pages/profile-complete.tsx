@@ -6190,7 +6190,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 data-testid="travel-content"
               >
                 {/* Travel Plans Widget - No wrapper needed, widget has its own styling */}
-                <TravelPlansWidget userId={effectiveUserId} />
+                <TravelPlansWidget userId={effectiveUserId} isOwnProfile={isOwnProfile} />
               </div>
             )}
 
