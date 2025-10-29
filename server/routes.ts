@@ -1418,7 +1418,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         );
 
       // FIXED: Count ALL traveler associations with this city
-      // 1. Travelers with travel plans TO this city
+      // Count ACTIVE travelers (users with current/active travel plans to this city, regardless of userType)
+      const today = new Date();
       const travelerUsersWithPlansResult = await db
         .select({ count: count() })
         .from(travelPlans)
@@ -1426,22 +1427,23 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         .where(
           and(
             or(...searchCities.map(searchCity => ilike(travelPlans.destination, `%${searchCity}%`))),
-            eq(users.userType, 'traveler') // Only count actual traveler users
+            // Count active trips: today is between start_date and end_date
+            sql`${travelPlans.startDate} <= ${today} AND ${travelPlans.endDate} >= ${today}`
           )
         );
 
-      // 2. Travelers currently traveling TO this city (travelDestination field)
+      // 2. Travelers currently traveling TO this city (travelDestination field) - permanent travelers
       const currentTravelersToResult = await db
         .select({ count: count() })
         .from(users)
         .where(
           and(
             or(...searchCities.map(searchCity => ilike(users.travelDestination, `%${searchCity}%`))),
-            eq(users.userType, 'traveler') // Only count actual traveler users
+            eq(users.userType, 'traveler') // Only permanent travelers
           )
         );
 
-      // 3. Travelers with destinationCity field (direct field match)
+      // 3. Travelers with destinationCity field (direct field match) - permanent travelers
       const travelersWithDestinationResult = await db
         .select({ count: count() })
         .from(users)
@@ -1452,7 +1454,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           )
         );
 
-      // 4. Travelers FROM this city (hometown = city, userType = traveler)
+      // 4. Travelers FROM this city (hometown = city, userType = traveler) - permanent travelers
       const travelersFromCityResult = await db
         .select({ count: count() })
         .from(users)
