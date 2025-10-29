@@ -472,7 +472,7 @@ export default function Events() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950 max-w-full overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950 w-full max-w-[100vw] overflow-x-hidden box-border">
       {/* MobileNav removed - using global MobileTopNav and MobileBottomNav */}
       {/* HERO SECTION — Airbnb Style Layout (Landing Page Layout) */}
       <section className="bg-white dark:bg-gray-900 py-8 sm:py-12 lg:py-16">
@@ -670,7 +670,7 @@ export default function Events() {
         </div>
       </div>
       
-      <div className="w-full max-w-7xl mx-auto px-2 sm:px-6 py-8">
+      <div className="w-full max-w-full px-2 sm:px-4 sm:max-w-7xl sm:mx-auto py-8 box-border">
 
         {/* Navigation Tabs - Removed "My Events" */}
         <div className="flex flex-wrap justify-center gap-2 mb-6 px-2">
@@ -1084,11 +1084,11 @@ export default function Events() {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-6 max-w-full">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-6 w-full max-w-full box-border">
                   {filteredUpcomingEvents.map((event) => (
                     <Card 
                       key={event.id} 
-                      className="cursor-pointer hover:shadow-lg transition-shadow duration-200 w-full overflow-hidden"
+                      className="cursor-pointer hover:shadow-lg transition-shadow duration-200 w-full min-w-0 overflow-hidden box-border"
                       onClick={() => setLocation(`/events/${event.id}`)}
                     >
                       <CardHeader className="pb-3">
@@ -1215,7 +1215,7 @@ export default function Events() {
             {filteredPastEvents.length > 0 && (
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Past Events</h2>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-6 max-w-full">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-6 w-full max-w-full box-border">
                   {filteredPastEvents.map((event) => (
                     <Card 
                       key={event.id} 
@@ -1362,7 +1362,7 @@ export default function Events() {
 
             {meetupLoading && (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-6 max-w-full">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-6 w-full max-w-full box-border">
                   {[...Array(6)].map((_, i) => (
                     <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse">
                       <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
@@ -1377,7 +1377,7 @@ export default function Events() {
             {!meetupLoading && (
               <>
                 {meetupEvents.events && meetupEvents.events.length > 0 ? (
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-6 max-w-full">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-6 w-full max-w-full box-border">
                     {meetupEvents.events.map((event: any) => (
                       <Card key={event.id} className="hover:shadow-lg transition-shadow duration-200 border border-gray-200 w-full overflow-hidden">
                         <CardContent className="p-6">
