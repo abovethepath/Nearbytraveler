@@ -765,7 +765,7 @@ export default function Events() {
 
 
         {selectedTab === 'explore' && (
-        <div className="space-y-6">
+        <div className="space-y-6 max-w-full overflow-x-hidden px-3 sm:px-0">
 
           {/* Show loading skeleton immediately while data loads */}
           {isLoading && (
@@ -774,7 +774,7 @@ export default function Events() {
                 <div className="w-full md:w-64 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
                 <div className="w-full md:w-64 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-6 max-w-full">
                 {[...Array(6)].map((_, i) => (
                   <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse">
                     <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
@@ -1084,7 +1084,7 @@ export default function Events() {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-6 max-w-full">
                   {filteredUpcomingEvents.map((event) => (
                     <Card 
                       key={event.id} 
@@ -1215,7 +1215,7 @@ export default function Events() {
             {filteredPastEvents.length > 0 && (
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Past Events</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-6 max-w-full">
                   {filteredPastEvents.map((event) => (
                     <Card 
                       key={event.id} 
@@ -1350,7 +1350,7 @@ export default function Events() {
 
         {/* Meetup Events Tab */}
         {selectedTab === 'meetup' && (
-          <div className="space-y-6">
+          <div className="space-y-6 max-w-full overflow-x-hidden px-3 sm:px-0">
             <div className="text-center mb-6">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                 Local Meetups in {cityToQuery}
@@ -1362,7 +1362,7 @@ export default function Events() {
 
             {meetupLoading && (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-6 max-w-full">
                   {[...Array(6)].map((_, i) => (
                     <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse">
                       <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
@@ -1377,9 +1377,9 @@ export default function Events() {
             {!meetupLoading && (
               <>
                 {meetupEvents.events && meetupEvents.events.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-6 max-w-full">
                     {meetupEvents.events.map((event: any) => (
-                      <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200">
+                      <Card key={event.id} className="hover:shadow-lg transition-shadow duration-200 border border-gray-200 w-full overflow-hidden">
                         <CardContent className="p-6">
                           <div className="flex items-start flex-wrap gap-2 mb-3">
                             <Badge className="bg-green-100 text-green-800">
