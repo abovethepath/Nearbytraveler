@@ -33,7 +33,7 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
       </div>
       
       {/* Glass Morphism Card */}
-      <Card className="relative backdrop-blur-sm bg-white/60 dark:bg-gray-900/60 border border-white/30 dark:border-gray-700/30 shadow-2xl transition-all duration-300 group-hover:shadow-3xl group-hover:bg-white/70 dark:group-hover:bg-gray-900/70">
+      <Card className="relative backdrop-blur-sm bg-white/90 dark:bg-gray-900/60 border-2 border-gray-300 dark:border-gray-700/30 shadow-2xl transition-all duration-300 group-hover:shadow-3xl group-hover:bg-white/95 dark:group-hover:bg-gray-900/70">
         <CardContent className="p-6">
         <div className="mb-4">
           <div className="flex items-center gap-2 mb-3">

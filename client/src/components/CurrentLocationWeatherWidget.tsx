@@ -209,7 +209,7 @@ export default function CurrentLocationWeatherWidget() {
         </div>
         
         {/* Glass Morphism Card */}
-        <Card className="relative backdrop-blur-sm bg-white/60 dark:bg-gray-900/60 border border-white/30 dark:border-gray-700/30 shadow-2xl">
+        <Card className="relative backdrop-blur-sm bg-white/90 dark:bg-gray-900/60 border-2 border-gray-300 dark:border-gray-700/30 shadow-2xl">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent font-bold">
               <MapPin className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" />
@@ -238,7 +238,7 @@ export default function CurrentLocationWeatherWidget() {
         </div>
         
         {/* Glass Morphism Card */}
-        <Card className="relative backdrop-blur-sm bg-white/60 dark:bg-gray-900/60 border border-white/30 dark:border-gray-700/30 shadow-2xl">
+        <Card className="relative backdrop-blur-sm bg-white/90 dark:bg-gray-900/60 border-2 border-gray-300 dark:border-gray-700/30 shadow-2xl">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent font-bold">
               <MapPin className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" />
@@ -271,7 +271,7 @@ export default function CurrentLocationWeatherWidget() {
         </div>
         
         {/* Glass Morphism Card */}
-        <Card className="relative backdrop-blur-sm bg-white/60 dark:bg-gray-900/60 border border-white/30 dark:border-gray-700/30 shadow-2xl">
+        <Card className="relative backdrop-blur-sm bg-white/90 dark:bg-gray-900/60 border-2 border-gray-300 dark:border-gray-700/30 shadow-2xl">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent font-bold">
               <MapPin className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" />
@@ -317,7 +317,7 @@ export default function CurrentLocationWeatherWidget() {
       </div>
       
       {/* Glass Morphism Card with Hover Effect */}
-      <Card className="relative backdrop-blur-sm bg-white/60 dark:bg-gray-900/60 border border-white/30 dark:border-gray-700/30 shadow-2xl transition-all duration-300 group-hover:shadow-3xl group-hover:bg-white/70 dark:group-hover:bg-gray-900/70">
+      <Card className="relative backdrop-blur-sm bg-white/90 dark:bg-gray-900/60 border-2 border-gray-300 dark:border-gray-700/30 shadow-2xl transition-all duration-300 group-hover:shadow-3xl group-hover:bg-white/95 dark:group-hover:bg-gray-900/70">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg flex items-center justify-between">
             <div className="flex items-center bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 bg-clip-text text-transparent font-bold">
