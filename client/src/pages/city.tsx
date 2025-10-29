@@ -299,13 +299,14 @@ export default function CityPage({ cityName }: CityPageProps) {
           <div className="relative z-10 p-6">
             <div className="absolute top-2 right-2">
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 onClick={toggleHeroVisibility}
-                className="text-white/80 hover:text-white hover:bg-white/20 h-8 w-8 p-0"
+                className="text-sm bg-white/10 text-white border-white/20 hover:bg-white/20"
                 data-testid="button-hide-city-hero"
               >
-                <X className="w-4 h-4" />
+                <X className="w-4 h-4 mr-2" />
+                Hide Hero Section
               </Button>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">

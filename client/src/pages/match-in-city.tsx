@@ -953,13 +953,14 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
             {/* Hide Hero Button */}
             <div className="absolute top-0 right-0">
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 onClick={toggleInitialHeroVisibility}
-                className="text-white/80 hover:text-white hover:bg-white/20 h-8 w-8 p-0"
+                className="text-sm bg-white/10 text-white border-white/20 hover:bg-white/20"
                 data-testid="button-hide-match-initial-hero"
               >
-                <X className="w-4 h-4" />
+                <X className="w-4 h-4 mr-2" />
+                Hide Hero Section
               </Button>
             </div>
             
@@ -1108,13 +1109,14 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
             <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
               <div className="absolute top-2 right-2">
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
                   onClick={toggleHeroVisibility}
-                  className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white h-6 w-6 p-0"
+                  className="text-sm"
                   data-testid="button-hide-match-hero"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-4 h-4 mr-2" />
+                  Hide Instructions
                 </Button>
               </div>
               <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-200 mb-2">🎯 How City Matching Works</h3>

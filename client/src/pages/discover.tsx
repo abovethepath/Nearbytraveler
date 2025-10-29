@@ -149,13 +149,14 @@ export default function DiscoverPage() {
         {/* Hide Hero Button */}
         <div className="absolute top-2 right-2 z-20">
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
             onClick={toggleHeroVisibility}
-            className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white h-8 w-8 p-0"
+            className="text-sm bg-white dark:bg-gray-800"
             data-testid="button-hide-discover-hero"
           >
-            <X className="w-4 h-4" />
+            <X className="w-4 h-4 mr-2" />
+            Hide Hero Section
           </Button>
         </div>
         
