@@ -5741,7 +5741,7 @@ Questions? Just reply to this message. Welcome aboard!
               city: city,
               state: state,
               country: country,
-              name: `${city} General Chat`,
+              name: `Let's Meet Up in ${city}`,
               description: `Connect with locals and travelers in ${city}`,
               isPrivate: false,
               createdAt: new Date()
@@ -5776,6 +5776,17 @@ Questions? Just reply to this message. Welcome aboard!
           destinationCountry: travelPlanData.destinationCountry
         });
         console.log(`✅ TRAVEL STATUS: Updated user ${travelPlanData.userId} to show as currently traveling`);
+        
+        // JOIN USER TO DESTINATION CHATROOM: Fetch updated user and assign to chatrooms
+        try {
+          const updatedUser = await storage.getUserById(travelPlanData.userId);
+          if (updatedUser) {
+            await storage.assignUserToChatrooms(updatedUser);
+            console.log(`✅ CHATROOM ASSIGNMENT: User ${travelPlanData.userId} joined ${travelPlanData.destinationCity} chatroom`);
+          }
+        } catch (chatroomError) {
+          console.error('❌ CHATROOM ASSIGNMENT: Failed to join user to chatroom:', chatroomError);
+        }
       } else {
         console.log(`📅 TRAVEL STATUS: Trip is future/past - user ${travelPlanData.userId} remains as planned traveler`);
         await storage.updateUser(travelPlanData.userId, {
