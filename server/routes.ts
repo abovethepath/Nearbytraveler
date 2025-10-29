@@ -1417,19 +1417,15 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           )
         );
 
-      // FIXED: Count ALL traveler associations with this city
-      // Count ACTIVE travelers (users with current/active travel plans to this city, regardless of userType)
-      const today = new Date();
+      // CUMULATIVE STATS: Count ALL travelers who have EVER visited or planned to visit this city
+      // This is cumulative - it only increases over time, never decreases
       const travelerUsersWithPlansResult = await db
         .select({ count: count() })
         .from(travelPlans)
         .innerJoin(users, eq(travelPlans.userId, users.id))
         .where(
-          and(
-            or(...searchCities.map(searchCity => ilike(travelPlans.destination, `%${searchCity}%`))),
-            // Count active trips: today is between start_date and end_date
-            sql`${travelPlans.startDate} <= ${today} AND ${travelPlans.endDate} >= ${today}`
-          )
+          or(...searchCities.map(searchCity => ilike(travelPlans.destination, `%${searchCity}%`)))
+          // No date filter - count ALL travel plans (past, present, future)
         );
 
       // 2. Travelers currently traveling TO this city (travelDestination field) - permanent travelers
