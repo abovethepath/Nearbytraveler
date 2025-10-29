@@ -37,16 +37,7 @@ const EVENT_CATEGORIES = [
   "Custom" // This will allow for custom category input
 ];
 
-// Clean tags - no overlap with categories, truly additional info only
-const PREDEFINED_TAGS = [
-  "Free Event",
-  "Pet Friendly", 
-  "LGBTQ+ Friendly",
-  "Solo Travelers Welcome",
-  "Language Exchange",
-  "Outdoor Event",
-  "Indoor Event"
-];
+// Tags removed - keeping event creation simple! Event descriptions cover everything.
 
 interface CreateEventProps {
   onEventCreated?: () => void;
@@ -101,8 +92,6 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
   const [selectedState, setSelectedState] = useState("");
   const [availableStates, setAvailableStates] = useState<string[]>([]);
   const [availableCities, setAvailableCities] = useState<string[]>([]);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [customTag, setCustomTag] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [customCategory, setCustomCategory] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -165,7 +154,6 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
       if (template.state) setValue("state", template.state);
       if (template.country) setValue("country", template.country);
       if (template.category) setSelectedCategories([template.category]);
-      if (template.tags) setSelectedTags(template.tags);
       if (template.requirements) setValue("requirements", template.requirements);
       if (template.maxParticipants) setValue("maxParticipants", template.maxParticipants);
       
@@ -209,36 +197,6 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
     }
   }, []);
 
-  // Tag management functions with limit
-  const MAX_TAGS = 6;
-  const toggleTag = (tag: string) => {
-    setSelectedTags(prev => {
-      if (prev.includes(tag)) {
-        return prev.filter(t => t !== tag);
-      } else if (prev.length < MAX_TAGS) {
-        return [...prev, tag];
-      }
-      return prev; // Don't add if at limit
-    });
-  };
-
-  const addCustomTag = () => {
-    const trimmedTag = customTag.trim();
-    if (trimmedTag && !selectedTags.includes(trimmedTag) && selectedTags.length < MAX_TAGS) {
-      setSelectedTags(prev => [...prev, trimmedTag]);
-      setCustomTag("");
-    } else if (selectedTags.length >= MAX_TAGS) {
-      toast({
-        title: "Tag limit reached",
-        description: `You can only add up to ${MAX_TAGS} tags per event.`,
-        variant: "destructive"
-      });
-    }
-  };
-
-  const removeTag = (tag: string) => {
-    setSelectedTags(prev => prev.filter(t => t !== tag));
-  };
 
   // Business address handler
   const handleUseBusinessAddress = (checked: boolean) => {
@@ -350,8 +308,6 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
       queryClient.refetchQueries({ queryKey: ["/api/events"] });
       
       reset();
-      setSelectedTags([]);
-      setCustomTag("");
       setSelectedCategories([]);
       setCustomCategory("");
       setImagePreview(null);
@@ -503,7 +459,7 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
         organizerId: user.id,
         maxParticipants: data.maxParticipants ? parseInt(data.maxParticipants.toString()) : null,
         isPublic: data.isPublic !== false,
-        tags: selectedTags,
+        tags: [],
         requirements: data.requirements || '',
         imageUrl: data.imageUrl || null,
         // Recurring event fields
@@ -1120,104 +1076,7 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
               </CardContent>
             </Card>
 
-            {/* Tags */}
-            <div className="space-y-2">
-              <Label className="flex items-center gap-2">
-                <Tag className="w-4 h-4" />
-                Event Tags ({selectedTags.length}/{MAX_TAGS})
-              </Label>
-              <div className="space-y-3">
-                {/* Predefined Tags */}
-                <div>
-                  <Label className="text-sm font-medium text-gray-600 dark:text-white">Quick Tags</Label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 mt-2">
-                    {PREDEFINED_TAGS.map((tag) => (
-                      <Button
-                        key={tag}
-                        type="button"
-                        variant={selectedTags.includes(tag) ? "secondary" : "outline"}
-                        size="sm"
-                        className={`justify-start text-xs h-auto py-2 px-3 text-left whitespace-normal leading-tight ${
-                          selectedTags.includes(tag) 
-                            ? "bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white border-gray-300 dark:border-gray-500" 
-                            : "hover:bg-gray-50 dark:hover:bg-gray-700"
-                        } ${
-                          !selectedTags.includes(tag) && selectedTags.length >= MAX_TAGS 
-                            ? "opacity-50 cursor-not-allowed" 
-                            : ""
-                        }`}
-                        onClick={() => {
-                          if (selectedTags.includes(tag) || selectedTags.length < MAX_TAGS) {
-                            toggleTag(tag);
-                          } else {
-                            toast({
-                              title: "Tag limit reached",
-                              description: `You can only add up to ${MAX_TAGS} tags per event.`,
-                              variant: "destructive"
-                            });
-                          }
-                        }}
-                        disabled={!selectedTags.includes(tag) && selectedTags.length >= MAX_TAGS}
-                      >
-                        {selectedTags.includes(tag) ? "✓ " : ""}{tag}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-                
-                {/* Custom Tag Input */}
-                <div>
-                  <Label className="text-sm font-medium text-gray-600 dark:text-white">Add Custom Tag</Label>
-                  <div className="flex gap-2 mt-2">
-                    <Input
-                      value={customTag}
-                      onChange={(e) => setCustomTag(e.target.value)}
-                      placeholder="Enter custom tag..."
-                      className="flex-1"
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          addCustomTag();
-                        }
-                      }}
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={addCustomTag}
-                      disabled={!customTag.trim() || selectedTags.length >= MAX_TAGS}
-                    >
-                      Add
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Selected Tags Display */}
-                {selectedTags.length > 0 && (
-                  <div>
-                    <Label className="text-sm font-medium text-gray-600 dark:text-white">Selected Tags</Label>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {selectedTags.map((tag) => (
-                        <Badge
-                          key={tag}
-                          variant="secondary"
-                          className="flex items-center gap-1 cursor-pointer hover:bg-red-100"
-                          onClick={() => removeTag(tag)}
-                        >
-                          {tag}
-                          <X className="w-3 h-3" />
-                        </Badge>
-                      ))}
-                    </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
-                      Click on a tag to remove it • {selectedTags.length}/{MAX_TAGS} tags used
-                      {selectedTags.length >= MAX_TAGS && " (limit reached)"}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
+            {/* Tags section removed - keeping it simple! Event descriptions cover everything */}
 
             {/* Event Image Upload */}
             <div className="space-y-4">

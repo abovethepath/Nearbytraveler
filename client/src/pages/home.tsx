@@ -1973,7 +1973,7 @@ export default function Home() {
                   </h3>
                   <div className="grid grid-cols-1 gap-3 sm:gap-4">
                     {userPriorityEvents
-                      ?.filter((event: any) => !event.isAIGenerated && !event.source && event.organizer)
+                      ?.filter((event: any) => !event.isAIGenerated && !event.source && event.organizerId)
                       ?.slice(0, 4)
                       ?.map((event: any) => (
                         <div key={event.id} className="w-full">
