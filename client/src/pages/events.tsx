@@ -1,3 +1,4 @@
+// Events page - v2.1 - Mobile responsive fixes
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
@@ -893,11 +894,11 @@ export default function Events() {
                     <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">
                       My Events ({allUserEvents.length})
                     </h2>
-                    <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-2">
+                    <div className="grid gap-4 sm:gap-6 sm:grid-cols-2">
                       {allUserEvents.map((event) => (
                         <Card 
                           key={event.id} 
-                          className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-2 border-blue-200 bg-blue-50/30 dark:border-blue-700 dark:bg-blue-900/20"
+                          className="cursor-pointer hover:shadow-lg transition-shadow duration-200 border-2 border-blue-200 bg-blue-50/30 dark:border-blue-700 dark:bg-blue-900/20 w-full overflow-hidden"
                           onClick={() => setLocation(`/events/${event.id}`)}
                         >
                           <CardHeader className="pb-3">
@@ -1073,11 +1074,11 @@ export default function Events() {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                   {filteredUpcomingEvents.map((event) => (
                     <Card 
                       key={event.id} 
-                      className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] w-full"
+                      className="cursor-pointer hover:shadow-lg transition-shadow duration-200 w-full overflow-hidden"
                       onClick={() => setLocation(`/events/${event.id}`)}
                     >
                       <CardHeader className="pb-3">
