@@ -151,7 +151,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
             <img
               src={event.imageUrl}
               alt={event.title}
-              className="w-full aspect-[16/9] object-cover"
+              className="w-full h-48 object-cover"
               loading="lazy"
             />
 
