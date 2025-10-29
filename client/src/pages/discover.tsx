@@ -143,8 +143,8 @@ export default function DiscoverPage() {
         </div>
       )}
       
-      {/* Hero Section - Consistent Layout */}
-      {isHeroVisible && (
+      {/* Hero Section - Desktop Only */}
+      {isHeroVisible && !isMobile && (
       <section className="bg-white dark:bg-gray-900 py-4 sm:py-8 lg:py-12 relative">
         {/* Hide Hero Button */}
         <div className="absolute top-2 right-2 z-20">
@@ -160,15 +160,7 @@ export default function DiscoverPage() {
           </Button>
         </div>
         
-        {isMobile ? (
-          // Mobile: Keep vertical layout
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            
-            <p className="text-base text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl mx-auto px-4">
-              Explore amazing cities, connect with locals and travelers, and find your next adventure
-            </p>
-          </div>
-        ) : (
+        {(
           // Desktop: Enhanced engaging layout (text left, image right)
           <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 py-8 sm:py-12 md:py-16 relative overflow-hidden">
             {/* Background decorative elements */}
