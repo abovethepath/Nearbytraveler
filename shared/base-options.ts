@@ -43,7 +43,7 @@ export const TOP_CHOICES = [
 ];
 
 // ========================================
-// INTERESTS (62 items)
+// INTERESTS (58 items)
 // ========================================
 // Extended interests for deeper user matching and personalization
 
@@ -63,7 +63,6 @@ export const INTERESTS = [
   "Bakeries & Desserts",
   "Ethnic Cuisine",
   "Farm-to-Table Dining",
-  "Farmers Markets",
   "Food Trucks",
   "Food & Wine Festivals",
   "Beer Festivals",
@@ -74,7 +73,6 @@ export const INTERESTS = [
   "Gaming",
   "Electronic/DJ Scene",
   "Ghost Tours",
-  "City Tours",
   "Architecture",
   "Street Art",
   "Trivia Nights",
@@ -99,7 +97,6 @@ export const INTERESTS = [
   "Family Travel",
   "Arts & Crafts",
   "Fashion & Style",
-  "Jazz & Blues",
   "Classical Music",
   "Indie Music Scene",
   "Vintage & Thrift Shopping",
@@ -108,28 +105,19 @@ export const INTERESTS = [
   "Book Clubs & Reading",
   "Tech & Innovation",
   "Coworking & Networking",
-  "Sunset Viewpoints",
   "Hot Air Balloons"
 ];
 
 // ========================================
-// ACTIVITIES (16 items)
+// ACTIVITIES (8 items)
 // ========================================
 // Concrete activities users want to do together
 
 export const ACTIVITIES = [
   "Zoo & Aquarium Visits",
-  "Restaurant Hopping",
-  "Alcohol-Free Hangouts",
-  "Bar Hopping",
-  "Working Out Together",
-  "Outdoor Adventures",
-  "Water Sports",
   "Beach Hangouts",
-  "Sports & Recreation",
   "Creative Sessions",
   "Cooking Together",
-  "Photography Walks",
   "Game Nights",
   "Walking Tours",
   "Exploring Local Spots",
@@ -264,8 +252,17 @@ export const getSexualPreferenceOptions = () => SEXUAL_PREFERENCE_OPTIONS;
 // ========================================
 // SUMMARY
 // ========================================
-// Total taxonomy: 108 items (consolidated from 115 to remove redundancies)
+// Total taxonomy: 96 items (consolidated from 115 to remove ALL redundancies)
 // - TOP_CHOICES: 30 items
-// - INTERESTS: 62 items (reduced from 67)
-// - ACTIVITIES: 16 items (reduced from 18)
+// - INTERESTS: 58 items (reduced from 67 - removed duplicates)
+// - ACTIVITIES: 8 items (reduced from 18 - removed duplicates)
+// 
+// REMOVED DUPLICATES (12 items):
+// From INTERESTS: Farmers Markets (dup of Local Markets), Jazz & Blues (dup of Jazz Clubs), 
+//                 City Tours (dup of Walking Tours), Sunset Viewpoints (dup of Photography & Scenic Spots)
+// From ACTIVITIES: Restaurant Hopping (dup of Food Tours), Alcohol-Free Hangouts (dup of Sober/Alcohol-Free Lifestyle),
+//                  Bar Hopping (covered by bar categories), Working Out Together (dup of Fitness & Workouts),
+//                  Outdoor Adventures (too vague), Water Sports (dup of Beach & Water Activities),
+//                  Sports & Recreation (too vague), Photography Walks (dup of Photography & Scenic Spots)
+// 
 // Events have been removed from user profiles - they now only exist as community events that users can create/attend
