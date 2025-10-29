@@ -43,7 +43,6 @@ interface EventFormData {
   startTime: string;
   endDate?: string;
   endTime?: string;
-  category: string;
   maxParticipants?: number;
   isPublic?: boolean;
   tags?: string[];
@@ -138,7 +137,6 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
       if (template.city) setValue("city", template.city);
       if (template.state) setValue("state", template.state);
       if (template.country) setValue("country", template.country);
-      if (template.category) setSelectedCategories([template.category]);
       if (template.requirements) setValue("requirements", template.requirements);
       if (template.maxParticipants) setValue("maxParticipants", template.maxParticipants);
       
@@ -293,8 +291,6 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
       queryClient.refetchQueries({ queryKey: ["/api/events"] });
       
       reset();
-      setSelectedCategories([]);
-      setCustomCategory("");
       setImagePreview(null);
       setUseBusinessAddress(false);
       setSelectedCountry("");
@@ -925,53 +921,7 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
               </div>
             </div>
 
-            {/* Categories */}
-            <div className="space-y-2">
-              <Label className="flex items-center gap-2">
-                <Tag className="w-4 h-4" />
-                Event Categories * (Select all that apply)
-              </Label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 p-4 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
-                {EVENT_CATEGORIES.map((category) => (
-                  <div key={category} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={category}
-                      checked={selectedCategories.includes(category)}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setSelectedCategories([...selectedCategories, category]);
-                        } else {
-                          setSelectedCategories(selectedCategories.filter(c => c !== category));
-                          if (category === "Custom") {
-                            setCustomCategory(""); // Clear custom category when unchecked
-                          }
-                        }
-                      }}
-                    />
-                    <Label htmlFor={category} className="text-sm font-medium text-gray-700 dark:text-white cursor-pointer">
-                      {category}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-              
-              {selectedCategories.includes("Custom") && (
-                <div className="space-y-2">
-                  <Label htmlFor="customCategory">Custom Category</Label>
-                  <Input
-                    id="customCategory"
-                    value={customCategory}
-                    onChange={(e) => setCustomCategory(e.target.value)}
-                    placeholder="Enter your custom category"
-                    className="w-full bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600"
-                  />
-                </div>
-              )}
-              
-              {errors.category && (
-                <p className="text-sm text-red-500">{errors.category.message}</p>
-              )}
-            </div>
+            {/* Category field removed - users describe event type in description */}
 
             {/* Max Participants */}
             <div className="space-y-2">
