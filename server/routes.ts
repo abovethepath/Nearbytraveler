@@ -1068,6 +1068,111 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
+  // Scrape Meetup event data from public URL
+  app.get("/api/scrape-meetup", async (req, res) => {
+    try {
+      const { url } = req.query as { url?: string };
+
+      if (!url) {
+        return res.status(400).json({ message: "URL parameter is required" });
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`🔍 MEETUP: Scraping event from ${url}`);
+
+      // Import cheerio for HTML parsing
+      const cheerio = await import('cheerio');
+
+      // Fetch the Meetup event page
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch Meetup page: ${response.status}`);
+      }
+
+      const html = await response.text();
+      const $ = cheerio.load(html);
+
+      // Extract event data from the HTML
+      const eventData: any = {};
+
+      // Try to find event title - multiple possible selectors
+      eventData.title = $('h1[data-event-label="event-title"]').first().text().trim() ||
+                       $('h1').first().text().trim() ||
+                       $('meta[property="og:title"]').attr('content') ||
+                       '';
+
+      // Try to find description
+      eventData.description = $('div[data-event-label="event-description"]').first().text().trim() ||
+                             $('meta[property="og:description"]').attr('content') ||
+                             '';
+
+      // Try to find venue name
+      eventData.venueName = $('span[data-element-name="address-name"]').first().text().trim() ||
+                           $('div[data-testid="location-info"] span').first().text().trim() ||
+                           '';
+
+      // Try to find address - Meetup often has structured data
+      const addressParts = $('div[data-testid="location-info"]').text().trim();
+      if (addressParts) {
+        const addressLines = addressParts.split('\n').map(line => line.trim()).filter(line => line);
+        if (addressLines.length > 0) {
+          eventData.street = addressLines[0] || '';
+          if (addressLines.length > 1) {
+            // Parse "City, State Zip" format
+            const cityStateZip = addressLines[1];
+            const parts = cityStateZip.split(',');
+            if (parts.length >= 2) {
+              eventData.city = parts[0].trim();
+              const stateZip = parts[1].trim().split(' ');
+              eventData.state = stateZip[0] || '';
+              eventData.zipcode = stateZip[1] || '';
+            }
+          }
+        }
+      }
+
+      // Try to find date and time - look for ISO date in structured data
+      const scriptTags = $('script[type="application/ld+json"]');
+      scriptTags.each((_, el) => {
+        try {
+          const jsonData = JSON.parse($(el).html() || '{}');
+          if (jsonData['@type'] === 'Event') {
+            if (jsonData.startDate) {
+              const eventDate = new Date(jsonData.startDate);
+              eventData.date = eventDate.toISOString().split('T')[0]; // YYYY-MM-DD
+              eventData.startTime = eventDate.toTimeString().slice(0, 5); // HH:MM
+            }
+            if (jsonData.location) {
+              eventData.venueName = eventData.venueName || jsonData.location.name;
+              if (jsonData.location.address) {
+                eventData.street = eventData.street || jsonData.location.address.streetAddress;
+                eventData.city = eventData.city || jsonData.location.address.addressLocality;
+                eventData.state = eventData.state || jsonData.location.address.addressRegion;
+                eventData.zipcode = eventData.zipcode || jsonData.location.address.postalCode;
+                eventData.country = jsonData.location.address.addressCountry;
+              }
+            }
+          }
+        } catch (e) {
+          // Skip invalid JSON
+        }
+      });
+
+      // Set default country to United States if not found
+      if (!eventData.country) {
+        eventData.country = 'United States';
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`✅ MEETUP: Extracted event data:`, eventData);
+
+      return res.json(eventData);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error("Error scraping Meetup event:", error);
+      }
+      return res.status(500).json({ message: "Failed to scrape Meetup event data" });
+    }
+  });
+
   // FIXED: City stats endpoint - LA METRO CITIES ONLY
   app.get("/api/city-stats", async (req, res) => {
     try {
