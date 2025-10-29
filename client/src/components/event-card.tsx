@@ -123,7 +123,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 <span className="break-words">
                   {event.venueName && <><strong>{event.venueName}</strong><br /></>}
                   {event.street && <>{event.street}<br /></>}
-                  {event.city}, {event.state}
+                  {event.city}{event.state && `, ${event.state}`}{event.country && `, ${event.country}`}
                 </span>
               </span>
             </div>
@@ -180,7 +180,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
             <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
               <MapPin className="h-4 w-4 shrink-0 text-travel-blue" />
               <span className="truncate break-words [overflow-wrap:anywhere]">
-                {event.venueName && `${event.venueName}, `}{event.street || event.location}{event.city && `, ${event.city}`}{event.state && `, ${event.state}`}
+                {event.venueName && `${event.venueName}, `}{event.street || event.location}{event.city && `, ${event.city}`}{event.state && `, ${event.state}`}{event.country && `, ${event.country}`}
               </span>
             </div>
             <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">

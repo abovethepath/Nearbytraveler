@@ -331,12 +331,13 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                   <div>
                     <p className="font-medium">{event.location}</p>
                     {/* Only show additional address if it's different from location */}
-                    {(event.street || event.city || event.state || event.zipcode) && 
-                     `${event.street ? event.street + ', ' : ''}${event.city}${event.state ? ', ' + event.state : ''}${event.zipcode ? ' ' + event.zipcode : ''}` !== event.location && (
+                    {(event.street || event.city || event.state || event.country || event.zipcode) && 
+                     `${event.street ? event.street + ', ' : ''}${event.city}${event.state ? ', ' + event.state : ''}${event.country ? ', ' + event.country : ''}${event.zipcode ? ' ' + event.zipcode : ''}` !== event.location && (
                       <p className="text-sm text-gray-500">
                         {event.street && `${event.street}, `}
                         {event.city}
                         {event.state && `, ${event.state}`}
+                        {event.country && `, ${event.country}`}
                         {event.zipcode && ` ${event.zipcode}`}
                       </p>
                     )}
