@@ -10,7 +10,7 @@ interface InstagramShareProps {
     id: number;
     title: string;
     description?: string | null;
-    date: string;
+    date: string | Date;
     startTime?: string | null;
     endTime?: string | null;
     city?: string | null;
