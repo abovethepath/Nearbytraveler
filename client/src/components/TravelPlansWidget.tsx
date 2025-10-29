@@ -139,25 +139,6 @@ export default function TravelPlansWidget({ userId, isOwnProfile = false }: Trav
                     </Button>
                   </div>
                 </div>
-                
-                {/* City Match CTA for current travel */}
-                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-700">
-                  <p className="text-sm text-blue-700 dark:text-blue-300 mb-3">
-                    💡 <strong>Maximize your {plan.destinationCity || plan.destination} experience!</strong> 
-                    Visit City Match to select specific interests and activities - this helps us connect you with the perfect locals and travelers who share your exact preferences.
-                  </p>
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    onClick={() => handleCityMatch(plan.destinationCity || plan.destination)}
-                    className="text-blue-600 border-blue-300 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-600 dark:hover:bg-blue-900/30 w-full"
-                    data-testid={`button-city-match-${(plan.destinationCity || plan.destination).toLowerCase().replace(/\s+/g, '-')}`}
-                  >
-                    <Sparkles className="w-4 h-4 mr-1" />
-                    Go to {plan.destinationCity || plan.destination} City Match
-                    <ArrowRight className="w-4 h-4 ml-1" />
-                  </Button>
-                </div>
               </div>
             ))}
           </div>
@@ -290,19 +271,6 @@ export default function TravelPlansWidget({ userId, isOwnProfile = false }: Trav
                 Plan Your First Trip
               </Button>
             )}
-          </div>
-        )}
-
-        {/* City Match explanation for existing plans */}
-        {uniquePlans.length > 0 && (
-          <div className="mt-6 p-4 bg-orange-50 dark:bg-orange-900/20 rounded border border-orange-200 dark:border-orange-700">
-            <h5 className="font-medium text-orange-800 dark:text-orange-200 mb-2 flex items-center">
-              🎯 Why use City Match?
-            </h5>
-            <p className="text-sm text-orange-700 dark:text-orange-300">
-              City Match helps you connect with locals and travelers who share your specific interests and activities. 
-              Select what you're passionate about in each city to get perfectly matched recommendations!
-            </p>
           </div>
         )}
 
