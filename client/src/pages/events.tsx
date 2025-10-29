@@ -670,7 +670,7 @@ export default function Events() {
         </div>
       </div>
       
-      <div className="w-full max-w-full px-2 sm:px-4 sm:max-w-7xl sm:mx-auto py-8 box-border">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         {/* Navigation Tabs - Removed "My Events" */}
         <div className="flex flex-wrap justify-center gap-2 mb-6 px-2">
@@ -765,7 +765,7 @@ export default function Events() {
 
 
         {selectedTab === 'explore' && (
-        <div className="space-y-6 w-full max-w-full overflow-x-hidden">
+        <div className="space-y-6">
 
           {/* Show loading skeleton immediately while data loads */}
           {isLoading && (
@@ -1084,7 +1084,7 @@ export default function Events() {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-6 w-full max-w-full box-border">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                   {filteredUpcomingEvents.map((event) => (
                     <Card 
                       key={event.id} 
@@ -1118,8 +1118,8 @@ export default function Events() {
                           </div>
                         </div>
                       </CardHeader>
-                      <CardContent className="px-2 sm:px-3">
-                        <div className="space-y-2 w-full min-w-0">
+                      <CardContent className="p-5">
+                        <div className="space-y-2">
                           <div className="flex items-start gap-2 text-xs sm:text-sm text-gray-600 dark:text-white">
                             <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-gray-600 dark:text-white flex-shrink-0 mt-0.5" />
                             <span className="line-clamp-2">
@@ -1215,7 +1215,7 @@ export default function Events() {
             {filteredPastEvents.length > 0 && (
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Past Events</h2>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-6 w-full max-w-full box-border">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                   {filteredPastEvents.map((event) => (
                     <Card 
                       key={event.id} 
@@ -1350,7 +1350,7 @@ export default function Events() {
 
         {/* Meetup Events Tab */}
         {selectedTab === 'meetup' && (
-          <div className="space-y-6 w-full max-w-full overflow-x-hidden">
+          <div className="space-y-6">
             <div className="text-center mb-6">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                 Local Meetups in {cityToQuery}
@@ -1362,7 +1362,7 @@ export default function Events() {
 
             {meetupLoading && (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-6 w-full max-w-full box-border">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                   {[...Array(6)].map((_, i) => (
                     <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse">
                       <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
@@ -1377,7 +1377,7 @@ export default function Events() {
             {!meetupLoading && (
               <>
                 {meetupEvents.events && meetupEvents.events.length > 0 ? (
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-6 w-full max-w-full box-border">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                     {meetupEvents.events.map((event: any) => (
                       <Card key={event.id} className="hover:shadow-lg transition-shadow duration-200 border border-gray-200 w-full overflow-hidden">
                         <CardContent className="p-6">
