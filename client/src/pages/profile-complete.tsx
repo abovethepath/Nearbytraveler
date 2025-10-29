@@ -8892,7 +8892,7 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
 
   // Calculate event statistics
   const totalEvents = userEvents.length;
-  const totalRSVPs = userEvents.reduce((sum: number, event: any) => sum + (event.participantCount || 0), 0);
+  const totalRSVPs = userEvents.reduce((sum: number, event: any) => sum + (Number(event.participantCount) || 0), 0);
   const upcomingEvents = userEvents.filter((event: any) => new Date(event.date) >= new Date()).length;
   const avgRSVPs = totalEvents > 0 ? Math.round((totalRSVPs / totalEvents) * 10) / 10 : 0;
 
