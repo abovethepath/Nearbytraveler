@@ -881,7 +881,7 @@ export default function Events() {
           </div>
 
           {/* Events Sections */}
-          <div className="space-y-6 sm:space-y-8">
+          <div className="space-y-6 sm:space-y-8 max-w-full overflow-hidden">
             {/* User's Events Section - Show first */}
             {currentUser && (() => {
               // Filter events created by the user
@@ -948,7 +948,7 @@ export default function Events() {
                               </div>
                             </div>
                           </CardHeader>
-                          <CardContent>
+                          <CardContent className="px-3 sm:px-4">
                             <div className="space-y-3">
                               <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-white">
                                 <Calendar className="w-4 h-4 text-gray-600 dark:text-white" />
@@ -1118,7 +1118,7 @@ export default function Events() {
                           </div>
                         </div>
                       </CardHeader>
-                      <CardContent className="px-4">
+                      <CardContent className="px-3 sm:px-4">
                         <div className="space-y-2">
                           <div className="flex items-start gap-2 text-xs sm:text-sm text-gray-600 dark:text-white">
                             <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-gray-600 dark:text-white flex-shrink-0 mt-0.5" />
