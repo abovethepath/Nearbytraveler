@@ -585,6 +585,8 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                         if (eventData.zipcode) setValue("zipcode", eventData.zipcode);
                         if (eventData.date) setValue("date", eventData.date);
                         if (eventData.startTime) setValue("startTime", eventData.startTime);
+                        if (eventData.endDate) setValue("endDate", eventData.endDate);
+                        if (eventData.endTime) setValue("endTime", eventData.endTime);
                         if (eventData.maxParticipants) setValue("maxParticipants", eventData.maxParticipants);
                         
                         // Update location state
