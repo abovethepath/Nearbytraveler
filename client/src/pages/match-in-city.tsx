@@ -53,7 +53,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [newActivity, setNewActivity] = useState('');
   const [editingActivityName, setEditingActivityName] = useState('');
 
-  // Hero section visibility state
+  // Hero section visibility state (for after city selection)
   const [isHeroVisible, setIsHeroVisible] = useState<boolean>(() => {
     const saved = localStorage.getItem('hideMatchInCityHero');
     return saved !== 'true'; // Default to visible
@@ -63,6 +63,18 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     const newValue = !isHeroVisible;
     setIsHeroVisible(newValue);
     localStorage.setItem('hideMatchInCityHero', String(!newValue));
+  };
+  
+  // Hero section visibility state (for initial city selection screen)
+  const [isInitialHeroVisible, setIsInitialHeroVisible] = useState<boolean>(() => {
+    const saved = localStorage.getItem('hideMatchInitialHero');
+    return saved !== 'true'; // Default to visible
+  });
+
+  const toggleInitialHeroVisibility = () => {
+    const newValue = !isInitialHeroVisible;
+    setIsInitialHeroVisible(newValue);
+    localStorage.setItem('hideMatchInitialHero', String(!newValue));
   };
 
   // Fetch all cities on component mount
@@ -920,7 +932,37 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-orange-900">
         <div className="container mx-auto px-4 py-8">
-          <div className="text-center mb-8">
+          {/* Hero Toggle Button */}
+          {!isInitialHeroVisible && (
+            <div className="mb-6">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={toggleInitialHeroVisibility}
+                className="text-sm bg-white/10 text-white border-white/20 hover:bg-white/20"
+                data-testid="button-show-match-initial-hero"
+              >
+                <ChevronDown className="w-4 h-4 mr-2" />
+                Show Hero Section
+              </Button>
+            </div>
+          )}
+          
+          {isInitialHeroVisible && (
+          <div className="text-center mb-8 relative">
+            {/* Hide Hero Button */}
+            <div className="absolute top-0 right-0">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleInitialHeroVisibility}
+                className="text-white/80 hover:text-white hover:bg-white/20 h-8 w-8 p-0"
+                data-testid="button-hide-match-initial-hero"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+            
             <h1 className="text-4xl font-bold text-white mb-4">🎯 Match in City</h1>
             <p className="text-xl text-white/80 mb-4">Select a city to start matching with people!</p>
             <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 max-w-2xl mx-auto">
@@ -931,6 +973,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
               </p>
             </div>
           </div>
+          )}
 
           {/* Search Cities */}
           <div className="max-w-md mx-auto mb-8">

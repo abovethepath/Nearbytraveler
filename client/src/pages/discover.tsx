@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Users, Calendar, Star, Search, Compass, TrendingUp, MessageCircle, Heart, Plane } from "lucide-react";
+import { MapPin, Users, Calendar, Star, Search, Compass, TrendingUp, MessageCircle, Heart, Plane, X, ChevronDown } from "lucide-react";
 import { useLocation } from "wouter";
 import { ArrowLeft } from "lucide-react";
 import { AuthContext } from "@/App";
@@ -32,6 +32,18 @@ export default function DiscoverPage() {
   const { user } = useContext(AuthContext);
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
+  
+  // Hero section visibility state
+  const [isHeroVisible, setIsHeroVisible] = useState<boolean>(() => {
+    const saved = localStorage.getItem('hideDiscoverHero');
+    return saved !== 'true'; // Default to visible
+  });
+
+  const toggleHeroVisibility = () => {
+    const newValue = !isHeroVisible;
+    setIsHeroVisible(newValue);
+    localStorage.setItem('hideDiscoverHero', String(!newValue));
+  };
 
   // Redirect business users away from destination discovery page
   useEffect(() => {
@@ -115,8 +127,38 @@ export default function DiscoverPage() {
 
   const pageContent = (
     <div className="min-h-screen bg-white dark:bg-gray-900">
+      {/* Hero Toggle Button */}
+      {!isHeroVisible && (
+        <div className="px-4 pt-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleHeroVisibility}
+            className="text-sm"
+            data-testid="button-show-discover-hero"
+          >
+            <ChevronDown className="w-4 h-4 mr-2" />
+            Show Hero Section
+          </Button>
+        </div>
+      )}
+      
       {/* Hero Section - Consistent Layout */}
-      <section className="bg-white dark:bg-gray-900 py-4 sm:py-8 lg:py-12">
+      {isHeroVisible && (
+      <section className="bg-white dark:bg-gray-900 py-4 sm:py-8 lg:py-12 relative">
+        {/* Hide Hero Button */}
+        <div className="absolute top-2 right-2 z-20">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleHeroVisibility}
+            className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white h-8 w-8 p-0"
+            data-testid="button-hide-discover-hero"
+          >
+            <X className="w-4 h-4" />
+          </Button>
+        </div>
+        
         {isMobile ? (
           // Mobile: Keep vertical layout
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -257,6 +299,7 @@ export default function DiscoverPage() {
           </div>
         )}
       </section>
+      )}
 
       {/* Search Section */}
       <section className="bg-gray-50 dark:bg-gray-800 py-12">
