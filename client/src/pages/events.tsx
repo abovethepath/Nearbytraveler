@@ -472,7 +472,7 @@ export default function Events() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950 max-w-full overflow-x-hidden">
       {/* MobileNav removed - using global MobileTopNav and MobileBottomNav */}
       {/* HERO SECTION — Airbnb Style Layout (Landing Page Layout) */}
       <section className="bg-white dark:bg-gray-900 py-8 sm:py-12 lg:py-16">
@@ -1219,7 +1219,7 @@ export default function Events() {
                   {filteredPastEvents.map((event) => (
                     <Card 
                       key={event.id} 
-                      className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] opacity-75"
+                      className="cursor-pointer hover:shadow-lg transition-shadow duration-200 opacity-75 w-full overflow-hidden"
                       onClick={() => setLocation(`/events/${event.id}`)}
                     >
                       <CardHeader className="pb-3">
