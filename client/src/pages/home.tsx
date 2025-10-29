@@ -2021,16 +2021,21 @@ export default function Home() {
           </div>
 
           {/* Right Sidebar - Weather, Messages, Quick Meetups, Events */}
-          <div className="col-span-1 space-y-3 sm:space-y-4 md:space-y-8">
+          <div className="col-span-1 space-y-6 sm:space-y-8 md:space-y-10">
             
             {/* Weather Widget */}
             {loadedSections.has('weather') && (
-              <CurrentLocationWeatherWidget currentUser={effectiveUser} />
+              <div className="relative">
+                <CurrentLocationWeatherWidget currentUser={effectiveUser} />
+              </div>
             )}
             
             {/* Messages Widget */}
             {loadedSections.has('messages') && (
-              <MessagesWidget userId={currentUserId} />
+              <div className="relative pt-2">
+                <div className="absolute -top-1 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent"></div>
+                <MessagesWidget userId={currentUserId} />
+              </div>
             )}
             
             {/* Quick Meetup Widget moved to Local Events section for better discoverability */}
