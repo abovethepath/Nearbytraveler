@@ -1958,6 +1958,13 @@ export default function Home() {
                   </h2>
                 </div>
                 
+                {/* Quick Meetup Widget - "Let's Meet Now" - MOVED HERE for better visibility */}
+                {loadedSections.has('quickMeets') && (
+                  <div className="mb-8">
+                    <QuickMeetupWidget currentUser={effectiveUser} />
+                  </div>
+                )}
+                
                 {/* User-Created Events */}
                 <div className="mb-8">
                   <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
@@ -2026,11 +2033,7 @@ export default function Home() {
               <MessagesWidget userId={currentUserId} />
             )}
             
-            {/* Quick Meetup Widget - "Let's Meet Now" */}
-            {loadedSections.has('quickMeets') && (
-              <QuickMeetupWidget currentUser={effectiveUser} />
-            )}
-            
+            {/* Quick Meetup Widget moved to Local Events section for better discoverability */}
 
             {/* Business Deals Section - REMOVED: Focusing on travelers and locals */}
           </div>
