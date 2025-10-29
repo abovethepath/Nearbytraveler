@@ -79,13 +79,39 @@ export default function UserCard({
     return user.location || "Location not set";
   };
 
-  // Get user's individual gradient or fallback to default
+  // Get user's individual gradient - unique for each user based on ID
   const getUserGradient = () => {
     if (user.avatarGradient) {
       return user.avatarGradient;
     }
-    // Default gradient if user hasn't set one
-    return 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+    
+    // Generate consistent unique gradient based on user ID
+    const gradients = [
+      'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', // Purple
+      'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', // Pink-Red
+      'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', // Blue-Cyan
+      'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', // Green-Teal
+      'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', // Pink-Yellow
+      'linear-gradient(135deg, #30cfd0 0%, #330867 100%)', // Cyan-Deep Purple
+      'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)', // Mint-Pink
+      'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)', // Coral-Pink
+      'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)', // Peach
+      'linear-gradient(135deg, #ff6e7f 0%, #bfe9ff 100%)', // Red-Blue
+      'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)', // Purple-Blue
+      'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', // Magenta-Red
+      'linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)', // Pink-Blue
+      'linear-gradient(135deg, #fdcbf1 0%, #e6dee9 100%)', // Light Pink
+      'linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)', // Sky Blue
+      'linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)', // Purple-Yellow
+      'linear-gradient(135deg, #fad0c4 0%, #ffd1ff 100%)', // Peach-Pink
+      'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)', // Orange-Peach
+      'linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%)', // Red-Peach
+      'linear-gradient(135deg, #fbc2eb 0%, #a18cd1 100%)', // Pink-Purple
+    ];
+    
+    // Use user ID to consistently pick the same gradient
+    const index = user.id % gradients.length;
+    return gradients[index];
   };
 
   return (
