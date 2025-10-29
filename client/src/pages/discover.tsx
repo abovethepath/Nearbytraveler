@@ -127,8 +127,17 @@ export default function DiscoverPage() {
 
   const pageContent = (
     <div className="min-h-screen bg-white dark:bg-gray-900">
+      {/* Mobile Tagline - Simple one-liner */}
+      {isMobile && (
+        <div className="px-4 py-4 text-center">
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            Discover your next adventure
+          </p>
+        </div>
+      )}
+
       {/* Hero Toggle Button */}
-      {!isHeroVisible && (
+      {!isHeroVisible && !isMobile && (
         <div className="px-4 pt-4">
           <Button
             variant="outline"
