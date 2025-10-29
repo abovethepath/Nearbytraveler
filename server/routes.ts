@@ -1384,7 +1384,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       
       // Apply specific city mappings for accurate user counting
       if (city === 'Los Angeles Metro') {
-        searchCities = ['Los Angeles', 'Santa Monica', 'Venice', 'Playa del Rey', 'Hollywood', 'Beverly Hills', 'Culver City', 'Marina del Rey'];
+        // Use all 76 LA Metro cities from shared constants for complete coverage
+        const { METRO_AREAS } = await import('../shared/constants');
+        searchCities = METRO_AREAS['Los Angeles'].cities;
       } else if (city === 'Nashville Metro') {
         searchCities = ['Nashville', 'Nashville Metro'];
       } else if (city === 'New York City') {
