@@ -1021,8 +1021,8 @@ export default function PlanTrip() {
                         }}
                         className={`h-auto py-2 sm:py-3 px-2 sm:px-3 text-xs sm:text-sm font-medium transition-colors duration-200 break-words overflow-hidden text-center leading-tight ${
                           tripPlan.interests.includes(interest)
-                            ? 'bg-blue-600 text-white border-blue-600 dark:bg-blue-500 dark:border-blue-500 shadow-lg'
-                            : 'bg-white dark:bg-gray-600 border-gray-200 dark:border-gray-500 hover:bg-blue-50 dark:hover:bg-blue-800 text-gray-700 dark:text-gray-200'
+                            ? 'bg-blue-600 text-white border-blue-600 dark:bg-blue-500 dark:border-blue-500 dark:text-white shadow-lg'
+                            : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-500 hover:bg-blue-50 dark:hover:bg-blue-800 text-gray-700 dark:text-gray-100'
                         }`}
                       >
                         <span className="break-words overflow-hidden">{interest}</span>
