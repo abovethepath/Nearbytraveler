@@ -546,14 +546,14 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
             }}
             className="space-y-6"
           >
-            {/* Import from Meetup or Eventbrite */}
+            {/* Import from Meetup */}
             <Card className="border-2 border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/20">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2 text-purple-800 dark:text-purple-200">
-                  🚀 Quick Import from Meetup or Eventbrite
+                  🚀 Quick Import from Meetup
                 </CardTitle>
                 <p className="text-sm text-purple-700 dark:text-purple-300">
-                  Paste a Meetup or Eventbrite event URL to auto-fill the form in seconds!
+                  Paste a Meetup.com event URL to auto-fill the form in seconds!
                 </p>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -561,7 +561,7 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                   <Input
                     value={eventUrl}
                     onChange={(e) => setEventUrl(e.target.value)}
-                    placeholder="https://www.meetup.com/... or https://www.eventbrite.com/..."
+                    placeholder="https://www.meetup.com/..."
                     className="flex-1 bg-white dark:bg-gray-800"
                     data-testid="input-event-url"
                   />
@@ -571,20 +571,17 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                       if (!eventUrl.trim()) {
                         toast({
                           title: "Missing URL",
-                          description: "Please paste a Meetup or Eventbrite event URL",
+                          description: "Please paste a Meetup.com event URL",
                           variant: "destructive"
                         });
                         return;
                       }
                       
-                      // Detect which platform the URL is from
-                      const isMeetup = eventUrl.includes('meetup.com');
-                      const isEventbrite = eventUrl.includes('eventbrite.com');
-                      
-                      if (!isMeetup && !isEventbrite) {
+                      // Check if it's a Meetup URL
+                      if (!eventUrl.includes('meetup.com')) {
                         toast({
                           title: "Invalid URL",
-                          description: "Please paste a Meetup.com or Eventbrite.com event URL",
+                          description: "Please paste a Meetup.com event URL",
                           variant: "destructive"
                         });
                         return;
@@ -592,12 +589,9 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                       
                       setIsImportingEvent(true);
                       try {
-                        const endpoint = isMeetup ? '/api/scrape-meetup' : '/api/scrape-eventbrite';
-                        const platform = isMeetup ? 'Meetup' : 'Eventbrite';
-                        
-                        const response = await fetch(`${endpoint}?url=${encodeURIComponent(eventUrl)}`);
+                        const response = await fetch(`/api/scrape-meetup?url=${encodeURIComponent(eventUrl)}`);
                         if (!response.ok) {
-                          throw new Error(`Failed to fetch ${platform} event`);
+                          throw new Error("Failed to fetch Meetup event");
                         }
                         const eventData = await response.json();
                         
@@ -622,12 +616,12 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                         
                         // Mark as imported and track platform
                         setImportedFromUrl(true);
-                        setImportedPlatform(platform);
+                        setImportedPlatform('Meetup');
                         setIsOriginalOrganizer(null); // Reset to require user confirmation
                         
                         toast({
                           title: "✨ Event imported!",
-                          description: `Successfully imported from ${platform}. Please confirm if you are the original organizer.`,
+                          description: "Successfully imported from Meetup. Please confirm if you are the original organizer.",
                         });
                       } catch (error) {
                         toast({
@@ -647,7 +641,7 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                   </Button>
                 </div>
                 <p className="text-xs text-purple-600 dark:text-purple-400">
-                  💡 Tip: This works with any public Meetup or Eventbrite event. Just paste the URL and click Import!
+                  💡 Tip: This works with any public Meetup event. Just paste the URL and click Import!
                 </p>
               </CardContent>
             </Card>
