@@ -1299,6 +1299,166 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
+  // Scrape Eventbrite event data from public URL
+  app.get("/api/scrape-eventbrite", async (req, res) => {
+    try {
+      const { url } = req.query as { url?: string };
+
+      if (!url) {
+        return res.status(400).json({ message: "URL parameter is required" });
+      }
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🎟️ EVENTBRITE: Fetching event from URL: ${url}`);
+      }
+
+      const response = await fetch(url);
+      const html = await response.text();
+      const $ = cheerio.load(html);
+
+      const eventData: any = {
+        title: '',
+        description: '',
+        date: '',
+        startTime: '',
+        endDate: '',
+        endTime: '',
+        venueName: '',
+        street: '',
+        city: '',
+        state: '',
+        zipcode: '',
+        country: ''
+      };
+
+      // Extract JSON-LD structured data (Eventbrite uses schema.org Event)
+      const scriptTags = $('script[type="application/ld+json"]');
+      let foundStructuredData = false;
+      let foundEventData = false;
+      
+      scriptTags.each((_, el) => {
+        try {
+          const jsonText = $(el).html() || '{}';
+          const jsonData = JSON.parse(jsonText);
+          
+          // Eventbrite uses @type: "Event" or event subtypes
+          const eventType = jsonData['@type'];
+          if (!eventType || (!eventType.includes('Event') && eventType !== 'Event')) {
+            return; // Continue to next script tag
+          }
+          
+          foundEventData = true;
+          foundStructuredData = true;
+          
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`📊 EVENTBRITE: Found ${eventType} JSON-LD data`);
+          }
+          
+          // Get title and description
+          if (jsonData.name) eventData.title = jsonData.name;
+          if (jsonData.description) eventData.description = jsonData.description;
+          
+          // Parse START date and time
+          if (jsonData.startDate) {
+            const isoString = jsonData.startDate;
+            const tIndex = isoString.indexOf('T');
+            if (tIndex !== -1) {
+              eventData.date = isoString.substring(0, tIndex);
+              const afterT = isoString.substring(tIndex + 1);
+              const timeMatch = afterT.match(/^(\d{2}):(\d{2})/);
+              if (timeMatch) {
+                eventData.startTime = `${timeMatch[1]}:${timeMatch[2]}`;
+              }
+            } else {
+              eventData.date = isoString;
+            }
+            
+            if (process.env.NODE_ENV === 'development') {
+              console.log(`📅 EVENTBRITE: Parsed start date=${eventData.date}, time=${eventData.startTime || '(not set)'}`);
+            }
+          }
+          
+          // Parse END date and time
+          if (jsonData.endDate) {
+            const isoString = jsonData.endDate;
+            const tIndex = isoString.indexOf('T');
+            if (tIndex !== -1) {
+              eventData.endDate = isoString.substring(0, tIndex);
+              const afterT = isoString.substring(tIndex + 1);
+              const timeMatch = afterT.match(/^(\d{2}):(\d{2})/);
+              if (timeMatch) {
+                eventData.endTime = `${timeMatch[1]}:${timeMatch[2]}`;
+              }
+            } else {
+              eventData.endDate = isoString;
+            }
+            
+            if (process.env.NODE_ENV === 'development') {
+              console.log(`📅 EVENTBRITE: Parsed end date=${eventData.endDate}, time=${eventData.endTime || '(not set)'}`);
+            }
+          }
+          
+          // Get location data from structured data
+          if (jsonData.location) {
+            if (jsonData.location.name) {
+              eventData.venueName = jsonData.location.name;
+            }
+            if (jsonData.location.address) {
+              const addr = jsonData.location.address;
+              if (addr.streetAddress) eventData.street = addr.streetAddress;
+              if (addr.addressLocality) eventData.city = addr.addressLocality;
+              if (addr.addressRegion) eventData.state = addr.addressRegion;
+              if (addr.postalCode) eventData.zipcode = addr.postalCode;
+              if (addr.addressCountry) eventData.country = addr.addressCountry;
+              
+              if (process.env.NODE_ENV === 'development') {
+                console.log(`📍 EVENTBRITE: Found structured address:`, {
+                  street: addr.streetAddress,
+                  city: addr.addressLocality,
+                  state: addr.addressRegion,
+                  zip: addr.postalCode,
+                  country: addr.addressCountry
+                });
+              }
+            }
+          }
+        } catch (e) {
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`⚠️ EVENTBRITE: Error parsing JSON-LD:`, e);
+          }
+        }
+      });
+
+      // Set default country to United States if not found
+      if (!eventData.country) {
+        eventData.country = 'United States';
+      }
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`✅ EVENTBRITE: Final extracted event data:`);
+        console.log(`   Title: ${eventData.title || '(not found)'}`);
+        console.log(`   Description: ${eventData.description ? eventData.description.substring(0, 100) + '...' : '(not found)'}`);
+        console.log(`   Venue: ${eventData.venueName || '(not found)'}`);
+        console.log(`   Street: ${eventData.street || '(not found)'}`);
+        console.log(`   City: ${eventData.city || '(not found)'}`);
+        console.log(`   State: ${eventData.state || '(not found)'}`);
+        console.log(`   Zip: ${eventData.zipcode || '(not found)'}`);
+        console.log(`   Country: ${eventData.country || '(not found)'}`);
+        console.log(`   Date: ${eventData.date || '(not found)'}`);
+        console.log(`   Start Time: ${eventData.startTime || '(not found)'}`);
+        console.log(`   End Date: ${eventData.endDate || '(not found)'}`);
+        console.log(`   End Time: ${eventData.endTime || '(not found)'}`);
+      }
+
+      return res.json(eventData);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error("Error scraping Eventbrite event:", error);
+      }
+      return res.status(500).json({ message: "Failed to scrape Eventbrite event data" });
+    }
+  });
+
   // FIXED: City stats endpoint - LA METRO CITIES ONLY
   app.get("/api/city-stats", async (req, res) => {
     try {
