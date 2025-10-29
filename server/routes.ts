@@ -1312,8 +1312,33 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         console.log(`🎟️ EVENTBRITE: Fetching event from URL: ${url}`);
       }
 
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        }
+      });
+      
+      if (!response.ok) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error(`🎟️ EVENTBRITE ERROR: HTTP ${response.status} - ${response.statusText}`);
+        }
+        return res.status(response.status).json({ 
+          message: `Failed to fetch Eventbrite page: ${response.status} ${response.statusText}. Eventbrite may be blocking automated requests.` 
+        });
+      }
+      
       const html = await response.text();
+      
+      // Check if we got a challenge/captcha page
+      if (html.includes('challenge') || html.includes('captcha') || html.includes('Access Denied')) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error(`🎟️ EVENTBRITE ERROR: Got anti-bot challenge page`);
+        }
+        return res.status(403).json({ 
+          message: 'Eventbrite is blocking automated access. Please try copying event details manually.' 
+        });
+      }
+      
       const $ = cheerio.load(html);
 
       const eventData: any = {
