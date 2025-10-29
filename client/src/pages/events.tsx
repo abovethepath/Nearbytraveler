@@ -670,7 +670,7 @@ export default function Events() {
         </div>
       </div>
       
-      <div className="container mx-auto px-2 sm:px-6 py-8">
+      <div className="w-full max-w-7xl mx-auto px-2 sm:px-6 py-8">
 
         {/* Navigation Tabs - Removed "My Events" */}
         <div className="flex flex-wrap justify-center gap-2 mb-6 px-2">
@@ -765,7 +765,7 @@ export default function Events() {
 
 
         {selectedTab === 'explore' && (
-        <div className="space-y-6 max-w-full overflow-x-hidden px-3 sm:px-0">
+        <div className="space-y-6 w-full max-w-full overflow-x-hidden">
 
           {/* Show loading skeleton immediately while data loads */}
           {isLoading && (
@@ -1350,7 +1350,7 @@ export default function Events() {
 
         {/* Meetup Events Tab */}
         {selectedTab === 'meetup' && (
-          <div className="space-y-6 max-w-full overflow-x-hidden px-3 sm:px-0">
+          <div className="space-y-6 w-full max-w-full overflow-x-hidden">
             <div className="text-center mb-6">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                 Local Meetups in {cityToQuery}
