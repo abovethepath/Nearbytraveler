@@ -5936,7 +5936,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 <FormControl>
                                   <textarea
                                     placeholder="Share your experience with this person..."
-                                    className="w-full min-h-[100px] p-3 border rounded-lg resize-none"
+                                    className="w-full min-h-[100px] p-3 border rounded-lg resize-none bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 placeholder:text-gray-500 dark:placeholder:text-gray-400"
                                     {...field}
                                   />
                                 </FormControl>
