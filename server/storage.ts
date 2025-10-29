@@ -717,9 +717,9 @@ export class DatabaseStorage implements IStorage {
     }
     
     if (hometownCity) {
-      // Hometown General Chat - SINGLE CHATROOM PER CITY
+      // Hometown Chatroom - SINGLE CHATROOM PER CITY
       await this.ensureAndJoinChatroom(user, {
-        name: `${hometownCity} General Chat`,
+        name: `Let's Meet Up in ${hometownCity}`,
         city: hometownCity || 'Unknown',
         state: hometownState,
         country: hometownCountry || 'United States',
@@ -739,9 +739,9 @@ export class DatabaseStorage implements IStorage {
         destinationState = 'California';
       }
       
-      // Destination General Chat - SINGLE CHATROOM PER CITY
+      // Destination Chatroom - SINGLE CHATROOM PER CITY
       await this.ensureAndJoinChatroom(user, {
-        name: `${destinationCity} General Chat`,
+        name: `Let's Meet Up in ${destinationCity}`,
         city: destinationCity || 'Unknown',
         state: destinationState,
         country: destinationCountry || 'United States',
