@@ -3505,7 +3505,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Avatar + camera (bigger, no scrollbars) */}
             <div className="relative flex-shrink-0">
-              <div className="rounded-full bg-white ring-4 ring-white shadow-lg overflow-hidden">
+              <div className="rounded-full bg-white dark:bg-gray-800 ring-4 ring-white dark:ring-gray-700 shadow-lg overflow-hidden">
                 <div className="w-36 h-36 sm:w-40 sm:h-40 md:w-56 md:h-56 rounded-full overflow-hidden no-scrollbar">
                   <SimpleAvatar
                     user={user}
@@ -3522,7 +3522,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     aria-label="Change avatar"
                     className="absolute -bottom-2 -right-2 translate-x-1/4 translate-y-1/4
                                h-10 w-10 sm:h-11 sm:w-11 rounded-full p-0
-                               bg-blue-600 hover:bg-blue-700 text-white shadow-lg ring-4 ring-white z-10"
+                               bg-blue-600 hover:bg-blue-700 text-white shadow-lg ring-4 ring-white dark:ring-gray-700 z-10"
                     onClick={() => document.getElementById('avatar-upload-input')?.click()}
                     disabled={uploadingPhoto}
                   >
