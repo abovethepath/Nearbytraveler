@@ -20,7 +20,8 @@ import {
   Target,
   Zap,
   ArrowLeft,
-  X
+  X,
+  ChevronDown
 } from "lucide-react";
 
 interface MatchInCityProps {
