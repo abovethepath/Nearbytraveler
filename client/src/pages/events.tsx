@@ -722,6 +722,20 @@ export default function Events() {
             Local {userCity}
           </Button>
 
+          {/* Travel Destination Tab - Shows when user is actively traveling */}
+          {getCurrentTravelDestination() && (
+            <Button 
+              onClick={() => setSelectedTab('travel-destination')}
+              className={`px-3 sm:px-4 py-2 rounded-xl transition-all duration-300 text-xs sm:text-sm ${
+                selectedTab === 'travel-destination' 
+                  ? 'bg-teal-600 hover:bg-teal-700 text-white shadow-lg' 
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+              }`}
+            >
+              Traveler {getCurrentTravelDestination()?.split(',')[0]?.trim()}
+            </Button>
+          )}
+
           {/* Mobile-only Create Event Button */}
           {isMobile && (
             <Button 
@@ -1831,6 +1845,85 @@ export default function Events() {
                   </div>
                 )}
               </>
+            )}
+          </div>
+        )}
+
+        {/* Travel Destination Tab - Shows events in current travel destination */}
+        {selectedTab === 'travel-destination' && getCurrentTravelDestination() && (
+          <div className="space-y-6">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                Traveler {getCurrentTravelDestination()?.split(',')[0]?.trim()} Events
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300">
+                Events where you're currently traveling: {getCurrentTravelDestination()}
+              </p>
+            </div>
+
+            {/* Reuse community events for the travel destination */}
+            {isLoading && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse">
+                      <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {!isLoading && events && events.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                {events
+                  .filter((event: Event) => {
+                    const travelDest = getCurrentTravelDestination()?.split(',')[0]?.trim();
+                    return event.city === travelDest;
+                  })
+                  .map((event: Event) => (
+                    <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200">
+                      <CardContent className="p-6">
+                        <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-2 line-clamp-2">
+                          {event.title}
+                        </h3>
+                        {event.description && (
+                          <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-3">
+                            {event.description}
+                          </p>
+                        )}
+                        <div className="space-y-2 mb-4">
+                          <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                            <Calendar className="w-4 h-4" />
+                            <span>{formatDateForDisplay(event.date)}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                            <MapPin className="w-4 h-4" />
+                            <span className="line-clamp-1">{event.venueName || event.location}</span>
+                          </div>
+                        </div>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full bg-gradient-to-r from-teal-500 to-teal-600 text-white border-0 hover:from-teal-600 hover:to-teal-700"
+                          onClick={() => setSelectedEvent(event)}
+                        >
+                          View Details
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Calendar className="w-16 h-16 text-gray-300 dark:text-white mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-600 dark:text-white mb-2">No Events Found</h3>
+                <p className="text-gray-500 dark:text-white">
+                  No events found in {getCurrentTravelDestination()?.split(',')[0]?.trim()}. Check other tabs or create your own!
+                </p>
+              </div>
             )}
           </div>
         )}
