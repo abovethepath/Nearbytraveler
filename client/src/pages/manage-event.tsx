@@ -980,16 +980,9 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
               <CardTitle className="flex items-center gap-2">
                 <Upload className="w-5 h-5" />
                 Social Media Promotion
-                <span className="text-red-600 font-bold text-sm">NOT FOR BETA VERSION</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg mb-4">
-                <p className="text-red-700 font-semibold text-sm">
-                  NOT FOR BETA VERSION - This feature is disabled during beta testing
-                </p>
-              </div>
-              
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Promote your event on social media to reach more people. You can post to Instagram and Facebook even days after creating the event.
               </p>
