@@ -947,7 +947,10 @@ export default function Events() {
 
                               <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-white">
                                 <MapPin className="w-4 h-4 text-gray-600 dark:text-white" />
-                                {event.location}
+                                {event.venueName && `${event.venueName}, `}
+                                {event.city}
+                                {event.state && event.state !== event.city && `, ${event.state}`}
+                                {event.country && `, ${event.country}`}
                               </div>
 
                               {event.description && (
@@ -1119,7 +1122,12 @@ export default function Events() {
 
                           <div className="flex items-start gap-2 text-xs sm:text-sm text-gray-600 dark:text-white">
                             <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-gray-600 dark:text-white flex-shrink-0 mt-0.5" />
-                            <span className="line-clamp-2">{event.location}</span>
+                            <span className="line-clamp-2">
+                              {event.venueName && `${event.venueName}, `}
+                              {event.city}
+                              {event.state && event.state !== event.city && `, ${event.state}`}
+                              {event.country && `, ${event.country}`}
+                            </span>
                           </div>
 
                           {event.description && (
