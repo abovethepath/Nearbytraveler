@@ -322,7 +322,7 @@ export default function Home() {
 
   // ONLY USER-CREATED EVENTS: Get events from both hometown AND travel destination
   const { data: userPriorityEvents = [] } = useQuery({
-    queryKey: ['/api/events', effectiveUser?.hometownCity, effectiveUser?.travelDestination],
+    queryKey: ['/api/events', effectiveUser?.hometownCity, effectiveUser?.travelDestination, travelPlans?.map(p => p.id).join(',')],
     queryFn: async () => {
       const cities = [];
       
@@ -331,10 +331,21 @@ export default function Home() {
         cities.push(effectiveUser.hometownCity);
       }
       
-      // Include travel destination if traveling
+      // CRITICAL FIX: Also check travel plans directly for active destinations
+      const currentTravelDestination = getCurrentTravelDestination(Array.isArray(travelPlans) ? travelPlans : []);
+      
+      // Include travel destination from active travel plan
+      if (currentTravelDestination) {
+        const travelCity = currentTravelDestination.split(',')[0].trim();
+        if (!cities.includes(travelCity) && travelCity !== effectiveUser?.hometownCity) {
+          cities.push(travelCity);
+        }
+      }
+      
+      // Fallback: Include travel destination from effectiveUser if set
       if (effectiveUser?.isCurrentlyTraveling && effectiveUser?.travelDestination) {
         const travelCity = effectiveUser.travelDestination.split(',')[0].trim();
-        if (travelCity !== effectiveUser?.hometownCity) {
+        if (!cities.includes(travelCity) && travelCity !== effectiveUser?.hometownCity) {
           cities.push(travelCity);
         }
       }
@@ -344,7 +355,13 @@ export default function Home() {
         cities.push('Culver City');
       }
       
-      console.log(`🎪 HOME: Fetching events from cities:`, cities);
+      console.log(`🎪 HOME: Fetching events from cities:`, cities, {
+        hometown: effectiveUser?.hometownCity,
+        travelDestination: effectiveUser?.travelDestination,
+        currentTravelDestination,
+        isCurrentlyTraveling: effectiveUser?.isCurrentlyTraveling,
+        travelPlansCount: travelPlans?.length
+      });
       
       // Fetch events from all relevant cities
       const allEvents = [];
