@@ -6125,23 +6125,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </Card>
 
             {/* References Widget */}
-            {activeTab === 'references' && user?.id && (
-              <div className="space-y-4 mt-6" style={{zIndex: 10, position: 'relative'}}>
-                <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
-                  <CardHeader className="bg-white dark:bg-gray-900">
-                    <CardTitle className="flex items-center gap-2 text-black dark:text-white">
-                      <Star className="w-5 h-5 text-yellow-500" />
-                      References
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="bg-white dark:bg-gray-900">
-                    <ReferencesWidgetNew userId={user.id} />
-                  </CardContent>
-                </Card>
-              </div>
-            )}
-
-            {/* Vouch Widget */}
             {/* References Panel - Lazy Loaded */}
             {activeTab === 'references' && loadedTabs.has('references') && (
               <div 
@@ -6150,8 +6133,25 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 aria-labelledby="tab-references"
                 ref={tabRefs.references}
                 className="mt-6"
-              data-testid="references-content"
-            >
+                data-testid="references-content"
+              >
+                {user?.id && (
+                  <div className="space-y-4" style={{zIndex: 10, position: 'relative'}}>
+                    <Card className="bg-white border border-black dark:bg-gray-900 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
+                      <CardHeader className="bg-white dark:bg-gray-900">
+                        <CardTitle className="flex items-center gap-2 text-black dark:text-white">
+                          <Star className="w-5 h-5 text-yellow-500" />
+                          References
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="bg-white dark:bg-gray-900">
+                        <ReferencesWidgetNew userId={user.id} />
+                      </CardContent>
+                    </Card>
+                  </div>
+                )}
+
+                {/* Vouch Widget */}
               {user?.id && (
                 <div>
                 <VouchWidget 
