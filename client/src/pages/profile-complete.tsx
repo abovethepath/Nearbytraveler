@@ -1112,6 +1112,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         apiRequest('/api/user/profile', {
           method: 'PATCH',
           body: JSON.stringify({ avatarGradient: gradientCSS }),
+        }).then(() => {
+          // Invalidate all user queries so cards refresh with new gradient
+          queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+          queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}`] });
         }).catch((err) => console.error('Failed to save gradient:', err));
       }
     }
