@@ -1134,7 +1134,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             console.log(`📊 MEETUP: Found ${eventType} JSON-LD data`);
           }
           
-          // Parse date and time from ISO format - preserve local timezone!
+          // Parse START date and time from ISO format - preserve local timezone!
           if (jsonData.startDate) {
             // Parse the ISO string directly to preserve the event's local date/time
             // Handles: "2025-05-10T19:00:00-07:00", "2025-05-10T19:00:00Z", "2025-05-10T19:00:00.123+02:00"
@@ -1153,7 +1153,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
               if (timeMatch) {
                 eventData.startTime = `${timeMatch[1]}:${timeMatch[2]}`;
               } else if (process.env.NODE_ENV === 'development') {
-                console.log(`⚠️ MEETUP: Could not parse time from: ${afterT}`);
+                console.log(`⚠️ MEETUP: Could not parse start time from: ${afterT}`);
               }
             } else {
               // Date-only format (no time)
@@ -1164,7 +1164,34 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             }
             
             if (process.env.NODE_ENV === 'development') {
-              console.log(`📅 MEETUP: Parsed date=${eventData.date}, time=${eventData.startTime || '(not set)'} from ${isoString}`);
+              console.log(`📅 MEETUP: Parsed start date=${eventData.date}, time=${eventData.startTime || '(not set)'} from ${isoString}`);
+            }
+          }
+          
+          // Parse END date and time from ISO format - preserve local timezone!
+          if (jsonData.endDate) {
+            const isoString = jsonData.endDate;
+            
+            // Extract date part (YYYY-MM-DD)
+            const tIndex = isoString.indexOf('T');
+            if (tIndex !== -1) {
+              eventData.endDate = isoString.substring(0, tIndex);
+              
+              // Extract time part (HH:MM) from after 'T'
+              const afterT = isoString.substring(tIndex + 1);
+              const timeMatch = afterT.match(/^(\d{2}):(\d{2})/);
+              if (timeMatch) {
+                eventData.endTime = `${timeMatch[1]}:${timeMatch[2]}`;
+              } else if (process.env.NODE_ENV === 'development') {
+                console.log(`⚠️ MEETUP: Could not parse end time from: ${afterT}`);
+              }
+            } else {
+              // Date-only format (no time)
+              eventData.endDate = isoString;
+            }
+            
+            if (process.env.NODE_ENV === 'development') {
+              console.log(`📅 MEETUP: Parsed end date=${eventData.endDate}, time=${eventData.endTime || '(not set)'} from ${isoString}`);
             }
           }
           
