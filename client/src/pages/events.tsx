@@ -1118,8 +1118,8 @@ export default function Events() {
                           </div>
                         </div>
                       </CardHeader>
-                      <CardContent className="px-3 sm:px-4">
-                        <div className="space-y-2">
+                      <CardContent className="px-2 sm:px-3">
+                        <div className="space-y-2 w-full min-w-0">
                           <div className="flex items-start gap-2 text-xs sm:text-sm text-gray-600 dark:text-white">
                             <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-gray-600 dark:text-white flex-shrink-0 mt-0.5" />
                             <span className="line-clamp-2">
@@ -1168,7 +1168,7 @@ export default function Events() {
                             })()}
                           </div>
 
-                          <div className="flex items-center gap-2 pt-2">
+                          <div className="flex items-center gap-1 sm:gap-2 pt-2 w-full min-w-0">
                             <Button 
                               size="sm" 
                               variant="outline"
@@ -1176,7 +1176,7 @@ export default function Events() {
                                 e.stopPropagation();
                                 setLocation(`/events/${event.id}`);
                               }}
-                              className="flex-1 bg-gradient-to-r from-blue-600 to-orange-500 text-white border-0 hover:from-blue-700 hover:to-orange-600"
+                              className="flex-1 min-w-0 bg-gradient-to-r from-blue-600 to-orange-500 text-white border-0 hover:from-blue-700 hover:to-orange-600 text-xs sm:text-sm"
                               style={{ 
                                 background: 'linear-gradient(to right, #2563eb, #ea580c)',
                                 border: 'none',
@@ -1194,7 +1194,7 @@ export default function Events() {
                               }}
                               disabled={joinEventMutation.isPending || leaveEventMutation.isPending}
                               variant={isUserJoined(event.id) ? "outline" : "default"}
-                              className={isUserJoined(event.id) ? "flex-1" : "flex-1 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0"}
+                              className={isUserJoined(event.id) ? "flex-1 min-w-0 text-xs sm:text-sm" : "flex-1 min-w-0 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0 text-xs sm:text-sm"}
                               style={!isUserJoined(event.id) ? { 
                                 background: 'linear-gradient(to right, #2563eb, #ea580c)',
                                 border: 'none'
