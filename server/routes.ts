@@ -1110,45 +1110,72 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
                            $('div[data-testid="location-info"] span').first().text().trim() ||
                            '';
 
-      // Try to find address - Meetup often has structured data
-      const addressParts = $('div[data-testid="location-info"]').text().trim();
-      if (addressParts) {
-        const addressLines = addressParts.split('\n').map(line => line.trim()).filter(line => line);
-        if (addressLines.length > 0) {
-          eventData.street = addressLines[0] || '';
-          if (addressLines.length > 1) {
-            // Parse "City, State Zip" format
-            const cityStateZip = addressLines[1];
-            const parts = cityStateZip.split(',');
-            if (parts.length >= 2) {
-              eventData.city = parts[0].trim();
-              const stateZip = parts[1].trim().split(' ');
-              eventData.state = stateZip[0] || '';
-              eventData.zipcode = stateZip[1] || '';
-            }
-          }
-        }
-      }
-
-      // Try to find date and time - look for ISO date in structured data
+      // Try to find date and time - look for ISO date in structured data FIRST (most reliable)
       const scriptTags = $('script[type="application/ld+json"]');
+      let foundStructuredData = false;
+      
       scriptTags.each((_, el) => {
         try {
           const jsonData = JSON.parse($(el).html() || '{}');
           if (jsonData['@type'] === 'Event') {
+            foundStructuredData = true;
+            
+            // Parse date and time from ISO format - preserve local timezone!
             if (jsonData.startDate) {
-              const eventDate = new Date(jsonData.startDate);
-              eventData.date = eventDate.toISOString().split('T')[0]; // YYYY-MM-DD
-              eventData.startTime = eventDate.toTimeString().slice(0, 5); // HH:MM
+              // Parse the ISO string directly to preserve the event's local date/time
+              // Handles: "2025-05-10T19:00:00-07:00", "2025-05-10T19:00:00Z", "2025-05-10T19:00:00.123+02:00"
+              const isoString = jsonData.startDate;
+              
+              // Extract date part (YYYY-MM-DD) - everything before 'T' or the whole string if no 'T'
+              const tIndex = isoString.indexOf('T');
+              if (tIndex !== -1) {
+                eventData.date = isoString.substring(0, tIndex);
+                
+                // Extract time part (HH:MM) from after 'T'
+                // Need to handle: "19:00:00", "19:00:00.123", "19:00:00Z", "19:00:00+02:00"
+                const afterT = isoString.substring(tIndex + 1);
+                // Match HH:MM pattern at the start
+                const timeMatch = afterT.match(/^(\d{2}):(\d{2})/);
+                if (timeMatch) {
+                  eventData.startTime = `${timeMatch[1]}:${timeMatch[2]}`;
+                } else if (process.env.NODE_ENV === 'development') {
+                  console.log(`⚠️ MEETUP: Could not parse time from: ${afterT}`);
+                }
+              } else {
+                // Date-only format (no time)
+                eventData.date = isoString;
+                if (process.env.NODE_ENV === 'development') {
+                  console.log(`⚠️ MEETUP: Date-only format (no time): ${isoString}`);
+                }
+              }
+              
+              if (process.env.NODE_ENV === 'development') {
+                console.log(`📅 MEETUP: Parsed date=${eventData.date}, time=${eventData.startTime || '(not set)'} from ${isoString}`);
+              }
             }
+            
+            // Get location data from structured data (most reliable)
             if (jsonData.location) {
-              eventData.venueName = eventData.venueName || jsonData.location.name;
+              if (jsonData.location.name) {
+                eventData.venueName = jsonData.location.name;
+              }
               if (jsonData.location.address) {
-                eventData.street = eventData.street || jsonData.location.address.streetAddress;
-                eventData.city = eventData.city || jsonData.location.address.addressLocality;
-                eventData.state = eventData.state || jsonData.location.address.addressRegion;
-                eventData.zipcode = eventData.zipcode || jsonData.location.address.postalCode;
-                eventData.country = jsonData.location.address.addressCountry;
+                const addr = jsonData.location.address;
+                if (addr.streetAddress) eventData.street = addr.streetAddress;
+                if (addr.addressLocality) eventData.city = addr.addressLocality;
+                if (addr.addressRegion) eventData.state = addr.addressRegion;
+                if (addr.postalCode) eventData.zipcode = addr.postalCode;
+                if (addr.addressCountry) eventData.country = addr.addressCountry;
+                
+                if (process.env.NODE_ENV === 'development') {
+                  console.log(`📍 MEETUP: Found structured address:`, {
+                    street: addr.streetAddress,
+                    city: addr.addressLocality,
+                    state: addr.addressRegion,
+                    zip: addr.postalCode,
+                    country: addr.addressCountry
+                  });
+                }
               }
             }
           }
@@ -1157,12 +1184,68 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         }
       });
 
+      // Fallback: Try to parse address from visible text if structured data didn't provide it
+      if (!eventData.street || !eventData.city) {
+        const addressParts = $('div[data-testid="location-info"]').text().trim();
+        if (addressParts) {
+          const addressLines = addressParts.split('\n').map(line => line.trim()).filter(line => line);
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`📍 MEETUP: Found address text lines:`, addressLines);
+          }
+          
+          if (addressLines.length > 0 && !eventData.street) {
+            // First line is usually street address
+            eventData.street = addressLines[0];
+          }
+          
+          if (addressLines.length > 1 && !eventData.city) {
+            // Second line often contains "City, State Zip" or "City, State"
+            const cityStateZip = addressLines[1];
+            const parts = cityStateZip.split(',').map(p => p.trim());
+            
+            if (parts.length >= 2) {
+              eventData.city = parts[0];
+              // Try to parse "State Zip" or just "State"
+              const stateZipParts = parts[1].split(' ').filter(p => p.trim());
+              if (stateZipParts.length > 0) {
+                eventData.state = stateZipParts[0];
+              }
+              if (stateZipParts.length > 1) {
+                // Last part is likely zip code
+                eventData.zipcode = stateZipParts[stateZipParts.length - 1];
+              }
+            } else if (parts.length === 1) {
+              // Sometimes it's just "City State" without comma
+              const cityStateParts = parts[0].split(' ').filter(p => p.trim());
+              if (cityStateParts.length >= 2) {
+                // Last item is probably state
+                eventData.state = cityStateParts[cityStateParts.length - 1];
+                // Everything before is city
+                eventData.city = cityStateParts.slice(0, -1).join(' ');
+              }
+            }
+          }
+        }
+      }
+
       // Set default country to United States if not found
       if (!eventData.country) {
         eventData.country = 'United States';
       }
 
-      if (process.env.NODE_ENV === 'development') console.log(`✅ MEETUP: Extracted event data:`, eventData);
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`✅ MEETUP: Final extracted event data:`);
+        console.log(`   Title: ${eventData.title || '(not found)'}`);
+        console.log(`   Description: ${eventData.description ? eventData.description.substring(0, 100) + '...' : '(not found)'}`);
+        console.log(`   Venue: ${eventData.venueName || '(not found)'}`);
+        console.log(`   Street: ${eventData.street || '(not found)'}`);
+        console.log(`   City: ${eventData.city || '(not found)'}`);
+        console.log(`   State: ${eventData.state || '(not found)'}`);
+        console.log(`   Zip: ${eventData.zipcode || '(not found)'}`);
+        console.log(`   Country: ${eventData.country || '(not found)'}`);
+        console.log(`   Date: ${eventData.date || '(not found)'}`);
+        console.log(`   Time: ${eventData.startTime || '(not found)'}`);
+      }
 
       return res.json(eventData);
     } catch (error: any) {
