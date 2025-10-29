@@ -3622,7 +3622,21 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     );
                   })()}
 
-                  {/* Stats - Removed countries and references badges */}
+                  {/* Stats Badges */}
+                  <div className="flex items-center gap-3 mt-3 flex-wrap">
+                    {user?.userType !== 'business' && (
+                      <>
+                        <Badge variant="outline" className="text-xs px-3 py-1 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+                          <Globe className="w-3 h-3 mr-1 inline" />
+                          {countriesVisited.length} {countriesVisited.length === 1 ? 'Country' : 'Countries'}
+                        </Badge>
+                        <Badge variant="outline" className="text-xs px-3 py-1 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
+                          <Star className="w-3 h-3 mr-1 inline" />
+                          {userReferences.length} {userReferences.length === 1 ? 'Reference' : 'References'}
+                        </Badge>
+                      </>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
