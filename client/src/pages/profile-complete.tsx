@@ -859,13 +859,25 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   
   const gradientOptions = [
     "from-blue-500 via-purple-500 to-orange-500", // Original
-    "from-green-500 via-emerald-500 to-orange-500", // Green to Orange
+    "from-green-500 via-emerald-500 to-orange-500", // Green to Orange (available to meet)
     "from-blue-500 via-cyan-500 to-orange-500", // Blue to Orange
     "from-purple-500 via-pink-500 to-red-500", // Purple to Red
     "from-indigo-500 via-blue-500 to-green-500", // Indigo to Green
     "from-orange-500 via-red-500 to-pink-500", // Orange to Pink
     "from-teal-500 via-blue-500 to-purple-500", // Teal to Purple
     "from-yellow-500 via-orange-500 to-red-500", // Yellow to Red
+  ];
+
+  // CSS gradient mapping for database storage and user cards
+  const gradientCSSMap = [
+    'linear-gradient(135deg, #3B82F6 0%, #A855F7 50%, #F97316 100%)', // Blue-Purple-Orange
+    'linear-gradient(135deg, #10B981 0%, #059669 50%, #F97316 100%)', // Green-Emerald-Orange
+    'linear-gradient(135deg, #3B82F6 0%, #06B6D4 50%, #F97316 100%)', // Blue-Cyan-Orange
+    'linear-gradient(135deg, #A855F7 0%, #EC4899 50%, #EF4444 100%)', // Purple-Pink-Red
+    'linear-gradient(135deg, #6366F1 0%, #3B82F6 50%, #10B981 100%)', // Indigo-Blue-Green
+    'linear-gradient(135deg, #F97316 0%, #EF4444 50%, #EC4899 100%)', // Orange-Red-Pink
+    'linear-gradient(135deg, #14B8A6 0%, #3B82F6 50%, #A855F7 100%)', // Teal-Blue-Purple
+    'linear-gradient(135deg, #EAB308 0%, #F97316 50%, #EF4444 100%)', // Yellow-Orange-Red
   ];
   
   // Listen for cover photo refresh events
@@ -1068,20 +1080,40 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Always prioritize fetched user data over localStorage cache
   const user = fetchedUser || currentUser;
 
-  // Load and save gradient selection from localStorage after user is defined
+  // Load gradient selection from database first, then localStorage as fallback
   useEffect(() => {
     if (user?.id) {
+      // If user has a saved gradient in database, find which index it matches
+      if (user.avatarGradient) {
+        const gradientIndex = gradientCSSMap.indexOf(user.avatarGradient);
+        if (gradientIndex !== -1) {
+          setSelectedGradient(gradientIndex);
+          return;
+        }
+      }
+      
+      // Fallback to localStorage
       const saved = localStorage.getItem(`profile_gradient_${user.id}`);
       if (saved) {
         setSelectedGradient(parseInt(saved, 10));
       }
     }
-  }, [user?.id]);
+  }, [user?.id, user?.avatarGradient]);
 
-  // Save gradient selection when it changes
+  // Save gradient selection when it changes - both localStorage and database
   useEffect(() => {
-    if (user?.id && selectedGradient !== 0) {
+    if (user?.id && selectedGradient !== undefined) {
+      // Save to localStorage
       localStorage.setItem(`profile_gradient_${user.id}`, selectedGradient.toString());
+      
+      // Save to database so it appears on user discovery cards
+      const gradientCSS = gradientCSSMap[selectedGradient];
+      if (gradientCSS) {
+        apiRequest('/api/user/profile', {
+          method: 'PATCH',
+          body: JSON.stringify({ avatarGradient: gradientCSS }),
+        }).catch((err) => console.error('Failed to save gradient:', err));
+      }
     }
   }, [selectedGradient, user?.id]);
   
