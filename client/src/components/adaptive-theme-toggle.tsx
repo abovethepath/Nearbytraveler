@@ -49,8 +49,8 @@ export function AdaptiveThemeToggle() {
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel className="flex items-center gap-2">
+      <DropdownMenuContent align="end" className="w-56 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+        <DropdownMenuLabel className="flex items-center gap-2 text-gray-900 dark:text-white">
           <Palette className="h-4 w-4" />
           Theme Settings
         </DropdownMenuLabel>
@@ -59,8 +59,8 @@ export function AdaptiveThemeToggle() {
         <DropdownMenuItem
           onClick={() => setTheme("light")}
           className={cn(
-            "cursor-pointer",
-            theme === "light" && "bg-accent text-accent-foreground"
+            "cursor-pointer text-gray-900 dark:text-gray-100",
+            theme === "light" && "bg-blue-100 dark:bg-blue-900/30"
           )}
         >
           <Sun className="mr-2 h-4 w-4" />
@@ -73,8 +73,8 @@ export function AdaptiveThemeToggle() {
         <DropdownMenuItem
           onClick={() => setTheme("dark")}
           className={cn(
-            "cursor-pointer",
-            theme === "dark" && "bg-accent text-accent-foreground"
+            "cursor-pointer text-gray-900 dark:text-gray-100",
+            theme === "dark" && "bg-blue-100 dark:bg-blue-900/30"
           )}
         >
           <Moon className="mr-2 h-4 w-4" />
@@ -87,8 +87,8 @@ export function AdaptiveThemeToggle() {
         <DropdownMenuItem
           onClick={() => setTheme("system")}
           className={cn(
-            "cursor-pointer",
-            theme === "system" && "bg-accent text-accent-foreground"
+            "cursor-pointer text-gray-900 dark:text-gray-100",
+            theme === "system" && "bg-blue-100 dark:bg-blue-900/30"
           )}
         >
           <Monitor className="mr-2 h-4 w-4" />
@@ -102,11 +102,11 @@ export function AdaptiveThemeToggle() {
         
         <DropdownMenuItem
           onClick={toggleTheme}
-          className="cursor-pointer text-sm text-muted-foreground"
+          className="cursor-pointer text-sm text-gray-600 dark:text-gray-400"
         >
           <div className="flex items-center gap-2">
             <span>Quick Toggle</span>
-            <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+            <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 px-1.5 font-mono text-[10px] font-medium text-gray-700 dark:text-gray-300 opacity-100">
               <span className="text-xs">⌘</span>T
             </kbd>
           </div>
