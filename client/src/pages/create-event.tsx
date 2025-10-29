@@ -82,6 +82,9 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
   const [recurrenceType, setRecurrenceType] = useState("");
   const [eventUrl, setEventUrl] = useState("");
   const [isImportingEvent, setIsImportingEvent] = useState(false);
+  const [importedFromUrl, setImportedFromUrl] = useState(false);
+  const [isOriginalOrganizer, setIsOriginalOrganizer] = useState<boolean | null>(null);
+  const [importedPlatform, setImportedPlatform] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
@@ -315,6 +318,15 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
   });
 
   const onSubmit = async (data: any) => {
+    // Validate organizer confirmation if event was imported from URL
+    if (importedFromUrl && isOriginalOrganizer === null) {
+      toast({
+        title: "Organizer Confirmation Required",
+        description: "Please confirm whether you are the original organizer of this imported event",
+        variant: "destructive"
+      });
+      return;
+    }
     
     setIsSubmitting(true);
     try {
@@ -435,6 +447,10 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
             data.customRestriction.trim() : 
             `${data.customRestriction.trim()} only` 
           : null,
+        // Event import attribution
+        importedFromUrl: importedFromUrl,
+        importedPlatform: importedFromUrl ? importedPlatform : null,
+        isOriginalOrganizer: importedFromUrl ? (isOriginalOrganizer === true) : true,
       };
 
       await createEventMutation.mutateAsync(eventData);
@@ -575,9 +591,14 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                         if (eventData.country) setSelectedCountry(eventData.country);
                         if (eventData.state) setSelectedState(eventData.state);
                         
+                        // Mark as imported and track platform
+                        setImportedFromUrl(true);
+                        setImportedPlatform(platform);
+                        setIsOriginalOrganizer(null); // Reset to require user confirmation
+                        
                         toast({
                           title: "✨ Event imported!",
-                          description: `Successfully imported from ${platform}. Check the details and create your event.`,
+                          description: `Successfully imported from ${platform}. Please confirm if you are the original organizer.`,
                         });
                       } catch (error) {
                         toast({
@@ -601,6 +622,90 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                 </p>
               </CardContent>
             </Card>
+
+            {/* Organizer Confirmation - Shows after importing from URL */}
+            {importedFromUrl && (
+              <Card className="border-2 border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-950/20">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg flex items-center gap-2 text-orange-800 dark:text-orange-200">
+                    ⚠️ Organizer Confirmation Required
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-orange-700 dark:text-orange-300">
+                    You imported this event from <strong>{importedPlatform}</strong>. Please confirm your role:
+                  </p>
+                  
+                  <div className="space-y-3">
+                    <div 
+                      className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                        isOriginalOrganizer === true 
+                          ? 'border-green-500 bg-green-50 dark:bg-green-950/30' 
+                          : 'border-gray-200 dark:border-gray-700 hover:border-green-300 dark:hover:border-green-700'
+                      }`}
+                      onClick={() => setIsOriginalOrganizer(true)}
+                      data-testid="option-original-organizer"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5 ${
+                          isOriginalOrganizer === true 
+                            ? 'border-green-500 bg-green-500' 
+                            : 'border-gray-300 dark:border-gray-600'
+                        }`}>
+                          {isOriginalOrganizer === true && (
+                            <div className="w-2 h-2 bg-white rounded-full" />
+                          )}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-gray-900 dark:text-gray-100">
+                            ✅ I am the original organizer
+                          </p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            I created this event on {importedPlatform} and I'm the official organizer
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div 
+                      className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                        isOriginalOrganizer === false 
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/30' 
+                          : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700'
+                      }`}
+                      onClick={() => setIsOriginalOrganizer(false)}
+                      data-testid="option-sharing-event"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mt-0.5 ${
+                          isOriginalOrganizer === false 
+                            ? 'border-blue-500 bg-blue-500' 
+                            : 'border-gray-300 dark:border-gray-600'
+                        }`}>
+                          {isOriginalOrganizer === false && (
+                            <div className="w-2 h-2 bg-white rounded-full" />
+                          )}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-gray-900 dark:text-gray-100">
+                            📢 I'm sharing someone else's event
+                          </p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            I found this event and want to share it with the Nearby Traveler community
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {isOriginalOrganizer === null && (
+                    <p className="text-sm text-orange-600 dark:text-orange-400 font-medium">
+                      ⚠️ Please select an option above before creating the event
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
             {/* Event Title */}
             <div className="space-y-2">

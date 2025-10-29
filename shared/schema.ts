@@ -422,6 +422,11 @@ export const events = pgTable("events", {
   privateNotes: text("private_notes"), // Private organizer notes about who should attend
   customRestriction: text("custom_restriction"), // Custom restriction label like "Taylor Swift fans only", "Dog lovers only", etc.
   
+  // Event import attribution fields
+  importedFromUrl: boolean("imported_from_url").default(false), // Whether this event was imported from Meetup/Eventbrite
+  importedPlatform: text("imported_platform"), // 'Meetup', 'Eventbrite', or null if created manually
+  isOriginalOrganizer: boolean("is_original_organizer").default(true), // True if user is the original creator, false if just sharing
+  
   createdAt: timestamp("created_at").defaultNow(),
 });
 
