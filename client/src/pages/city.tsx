@@ -319,7 +319,7 @@ export default function CityPage({ cityName }: CityPageProps) {
                 <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight drop-shadow-lg">
                   {decodedCityName}
                 </h1>
-                <p className="text-white/90 mt-2">Discover everything happening in this amazing city</p>
+                <p className="text-white/90 mt-2">Discover and connect with people</p>
               </div>
               <div className="flex items-center gap-2 text-white/90 flex-shrink-0">
                 <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
