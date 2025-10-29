@@ -4195,7 +4195,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
                     <Heart className="w-5 h-5 text-red-500" />
-                    Interests, Activities, Events
+                    Interests & Activities
                   </CardTitle>
                   {isOwnProfile && !isEditingPublicInterests && (
                     <Button

@@ -25,7 +25,7 @@ export const getInterestStyle = (interest: string): string => {
 };
 
 export const getActivityStyle = (): string => {
-  return 'bg-green-50 text-green-700 hover:bg-green-100 dark:bg-green-900 dark:text-green-200 border-green-200 dark:border-green-700';
+  return 'bg-gradient-to-r from-orange-500 to-blue-500 text-white border-0 hover:from-orange-600 hover:to-blue-600';
 };
 
 export const getEventStyle = (): string => {
