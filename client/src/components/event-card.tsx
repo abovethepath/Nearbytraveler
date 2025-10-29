@@ -10,6 +10,7 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import ImageLoader from "./ImageLoader";
+import { InstagramShare } from "./InstagramShare";
 
 interface EventCardProps {
   event: Event;
@@ -190,7 +191,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
 
 
           {/* Actions */}
-          <div className="flex gap-2 pt-2">
+          <div className="flex flex-wrap gap-2 pt-2">
             <Button 
               size="sm" 
               variant="outline"
@@ -218,6 +219,9 @@ export default function EventCard({ event, compact = false, featured = false }: 
             >
               {joinEventMutation.isPending ? "Joining..." : "Join"}
             </Button>
+            <div onClick={(e) => e.stopPropagation()}>
+              <InstagramShare event={event} />
+            </div>
           </div>
         </div>
       </article>

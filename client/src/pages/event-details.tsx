@@ -12,6 +12,7 @@ import { type Event, type EventParticipant, type User as UserType } from "@share
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { ParticipantAvatars } from "@/components/ParticipantAvatars";
+import { InstagramShare } from "@/components/InstagramShare";
 
 import { useLocation } from "wouter";
 
@@ -264,6 +265,9 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
               {viewAsGuest ? "View as Organizer" : "View as Guest"}
             </Button>
           )}
+          
+          {/* Instagram Share */}
+          <InstagramShare event={event} />
           
           {/* Share Button */}
           <Button
