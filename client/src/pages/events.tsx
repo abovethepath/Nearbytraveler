@@ -760,7 +760,7 @@ export default function Events() {
                 <div className="w-full md:w-64 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
                 <div className="w-full md:w-64 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
                 {[...Array(6)].map((_, i) => (
                   <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse">
                     <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
@@ -893,7 +893,7 @@ export default function Events() {
                     <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">
                       My Events ({allUserEvents.length})
                     </h2>
-                    <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-2">
                       {allUserEvents.map((event) => (
                         <Card 
                           key={event.id} 
@@ -1070,7 +1070,7 @@ export default function Events() {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
                   {filteredUpcomingEvents.map((event) => (
                     <Card 
                       key={event.id} 
@@ -1201,7 +1201,7 @@ export default function Events() {
             {filteredPastEvents.length > 0 && (
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Past Events</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
                   {filteredPastEvents.map((event) => (
                     <Card 
                       key={event.id} 
@@ -1348,7 +1348,7 @@ export default function Events() {
 
             {meetupLoading && (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
                   {[...Array(6)].map((_, i) => (
                     <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse">
                       <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
@@ -1363,7 +1363,7 @@ export default function Events() {
             {!meetupLoading && (
               <>
                 {meetupEvents.events && meetupEvents.events.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
                     {meetupEvents.events.map((event: any) => (
                       <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200">
                         <CardContent className="p-6">
@@ -1464,7 +1464,7 @@ export default function Events() {
 
             {isAllEventsLoading && (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
                   {[...Array(6)].map((_, i) => (
                     <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse">
                       <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
@@ -1479,7 +1479,7 @@ export default function Events() {
             {!isAllEventsLoading && (
               <>
                 {allEventsData.events && allEventsData.events.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
                     {allEventsData.events.map((event: any) => (
                       <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200">
                         {event.image && (
@@ -1613,7 +1613,7 @@ export default function Events() {
 
             {ticketmasterLoading && (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
                   {[...Array(6)].map((_, i) => (
                     <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse">
                       <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
@@ -1628,7 +1628,7 @@ export default function Events() {
             {!ticketmasterLoading && (
               <>
                 {ticketmasterEvents.events && ticketmasterEvents.events.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
                     {ticketmasterEvents.events.map((event: any) => (
                       <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200">
                         {event.image && (
@@ -1747,7 +1747,7 @@ export default function Events() {
 
             {localLoading && (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
                   {[...Array(6)].map((_, i) => (
                     <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse">
                       <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
@@ -1762,7 +1762,7 @@ export default function Events() {
             {!localLoading && (
               <>
                 {localEvents.events && localEvents.events.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
                     {localEvents.events.map((event: any) => (
                       <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200">
                         <CardContent className="p-6">
@@ -1864,7 +1864,7 @@ export default function Events() {
             {/* Reuse community events for the travel destination */}
             {isLoading && (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
                   {[...Array(6)].map((_, i) => (
                     <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse">
                       <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
@@ -1877,7 +1877,7 @@ export default function Events() {
             )}
 
             {!isLoading && events && events.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
                 {events
                   .filter((event: Event) => {
                     const travelDest = getCurrentTravelDestination()?.split(',')[0]?.trim();
@@ -1942,7 +1942,7 @@ export default function Events() {
 
             {false && (
               <div className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
                   {[...Array(6)].map((_, i) => (
                     <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse">
                       <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
@@ -1957,7 +1957,7 @@ export default function Events() {
             {true && (
               <>
                 {(events as any)?.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
                     {(events as any).map((event: any) => (
                       <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200">
                         <CardContent className="p-6">
