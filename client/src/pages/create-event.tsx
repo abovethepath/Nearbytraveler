@@ -22,22 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { authStorage } from "@/lib/auth";
 
-// UNIFIED event categories - matches events page exactly (no more duplicates!)
-const EVENT_CATEGORIES = [
-  "Food & Dining",
-  "Social & Networking", 
-  "Health & Wellness",
-  "Arts & Culture",
-  "Music & Entertainment",
-  "Sports & Fitness",
-  "Family Activities",
-  "Nightlife & Parties",
-  "Education & Learning",
-  "Business & Professional",
-  "Custom" // This will allow for custom category input
-];
-
-// Tags removed - keeping event creation simple! Event descriptions cover everything.
+// Categories removed - users can describe their event in the description field!
 
 interface CreateEventProps {
   onEventCreated?: () => void;
@@ -92,8 +77,6 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
   const [selectedState, setSelectedState] = useState("");
   const [availableStates, setAvailableStates] = useState<string[]>([]);
   const [availableCities, setAvailableCities] = useState<string[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [customCategory, setCustomCategory] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [useBusinessAddress, setUseBusinessAddress] = useState(false);
   const [isRecurring, setIsRecurring] = useState(false);
@@ -409,39 +392,6 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
       if (data.city) locationParts.push(data.city);
       if (data.state) locationParts.push(data.state);
       const displayLocation = locationParts.join(', ');
-      
-      // Validate categories and remove duplicates/redundancy
-      let finalCategories = [...selectedCategories];
-      if (selectedCategories.includes("Custom") && customCategory.trim()) {
-        finalCategories = finalCategories.filter(cat => cat !== "Custom").concat([customCategory.trim()]);
-      } else if (selectedCategories.includes("Custom")) {
-        finalCategories = finalCategories.filter(cat => cat !== "Custom");
-      }
-      
-      // Remove redundant categories (e.g., if both "Adventure Sports" and "Sports & Fitness" are selected, keep only "Adventure Sports")
-      const redundancyMap = {
-        "Adventure Sports": ["Sports & Fitness"],
-        "Health & Wellness": ["Sports & Fitness"],
-        "Entertainment": ["Music", "Arts & Culture"],
-        "Food & Dining": ["Food"]
-      };
-      
-      finalCategories = finalCategories.filter((category, index, array) => {
-        // Check if this category should be removed due to redundancy
-        for (const [primary, redundant] of Object.entries(redundancyMap)) {
-          if (redundant.includes(category) && array.includes(primary)) {
-            return false; // Remove the redundant category
-          }
-        }
-        return true;
-      });
-      
-      // Remove duplicates
-      finalCategories = [...new Set(finalCategories)];
-      
-      if (finalCategories.length === 0) {
-        throw new Error('At least one event category is required');
-      }
 
       const eventData = {
         title: data.title,
@@ -457,7 +407,7 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
         endDate: endDateTime,
         startTime: data.startTime || null,
         endTime: data.endTime || null,
-        category: finalCategories.join(", "),
+        category: "General", // Default category - users can specify type in description
         organizerId: user.id,
         maxParticipants: data.maxParticipants ? parseInt(data.maxParticipants.toString()) : null,
         isPublic: data.isPublic !== false,
