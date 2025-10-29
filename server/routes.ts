@@ -1271,9 +1271,60 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         }
       }
 
-      // Set default country to United States if not found
+      // Smart country detection - only default to US if we have a US state code
       if (!eventData.country) {
-        eventData.country = 'United States';
+        // List of US state codes/abbreviations
+        const US_STATES = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 
+                          'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 
+                          'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 
+                          'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 
+                          'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY', 'DC'];
+        
+        // Only default to United States if we have a valid US state
+        if (eventData.state && US_STATES.includes(eventData.state.toUpperCase())) {
+          eventData.country = 'United States';
+        } else {
+          // Try to infer country from city name for common international cities
+          const cityLower = (eventData.city || '').toLowerCase();
+          const CITY_COUNTRY_MAP: Record<string, string> = {
+            'berlin': 'Germany',
+            'london': 'United Kingdom',
+            'paris': 'France',
+            'tokyo': 'Japan',
+            'toronto': 'Canada',
+            'sydney': 'Australia',
+            'melbourne': 'Australia',
+            'barcelona': 'Spain',
+            'madrid': 'Spain',
+            'rome': 'Italy',
+            'milan': 'Italy',
+            'amsterdam': 'Netherlands',
+            'brussels': 'Belgium',
+            'zurich': 'Switzerland',
+            'geneva': 'Switzerland',
+            'vienna': 'Austria',
+            'prague': 'Czech Republic',
+            'dublin': 'Ireland',
+            'vancouver': 'Canada',
+            'montreal': 'Canada',
+            'singapore': 'Singapore',
+            'hong kong': 'Hong Kong',
+            'mumbai': 'India',
+            'bangalore': 'India',
+            'delhi': 'India',
+            'mexico city': 'Mexico',
+            'são paulo': 'Brazil',
+            'rio de janeiro': 'Brazil',
+            'buenos aires': 'Argentina'
+          };
+          
+          if (cityLower && CITY_COUNTRY_MAP[cityLower]) {
+            eventData.country = CITY_COUNTRY_MAP[cityLower];
+          } else {
+            // Last resort: leave it blank and let the user fill it in
+            eventData.country = '';
+          }
+        }
       }
 
       if (process.env.NODE_ENV === 'development') {
@@ -1454,9 +1505,60 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         }
       });
 
-      // Set default country to United States if not found
+      // Smart country detection - only default to US if we have a US state code
       if (!eventData.country) {
-        eventData.country = 'United States';
+        // List of US state codes/abbreviations
+        const US_STATES = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 
+                          'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 
+                          'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 
+                          'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 
+                          'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY', 'DC'];
+        
+        // Only default to United States if we have a valid US state
+        if (eventData.state && US_STATES.includes(eventData.state.toUpperCase())) {
+          eventData.country = 'United States';
+        } else {
+          // Try to infer country from city name for common international cities
+          const cityLower = (eventData.city || '').toLowerCase();
+          const CITY_COUNTRY_MAP: Record<string, string> = {
+            'berlin': 'Germany',
+            'london': 'United Kingdom',
+            'paris': 'France',
+            'tokyo': 'Japan',
+            'toronto': 'Canada',
+            'sydney': 'Australia',
+            'melbourne': 'Australia',
+            'barcelona': 'Spain',
+            'madrid': 'Spain',
+            'rome': 'Italy',
+            'milan': 'Italy',
+            'amsterdam': 'Netherlands',
+            'brussels': 'Belgium',
+            'zurich': 'Switzerland',
+            'geneva': 'Switzerland',
+            'vienna': 'Austria',
+            'prague': 'Czech Republic',
+            'dublin': 'Ireland',
+            'vancouver': 'Canada',
+            'montreal': 'Canada',
+            'singapore': 'Singapore',
+            'hong kong': 'Hong Kong',
+            'mumbai': 'India',
+            'bangalore': 'India',
+            'delhi': 'India',
+            'mexico city': 'Mexico',
+            'são paulo': 'Brazil',
+            'rio de janeiro': 'Brazil',
+            'buenos aires': 'Argentina'
+          };
+          
+          if (cityLower && CITY_COUNTRY_MAP[cityLower]) {
+            eventData.country = CITY_COUNTRY_MAP[cityLower];
+          } else {
+            // Last resort: leave it blank and let the user fill it in
+            eventData.country = '';
+          }
+        }
       }
 
       if (process.env.NODE_ENV === 'development') {
