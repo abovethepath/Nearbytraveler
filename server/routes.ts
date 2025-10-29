@@ -4789,6 +4789,15 @@ Questions? Just reply to this message. Welcome aboard!
           }
           
           console.log(`✅ HOMETOWN CITY INFRASTRUCTURE COMPLETE: ${cityName}`);
+          
+          // AUTO-ASSIGN USER TO CHATROOMS: Same logic as when a new user is created
+          try {
+            await storage.assignUserToChatrooms(userId, cityName, stateName, countryName);
+            console.log(`✅ CHATROOM ASSIGNMENT: User ${userId} automatically assigned to ${cityName} chatrooms`);
+          } catch (chatroomError) {
+            console.error('❌ CHATROOM ASSIGNMENT: Failed to assign user to chatrooms:', chatroomError);
+            // Don't fail the user update if chatroom assignment fails
+          }
         } catch (error) {
           console.error('❌ AUTO-SETUP: Failed to set up city infrastructure for hometown:', error);
           // Don't fail the user update if city setup fails
