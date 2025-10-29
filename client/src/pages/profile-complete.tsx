@@ -4598,7 +4598,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             {allActivities.map((activity, index) => (
                               <div 
                                 key={`activity-${index}`} 
-                                className="h-8 px-4 rounded-full text-sm font-medium bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-md"
+                                className="h-8 px-4 rounded-full text-sm font-medium bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-md"
                               >
                                 {activity}
                               </div>
@@ -4965,7 +4965,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <Globe className="w-5 h-5 text-green-500" />
                           Business Activities
                         </h4>
-                        <div className="flex flex-wrap gap-2 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                        <div className="flex flex-wrap gap-2 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
                           {safeGetAllActivities().map((activity, index) => {
                             const isSelected = (editFormData.activities ?? []).includes(activity);
                             return (
@@ -4981,8 +4981,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 }}
                                 className={`inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none border-0 transition-all ${
                                   isSelected
-                                    ? 'bg-green-600 text-white'
-                                    : 'bg-green-100 text-green-800 hover:bg-green-200 dark:bg-green-800 dark:text-green-200 dark:hover:bg-green-700'
+                                    ? 'bg-purple-600 text-white'
+                                    : 'bg-purple-100 text-purple-800 hover:bg-purple-200 dark:bg-purple-800 dark:text-purple-200 dark:hover:bg-purple-700'
                                 }`}
                               >
                                 {activity}
