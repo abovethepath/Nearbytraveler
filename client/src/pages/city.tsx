@@ -62,6 +62,9 @@ export default function CityPage({ cityName }: CityPageProps) {
   const urlCityName = cityName || (location.split('/')[2] ? decodeURIComponent(location.split('/')[2]) : '');
   const decodedCityName = urlCityName;
   
+  // Debug logging
+  console.log('🏙️ CityPage Debug:', { cityName, location, urlCityName, decodedCityName });
+  
   // Parse city location data for weather widget
   const locationParts = decodedCityName.split(',').map(part => part.trim());
   const parsedCityName = locationParts[0] || '';
