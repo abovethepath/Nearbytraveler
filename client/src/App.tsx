@@ -941,7 +941,8 @@ function Router() {
         cityName.toLowerCase().includes(metroCity.toLowerCase())
       );
       
-      if (isLAMetroCity) {
+      // Only redirect if not already on the consolidated LA Metro page
+      if (isLAMetroCity && cityName !== 'Los Angeles Metro') {
         const newPath = subPath ? `/city/Los Angeles Metro/${subPath}` : '/city/Los Angeles Metro';
         console.log(`🌍 METRO CONSOLIDATION: ${cityName} → Los Angeles Metro (preventing separate suburb pages)`);
         setLocation(newPath);
