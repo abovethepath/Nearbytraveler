@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, MapPin, Calendar, Filter, ArrowLeft, ArrowUpDown, ChevronDown, Clock, Globe, Star, Zap, Briefcase, Phone, Building2 } from "lucide-react";
+import { Users, MapPin, Calendar, Filter, ArrowLeft, ArrowUpDown, ChevronDown, X, Clock, Globe, Star, Zap, Briefcase, Phone, Building2 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 import UserCard from "@/components/user-card";
