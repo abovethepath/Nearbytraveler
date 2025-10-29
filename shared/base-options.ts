@@ -43,7 +43,7 @@ export const TOP_CHOICES = [
 ];
 
 // ========================================
-// INTERESTS (67 items)
+// INTERESTS (62 items)
 // ========================================
 // Extended interests for deeper user matching and personalization
 
@@ -56,7 +56,6 @@ export const INTERESTS = [
   "Pet Lovers",
   "Luxury Experiences",
   "Budget Travel",
-  "Non-Drinker Social Scene",
   "Smoke-Free Environments",
   "Health-Conscious/Vaccinated",
   "Hookah Lounges",
@@ -98,10 +97,6 @@ export const INTERESTS = [
   "Kid-Friendly Activities",
   "Parenting Meetups",
   "Family Travel",
-  "Children's Museums & Events",
-  "Playground Hangouts",
-  "Family Dining",
-  "Educational Activities for Kids",
   "Arts & Crafts",
   "Fashion & Style",
   "Jazz & Blues",
@@ -118,13 +113,11 @@ export const INTERESTS = [
 ];
 
 // ========================================
-// ACTIVITIES (18 items)
+// ACTIVITIES (16 items)
 // ========================================
 // Concrete activities users want to do together
 
 export const ACTIVITIES = [
-  "Family Outings",
-  "Kids' Playgrounds & Parks",
   "Zoo & Aquarium Visits",
   "Restaurant Hopping",
   "Alcohol-Free Hangouts",
@@ -271,8 +264,8 @@ export const getSexualPreferenceOptions = () => SEXUAL_PREFERENCE_OPTIONS;
 // ========================================
 // SUMMARY
 // ========================================
-// Total taxonomy: 115 items
+// Total taxonomy: 108 items (consolidated from 115 to remove redundancies)
 // - TOP_CHOICES: 30 items
-// - INTERESTS: 67 items  
-// - ACTIVITIES: 18 items
+// - INTERESTS: 62 items (reduced from 67)
+// - ACTIVITIES: 16 items (reduced from 18)
 // Events have been removed from user profiles - they now only exist as community events that users can create/attend
