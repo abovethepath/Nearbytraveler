@@ -1120,8 +1120,10 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           const jsonText = $(el).html() || '{}';
           const jsonData = JSON.parse(jsonText);
           
-          // Skip if not an Event type (Meetup also has Organization, BreadcrumbList, etc.)
-          if (jsonData['@type'] !== 'Event') {
+          // Skip if not an Event type (Meetup uses FoodEvent, SocialEvent, MusicEvent, etc.)
+          // All these are subtypes of Event in schema.org
+          const eventType = jsonData['@type'];
+          if (!eventType || (!eventType.includes('Event') && eventType !== 'Event')) {
             return; // Continue to next script tag
           }
           
@@ -1129,7 +1131,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           foundStructuredData = true;
           
           if (process.env.NODE_ENV === 'development') {
-            console.log(`📊 MEETUP: Found Event JSON-LD data`);
+            console.log(`📊 MEETUP: Found ${eventType} JSON-LD data`);
           }
           
           // Parse date and time from ISO format - preserve local timezone!
