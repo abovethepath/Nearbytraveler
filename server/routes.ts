@@ -6686,6 +6686,28 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Get single chatroom details by ID (MUST come before /:userId route)
+  app.get("/api/chatrooms/:chatroomId(\\d+)", async (req, res) => {
+    try {
+      const chatroomId = parseInt(req.params.chatroomId);
+      if (process.env.NODE_ENV === 'development') console.log(`🔍 CHATROOM DETAIL: Getting chatroom ${chatroomId}`);
+
+      // Get chatroom details
+      const chatroom = await db.select().from(citychatrooms)
+        .where(eq(citychatrooms.id, chatroomId))
+        .limit(1);
+
+      if (!chatroom || chatroom.length === 0) {
+        return res.status(404).json({ message: "Chatroom not found" });
+      }
+
+      return res.json(chatroom[0]);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error fetching chatroom details:", error);
+      return res.status(500).json({ message: "Failed to fetch chatroom details" });
+    }
+  });
+
   // CRITICAL: Get chatrooms for user
   app.get("/api/chatrooms/:userId", async (req, res) => {
     try {
