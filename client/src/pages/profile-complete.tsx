@@ -3522,7 +3522,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     aria-label="Change avatar"
                     className="absolute -bottom-2 -right-2 translate-x-1/4 translate-y-1/4
                                h-10 w-10 sm:h-11 sm:w-11 rounded-full p-0
-                               bg-blue-600 hover:bg-blue-700 text-white shadow-lg ring-4 ring-white dark:ring-gray-900 z-10"
+                               bg-blue-600 dark:bg-gray-800 hover:bg-blue-700 dark:hover:bg-gray-700 text-white shadow-lg ring-4 ring-white dark:ring-gray-700 z-10"
                     onClick={() => document.getElementById('avatar-upload-input')?.click()}
                     disabled={uploadingPhoto}
                   >
