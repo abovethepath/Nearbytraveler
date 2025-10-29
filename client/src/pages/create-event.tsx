@@ -98,6 +98,8 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
   const [useBusinessAddress, setUseBusinessAddress] = useState(false);
   const [isRecurring, setIsRecurring] = useState(false);
   const [recurrenceType, setRecurrenceType] = useState("");
+  const [meetupUrl, setMeetupUrl] = useState("");
+  const [isImportingMeetup, setIsImportingMeetup] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
@@ -555,6 +557,89 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
             }}
             className="space-y-6"
           >
+            {/* Import from Meetup */}
+            <Card className="border-2 border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/20">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg flex items-center gap-2 text-purple-800 dark:text-purple-200">
+                  🚀 Quick Import from Meetup.com
+                </CardTitle>
+                <p className="text-sm text-purple-700 dark:text-purple-300">
+                  Paste your Meetup event URL to auto-fill the form in seconds!
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex gap-2">
+                  <Input
+                    value={meetupUrl}
+                    onChange={(e) => setMeetupUrl(e.target.value)}
+                    placeholder="https://www.meetup.com/your-group/events/12345/"
+                    className="flex-1 bg-white dark:bg-gray-800"
+                    data-testid="input-meetup-url"
+                  />
+                  <Button
+                    type="button"
+                    onClick={async () => {
+                      if (!meetupUrl.trim()) {
+                        toast({
+                          title: "Missing URL",
+                          description: "Please paste a Meetup event URL",
+                          variant: "destructive"
+                        });
+                        return;
+                      }
+                      
+                      setIsImportingMeetup(true);
+                      try {
+                        const response = await fetch(`/api/scrape-meetup?url=${encodeURIComponent(meetupUrl)}`);
+                        if (!response.ok) {
+                          throw new Error('Failed to fetch Meetup event');
+                        }
+                        const eventData = await response.json();
+                        
+                        // Auto-fill the form with scraped data
+                        if (eventData.title) setValue("title", eventData.title);
+                        if (eventData.description) setValue("description", eventData.description);
+                        if (eventData.venueName) setValue("venueName", eventData.venueName);
+                        if (eventData.street) setValue("street", eventData.street);
+                        if (eventData.city) setValue("city", eventData.city);
+                        if (eventData.state) setValue("state", eventData.state);
+                        if (eventData.country) setValue("country", eventData.country);
+                        if (eventData.zipcode) setValue("zipcode", eventData.zipcode);
+                        if (eventData.date) setValue("date", eventData.date);
+                        if (eventData.startTime) setValue("startTime", eventData.startTime);
+                        if (eventData.maxParticipants) setValue("maxParticipants", eventData.maxParticipants);
+                        
+                        // Update location state
+                        if (eventData.country) setSelectedCountry(eventData.country);
+                        if (eventData.state) setSelectedState(eventData.state);
+                        
+                        toast({
+                          title: "✨ Event imported!",
+                          description: "Check the details and create your event",
+                        });
+                      } catch (error) {
+                        toast({
+                          title: "Import failed",
+                          description: error instanceof Error ? error.message : "Could not import Meetup event",
+                          variant: "destructive"
+                        });
+                      } finally {
+                        setIsImportingMeetup(false);
+                      }
+                    }}
+                    disabled={isImportingMeetup || !meetupUrl.trim()}
+                    className="bg-purple-600 hover:bg-purple-700 text-white"
+                    data-testid="button-import-meetup"
+                  >
+                    {isImportingMeetup ? "Importing..." : "Import"}
+                  </Button>
+                </div>
+                <p className="text-xs text-purple-600 dark:text-purple-400">
+                  💡 Tip: This works with any public Meetup event. Just paste the URL and click Import!
+                </p>
+              </CardContent>
+            </Card>
+
             {/* Event Title */}
             <div className="space-y-2">
               <Label htmlFor="title" className="flex items-center gap-2">
