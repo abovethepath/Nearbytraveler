@@ -4780,7 +4780,7 @@ Questions? Just reply to this message. Welcome aboard!
               city: cityName,
               state: stateName,
               country: countryName,
-              name: `${cityName} General Chat`,
+              name: `Let's Meet Up in ${cityName}`,
               description: `Connect with locals and travelers in ${cityName}`,
               isPrivate: false,
               createdAt: new Date()
@@ -4792,7 +4792,7 @@ Questions? Just reply to this message. Welcome aboard!
           
           // AUTO-ASSIGN USER TO CHATROOMS: Same logic as when a new user is created
           try {
-            await storage.assignUserToChatrooms(userId, cityName, stateName, countryName);
+            await storage.assignUserToChatrooms(updatedUser);
             console.log(`✅ CHATROOM ASSIGNMENT: User ${userId} automatically assigned to ${cityName} chatrooms`);
           } catch (chatroomError) {
             console.error('❌ CHATROOM ASSIGNMENT: Failed to assign user to chatrooms:', chatroomError);
