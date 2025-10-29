@@ -162,21 +162,48 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
         description: "Using your previous event as a template. Just add new title and date!"
       });
     } else {
-      // No template - set defaults from user's profile location
-      if (currentUser.hometownCity) {
-        setValue("city", currentUser.hometownCity);
-      }
-      if (currentUser.hometownState) {
-        setValue("state", currentUser.hometownState);
-        setSelectedState(currentUser.hometownState);
-      }
-      if (currentUser.hometownCountry) {
-        setValue("country", currentUser.hometownCountry);
-        setSelectedCountry(currentUser.hometownCountry);
-        if (currentUser.hometownCountry === "United States") {
-          setAvailableStates(Object.keys(US_CITIES_BY_STATE));
-          if (currentUser.hometownState && US_CITIES_BY_STATE[currentUser.hometownState]) {
-            setAvailableCities(US_CITIES_BY_STATE[currentUser.hometownState]);
+      // No template - set defaults based on travel status
+      // CRITICAL: If user is traveling, use travel destination. Otherwise use hometown.
+      const isCurrentlyTraveling = currentUser.destinationCity || currentUser.travelDestination;
+      
+      if (isCurrentlyTraveling) {
+        // User is traveling - use their travel destination
+        const destinationCity = currentUser.destinationCity || currentUser.travelDestination?.split(',')[0]?.trim();
+        const destinationState = currentUser.destinationState || currentUser.travelDestination?.split(',')[1]?.trim();
+        const destinationCountry = currentUser.destinationCountry || currentUser.travelDestination?.split(',')[2]?.trim() || 'United States';
+        
+        if (destinationCity) setValue("city", destinationCity);
+        if (destinationState) {
+          setValue("state", destinationState);
+          setSelectedState(destinationState);
+        }
+        if (destinationCountry) {
+          setValue("country", destinationCountry);
+          setSelectedCountry(destinationCountry);
+          if (destinationCountry === "United States") {
+            setAvailableStates(Object.keys(US_CITIES_BY_STATE));
+            if (destinationState && US_CITIES_BY_STATE[destinationState]) {
+              setAvailableCities(US_CITIES_BY_STATE[destinationState]);
+            }
+          }
+        }
+      } else {
+        // User is NOT traveling - use their hometown
+        if (currentUser.hometownCity) {
+          setValue("city", currentUser.hometownCity);
+        }
+        if (currentUser.hometownState) {
+          setValue("state", currentUser.hometownState);
+          setSelectedState(currentUser.hometownState);
+        }
+        if (currentUser.hometownCountry) {
+          setValue("country", currentUser.hometownCountry);
+          setSelectedCountry(currentUser.hometownCountry);
+          if (currentUser.hometownCountry === "United States") {
+            setAvailableStates(Object.keys(US_CITIES_BY_STATE));
+            if (currentUser.hometownState && US_CITIES_BY_STATE[currentUser.hometownState]) {
+              setAvailableCities(US_CITIES_BY_STATE[currentUser.hometownState]);
+            }
           }
         }
       }
