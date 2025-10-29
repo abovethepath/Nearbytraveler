@@ -1,4 +1,4 @@
-// Events page - v2.1 - Mobile responsive fixes
+// Events page - v2.2 - Complete location fix
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
@@ -25,6 +25,19 @@ import { PublicationSchedule } from "@/components/PublicationSchedule";
 import { InterestButton } from "@/components/InterestButton";
 const eventsBgImage = "/event%20page%20bbq%20party_1753299541268.png";
 // MobileNav removed - using global mobile navigation
+
+// Helper function to format event location properly
+function formatEventLocation(event: Event | any): string {
+  const parts = [];
+  
+  if (event.venueName) parts.push(event.venueName);
+  if (event.city) parts.push(event.city);
+  // Only add state if it's different from city (avoids "Berlin, Berlin")
+  if (event.state && event.state !== event.city) parts.push(event.state);
+  if (event.country) parts.push(event.country);
+  
+  return parts.join(', ') || event.location || 'Location TBD';
+}
 
 export default function Events() {
   const [selectedLocation, setSelectedLocation] = useState<string>("hometown");
@@ -357,7 +370,7 @@ export default function Events() {
   const filteredUpcomingEvents = upcomingEvents.filter(event => {
     const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          event.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         event.location.toLowerCase().includes(searchQuery.toLowerCase());
+                         formatEventLocation(event).toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesCategory = effectiveCategoryFilter === "all" || 
                            !effectiveCategoryFilter ||
@@ -369,7 +382,7 @@ export default function Events() {
   const filteredPastEvents = pastEvents.filter(event => {
     const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          event.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         event.location.toLowerCase().includes(searchQuery.toLowerCase());
+                         formatEventLocation(event).toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesCategory = effectiveCategoryFilter === "all" || 
                            !effectiveCategoryFilter ||
@@ -463,7 +476,7 @@ export default function Events() {
       {/* MobileNav removed - using global MobileTopNav and MobileBottomNav */}
       {/* HERO SECTION — Airbnb Style Layout (Landing Page Layout) */}
       <section className="bg-white dark:bg-gray-900 py-8 sm:py-12 lg:py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div className="flex items-start justify-between mb-6">
             <BackButton fallbackRoute="/events-landing" />
             {isDesktop && (
@@ -894,7 +907,7 @@ export default function Events() {
                     <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">
                       My Events ({allUserEvents.length})
                     </h2>
-                    <div className="grid gap-4 sm:gap-6 sm:grid-cols-2">
+                    <div className="grid gap-3 sm:gap-6 sm:grid-cols-2">
                       {allUserEvents.map((event) => (
                         <Card 
                           key={event.id} 
@@ -948,10 +961,7 @@ export default function Events() {
 
                               <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-white">
                                 <MapPin className="w-4 h-4 text-gray-600 dark:text-white" />
-                                {event.venueName && `${event.venueName}, `}
-                                {event.city}
-                                {event.state && event.state !== event.city && `, ${event.state}`}
-                                {event.country && `, ${event.country}`}
+                                {formatEventLocation(event)}
                               </div>
 
                               {event.description && (
@@ -1074,7 +1084,7 @@ export default function Events() {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
                   {filteredUpcomingEvents.map((event) => (
                     <Card 
                       key={event.id} 
@@ -1123,12 +1133,7 @@ export default function Events() {
 
                           <div className="flex items-start gap-2 text-xs sm:text-sm text-gray-600 dark:text-white">
                             <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-gray-600 dark:text-white flex-shrink-0 mt-0.5" />
-                            <span className="line-clamp-2">
-                              {event.venueName && `${event.venueName}, `}
-                              {event.city}
-                              {event.state && event.state !== event.city && `, ${event.state}`}
-                              {event.country && `, ${event.country}`}
-                            </span>
+                            <span className="line-clamp-2">{formatEventLocation(event)}</span>
                           </div>
 
                           {event.description && (
@@ -1247,7 +1252,7 @@ export default function Events() {
 
                           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                             <MapPin className="w-4 h-4" />
-                            {event.location}
+                            {formatEventLocation(event)}
                           </div>
 
                           {event.description && (
@@ -1910,7 +1915,7 @@ export default function Events() {
                           </div>
                           <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                             <MapPin className="w-4 h-4" />
-                            <span className="line-clamp-1">{event.venueName || event.location}</span>
+                            <span className="line-clamp-1">{formatEventLocation(event)}</span>
                           </div>
                         </div>
                         <Button 
