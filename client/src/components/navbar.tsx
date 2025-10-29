@@ -362,7 +362,8 @@ function Navbar() {
     !directUser.bio || 
     directUser.bio.length < 30 ||
     !directUser.profileImage ||
-    (directUser.interests && directUser.interests.length < 3)
+    !directUser.interests ||
+    directUser.interests.length < 3
   );
 
   return (
