@@ -271,64 +271,34 @@ export default function CityPage({ cityName }: CityPageProps) {
         </button>
       </div>
       
-      {/* Hero Toggle Button */}
-      {!isHeroVisible && (
-        <div className="mx-4 mt-2 mb-6">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={toggleHeroVisibility}
-            className="text-sm"
-            data-testid="button-show-city-hero"
-          >
-            <ChevronDown className="w-4 h-4 mr-2" />
-            Show City Header
-          </Button>
-        </div>
-      )}
-
-      {/* City Header with Griffith Observatory Background */}
-      {isHeroVisible && (
-        <div 
-          className="relative mx-4 mt-2 mb-6 rounded-xl overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-700 to-orange-600 dark:from-blue-900 dark:via-indigo-900 dark:to-orange-900"
-          style={{
-            backgroundRepeat: 'no-repeat'
-          }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent dark:from-black/80 dark:via-black/50 dark:to-black/20" />
-          <div className="relative z-10 p-6">
-            <div className="absolute top-2 right-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={toggleHeroVisibility}
-                className="text-sm bg-white/10 text-white border-white/20 hover:bg-white/20"
-                data-testid="button-hide-city-hero"
-              >
-                <X className="w-4 h-4 mr-2" />
-                Hide Hero Section
-              </Button>
+      {/* City Header - Always Visible */}
+      <div 
+        className="relative mx-4 mt-2 mb-6 rounded-xl overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-700 to-orange-600 dark:from-blue-900 dark:via-indigo-900 dark:to-orange-900"
+        style={{
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent dark:from-black/80 dark:via-black/50 dark:to-black/20" />
+        <div className="relative z-10 p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+            <div className="flex-1 min-w-0">
+              {isLAArea && (
+                <Badge className="bg-orange-500 text-white text-xs mb-2">
+                  🌟 Beta Launch City
+                </Badge>
+              )}
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight drop-shadow-lg">
+                {decodedCityName}
+              </h1>
+              <p className="text-white/90 mt-2">Discover and connect with people</p>
             </div>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-              <div className="flex-1 min-w-0">
-                {isLAArea && (
-                  <Badge className="bg-orange-500 text-white text-xs mb-2">
-                    🌟 Beta Launch City
-                  </Badge>
-                )}
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight drop-shadow-lg">
-                  {decodedCityName}
-                </h1>
-                <p className="text-white/90 mt-2">Discover and connect with people</p>
-              </div>
-              <div className="flex items-center gap-2 text-white/90 flex-shrink-0">
-                <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="text-sm sm:text-base">{parsedCityName}</span>
-              </div>
+            <div className="flex items-center gap-2 text-white/90 flex-shrink-0">
+              <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="text-sm sm:text-base">{parsedCityName}</span>
             </div>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Content */}
       <main className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">
@@ -339,9 +309,6 @@ export default function CityPage({ cityName }: CityPageProps) {
               <div id="people-section" className="mb-6 sm:mb-8">
                 <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row justify-between items-start sm:items-center mb-6">
                   <div>
-                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">Discover and Connect with People</h2>
-                    <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Connect with travelers, locals, and businesses in {decodedCityName}</p>
-                  </div>
                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
                     <div className="flex items-center gap-2 w-full sm:w-auto">
                       <Filter className="w-4 h-4 text-gray-500 dark:text-gray-400" />
