@@ -290,7 +290,6 @@ export default function CityPage({ cityName }: CityPageProps) {
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight drop-shadow-lg">
                 {decodedCityName}
               </h1>
-              <p className="text-white/90 mt-2">Discover and connect with people</p>
             </div>
             <div className="flex items-center gap-2 text-white/90 flex-shrink-0">
               <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -309,6 +308,9 @@ export default function CityPage({ cityName }: CityPageProps) {
               <div id="people-section" className="mb-6 sm:mb-8">
                 <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row justify-between items-start sm:items-center mb-6">
                   <div>
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">Discover and Connect with People</h2>
+                    <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">Connect with travelers, locals, and businesses in {decodedCityName}</p>
+                  </div>
                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
                     <div className="flex items-center gap-2 w-full sm:w-auto">
                       <Filter className="w-4 h-4 text-gray-500 dark:text-gray-400" />
