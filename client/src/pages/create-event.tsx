@@ -134,12 +134,16 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
   React.useEffect(() => {
     const template = loadEventTemplate();
     if (template) {
-      // Apply template data to form
+      // Apply template data to form - NOW INCLUDING ALL FIELDS
+      if (template.title) setValue("title", template.title);
+      if (template.description) setValue("description", template.description);
       if (template.venueName) setValue("venueName", template.venueName);
       if (template.street) setValue("street", template.street);
       if (template.city) setValue("city", template.city);
       if (template.state) setValue("state", template.state);
       if (template.country) setValue("country", template.country);
+      if (template.category) setValue("category", template.category);
+      if (template.tags) setValue("tags", template.tags);
       if (template.requirements) setValue("requirements", template.requirements);
       if (template.maxParticipants) setValue("maxParticipants", template.maxParticipants);
       
@@ -159,7 +163,7 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
       
       toast({
         title: "Template loaded!",
-        description: "Using your previous event as a template. Just add new title and date!"
+        description: "Event duplicated! Update the title and date, then publish."
       });
     } else {
       // No template - set defaults based on travel status

@@ -8919,8 +8919,8 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
     const duplicateData = {
       title: `${event.title} (Copy)`,
       description: event.description,
-      venue: event.venue,
-      streetAddress: event.streetAddress,
+      venueName: event.venue || event.venueName,
+      street: event.streetAddress || event.street,
       city: event.city,
       state: event.state,
       country: event.country,
