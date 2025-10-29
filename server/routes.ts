@@ -3598,7 +3598,7 @@ Questions? Just reply to this message. Welcome to the community!
       try {
         // Auto-assign user to chatrooms immediately (this was always fast)
         if (user.hometownCity && user.hometownCountry) {
-          await storage.assignUserToChatrooms(user.id, user.hometownCity, user.hometownState, user.hometownCountry);
+          await storage.assignUserToChatrooms(user);
           console.log('✅ CHATROOM ASSIGNMENT: User automatically assigned to chatrooms');
         }
       } catch (error) {
