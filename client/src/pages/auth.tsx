@@ -420,8 +420,8 @@ export default function Auth() {
           </CardContent>
         </Card>
 
-        {/* Join Now Widget for join page */}
-        {isJoinPage && !isLogin && (
+        {/* Join Now Widget for signup page */}
+        {isSignupPage && !isLogin && (
           <div className="mt-8">
             <JoinNowWidgetNew />
           </div>
