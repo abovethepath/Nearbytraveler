@@ -42,9 +42,11 @@ export default function QRCodeCard() {
   // Initialize user data and fetch referral code
   useEffect(() => {
     const user = getUserData();
+    console.log('🔍 QRCodeCard useEffect - user:', user);
     if (user) {
       setCurrentUser(user);
       
+      console.log('📞 Fetching QR code from API for user:', user.id);
       // Fetch the user's referral code from the backend
       fetch('/api/user/qr-code', {
         headers: {
@@ -53,20 +55,26 @@ export default function QRCodeCard() {
           'x-user-data': JSON.stringify(user)
         }
       })
-        .then(response => response.json())
+        .then(response => {
+          console.log('📡 QR API response status:', response.status);
+          return response.json();
+        })
         .then(data => {
+          console.log('📦 QR API data:', data);
           if (data.referralCode) {
             const baseUrl = window.location.origin;
             // Create proper referral signup URL that goes to qr-signup page
             const url = `${baseUrl}/qr-signup?code=${data.referralCode}`;
+            console.log('✅ Setting share URL:', url);
             setShareUrl(url);
           }
         })
         .catch(error => {
-          console.error('Error fetching referral code:', error);
+          console.error('❌ Error fetching referral code:', error);
           // Fallback to old format if API fails
           const baseUrl = window.location.origin;
           const url = `${baseUrl}/?ref=${user.username}&signup=true&connect=${user.id}`;
+          console.log('⚠️ Using fallback URL:', url);
           setShareUrl(url);
         });
     }
@@ -75,9 +83,13 @@ export default function QRCodeCard() {
   // Memoized QR generation function using proper QRCode library
   const generateQRCode = useCallback(async (text: string) => {
     const canvas = canvasRef.current;
-    if (!canvas || !text) return;
+    if (!canvas || !text) {
+      console.log('❌ QR: Canvas or text missing', { canvas: !!canvas, text: !!text });
+      return;
+    }
 
     try {
+      console.log('🎨 Generating QR code for:', text.substring(0, 50) + '...');
       await QRCode.toCanvas(canvas, text, {
         width: 200,
         margin: 2,
@@ -87,8 +99,9 @@ export default function QRCodeCard() {
         }
       });
       setQrGenerated(true);
+      console.log('✅ QR code generated successfully');
     } catch (error) {
-      console.error('Error generating QR code:', error);
+      console.error('❌ Error generating QR code:', error);
     }
   }, []);
 
@@ -187,10 +200,11 @@ export default function QRCodeCard() {
       <CardContent className="space-y-6">
         {/* QR Code */}
         <div className="flex justify-center">
-          <div className="p-4 bg-white rounded-xl shadow-inner border-2 border-gray-200 dark:border-gray-600">
+          <div className="p-4 bg-gray-50 dark:bg-white rounded-xl shadow-inner border-2 border-gray-200 dark:border-gray-600">
             <canvas 
               ref={canvasRef} 
               className="block"
+              data-testid="qr-canvas"
               style={{ 
                 width: '200px', 
                 height: '200px',
