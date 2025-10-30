@@ -163,17 +163,13 @@ export default function JoinNowWidget() {
               </Select>
             </div>
 
-            <div className="mt-8 pt-4">
-              <div className="w-full p-4 rounded-lg bg-gray-100 dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-center">
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
-                  🚀 Coming Soon!
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  We're putting the finishing touches on Nearby Traveler.<br/>
-                  Check back soon - we'll be live shortly!
-                </p>
-              </div>
-            </div>
+            <Button
+              onClick={handleStepOne}
+              className="w-full mt-4 bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white"
+              data-testid="button-next"
+            >
+              Next
+            </Button>
           </>
         ) : (
           <>
@@ -321,23 +317,21 @@ export default function JoinNowWidget() {
               </div>
             </div>
 
-            <div className="mt-8 pt-4 space-y-3">
-              <div className="w-full p-4 rounded-lg bg-gray-100 dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-center">
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
-                  🚀 Coming Soon!
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  We're putting the finishing touches on Nearby Traveler.<br/>
-                  Check back soon - we'll be live shortly!
-                </p>
-              </div>
-              
+            <div className="mt-6 flex gap-3">
               <Button
-                onClick={() => setLocation('/')}
+                onClick={() => setStep(1)}
                 variant="outline"
-                className="w-full bg-gray-200 dark:bg-gray-700 border-gray-400 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
+                className="flex-1"
+                data-testid="button-back"
               >
-                Back to Landing Page
+                Back
+              </Button>
+              <Button
+                onClick={handleCreateAccount}
+                className="flex-1 bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white"
+                data-testid="button-create-account"
+              >
+                Create Account
               </Button>
             </div>
           </>
