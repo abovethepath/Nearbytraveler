@@ -4557,58 +4557,80 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   /* VIEW MODE - Display interests, activities, events */
                   <div className="space-y-6">
                     
-                    {/* TOP INTERESTS */}
-                    <div>
-                      <h4 className="font-medium text-gray-800 dark:text-white mb-3 flex items-center gap-2">
-                        <Heart className="w-4 h-4 text-blue-500" />
-                        Top Interests
-                      </h4>
-                      {user?.interests && user.interests.length > 0 ? (
-                        <div className="flex flex-wrap gap-2">
-                          {user.interests.map((interest, index) => (
-                            <div 
-                              key={`top-interest-${index}`} 
-                              className="h-8 px-4 rounded-full text-sm font-medium bg-gradient-to-r from-blue-500 to-orange-500 text-white"
-                            >
-                              {interest}
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-gray-500 dark:text-gray-400 italic text-sm">
-                          {isOwnProfile ? "Click Edit to add your top interests" : "No interests added yet"}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* OTHER INTERESTS */}
-                    <div>
-                      <h4 className="font-medium text-gray-800 dark:text-white mb-3 flex items-center gap-2">
-                        <Heart className="w-4 h-4 text-blue-500" />
-                        Other Interests
-                      </h4>
-                      {(() => {
-                        const allInterests = [...(user?.interests || []), ...(user?.customInterests ? user.customInterests.split(',').map(s => s.trim()).filter(Boolean) : [])];
-                        const otherInterests = allInterests.filter(i => !(user?.interests || []).includes(i));
-                        
-                        return otherInterests.length > 0 ? (
-                          <div className="flex flex-wrap gap-2">
-                            {otherInterests.map((interest, index) => (
-                              <div 
-                                key={`other-interest-${index}`} 
-                                className="h-8 px-4 rounded-full text-sm font-medium bg-gradient-to-r from-blue-400 to-orange-400 text-white shadow-md"
-                              >
-                                {interest}
+                    {(() => {
+                      // Split interests into Top Choices and Additional Interests to match edit mode
+                      const topChoices = MOST_POPULAR_INTERESTS;
+                      const additionalInterests = ADDITIONAL_INTERESTS;
+                      
+                      const userTopInterests = (user?.interests || []).filter(i => topChoices.includes(i));
+                      const userOtherInterests = (user?.interests || []).filter(i => additionalInterests.includes(i));
+                      const userCustomInterests = user?.customInterests ? user.customInterests.split(',').map(s => s.trim()).filter(Boolean) : [];
+                      
+                      return (
+                        <>
+                          {/* TOP INTERESTS */}
+                          {userTopInterests.length > 0 && (
+                            <div>
+                              <h4 className="font-medium text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+                                <Heart className="w-4 h-4 text-blue-500" />
+                                Top Interests
+                              </h4>
+                              <div className="flex flex-wrap gap-2">
+                                {userTopInterests.map((interest, index) => (
+                                  <div 
+                                    key={`top-interest-${index}`} 
+                                    className="h-8 px-4 rounded-full text-sm font-medium bg-gradient-to-r from-blue-500 to-orange-500 text-white"
+                                  >
+                                    {interest}
+                                  </div>
+                                ))}
                               </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <p className="text-gray-500 dark:text-gray-400 italic text-sm">
-                            {isOwnProfile ? "Click Edit to add more interests" : "No additional interests"}
-                          </p>
-                        );
-                      })()}
-                    </div>
+                            </div>
+                          )}
+
+                          {/* OTHER INTERESTS */}
+                          {(userOtherInterests.length > 0 || userCustomInterests.length > 0) && (
+                            <div>
+                              <h4 className="font-medium text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+                                <Heart className="w-4 h-4 text-blue-500" />
+                                Other Interests
+                              </h4>
+                              <div className="flex flex-wrap gap-2">
+                                {userOtherInterests.map((interest, index) => (
+                                  <div 
+                                    key={`other-interest-${index}`} 
+                                    className="h-8 px-4 rounded-full text-sm font-medium bg-gradient-to-r from-blue-400 to-orange-400 text-white shadow-md"
+                                  >
+                                    {interest}
+                                  </div>
+                                ))}
+                                {userCustomInterests.map((interest, index) => (
+                                  <div 
+                                    key={`custom-interest-${index}`} 
+                                    className="h-8 px-4 rounded-full text-sm font-medium bg-gradient-to-r from-blue-400 to-orange-400 text-white shadow-md"
+                                  >
+                                    {interest}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Show "no interests" message only if truly empty */}
+                          {userTopInterests.length === 0 && userOtherInterests.length === 0 && userCustomInterests.length === 0 && (
+                            <div>
+                              <h4 className="font-medium text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+                                <Heart className="w-4 h-4 text-blue-500" />
+                                Interests
+                              </h4>
+                              <p className="text-gray-500 dark:text-gray-400 italic text-sm">
+                                {isOwnProfile ? "Click Edit to add your interests" : "No interests added yet"}
+                              </p>
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
 
                     {/* ACTIVITIES */}
                     <div>
