@@ -8,7 +8,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import Logo from "@/components/logo";
 import { authStorage } from "@/lib/auth";
-import JoinNowWidget from "@/components/join-now-widget";
+import JoinNowWidgetNew from "@/components/join-now-widget-new";
 // Background image handled via direct path in CSS
 
 
@@ -229,7 +229,9 @@ export default function Auth() {
             )}
           </CardHeader>
           <CardContent className="space-y-6">
-            {isLogin ? (
+            {isSignupPage && !isLogin ? (
+              <JoinNowWidgetNew />
+            ) : isLogin ? (
               <div className="space-y-6">
                 <div className="space-y-4">
                   <div>
@@ -420,17 +422,6 @@ export default function Auth() {
           </CardContent>
         </Card>
 
-        {/* Join Now Widget for signup page */}
-        {isSignupPage && !isLogin && (
-          <Card className="bg-white/95 backdrop-blur-sm shadow-2xl border-0 mt-8">
-            <CardHeader className="text-center pb-6">
-              <CardTitle className="text-2xl font-bold text-gray-900">Create Your Account</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <JoinNowWidget />
-            </CardContent>
-          </Card>
-        )}
       </div>
     </div>
   );
