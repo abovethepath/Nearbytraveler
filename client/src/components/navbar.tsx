@@ -400,7 +400,6 @@ function Navbar() {
                   }}
                 />
               </Link>
-              <span className="ml-3 text-red-600 font-bold text-base">BETA VERSION</span>
             </div>
             <div className="flex items-center space-x-4 md:space-x-8 ml-auto">
               {/* Desktop Navigation */}
