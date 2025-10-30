@@ -8,7 +8,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import Logo from "@/components/logo";
 import { authStorage } from "@/lib/auth";
-import JoinNowWidgetNew from "@/components/join-now-widget-new";
+import JoinNowWidget from "@/components/join-now-widget";
 // Background image handled via direct path in CSS
 
 
@@ -422,9 +422,14 @@ export default function Auth() {
 
         {/* Join Now Widget for signup page */}
         {isSignupPage && !isLogin && (
-          <div className="mt-8">
-            <JoinNowWidgetNew />
-          </div>
+          <Card className="bg-white/95 backdrop-blur-sm shadow-2xl border-0 mt-8">
+            <CardHeader className="text-center pb-6">
+              <CardTitle className="text-2xl font-bold text-gray-900">Create Your Account</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <JoinNowWidget />
+            </CardContent>
+          </Card>
         )}
       </div>
     </div>
