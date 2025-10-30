@@ -3903,13 +3903,30 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </CardTitle>
 
                   {isOwnProfile && (
-                    <div className="flex-shrink-0">
+                    <div className="flex-shrink-0 relative">
+                      {/* Blinking Arrow - Only show when profile is incomplete */}
+                      {isProfileIncomplete() && (
+                        <div className="absolute -top-12 -right-2 flex flex-col items-center z-10">
+                          <div className="animate-bounce">
+                            <ChevronDown className="w-8 h-8 text-red-500" style={{
+                              animation: 'blink 1s ease-in-out infinite'
+                            }} />
+                          </div>
+                          <style>{`
+                            @keyframes blink {
+                              0%, 100% { opacity: 1; }
+                              50% { opacity: 0.3; }
+                            }
+                          `}</style>
+                        </div>
+                      )}
+                      
                       {/* Icon-only on phones */}
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => setIsEditMode(true)}
-                        className="sm:hidden bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800 dark:border-blue-700 dark:text-blue-100"
+                        className={`sm:hidden ${isProfileIncomplete() ? 'bg-red-100 hover:bg-red-200 border-red-400 text-red-700 animate-pulse' : 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800 dark:border-blue-700 dark:text-blue-100'}`}
                         aria-label="Edit Profile"
                       >
                         <Edit2 className="w-4 h-4" />
@@ -3920,7 +3937,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         size="sm"
                         variant="outline"
                         onClick={() => setIsEditMode(true)}
-                        className="hidden sm:inline-flex bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800 dark:border-blue-700 dark:text-blue-100"
+                        className={`hidden sm:inline-flex ${isProfileIncomplete() ? 'bg-red-100 hover:bg-red-200 border-red-400 text-red-700 animate-pulse' : 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800 dark:border-blue-700 dark:text-blue-100'}`}
                       >
                         <Edit2 className="w-4 h-4 mr-2" />
                         Edit Profile
@@ -3933,18 +3950,28 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-4 lg:px-6 pb-3 sm:pb-4 lg:pb-6 min-w-0 break-words overflow-visible">
                 {/* Edit Bio Quick Action for Mobile - Show for all users */}
                 {isOwnProfile && (
-                  <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mb-4 sm:hidden">
+                  <div className={`${isProfileIncomplete() ? 'bg-red-50 dark:bg-red-900/20 border-red-400 dark:border-red-800' : 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'} border rounded-lg p-3 mb-4 sm:hidden relative`}>
+                    {/* Blinking Arrow for mobile edit bio */}
+                    {isProfileIncomplete() && (
+                      <div className="absolute -top-10 right-4 flex flex-col items-center z-10">
+                        <div className="animate-bounce">
+                          <ChevronDown className="w-6 h-6 text-red-500" style={{
+                            animation: 'blink 1s ease-in-out infinite'
+                          }} />
+                        </div>
+                      </div>
+                    )}
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                        <p className={`text-sm font-medium ${isProfileIncomplete() ? 'text-red-800 dark:text-red-200' : 'text-blue-800 dark:text-blue-200'}`}>
                           {(!user?.bio || user?.bio.trim().length === 0) ? 'Add your bio' : 'Edit your bio'}
                         </p>
-                        <p className="text-xs text-blue-600 dark:text-blue-300">Tell others about yourself</p>
+                        <p className={`text-xs ${isProfileIncomplete() ? 'text-red-600 dark:text-red-300' : 'text-blue-600 dark:text-blue-300'}`}>Tell others about yourself</p>
                       </div>
                       <Button
                         size="sm"
                         onClick={() => setIsEditMode(true)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white ml-2 flex-shrink-0"
+                        className={`ml-2 flex-shrink-0 ${isProfileIncomplete() ? 'bg-red-600 hover:bg-red-700 animate-pulse' : 'bg-blue-600 hover:bg-blue-700'} text-white`}
                         data-testid="button-edit-bio-mobile"
                       >
                         <Edit2 className="w-4 h-4 mr-1" />
