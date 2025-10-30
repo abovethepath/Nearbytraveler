@@ -545,7 +545,7 @@ export default function SignupTraveling() {
                         onClick={() => toggleHometownInterest(interest)}
                         className={`p-3 rounded-lg border-2 text-sm font-medium text-center transition-all ${
                           formData.interests.includes(interest)
-                            ? 'border-blue-500 bg-blue-50 text-blue-700'
+                            ? 'bg-gradient-to-r from-blue-600 to-orange-500 text-white border-transparent shadow-md transform scale-105'
                             : 'border-gray-300 bg-white text-gray-900 hover:border-gray-400 hover:bg-gray-50'
                         }`}
                         data-testid={`hometown-interest-${interest}`}

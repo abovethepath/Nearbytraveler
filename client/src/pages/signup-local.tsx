@@ -384,9 +384,9 @@ export default function SignupLocal() {
                           key={interest}
                           type="button"
                           onClick={() => toggleInterest(interest)}
-                          className={`px-3 py-2 rounded-full text-sm font-medium transition-colors ${
+                          className={`px-3 py-2 rounded-full text-sm font-medium transition-all ${
                             formData.interests.includes(interest)
-                              ? 'bg-blue-600 text-white'
+                              ? 'bg-gradient-to-r from-blue-600 to-orange-500 text-white shadow-md transform scale-105'
                               : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
                           }`}
                           data-testid={`interest-${interest}`}
