@@ -77,7 +77,10 @@ export default function ConnectButton({
     },
   });
 
-  const handleConnect = () => {
+  const handleConnect = (e: React.MouseEvent) => {
+    // Stop event propagation to prevent card click from navigating
+    e.stopPropagation();
+    
     if (!currentUserId || !targetUserId) {
       toast({
         title: "Error",
@@ -104,16 +107,13 @@ export default function ConnectButton({
     }
     
     if (connectionStatus?.status === 'pending') {
-      // Connection request already sent - show message
-      toast({
-        title: "Connection request already sent",
-        description: "Your connection request is pending approval.",
-      });
+      // Connection request already sent - navigate to their profile
+      setLocation(`/profile/${targetUserId}`);
       return;
     }
     
-    // Send new connection request using individual mutation
-    connectMutation.mutate();
+    // Navigate to user's profile instead of sending request directly
+    setLocation(`/profile/${targetUserId}`);
   };
 
   // Get button state based on connection status and THIS button's loading state
@@ -129,9 +129,9 @@ export default function ConnectButton({
     if (connectionStatus?.status === 'pending') {
       return { 
         text: 'Request Sent', 
-        disabled: true, 
+        disabled: false, 
         variant: 'default' as const, 
-        className: 'bg-gray-600 hover:bg-gray-700 text-white border-0' 
+        className: 'bg-yellow-500 hover:bg-yellow-600 text-white border-0' 
       };
     }
     // This is the key fix - only THIS button's isPending state affects THIS button
