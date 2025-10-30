@@ -1,27 +1,51 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import QRCodeCard from "@/components/QRCodeCard";
+import { useTheme } from "@/components/theme-provider";
 
 export default function ShareQR() {
   const [, setLocation] = useLocation();
+  const { theme, setTheme } = useTheme();
+
+  const isDark = theme === "dark";
+
+  const toggleTheme = () => {
+    setTheme(isDark ? "light" : "dark");
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="max-w-md mx-auto">
-        {/* Header with Back Button */}
-        <div className="flex items-center mb-6">
+        {/* Header with Back Button and Theme Toggle */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setLocation('/profile')}
+              className="mr-4 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+              data-testid="button-back"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Invite Friends</h1>
+          </div>
           <Button
             variant="ghost"
-            size="sm"
-            onClick={() => setLocation('/profile')}
-            className="mr-4 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
-            data-testid="button-back"
+            size="icon"
+            onClick={toggleTheme}
+            className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+            data-testid="button-theme-toggle"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
+            {isDark ? (
+              <Sun className="h-5 w-5" />
+            ) : (
+              <Moon className="h-5 w-5" />
+            )}
+            <span className="sr-only">Toggle theme</span>
           </Button>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Invite Friends</h1>
         </div>
 
         {/* QR Code Card */}

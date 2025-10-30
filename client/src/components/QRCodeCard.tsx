@@ -187,7 +187,7 @@ export default function QRCodeCard() {
       <CardContent className="space-y-6">
         {/* QR Code */}
         <div className="flex justify-center">
-          <div className="p-4 bg-white dark:bg-gray-100 rounded-xl shadow-inner border-2 border-gray-100 dark:border-gray-200">
+          <div className="p-4 bg-white rounded-xl shadow-inner border-2 border-gray-200 dark:border-gray-600">
             <canvas 
               ref={canvasRef} 
               className="block"
