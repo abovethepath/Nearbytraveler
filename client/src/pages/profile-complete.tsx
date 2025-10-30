@@ -4381,21 +4381,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             </div>
                             <div className="flex flex-wrap gap-2">
                               {customInterests.map((interest, index) => (
-                                <span
+                                <button
                                   key={`custom-interest-${index}`}
-                                  className="inline-flex items-center justify-center h-8 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-gradient-to-r from-blue-400 to-orange-400 text-white shadow-md gap-1.5"
+                                  type="button"
+                                  onClick={() => {
+                                    setEditFormData(prev => ({ ...prev, interests: prev.interests.filter(i => i !== interest) }));
+                                  }}
+                                  className="inline-flex items-center justify-center h-8 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-gradient-to-r from-blue-400 to-orange-400 text-white shadow-md gap-1.5 hover:opacity-80 transition-opacity"
+                                  title="Click to remove"
                                 >
                                   {interest}
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      setEditFormData(prev => ({ ...prev, interests: prev.interests.filter(i => i !== interest) }));
-                                    }}
-                                    className="ml-1 text-white hover:text-gray-200 font-bold"
-                                  >
-                                    ×
-                                  </button>
-                                </span>
+                                  <span className="ml-1 font-bold">×</span>
+                                </button>
                               ))}
                             </div>
                           </div>
@@ -4487,21 +4484,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             </div>
                             <div className="flex flex-wrap gap-2">
                               {customActivities.map((activity, index) => (
-                                <span
+                                <button
                                   key={`custom-activity-${index}`}
-                                  className="inline-flex items-center justify-center h-8 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-md gap-1.5"
+                                  type="button"
+                                  onClick={() => {
+                                    setEditFormData(prev => ({ ...prev, activities: prev.activities.filter(a => a !== activity) }));
+                                  }}
+                                  className="inline-flex items-center justify-center h-8 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-md gap-1.5 hover:opacity-80 transition-opacity"
+                                  title="Click to remove"
                                 >
                                   {activity}
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      setEditFormData(prev => ({ ...prev, activities: prev.activities.filter(a => a !== activity) }));
-                                    }}
-                                    className="ml-1 text-white hover:text-gray-200 font-bold"
-                                  >
-                                    ×
-                                  </button>
-                                </span>
+                                  <span className="ml-1 font-bold">×</span>
+                                </button>
                               ))}
                             </div>
                           </div>
