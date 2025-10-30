@@ -184,35 +184,35 @@ export default function UserCard({
             ) : null;
           })()}
           
-          {/* Things in Common Badge - modernized with gradient */}
-          {compatibilityData && (() => {
-            const data = compatibilityData as any;
-            // Use the same simple calculation as the backend algorithm
-            const totalCommon = 
-              (data.sharedInterests?.length || 0) +
-              (data.sharedActivities?.length || 0) +
-              (data.sharedEvents?.length || 0);
-            
-            const matchPercentage = Math.round((data.score || 0) * 100);
-            
-            return totalCommon > 0 ? (
-              <div className="flex justify-center">
-                <div className="bg-gradient-to-r from-blue-500 to-orange-500 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg inline-block">
-                  {totalCommon} Things in Common • {matchPercentage}% Match
-                </div>
-              </div>
-            ) : null;
-          })()}
-          
-          {/* Connect Button - only show if not current user */}
+          {/* CTA Section - Compatibility Badge + Connect Button together */}
           {!isCurrentUser && currentUserId && (
-            <div className="pt-4">
+            <div className="mt-auto pt-4 space-y-3">
+              {/* Things in Common Badge */}
+              {compatibilityData && (() => {
+                const data = compatibilityData as any;
+                const totalCommon = 
+                  (data.sharedInterests?.length || 0) +
+                  (data.sharedActivities?.length || 0) +
+                  (data.sharedEvents?.length || 0);
+                
+                const matchPercentage = Math.round((data.score || 0) * 100);
+                
+                return totalCommon > 0 ? (
+                  <div className="flex justify-center">
+                    <div className="bg-gradient-to-r from-blue-500 to-orange-500 text-white text-xs sm:text-sm font-bold px-3 py-1.5 rounded-full shadow-lg">
+                      {totalCommon} Things in Common • {matchPercentage}% Match
+                    </div>
+                  </div>
+                ) : null;
+              })()}
+              
+              {/* Connect Button */}
               <ConnectButton
                 currentUserId={currentUserId}
                 targetUserId={user.id}
                 targetUsername={user.username}
                 targetName={user.name}
-                className="w-full bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+                className="w-full bg-white dark:bg-gray-800 border-2 border-gray-900 dark:border-white text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold shadow-md hover:shadow-lg transition-all duration-300"
                 size="default"
               />
             </div>
