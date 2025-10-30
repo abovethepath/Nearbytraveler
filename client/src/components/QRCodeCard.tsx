@@ -24,18 +24,23 @@ export default function QRCodeCard() {
   useEffect(() => {
     const loadQRCode = async () => {
       try {
+        console.log('🚀 QR: Starting load process...');
+        
         // Get user from localStorage
         const storedUser = localStorage.getItem('travelconnect_user') || localStorage.getItem('user');
         if (!storedUser) {
+          console.error('❌ QR: No user in localStorage');
           setError('No user found');
           setLoading(false);
           return;
         }
 
         const user: User = JSON.parse(storedUser);
+        console.log('✅ QR: User loaded:', user.username);
         setCurrentUser(user);
 
         // Fetch QR code from API
+        console.log('📞 QR: Fetching from API...');
         const response = await fetch('/api/user/qr-code', {
           headers: {
             'Content-Type': 'application/json',
@@ -48,6 +53,7 @@ export default function QRCodeCard() {
         }
 
         const data = await response.json();
+        console.log('📦 QR: API response:', { hasCode: !!data.referralCode, code: data.referralCode });
         
         if (!data.referralCode) {
           throw new Error('No referral code in response');
@@ -56,24 +62,30 @@ export default function QRCodeCard() {
         // Build the signup URL
         const baseUrl = window.location.origin;
         const url = `${baseUrl}/qr-signup?code=${data.referralCode}`;
+        console.log('🔗 QR: Share URL:', url);
         setShareUrl(url);
 
         // Generate QR code on canvas
-        if (canvasRef.current) {
-          await QRCode.toCanvas(canvasRef.current, url, {
-            width: 200,
-            margin: 2,
-            color: {
-              dark: '#000000',
-              light: '#FFFFFF'
-            },
-            errorCorrectionLevel: 'M'
-          });
+        if (!canvasRef.current) {
+          console.error('❌ QR: Canvas ref is null!');
+          throw new Error('Canvas not ready');
         }
+
+        console.log('🎨 QR: Generating QR code on canvas...');
+        await QRCode.toCanvas(canvasRef.current, url, {
+          width: 200,
+          margin: 2,
+          color: {
+            dark: '#000000',
+            light: '#FFFFFF'
+          },
+          errorCorrectionLevel: 'M'
+        });
+        console.log('✅ QR: Canvas rendering complete!');
 
         setLoading(false);
       } catch (err: any) {
-        console.error('QR Code Error:', err);
+        console.error('❌ QR Code Error:', err);
         setError(err.message || 'Failed to load QR code');
         setLoading(false);
       }
