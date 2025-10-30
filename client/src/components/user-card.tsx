@@ -79,34 +79,22 @@ export default function UserCard({
     return user.location || "Location not set";
   };
 
-  // Get user's individual gradient - unique for each user based on ID
+  // Get user's individual gradient - matches profile page gradient
   const getUserGradient = () => {
     if (user.avatarGradient) {
       return user.avatarGradient;
     }
     
-    // Generate consistent unique gradient based on user ID
+    // CSS gradient mapping matching ProfileComplete gradients
     const gradients = [
-      'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', // Purple
-      'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', // Pink-Red
-      'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', // Blue-Cyan
-      'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', // Green-Teal
-      'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', // Pink-Yellow
-      'linear-gradient(135deg, #30cfd0 0%, #330867 100%)', // Cyan-Deep Purple
-      'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)', // Mint-Pink
-      'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)', // Coral-Pink
-      'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)', // Peach
-      'linear-gradient(135deg, #ff6e7f 0%, #bfe9ff 100%)', // Red-Blue
-      'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)', // Purple-Blue
-      'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', // Magenta-Red
-      'linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)', // Pink-Blue
-      'linear-gradient(135deg, #fdcbf1 0%, #e6dee9 100%)', // Light Pink
-      'linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)', // Sky Blue
-      'linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)', // Purple-Yellow
-      'linear-gradient(135deg, #fad0c4 0%, #ffd1ff 100%)', // Peach-Pink
-      'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)', // Orange-Peach
-      'linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%)', // Red-Peach
-      'linear-gradient(135deg, #fbc2eb 0%, #a18cd1 100%)', // Pink-Purple
+      'linear-gradient(135deg, #3B82F6 0%, #A855F7 50%, #F97316 100%)', // Blue-Purple-Orange
+      'linear-gradient(135deg, #10B981 0%, #059669 50%, #F97316 100%)', // Green-Emerald-Orange
+      'linear-gradient(135deg, #3B82F6 0%, #06B6D4 50%, #F97316 100%)', // Blue-Cyan-Orange
+      'linear-gradient(135deg, #A855F7 0%, #EC4899 50%, #EF4444 100%)', // Purple-Pink-Red
+      'linear-gradient(135deg, #6366F1 0%, #3B82F6 50%, #10B981 100%)', // Indigo-Blue-Green
+      'linear-gradient(135deg, #F97316 0%, #EF4444 50%, #EC4899 100%)', // Orange-Red-Pink
+      'linear-gradient(135deg, #14B8A6 0%, #3B82F6 50%, #A855F7 100%)', // Teal-Blue-Purple
+      'linear-gradient(135deg, #EAB308 0%, #F97316 50%, #EF4444 100%)', // Yellow-Orange-Red
     ];
     
     // Use user ID to consistently pick the same gradient
