@@ -65,24 +65,6 @@ export default function QRCodeCard() {
         console.log('🔗 QR: Share URL:', url);
         setShareUrl(url);
 
-        // Generate QR code on canvas
-        if (!canvasRef.current) {
-          console.error('❌ QR: Canvas ref is null!');
-          throw new Error('Canvas not ready');
-        }
-
-        console.log('🎨 QR: Generating QR code on canvas...');
-        await QRCode.toCanvas(canvasRef.current, url, {
-          width: 200,
-          margin: 2,
-          color: {
-            dark: '#000000',
-            light: '#FFFFFF'
-          },
-          errorCorrectionLevel: 'M'
-        });
-        console.log('✅ QR: Canvas rendering complete!');
-
         setLoading(false);
       } catch (err: any) {
         console.error('❌ QR Code Error:', err);
@@ -93,6 +75,35 @@ export default function QRCodeCard() {
 
     loadQRCode();
   }, []);
+
+  // Generate QR code when shareUrl is available and canvas is mounted
+  useEffect(() => {
+    const generateQR = async () => {
+      if (!shareUrl || !canvasRef.current) {
+        console.log('⏳ QR: Waiting for canvas and URL...', { hasUrl: !!shareUrl, hasCanvas: !!canvasRef.current });
+        return;
+      }
+
+      try {
+        console.log('🎨 QR: Generating QR code on canvas...');
+        await QRCode.toCanvas(canvasRef.current, shareUrl, {
+          width: 200,
+          margin: 2,
+          color: {
+            dark: '#000000',
+            light: '#FFFFFF'
+          },
+          errorCorrectionLevel: 'M'
+        });
+        console.log('✅ QR: Canvas rendering complete!');
+      } catch (err) {
+        console.error('❌ QR: Canvas generation failed:', err);
+        setError('Failed to generate QR code');
+      }
+    };
+
+    generateQR();
+  }, [shareUrl]);
 
   const copyToClipboard = async () => {
     try {
