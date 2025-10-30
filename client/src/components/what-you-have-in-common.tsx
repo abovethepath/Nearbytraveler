@@ -494,7 +494,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
             <Heart className="w-6 h-6 text-red-500 animate-pulse" />
             What You Have in Common
           </CardTitle>
-          <p className="text-sm text-orange-600 dark:text-orange-400 font-medium mt-1">
+          <p className="text-sm text-orange-600 dark:text-gray-300 font-medium mt-1">
             Discover your shared interests and travel experiences
           </p>
         </CardHeader>
@@ -513,7 +513,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
             <Heart className="w-6 h-6 text-red-500 animate-pulse" />
             What You Have in Common
           </CardTitle>
-          <p className="text-sm text-orange-600 dark:text-orange-400 font-medium mt-1">
+          <p className="text-sm text-orange-600 dark:text-gray-300 font-medium mt-1">
             Discover your shared interests and travel experiences
           </p>
         </CardHeader>
@@ -551,7 +551,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
             </Badge>
           </div>
         </div>
-        <p className="text-sm text-orange-600 dark:text-orange-400 font-medium mt-1">
+        <p className="text-sm text-orange-600 dark:text-gray-300 font-medium mt-1">
           All your shared interests, activities, and experiences
         </p>
       </CardHeader>
