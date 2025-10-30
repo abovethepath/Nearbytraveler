@@ -64,20 +64,21 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
     queryKey: ["/api/users"],
   });
 
-  // Join event mutation
+  // Join event mutation (with status: 'interested' or 'going')
   const joinEventMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (status: 'interested' | 'going') => {
       if (!currentUser?.id || !eventId) throw new Error("Missing user or event ID");
       
       return await apiRequest("POST", `/api/events/${eventId}/join`, {
         userId: currentUser.id,
-        notes: "Looking forward to attending!"
+        notes: status === 'going' ? "Looking forward to attending!" : "Interested in this event",
+        status
       });
     },
-    onSuccess: () => {
+    onSuccess: (data, status) => {
       toast({
         title: "Success!",
-        description: "You've successfully joined the event",
+        description: status === 'going' ? "You're going to this event!" : "Marked as interested",
       });
       // Invalidate events cache to refresh participant counts
       queryClient.invalidateQueries({ queryKey: ['/api/events'] });
@@ -154,7 +155,9 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
     );
   }
 
-  const isParticipant = participants.some(p => p.userId === currentUser?.id);
+  const currentParticipant = participants.find(p => p.userId === currentUser?.id);
+  const isParticipant = !!currentParticipant;
+  const participantStatus = currentParticipant?.status;
   const isOrganizer = viewAsGuest ? false : event.organizerId === currentUser?.id;
   const organizer = users.find(u => u.id === event.organizerId);
 
@@ -474,17 +477,58 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                 <div className="text-center">
                   {isParticipant ? (
                     <>
-                      <Badge variant="default" className="mb-4 bg-green-100 text-green-800">
-                        You're attending
+                      <Badge 
+                        variant="default" 
+                        className={`mb-4 ${
+                          participantStatus === 'going' 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}
+                      >
+                        {participantStatus === 'going' ? "You're going!" : "You're interested"}
                       </Badge>
-                      <p className="text-sm text-gray-600 mb-4">
-                        You've joined this event. We'll send you updates!
+                      <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                        {participantStatus === 'going' 
+                          ? "You've confirmed you're attending. We'll send you updates!" 
+                          : "Marked as interested. Change to 'Going' when ready!"}
                       </p>
+                      
+                      {/* Change status buttons */}
+                      <div className="flex gap-2 mb-3">
+                        <Button 
+                          variant={participantStatus === 'interested' ? 'default' : 'outline'}
+                          className={`flex-1 ${
+                            participantStatus === 'interested' 
+                              ? 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white border-0' 
+                              : ''
+                          }`}
+                          onClick={() => joinEventMutation.mutate('interested')}
+                          disabled={joinEventMutation.isPending || participantStatus === 'interested'}
+                          data-testid="button-mark-interested"
+                        >
+                          ⭐ Interested
+                        </Button>
+                        <Button 
+                          variant={participantStatus === 'going' ? 'default' : 'outline'}
+                          className={`flex-1 ${
+                            participantStatus === 'going' 
+                              ? 'bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white border-0' 
+                              : ''
+                          }`}
+                          onClick={() => joinEventMutation.mutate('going')}
+                          disabled={joinEventMutation.isPending || participantStatus === 'going'}
+                          data-testid="button-mark-going"
+                        >
+                          ✓ Going
+                        </Button>
+                      </div>
+                      
                       <Button 
                         variant="outline" 
                         className="w-full mb-3"
                         onClick={() => leaveEventMutation.mutate()}
                         disabled={leaveEventMutation.isPending}
+                        data-testid="button-leave-event"
                       >
                         {leaveEventMutation.isPending ? "Leaving..." : "Leave Event"}
                       </Button>
@@ -493,6 +537,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                       <Button 
                         className="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white hover:from-green-600 hover:to-blue-600"
                         onClick={() => setLocation(`/event-chat/${eventId}`)}
+                        data-testid="button-open-chat"
                       >
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -502,21 +547,31 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                     </>
                   ) : (
                     <>
-                      <h3 className="font-semibold mb-4">Join this event</h3>
-                      <p className="text-sm text-gray-600 mb-4">
-                        Connect with other attendees and get event updates
+                      <h3 className="font-semibold mb-4 dark:text-white">RSVP to this event</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                        Join the chat and connect with attendees
                       </p>
-                      <Button 
-                        className="w-full bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-0"
-                        style={{ 
-                          background: 'linear-gradient(to right, #3b82f6, #ea580c)',
-                          border: 'none'
-                        }}
-                        onClick={() => joinEventMutation.mutate()}
-                        disabled={joinEventMutation.isPending}
-                      >
-                        {joinEventMutation.isPending ? "Joining..." : "Join Event"}
-                      </Button>
+                      
+                      {/* Two RSVP buttons: Interested and Going */}
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="outline"
+                          className="flex-1 border-2 border-yellow-500 text-yellow-700 hover:bg-yellow-50 dark:text-yellow-400 dark:hover:bg-yellow-900/20"
+                          onClick={() => joinEventMutation.mutate('interested')}
+                          disabled={joinEventMutation.isPending}
+                          data-testid="button-interested"
+                        >
+                          {joinEventMutation.isPending ? "..." : "⭐ Interested"}
+                        </Button>
+                        <Button 
+                          className="flex-1 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white border-0"
+                          onClick={() => joinEventMutation.mutate('going')}
+                          disabled={joinEventMutation.isPending}
+                          data-testid="button-going"
+                        >
+                          {joinEventMutation.isPending ? "..." : "✓ Going"}
+                        </Button>
+                      </div>
                     </>
                   )}
                 </div>
@@ -525,77 +580,102 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
           </Card>
 
           {/* Participants */}
-          {participants.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Attendees ({participants.length})</CardTitle>
-                {/* Participant Avatars */}
-                <ParticipantAvatars
-                  type="event"
-                  itemId={parseInt(eventId)}
-                  maxVisible={10}
-                  className="mt-3"
-                />
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {participants
-                    .sort((a, b) => {
-                      // Event creator first, then alphabetical by username
-                      const userA = users.find(u => u.id === a.userId);
-                      const userB = users.find(u => u.id === b.userId);
-                      
-                      if (a.userId === event.organizerId) return -1;
-                      if (b.userId === event.organizerId) return 1;
-                      
-                      return (userA?.username || '').localeCompare(userB?.username || '');
-                    })
-                    .slice(0, 10).map((participant) => {
-                    const user = users.find(u => u.id === participant.userId);
-                    return (
-                      <div key={participant.id} className="flex items-center gap-3">
-                        <Avatar className="w-8 h-8">
-                          <AvatarImage src={user?.profileImage || undefined} />
-                          <AvatarFallback>
-                            {user?.username?.charAt(0).toUpperCase() || 'U'}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <button
-                            onClick={() => setLocation(`/profile/${user?.id}`)}
-                            className="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline text-left"
-                          >
-                            {user?.username || 'Unknown'}
-                          </button>
-                          {user?.id === event.organizerId && (
-                            <Badge variant="default" className="text-xs ml-2 bg-orange-500 hover:bg-orange-600">
-                              Event Creator
-                            </Badge>
-                          )}
-                          <button
-                            onClick={() => setLocation(`/messages?user=${user?.id}`)}
-                            className="text-xs text-blue-500 hover:text-blue-700 ml-2"
-                          >
-                            Message
-                          </button>
-                          {participant.status && participant.status !== 'confirmed' && (
-                            <Badge variant="outline" className="text-xs ml-2">
-                              {participant.status}
-                            </Badge>
-                          )}
+          {participants.length > 0 && (() => {
+            const goingCount = participants.filter(p => p.status === 'going').length;
+            const interestedCount = participants.filter(p => p.status === 'interested').length;
+            
+            return (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2 flex-wrap">
+                    <span className="dark:text-white">Attendees</span>
+                    <div className="flex gap-2 text-sm">
+                      <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" data-testid="badge-going-count">
+                        ✓ {goingCount} Going
+                      </Badge>
+                      <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200" data-testid="badge-interested-count">
+                        ⭐ {interestedCount} Interested
+                      </Badge>
+                    </div>
+                  </CardTitle>
+                  {/* Participant Avatars */}
+                  <ParticipantAvatars
+                    type="event"
+                    itemId={parseInt(eventId)}
+                    maxVisible={10}
+                    className="mt-3"
+                  />
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {participants
+                      .sort((a, b) => {
+                        // Event creator first, then 'going' before 'interested', then alphabetical
+                        if (a.userId === event.organizerId) return -1;
+                        if (b.userId === event.organizerId) return 1;
+                        
+                        // 'going' status comes before 'interested'
+                        if (a.status === 'going' && b.status !== 'going') return -1;
+                        if (a.status !== 'going' && b.status === 'going') return 1;
+                        
+                        const userA = users.find(u => u.id === a.userId);
+                        const userB = users.find(u => u.id === b.userId);
+                        return (userA?.username || '').localeCompare(userB?.username || '');
+                      })
+                      .slice(0, 10).map((participant) => {
+                      const user = users.find(u => u.id === participant.userId);
+                      return (
+                        <div key={participant.id} className="flex items-center gap-3">
+                          <Avatar className="w-8 h-8">
+                            <AvatarImage src={user?.profileImage || undefined} />
+                            <AvatarFallback>
+                              {user?.username?.charAt(0).toUpperCase() || 'U'}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <button
+                                onClick={() => setLocation(`/profile/${user?.id}`)}
+                                className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline text-left"
+                              >
+                                {user?.username || 'Unknown'}
+                              </button>
+                              {user?.id === event.organizerId && (
+                                <Badge variant="default" className="text-xs bg-orange-500 hover:bg-orange-600">
+                                  Organizer
+                                </Badge>
+                              )}
+                              {participant.status === 'going' && (
+                                <Badge className="text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" data-testid={`participant-status-${participant.userId}`}>
+                                  ✓ Going
+                                </Badge>
+                              )}
+                              {participant.status === 'interested' && (
+                                <Badge className="text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200" data-testid={`participant-status-${participant.userId}`}>
+                                  ⭐ Interested
+                                </Badge>
+                              )}
+                            </div>
+                            <button
+                              onClick={() => setLocation(`/messages?user=${user?.id}`)}
+                              className="text-xs text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                            >
+                              Message
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                  {participants.length > 10 && (
-                    <p className="text-sm text-gray-500 text-center pt-2">
-                      +{participants.length - 10} more attendees
-                    </p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                      );
+                    })}
+                    {participants.length > 10 && (
+                      <p className="text-sm text-gray-500 dark:text-gray-400 text-center pt-2">
+                        +{participants.length - 10} more
+                      </p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })()}
         </div>
       </div>
     </div>
