@@ -477,61 +477,41 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                 <div className="text-center">
                   {isParticipant ? (
                     <>
-                      <Badge 
-                        variant="default" 
-                        className={`mb-4 ${
-                          participantStatus === 'going' 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-yellow-100 text-yellow-800'
-                        }`}
-                      >
-                        {participantStatus === 'going' ? "You're going!" : "You're interested"}
-                      </Badge>
-                      <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                        {participantStatus === 'going' 
-                          ? "You've confirmed you're attending. We'll send you updates!" 
-                          : "Marked as interested. Change to 'Going' when ready!"}
-                      </p>
-                      
-                      {/* Change status buttons */}
-                      <div className="flex gap-2 mb-3">
-                        <Button 
-                          variant={participantStatus === 'interested' ? 'default' : 'outline'}
-                          className={`flex-1 ${
-                            participantStatus === 'interested' 
-                              ? 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white border-0' 
-                              : ''
-                          }`}
-                          onClick={() => joinEventMutation.mutate('interested')}
-                          disabled={joinEventMutation.isPending || participantStatus === 'interested'}
-                          data-testid="button-mark-interested"
-                        >
-                          ⭐ Interested
-                        </Button>
-                        <Button 
-                          variant={participantStatus === 'going' ? 'default' : 'outline'}
-                          className={`flex-1 ${
-                            participantStatus === 'going' 
-                              ? 'bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white border-0' 
-                              : ''
-                          }`}
-                          onClick={() => joinEventMutation.mutate('going')}
-                          disabled={joinEventMutation.isPending || participantStatus === 'going'}
-                          data-testid="button-mark-going"
-                        >
-                          ✓ Going
-                        </Button>
-                      </div>
-                      
+                      {/* Current RSVP Status Button (like Plura - shows your current status) */}
                       <Button 
-                        variant="outline" 
-                        className="w-full mb-3"
+                        className={`w-full mb-2 ${
+                          participantStatus === 'going' 
+                            ? 'bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white' 
+                            : 'bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white'
+                        }`}
+                        disabled
+                        data-testid={`status-${participantStatus}`}
+                      >
+                        {participantStatus === 'going' ? 'Going' : 'Interested'}
+                      </Button>
+                      
+                      {/* Change Status Link (like Plura's "No longer interested") */}
+                      <button
+                        onClick={() => {
+                          // Toggle between interested and going
+                          const newStatus = participantStatus === 'going' ? 'interested' : 'going';
+                          joinEventMutation.mutate(newStatus);
+                        }}
+                        className="text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white underline mb-3 w-full"
+                        disabled={joinEventMutation.isPending}
+                        data-testid="button-change-status"
+                      >
+                        {participantStatus === 'going' ? 'Change to Interested' : 'Change to Going'}
+                      </button>
+                      
+                      <button
                         onClick={() => leaveEventMutation.mutate()}
+                        className="text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white underline mb-4 w-full"
                         disabled={leaveEventMutation.isPending}
                         data-testid="button-leave-event"
                       >
-                        {leaveEventMutation.isPending ? "Leaving..." : "Leave Event"}
-                      </Button>
+                        {leaveEventMutation.isPending ? "Leaving..." : "No longer interested"}
+                      </button>
                       
                       {/* Open Chat Button for participants */}
                       <Button 
@@ -542,34 +522,29 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                         </svg>
-                        Open Chat
+                        Go to chat
                       </Button>
                     </>
                   ) : (
                     <>
-                      <h3 className="font-semibold mb-4 dark:text-white">RSVP to this event</h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-                        Join the chat and connect with attendees
-                      </p>
-                      
-                      {/* Two RSVP buttons: Interested and Going */}
-                      <div className="flex gap-2">
+                      {/* Two side-by-side RSVP buttons (like Plura) */}
+                      <div className="flex gap-3">
                         <Button 
-                          variant="outline"
-                          className="flex-1 border-2 border-yellow-500 text-yellow-700 hover:bg-yellow-50 dark:text-yellow-400 dark:hover:bg-yellow-900/20"
-                          onClick={() => joinEventMutation.mutate('interested')}
-                          disabled={joinEventMutation.isPending}
-                          data-testid="button-interested"
-                        >
-                          {joinEventMutation.isPending ? "..." : "⭐ Interested"}
-                        </Button>
-                        <Button 
-                          className="flex-1 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white border-0"
+                          className="flex-1 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white border-0"
                           onClick={() => joinEventMutation.mutate('going')}
                           disabled={joinEventMutation.isPending}
                           data-testid="button-going"
                         >
-                          {joinEventMutation.isPending ? "..." : "✓ Going"}
+                          {joinEventMutation.isPending ? "..." : "Going"}
+                        </Button>
+                        <Button 
+                          variant="outline"
+                          className="flex-1 border-2 border-white dark:border-gray-600 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                          onClick={() => joinEventMutation.mutate('interested')}
+                          disabled={joinEventMutation.isPending}
+                          data-testid="button-interested"
+                        >
+                          {joinEventMutation.isPending ? "..." : "Interested"}
                         </Button>
                       </div>
                     </>
