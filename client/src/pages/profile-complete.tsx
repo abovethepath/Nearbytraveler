@@ -4362,7 +4362,23 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         const customInterests = editFormData.interests.filter(interest => !allPredefinedInterests.includes(interest));
                         return customInterests.length > 0 && (
                           <div className="mt-2">
-                            <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Your Custom Interests (click X to remove):</p>
+                            <div className="flex items-center justify-between mb-1">
+                              <p className="text-xs font-medium text-gray-600 dark:text-gray-400">Your Custom Interests (click X to remove):</p>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  setEditFormData(prev => ({ 
+                                    ...prev, 
+                                    interests: prev.interests.filter(i => allPredefinedInterests.includes(i)) 
+                                  }));
+                                }}
+                                className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50 h-6"
+                              >
+                                Clear All Custom
+                              </Button>
+                            </div>
                             <div className="flex flex-wrap gap-2">
                               {customInterests.map((interest, index) => (
                                 <span
@@ -4452,7 +4468,23 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         const customActivities = editFormData.activities.filter(activity => !ALL_ACTIVITIES.includes(activity));
                         return customActivities.length > 0 && (
                           <div className="mt-2">
-                            <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Your Custom Activities (click X to remove):</p>
+                            <div className="flex items-center justify-between mb-1">
+                              <p className="text-xs font-medium text-gray-600 dark:text-gray-400">Your Custom Activities (click X to remove):</p>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  setEditFormData(prev => ({ 
+                                    ...prev, 
+                                    activities: prev.activities.filter(a => ALL_ACTIVITIES.includes(a)) 
+                                  }));
+                                }}
+                                className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50 h-6"
+                              >
+                                Clear All Custom
+                              </Button>
+                            </div>
                             <div className="flex flex-wrap gap-2">
                               {customActivities.map((activity, index) => (
                                 <span
