@@ -377,9 +377,13 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
     // CHILDREN AGES - CRITICAL FOR PARENTS!
     if (currentUser.travelingWithChildren && otherUser.travelingWithChildren &&
         currentUser.childrenAges && otherUser.childrenAges) {
-      // Parse children ages from strings like "5, 8, 12"
-      const currentAges = currentUser.childrenAges.split(',').map(age => parseInt(age.trim())).filter(age => !isNaN(age));
-      const otherAges = otherUser.childrenAges.split(',').map(age => parseInt(age.trim())).filter(age => !isNaN(age));
+      // Parse children ages from strings like "5, 8, 12" or "7 Boy" - extract all numbers
+      const extractAges = (ageString: string): number[] => {
+        return ageString.match(/\d+/g)?.map(num => parseInt(num)).filter(age => !isNaN(age)) || [];
+      };
+      
+      const currentAges = extractAges(currentUser.childrenAges);
+      const otherAges = extractAges(otherUser.childrenAges);
       
       // Find exact matches
       const exactMatches = currentAges.filter(age => otherAges.includes(age));
