@@ -3909,7 +3909,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         size="sm"
                         variant="outline"
                         onClick={() => setIsEditMode(true)}
-                        className="sm:hidden bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700"
+                        className="sm:hidden bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800 dark:border-blue-700 dark:text-blue-100"
                         aria-label="Edit Profile"
                       >
                         <Edit2 className="w-4 h-4" />
@@ -3920,7 +3920,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         size="sm"
                         variant="outline"
                         onClick={() => setIsEditMode(true)}
-                        className="hidden sm:inline-flex bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700"
+                        className="hidden sm:inline-flex bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800 dark:border-blue-700 dark:text-blue-100"
                       >
                         <Edit2 className="w-4 h-4 mr-2" />
                         Edit Profile
