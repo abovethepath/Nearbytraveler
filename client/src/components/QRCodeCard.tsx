@@ -57,6 +57,9 @@ export default function QRCodeCard() {
       })
         .then(response => {
           console.log('📡 QR API response status:', response.status);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
           return response.json();
         })
         .then(data => {
@@ -67,6 +70,8 @@ export default function QRCodeCard() {
             const url = `${baseUrl}/qr-signup?code=${data.referralCode}`;
             console.log('✅ Setting share URL:', url);
             setShareUrl(url);
+          } else {
+            console.error('❌ No referralCode in response');
           }
         })
         .catch(error => {
@@ -77,37 +82,50 @@ export default function QRCodeCard() {
           console.log('⚠️ Using fallback URL:', url);
           setShareUrl(url);
         });
+    } else {
+      console.log('❌ No user data found in localStorage');
     }
   }, [getUserData]);
 
   // Memoized QR generation function using proper QRCode library
   const generateQRCode = useCallback(async (text: string) => {
     const canvas = canvasRef.current;
-    if (!canvas || !text) {
-      console.log('❌ QR: Canvas or text missing', { canvas: !!canvas, text: !!text });
+    if (!canvas) {
+      console.log('❌ QR: Canvas ref not available');
+      return;
+    }
+    if (!text) {
+      console.log('❌ QR: No text provided');
       return;
     }
 
     try {
-      console.log('🎨 Generating QR code for:', text.substring(0, 50) + '...');
+      console.log('🎨 Generating QR code for:', text.substring(0, 80));
+      console.log('📐 Canvas dimensions:', canvas.width, 'x', canvas.height);
+      
       await QRCode.toCanvas(canvas, text, {
         width: 200,
         margin: 2,
         color: {
           dark: '#000000',
           light: '#FFFFFF'
-        }
+        },
+        errorCorrectionLevel: 'M'
       });
+      
       setQrGenerated(true);
-      console.log('✅ QR code generated successfully');
+      console.log('✅ QR code generated successfully on canvas');
     } catch (error) {
       console.error('❌ Error generating QR code:', error);
+      console.error('Error details:', error);
     }
   }, []);
 
   // Generate QR code when shareUrl is available - run only once
   useEffect(() => {
+    console.log('📊 QR Gen Effect - shareUrl:', !!shareUrl, 'canvas:', !!canvasRef.current, 'qrGenerated:', qrGenerated);
     if (shareUrl && canvasRef.current && !qrGenerated) {
+      console.log('🚀 Triggering QR code generation...');
       generateQRCode(shareUrl);
     }
   }, [shareUrl, generateQRCode, qrGenerated]);
