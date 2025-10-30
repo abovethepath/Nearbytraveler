@@ -18,13 +18,13 @@ export default function Auth() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
-  // Check if we're on the join page or in register mode
+  // Check if we're on the join page or signup page or in register mode
   const urlParams = new URLSearchParams(window.location.search);
   const mode = urlParams.get('mode');
-  const isJoinPage = window.location.pathname === '/join';
-  const [isLogin, setIsLogin] = useState(mode === 'register' ? false : !isJoinPage);
+  const isSignupPage = window.location.pathname === '/signup' || window.location.pathname === '/join';
+  const [isLogin, setIsLogin] = useState(mode === 'register' ? false : !isSignupPage);
   
-  console.log('🔍 AUTH DEBUG - URL:', window.location.pathname, 'mode:', mode, 'isJoinPage:', isJoinPage, 'isLogin:', isLogin);
+  console.log('🔍 AUTH DEBUG - URL:', window.location.pathname, 'mode:', mode, 'isSignupPage:', isSignupPage, 'isLogin:', isLogin);
   
   // Basic form fields
   const [formData, setFormData] = useState({
@@ -222,7 +222,7 @@ export default function Auth() {
             <CardTitle className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
               {isLogin ? 'Welcome Back' : 'Join Nearby Traveler'}
             </CardTitle>
-            {isJoinPage && (
+            {!isLogin && (
               <p className="text-lg text-gray-600 mt-2">
                 Connect with travelers and locals worldwide
               </p>
