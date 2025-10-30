@@ -4,7 +4,7 @@
 // DO NOT CREATE SEPARATE LISTS - ALWAYS IMPORT FROM HERE
 
 // ========================================
-// TOP CHOICES (30 items)
+// TOP CHOICES (35 items)
 // ========================================
 // Primary categories for meeting travelers and locals
 // Users select from this list to indicate their main interests
@@ -22,17 +22,22 @@ export const TOP_CHOICES = [
   "Wine Bars & Vineyards",
   "Rooftop Bars",
   "Nightlife & Dancing",
-  "Live Music & Concerts",
+  "Live Music",
+  "Concerts",
   "Karaoke",
   "Comedy Shows",
   "Local Hidden Gems",
   "Historical Sites & Tours",
-  "Museums & Culture",
+  "Museums",
+  "Cultural Experiences",
   "Photography & Scenic Spots",
   "Local Markets & Bazaars",
-  "Beach & Water Activities",
-  "Hiking & Nature",
-  "Fitness & Workouts",
+  "Beach Activities",
+  "Water Sports",
+  "Hiking",
+  "Nature Walks",
+  "Fitness Classes",
+  "Working Out",
   "Golf",
   "Pickleball",
   "Meeting New People",
@@ -43,7 +48,7 @@ export const TOP_CHOICES = [
 ];
 
 // ========================================
-// INTERESTS (58 items)
+// INTERESTS (74 items)
 // ========================================
 // Extended interests for deeper user matching and personalization
 
@@ -52,7 +57,9 @@ export const INTERESTS = [
   "420-Friendly",
   "Religious & Spiritual Sites",
   "Wellness & Mindfulness",
-  "Volunteering & Activism",
+  "Volunteering",
+  "Activism",
+  "Animal Rescue & Shelters",
   "Pet Lovers",
   "Luxury Experiences",
   "Budget Travel",
@@ -68,8 +75,10 @@ export const INTERESTS = [
   "Beer Festivals",
   "Pop-up Restaurants",
   "Jazz Clubs",
-  "Theater & Performing Arts",
-  "Film & Cinema",
+  "Theater",
+  "Performing Arts",
+  "Movies",
+  "Film Festivals",
   "Gaming",
   "Electronic/DJ Scene",
   "Ghost Tours",
@@ -77,7 +86,8 @@ export const INTERESTS = [
   "Street Art",
   "Trivia Nights",
   "Sports Events",
-  "Street Festivals & Community Events",
+  "Street Festivals",
+  "Community Events",
   "Tennis",
   "Running & Jogging",
   "Team Sports",
@@ -95,15 +105,18 @@ export const INTERESTS = [
   "Kid-Friendly Activities",
   "Parenting Meetups",
   "Family Travel",
-  "Arts & Crafts",
+  "Arts",
+  "Crafts",
   "Fashion & Style",
   "Classical Music",
   "Indie Music Scene",
   "Vintage & Thrift Shopping",
   "Antiques & Collectibles",
   "Language Exchange",
-  "Book Clubs & Reading",
-  "Tech & Innovation",
+  "Book Clubs",
+  "Reading",
+  "Tech Meetups",
+  "Innovation",
   "Coworking & Networking",
   "Hot Air Balloons",
   "Beach Volleyball",
@@ -195,6 +208,48 @@ export const ALL_LANGUAGES = [
 export const getAllLanguages = () => ALL_LANGUAGES;
 
 // ========================================
+// LEGACY COMPATIBILITY MAPPING
+// ========================================
+
+// Maps old combined options to new split options
+// This ensures existing user data doesn't break after the split
+export const LEGACY_TO_NEW_MAPPING: Record<string, string[]> = {
+  // TOP CHOICES legacy mappings
+  "Live Music & Concerts": ["Live Music", "Concerts"],
+  "Museums & Culture": ["Museums", "Cultural Experiences"],
+  "Beach & Water Activities": ["Beach Activities", "Water Sports"],
+  "Hiking & Nature": ["Hiking", "Nature Walks"],
+  "Fitness & Workouts": ["Fitness Classes", "Working Out"],
+  
+  // INTERESTS legacy mappings
+  "Volunteering & Activism": ["Volunteering", "Activism", "Animal Rescue & Shelters"],
+  "Theater & Performing Arts": ["Theater", "Performing Arts"],
+  "Film & Cinema": ["Movies", "Film Festivals"],
+  "Street Festivals & Community Events": ["Street Festivals", "Community Events"],
+  "Arts & Crafts": ["Arts", "Crafts"],
+  "Book Clubs & Reading": ["Book Clubs", "Reading"],
+  "Tech & Innovation": ["Tech Meetups", "Innovation"],
+};
+
+// Migrates old combined options to new split options
+export const migrateLegacyOptions = (options: string[]): string[] => {
+  const migrated: string[] = [];
+  
+  options.forEach(option => {
+    if (LEGACY_TO_NEW_MAPPING[option]) {
+      // Replace old combined option with new split options
+      migrated.push(...LEGACY_TO_NEW_MAPPING[option]);
+    } else {
+      // Keep option as-is if not a legacy value
+      migrated.push(option);
+    }
+  });
+  
+  // Remove duplicates
+  return Array.from(new Set(migrated));
+};
+
+// ========================================
 // VALIDATION FUNCTIONS
 // ========================================
 
@@ -262,20 +317,35 @@ export const getSexualPreferenceOptions = () => SEXUAL_PREFERENCE_OPTIONS;
 // ========================================
 // SUMMARY
 // ========================================
-// Total taxonomy: 105 items (fully consolidated to eliminate ALL redundancies)
-// - TOP_CHOICES: 30 items (broad categories)
-// - INTERESTS: 69 items (specific interests and preferences)
+// Total taxonomy: 115 items (split combined options for clarity)
+// - TOP_CHOICES: 35 items (broad categories, split confusing combinations)
+// - INTERESTS: 74 items (specific interests and preferences, split confusing combinations)
 // - ACTIVITIES: 6 items (unique concrete activities with zero overlap)
 // 
-// REMOVED DUPLICATES FROM ACTIVITIES (October 2025):
+// SPLIT COMBINED OPTIONS (October 2025):
+// To improve clarity and precision, confusing combined options were split into individual choices:
+// 
+// TOP CHOICES splits:
+// - "Live Music & Concerts" → "Live Music", "Concerts"
+// - "Museums & Culture" → "Museums", "Cultural Experiences"
+// - "Beach & Water Activities" → "Beach Activities", "Water Sports"
+// - "Hiking & Nature" → "Hiking", "Nature Walks"
+// - "Fitness & Workouts" → "Fitness Classes", "Working Out"
+//
+// INTERESTS splits:
+// - "Volunteering & Activism" → "Volunteering", "Activism", "Animal Rescue & Shelters"
+// - "Theater & Performing Arts" → "Theater", "Performing Arts"
+// - "Film & Cinema" → "Movies", "Film Festivals"
+// - "Street Festivals & Community Events" → "Street Festivals", "Community Events"
+// - "Arts & Crafts" → "Arts", "Crafts"
+// - "Book Clubs & Reading" → "Book Clubs", "Reading"
+// - "Tech & Innovation" → "Tech Meetups", "Innovation"
+// 
+// REMOVED DUPLICATES FROM ACTIVITIES:
 // - Park Gatherings, Picnic Outings (duplicates of "Park Picnics" in Interests)
-// - Beach Hangouts (duplicate of "Beach & Water Activities" in Top Choices)
+// - Beach Hangouts (duplicate of "Beach Activities" in Top Choices)
 // - Walking Tours (duplicate of "City Tours & Sightseeing" in Interests)
-// - Movie Going (duplicate of "Film & Cinema" in Interests)
-// - Outdoor Adventures (duplicate of "Hiking & Nature" in Top Choices)
-// - Coffee Shop Meetups (duplicate of "Coffee Shops & Cafes" in Top Choices)
-// - Late Night Dining (duplicate of "Late Night Eats" in Top Choices)
-// - Rooftop Lounging (duplicate of "Rooftop Bars" in Top Choices)
-// - Bar Hopping (covered by bar categories in Top Choices)
+// - Movie Going (duplicate of "Movies" in Interests)
+// - Outdoor Adventures (duplicate of "Hiking" in Top Choices)
 // 
 // Events have been removed from user profiles - they now only exist as community events that users can create/attend

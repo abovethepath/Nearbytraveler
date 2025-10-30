@@ -326,7 +326,7 @@ import { BlockUserButton } from "@/components/block-user-button";
 
 import type { User, UserPhoto, PassportStamp, TravelPlan } from "@shared/schema";
 import { insertUserReferenceSchema } from "@shared/schema";
-import { getAllInterests, getAllActivities, getAllLanguages, validateSelections, getHometownInterests, getTravelInterests, getProfileInterests } from "../../../shared/base-options";
+import { getAllInterests, getAllActivities, getAllLanguages, validateSelections, getHometownInterests, getTravelInterests, getProfileInterests, migrateLegacyOptions } from "../../../shared/base-options";
 import { getTopChoicesInterests } from "../lib/topChoicesUtils";
 
 // Extended user interface for additional properties
@@ -1518,30 +1518,37 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       
       // Initialize temp values for editing - EXCLUDE hometown/travel interests from profile interests to prevent duplication
       const signupInterests = [...getHometownInterests(), ...getTravelInterests()];
-      setTempInterests((user.interests || []).filter(interest => !signupInterests.includes(interest)));
-      setTempActivities(user.activities || []);
+      
+      // Migrate legacy combined options to new split options
+      const migratedInterests = migrateLegacyOptions(user.interests || []);
+      const migratedActivities = migrateLegacyOptions(user.activities || []);
+      
+      setTempInterests(migratedInterests.filter(interest => !signupInterests.includes(interest)));
+      setTempActivities(migratedActivities);
       
       // Initialize editFormData with current user preferences - EXCLUDE signup interests
       setEditFormData({
-        interests: (user.interests || []).filter(interest => !signupInterests.includes(interest)),
-        activities: user.activities || []
+        interests: migratedInterests.filter(interest => !signupInterests.includes(interest)),
+        activities: migratedActivities
       });
       
       // Reset form with user type-specific data
       if (user.userType === 'business') {
         // Extract custom entries from the arrays (entries not in predefined lists)
         const allPredefinedInterests = [...getHometownInterests(), ...getTravelInterests(), ...getProfileInterests()];
-        const customInterests = (user.interests || [])
+        
+        // Already migrated above, use the migrated arrays
+        const customInterests = migratedInterests
           .filter((item: string) => !allPredefinedInterests.includes(item))
           .join(', ');
-        const customActivities = (user.activities || [])
+        const customActivities = migratedActivities
           .filter((item: string) => !safeGetAllActivities().includes(item))
           .join(', ');
         
         // Only include predefined entries in the checkbox arrays
-        const predefinedInterests = (user.interests || [])
+        const predefinedInterests = migratedInterests
           .filter((item: string) => allPredefinedInterests.includes(item));
-        const predefinedActivities = (user.activities || [])
+        const predefinedActivities = migratedActivities
           .filter((item: string) => safeGetAllActivities().includes(item));
         
         profileForm.reset({
@@ -1613,25 +1620,29 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     if (isEditMode && user && !userLoading) {
       console.log('🔥 Re-syncing form with updated user data');
       
+      // Migrate legacy combined options before using
+      const reSyncMigratedInterests = migrateLegacyOptions(user.interests || []);
+      const reSyncMigratedActivities = migrateLegacyOptions(user.activities || []);
+      
       // Initialize editFormData with user's current data
       setEditFormData({
-        interests: user.interests || [],
-        activities: user.activities || []
+        interests: reSyncMigratedInterests,
+        activities: reSyncMigratedActivities
       });
       
       // For business users, extract and set custom fields
       if (user.userType === 'business') {
         const allPredefinedInterests = [...getHometownInterests(), ...getTravelInterests(), ...getProfileInterests()];
-        const customInterests = (user.interests || [])
+        const customInterests = reSyncMigratedInterests
           .filter((item: string) => !allPredefinedInterests.includes(item))
           .join(', ');
-        const customActivities = (user.activities || [])
+        const customActivities = reSyncMigratedActivities
           .filter((item: string) => !safeGetAllActivities().includes(item))
           .join(', ');
         
-        const predefinedInterests = (user.interests || [])
+        const predefinedInterests = reSyncMigratedInterests
           .filter((item: string) => allPredefinedInterests.includes(item));
-        const predefinedActivities = (user.activities || [])
+        const predefinedActivities = reSyncMigratedActivities
           .filter((item: string) => safeGetAllActivities().includes(item));
         
         profileForm.reset({

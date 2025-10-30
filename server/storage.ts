@@ -3,6 +3,7 @@ import { users, connections, messages, events, eventParticipants, travelPlans, t
 import { eq, and, or, ilike, gte, desc, avg, count, sql, isNotNull, ne, lte, lt, gt, asc, like, inArray, getTableColumns, isNull } from "drizzle-orm";
 import { promises as fs } from 'fs';
 import path from 'path';
+import { migrateLegacyOptions } from "../shared/base-options";
 
 export interface IStorage {
   // User methods
@@ -526,8 +527,14 @@ export class DatabaseStorage implements IStorage {
     // Convert PostgreSQL boolean strings to proper JavaScript booleans using consistent helper
     const asBool = (v: any) => v === true || v === 't' || v === 'true' || v === 1;
     
+    // Migrate legacy combined options to new split options
+    const migratedInterests = migrateLegacyOptions(user.interests || []);
+    const migratedActivities = migrateLegacyOptions(user.activities || []);
+    
     return {
       ...user,
+      interests: migratedInterests,
+      activities: migratedActivities,
       travelingWithChildren: asBool(user.travelingWithChildren),
       isVeteran: asBool(user.isVeteran),
       isActiveDuty: asBool(user.isActiveDuty),
