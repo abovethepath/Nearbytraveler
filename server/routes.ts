@@ -7911,39 +7911,41 @@ Questions? Just reply to this message. Welcome aboard!
   app.post("/api/events/:id/join", async (req, res) => {
     try {
       const eventId = parseInt(req.params.id || '0');
-      const { userId, notes } = req.body;
+      const { userId, notes, status = 'going' } = req.body;
       
       if (!userId) {
         return res.status(400).json({ message: "User ID required" });
       }
 
-      if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENT JOIN: User ${userId} joining event ${eventId}`);
+      if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENT JOIN: User ${userId} joining event ${eventId} with status: ${status}`);
       
-      const participant = await storage.joinEvent(eventId, userId, notes);
-      if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENT JOIN: User ${userId} successfully joined event ${eventId}`);
+      const participant = await storage.joinEvent(eventId, userId, notes, status);
+      if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENT JOIN: User ${userId} successfully joined event ${eventId} as ${status}`);
       
-      // Send SMS notification if user has phone number
-      try {
-        const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
-        const [event] = await db.select().from(events).where(eq(events.id, eventId)).limit(1);
-        
-        if (user?.phoneNumber && event && smsService.isValidPhoneNumber(user.phoneNumber)) {
-          const eventDate = new Date(event.date).toLocaleDateString();
-          const eventTime = new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      // Send SMS notification only if status is 'going' (not for 'interested')
+      if (status === 'going') {
+        try {
+          const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+          const [event] = await db.select().from(events).where(eq(events.id, eventId)).limit(1);
           
-          await smsService.sendEventRSVPConfirmation(user.phoneNumber, {
-            eventTitle: event.title,
-            eventTime: eventTime,
-            eventLocation: `${event.city}, ${event.state}`,
-            eventDate: eventDate,
-            userName: user.name
-          });
-          
-          if (process.env.NODE_ENV === 'development') console.log(`📱 SMS: RSVP confirmation sent to ${user.name} for event "${event.title}"`);
+          if (user?.phoneNumber && event && smsService.isValidPhoneNumber(user.phoneNumber)) {
+            const eventDate = new Date(event.date).toLocaleDateString();
+            const eventTime = new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            await smsService.sendEventRSVPConfirmation(user.phoneNumber, {
+              eventTitle: event.title,
+              eventTime: eventTime,
+              eventLocation: `${event.city}, ${event.state}`,
+              eventDate: eventDate,
+              userName: user.name
+            });
+            
+            if (process.env.NODE_ENV === 'development') console.log(`📱 SMS: RSVP confirmation sent to ${user.name} for event "${event.title}"`);
+          }
+        } catch (smsError: any) {
+          // Don't fail the event join if SMS fails
+          if (process.env.NODE_ENV === 'development') console.error(`📱 SMS: Failed to send RSVP confirmation:`, smsError);
         }
-      } catch (smsError: any) {
-        // Don't fail the event join if SMS fails
-        if (process.env.NODE_ENV === 'development') console.error(`📱 SMS: Failed to send RSVP confirmation:`, smsError);
       }
       
       return res.json({ success: true, participant });

@@ -1561,7 +1561,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Event participation methods
-  async joinEvent(eventId: number, userId: number, notes?: string): Promise<EventParticipant> {
+  async joinEvent(eventId: number, userId: number, notes?: string, status: string = 'going'): Promise<EventParticipant> {
     // Check if user is already a participant
     const [existingParticipant] = await db
       .select()
@@ -1573,8 +1573,14 @@ export class DatabaseStorage implements IStorage {
         )
       );
 
+    // If already a participant, update their status
     if (existingParticipant) {
-      return existingParticipant;
+      const [updated] = await db
+        .update(eventParticipants)
+        .set({ status, notes: notes || existingParticipant.notes })
+        .where(eq(eventParticipants.id, existingParticipant.id))
+        .returning();
+      return updated;
     }
 
     const [participant] = await db
@@ -1583,7 +1589,7 @@ export class DatabaseStorage implements IStorage {
         eventId,
         userId,
         notes: notes || "",
-        status: "confirmed"
+        status
       })
       .returning();
     return participant;

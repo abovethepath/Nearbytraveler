@@ -435,7 +435,7 @@ export const eventParticipants = pgTable("event_participants", {
   id: serial("id").primaryKey(),
   eventId: integer("event_id").notNull(),
   userId: integer("user_id").notNull(),
-  status: text("status").notNull().default("joined"), // 'invited', 'joined', 'declined', 'pending'
+  status: text("status").notNull().default("going"), // 'interested', 'going', 'invited', 'declined', 'pending'
   role: text("role").default("participant"), // 'organizer', 'participant', 'co-organizer'
   joinedAt: timestamp("joined_at").defaultNow(),
   notes: text("notes"), // Participant notes or message when joining
