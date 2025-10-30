@@ -121,7 +121,7 @@ export const INTERESTS = [
 ];
 
 // ========================================
-// ACTIVITIES (8 items)
+// ACTIVITIES (12 items)
 // ========================================
 // Concrete activities users want to do together
 
@@ -133,15 +133,10 @@ export const ACTIVITIES = [
   "Game Nights",
   "Walking Tours",
   "Exploring Local Spots",
-  "Late Night Adventures",
   "Meetup Organizing",
   "Park Gatherings",
-  "Coffee Shop Meetups",
   "Outdoor Adventures",
   "Movie Going",
-  "Bar Hopping",
-  "Rooftop Lounging",
-  "Late Night Dining",
   "Picnic Outings"
 ];
 
@@ -273,17 +268,16 @@ export const getSexualPreferenceOptions = () => SEXUAL_PREFERENCE_OPTIONS;
 // ========================================
 // SUMMARY
 // ========================================
-// Total taxonomy: 96 items (consolidated from 115 to remove ALL redundancies)
+// Total taxonomy: 111 items (consolidated to eliminate ALL redundancies with Top Choices)
 // - TOP_CHOICES: 30 items
-// - INTERESTS: 58 items (reduced from 67 - removed duplicates)
-// - ACTIVITIES: 8 items (reduced from 18 - removed duplicates)
+// - INTERESTS: 69 items (expanded with specific interests)
+// - ACTIVITIES: 12 items (concrete activities, no overlap with Top Choices)
 // 
-// REMOVED DUPLICATES (12 items):
-// From INTERESTS: Farmers Markets (dup of Local Markets), Jazz & Blues (dup of Jazz Clubs), 
-//                 City Tours (dup of Walking Tours), Sunset Viewpoints (dup of Photography & Scenic Spots)
-// From ACTIVITIES: Restaurant Hopping (dup of Food Tours), Alcohol-Free Hangouts (dup of Sober/Alcohol-Free Lifestyle),
-//                  Bar Hopping (covered by bar categories), Working Out Together (dup of Fitness & Workouts),
-//                  Outdoor Adventures (too vague), Water Sports (dup of Beach & Water Activities),
-//                  Sports & Recreation (too vague), Photography Walks (dup of Photography & Scenic Spots)
+// REMOVED DUPLICATES FROM ACTIVITIES:
+// - Coffee Shop Meetups (duplicate of "Coffee Shops & Cafes" in Top Choices)
+// - Late Night Dining (duplicate of "Late Night Eats" in Top Choices)
+// - Rooftop Lounging (duplicate of "Rooftop Bars" in Top Choices)
+// - Bar Hopping (covered by bar categories in Top Choices)
+// - Late Night Adventures (kept in Activities as it's different from Late Night Eats)
 // 
 // Events have been removed from user profiles - they now only exist as community events that users can create/attend
