@@ -50,6 +50,8 @@ interface User {
   travelBudget?: string;
   travelGroup?: string;
   travelWhat?: string[];
+  travelingWithChildren?: boolean;
+  childrenAges?: string;
 }
 
 interface SharedTripData {
@@ -371,6 +373,36 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
     }
 
     commonalities.sharedTravelIntent = travelIntentCommonalities;
+
+    // CHILDREN AGES - CRITICAL FOR PARENTS!
+    if (currentUser.travelingWithChildren && otherUser.travelingWithChildren &&
+        currentUser.childrenAges && otherUser.childrenAges) {
+      // Parse children ages from strings like "5, 8, 12"
+      const currentAges = currentUser.childrenAges.split(',').map(age => parseInt(age.trim())).filter(age => !isNaN(age));
+      const otherAges = otherUser.childrenAges.split(',').map(age => parseInt(age.trim())).filter(age => !isNaN(age));
+      
+      // Find exact matches
+      const exactMatches = currentAges.filter(age => otherAges.includes(age));
+      
+      // Find close matches (within 1-2 years)
+      const closeMatches = currentAges.filter(age => 
+        otherAges.some(otherAge => Math.abs(age - otherAge) <= 2 && Math.abs(age - otherAge) > 0)
+      );
+      
+      if (exactMatches.length > 0) {
+        const agesList = exactMatches.join(', ');
+        commonalities.otherCommonalities.push(`🎉 Both have kids age ${agesList}!`);
+      }
+      
+      if (closeMatches.length > 0 && exactMatches.length === 0) {
+        commonalities.otherCommonalities.push(`👶 Both have kids of similar ages`);
+      }
+      
+      // General parent connection if they both have kids
+      if (exactMatches.length === 0 && closeMatches.length === 0) {
+        commonalities.otherCommonalities.push(`👨‍👩‍👧‍👦 Both traveling with children`);
+      }
+    }
 
     // Other commonalities
     if (commonalities.bothVeterans) {
