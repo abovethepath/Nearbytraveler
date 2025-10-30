@@ -567,19 +567,15 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
             What You Have in Common
           </CardTitle>
           <div className="flex items-center gap-1.5 flex-wrap">
-            <Badge className="bg-green-500 text-white shadow-md border-green-600 text-xs sm:text-sm px-2 py-1 font-bold whitespace-nowrap">
-              <span style={{ color: 'white !important' }}>
-                {compatibilityData ? Math.round((compatibilityData.score || 0) * 100) : commonalities.compatibilityPercentage}% Match
-              </span>
+            <Badge className="bg-green-600 dark:bg-green-500 text-white dark:text-white shadow-md border-green-700 dark:border-green-600 text-xs sm:text-sm px-2 py-1 font-bold whitespace-nowrap">
+              {compatibilityData ? Math.round((compatibilityData.score || 0) * 100) : commonalities.compatibilityPercentage}% Match
             </Badge>
-            <Badge className="bg-blue-500 text-white shadow-md border-blue-600 text-xs sm:text-sm px-2 py-1 font-medium whitespace-nowrap">
-              <span style={{ color: 'white !important' }}>
-                {compatibilityData ? (
-                  (compatibilityData.sharedInterests?.length || 0) + 
-                  (compatibilityData.sharedActivities?.length || 0) + 
-                  (compatibilityData.sharedEvents?.length || 0)
-                ) : commonalities.totalCount} Common
-              </span>
+            <Badge className="bg-blue-600 dark:bg-blue-500 text-white dark:text-white shadow-md border-blue-700 dark:border-blue-600 text-xs sm:text-sm px-2 py-1 font-medium whitespace-nowrap">
+              {compatibilityData ? (
+                (compatibilityData.sharedInterests?.length || 0) + 
+                (compatibilityData.sharedActivities?.length || 0) + 
+                (compatibilityData.sharedEvents?.length || 0)
+              ) : commonalities.totalCount} Common
             </Badge>
           </div>
         </div>
