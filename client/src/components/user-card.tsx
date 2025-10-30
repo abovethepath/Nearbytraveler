@@ -184,37 +184,37 @@ export default function UserCard({
             ) : null;
           })()}
           
-          {/* CTA Section - Compatibility Badge + Connect Button together */}
+          {/* CTA Section - Compatibility Badge + Connect Button on same line */}
           {!isCurrentUser && currentUserId && (
-            <div className="mt-auto pt-4 space-y-3">
-              {/* Things in Common Badge */}
-              {compatibilityData && (() => {
-                const data = compatibilityData as any;
-                const totalCommon = 
-                  (data.sharedInterests?.length || 0) +
-                  (data.sharedActivities?.length || 0) +
-                  (data.sharedEvents?.length || 0);
-                
-                const matchPercentage = Math.round((data.score || 0) * 100);
-                
-                return totalCommon > 0 ? (
-                  <div className="flex justify-center">
-                    <div className="bg-gradient-to-r from-blue-500 to-orange-500 text-white text-xs sm:text-sm font-bold px-3 py-1.5 rounded-full shadow-lg">
+            <div className="mt-auto pt-4">
+              <div className="flex flex-col gap-2">
+                {/* Things in Common Badge */}
+                {compatibilityData && (() => {
+                  const data = compatibilityData as any;
+                  const totalCommon = 
+                    (data.sharedInterests?.length || 0) +
+                    (data.sharedActivities?.length || 0) +
+                    (data.sharedEvents?.length || 0);
+                  
+                  const matchPercentage = Math.round((data.score || 0) * 100);
+                  
+                  return totalCommon > 0 ? (
+                    <div className="bg-gradient-to-r from-blue-500 to-orange-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md text-center">
                       {totalCommon} Things in Common • {matchPercentage}% Match
                     </div>
-                  </div>
-                ) : null;
-              })()}
-              
-              {/* Connect Button */}
-              <ConnectButton
-                currentUserId={currentUserId}
-                targetUserId={user.id}
-                targetUsername={user.username}
-                targetName={user.name}
-                className="w-full bg-white dark:bg-gray-800 border-2 border-gray-900 dark:border-white text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold shadow-md hover:shadow-lg transition-all duration-300"
-                size="default"
-              />
+                  ) : null;
+                })()}
+                
+                {/* Connect Button */}
+                <ConnectButton
+                  currentUserId={currentUserId}
+                  targetUserId={user.id}
+                  targetUsername={user.username}
+                  targetName={user.name}
+                  className="w-full bg-white dark:bg-gray-800 border-2 border-gray-900 dark:border-white text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+                  size="default"
+                />
+              </div>
             </div>
           )}
         </div>
