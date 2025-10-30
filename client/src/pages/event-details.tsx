@@ -75,15 +75,16 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
         status
       });
     },
-    onSuccess: (data, status) => {
+    onSuccess: async (data, status) => {
       toast({
         title: "Success!",
         description: status === 'going' ? "You're going to this event!" : "Marked as interested",
       });
-      // Invalidate events cache to refresh participant counts
+      // Invalidate and refetch to update UI immediately
+      await queryClient.invalidateQueries({ queryKey: [`/api/events/${eventId}/participants`] });
+      await queryClient.refetchQueries({ queryKey: [`/api/events/${eventId}/participants`] });
       queryClient.invalidateQueries({ queryKey: ['/api/events'] });
       queryClient.invalidateQueries({ queryKey: ['/api/events', eventId] });
-      queryClient.invalidateQueries({ queryKey: [`/api/events/${eventId}/participants`] });
     },
     onError: (error: any) => {
       const errorMessage = error.message || "Failed to join event";
