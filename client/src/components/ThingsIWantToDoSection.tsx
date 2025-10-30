@@ -152,9 +152,10 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
         const response = await apiRequest('DELETE', `/api/user-event-interests/${eventData.id}`);
         if (!response.ok) throw new Error('Failed to delete event interest');
       } else {
-        // It's a joined event, delete from event participants
-        const response = await apiRequest('DELETE', `/api/event-interests/${eventData.id}`);
-        if (!response.ok) throw new Error('Failed to delete event participation');
+        // It's a joined event - use the proper leave endpoint
+        const eventId = eventData.id;
+        const response = await apiRequest('DELETE', `/api/events/${eventId}/leave`, { userId });
+        if (!response.ok) throw new Error('Failed to leave event');
       }
     },
     onSuccess: () => {
