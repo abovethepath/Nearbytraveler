@@ -287,11 +287,11 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
 
       {/* Event Image */}
       {event.imageUrl && (
-        <div className="mb-8">
+        <div className="mb-4 sm:mb-6 md:mb-8 w-full overflow-hidden rounded-xl shadow-lg">
           <img 
             src={event.imageUrl} 
             alt={event.title}
-            className="w-full h-64 md:h-80 object-cover rounded-xl shadow-lg"
+            className="w-full h-48 sm:h-56 md:h-64 lg:h-80 object-cover"
           />
         </div>
       )}
