@@ -562,9 +562,9 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
             return (
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2 flex-wrap">
-                    <span className="dark:text-white">Attendees</span>
-                    <div className="flex gap-2 text-sm">
+                  <div className="space-y-2">
+                    <CardTitle className="text-lg dark:text-white">Attendees</CardTitle>
+                    <div className="flex gap-2 text-sm flex-wrap">
                       <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" data-testid="badge-going-count">
                         ✓ {goingCount} Going
                       </Badge>
@@ -572,7 +572,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                         ⭐ {interestedCount} Interested
                       </Badge>
                     </div>
-                  </CardTitle>
+                  </div>
                   {/* Participant Avatars */}
                   <ParticipantAvatars
                     type="event"
