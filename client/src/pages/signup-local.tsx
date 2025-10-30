@@ -106,6 +106,10 @@ export default function SignupLocal() {
         }
       }
 
+      // Get referral code and connection note from QR code signup flow
+      const referralCode = sessionStorage.getItem('referralCode');
+      const connectionNote = sessionStorage.getItem('connectionNote');
+
       // CRITICAL: Merge account data INTO formData to ensure submission has complete data
       const finalFormData = {
         ...formData,
@@ -160,7 +164,11 @@ export default function SignupLocal() {
         interests: formData.interests,
         
         // languages
-        languagesSpoken
+        languagesSpoken,
+        
+        // Referral tracking (if user came from QR code)
+        ...(referralCode && { referralCode }),
+        ...(connectionNote && { connectionNote })
       };
 
       // Simple validation for required fields (after data is built)
