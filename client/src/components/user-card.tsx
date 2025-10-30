@@ -117,9 +117,9 @@ export default function UserCard({
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10"></div>
       </div>
       
-      <CardContent className="p-4 pb-5 -mt-12 flex flex-col flex-grow">
-        {/* User Info */}
-        <div className="space-y-3 flex flex-col flex-grow">
+      <CardContent className="p-4 pb-5 -mt-12 flex flex-col flex-grow min-h-0">
+        {/* User Info - Content that can vary */}
+        <div className="space-y-3 flex flex-col">
           {/* Large Circular Avatar with enhanced ring */}
           <div className="flex justify-center">
             <SimpleAvatar 
@@ -169,24 +169,30 @@ export default function UserCard({
             </div>
           </div>
           
-          {/* Bio - Filter out birth date info */}
-          {user.bio && (() => {
-            // Remove "Born: [date]" information from bio display
-            const cleanBio = String(user.bio)
-              .replace(/Born:\s*[^\n]*/gi, '') // Remove "Born: ..." lines
-              .replace(/\n\n+/g, '\n') // Replace multiple newlines with single
-              .trim(); // Remove leading/trailing whitespace
-            
-            return cleanBio ? (
-              <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2 leading-relaxed text-center font-medium">
-                {cleanBio}
-              </p>
-            ) : null;
-          })()}
-          
-          {/* CTA Section - Compatibility Badge + Connect Button on same line */}
-          {!isCurrentUser && currentUserId && (
-            <div className="mt-auto pt-4">
+          {/* Bio - Fixed height to ensure alignment */}
+          <div className="min-h-[3rem] flex items-start justify-center">
+            {user.bio && (() => {
+              // Remove "Born: [date]" information from bio display
+              const cleanBio = String(user.bio)
+                .replace(/Born:\s*[^\n]*/gi, '') // Remove "Born: ..." lines
+                .replace(/\n\n+/g, '\n') // Replace multiple newlines with single
+                .trim(); // Remove leading/trailing whitespace
+              
+              return cleanBio ? (
+                <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2 leading-relaxed text-center font-medium">
+                  {cleanBio}
+                </p>
+              ) : null;
+            })()}
+          </div>
+        </div>
+        
+        {/* Spacer to push CTA to bottom */}
+        <div className="flex-grow"></div>
+        
+        {/* CTA Section - Always at bottom */}
+        {!isCurrentUser && currentUserId && (
+          <div className="pt-4">
               <div className="flex flex-col gap-2">
                 {/* Things in Common Badge */}
                 {compatibilityData && (() => {
@@ -214,10 +220,9 @@ export default function UserCard({
                   className="w-full bg-white dark:bg-gray-800 border-2 border-gray-900 dark:border-white text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold shadow-md hover:shadow-lg transition-all duration-300"
                   size="default"
                 />
-              </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
