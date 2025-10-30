@@ -4684,7 +4684,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             {allActivities.map((activity, index) => (
                               <div 
                                 key={`activity-${index}`} 
-                                className="h-8 px-4 rounded-full text-sm font-medium bg-gradient-to-r from-purple-500 to-violet-500 text-white shadow-md"
+                                className="h-8 px-4 rounded-full text-sm font-medium bg-gradient-to-r from-blue-700 to-blue-400 text-white shadow-md"
                               >
                                 {activity}
                               </div>
