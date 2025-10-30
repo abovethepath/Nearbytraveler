@@ -105,7 +105,19 @@ export const INTERESTS = [
   "Book Clubs & Reading",
   "Tech & Innovation",
   "Coworking & Networking",
-  "Hot Air Balloons"
+  "Hot Air Balloons",
+  "Beach Volleyball",
+  "Frisbee & Disc Golf",
+  "Stargazing",
+  "Fine Dining",
+  "Cheap Eats",
+  "City Tours & Sightseeing",
+  "Art Galleries",
+  "Outdoor BBQ",
+  "Sunset Watching",
+  "Park Picnics",
+  "Cultural Learning",
+  "Blogging"
 ];
 
 // ========================================
@@ -121,7 +133,16 @@ export const ACTIVITIES = [
   "Game Nights",
   "Walking Tours",
   "Exploring Local Spots",
-  "Late Night Adventures"
+  "Late Night Adventures",
+  "Meetup Organizing",
+  "Park Gatherings",
+  "Coffee Shop Meetups",
+  "Outdoor Adventures",
+  "Movie Going",
+  "Bar Hopping",
+  "Rooftop Lounging",
+  "Late Night Dining",
+  "Picnic Outings"
 ];
 
 // ========================================
