@@ -26,7 +26,6 @@ const businessSignupSchema = z.object({
   }, "Please enter a valid email address"),
   password: z.string().min(8, "Password must be 8 characters or more"),
   ownerName: z.string().min(1, "Business name is required for contact database"),
-  contactName: z.string().min(1, "Contact person name is required"),
   ownerPhone: z.string().min(1, "Contact phone is required").refine((val) => {
     // Accept various international phone formats
     const phoneRegex = /^[\+]?[1-9][\d]{0,15}$|^[\+]?[\d\s\-\(\)]{7,20}$/;
