@@ -3996,8 +3996,112 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </p>
                 </div>
 
-                {/* Metropolitan Area (optional) */}
-                {user.hometownCity && user.hometownState && user.hometownCountry && (() => {
+                {/* Business Contact Information - Prominent placement for business profiles */}
+                {user?.userType === 'business' && (
+                  <div className="space-y-3 border-t pt-4 mt-4 bg-gradient-to-br from-blue-50 to-gray-50 dark:from-gray-800 dark:to-gray-900 p-4 rounded-lg">
+                    <h4 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2 text-base">
+                      <Phone className="w-5 h-5 text-blue-600" />
+                      Contact Information
+                    </h4>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm">
+                      {user.streetAddress && (
+                        <div className="flex items-start">
+                          <span className="font-medium text-gray-700 dark:text-gray-300 w-20 flex-shrink-0">Address:</span>
+                          <a
+                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(user.streetAddress + (user.zipCode ? `, ${user.zipCode}` : '') + (user.city ? `, ${user.city}, ${user.state || ''}, ${user.country || ''}` : ''))}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline flex-1 break-words transition-colors font-medium"
+                          >
+                            {user.streetAddress}{user.zipCode && `, ${user.zipCode}`}
+                          </a>
+                        </div>
+                      )}
+                      
+                      {user.phoneNumber && (
+                        <div className="flex items-start">
+                          <span className="font-medium text-gray-700 dark:text-gray-300 w-20 flex-shrink-0">Phone:</span>
+                          <a
+                            href={`tel:${user.phoneNumber}`}
+                            className="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 underline flex-1 break-words transition-colors font-medium"
+                          >
+                            {user.phoneNumber}
+                          </a>
+                        </div>
+                      )}
+                      
+                      {user.email && (
+                        <div className="flex items-start">
+                          <span className="font-medium text-gray-700 dark:text-gray-300 w-20 flex-shrink-0">Email:</span>
+                          <a
+                            href={`mailto:${user.email}`}
+                            className="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 underline flex-1 break-words transition-colors font-medium"
+                          >
+                            {user.email}
+                          </a>
+                        </div>
+                      )}
+                      
+                      {user.websiteUrl && (
+                        <div className="flex items-start">
+                          <span className="font-medium text-gray-700 dark:text-gray-300 w-20 flex-shrink-0">Website:</span>
+                          <a 
+                            href={user.websiteUrl.startsWith('http') ? user.websiteUrl : `https://${user.websiteUrl}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline flex-1 break-words transition-colors font-medium"
+                          >
+                            {user.websiteUrl}
+                          </a>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Business Ownership Categories */}
+                    {(user.isVeteran || user.isActiveDuty || (user.isMinorityOwned && user.showMinorityOwned) || (user.isFemaleOwned && user.showFemaleOwned) || (user.isLGBTQIAOwned && user.showLGBTQIAOwned)) && (
+                      <div className="space-y-2 border-t border-gray-200 dark:border-gray-700 pt-3 mt-3">
+                        <h5 className="font-medium text-gray-800 dark:text-gray-200">Business Ownership</h5>
+                        
+                        <div className="flex flex-wrap gap-2">
+                          {user.isVeteran && (
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100 rounded-full text-sm font-medium">
+                              <span className="text-green-600 dark:text-green-400">✓</span>
+                              Veteran Owned
+                            </div>
+                          )}
+                          {user.isActiveDuty && (
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100 rounded-full text-sm font-medium">
+                              <span className="text-blue-600 dark:text-blue-400">✓</span>
+                              Active Duty Owned
+                            </div>
+                          )}
+                          {user.isMinorityOwned && user.showMinorityOwned && (
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-100 rounded-full text-sm font-medium">
+                              <span className="text-purple-600 dark:text-purple-400">✓</span>
+                              Minority Owned
+                            </div>
+                          )}
+                          {user.isFemaleOwned && user.showFemaleOwned && (
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-pink-100 dark:bg-pink-900 text-pink-800 dark:text-pink-100 rounded-full text-sm font-medium">
+                              <span className="text-pink-600 dark:text-pink-400">✓</span>
+                              Female Owned
+                            </div>
+                          )}
+                          {user.isLGBTQIAOwned && user.showLGBTQIAOwned && (
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-red-100 via-yellow-100 to-purple-100 dark:from-red-900 dark:via-yellow-900 dark:to-purple-900 text-purple-800 dark:text-purple-100 rounded-full text-sm font-medium">
+                              <span className="bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500 bg-clip-text text-transparent font-bold">✓</span>
+                              LGBTQIA+ Owned
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Metropolitan Area (optional) - Non-business users only */}
+                {user?.userType !== 'business' && user.hometownCity && user.hometownState && user.hometownCountry && (() => {
                   const metroArea = getMetropolitanArea(user.hometownCity, user.hometownState, user.hometownCountry);
                   if (!metroArea) return null;
                   return (
@@ -4108,118 +4212,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </CardContent>
               </Card>
             )}
-
-
-            {/* Travel Plans and Business Information Card */}
-            <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm w-full overflow-hidden">
-              <CardContent className="p-4">
-
-                {/* Business Contact Information */}
-                {user.userType === 'business' && (
-                  <div className="space-y-3 border-t pt-4 mt-4">
-                    <h4 className="font-medium text-gray-800 dark:text-white flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-blue-500" />
-                      Business Information
-                    </h4>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
-                      {user.streetAddress && (
-                        <div className="flex items-start">
-                          <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Address:</span>
-                          <a
-                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(user.streetAddress + (user.zipCode ? `, ${user.zipCode}` : '') + (user.city ? `, ${user.city}, ${user.state || ''}, ${user.country || ''}` : ''))}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:text-blue-700 underline flex-1 break-words transition-colors"
-                          >
-                            {user.streetAddress}{user.zipCode && `, ${user.zipCode}`}
-                          </a>
-                        </div>
-                      )}
-                      
-                      {user.phoneNumber && (
-                        <div className="flex items-start">
-                          <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Phone:</span>
-                          <a
-                            href={`tel:${user.phoneNumber}`}
-                            className="text-green-600 hover:text-green-700 underline flex-1 break-words transition-colors"
-                          >
-                            {user.phoneNumber}
-                          </a>
-                        </div>
-                      )}
-                      
-                      {user.email && (
-                        <div className="flex items-start">
-                          <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Email:</span>
-                          <a
-                            href={`mailto:${user.email}`}
-                            className="text-purple-600 hover:text-purple-700 underline flex-1 break-words transition-colors"
-                          >
-                            {user.email}
-                          </a>
-                        </div>
-                      )}
-                      
-                      {user.websiteUrl && (
-                        <div className="flex items-start">
-                          <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Website:</span>
-                          <a 
-                            href={user.websiteUrl.startsWith('http') ? user.websiteUrl : `https://${user.websiteUrl}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:text-blue-700 underline flex-1 break-words transition-colors"
-                          >
-                            {user.websiteUrl}
-                          </a>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Business Ownership Categories */}
-                    {(user.isVeteran || user.isActiveDuty || (user.isMinorityOwned && user.showMinorityOwned) || (user.isFemaleOwned && user.showFemaleOwned) || (user.isLGBTQIAOwned && user.showLGBTQIAOwned)) && (
-                      <div className="space-y-2 border-t pt-3 mt-3">
-                        <h5 className="font-medium text-gray-700 dark:text-gray-300">Business Ownership</h5>
-                        
-                        {/* Military Status */}
-                        {user.isVeteran && (
-                          <div className="flex items-center gap-2">
-                            <span className="text-green-600">✓</span>
-                            <span className="text-sm">Veteran Owned Business</span>
-                          </div>
-                        )}
-                        {user.isActiveDuty && (
-                          <div className="flex items-center gap-2">
-                            <span className="text-blue-600">✓</span>
-                            <span className="text-sm">Active Duty Owned Business</span>
-                          </div>
-                        )}
-                        
-                        {/* Diversity Categories */}
-                        {user.isMinorityOwned && user.showMinorityOwned && (
-                          <div className="flex items-center gap-2">
-                            <span className="text-purple-600">✓</span>
-                            <span className="text-sm">Minority Owned Business</span>
-                          </div>
-                        )}
-                        {user.isFemaleOwned && user.showFemaleOwned && (
-                          <div className="flex items-center gap-2">
-                            <span className="text-pink-600">✓</span>
-                            <span className="text-sm">Female Owned Business</span>
-                          </div>
-                        )}
-                        {user.isLGBTQIAOwned && user.showLGBTQIAOwned && (
-                          <div className="flex items-center gap-2">
-                            <span className="text-rainbow bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500 bg-clip-text text-transparent font-bold">✓</span>
-                            <span className="text-sm">LGBTQIA+ Owned Business</span>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
 
             {/* Business Deals Section - Only for business users */}
             {user?.userType === 'business' && (
