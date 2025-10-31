@@ -24,7 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Globe, Users, MapPin, Briefcase, Calendar, Filter, X, ChevronDown, ChevronRight, MessageCircle, Camera, Search, Store, Hash, Tag, AlertCircle, ArrowUpDown, Clock, Zap, Star, Coffee, Phone, Plane, Sparkles } from "lucide-react";
+import { Globe, Users, MapPin, Briefcase, Calendar, Filter, X, ChevronDown, ChevronRight, MessageCircle, Camera, Search, Store, Hash, Tag, AlertCircle, ArrowUpDown, Clock, Zap, Star, Coffee, Phone, Plane, Sparkles, Package } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
@@ -2031,6 +2031,28 @@ export default function Home() {
                       )}
                   </div>
                 </div>
+              </div>
+            </Card>
+
+            {/* Local Businesses Section */}
+            <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-sm" data-testid="local-businesses-section">
+              <div className="p-4 sm:p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center">
+                    <Package className="w-6 h-6 mr-3 text-orange-500" />
+                    Local Businesses
+                  </h2>
+                </div>
+                <BusinessesGrid 
+                  currentLocation={
+                    effectiveUser?.hometownCity ? {
+                      city: effectiveUser.hometownCity,
+                      state: effectiveUser.hometownState || '',
+                      country: effectiveUser.hometownCountry || 'USA'
+                    } : null
+                  }
+                  travelPlans={effectiveUser?.userType !== 'business' ? travelPlans : []}
+                />
               </div>
             </Card>
           </div>

@@ -91,7 +91,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-80">
+      <DropdownMenuContent align="end" className="w-80 bg-white dark:bg-gray-900">
         <DropdownMenuLabel className="text-gray-900 dark:text-white">Notifications</DropdownMenuLabel>
         <DropdownMenuSeparator />
         
