@@ -1679,7 +1679,14 @@ export default function BusinessDashboard() {
           </DialogHeader>
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit, (errors) => {
+              console.error("❌ Form validation errors:", errors);
+              toast({
+                title: "Form Validation Error",
+                description: "Please check all required fields and fix any errors",
+                variant: "destructive",
+              });
+            })} className="space-y-4 sm:space-y-6">
               {/* Mobile-responsive form fields */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <FormField
