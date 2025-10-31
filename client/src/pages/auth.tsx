@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import Logo from "@/components/logo";
 import { authStorage } from "@/lib/auth";
 import JoinNowWidgetNew from "@/components/join-now-widget-new";
+import { ArrowLeft } from "lucide-react";
 // Background image handled via direct path in CSS
 
 
@@ -128,7 +129,17 @@ export default function Auth() {
     >
       <div className="w-full max-w-2xl">
         <Card className="bg-white/95 backdrop-blur-sm shadow-2xl border-0">
-          <CardHeader className="text-center pb-8">
+          <CardHeader className="text-center pb-8 relative">
+            {/* Back Button */}
+            <button
+              onClick={() => setLocation('/')}
+              className="absolute left-4 top-4 flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors group"
+              data-testid="button-back-home"
+            >
+              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+              <span className="text-sm font-medium">Back</span>
+            </button>
+            
             <div className="flex justify-center mb-6">
               <Logo variant="header" />
             </div>
