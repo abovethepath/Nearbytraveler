@@ -5965,6 +5965,14 @@ Questions? Just reply to this message. Welcome aboard!
   // Update a user reference
   app.patch("/api/user-references/:referenceId", async (req, res) => {
     try {
+      // Debug logging
+      console.log('🔍 PATCH REFERENCE - Session check:', {
+        hasSession: !!req.session,
+        hasUser: !!req.session?.user,
+        userId: req.session?.user?.id,
+        sessionKeys: req.session ? Object.keys(req.session) : []
+      });
+      
       // Authentication check
       if (!req.session?.user?.id) {
         return res.status(401).json({ message: "Not authenticated" });
