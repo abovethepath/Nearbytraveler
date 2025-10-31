@@ -5970,17 +5970,39 @@ Questions? Just reply to this message. Welcome aboard!
         hasSession: !!req.session,
         hasUser: !!req.session?.user,
         userId: req.session?.user?.id,
-        sessionKeys: req.session ? Object.keys(req.session) : []
+        sessionKeys: req.session ? Object.keys(req.session) : [],
+        userData: req.headers['x-user-data'] ? 'present' : 'missing'
       });
       
+      // Try to get user ID from session or header
+      let userId = req.session?.user?.id;
+      
+      // If session doesn't have user but we have auth header, refresh the session
+      if (!userId && req.headers['x-user-data']) {
+        try {
+          const userData = JSON.parse(req.headers['x-user-data'] as string);
+          if (userData && userData.id) {
+            console.log('🔄 Refreshing session with user data from header:', userData.id);
+            (req as any).session.user = userData;
+            userId = userData.id;
+            // Save session asynchronously - don't wait for it
+            (req as any).session.save((err: any) => {
+              if (err) console.error("Session save error:", err);
+            });
+          }
+        } catch (e) {
+          console.error('Error parsing x-user-data header:', e);
+        }
+      }
+      
       // Authentication check
-      if (!req.session?.user?.id) {
+      if (!userId) {
         return res.status(401).json({ message: "Not authenticated" });
       }
       
       const referenceId = parseInt(req.params.referenceId || '0');
       const { content, experience } = req.body;
-      const reviewerId = req.session.user.id;
+      const reviewerId = userId;
       
       if (isNaN(referenceId) || referenceId <= 0) {
         return res.status(400).json({ message: "Invalid reference ID" });
