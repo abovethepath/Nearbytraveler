@@ -526,7 +526,6 @@ export default function SignupSteps() {
                         <SelectItem value="Trans Female">Trans Female</SelectItem>
                         <SelectItem value="Non-Binary">Non-Binary</SelectItem>
                         <SelectItem value="Other">Other</SelectItem>
-                        <SelectItem value="Prefer Not To Say">Prefer Not To Say</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

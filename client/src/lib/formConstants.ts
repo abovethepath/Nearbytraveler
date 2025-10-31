@@ -7,8 +7,7 @@ export const GENDER_OPTIONS = [
   "Trans Male", 
   "Trans Female", 
   "Non-Binary", 
-  "Other", 
-  "Prefer Not To Say"
+  "Other"
 ];
 
 export const SEXUAL_PREFERENCE_OPTIONS = [
