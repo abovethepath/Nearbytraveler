@@ -426,11 +426,16 @@ export default function EventChat() {
                           </span>
                         </div>
                         
-                        <div className={`inline-block px-3 py-2 rounded-lg text-sm ${
-                          msg.senderId === currentUser?.id
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
-                        }`}>
+                        <div 
+                          className={`inline-block px-3 py-2 rounded-lg text-sm ${
+                            msg.senderId === currentUser?.id
+                              ? 'bg-blue-600'
+                              : 'bg-gray-200 dark:bg-gray-700'
+                          }`}
+                          style={{
+                            color: msg.senderId === currentUser?.id ? '#ffffff' : '#000000'
+                          }}
+                        >
                           {msg.content}
                         </div>
                       </div>
