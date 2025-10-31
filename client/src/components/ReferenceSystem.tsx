@@ -364,7 +364,7 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
                 <Button
                   onClick={handleSubmitReference}
                   disabled={submitReference.isPending || !referenceData.content.trim() || referenceData.content.trim().length < 10}
-                  className="w-full sm:w-auto min-h-[48px] bg-gradient-to-r from-orange-500 to-blue-500 hover:from-orange-600 hover:to-blue-600 border-2 border-black dark:border-white"
+                  className="w-full sm:w-auto min-h-[48px] bg-gradient-to-r from-orange-500 to-blue-500 hover:from-orange-600 hover:to-blue-600 border-[3px] border-black dark:border-white ring-2 ring-black dark:ring-white ring-offset-0"
                   type="button"
                   data-testid="button-submit-reference"
                 >
