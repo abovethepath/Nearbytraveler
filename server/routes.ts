@@ -3900,12 +3900,20 @@ Questions? Just reply to this message. Welcome to the community!
           }
           processedData.travelDestination = destination;
           
+          // CRITICAL: Set individual destination fields for city discovery and matching
+          processedData.destinationCity = processedData.currentTripDestinationCity;
+          processedData.destinationState = processedData.currentTripDestinationState || '';
+          processedData.destinationCountry = processedData.currentTripDestinationCountry;
+          
           if (process.env.NODE_ENV === 'development') {
             console.log('🧳 TRAVEL DESTINATION MAPPING:', {
               city: processedData.currentTripDestinationCity,
               state: processedData.currentTripDestinationState,
               country: processedData.currentTripDestinationCountry,
-              finalDestination: destination
+              finalDestination: destination,
+              destinationCity: processedData.destinationCity,
+              destinationState: processedData.destinationState,
+              destinationCountry: processedData.destinationCountry
             });
           }
         }
