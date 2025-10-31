@@ -253,7 +253,7 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
             value={newMessage}
             onChange={(e) => handleTyping(e.target.value)}
             placeholder="Type a message..."
-            className="flex-1 text-sm"
+            className="flex-1 text-sm bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
             onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
           />
           <Button
