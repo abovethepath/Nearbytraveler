@@ -3716,7 +3716,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </Badge>
                         <Badge variant="outline" className="text-xs px-3 py-1 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
                           <Star className="w-3 h-3 mr-1 inline" />
-                          {userReferences.length} {userReferences.length === 1 ? 'Reference' : 'References'}
+                          {userReferences?.references?.length || userReferences?.counts?.total || 0} {(userReferences?.references?.length || userReferences?.counts?.total || 0) === 1 ? 'Reference' : 'References'}
                         </Badge>
                       </>
                     )}
