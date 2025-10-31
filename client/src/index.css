@@ -1001,6 +1001,19 @@ img[alt*="profile" i],
   color: #666666 !important;
 }
 
+/* Profile text should be black in light mode, white in dark mode */
+.text-gray-600,
+.text-gray-700,
+.text-gray-900 {
+  color: rgb(0, 0, 0) !important;
+}
+
+.dark .text-gray-600,
+.dark .text-gray-700,
+.dark .text-gray-900 {
+  color: rgb(255, 255, 255) !important;
+}
+
 /* Fix: Make message bubble text BLACK so it's visible on white/light backgrounds */
 .dark .bg-white,
 .dark .bg-gray-100,
