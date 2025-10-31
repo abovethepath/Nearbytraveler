@@ -467,7 +467,7 @@ export default function Deals() {
           {effectiveUser?.userType === 'business' && (
             <div className="mt-4 mb-6 overflow-hidden break-words">
               <Button 
-                onClick={() => setLocation('/business-deals')}
+                onClick={() => setLocation('/business-dashboard')}
                 className="bg-orange-600 hover:bg-orange-700 text-white font-semibold px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
                 data-testid="button-create-deal"
               >
