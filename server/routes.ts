@@ -11020,8 +11020,8 @@ Questions? Just reply to this message. Welcome aboard!
 
       const chatroom = await storage.getEventChatroom(eventId);
       if (!chatroom) {
-        // Create chatroom if it doesn't exist
-        const newChatroom = await storage.createEventChatroom(eventId);
+        // Create chatroom if it doesn't exist - FIX: pass object with eventId
+        const newChatroom = await storage.createEventChatroom({ eventId });
         return res.json(newChatroom);
       }
 
