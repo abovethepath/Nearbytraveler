@@ -140,8 +140,8 @@ export default function SignupBusinessSimple() {
       username: accountData?.username || "",
       email: accountData?.email || "",
       password: accountData?.password || "",
-      businessName: accountData?.name || "", // Business name from step 1
-      contactName: "", // Contact person name - BLANK for manual entry
+      contactName: accountData?.name || "", // Business name from step 1 goes to contactName field
+      businessName: "", // Manager's name - BLANK for manual entry
       ownerPhone: "",
       businessType: "",
       customBusinessType: "",
