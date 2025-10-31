@@ -277,12 +277,12 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
             </div>
           </div>
 
-          {/* Search CTA Button */}
-          <div className="text-center">
+          {/* Search CTA Buttons */}
+          <div className="flex gap-3 justify-center">
             <Button 
               onClick={handleAdvancedSearch}
               disabled={isAdvancedSearching}
-              className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white py-3 px-8 rounded-xl font-semibold text-lg shadow-lg transition-all duration-200 transform hover:scale-105"
+              className="flex-1 sm:flex-none sm:min-w-[200px] bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white py-3 px-8 rounded-xl font-semibold text-lg shadow-lg transition-all duration-200 transform hover:scale-105"
               data-testid="button-search-top"
             >
               {isAdvancedSearching ? (
@@ -296,6 +296,14 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                   Search Now
                 </>
               )}
+            </Button>
+            <Button 
+              onClick={clearAdvancedFilters}
+              variant="outline"
+              className="px-6 py-3 rounded-xl font-semibold text-lg border-2 hover:bg-gray-100 dark:hover:bg-gray-800"
+              data-testid="button-clear-top"
+            >
+              Clear
             </Button>
           </div>
 
