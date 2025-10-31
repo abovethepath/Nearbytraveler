@@ -177,6 +177,13 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
   };
 
   const handleSubmitReference = () => {
+    console.log('🚀 SUBMITTING REFERENCE:', {
+      userId: user?.id,
+      revieweeId: userId,
+      contentLength: referenceData.content.length,
+      experience: referenceData.experience
+    });
+    
     if (!referenceData.content.trim() || referenceData.content.trim().length < 10) {
       toast({
         title: "Validation Error",
