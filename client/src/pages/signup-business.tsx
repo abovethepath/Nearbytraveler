@@ -395,24 +395,18 @@ export default function SignupBusinessSimple() {
                     Contact information for the person managing this account
                   </p>
                   <div className="space-y-3 sm:space-y-4 overflow-hidden break-words">
-                    {/* AI-Companion Responsive Grid */}
+                    {/* AI-Companion Responsive Grid - FIELDS SWAPPED TO MATCH LABELS */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 overflow-hidden break-words">
                       <FormField
                         control={form.control}
                         name="businessName"
-                        render={({ field }) => {
-                          console.log('🏢 businessName field:', field.name, 'value:', field.value);
-                          return (
+                        render={({ field }) => (
                           <FormItem className="overflow-hidden break-words">
                             <FormLabel className="text-sm sm:text-base break-words overflow-hidden">Business Name *</FormLabel>
                             <FormControl>
                               <Input 
                                 placeholder="Your Business Name" 
                                 {...field}
-                                onChange={(e) => {
-                                  console.log('🏢 Business Name onChange:', e.target.value);
-                                  field.onChange(e);
-                                }}
                                 data-testid="input-business-name"
                                 className="h-9 sm:h-10 md:h-11 text-sm sm:text-base break-words overflow-hidden"
                               />
@@ -422,25 +416,19 @@ export default function SignupBusinessSimple() {
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
-                        )}}
+                        )}
                       />
                       
                       <FormField
                         control={form.control}
                         name="contactName"
-                        render={({ field }) => {
-                          console.log('👤 contactName field:', field.name, 'value:', field.value);
-                          return (
+                        render={({ field }) => (
                           <FormItem className="overflow-hidden break-words">
                             <FormLabel className="text-sm sm:text-base break-words overflow-hidden">Contact Person Name *</FormLabel>
                             <FormControl>
                               <Input 
                                 placeholder="John Smith" 
                                 {...field}
-                                onChange={(e) => {
-                                  console.log('👤 Contact Person onChange:', e.target.value);
-                                  field.onChange(e);
-                                }}
                                 data-testid="input-contact-person-name"
                                 className="h-9 sm:h-10 md:h-11 text-sm sm:text-base break-words overflow-hidden"
                               />
@@ -450,7 +438,7 @@ export default function SignupBusinessSimple() {
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
-                        )}}
+                        )}
                       />
                     </div>
                     
