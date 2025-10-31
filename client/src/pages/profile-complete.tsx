@@ -3453,13 +3453,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const isProfileIncomplete = () => {
     if (!user || !isOwnProfile) return false;
     
-    // For business users, check business-specific required fields
+    // Business users fill out all required info during signup - never show completion banner
     if (user.userType === 'business') {
-      const hasBusinessInfo = user.businessName && user.businessDescription && user.businessType;
-      const hasBusinessLocation = user.city && user.state && user.country;
-      const hasBusinessInterests = user.interests && Array.isArray(user.interests) && user.interests.length >= 3;
-      
-      return !hasBusinessInfo || !hasBusinessLocation || !hasBusinessInterests;
+      return false;
     }
     
     // For regular users (travelers/locals) - GLOBAL FRIENDLY REQUIREMENTS

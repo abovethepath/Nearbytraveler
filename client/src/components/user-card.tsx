@@ -19,6 +19,12 @@ export interface User {
   travelDestination?: string;
   avatarGradient?: string;
   avatarColor?: string;
+  userType?: string;
+  businessName?: string;
+  streetAddress?: string;
+  city?: string;
+  state?: string;
+  country?: string;
 }
 
 interface UserCardProps {
@@ -130,9 +136,22 @@ export default function UserCard({
           </div>
           
           <div className="text-center">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white truncate bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text">
-              @{user.username}
-            </h3>
+            {user.userType === 'business' && user.businessName ? (
+              <>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white truncate bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text">
+                  {user.businessName}
+                </h3>
+                {user.streetAddress && (
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    {user.streetAddress}
+                  </p>
+                )}
+              </>
+            ) : (
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white truncate bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text">
+                @{user.username}
+              </h3>
+            )}
           </div>
           
           {/* Location and Travel Info */}
