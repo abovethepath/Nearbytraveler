@@ -305,14 +305,20 @@ div[class*="pill-events"] {
   text-transform: none !important;
 }
 
-/* CRITICAL FIX: Ensure inputs ALWAYS respect dark mode */
-.dark input {
+/* SAFE FIX: Only target chat/message inputs in dark mode */
+.dark input[placeholder*="Type your message"],
+.dark input[placeholder*="message"],
+.dark input[data-testid="input-message"] {
   background-color: #374151 !important;
+  background: #374151 !important;
   color: #ffffff !important;
   border-color: #4b5563 !important;
+  -webkit-text-fill-color: #ffffff !important;
 }
 
-.dark input::placeholder {
+.dark input[placeholder*="Type your message"]::placeholder,
+.dark input[placeholder*="message"]::placeholder,
+.dark input[data-testid="input-message"]::placeholder {
   color: #9ca3af !important;
 }
 
