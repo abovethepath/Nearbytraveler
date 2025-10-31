@@ -26,6 +26,7 @@ const businessSignupSchema = z.object({
   }, "Please enter a valid email address"),
   password: z.string().min(8, "Password must be 8 characters or more"),
   ownerName: z.string().min(1, "Business name is required for contact database"),
+  contactName: z.string().min(1, "Contact person name is required"),
   ownerPhone: z.string().min(1, "Contact phone is required").refine((val) => {
     // Accept various international phone formats
     const phoneRegex = /^[\+]?[1-9][\d]{0,15}$|^[\+]?[\d\s\-\(\)]{7,20}$/;
@@ -145,8 +146,8 @@ export default function SignupBusinessSimple() {
       username: accountData?.username || "",
       email: accountData?.email || "",
       password: accountData?.password || "",
-      ownerName: accountData?.businessName || "", // Business name for contact database
-      contactName: accountData?.name || "", // Contact person name 
+      ownerName: accountData?.name || "", // Business name from step 1
+      contactName: "", // Contact person - leave empty for user to fill
       ownerPhone: "",
       // businessName comes from step 1, no need to collect again
       businessType: "",
