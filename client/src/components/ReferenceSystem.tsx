@@ -105,8 +105,9 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
       setIsEditingReference(false);
       setReferenceData({ experience: 'positive', content: '' });
       toast({
-        title: isEditingReference ? 'Reference Updated' : 'Reference Submitted',
-        description: isEditingReference ? 'Your reference has been updated successfully.' : 'Your reference has been submitted successfully.',
+        title: isEditingReference ? '✅ Reference Updated!' : '✅ Reference Submitted!',
+        description: isEditingReference ? 'Your reference has been updated and is now visible on their profile.' : 'Your reference has been posted and is now visible on their profile.',
+        duration: 5000,
       });
     },
     onError: (error: any) => {
@@ -149,8 +150,9 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
       setShowPrivateReference(false);
       setPrivateReferenceData({ category: 'feedback', content: '' });
       toast({
-        title: 'Private Reference Sent',
-        description: 'Your private reference has been sent to our support team.',
+        title: '✅ Private Reference Sent!',
+        description: 'Your confidential message has been sent to our support team for review.',
+        duration: 5000,
       });
     },
     onError: (error: any) => {
