@@ -983,3 +983,11 @@ img[alt*="profile" i],
   object-fit: cover !important;
   aspect-ratio: 1 / 1 !important;
 }
+
+/* SPECIFIC FIX: Profile contact info text should be black on gradient backgrounds */
+[class*="bg-gradient"] .text-gray-300,
+[class*="bg-gradient"] .text-gray-400,
+[class*="from-blue"] .text-gray-300,
+[class*="from-blue"] .text-gray-400 {
+  color: rgb(0, 0, 0) !important;
+}
