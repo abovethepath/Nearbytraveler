@@ -22,7 +22,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight, AlertCircle, Phone, Plane, User as UserIcon } from "lucide-react";
+import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight, AlertCircle, Phone, Plane, User as UserIcon, Mail } from "lucide-react";
 
 type TabKey = 'contacts' | 'photos' | 'references' | 'travel' | 'countries';
 import { compressPhotoAdaptive } from "@/utils/photoCompression";
@@ -3628,19 +3628,69 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <h1 className="text-2xl sm:text-4xl font-bold text-black">
                     {user.businessName || user.name || `@${user.username}`}
                   </h1>
-                  <div className="space-y-1">
+                  <div className="space-y-3">
                     <div className="flex items-center gap-2 text-sm sm:text-base">
                       <span className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium bg-white text-black border border-black">
                         Nearby Business
                       </span>
                       {user.businessType && <span className="text-black/80">• {user.businessType}</span>}
                     </div>
-                    {user.streetAddress && (
-                      <div className="text-sm text-black/70">
-                        {user.streetAddress}{user.zipCode && `, ${user.zipCode}`}
-                        {user.city && `, ${user.city}`}{user.state && `, ${user.state}`}
-                      </div>
-                    )}
+                    
+                    {/* Contact Information - Large and Prominent */}
+                    <div className="space-y-2 mt-3">
+                      {user.streetAddress && (
+                        <a 
+                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                            `${user.streetAddress}, ${user.city}, ${user.state} ${user.zipCode}`
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 text-lg sm:text-xl font-semibold text-blue-600 hover:text-blue-800 transition-colors"
+                          data-testid="link-business-address"
+                        >
+                          <MapPin className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
+                          <span className="break-words">
+                            {user.streetAddress}{user.zipCode && `, ${user.zipCode}`}
+                            {user.city && `, ${user.city}`}{user.state && `, ${user.state}`}
+                          </span>
+                        </a>
+                      )}
+                      
+                      {user.phoneNumber && (
+                        <a 
+                          href={`tel:${user.phoneNumber}`}
+                          className="flex items-center gap-2 text-lg sm:text-xl font-semibold text-blue-600 hover:text-blue-800 transition-colors"
+                          data-testid="link-business-phone"
+                        >
+                          <Phone className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
+                          <span>{user.phoneNumber}</span>
+                        </a>
+                      )}
+                      
+                      {user.email && (
+                        <a 
+                          href={`mailto:${user.email}`}
+                          className="flex items-center gap-2 text-lg sm:text-xl font-semibold text-blue-600 hover:text-blue-800 transition-colors break-all"
+                          data-testid="link-business-email"
+                        >
+                          <Mail className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
+                          <span>{user.email}</span>
+                        </a>
+                      )}
+                      
+                      {user.websiteUrl && (
+                        <a 
+                          href={user.websiteUrl.startsWith('http') ? user.websiteUrl : `https://${user.websiteUrl}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 text-lg sm:text-xl font-semibold text-blue-600 hover:text-blue-800 transition-colors break-all"
+                          data-testid="link-business-website"
+                        >
+                          <Globe className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
+                          <span>{user.websiteUrl}</span>
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </div>
               ) : (
