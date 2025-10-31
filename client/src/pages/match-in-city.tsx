@@ -1263,6 +1263,11 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         // Check if this activity was created by current user (for EDIT permission)
                         const isUserCreated = activity.createdByUserId === currentUserId;
                         
+                        // CRITICAL: Only show edit/delete buttons for USER-created activities
+                        // AI-created activities (createdByUserId === 1) should NEVER be editable/deletable
+                        const isAICreated = activity.createdByUserId === 1;
+                        const canShowActions = !isAICreated && activity.createdByUserId && activity.createdByUserId > 1;
+                        
                         return (
                           <div key={activity.id} className="group relative">
                             <button
@@ -1284,8 +1289,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                               <span className="relative z-10">{activity.activityName}</span>
                             </button>
                             
-                            {/* Edit/Delete buttons - Only show for user-created activities (not static/system activities) */}
-                            {activity.createdByUserId !== 1 && (
+                            {/* Edit/Delete buttons - ONLY show for USER-created activities (NOT AI/system activities) */}
+                            {canShowActions && (
                               <div className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-1">
                                 {/* EDIT button - only for activity creator */}
                                 {isUserCreated && (
@@ -1301,7 +1306,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                     <Edit className="w-2.5 h-2.5" />
                                   </button>
                                 )}
-                                {/* DELETE button - available to ALL users for community moderation (except static activities) */}
+                                {/* DELETE button - available to ALL users for user-created activities only */}
                                 <button
                                   className="w-5 h-5 bg-red-600 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-700"
                                   onClick={(e) => {
