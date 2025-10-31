@@ -1753,12 +1753,21 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Create reference mutation
   const createReference = useMutation({
     mutationFn: async (referenceData: any) => {
+      console.log('🚀 CREATE REFERENCE MUTATION CALLED', {
+        referenceData,
+        currentUserId: currentUser?.id,
+        effectiveUserId,
+        user: user?.username
+      });
+      
       const payload = {
         reviewerId: currentUser?.id,
         revieweeId: effectiveUserId, // Use the profile user ID  
         experience: referenceData.experience || "positive",
         content: referenceData.content || "",
       };
+      
+      console.log('📤 POSTING REFERENCE:', payload);
       
       const response = await fetch('/api/user-references', {
         method: 'POST',
@@ -1767,16 +1776,24 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         },
         body: JSON.stringify(payload),
       });
+      
+      console.log('📥 RESPONSE STATUS:', response.status, response.ok);
+      
       if (!response.ok) throw new Error('Failed to create reference');
-      return response.json();
+      const result = await response.json();
+      console.log('✅ REFERENCE CREATED:', result);
+      return result;
     },
     onSuccess: () => {
+      console.log('✅ SUCCESS CALLBACK - Invalidating cache');
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/references`] });
       toast({
         title: "Reference submitted",
         description: "Your reference has been posted successfully.",
       });
       setShowReferenceForm(false);
+      setShowWriteReferenceModal(false);
+      referenceForm.reset();
       setShowWriteReferenceModal(false);
       referenceForm.reset();
     },
