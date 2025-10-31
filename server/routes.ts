@@ -5963,10 +5963,16 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // Update a user reference
-  app.put("/api/user-references/:referenceId", async (req, res) => {
+  app.patch("/api/user-references/:referenceId", async (req, res) => {
     try {
+      // Authentication check
+      if (!req.session || !req.session.userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+      
       const referenceId = parseInt(req.params.referenceId || '0');
       const { content, experience } = req.body;
+      const reviewerId = req.session.userId;
       
       if (isNaN(referenceId) || referenceId <= 0) {
         return res.status(400).json({ message: "Invalid reference ID" });
@@ -5976,7 +5982,8 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(400).json({ message: "No update data provided" });
       }
       
-      const updatedReference = await storage.updateUserReference(referenceId, { content, experience });
+      // Storage method now validates ownership
+      const updatedReference = await storage.updateUserReference(referenceId, reviewerId, { content, experience });
       if (!updatedReference) {
         return res.status(404).json({ message: "Reference not found" });
       }
@@ -5984,6 +5991,12 @@ Questions? Just reply to this message. Welcome aboard!
       return res.json(updatedReference);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error updating user reference:", error);
+      
+      // Return specific error messages from storage layer
+      if (error.message === 'Reference not found' || error.message.includes('Unauthorized')) {
+        return res.status(error.message === 'Reference not found' ? 404 : 403).json({ message: error.message });
+      }
+      
       return res.status(500).json({ message: "Failed to update reference" });
     }
   });
