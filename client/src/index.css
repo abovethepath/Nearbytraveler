@@ -997,3 +997,13 @@ img[alt*="profile" i],
 .dark input[data-testid="input-message"]::placeholder {
   color: #666666 !important;
 }
+
+/* Fix: Make message bubble text BLACK so it's visible on white/light backgrounds */
+.dark .bg-white,
+.dark .bg-gray-100,
+.dark .bg-gray-200,
+.dark [class*="bg-white"],
+.dark [class*="bg-gray-1"],
+.dark [class*="bg-gray-2"] {
+  color: #000000 !important;
+}
