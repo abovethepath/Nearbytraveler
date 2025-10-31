@@ -2286,11 +2286,16 @@ export default function BusinessDashboard() {
       </Dialog>
 
       {/* Quick Deal Creator Modal */}
-      {showQuickDealCreator && (
+      {showQuickDealCreator && storageUser && (
         <InstantDealCreator
-          open={showQuickDealCreator}
-          onClose={() => setShowQuickDealCreator(false)}
-          onSuccess={() => {
+          businessId={storageUser.id}
+          businessName={storageUser.businessName || storageUser.username}
+          businessLocation={{
+            city: storageUser.hometownCity || storageUser.city || 'Los Angeles',
+            state: storageUser.hometownState || storageUser.state || 'California',
+            country: storageUser.hometownCountry || storageUser.country || 'United States'
+          }}
+          onDealCreated={() => {
             setShowQuickDealCreator(false);
             // Refresh analytics and offers
             queryClient.invalidateQueries({ queryKey: ['/api/business-deals/analytics'] });
