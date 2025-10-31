@@ -63,10 +63,7 @@ function ReferencesWidgetNew({ userId, currentUserId }: ReferencesWidgetProps) {
 
   const updateReferenceMutation = useMutation({
     mutationFn: async ({ referenceId, content, experience }: { referenceId: number; content: string; experience: string }) => {
-      return await apiRequest(`/api/user-references/${referenceId}`, {
-        method: 'PATCH',
-        body: JSON.stringify({ content, experience })
-      });
+      return await apiRequest('PATCH', `/api/user-references/${referenceId}`, { content, experience });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/references`] });
