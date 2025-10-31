@@ -22,7 +22,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight, AlertCircle, Phone, Plane, User as UserIcon, Mail } from "lucide-react";
+import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight, AlertCircle, Phone, Plane, User as UserIcon, Mail, ThumbsUp } from "lucide-react";
 
 type TabKey = 'contacts' | 'photos' | 'references' | 'travel' | 'countries';
 import { compressPhotoAdaptive } from "@/utils/photoCompression";
@@ -39,6 +39,7 @@ import { useToast } from "@/hooks/use-toast";
 import { AuthContext } from "@/App";
 import { authStorage } from "@/lib/auth";
 import ConnectButton from "@/components/ConnectButton";
+import { VouchButton } from "@/components/VouchButton";
 
 import { formatDateForDisplay, getCurrentTravelDestination } from "@/lib/dateUtils";
 import { METRO_AREAS } from "@shared/constants";
@@ -1321,6 +1322,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Fetch references received by this user (visible to all)
   const { data: userReferences = [] } = useQuery<any[]>({
     queryKey: [`/api/users/${effectiveUserId}/references`],
+    enabled: !!effectiveUserId,
+    staleTime: 0,
+    gcTime: 0,
+  });
+
+  // Fetch vouches received by this user (visible to all)
+  const { data: userVouches = [] } = useQuery<any[]>({
+    queryKey: [`/api/users/${effectiveUserId}/vouches`],
     enabled: !!effectiveUserId,
     staleTime: 0,
     gcTime: 0,
@@ -3775,6 +3784,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <Star className="w-3 h-3 mr-1 inline" />
                           {userReferences?.references?.length || userReferences?.counts?.total || 0} {(userReferences?.references?.length || userReferences?.counts?.total || 0) === 1 ? 'Reference' : 'References'}
                         </Badge>
+                        <Badge variant="outline" className="text-xs px-3 py-1 bg-purple-100 dark:bg-purple-900 border-purple-300 dark:border-purple-600">
+                          <ThumbsUp className="w-3 h-3 mr-1 inline" />
+                          {userVouches?.length || 0} {(userVouches?.length || 0) === 1 ? 'Vouch' : 'Vouches'}
+                        </Badge>
                       </>
                     )}
                   </div>
@@ -3799,6 +3812,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   targetUsername={user?.username}
                   targetName={user?.name}
                   className="px-6 py-2 rounded-lg shadow-md transition-all"
+                />
+                <VouchButton
+                  currentUserId={currentUser?.id || 0}
+                  targetUserId={user?.id || 0}
+                  targetUsername={user?.username}
                 />
               </div>
             ) : (
