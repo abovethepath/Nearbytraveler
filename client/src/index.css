@@ -984,3 +984,21 @@ img[alt*="profile" i],
   aspect-ratio: 1 / 1 !important;
 }
 
+/* CRITICAL FIX: Business contact info must be BLACK on gradient backgrounds in LIGHT MODE ONLY */
+:not(.dark) [class*="bg-gradient"] a[data-testid*="business"],
+:not(.dark) [class*="bg-gradient"] a.text-black,
+:not(.dark) [class*="from-blue"] a[data-testid*="business"],
+:not(.dark) [class*="from-blue"] a.text-black,
+:not(.dark) [class*="from-purple"] a[data-testid*="business"],
+:not(.dark) [class*="from-purple"] a.text-black,
+:not(.dark) [class*="from-pink"] a[data-testid*="business"],
+:not(.dark) [class*="from-pink"] a.text-black {
+  color: rgb(0, 0, 0) !important;
+}
+
+:not(.dark) [class*="bg-gradient"] a[data-testid*="business"] svg,
+:not(.dark) [class*="from-blue"] a[data-testid*="business"] svg,
+:not(.dark) [class*="from-purple"] a[data-testid*="business"] svg,
+:not(.dark) [class*="from-pink"] a[data-testid*="business"] svg {
+  color: rgb(0, 0, 0) !important;
+}
