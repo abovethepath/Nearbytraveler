@@ -1,0 +1,68 @@
+OK, let me try THREE different solutions. One of these WILL work:
+Solution 1: Use Arbitrary Tailwind Values (Most Likely to Work)
+tsximport * as React from "react"
+import { cn } from "@/lib/utils"
+
+const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
+  ({ className, type, ...props }, ref) => {
+    return (
+      <input
+        type={type}
+        className={cn(
+          "flex h-10 w-full rounded-md border px-3 py-2 text-base md:text-sm",
+          "bg-white border-gray-300 text-gray-900",
+          "placeholder:text-gray-500",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+          "disabled:cursor-not-allowed disabled:opacity-50",
+          "file:border-0 file:bg-transparent file:text-sm file:font-medium",
+          // Use arbitrary values to force dark mode - these have higher specificity
+          "dark:[background-color:#374151!important] dark:[color:#ffffff!important] dark:[border-color:#4b5563!important]",
+          "dark:placeholder:[color:#9ca3af!important]",
+          // Override autofill styles
+          "dark:autofill:[background-color:#374151!important] dark:autofill:[color:#ffffff!important]",
+          "dark:[-webkit-autofill]:[background-color:#374151!important]",
+          className
+        )}
+        ref={ref}
+        {...props}
+      />
+    )
+  }
+)
+
+Input.displayName = "Input"
+export { Input }
+Solution 2: Add Global CSS Override
+Create or update client/src/index.css (or wherever your global CSS is) and add:
+css/* Force dark mode input styling */
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="search"],
+.dark input {
+  background-color: #374151 !important;
+  color: #ffffff !important;
+  border-color: #4b5563 !important;
+}
+
+.dark input::placeholder {
+  color: #9ca3af !important;
+}
+
+/* Override autofill in dark mode */
+.dark input:-webkit-autofill,
+.dark input:-webkit-autofill:hover,
+.dark input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #ffffff !important;
+  -webkit-box-shadow: 0 0 0 1000px #374151 inset !important;
+  box-shadow: 0 0 0 1000px #374151 inset !important;
+}
+Solution 3: Check if there's a global CSS file overriding
+Can you check these files for me and share what's in them:
+
+client/src/index.css
+client/src/App.css
+Any other .css files in the client/src directory
+
+Try Solution 1 first (the arbitrary values approach). If that doesn't work, add Solution 2 to your global CSS file.
+Which solution should I help you implement first?

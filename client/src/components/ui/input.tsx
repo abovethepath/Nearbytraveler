@@ -2,47 +2,28 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
-  ({ className, type, style, ...props }, ref) => {
-    const [isDark, setIsDark] = React.useState(false)
-
-    React.useEffect(() => {
-      // Check if dark mode is active
-      const checkDarkMode = () => {
-        setIsDark(document.documentElement.classList.contains('dark'))
-      }
-      
-      checkDarkMode()
-      
-      // Watch for dark mode changes
-      const observer = new MutationObserver(checkDarkMode)
-      observer.observe(document.documentElement, {
-        attributes: true,
-        attributeFilter: ['class']
-      })
-      
-      return () => observer.disconnect()
-    }, [])
-
-    // Force dark mode styles via inline CSS (overrides everything)
-    const forcedStyle = isDark ? {
-      backgroundColor: '#374151', // gray-700
-      color: '#ffffff',
-      borderColor: '#4b5563', // gray-600
-      ...style
-    } : style
-
+  ({ className, type, ...props }, ref) => {
     return (
       <input
         type={type}
-        style={forcedStyle}
         className={cn(
+          // Layout
           "flex h-10 w-full rounded-md border px-3 py-2 text-base md:text-sm",
-          "bg-white border-gray-300 text-gray-900",
-          "placeholder:text-gray-500 dark:placeholder:text-gray-400",
+          // Colors using shadcn tokens that respond to dark mode
+          "bg-background text-foreground border-input",
+          // Dark mode specific overrides
+          "dark:bg-muted dark:border-border dark:text-foreground",
+          // Placeholder
+          "placeholder:text-muted-foreground",
+          // Focus states
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-          "disabled:cursor-not-allowed disabled:opacity-50",
-          "file:border-0 file:bg-transparent file:text-sm file:font-medium",
           "ring-offset-background",
+          // Disabled state
+          "disabled:cursor-not-allowed disabled:opacity-50",
+          // File input
+          "file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground",
+          // Calendar picker dark mode fix
+          "dark:[&::-webkit-calendar-picker-indicator]:filter dark:[&::-webkit-calendar-picker-indicator]:invert dark:[&::-webkit-calendar-picker-indicator]:brightness-100 dark:[&::-webkit-calendar-picker-indicator]:!opacity-100",
           className
         )}
         ref={ref}
