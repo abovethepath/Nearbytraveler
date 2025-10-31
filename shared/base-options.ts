@@ -43,7 +43,7 @@ export const TOP_CHOICES = [
 ];
 
 // ========================================
-// INTERESTS (74 items)
+// INTERESTS (79 items)
 // ========================================
 // Extended interests for deeper user matching and personalization
 
@@ -69,7 +69,10 @@ export const INTERESTS = [
   "Food & Wine Festivals",
   "Beer Festivals",
   "Pop-up Restaurants",
+  "Rooftop Bars",
+  "Cocktail Bars & Speakeasies",
   "Jazz Clubs",
+  "Concerts",
   "Theater",
   "Performing Arts",
   "Movies",
@@ -89,6 +92,7 @@ export const INTERESTS = [
   "Yoga & Meditation",
   "Extreme Sports",
   "Camping & RV Travel",
+  "Nature Walks",
   "Rock Climbing",
   "Surfing",
   "Skiing & Snowboarding",
@@ -113,6 +117,7 @@ export const INTERESTS = [
   "Tech Meetups",
   "Innovation",
   "Coworking & Networking",
+  "Digital Nomads",
   "Hot Air Balloons",
   "Beach Volleyball",
   "Frisbee & Disc Golf",
@@ -312,9 +317,9 @@ export const getSexualPreferenceOptions = () => SEXUAL_PREFERENCE_OPTIONS;
 // ========================================
 // SUMMARY
 // ========================================
-// Total taxonomy: 110 items (cleaned up redundancies October 2025)
+// Total taxonomy: 115 items (cleaned up redundancies October 2025)
 // - TOP_CHOICES: 30 items (broad categories for meeting travelers and locals)
-// - INTERESTS: 74 items (specific interests and preferences for deeper matching)
+// - INTERESTS: 79 items (specific interests and preferences for deeper matching)
 // - ACTIVITIES: 6 items (unique concrete activities with zero overlap)
 // 
 // SPLIT COMBINED OPTIONS (October 2025):
