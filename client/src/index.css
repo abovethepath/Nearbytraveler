@@ -984,10 +984,22 @@ img[alt*="profile" i],
   aspect-ratio: 1 / 1 !important;
 }
 
-/* SPECIFIC FIX: Profile contact info text should be black on gradient backgrounds */
+/* SPECIFIC FIX: Profile contact info text should be BLACK on gradient backgrounds */
+[class*="bg-gradient"] .text-black,
+[class*="bg-gradient"] a.text-black,
 [class*="bg-gradient"] .text-gray-300,
 [class*="bg-gradient"] .text-gray-400,
+[class*="from-blue"] .text-black,
+[class*="from-blue"] a.text-black,
 [class*="from-blue"] .text-gray-300,
-[class*="from-blue"] .text-gray-400 {
+[class*="from-blue"] .text-gray-400,
+[class*="from-purple"] .text-black,
+[class*="from-purple"] a.text-black,
+[class*="from-pink"] .text-black,
+[class*="from-pink"] a.text-black,
+[class*="to-purple"] .text-black,
+[class*="to-purple"] a.text-black,
+[class*="to-pink"] .text-black,
+[class*="to-pink"] a.text-black {
   color: rgb(0, 0, 0) !important;
 }
