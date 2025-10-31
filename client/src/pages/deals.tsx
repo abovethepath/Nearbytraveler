@@ -80,6 +80,12 @@ export default function Deals() {
 
   // Combine all deals
   const allDeals = useMemo(() => {
+    // Add dealSource to business deals to distinguish them
+    const markedBusinessDeals = businessDeals.map(deal => ({
+      ...deal,
+      dealSource: 'business' as const
+    }));
+
     // Convert quick deals to match BusinessDeal interface
     const convertedQuickDeals = quickDeals.map((deal: any) => ({
       id: deal.id,
@@ -105,17 +111,18 @@ export default function Deals() {
       businessEmail: deal.businessEmail || '',
       businessPhone: deal.businessPhone || '',
       businessImage: deal.businessImage || '',
-      street: deal.street || '' // Add street address field
+      street: deal.street || '', // Add street address field
+      dealSource: 'quick' as const
     }));
 
-    return [...businessDeals, ...convertedQuickDeals];
+    return [...markedBusinessDeals, ...convertedQuickDeals];
   }, [businessDeals, quickDeals]);
 
   const isLoading = isBusinessDealsLoading || isQuickDealsLoading;
   const error = businessDealsError || quickDealsError;
 
   // Handle claiming a deal
-  const handleClaimDeal = async (deal: BusinessDeal) => {
+  const handleClaimDeal = async (deal: any) => {
     if (!effectiveUser) {
       toast({
         title: "Login Required",
@@ -126,7 +133,10 @@ export default function Deals() {
     }
 
     try {
-      const response = await fetch('/api/quick-deals/claim', {
+      // Use correct endpoint based on deal source
+      const endpoint = deal.dealSource === 'business' ? '/api/business-deals/claim' : '/api/quick-deals/claim';
+      
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

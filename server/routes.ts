@@ -10335,6 +10335,44 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // POST: Claim a business deal
+  app.post("/api/business-deals/claim", async (req, res) => {
+    try {
+      const { dealId } = req.body;
+      const userId = req.headers['x-user-id'];
+      
+      if (!userId || !dealId) {
+        return res.status(400).json({ message: "User ID and deal ID required" });
+      }
+
+      // Get the deal to verify it exists and is valid
+      const [deal] = await db
+        .select()
+        .from(businessOffers)
+        .where(eq(businessOffers.id, dealId))
+        .limit(1);
+      
+      if (!deal) {
+        return res.status(404).json({ message: "Deal not found" });
+      }
+      
+      // Check if deal is still valid (not expired)
+      const now = new Date();
+      if (new Date(deal.validUntil) < now) {
+        return res.status(400).json({ message: "Deal has expired" });
+      }
+      
+      // TODO: Track business deal redemptions in a new table if needed
+      // For now, just return success
+      
+      return res.json({ message: "Deal claimed successfully", dealId: deal.id });
+      
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Failed to claim business deal:", error);
+      return res.status(500).json({ message: "Failed to claim deal", error: error.message });
+    }
+  });
+
   // Contextual event recommendations
   app.get("/api/contextual-events/:userId", async (req, res) => {
     try {
