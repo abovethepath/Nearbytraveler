@@ -6286,7 +6286,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="bg-white dark:bg-gray-900">
-                        <ReferencesWidgetNew userId={user.id} />
+                        <ReferencesWidgetNew userId={user.id} currentUserId={currentUser?.id} />
                       </CardContent>
                     </Card>
                   </div>

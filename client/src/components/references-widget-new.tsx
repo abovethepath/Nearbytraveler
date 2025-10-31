@@ -1,9 +1,13 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { SimpleAvatar } from '@/components/simple-avatar';
-import { MessageSquare, Users, ChevronDown, ChevronUp } from 'lucide-react';
+import { MessageSquare, Users, ChevronDown, ChevronUp, Edit, X, Save } from 'lucide-react';
+import { apiRequest, queryClient } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface Reference {
   id: number;
@@ -22,6 +26,7 @@ interface Reference {
 
 interface ReferencesWidgetProps {
   userId: number;
+  currentUserId?: number;
 }
 
 const getExperienceColor = (experience: string) => {
@@ -35,9 +40,13 @@ const getExperienceColor = (experience: string) => {
   }
 };
 
-function ReferencesWidgetNew({ userId }: ReferencesWidgetProps) {
+function ReferencesWidgetNew({ userId, currentUserId }: ReferencesWidgetProps) {
   const [expandedReference, setExpandedReference] = useState<number | null>(null);
   const [showAllReferences, setShowAllReferences] = useState(false);
+  const [editingReferenceId, setEditingReferenceId] = useState<number | null>(null);
+  const [editContent, setEditContent] = useState('');
+  const [editExperience, setEditExperience] = useState<'positive' | 'neutral' | 'negative'>('positive');
+  const { toast } = useToast();
   
   const { data: referencesData = { references: [], counts: { total: 0, positive: 0, negative: 0, neutral: 0 } } } = useQuery({
     queryKey: [`/api/users/${userId}/references`],
@@ -50,6 +59,52 @@ function ReferencesWidgetNew({ userId }: ReferencesWidgetProps) {
 
   const toggleReference = (referenceId: number) => {
     setExpandedReference(expandedReference === referenceId ? null : referenceId);
+  };
+
+  const updateReferenceMutation = useMutation({
+    mutationFn: async ({ referenceId, content, experience }: { referenceId: number; content: string; experience: string }) => {
+      return await apiRequest(`/api/user-references/${referenceId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ content, experience })
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/references`] });
+      setEditingReferenceId(null);
+      toast({
+        title: "Reference updated",
+        description: "Your reference has been updated successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to update reference",
+        description: error.message || "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const startEdit = (reference: Reference) => {
+    setEditingReferenceId(reference.id);
+    setEditContent(reference.content);
+    setEditExperience(reference.experience);
+  };
+
+  const cancelEdit = () => {
+    setEditingReferenceId(null);
+    setEditContent('');
+    setEditExperience('positive');
+  };
+
+  const saveEdit = () => {
+    if (!editingReferenceId || !editContent.trim()) return;
+    
+    updateReferenceMutation.mutate({
+      referenceId: editingReferenceId,
+      content: editContent,
+      experience: editExperience
+    });
   };
 
   return (
@@ -102,6 +157,9 @@ function ReferencesWidgetNew({ userId }: ReferencesWidgetProps) {
               <h4 className="text-xs font-medium text-gray-800 dark:text-gray-200 mb-1">Recent References</h4>
               {displayedReferences.map((reference) => {
                 const isExpanded = expandedReference === reference.id;
+                const isEditing = editingReferenceId === reference.id;
+                const canEdit = currentUserId && reference.reviewerId === currentUserId;
+                
                 return (
                   <div
                     key={reference.id}
@@ -118,29 +176,87 @@ function ReferencesWidgetNew({ userId }: ReferencesWidgetProps) {
                         <p className="text-xs font-medium text-gray-900 dark:text-gray-100 truncate">
                           @{reference.reviewer?.username || 'Unknown User'}
                         </p>
-                        <span className={`text-xs px-2 py-1 rounded-md border ${getExperienceColor(reference.experience)} border-current flex-shrink-0 ml-2`}>
-                          {reference.experience}
-                        </span>
+                        <div className="flex items-center gap-1 flex-shrink-0 ml-2">
+                          <span className={`text-xs px-2 py-1 rounded-md border ${getExperienceColor(reference.experience)} border-current`}>
+                            {reference.experience}
+                          </span>
+                          {canEdit && !isEditing && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0"
+                              onClick={() => startEdit(reference)}
+                              data-testid={`button-edit-reference-${reference.id}`}
+                            >
+                              <Edit className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                            </Button>
+                          )}
+                        </div>
                       </div>
-                      <div className="space-y-1">
-                        <p className={`text-xs text-gray-700 dark:text-gray-300 leading-relaxed ${isExpanded ? '' : 'line-clamp-2'}`}>
-                          {reference.content}
-                        </p>
-                        {reference.content.length > 100 && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-5 px-1 text-xs text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 p-0"
-                            onClick={() => toggleReference(reference.id)}
-                          >
-                            {isExpanded ? (
-                              <>Show Less <ChevronUp className="w-3 h-3 ml-1" /></>
-                            ) : (
-                              <>Read More <ChevronDown className="w-3 h-3 ml-1" /></>
-                            )}
-                          </Button>
-                        )}
-                      </div>
+                      
+                      {isEditing ? (
+                        <div className="space-y-2 mt-2">
+                          <Textarea
+                            value={editContent}
+                            onChange={(e) => setEditContent(e.target.value)}
+                            placeholder="Write your reference..."
+                            className="min-h-[80px] text-xs"
+                            data-testid="textarea-edit-reference"
+                          />
+                          <Select value={editExperience} onValueChange={(val: 'positive' | 'neutral' | 'negative') => setEditExperience(val)}>
+                            <SelectTrigger className="text-xs h-8" data-testid="select-edit-experience">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-white dark:bg-gray-900">
+                              <SelectItem value="positive">Positive</SelectItem>
+                              <SelectItem value="neutral">Neutral</SelectItem>
+                              <SelectItem value="negative">Negative</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              onClick={saveEdit}
+                              disabled={!editContent.trim() || updateReferenceMutation.isPending}
+                              className="text-xs h-7"
+                              data-testid="button-save-edit"
+                            >
+                              <Save className="w-3 h-3 mr-1" />
+                              {updateReferenceMutation.isPending ? 'Saving...' : 'Save'}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={cancelEdit}
+                              className="text-xs h-7"
+                              data-testid="button-cancel-edit"
+                            >
+                              <X className="w-3 h-3 mr-1" />
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-1">
+                          <p className={`text-xs text-gray-700 dark:text-gray-300 leading-relaxed ${isExpanded ? '' : 'line-clamp-2'}`}>
+                            {reference.content}
+                          </p>
+                          {reference.content.length > 100 && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-5 px-1 text-xs text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 p-0"
+                              onClick={() => toggleReference(reference.id)}
+                            >
+                              {isExpanded ? (
+                                <>Show Less <ChevronUp className="w-3 h-3 ml-1" /></>
+                              ) : (
+                                <>Read More <ChevronDown className="w-3 h-3 ml-1" /></>
+                              )}
+                            </Button>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
