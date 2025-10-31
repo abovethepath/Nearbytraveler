@@ -336,8 +336,8 @@ export default function SimpleChatroomPage() {
             {Array.isArray(members) && members.length > 0 && (
               <div className="mt-4 pt-4 border-t">
                 <div className="flex items-center gap-2 mb-3">
-                  <Users className="w-4 h-4" />
-                  <span className="text-sm font-medium">Members ({members.length})</span>
+                  <Users className="w-4 h-4 text-gray-900 dark:text-white" />
+                  <span className="text-sm font-medium text-gray-900 dark:text-white">Members ({members.length})</span>
                   {userIsMember && (
                     <span className="text-xs bg-green-100 text-green-700 dark:bg-green-800 dark:text-green-200 rounded px-2 py-1">
                       You're a member
@@ -364,7 +364,7 @@ export default function SimpleChatroomPage() {
                         size="sm"
                         clickable={false}
                       />
-                      <span className="text-sm font-medium">{member.username}</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">{member.username}</span>
                       {member.role === 'admin' && (
                         <span className="text-xs bg-blue-500 text-white rounded px-1.5 py-0.5">Admin</span>
                       )}
@@ -417,7 +417,7 @@ export default function SimpleChatroomPage() {
                     />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="font-medium text-sm">{message.username}</span>
+                        <span className="font-medium text-sm text-gray-900 dark:text-white">{message.username}</span>
                         <span className="text-xs text-gray-500 dark:text-gray-400">
                           {new Date(message.created_at).toLocaleTimeString()}
                         </span>
