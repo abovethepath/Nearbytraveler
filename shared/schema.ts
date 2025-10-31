@@ -1341,6 +1341,7 @@ export const userReferences = pgTable("user_references", {
   revieweeId: integer("reviewee_id").notNull(), // User receiving the reference
   experience: text("experience").default("positive"), // 'positive', 'neutral', 'negative'
   content: text("content"), // Reference text about the person
+  howWeMet: text("how_we_met"), // Context about how they met (e.g., "met at bonfire BBQ")
   createdAt: timestamp("created_at").defaultNow(),
 });
 

@@ -15,6 +15,7 @@ interface Reference {
   revieweeId: number;
   experience: "positive" | "neutral" | "negative";
   content: string;
+  howWeMet?: string;
   createdAt: string;
   reviewer: {
     id: number;
@@ -46,6 +47,7 @@ function ReferencesWidgetNew({ userId, currentUserId }: ReferencesWidgetProps) {
   const [editingReferenceId, setEditingReferenceId] = useState<number | null>(null);
   const [editContent, setEditContent] = useState('');
   const [editExperience, setEditExperience] = useState<'positive' | 'neutral' | 'negative'>('positive');
+  const [editHowWeMet, setEditHowWeMet] = useState('');
   const { toast } = useToast();
   
   const { data: referencesData = { references: [], counts: { total: 0, positive: 0, negative: 0, neutral: 0 } } } = useQuery({
@@ -62,8 +64,8 @@ function ReferencesWidgetNew({ userId, currentUserId }: ReferencesWidgetProps) {
   };
 
   const updateReferenceMutation = useMutation({
-    mutationFn: async ({ referenceId, content, experience }: { referenceId: number; content: string; experience: string }) => {
-      return await apiRequest('PATCH', `/api/user-references/${referenceId}`, { content, experience });
+    mutationFn: async ({ referenceId, content, experience, howWeMet }: { referenceId: number; content: string; experience: string; howWeMet?: string }) => {
+      return await apiRequest('PATCH', `/api/user-references/${referenceId}`, { content, experience, howWeMet });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/references`] });
