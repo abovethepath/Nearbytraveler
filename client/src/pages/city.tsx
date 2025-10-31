@@ -10,6 +10,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 
 import UserCard from "@/components/user-card";
 import EventCard from "@/components/event-card";
+import { SimpleAvatar } from "@/components/simple-avatar";
 
 import WeatherWidget from "@/components/WeatherWidget";
 
@@ -483,38 +484,52 @@ export default function CityPage({ cityName }: CityPageProps) {
                       .filter((user: User) => user.userType === 'business')
                       .slice(0, 6)
                       .map((business: User) => (
-                        <Card key={business.id} className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow">
+                        <Card key={business.id} className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setLocation(`/profile/${business.id}`)}>
                           <CardContent className="p-6">
-                            <div className="flex items-start justify-between mb-4">
-                              <div className="flex-1">
-                                <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">
-                                  {(business as any).businessName || business.name || business.username}
-                                </h3>
-                                <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-2">
-                                  {(business as any).businessDescription || 'Local business serving the community'}
-                                </p>
+                            {/* Business Avatar */}
+                            <div className="flex justify-center mb-4">
+                              <SimpleAvatar 
+                                user={business} 
+                                size="lg" 
+                                className="ring-4 ring-white dark:ring-gray-800 shadow-lg w-20 h-20"
+                              />
+                            </div>
+                            
+                            <div className="text-center mb-4">
+                              <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">
+                                {(business as any).businessName || business.name || business.username}
+                              </h3>
+                              <div className="flex items-center justify-center gap-2 mb-2">
+                                <Badge variant="secondary" className="text-xs bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
+                                  Nearby Business
+                                </Badge>
+                                {(business as any).businessType && (
+                                  <span className="text-xs text-gray-600 dark:text-gray-400">
+                                    {(business as any).businessType}
+                                  </span>
+                                )}
                               </div>
-                              <Badge variant="secondary" className="ml-2 text-xs bg-green-100 text-green-800">
-                                Business
-                              </Badge>
+                              <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-2">
+                                {(business as any).businessDescription || 'Local business serving the community'}
+                              </p>
                             </div>
                             
                             <div className="space-y-2 mb-4">
                               {((business as any).streetAddress || (business as any).businessAddress) && (
-                                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                                <div className="flex items-center justify-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                                   <MapPin className="w-4 h-4" />
                                   <span className="truncate">{(business as any).streetAddress || (business as any).businessAddress}</span>
                                 </div>
                               )}
                               {((business as any).phoneNumber || (business as any).businessPhone) && (
-                                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                                <div className="flex items-center justify-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                                   <Phone className="w-4 h-4" />
                                   <span>{(business as any).phoneNumber || (business as any).businessPhone}</span>
                                 </div>
                               )}
                             </div>
 
-                            <div className="flex gap-2">
+                            <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
                               <Button 
                                 size="sm" 
                                 className="flex-1 bg-blue-500 hover:bg-blue-600 text-white border-0"
