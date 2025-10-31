@@ -1988,17 +1988,16 @@ export default function Home() {
                     <Users className="w-5 h-5 mr-2 text-green-500" />
                     Created by Community Members
                   </h3>
-                  <div className="grid grid-cols-1 gap-3 sm:gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                     {userPriorityEvents
                       ?.filter((event: any) => !event.isAIGenerated && !event.source && event.organizerId)
                       ?.slice(0, 4)
                       ?.map((event: any) => (
-                        <div key={event.id} className="w-full">
-                          <EventCard 
-                            event={event} 
-                            currentUser={effectiveUser}
-                          />
-                        </div>
+                        <EventCard 
+                          key={event.id}
+                          event={event} 
+                          currentUser={effectiveUser}
+                        />
                       )) || (
                         <div className="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">
                           <Users className="w-12 h-12 mx-auto mb-4 text-gray-300" />
@@ -2014,17 +2013,16 @@ export default function Home() {
                     <Globe className="w-5 h-5 mr-2 text-blue-500" />
                     Local Area Events
                   </h3>
-                  <div className="grid grid-cols-1 gap-3 sm:gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                     {userPriorityEvents
                       ?.filter((event: any) => event.source && !event.isAIGenerated)
                       ?.slice(0, 4)
                       ?.map((event: any) => (
-                        <div key={event.id} className="w-full">
-                          <EventCard 
-                            event={event} 
-                            currentUser={effectiveUser}
-                          />
-                        </div>
+                        <EventCard 
+                          key={event.id}
+                          event={event} 
+                          currentUser={effectiveUser}
+                        />
                       )) || (
                         <div className="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">
                           <Globe className="w-12 h-12 mx-auto mb-4 text-gray-300" />
