@@ -4759,6 +4759,7 @@ Questions? Just reply to this message. Welcome aboard!
             sql`array_to_string(${users.privateInterests}, ',') ILIKE ${'%' + searchTerm + '%'}`,
             sql`array_to_string(${users.activities}, ',') ILIKE ${'%' + searchTerm + '%'}`,
             sql`array_to_string(${users.events}, ',') ILIKE ${'%' + searchTerm + '%'}`,
+            sql`array_to_string(${users.travelerTypes}, ',') ILIKE ${'%' + searchTerm + '%'}`,
             
             // Custom text fields - User typed interests/activities/events
             ilike(users.customInterests, `%${searchTerm}%`),
@@ -4821,6 +4822,13 @@ Questions? Just reply to this message. Welcome aboard!
                 sql`${users.isNewToTown} = true`,
                 sql`${users.newToTownUntil} > NOW()`
               )
+            );
+          }
+          
+          // Special keywords: "family" or "children" should match users traveling with children
+          if (searchTerm.includes('family') || searchTerm.includes('children') || searchTerm.includes('kid') || searchTerm.includes('parent')) {
+            searchConditions.push(
+              sql`${users.travelingWithChildren} = true`
             );
           }
           
