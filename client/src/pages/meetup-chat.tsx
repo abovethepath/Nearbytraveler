@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRoute } from "wouter";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { ChatInput } from "@/components/ui/chat-input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowLeft, Send, Users, MapPin, Clock } from "lucide-react";
@@ -273,8 +273,8 @@ export default function MeetupChat() {
 
                 {/* Message Input */}
                 <div className="border-t border-gray-200 dark:border-gray-700 p-4">
-                  <div className="flex gap-2 chat-input-wrapper">
-                    <Input
+                  <div className="flex gap-2">
+                    <ChatInput
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       onKeyPress={handleKeyPress}

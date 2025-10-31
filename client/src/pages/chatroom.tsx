@@ -3,7 +3,7 @@ import { useParams } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { ChatInput } from "@/components/ui/chat-input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -252,8 +252,8 @@ export default function ChatroomPage() {
             </div>
 
             {/* Message Input */}
-            <form onSubmit={handleSendMessage} className="flex gap-2 chat-input-wrapper">
-              <Input
+            <form onSubmit={handleSendMessage} className="flex gap-2">
+              <ChatInput
                 value={messageText}
                 onChange={(e) => setMessageText(e.target.value)}
                 placeholder="Type your message..."

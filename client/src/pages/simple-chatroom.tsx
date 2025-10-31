@@ -3,7 +3,7 @@ import { useParams, useLocation } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { ChatInput } from "@/components/ui/chat-input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
@@ -438,8 +438,8 @@ export default function SimpleChatroomPage() {
         {userIsMember ? (
           <Card className="bg-white dark:bg-gray-800">
             <CardContent className="p-4">
-              <form onSubmit={handleSendMessage} className="flex gap-3 chat-input-wrapper">
-                <Input
+              <form onSubmit={handleSendMessage} className="flex gap-3">
+                <ChatInput
                   value={messageText}
                   onChange={(e) => setMessageText(e.target.value)}
                   placeholder="Type your message..."

@@ -3,6 +3,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { authStorage } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ChatInput } from '@/components/ui/chat-input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { MessageCircle, Send, Users, ArrowLeft } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
@@ -533,8 +534,8 @@ export default function Messages() {
 
             {/* Message Input */}
             <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800">
-              <div className="flex gap-2 chat-input-wrapper">
-                <Input
+              <div className="flex gap-2">
+                <ChatInput
                   value={newMessage}
                   onChange={(e) => handleTyping(e.target.value)}
                   placeholder="Type your message..."
