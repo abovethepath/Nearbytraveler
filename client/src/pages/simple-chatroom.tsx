@@ -422,7 +422,7 @@ export default function SimpleChatroomPage() {
                           {new Date(message.created_at).toLocaleTimeString()}
                         </span>
                       </div>
-                      <div className="text-sm text-gray-900 dark:text-gray-900 break-words">
+                      <div className="text-sm break-words" style={{ color: '#000000' }}>
                         {message.content}
                       </div>
                     </div>

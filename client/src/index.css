@@ -984,18 +984,26 @@ img[alt*="profile" i],
   aspect-ratio: 1 / 1 !important;
 }
 
-/* Simple fix: Make input text BLACK in dark mode so it's visible on white background */
-.dark input[placeholder*="Type your message"],
-.dark input[placeholder*="message"],
-.dark input[data-testid="input-message"] {
+/* UNIVERSAL FIX: Make ALL input text BLACK in dark mode (since backgrounds are white) */
+.dark input,
+.dark textarea,
+html.dark input,
+html.dark textarea {
   color: #000000 !important;
   -webkit-text-fill-color: #000000 !important;
 }
 
-.dark input[placeholder*="Type your message"]::placeholder,
-.dark input[placeholder*="message"]::placeholder,
-.dark input[data-testid="input-message"]::placeholder {
+.dark input::placeholder,
+.dark textarea::placeholder,
+html.dark input::placeholder,
+html.dark textarea::placeholder {
   color: #666666 !important;
+}
+
+/* Autofill fix */
+.dark input:-webkit-autofill,
+html.dark input:-webkit-autofill {
+  -webkit-text-fill-color: #000000 !important;
 }
 
 /* Fix: Make message bubble text BLACK so it's visible on white/light backgrounds */

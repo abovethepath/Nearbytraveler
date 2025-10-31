@@ -515,9 +515,12 @@ export default function Messages() {
                         <div
                           className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                             isOwnMessage
-                              ? 'bg-blue-600 dark:bg-blue-600 text-white dark:text-white'
-                              : 'bg-gray-200 dark:bg-gray-200 text-gray-900 dark:text-gray-900'
+                              ? 'bg-blue-600 dark:bg-blue-600'
+                              : 'bg-gray-200 dark:bg-gray-200'
                           }`}
+                          style={{
+                            color: isOwnMessage ? '#ffffff' : '#000000'
+                          }}
                         >
                           <p>{message.content}</p>
                           <p className="text-xs opacity-70 mt-1">

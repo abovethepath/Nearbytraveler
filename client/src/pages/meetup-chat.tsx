@@ -257,11 +257,16 @@ export default function MeetupChat() {
                               {new Date(msg.createdAt).toLocaleTimeString()}
                             </span>
                           </div>
-                          <div className={`max-w-xs lg:max-w-md px-3 py-2 rounded-lg ${
-                            msg.senderId === currentUser?.id
-                              ? 'bg-blue-500 text-white'
-                              : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
-                          }`}>
+                          <div 
+                            className={`max-w-xs lg:max-w-md px-3 py-2 rounded-lg ${
+                              msg.senderId === currentUser?.id
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-gray-100 dark:bg-gray-700'
+                            }`}
+                            style={{
+                              color: msg.senderId === currentUser?.id ? '#ffffff' : '#000000'
+                            }}
+                          >
                             {msg.content}
                           </div>
                         </div>
