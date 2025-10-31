@@ -5137,6 +5137,52 @@ Questions? Just reply to this message. Welcome aboard!
         delete userWithoutPassword.private_interests;
       }
       
+      // MAP BUSINESS FIELDS: Convert snake_case database fields to camelCase for frontend
+      if (userWithoutPassword.business_name !== undefined) {
+        userWithoutPassword.businessName = userWithoutPassword.business_name;
+        delete userWithoutPassword.business_name;
+      }
+      if (userWithoutPassword.business_description !== undefined) {
+        userWithoutPassword.businessDescription = userWithoutPassword.business_description;
+        delete userWithoutPassword.business_description;
+      }
+      if (userWithoutPassword.business_type !== undefined) {
+        userWithoutPassword.businessType = userWithoutPassword.business_type;
+        delete userWithoutPassword.business_type;
+      }
+      if (userWithoutPassword.street_address !== undefined) {
+        userWithoutPassword.streetAddress = userWithoutPassword.street_address;
+        delete userWithoutPassword.street_address;
+      }
+      if (userWithoutPassword.zip_code !== undefined) {
+        userWithoutPassword.zipCode = userWithoutPassword.zip_code;
+        delete userWithoutPassword.zip_code;
+      }
+      if (userWithoutPassword.phone_number !== undefined) {
+        userWithoutPassword.phoneNumber = userWithoutPassword.phone_number;
+        delete userWithoutPassword.phone_number;
+      }
+      if (userWithoutPassword.website_url !== undefined) {
+        userWithoutPassword.websiteUrl = userWithoutPassword.website_url;
+        delete userWithoutPassword.website_url;
+      }
+      if (userWithoutPassword.contact_name !== undefined) {
+        userWithoutPassword.contactName = userWithoutPassword.contact_name;
+        delete userWithoutPassword.contact_name;
+      }
+      if (userWithoutPassword.owner_name !== undefined) {
+        userWithoutPassword.ownerName = userWithoutPassword.owner_name;
+        delete userWithoutPassword.owner_name;
+      }
+      if (userWithoutPassword.owner_email !== undefined) {
+        userWithoutPassword.ownerEmail = userWithoutPassword.owner_email;
+        delete userWithoutPassword.owner_email;
+      }
+      if (userWithoutPassword.owner_phone !== undefined) {
+        userWithoutPassword.ownerPhone = userWithoutPassword.owner_phone;
+        delete userWithoutPassword.owner_phone;
+      }
+      
       // Note: Travel intent fields are already in camelCase from database
       
       return res.json(userWithoutPassword);
