@@ -5966,13 +5966,13 @@ Questions? Just reply to this message. Welcome aboard!
   app.patch("/api/user-references/:referenceId", async (req, res) => {
     try {
       // Authentication check
-      if (!req.session || !req.session.userId) {
+      if (!req.session?.user?.id) {
         return res.status(401).json({ message: "Not authenticated" });
       }
       
       const referenceId = parseInt(req.params.referenceId || '0');
       const { content, experience } = req.body;
-      const reviewerId = req.session.userId;
+      const reviewerId = req.session.user.id;
       
       if (isNaN(referenceId) || referenceId <= 0) {
         return res.status(400).json({ message: "Invalid reference ID" });
