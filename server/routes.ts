@@ -4390,7 +4390,29 @@ Questions? Just reply to this message. Welcome to the community!
         // Find the nearbytrav system account (ID 2)
         const nearbytravAccount = await storage.getUser(2);
         if (nearbytravAccount) {
-          await storage.sendSystemMessage(2, user.id, `Welcome to Nearby Traveler, ${user.name || user.username}! ✈️
+          const welcomeMessage = user.userType === 'business'
+            ? `Welcome to Nearby Traveler Business, @${user.username}! 🏢
+
+Key features for your business:
+
+**📊 Business Dashboard**: Track offer analytics, views, and customer redemptions
+
+**🎯 Smart Offers**: Create deals with multiple discount types (%, fixed, BOGO, free items with purchase, combos)
+
+**⚡ Instant Deals**: Flash sales that expire in 1-24 hours for immediate foot traffic
+
+**🔔 Customer Matching**: Get notified when travelers/locals with interests matching your business are nearby
+
+**🗺️ Map Presence**: Appear on our interactive map for location-based discovery
+
+**🎪 Event Hosting**: Create business events to showcase your offerings
+
+**🔍 Target Marketing**: Search specifically for locals and nearby travelers coming to or already in your location to market your offers and deals directly to them
+
+Start by creating your first offer and setting up location notifications!
+
+Aaron`
+            : `Welcome to Nearby Traveler, ${user.name || user.username}! ✈️
 
 I'm Aaron, and I'm excited to welcome you to our community of travelers, locals, and businesses who believe in authentic human connections.
 
@@ -4411,8 +4433,10 @@ ${hasExistingTravelPlan ? `Since you're planning to travel, you'll get matched w
 
 Questions? Just reply to this message. Welcome to the community!
 
-- Aaron (your fellow nearby traveler)`);
-          console.log(`✓ REGISTRATION: Sent welcome message from nearbytrav to ${user.username}`);
+- Aaron (your fellow nearby traveler)`;
+
+          await storage.sendSystemMessage(2, user.id, welcomeMessage);
+          console.log(`✓ REGISTRATION: Sent ${user.userType === 'business' ? 'business' : 'user'} welcome message from nearbytrav to ${user.username}`);
         } else {
           console.error('REGISTRATION ERROR: nearbytrav account (ID 2) not found');
         }
