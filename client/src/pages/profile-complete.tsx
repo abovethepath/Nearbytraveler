@@ -46,7 +46,7 @@ import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/locationData";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { calculateAge, formatDateOfBirthForInput, validateDateInput, getDateInputConstraints } from "@/lib/ageUtils";
 import { isTopChoiceInterest } from "@/lib/topChoicesUtils";
-import { BUSINESS_TYPES, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, ALL_ACTIVITIES } from "@shared/base-options";
+import { BUSINESS_TYPES, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, ALL_ACTIVITIES, BUSINESS_INTERESTS, BUSINESS_ACTIVITIES } from "@shared/base-options";
 
 // Helper function to check if two cities are in the same metro area
 function areInSameMetroArea(city1: string, city2: string): boolean {
@@ -4952,7 +4952,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           Business Interests
                         </h4>
                         <div className="flex flex-wrap gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                          {getProfileInterests().map((interest, index) => {
+                          {BUSINESS_INTERESTS.map((interest, index) => {
                             const isSelected = editFormData.interests.includes(interest);
                             console.log(`🔍 Interest "${interest}" is ${isSelected ? 'SELECTED' : 'not selected'} in:`, editFormData.interests);
                             return (
@@ -5056,7 +5056,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           Business Activities
                         </h4>
                         <div className="flex flex-wrap gap-2 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                          {safeGetAllActivities().map((activity, index) => {
+                          {BUSINESS_ACTIVITIES.map((activity, index) => {
                             const isSelected = (editFormData.activities ?? []).includes(activity);
                             return (
                               <button

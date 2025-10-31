@@ -153,6 +153,93 @@ export const ACTIVITIES = [
 ];
 
 // ========================================
+// BUSINESS OFFERINGS (What businesses provide)
+// ========================================
+// These are what BUSINESSES OFFER to attract customers
+// NOT what users want to do - this is business amenities/features/services
+
+export const BUSINESS_INTERESTS = [
+  "Happy Hour",
+  "Rooftop Bar",
+  "Live Music",
+  "DJ Nights",
+  "Karaoke Nights",
+  "Trivia Nights",
+  "Comedy Shows",
+  "Sports Viewing",
+  "Outdoor Seating",
+  "Pet-Friendly",
+  "Family-Friendly",
+  "LGBTQIA+ Friendly",
+  "Late Night Hours",
+  "Breakfast/Brunch",
+  "Lunch Specials",
+  "Dinner Service",
+  "Craft Cocktails",
+  "Wine Selection",
+  "Craft Beer",
+  "Local Beer",
+  "Imported Beer",
+  "Full Bar",
+  "Non-Alcoholic Options",
+  "Vegan Options",
+  "Vegetarian Options",
+  "Gluten-Free Options",
+  "Farm-to-Table",
+  "Organic Ingredients",
+  "Live Sports",
+  "Pool Table",
+  "Darts",
+  "Board Games",
+  "Arcade Games",
+  "Private Events",
+  "Catering",
+  "Delivery Available",
+  "Takeout Available",
+  "WiFi Available",
+  "Coworking Space",
+  "Meeting Rooms",
+  "420-Friendly"
+];
+
+export const BUSINESS_ACTIVITIES = [
+  "Pickleball Courts",
+  "Tennis Courts",
+  "Basketball Courts",
+  "Yoga Classes",
+  "Fitness Classes",
+  "Gym/Workout Facility",
+  "Swimming Pool",
+  "Hot Tub/Spa",
+  "Sauna/Steam Room",
+  "Golf Course",
+  "Mini Golf",
+  "Driving Range",
+  "Bowling Lanes",
+  "Rock Climbing Wall",
+  "Bike Rentals",
+  "Kayak Rentals",
+  "Surfboard Rentals",
+  "Beach Equipment",
+  "Hiking Trails",
+  "Nature Walks",
+  "Wine Tasting",
+  "Beer Tasting",
+  "Cooking Classes",
+  "Art Classes",
+  "Music Lessons",
+  "Dance Classes",
+  "Language Classes",
+  "Tours & Excursions",
+  "Photography Tours",
+  "Food Tours",
+  "Historical Tours",
+  "Ghost Tours",
+  "Boat Tours",
+  "Fishing Trips"
+];
+
+// ========================================
 // COMBINED ARRAYS
 // ========================================
 
