@@ -4,7 +4,7 @@
 // DO NOT CREATE SEPARATE LISTS - ALWAYS IMPORT FROM HERE
 
 // ========================================
-// TOP CHOICES (29 items)
+// TOP CHOICES (30 items)
 // ========================================
 // Primary categories for meeting travelers and locals
 // Users select from this list to indicate their main interests
@@ -16,6 +16,7 @@ export const TOP_CHOICES = [
   "Coffee Shops & Cafes",
   "Late Night Eats",
   "Vegan/Vegetarian",
+  "Happy Hour",
   "Craft Beer & Breweries",
   "Wine Bars & Vineyards",
   "Nightlife & Dancing",
@@ -311,8 +312,8 @@ export const getSexualPreferenceOptions = () => SEXUAL_PREFERENCE_OPTIONS;
 // ========================================
 // SUMMARY
 // ========================================
-// Total taxonomy: 109 items (cleaned up redundancies October 2025)
-// - TOP_CHOICES: 29 items (broad categories for meeting travelers and locals)
+// Total taxonomy: 110 items (cleaned up redundancies October 2025)
+// - TOP_CHOICES: 30 items (broad categories for meeting travelers and locals)
 // - INTERESTS: 74 items (specific interests and preferences for deeper matching)
 // - ACTIVITIES: 6 items (unique concrete activities with zero overlap)
 // 
@@ -330,7 +331,7 @@ export const getSexualPreferenceOptions = () => SEXUAL_PREFERENCE_OPTIONS;
 // - "Digital Nomads" (not relevant for meeting travelers/locals)
 // - "Nature Walks" (duplicate of "Hiking")
 // - "Concerts" (duplicate of "Live Music")
-// - "Happy Hour", "Rooftop Bars", "Cocktail Bars & Speakeasies" (consolidated into Nightlife & Dancing, Craft Beer, Wine Bars)
+// - "Rooftop Bars", "Cocktail Bars & Speakeasies" (consolidated into Happy Hour, Nightlife & Dancing, Craft Beer, Wine Bars)
 //
 // INTERESTS splits:
 // - "Volunteering & Activism" → "Volunteering", "Activism", "Animal Rescue & Shelters"
