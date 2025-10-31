@@ -8625,7 +8625,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 >
                   Cancel
                 </Button>
-                <Button type="submit" disabled={createReference.isPending}>
+                <Button 
+                  type="submit" 
+                  disabled={createReference.isPending}
+                  className="border-2 border-black dark:border-white"
+                  data-testid="button-submit-reference"
+                >
                   {createReference.isPending ? "Submitting..." : "Submit Reference"}
                 </Button>
               </div>
