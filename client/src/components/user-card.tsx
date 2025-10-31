@@ -143,14 +143,17 @@ export default function UserCard({
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white truncate bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text">
                   {user.businessName}
                 </h3>
-                <div className="flex items-center justify-center gap-2 mt-2">
-                  <span className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100 border border-green-300 dark:border-green-600">
+                <div className="flex items-center justify-center gap-1 mt-1">
+                  <span className="text-xs text-gray-600 dark:text-gray-400">
                     Nearby Business
                   </span>
                   {(user as any).businessType && (
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
-                      {(user as any).businessType}
-                    </span>
+                    <>
+                      <span className="text-xs text-gray-400">•</span>
+                      <span className="text-xs text-gray-600 dark:text-gray-400">
+                        {(user as any).businessType}
+                      </span>
+                    </>
                   )}
                 </div>
               </>
@@ -167,12 +170,19 @@ export default function UserCard({
               /* Business Contact Information */
               <div className="space-y-2 text-sm">
                 {user.streetAddress && (
-                  <div className="flex items-center justify-center gap-2 text-gray-700 dark:text-gray-300">
-                    <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <span className="truncate">{user.streetAddress}</span>
+                  <div className="flex flex-col items-center justify-center gap-1 text-gray-700 dark:text-gray-300">
+                    <div className="flex items-center gap-2">
+                      <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      <span className="truncate">{user.streetAddress}</span>
+                    </div>
+                    {(user.city || user.hometownCity) && (
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        {user.city || user.hometownCity}{user.state && `, ${user.state}`}
+                      </span>
+                    )}
                   </div>
                 )}
                 {(user as any).phoneNumber && (
