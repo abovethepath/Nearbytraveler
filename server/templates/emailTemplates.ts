@@ -183,7 +183,7 @@ export const welcomeEmailBusiness = (data: WelcomeEmailData): EmailTemplate => (
             <span class="benefit-icon">🎁</span>
             <div>
               <strong>Create your first deal</strong><br>
-              Offer something special - businesses see 40% more bookings with their first deal
+              Offer something special to attract new customers
             </div>
           </div>
           <div class="benefit">
@@ -205,7 +205,7 @@ export const welcomeEmailBusiness = (data: WelcomeEmailData): EmailTemplate => (
             <a href="https://nearbytraveler.org/business-dashboard" class="button">Set Up Your Business Profile</a>
           </div>
           
-          <p>Pro tip: Complete your business profile first - it takes 3 minutes and businesses with complete profiles get 5x more inquiries! Don't forget to share your QR code with customers for instant connections.</p>
+          <p>Pro tip: Complete your business profile first - it takes 3 minutes! Don't forget to share your QR code with customers for instant connections.</p>
           
           <p>Questions about getting started? Just reply to this email.</p>
           
@@ -232,13 +232,13 @@ Your business account is ready!
 Username: @${data.username}
 
 Start getting customers today:
-• Create your first deal - Businesses see 40% more bookings with their first deal
+• Create your first deal - Offer something special to attract new customers
 • Get discovered locally - Be there when travelers are searching by location and interests
 • Build your reputation - Real reviews from real customers who found you through the platform
 
 Set up your business profile: https://nearbytraveler.org/business-dashboard
 
-Pro tip: Complete your business profile first - businesses with complete profiles get 5x more inquiries! Don't forget to share your QR code with customers for instant connections.
+Pro tip: Complete your business profile first - it takes 3 minutes! Don't forget to share your QR code with customers for instant connections.
 
 Questions? Just reply to this email.
 
