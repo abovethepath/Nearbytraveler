@@ -228,7 +228,7 @@ export function SubscriptionStatus() {
               Free Access Mode - Limited Time
             </p>
             <p className="text-xs text-purple-700 dark:text-purple-300 mt-1">
-              You currently have free access to all business features. Upgrade to a paid subscription ($50/month + $100 sign-up fee) for guaranteed long-term access and priority support.
+              You currently have free access to all business features. Upgrade to a paid subscription ($75/month + $100 sign-up fee) for guaranteed long-term access and priority support.
             </p>
           </div>
         )}
@@ -259,7 +259,7 @@ export function SubscriptionStatus() {
             >
               {createSubscriptionMutation.isPending 
                 ? "Restarting Subscription..." 
-                : "Restart Subscription ($50/month)"
+                : "Restart Subscription ($75/month)"
               }
             </Button>
           ) : !subscriptionStatus?.hasSubscription ? (
@@ -274,7 +274,7 @@ export function SubscriptionStatus() {
             >
               {createSubscriptionMutation.isPending 
                 ? "Starting Subscription..." 
-                : "Start Subscription ($50/month + $100 Sign Up Fee)"
+                : "Start Subscription ($75/month + $100 Sign Up Fee)"
               }
             </Button>
           ) : (
@@ -292,7 +292,7 @@ export function SubscriptionStatus() {
                 >
                   {createSubscriptionMutation.isPending 
                     ? "Upgrading..." 
-                    : "Upgrade to Paid Plan ($50/month + $100 Sign Up Fee)"
+                    : "Upgrade to Paid Plan ($75/month + $100 Sign Up Fee)"
                   }
                 </Button>
               )}
@@ -327,7 +327,7 @@ export function SubscriptionStatus() {
         {/* Pricing Info */}
         <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700 mt-4">
           <div className="text-xs text-gray-700 dark:text-gray-300 font-medium">
-            Business Plan: $50/month + $100 sign-up fee • Monthly deal limits • Priority support • Analytics dashboard
+            Business Plan: $75/month + $100 sign-up fee • Monthly deal limits • Priority support • Analytics dashboard
           </div>
         </div>
       </CardContent>

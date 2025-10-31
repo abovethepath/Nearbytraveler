@@ -228,7 +228,7 @@ export default function BusinessRegistration() {
               <h3 className="text-xl font-bold text-black dark:text-white mb-4">Business Membership Benefits</h3>
               <div className="bg-white dark:bg-gray-700 rounded-lg p-6 shadow-lg border-2 border-green-500">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">$50/month</div>
+                  <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">$75/month</div>
                   <div className="text-sm text-gray-600 dark:text-gray-300 mb-3">+ $100 sign-up fee</div>
                   <div className="text-xs text-gray-500 dark:text-gray-400 mb-4">Currently FREE during beta</div>
                   <div className="text-sm text-gray-700 dark:text-gray-300 space-y-1">

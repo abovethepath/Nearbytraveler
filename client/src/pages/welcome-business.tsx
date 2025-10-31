@@ -226,7 +226,7 @@ export default function WelcomeBusiness() {
               </p>
               <div className="mt-6 p-4 bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900/30 dark:to-red-900/30 rounded-lg border-2 border-orange-300 dark:border-orange-700">
                 <p className="text-center text-sm text-orange-800 dark:text-orange-200 font-bold">
-                  After Beta: $50/month + $100 one-time signup fee
+                  After Beta: $75/month + $100 one-time signup fee
                 </p>
               </div>
             </div>
