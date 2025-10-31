@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { User } from "lucide-react";
 
 interface SimpleAvatarProps {
   user: {
@@ -23,12 +24,20 @@ export function SimpleAvatar({ user, size = 'md', className = '', clickable = tr
     xl: 'w-full h-full text-xl'
   };
 
+  // Icon sizes for different avatar sizes
+  const iconSizes = {
+    sm: 'w-4 h-4',
+    md: 'w-5 h-5',
+    lg: 'w-6 h-6',
+    xl: 'w-24 h-24'
+  };
+
   // Stable avatar generation with useMemo to prevent flickering
   const avatarData = useMemo(() => {
     if (!user?.username) {
       return { 
         letter: 'U', 
-        bgColor: 'bg-blue-500',
+        gradient: 'bg-gradient-to-br from-blue-500 to-purple-600',
         hasImage: false,
         imageUrl: null
       };
@@ -36,13 +45,19 @@ export function SimpleAvatar({ user, size = 'md', className = '', clickable = tr
 
     const firstLetter = user.username.charAt(0).toUpperCase();
     
-    // Simple color based on username
-    const colors = [
-      'bg-blue-500', 'bg-red-500', 'bg-green-500', 'bg-orange-500',
-      'bg-purple-500', 'bg-pink-500', 'bg-cyan-500', 'bg-lime-500'
+    // Nice gradients based on username
+    const gradients = [
+      'bg-gradient-to-br from-blue-500 to-purple-600',
+      'bg-gradient-to-br from-red-500 to-pink-600',
+      'bg-gradient-to-br from-green-500 to-teal-600',
+      'bg-gradient-to-br from-orange-500 to-red-600',
+      'bg-gradient-to-br from-purple-500 to-indigo-600',
+      'bg-gradient-to-br from-pink-500 to-rose-600',
+      'bg-gradient-to-br from-cyan-500 to-blue-600',
+      'bg-gradient-to-br from-lime-500 to-green-600'
     ];
-    const colorIndex = user.username.charCodeAt(0) % colors.length;
-    const bgColor = colors[colorIndex];
+    const gradientIndex = user.username.charCodeAt(0) % gradients.length;
+    const gradient = gradients[gradientIndex];
 
     // More robust image validation - check for data URLs or http URLs
     const hasValidImage = user.profileImage && 
@@ -52,7 +67,7 @@ export function SimpleAvatar({ user, size = 'md', className = '', clickable = tr
 
     return {
       letter: firstLetter,
-      bgColor,
+      gradient,
       hasImage: hasValidImage,
       imageUrl: hasValidImage ? user.profileImage : null
     };
@@ -86,13 +101,14 @@ export function SimpleAvatar({ user, size = 'md', className = '', clickable = tr
         />
       )}
       
-      {/* Letter fallback - show if no image or image failed to load */}
+      {/* Letter fallback with gradient and icon - show if no image or image failed to load */}
       <div 
-        className={`${baseClasses} ${avatarData.bgColor} text-white ${avatarData.hasImage ? 'absolute inset-0' : ''}`}
+        className={`${baseClasses} ${avatarData.gradient} text-white ${avatarData.hasImage ? 'absolute inset-0' : ''} flex-col`}
         onClick={handleClick}
         style={{ display: avatarData.hasImage ? 'none' : 'flex' }}
       >
-        <span className="font-bold">{avatarData.letter}</span>
+        <User className={`${iconSizes[size]} opacity-90`} />
+        <span className="font-bold text-xs opacity-75 mt-0.5">{avatarData.letter}</span>
       </div>
     </div>
   );

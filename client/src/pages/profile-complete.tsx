@@ -3564,14 +3564,23 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
               {isOwnProfile && (
                 <>
+                  {/* Upload Photo Prompt - Only show when no profile image */}
+                  {!user?.profileImage && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg whitespace-nowrap z-20 animate-pulse">
+                      Add Photo
+                    </div>
+                  )}
+                  
                   <Button
                     size="icon"
                     aria-label="Change avatar"
-                    className="absolute -bottom-2 -right-2 translate-x-1/4 translate-y-1/4
+                    className={`absolute -bottom-2 -right-2 translate-x-1/4 translate-y-1/4
                                h-10 w-10 sm:h-11 sm:w-11 rounded-full p-0
-                               bg-blue-600 dark:bg-gray-800 hover:bg-blue-700 dark:hover:bg-gray-700 text-white shadow-lg ring-4 ring-white dark:ring-gray-700 z-10"
+                               ${!user?.profileImage ? 'bg-orange-500 hover:bg-orange-600 animate-bounce' : 'bg-blue-600 hover:bg-blue-700'} 
+                               dark:bg-gray-800 dark:hover:bg-gray-700 text-white shadow-lg ring-4 ring-white dark:ring-gray-700 z-10`}
                     onClick={() => document.getElementById('avatar-upload-input')?.click()}
                     disabled={uploadingPhoto}
+                    data-testid="button-upload-avatar"
                   >
                     <Camera className="h-4 w-4 sm:h-5 sm:w-5" />
                   </Button>
