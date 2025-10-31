@@ -2123,6 +2123,18 @@ export class DatabaseStorage implements IStorage {
           autoJoin: !isDomesticTravel && !isFutureTrip
         });
         
+        // Add destination country to countriesVisited if it's a new country
+        if (destinationCountry && user) {
+          const currentCountries = user.countriesVisited || [];
+          if (!currentCountries.includes(destinationCountry)) {
+            const updatedCountries = [...currentCountries, destinationCountry];
+            await db.update(users)
+              .set({ countriesVisited: updatedCountries })
+              .where(eq(users.id, newPlan.userId));
+            console.log(`🌍 COUNTRY ADDED: ${destinationCountry} added to countries visited for user ${newPlan.userId}`);
+          }
+        }
+        
         if (destinationCity && destinationCountry && !isDomesticTravel && !isFutureTrip) {
           // Only auto-join for INTERNATIONAL and ACTIVE/CURRENT travel
           await this.ensureMeetLocalsChatrooms(destinationCity, destinationState, destinationCountry);
