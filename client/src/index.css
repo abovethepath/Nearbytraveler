@@ -983,3 +983,17 @@ img[alt*="profile" i],
   object-fit: cover !important;
   aspect-ratio: 1 / 1 !important;
 }
+
+/* Simple fix: Make input text BLACK in dark mode so it's visible on white background */
+.dark input[placeholder*="Type your message"],
+.dark input[placeholder*="message"],
+.dark input[data-testid="input-message"] {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+
+.dark input[placeholder*="Type your message"]::placeholder,
+.dark input[placeholder*="message"]::placeholder,
+.dark input[data-testid="input-message"]::placeholder {
+  color: #666666 !important;
+}
