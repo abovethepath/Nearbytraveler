@@ -4,7 +4,7 @@
 // DO NOT CREATE SEPARATE LISTS - ALWAYS IMPORT FROM HERE
 
 // ========================================
-// TOP CHOICES (35 items)
+// TOP CHOICES (29 items)
 // ========================================
 // Primary categories for meeting travelers and locals
 // Users select from this list to indicate their main interests
@@ -16,14 +16,10 @@ export const TOP_CHOICES = [
   "Coffee Shops & Cafes",
   "Late Night Eats",
   "Vegan/Vegetarian",
-  "Happy Hour",
-  "Cocktail Bars & Speakeasies",
   "Craft Beer & Breweries",
   "Wine Bars & Vineyards",
-  "Rooftop Bars",
   "Nightlife & Dancing",
   "Live Music",
-  "Concerts",
   "Karaoke",
   "Comedy Shows",
   "Local Hidden Gems",
@@ -35,7 +31,6 @@ export const TOP_CHOICES = [
   "Beach Activities",
   "Water Sports",
   "Hiking",
-  "Nature Walks",
   "Fitness Classes",
   "Working Out",
   "Golf",
@@ -43,8 +38,7 @@ export const TOP_CHOICES = [
   "Meeting New People",
   "Open to Dating",
   "LGBTQIA+",
-  "Family-Oriented",
-  "Digital Nomads"
+  "Family-Oriented"
 ];
 
 // ========================================
@@ -215,10 +209,10 @@ export const getAllLanguages = () => ALL_LANGUAGES;
 // This ensures existing user data doesn't break after the split
 export const LEGACY_TO_NEW_MAPPING: Record<string, string[]> = {
   // TOP CHOICES legacy mappings
-  "Live Music & Concerts": ["Live Music", "Concerts"],
+  "Live Music & Concerts": ["Live Music"],
   "Museums & Culture": ["Museums", "Cultural Experiences"],
   "Beach & Water Activities": ["Beach Activities", "Water Sports"],
-  "Hiking & Nature": ["Hiking", "Nature Walks"],
+  "Hiking & Nature": ["Hiking"],
   "Fitness & Workouts": ["Fitness Classes", "Working Out"],
   
   // INTERESTS legacy mappings
@@ -317,20 +311,26 @@ export const getSexualPreferenceOptions = () => SEXUAL_PREFERENCE_OPTIONS;
 // ========================================
 // SUMMARY
 // ========================================
-// Total taxonomy: 115 items (split combined options for clarity)
-// - TOP_CHOICES: 35 items (broad categories, split confusing combinations)
-// - INTERESTS: 74 items (specific interests and preferences, split confusing combinations)
+// Total taxonomy: 109 items (cleaned up redundancies October 2025)
+// - TOP_CHOICES: 29 items (broad categories for meeting travelers and locals)
+// - INTERESTS: 74 items (specific interests and preferences for deeper matching)
 // - ACTIVITIES: 6 items (unique concrete activities with zero overlap)
 // 
 // SPLIT COMBINED OPTIONS (October 2025):
 // To improve clarity and precision, confusing combined options were split into individual choices:
 // 
 // TOP CHOICES splits:
-// - "Live Music & Concerts" → "Live Music", "Concerts"
+// - "Live Music & Concerts" → "Live Music" (Concerts removed as duplicate)
 // - "Museums & Culture" → "Museums", "Cultural Experiences"
 // - "Beach & Water Activities" → "Beach Activities", "Water Sports"
-// - "Hiking & Nature" → "Hiking", "Nature Walks"
+// - "Hiking & Nature" → "Hiking" (Nature Walks removed as duplicate)
 // - "Fitness & Workouts" → "Fitness Classes", "Working Out"
+// 
+// REMOVED REDUNDANCIES (October 2025):
+// - "Digital Nomads" (not relevant for meeting travelers/locals)
+// - "Nature Walks" (duplicate of "Hiking")
+// - "Concerts" (duplicate of "Live Music")
+// - "Happy Hour", "Rooftop Bars", "Cocktail Bars & Speakeasies" (consolidated into Nightlife & Dancing, Craft Beer, Wine Bars)
 //
 // INTERESTS splits:
 // - "Volunteering & Activism" → "Volunteering", "Activism", "Animal Rescue & Shelters"
