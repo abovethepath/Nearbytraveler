@@ -10543,6 +10543,8 @@ Questions? Just reply to this message. Welcome aboard!
         monthlyLimit: 10,
         monthlyQuickDeals: monthlyQuickCount,
         monthlyBusinessDeals: monthlyBusinessCount,
+        currentMonthDeals: monthlyBusinessCount, // Regular deals only (not quick deals)
+        monthlyDealLimit: 5, // Monthly limit for regular deals (quick deals unlimited)
         totalViews: 0, // Placeholder for future implementation
         totalRedemptions: 0 // Placeholder for future implementation
       });

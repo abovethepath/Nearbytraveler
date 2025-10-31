@@ -803,13 +803,13 @@ export default function BusinessDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="col-span-1">
+          <Card className="col-span-1 border-2 border-orange-500 dark:border-orange-400">
             <CardContent className="p-3 sm:p-6 text-center">
-              <CalendarDays className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-pink-600 dark:text-pink-400" />
+              <CalendarDays className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-orange-600 dark:text-orange-400" />
               <div className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
-                {analytics.monthlyUsage}
+                {analytics.currentMonthDeals}/{analytics.monthlyDealLimit}
               </div>
-              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">This Month</div>
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Deals This Month</div>
             </CardContent>
           </Card>
         </div>
