@@ -450,11 +450,7 @@ p, span, div, button, input, textarea, select {
   color: rgb(243 244 246); /* gray-100 */
 }
 
-.dark input:not([class*="bg-"]):not([class*="text-"]) {
-  background-color: rgb(31 41 55); /* gray-800 */
-  color: rgb(243 244 246); /* gray-100 */
-  border-color: rgb(75 85 99); /* gray-600 */
-}
+/* Removed - consolidated dark mode input rules below */
 
 .dark select:not([class*="bg-"]):not([class*="text-"]) {
   background-color: rgb(31 41 55); /* gray-800 */
@@ -697,14 +693,7 @@ p, span, div, button, input, textarea, select {
   @apply text-gray-100 !important;
 }
 
-/* Input fixes */
-.dark input {
-  @apply bg-gray-700 text-gray-100 border-gray-600 !important;
-}
-
-.dark input::placeholder {
-  @apply text-gray-400 !important;
-}
+/* Input fixes - REMOVED DUPLICATE - see lines 309-317 for authoritative dark mode input rules */
 
 /* Ensure any custom components use proper dark colors */
 .dark .prose {
