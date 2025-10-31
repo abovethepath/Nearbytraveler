@@ -4120,10 +4120,40 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       {user.streetAddress && (
                         <div className="flex items-start">
                           <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Address:</span>
-                          <span className="flex-1 break-words">{user.streetAddress}{user.zipCode && `, ${user.zipCode}`}</span>
+                          <a
+                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(user.streetAddress + (user.zipCode ? `, ${user.zipCode}` : '') + (user.city ? `, ${user.city}, ${user.state || ''}, ${user.country || ''}` : ''))}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:text-blue-700 underline flex-1 break-words transition-colors"
+                          >
+                            {user.streetAddress}{user.zipCode && `, ${user.zipCode}`}
+                          </a>
                         </div>
                       )}
                       
+                      {user.phoneNumber && (
+                        <div className="flex items-start">
+                          <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Phone:</span>
+                          <a
+                            href={`tel:${user.phoneNumber}`}
+                            className="text-green-600 hover:text-green-700 underline flex-1 break-words transition-colors"
+                          >
+                            {user.phoneNumber}
+                          </a>
+                        </div>
+                      )}
+                      
+                      {user.email && (
+                        <div className="flex items-start">
+                          <span className="font-medium text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Email:</span>
+                          <a
+                            href={`mailto:${user.email}`}
+                            className="text-purple-600 hover:text-purple-700 underline flex-1 break-words transition-colors"
+                          >
+                            {user.email}
+                          </a>
+                        </div>
+                      )}
                       
                       {user.websiteUrl && (
                         <div className="flex items-start">
@@ -4132,7 +4162,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             href={user.websiteUrl.startsWith('http') ? user.websiteUrl : `https://${user.websiteUrl}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-600 underline flex-1 break-words"
+                            className="text-blue-600 hover:text-blue-700 underline flex-1 break-words transition-colors"
                           >
                             {user.websiteUrl}
                           </a>
