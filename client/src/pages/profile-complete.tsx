@@ -4316,8 +4316,24 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <div key={deal.id} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:shadow-md dark:hover:shadow-gray-800/50 transition-shadow bg-white dark:bg-gray-800">
                           <div className="flex items-start justify-between mb-2">
                             <h4 className="font-semibold text-gray-900 dark:text-white">{deal.title}</h4>
-                            <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-white text-black border border-black">
-                              {deal.discountValue}
+                            <div className="flex items-center gap-2">
+                              <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-white text-black border border-black">
+                                {deal.discountValue}
+                              </div>
+                              {isOwnProfile && (
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => {
+                                    // Navigate to business dashboard with deal ID to edit
+                                    setLocation(`/business-dashboard?editDeal=${deal.id}`);
+                                  }}
+                                  className="h-6 px-2 text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20"
+                                  data-testid={`button-edit-deal-${deal.id}`}
+                                >
+                                  Edit
+                                </Button>
+                              )}
                             </div>
                           </div>
                           <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">{deal.description}</p>
