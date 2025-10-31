@@ -8,9 +8,9 @@ export const ChatInput = React.forwardRef<HTMLInputElement, ChatInputProps>(
       <input
         ref={ref}
         style={{
-          backgroundColor: '#374151',
-          color: '#ffffff',
-          borderColor: '#4b5563',
+          backgroundColor: '#f3f4f6',
+          color: '#111827',
+          borderColor: '#9ca3af',
           padding: '0.5rem 0.75rem',
           borderRadius: '0.375rem',
           border: '1px solid',
