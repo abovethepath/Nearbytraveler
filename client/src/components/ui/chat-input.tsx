@@ -20,7 +20,7 @@ export const ChatInput = React.forwardRef<HTMLInputElement, ChatInputProps>(
           outline: 'none',
           ...style
         } as React.CSSProperties}
-        className={className}
+        className={`text-gray-900 ${className || ''}`}
         {...props}
       />
     )
