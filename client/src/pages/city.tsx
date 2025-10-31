@@ -500,16 +500,16 @@ export default function CityPage({ cityName }: CityPageProps) {
                             </div>
                             
                             <div className="space-y-2 mb-4">
-                              {(business as any).businessAddress && (
+                              {((business as any).streetAddress || (business as any).businessAddress) && (
                                 <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                                   <MapPin className="w-4 h-4" />
-                                  <span className="truncate">{(business as any).businessAddress}</span>
+                                  <span className="truncate">{(business as any).streetAddress || (business as any).businessAddress}</span>
                                 </div>
                               )}
-                              {(business as any).businessPhone && (
+                              {((business as any).phoneNumber || (business as any).businessPhone) && (
                                 <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                                   <Phone className="w-4 h-4" />
-                                  <span>{(business as any).businessPhone}</span>
+                                  <span>{(business as any).phoneNumber || (business as any).businessPhone}</span>
                                 </div>
                               )}
                             </div>
