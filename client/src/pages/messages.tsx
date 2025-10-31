@@ -515,11 +515,11 @@ export default function Messages() {
                           className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
                             isOwnMessage
                               ? 'bg-blue-600 dark:bg-blue-600 text-white dark:text-white'
-                              : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
+                              : 'bg-gray-200 dark:bg-gray-200 text-gray-900 dark:text-gray-900'
                           }`}
                         >
-                          <p className="text-white dark:text-white">{message.content}</p>
-                          <p className="text-xs text-white dark:text-white opacity-70 mt-1">
+                          <p>{message.content}</p>
+                          <p className="text-xs opacity-70 mt-1">
                             {new Date(message.createdAt).toLocaleTimeString()}
                           </p>
                         </div>
