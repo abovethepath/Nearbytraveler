@@ -5,9 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { isLAMetroCity, getMetroCities } from "@shared/constants";
 
-import { CalendarDays, MapPin, Percent, Store, Users, Phone, Globe, Mail, Clock, Timer, Zap, AlertCircle } from "lucide-react";
+import { CalendarDays, MapPin, Percent, Store, Users, Phone, Globe, Mail, Clock, Timer, Zap, AlertCircle, ExternalLink } from "lucide-react";
 import { useLocation } from "wouter";
 import { authStorage } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
@@ -49,6 +50,9 @@ export default function Deals() {
   
   // Simple city filtering - Initialize with user's city for proper location filtering
   const [selectedCity, setSelectedCity] = useState(effectiveUser?.hometownCity || '');
+  
+  // State for claimed deal modal
+  const [claimedDeal, setClaimedDeal] = useState<any>(null);
 
   // Add periodic refresh to ensure business description updates are reflected
   useEffect(() => {
@@ -150,10 +154,8 @@ export default function Deals() {
         throw new Error(error.message || 'Failed to claim deal');
       }
 
-      toast({
-        title: "Deal Claimed!",
-        description: `You've successfully claimed "${deal.title}". Show this to the business to redeem.`
-      });
+      // Show business contact modal instead of just a toast
+      setClaimedDeal(deal);
 
     } catch (error: any) {
       toast({
@@ -605,6 +607,165 @@ export default function Deals() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Business Contact Modal - After Claiming Deal */}
+      <Dialog open={!!claimedDeal} onOpenChange={() => setClaimedDeal(null)}>
+        <DialogContent className="max-w-2xl bg-white dark:bg-gray-900">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white">
+              Deal Claimed Successfully! 🎉
+            </DialogTitle>
+          </DialogHeader>
+          
+          {claimedDeal && (
+            <div className="space-y-6">
+              {/* Deal Info */}
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-700">
+                <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">
+                  {claimedDeal.title}
+                </h3>
+                <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
+                  {claimedDeal.description}
+                </p>
+                <div className="flex items-center gap-2">
+                  <Badge className="bg-green-500 text-white">
+                    {claimedDeal.discountValue}
+                    {claimedDeal.discountType === 'percentage' ? '% OFF' : ' OFF'}
+                  </Badge>
+                  {claimedDeal.discountCode && (
+                    <Badge variant="outline" className="font-mono">
+                      Code: {claimedDeal.discountCode}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+
+              {/* Business Contact Information */}
+              <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-white dark:bg-gray-800">
+                <div className="flex items-center gap-4 mb-6">
+                  {claimedDeal.businessImage ? (
+                    <img 
+                      src={claimedDeal.businessImage} 
+                      alt={claimedDeal.businessName}
+                      className="w-16 h-16 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-2xl">
+                      {claimedDeal.businessName?.charAt(0).toUpperCase() || 'B'}
+                    </div>
+                  )}
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                      {claimedDeal.businessName || 'Business'}
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {claimedDeal.businessType || 'Local Business'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  {/* Address */}
+                  {claimedDeal.businessAddress && (
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(claimedDeal.businessAddress + ', ' + claimedDeal.businessLocation)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
+                    >
+                      <MapPin className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                          {claimedDeal.businessAddress}
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {claimedDeal.businessLocation}
+                        </p>
+                      </div>
+                      <ExternalLink className="w-4 h-4 text-gray-400" />
+                    </a>
+                  )}
+
+                  {/* Phone */}
+                  {claimedDeal.businessPhone && (
+                    <a
+                      href={`tel:${claimedDeal.businessPhone}`}
+                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
+                    >
+                      <Phone className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400">
+                          {claimedDeal.businessPhone}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Tap to call</p>
+                      </div>
+                    </a>
+                  )}
+
+                  {/* Email */}
+                  {claimedDeal.businessEmail && (
+                    <a
+                      href={`mailto:${claimedDeal.businessEmail}`}
+                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
+                    >
+                      <Mail className="w-5 h-5 text-purple-500 flex-shrink-0" />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400">
+                          {claimedDeal.businessEmail}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Send email</p>
+                      </div>
+                    </a>
+                  )}
+
+                  {/* Website */}
+                  {claimedDeal.businessWebsite && (
+                    <a
+                      href={claimedDeal.businessWebsite.startsWith('http') ? claimedDeal.businessWebsite : `https://${claimedDeal.businessWebsite}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
+                    >
+                      <Globe className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                          {claimedDeal.businessWebsite}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Visit website</p>
+                      </div>
+                      <ExternalLink className="w-4 h-4 text-gray-400" />
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              {/* Instructions */}
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4">
+                <div className="flex gap-3">
+                  <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-yellow-900 dark:text-yellow-200 mb-1">
+                      How to Redeem
+                    </h4>
+                    <p className="text-sm text-yellow-800 dark:text-yellow-300">
+                      Show this screen or mention the deal code to the business to claim your discount. 
+                      Contact them using the information above to confirm hours and availability.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Close Button */}
+              <Button
+                onClick={() => setClaimedDeal(null)}
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+              >
+                Done
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
