@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Building, MapPin, Phone, Globe, Users, Camera, MessageCircle, CheckCircle } from "lucide-react";
+import { Building, MapPin, Phone, Globe, Users, Camera, MessageCircle, CheckCircle, Mail } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AuthContext } from "@/App";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
@@ -32,8 +32,10 @@ export default function BusinessProfile() {
     name: user?.businessName || user?.name || "Business Profile",
     description: user?.businessDescription || "Welcome to our business profile. We're excited to connect with travelers and locals!",
     location: user?.businessLocation || `${user?.businessCity || ''}, ${user?.businessState || ''}, ${user?.businessCountry || ''}`.replace(/^,\s*|,\s*$/g, '') || "Location not specified",
-    phone: user?.phoneNumber || "Phone not provided",
-    website: user?.website || "Website not provided",
+    phone: user?.phoneNumber || user?.businessPhone || "",
+    email: user?.email || user?.businessEmail || "",
+    website: user?.website || user?.businessWebsite || "",
+    streetAddress: user?.streetAddress || user?.businessAddress || "",
     verified: true,
     photos: user?.profileImage ? [user.profileImage] : [
       "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400",
@@ -95,16 +97,55 @@ export default function BusinessProfile() {
               <p className="text-lg text-gray-600 mb-4">{businessData.description}</p>
               
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-gray-600">
-                  <MapPin className="h-4 w-4" />
-                  <span>{businessData.location}</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-600">
-                  <Globe className="h-4 w-4" />
-                  <a href={`https://${businessData.website}`} className="text-blue-600 hover:underline">
-                    {businessData.website}
+                {/* Street Address */}
+                {businessData.streetAddress && (
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(businessData.streetAddress + ', ' + businessData.location)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
+                  >
+                    <MapPin className="h-4 w-4 flex-shrink-0" />
+                    <span className="hover:underline">
+                      {businessData.streetAddress}, {businessData.location}
+                    </span>
                   </a>
-                </div>
+                )}
+
+                {/* Phone Number */}
+                {businessData.phone && (
+                  <a
+                    href={`tel:${businessData.phone}`}
+                    className="flex items-center gap-2 text-gray-600 hover:text-green-600 transition-colors"
+                  >
+                    <Phone className="h-4 w-4 flex-shrink-0" />
+                    <span className="hover:underline">{businessData.phone}</span>
+                  </a>
+                )}
+
+                {/* Email */}
+                {businessData.email && (
+                  <a
+                    href={`mailto:${businessData.email}`}
+                    className="flex items-center gap-2 text-gray-600 hover:text-purple-600 transition-colors"
+                  >
+                    <Mail className="h-4 w-4 flex-shrink-0" />
+                    <span className="hover:underline">{businessData.email}</span>
+                  </a>
+                )}
+
+                {/* Website */}
+                {businessData.website && (
+                  <a
+                    href={businessData.website.startsWith('http') ? businessData.website : `https://${businessData.website}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
+                  >
+                    <Globe className="h-4 w-4 flex-shrink-0" />
+                    <span className="hover:underline">{businessData.website}</span>
+                  </a>
+                )}
               </div>
             </div>
 
