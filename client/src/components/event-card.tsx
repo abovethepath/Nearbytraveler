@@ -191,11 +191,11 @@ export default function EventCard({ event, compact = false, featured = false }: 
 
 
           {/* Actions */}
-          <div className="flex flex-wrap gap-2 pt-2">
+          <div className="flex gap-2 pt-2">
             <Button 
               size="sm" 
               variant="outline"
-              className="flex-1 sm:flex-none"
+              className="flex-shrink-0"
               onClick={(e) => {
                 e.stopPropagation();
                 setLocation(`/event-chat/${event.id}`);
@@ -205,7 +205,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
             </Button>
             <Button 
               size="sm" 
-              className="flex-1 sm:flex-none text-white border-0"
+              className="flex-shrink-0 text-white border-0"
               onClick={(e) => {
                 e.stopPropagation();
                 handleJoinEvent();
@@ -219,7 +219,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
             >
               {joinEventMutation.isPending ? "Joining..." : "Join"}
             </Button>
-            <div onClick={(e) => e.stopPropagation()}>
+            <div onClick={(e) => e.stopPropagation()} className="flex-shrink-0">
               <InstagramShare event={event} />
             </div>
           </div>
