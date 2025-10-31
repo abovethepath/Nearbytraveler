@@ -984,26 +984,21 @@ img[alt*="profile" i],
   aspect-ratio: 1 / 1 !important;
 }
 
-/* UNIVERSAL FIX: Make ALL input text BLACK in dark mode (since backgrounds are white) */
-.dark input,
-.dark textarea,
-html.dark input,
-html.dark textarea {
+/* TARGETED FIX: Only force black text on inputs with WHITE backgrounds (chat inputs) */
+.dark input[class*="bg-white"],
+.dark textarea[class*="bg-white"],
+.dark .chat-input input,
+.dark .chat-input textarea {
   color: #000000 !important;
   -webkit-text-fill-color: #000000 !important;
 }
 
-.dark input::placeholder,
-.dark textarea::placeholder,
-html.dark input::placeholder,
-html.dark textarea::placeholder {
+/* Chat input placeholder */
+.dark input[class*="bg-white"]::placeholder,
+.dark textarea[class*="bg-white"]::placeholder,
+.dark .chat-input input::placeholder,
+.dark .chat-input textarea::placeholder {
   color: #666666 !important;
-}
-
-/* Autofill fix */
-.dark input:-webkit-autofill,
-html.dark input:-webkit-autofill {
-  -webkit-text-fill-color: #000000 !important;
 }
 
 /* Fix: Make message bubble text BLACK so it's visible on white/light backgrounds */
