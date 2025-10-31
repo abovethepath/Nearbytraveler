@@ -48,6 +48,14 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
   const references = (referencesData as any)?.references || [];
   const referenceCounts = (referencesData as any)?.counts || { total: 0, positive: 0, negative: 0, neutral: 0 };
 
+  console.log('🔍 REFERENCES DEBUG:', {
+    userId,
+    referencesData,
+    referencesArray: references,
+    referencesLength: references.length,
+    counts: referenceCounts
+  });
+
   // Check if user has already written a reference for this person
   const { data: existingReferenceData } = useQuery({
     queryKey: [`/api/user-references/check`, user?.id, userId],
@@ -371,7 +379,13 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
                 <Button
                   onClick={handleSubmitReference}
                   disabled={submitReference.isPending || !referenceData.content.trim() || referenceData.content.trim().length < 10}
-                  className="w-full sm:w-auto min-h-[48px] bg-gradient-to-r from-orange-500 to-blue-500 hover:from-orange-600 hover:to-blue-600 border-[3px] border-black dark:border-white ring-2 ring-black dark:ring-white ring-offset-0"
+                  variant="outline"
+                  style={{ 
+                    background: 'linear-gradient(to right, rgb(249, 115, 22), rgb(59, 130, 246))',
+                    border: '2px solid black',
+                    color: 'white'
+                  }}
+                  className="w-full sm:w-auto min-h-[48px] hover:opacity-90"
                   type="button"
                   data-testid="button-submit-reference"
                 >
