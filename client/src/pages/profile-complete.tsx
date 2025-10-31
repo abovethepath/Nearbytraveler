@@ -3455,8 +3455,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     
     // Business users fill out all required info during signup - never show completion banner
     if (user.userType === 'business') {
+      console.log('✅ Business user detected - NO profile completion banner');
       return false;
     }
+    
+    console.log('🔍 Profile completion check - userType:', user.userType);
     
     // For regular users (travelers/locals) - GLOBAL FRIENDLY REQUIREMENTS
     // These fields work for ALL countries (unlike state which doesn't exist globally)
@@ -3625,11 +3628,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <h1 className="text-2xl sm:text-4xl font-bold text-black">
                     {user.businessName || user.name || `@${user.username}`}
                   </h1>
-                  <div className="flex items-center gap-2 text-sm sm:text-base">
-                    <span className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium bg-white text-black border border-black">
-                      Nearby Business
-                    </span>
-                    {user.businessType && <span className="text-black/80">• {user.businessType}</span>}
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 text-sm sm:text-base">
+                      <span className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium bg-white text-black border border-black">
+                        Nearby Business
+                      </span>
+                      {user.businessType && <span className="text-black/80">• {user.businessType}</span>}
+                    </div>
+                    {user.streetAddress && (
+                      <div className="text-sm text-black/70">
+                        {user.streetAddress}{user.zipCode && `, ${user.zipCode}`}
+                        {user.city && `, ${user.city}`}{user.state && `, ${user.state}`}
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : (

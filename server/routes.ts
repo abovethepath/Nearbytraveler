@@ -5117,6 +5117,12 @@ Questions? Just reply to this message. Welcome aboard!
       // Remove password from response
       const { password: _, ...userWithoutPassword } = user;
       
+      // MAP USER TYPE: Convert snake_case to camelCase
+      if (userWithoutPassword.user_type !== undefined) {
+        userWithoutPassword.userType = userWithoutPassword.user_type;
+        delete userWithoutPassword.user_type;
+      }
+      
       // MAP CUSTOM FIELDS: Convert snake_case database fields to camelCase for frontend
       if (userWithoutPassword.custom_interests !== undefined) {
         userWithoutPassword.customInterests = userWithoutPassword.custom_interests;
