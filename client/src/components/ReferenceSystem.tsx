@@ -321,8 +321,8 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
           </div>
 
           {showWriteReference && (
-            <div className="space-y-4 p-6 border-2 border-gray-300 rounded-lg bg-white dark:bg-white shadow-xl mb-6 opacity-100 relative z-10">
-              <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-900">{isEditingReference ? 'Edit Your Reference' : 'Write a Reference'}</h4>
+            <div className="space-y-4 p-6 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 shadow-xl mb-6 opacity-100 relative z-10">
+              <h4 className="font-semibold text-lg text-gray-900 dark:text-white">{isEditingReference ? 'Edit Your Reference' : 'Write a Reference'}</h4>
               {isEditingReference && (
                 <p className="text-sm text-blue-600 dark:text-blue-400 mb-4">
                   You can only have one reference per person. Updating this will replace your previous reference.
@@ -330,13 +330,13 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
               )}
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-700 block">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block">
                   Experience Type *
                 </label>
                 <select
                   value={referenceData.experience}
                   onChange={(e) => setReferenceData(prev => ({ ...prev, experience: e.target.value as any }))}
-                  className="w-full p-3 border rounded-md bg-white dark:bg-white dark:border-gray-300 dark:text-gray-900 min-h-[48px]"
+                  className="w-full p-3 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white min-h-[48px]"
                   required
                 >
                   <option value="positive">👍 Positive Experience</option>
@@ -346,19 +346,19 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-700 block">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 block">
                   Your Reference *
                 </label>
                 <textarea
                   value={referenceData.content}
                   onChange={(e) => setReferenceData(prev => ({ ...prev, content: e.target.value }))}
-                  className="w-full p-3 border rounded-md bg-white dark:bg-white dark:border-gray-300 dark:text-gray-900 min-h-[120px] resize-none"
+                  className="w-full p-3 border rounded-md bg-white dark:bg-gray-700 dark:border-gray-600 text-gray-900 dark:text-white min-h-[120px] resize-none placeholder:text-gray-500 dark:placeholder:text-gray-400"
                   placeholder="Share your experience with this person... (minimum 10 characters)"
                   required
                   minLength={10}
                   maxLength={500}
                 />
-                <div className="text-xs text-gray-500 dark:text-gray-500 text-right">
+                <div className="text-xs text-gray-500 dark:text-gray-400 text-right">
                   {referenceData.content.length}/500 characters
                 </div>
               </div>
