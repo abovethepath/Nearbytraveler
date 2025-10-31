@@ -358,11 +358,13 @@ function Navbar() {
   });
 
   // Check if profile needs completion (bio, gender, sexual preference)
-  const profileNeedsCompletion = directUser && (
-    !directUser.bio || 
-    !directUser.gender ||
-    !directUser.sexualPreference
-  );
+  // Business users are excluded - they complete different fields during signup
+  const profileNeedsCompletion = directUser && 
+    directUser.userType !== 'business' && (
+      !directUser.bio || 
+      !directUser.gender ||
+      !directUser.sexualPreference
+    );
 
   return (
     <>
