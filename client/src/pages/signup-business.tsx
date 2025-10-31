@@ -406,7 +406,8 @@ export default function SignupBusinessSimple() {
                             <FormControl>
                               <Input 
                                 placeholder="Your Business Name" 
-                                {...field} 
+                                {...field}
+                                data-testid="input-business-name"
                                 className="h-9 sm:h-10 md:h-11 text-sm sm:text-base break-words overflow-hidden"
                               />
                             </FormControl>
@@ -427,7 +428,8 @@ export default function SignupBusinessSimple() {
                             <FormControl>
                               <Input 
                                 placeholder="John Smith" 
-                                {...field} 
+                                {...field}
+                                data-testid="input-contact-person-name"
                                 className="h-9 sm:h-10 md:h-11 text-sm sm:text-base break-words overflow-hidden"
                               />
                             </FormControl>
