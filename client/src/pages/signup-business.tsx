@@ -26,7 +26,6 @@ const businessSignupSchema = z.object({
   }, "Please enter a valid email address"),
   password: z.string().min(8, "Password must be 8 characters or more"),
   businessName: z.string().min(1, "Business name is required"),
-  ownerName: z.string().min(1, "Owner name is required for contact database"),
   contactName: z.string().min(1, "Contact person name is required"),
   ownerPhone: z.string().min(1, "Contact phone is required").refine((val) => {
     // Accept various international phone formats
@@ -142,8 +141,7 @@ export default function SignupBusinessSimple() {
       email: accountData?.email || "",
       password: accountData?.password || "",
       businessName: accountData?.name || "", // Business name from step 1
-      ownerName: "", // Owner's personal name - user enters manually
-      contactName: "", // Contact person name - user enters manually
+      contactName: "", // Contact person name - BLANK for manual entry
       ownerPhone: "",
       businessType: "",
       customBusinessType: "",
@@ -184,6 +182,8 @@ export default function SignupBusinessSimple() {
       
       // CRITICAL: Set name field for user record (business name)
       (processedData as any).name = data.businessName;
+      // Map contactName to ownerName for database storage
+      (processedData as any).ownerName = data.contactName;
       
       // Handle website URL - add https:// if missing protocol and set to websiteUrl
       let finalWebsiteUrl = "";
@@ -395,45 +395,23 @@ export default function SignupBusinessSimple() {
                     Contact information for the person managing this account
                   </p>
                   <div className="space-y-3 sm:space-y-4 overflow-hidden break-words">
-                    {/* Business Name - Auto-filled from Step 1 */}
-                    <FormField
-                      control={form.control}
-                      name="businessName"
-                      render={({ field }) => (
-                        <FormItem className="overflow-hidden break-words">
-                          <FormLabel className="text-sm sm:text-base break-words overflow-hidden">Business Name *</FormLabel>
-                          <FormControl>
-                            <Input 
-                              placeholder="Your Business Name" 
-                              {...field} 
-                              className="h-9 sm:h-10 md:h-11 text-sm sm:text-base break-words overflow-hidden"
-                            />
-                          </FormControl>
-                          <FormDescription className="text-xs sm:text-sm break-words overflow-hidden">
-                            Legal name of your business (from step 1)
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
                     {/* AI-Companion Responsive Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 overflow-hidden break-words">
                       <FormField
                         control={form.control}
-                        name="ownerName"
+                        name="businessName"
                         render={({ field }) => (
                           <FormItem className="overflow-hidden break-words">
-                            <FormLabel className="text-sm sm:text-base break-words overflow-hidden">Business Owner Name *</FormLabel>
+                            <FormLabel className="text-sm sm:text-base break-words overflow-hidden">Business Name *</FormLabel>
                             <FormControl>
                               <Input 
-                                placeholder="John Smith" 
+                                placeholder="Your Business Name" 
                                 {...field} 
                                 className="h-9 sm:h-10 md:h-11 text-sm sm:text-base break-words overflow-hidden"
                               />
                             </FormControl>
                             <FormDescription className="text-xs sm:text-sm break-words overflow-hidden">
-                              Your full name as business owner
+                              Legal name of your business (from step 1)
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -448,13 +426,13 @@ export default function SignupBusinessSimple() {
                             <FormLabel className="text-sm sm:text-base break-words overflow-hidden">Contact Person Name *</FormLabel>
                             <FormControl>
                               <Input 
-                                placeholder="Jane Doe" 
+                                placeholder="John Smith" 
                                 {...field} 
                                 className="h-9 sm:h-10 md:h-11 text-sm sm:text-base break-words overflow-hidden"
                               />
                             </FormControl>
                             <FormDescription className="text-xs sm:text-sm break-words overflow-hidden">
-                              Primary contact person (can be same as owner)
+                              Your full name (owner or manager)
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
