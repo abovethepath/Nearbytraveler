@@ -107,13 +107,16 @@ export default function ConnectButton({
     }
     
     if (connectionStatus?.status === 'pending') {
-      // Connection request already sent - navigate to their profile
-      setLocation(`/profile/${targetUserId}`);
+      // Request already sent - show toast
+      toast({
+        title: "Request Already Sent",
+        description: `You've already sent a connection request to ${targetName || targetUsername}.`,
+      });
       return;
     }
     
-    // Navigate to user's profile instead of sending request directly
-    setLocation(`/profile/${targetUserId}`);
+    // Send connection request immediately
+    connectMutation.mutate();
   };
 
   // Get button state based on connection status and THIS button's loading state
