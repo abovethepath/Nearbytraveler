@@ -4949,10 +4949,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <div>
                         <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
                           <Heart className="w-5 h-5 text-orange-500" />
-                          Business Interests
+                          Business Interests (What travelers want - select what you offer)
                         </h4>
                         <div className="flex flex-wrap gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                          {BUSINESS_INTERESTS.map((interest, index) => {
+                          {ALL_INTERESTS.map((interest, index) => {
                             const isSelected = editFormData.interests.includes(interest);
                             console.log(`🔍 Interest "${interest}" is ${isSelected ? 'SELECTED' : 'not selected'} in:`, editFormData.interests);
                             return (
@@ -5053,10 +5053,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <div>
                         <h4 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
                           <Globe className="w-5 h-5 text-green-500" />
-                          Business Activities
+                          Business Activities (What travelers want to do - select what you offer)
                         </h4>
                         <div className="flex flex-wrap gap-2 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                          {BUSINESS_ACTIVITIES.map((activity, index) => {
+                          {ALL_ACTIVITIES.map((activity, index) => {
                             const isSelected = (editFormData.activities ?? []).includes(activity);
                             return (
                               <button
