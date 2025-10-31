@@ -4806,8 +4806,9 @@ export class DatabaseStorage implements IStorage {
             city,
             state: state || '',
             country,
+            createdById: 1, // System user creates initial city pages
             description: `Discover ${city} - Connect with locals and travelers, find events, and explore amazing experiences.`,
-            imageUrl: null,
+            coverImage: null,
             createdAt: new Date(),
             updatedAt: new Date()
           });

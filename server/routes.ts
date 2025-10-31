@@ -4131,6 +4131,36 @@ Questions? Just reply to this message. Welcome to the community!
         console.error('❌ Failed to assign user to chatrooms:', error);
       }
 
+      // CRITICAL: Create city infrastructure for HOMETOWN (city page, chatrooms, activities)
+      // This enables organic growth tracking - we know which cities users are from
+      try {
+        if (user.hometownCity && user.hometownCountry) {
+          await storage.ensureCityExists(
+            user.hometownCity,
+            user.hometownState || '',
+            user.hometownCountry
+          );
+          console.log(`✅ CITY INFRASTRUCTURE: Created city infrastructure for hometown ${user.hometownCity}`);
+        }
+      } catch (error) {
+        console.error('❌ Failed to create hometown city infrastructure:', error);
+      }
+
+      // CRITICAL: Create city infrastructure for DESTINATION (if traveling)
+      // This enables organic growth tracking - we know which cities travelers are visiting
+      try {
+        if (user.isCurrentlyTraveling && user.destinationCity && user.destinationCountry) {
+          await storage.ensureCityExists(
+            user.destinationCity,
+            user.destinationState || '',
+            user.destinationCountry
+          );
+          console.log(`✅ CITY INFRASTRUCTURE: Created city infrastructure for destination ${user.destinationCity}`);
+        }
+      } catch (error) {
+        console.error('❌ Failed to create destination city infrastructure:', error);
+      }
+
       if (process.env.NODE_ENV === 'development') console.log("💾 USER CREATED IN DATABASE - Location data stored:", {
         id: user.id,
         username: user.username,
