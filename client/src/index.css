@@ -447,12 +447,7 @@ p, span, div, button, input, textarea, select {
   color: rgb(243 244 246); /* gray-100 */
 }
 
-.dark *:not([class*="bg-"]):not([class*="text-"]) {
-  /* Ensure any element without explicit styling gets proper contrast */
-  color: rgb(243 244 246); /* gray-100 */
-}
-
-/* Removed - consolidated dark mode input rules below */
+/* Removed wildcard dark mode rules that were causing input visibility issues */
 
 .dark select:not([class*="bg-"]):not([class*="text-"]) {
   background-color: rgb(31 41 55); /* gray-800 */
@@ -464,11 +459,6 @@ p, span, div, button, input, textarea, select {
   background-color: rgb(31 41 55); /* gray-800 */
   color: rgb(243 244 246); /* gray-100 */
   border-color: rgb(75 85 99); /* gray-600 */
-}
-
-/* Override problematic black text */
-.dark .text-gray-900 {
-  color: rgb(243 244 246) !important; /* gray-100 */
 }
 
 /* Ensure dropdown content has proper contrast */
