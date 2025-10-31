@@ -212,14 +212,16 @@ export default function UserCard({
                 })()}
                 
                 {/* Connect Button */}
-                <ConnectButton
-                  currentUserId={currentUserId}
-                  targetUserId={user.id}
-                  targetUsername={user.username}
-                  targetName={user.name}
-                  className="w-full bg-white dark:bg-gray-800 border-2 border-gray-900 dark:border-white text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold shadow-md hover:shadow-lg transition-all duration-300"
-                  size="default"
-                />
+                <div onClick={(e) => e.stopPropagation()}>
+                  <ConnectButton
+                    currentUserId={currentUserId}
+                    targetUserId={user.id}
+                    targetUsername={user.username}
+                    targetName={user.name}
+                    className="w-full bg-white dark:bg-gray-800 border-2 border-gray-900 dark:border-white text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+                    size="default"
+                  />
+                </div>
             </div>
           </div>
         )}
