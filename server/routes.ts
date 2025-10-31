@@ -5038,20 +5038,18 @@ Questions? Just reply to this message. Welcome aboard!
         .limit(20);
 
       if (process.env.NODE_ENV === 'development') {
-        console.log(`🔍 SEARCH: Applied ${whereConditions.length} where conditions, found ${searchResults.length} users`);
-        console.log('🔍 WHERE CONDITIONS DETAILS:');
-        whereConditions.forEach((condition, index) => {
-          console.log(`  ${index + 1}. ${typeof condition} condition applied`);
-        });
+        console.log(`🔍 SEARCH RESULTS: Applied ${whereConditions.length} where conditions, found ${searchResults.length} users`);
         if (search) {
-          console.log(`🔍 SEARCH TERM USED: "${search}" (length: ${search.length})`);
-          console.log(`🔍 FIRST FEW RESULTS NAME MATCH CHECK:`);
-          searchResults.slice(0, 3).forEach(user => {
-            const nameMatch = user.name?.toLowerCase().includes(search.toLowerCase());
-            const usernameMatch = user.username?.toLowerCase().includes(search.toLowerCase());
-            const bioMatch = user.bio?.toLowerCase().includes(search.toLowerCase());
-            console.log(`  ${user.username}: name="${user.name}" matches=${nameMatch}, username matches=${usernameMatch}, bio matches=${bioMatch}`);
-          });
+          console.log(`🔍 KEYWORD SEARCH: "${search}" (length: ${search.length})`);
+          if (searchResults.length === 0) {
+            console.log(`⚠️ NO RESULTS FOUND for keyword: "${search}"`);
+            console.log(`⚠️ This should have matched users with this in: name, username, bio, interests, activities, customInterests, etc.`);
+          } else {
+            console.log(`✅ FOUND ${searchResults.length} users matching keyword "${search}":`);
+            searchResults.slice(0, 5).forEach(user => {
+              console.log(`  - ${user.username} (${user.name})`);
+            });
+          }
         }
       }
       
