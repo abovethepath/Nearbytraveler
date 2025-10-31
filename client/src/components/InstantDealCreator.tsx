@@ -39,7 +39,7 @@ interface InstantDealCreatorProps {
 }
 
 export default function InstantDealCreator({ businessId, businessName, businessLocation, onDealCreated }: InstantDealCreatorProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true); // Open immediately when component renders
   const { toast } = useToast();
 
   const form = useForm<InstantDealFormData>({
@@ -117,7 +117,12 @@ export default function InstantDealCreator({ businessId, businessName, businessL
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      setIsOpen(open);
+      if (!open) {
+        onDealCreated(); // Clean up parent state when dialog closes
+      }
+    }}>
       <DialogTrigger asChild>
         <Card className="cursor-pointer hover:shadow-lg transition-shadow border-2 border-dashed border-orange-300 hover:border-orange-400">
           <CardContent className="flex flex-col items-center justify-center p-6">
