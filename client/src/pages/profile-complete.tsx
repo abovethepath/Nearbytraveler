@@ -3847,9 +3847,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 data-testid="tab-references"
               >
                 References
-                {!!(vouches?.length) && (
+                {!!(userReferences?.references?.length || userReferences?.counts?.total) && (
                   <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
-                    {vouches.length}
+                    {userReferences?.references?.length || userReferences?.counts?.total || 0}
                   </span>
                 )}
               </button>
