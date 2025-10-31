@@ -3742,7 +3742,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </div>
             ) : (
               <div className="flex items-center gap-3 flex-wrap min-w-0">
-                {user && (user.hometownCity || user.location) && (
+                {user && user.userType !== 'business' && (user.hometownCity || user.location) && (
                   <Button
                     onClick={() => {
                       const chatCity = user.hometownCity || user.location?.split(',')[0] || 'General';
@@ -3830,27 +3830,25 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 )}
               </button>
 
-              {user?.userType !== 'business' && (
-                <button
-                  role="tab"
-                  aria-selected={activeTab === 'references'}
-                  aria-controls="panel-references"
-                  onClick={() => openTab('references')}
-                  className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
-                    activeTab === 'references'
-                      ? 'bg-blue-600 text-white border border-blue-600'
-                      : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
-                  }`}
-                  data-testid="tab-references"
-                >
-                  References
-                  {!!(userReferences?.references?.length || userReferences?.counts?.total) && (
-                    <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
-                      {userReferences?.references?.length || userReferences?.counts?.total || 0}
-                    </span>
-                  )}
-                </button>
-              )}
+              <button
+                role="tab"
+                aria-selected={activeTab === 'references'}
+                aria-controls="panel-references"
+                onClick={() => openTab('references')}
+                className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
+                  activeTab === 'references'
+                    ? 'bg-blue-600 text-white border border-blue-600'
+                    : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
+                }`}
+                data-testid="tab-references"
+              >
+                References
+                {!!(userReferences?.references?.length || userReferences?.counts?.total) && (
+                  <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
+                    {userReferences?.references?.length || userReferences?.counts?.total || 0}
+                  </span>
+                )}
+              </button>
 
               {user?.userType !== 'business' && (
                 <button
