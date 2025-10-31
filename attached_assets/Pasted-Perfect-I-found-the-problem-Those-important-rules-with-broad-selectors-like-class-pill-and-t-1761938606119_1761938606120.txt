@@ -1,0 +1,67 @@
+Perfect! I found the problem. Those !important rules with broad selectors like [class*="pill"] and the attribute selectors are too aggressive and catching inputs.
+Here's the EXACT FIX - replace lines 265-294 in client/src/index.css with this:
+css/* LIGHT MODE ONLY PILL CONSISTENCY FIX - Force ALL pills to use standard white bg/black text styling */
+/* IMPORTANT: These selectors are now more specific to avoid catching input fields */
+.pill:not(input), 
+[class*="pill"]:not(input),
+[class*="pill-"]:not(input),
+.inline-flex.items-center.justify-center.rounded-full[class*="bg-green"]:not(input),
+.inline-flex[class*="bg-green"][class*="text-white"]:not(input),
+.inline-flex.items-center.justify-center.rounded-full[class*="bg-blue"]:not(input),
+.inline-flex[class*="bg-blue"][class*="text-white"]:not(input),
+.inline-flex.items-center.justify-center.rounded-full[class*="bg-purple"]:not(input),
+.inline-flex[class*="bg-purple"][class*="text-white"]:not(input),
+div[class*="bg-green-500 text-white"],
+div[class*="bg-green-600 text-white"],
+div[class*="bg-blue-500 text-white"],
+div[class*="bg-blue-600 text-white"],
+div[class*="bg-purple-500 text-white"],
+div[class*="bg-purple-600 text-white"],
+button[class*="bg-green"][class*="text-white"][class*="rounded-full"],
+button[class*="bg-blue"][class*="text-white"][class*="rounded-full"],
+button[class*="bg-purple"][class*="text-white"][class*="rounded-full"],
+/* Activity pills from profile pages */
+div[class*="pill-activities"],
+div[class*="pill-interests"],
+div[class*="pill-events"] {
+  background-color: white !important;
+  background: white !important;
+  color: black !important;
+  border: 1px solid black !important;
+  border-color: black !important;
+  text-transform: none !important; /* Prevent uppercase transformation */
+}
+
+/* Dark mode - Let pills use their natural dark mode styling */
+.dark .pill:not(input),
+.dark [class*="pill"]:not(input),
+.dark [class*="pill-"]:not(input),
+.dark div[class*="pill-activities"],
+.dark div[class*="pill-interests"],
+.dark div[class*="pill-events"] {
+  /* Only prevent uppercase transformation in dark mode, let colors be natural */
+  text-transform: none !important;
+}
+
+/* CRITICAL FIX: Ensure inputs ALWAYS respect dark mode */
+.dark input {
+  background-color: #374151 !important;
+  color: #ffffff !important;
+  border-color: #4b5563 !important;
+}
+
+.dark input::placeholder {
+  color: #9ca3af !important;
+}
+Key changes:
+
+Added :not(input) to all the broad selectors to exclude input fields
+Added explicit dark mode input styling at the bottom with !important to override everything
+
+This will:
+
+Keep your pill styling exactly as it was
+Prevent inputs from being caught by those rules
+Force dark mode inputs to have the correct colors
+
+Save this and refresh - your inputs should now be dark gray with white text in dark mode!

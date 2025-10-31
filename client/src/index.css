@@ -263,15 +263,16 @@ img,
 }
 
 /* LIGHT MODE ONLY PILL CONSISTENCY FIX - Force ALL pills to use standard white bg/black text styling */
-.pill, 
-[class*="pill"],
-[class*="pill-"],
-.inline-flex.items-center.justify-center.rounded-full[class*="bg-green"],
-.inline-flex[class*="bg-green"][class*="text-white"],
-.inline-flex.items-center.justify-center.rounded-full[class*="bg-blue"],
-.inline-flex[class*="bg-blue"][class*="text-white"],
-.inline-flex.items-center.justify-center.rounded-full[class*="bg-purple"],
-.inline-flex[class*="bg-purple"][class*="text-white"],
+/* IMPORTANT: These selectors are now more specific to avoid catching input fields */
+.pill:not(input), 
+[class*="pill"]:not(input),
+[class*="pill-"]:not(input),
+.inline-flex.items-center.justify-center.rounded-full[class*="bg-green"]:not(input),
+.inline-flex[class*="bg-green"][class*="text-white"]:not(input),
+.inline-flex.items-center.justify-center.rounded-full[class*="bg-blue"]:not(input),
+.inline-flex[class*="bg-blue"][class*="text-white"]:not(input),
+.inline-flex.items-center.justify-center.rounded-full[class*="bg-purple"]:not(input),
+.inline-flex[class*="bg-purple"][class*="text-white"]:not(input),
 div[class*="bg-green-500 text-white"],
 div[class*="bg-green-600 text-white"],
 div[class*="bg-blue-500 text-white"],
@@ -294,14 +295,25 @@ div[class*="pill-events"] {
 }
 
 /* Dark mode - Let pills use their natural dark mode styling */
-.dark .pill,
-.dark [class*="pill"],
-.dark [class*="pill-"],
+.dark .pill:not(input),
+.dark [class*="pill"]:not(input),
+.dark [class*="pill-"]:not(input),
 .dark div[class*="pill-activities"],
 .dark div[class*="pill-interests"],
 .dark div[class*="pill-events"] {
   /* Only prevent uppercase transformation in dark mode, let colors be natural */
   text-transform: none !important;
+}
+
+/* CRITICAL FIX: Ensure inputs ALWAYS respect dark mode */
+.dark input {
+  background-color: #374151 !important;
+  color: #ffffff !important;
+  border-color: #4b5563 !important;
+}
+
+.dark input::placeholder {
+  color: #9ca3af !important;
 }
 
 /* Set Inter as the default font for the entire application */
