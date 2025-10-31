@@ -160,7 +160,7 @@ export interface IStorage {
   getUserReferences(userId: number): Promise<any>;
   getUserReferencesGiven(): Promise<any>;
   findUserReference(reviewerId: number, revieweeId: number): Promise<any>;
-  updateUserReference(referenceId: number, updates: any): Promise<any>;
+  updateUserReference(referenceId: number, reviewerId: number, updates: any): Promise<any>;
   deleteUserReference(): Promise<any>;
   createReferral(): Promise<any>;
   getUserReferrals(): Promise<any>;
@@ -3444,9 +3444,24 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async updateUserReference(referenceId: number, updates: { content?: string; experience?: string }): Promise<any> {
+  async updateUserReference(referenceId: number, reviewerId: number, updates: { content?: string; experience?: string }): Promise<any> {
     try {
-      console.log('Storage updateUserReference input:', { referenceId, updates });
+      console.log('Storage updateUserReference input:', { referenceId, reviewerId, updates });
+      
+      // First check if the reference exists and belongs to the reviewer
+      const [existing] = await db
+        .select()
+        .from(userReferences)
+        .where(eq(userReferences.id, referenceId))
+        .limit(1);
+      
+      if (!existing) {
+        throw new Error('Reference not found');
+      }
+      
+      if (existing.reviewerId !== reviewerId) {
+        throw new Error('Unauthorized: You can only edit your own references');
+      }
       
       const updateResult = await db
         .update(userReferences)
