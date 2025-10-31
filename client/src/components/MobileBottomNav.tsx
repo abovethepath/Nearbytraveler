@@ -56,7 +56,11 @@ export function MobileBottomNav() {
   const isBusinessUser = user?.userType === 'business';
   console.log('🚨 BUSINESS USER CHECK:', { username: user?.username, userType: user?.userType, isBusinessUser });
   
-  const actionMenuItems = [
+  // Different action menu items for business vs regular users
+  const actionMenuItems = isBusinessUser ? [
+    { label: "Create Deal", path: "/business-dashboard", icon: Calendar },
+    { label: "Create Quick Deal", path: "/business-dashboard", icon: MessageCircle },
+  ] : [
     { label: "Create Event", path: "/create-event", icon: Calendar },
     { label: "Create Trip", path: "/plan-trip", icon: Calendar },
     { label: "Create Quick Meetup", path: "/quick-meetups", icon: MessageCircle },
