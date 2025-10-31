@@ -3645,7 +3645,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           )}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2 text-lg sm:text-xl font-semibold text-blue-600 hover:text-blue-800 transition-colors"
+                          className="flex items-center gap-2 text-lg sm:text-xl font-semibold text-black hover:text-gray-800 transition-colors"
                           data-testid="link-business-address"
                         >
                           <MapPin className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
@@ -3659,7 +3659,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       {user.phoneNumber && (
                         <a 
                           href={`tel:${user.phoneNumber}`}
-                          className="flex items-center gap-2 text-lg sm:text-xl font-semibold text-blue-600 hover:text-blue-800 transition-colors"
+                          className="flex items-center gap-2 text-lg sm:text-xl font-semibold text-black hover:text-gray-800 transition-colors"
                           data-testid="link-business-phone"
                         >
                           <Phone className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
@@ -3670,7 +3670,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       {user.email && (
                         <a 
                           href={`mailto:${user.email}`}
-                          className="flex items-center gap-2 text-lg sm:text-xl font-semibold text-blue-600 hover:text-blue-800 transition-colors break-all"
+                          className="flex items-center gap-2 text-lg sm:text-xl font-semibold text-black hover:text-gray-800 transition-colors break-all"
                           data-testid="link-business-email"
                         >
                           <Mail className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
@@ -3683,7 +3683,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           href={user.websiteUrl.startsWith('http') ? user.websiteUrl : `https://${user.websiteUrl}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2 text-lg sm:text-xl font-semibold text-blue-600 hover:text-blue-800 transition-colors break-all"
+                          className="flex items-center gap-2 text-lg sm:text-xl font-semibold text-black hover:text-gray-800 transition-colors break-all"
                           data-testid="link-business-website"
                         >
                           <Globe className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
