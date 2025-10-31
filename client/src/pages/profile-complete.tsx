@@ -5802,81 +5802,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               : "New member"}
                           </p>
                           
-                          {/* How We Met Notes - Only for Profile Owner */}
-                          {isOwnProfile && (
-                            <div className="mt-2 w-full">
-                              {connection.connectionNote ? (
-                                <div className="bg-blue-50 dark:bg-blue-900/30 p-2 rounded text-xs">
-                                  <p className="text-blue-700 dark:text-blue-300 font-medium">How we met:</p>
-                                  <p className="text-blue-600 dark:text-blue-200">{connection.connectionNote}</p>
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    className="mt-1 h-6 px-2 text-xs text-blue-600 hover:text-blue-700"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setEditingConnectionNote(connection.id);
-                                      setConnectionNoteText(connection.connectionNote || '');
-                                    }}
-                                  >
-                                    Edit note
-                                  </Button>
-                                </div>
-                              ) : (
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="mt-1 h-6 px-2 text-xs w-full border-dashed"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setEditingConnectionNote(connection.id);
-                                    setConnectionNoteText('');
-                                  }}
-                                >
-                                  + Add note
-                                </Button>
-                              )}
-                            </div>
-                          )}
-                          
-                          {/* Connection Note Edit Form */}
-                          {isOwnProfile && editingConnectionNote === connection.id && (
-                            <div className="mt-2 w-full space-y-2">
-                              <textarea
-                                value={connectionNoteText}
-                                onChange={(e) => setConnectionNoteText(e.target.value)}
-                                placeholder="How did you meet? Add a private note..."
-                                className="w-full p-2 text-xs border rounded resize-none"
-                                rows={3}
-                              />
-                              <div className="flex gap-1">
-                                <Button
-                                  size="sm"
-                                  className="h-6 px-2 text-xs bg-green-600 hover:bg-green-700"
-                                  onClick={() => {
-                                    // TODO: Add save mutation here
-                                    setEditingConnectionNote(null);
-                                    setConnectionNoteText('');
-                                  }}
-                                >
-                                  Save
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="h-6 px-2 text-xs"
-                                  onClick={() => {
-                                    setEditingConnectionNote(null);
-                                    setConnectionNoteText('');
-                                  }}
-                                >
-                                  Cancel
-                                </Button>
-                              </div>
-                            </div>
-                          )}
-                          
-                          {/* Connection Note - How We Met */}
+                          {/* Connection Note - How We Met (Own Profile Only) */}
                           {isOwnProfile && (
                             <div className="mt-2 w-full">
                               {editingConnectionNote === connection.id ? (
@@ -5885,10 +5811,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     value={connectionNoteText}
                                     onChange={(e) => setConnectionNoteText(e.target.value)}
                                     placeholder="How did we meet? e.g., met at bonfire BBQ"
-                                    className="text-xs h-7 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700"
+                                    className="text-xs h-8 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700"
                                     onKeyPress={(e) => {
                                       if (e.key === 'Enter') {
-                                        // Save connection note
                                         apiRequest('PATCH', `/api/connections/${connection.id}/note`, {
                                           connectionNote: connectionNoteText
                                         }).then(() => {
@@ -5898,6 +5823,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                         }).catch(console.error);
                                       }
                                     }}
+                                    data-testid={`input-connection-note-${connection.id}`}
                                   />
                                   <div className="flex gap-1">
                                     <Button
@@ -5912,6 +5838,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                         }).catch(console.error);
                                       }}
                                       className="h-6 px-2 text-xs bg-green-500 hover:bg-green-600 text-white border-0"
+                                      data-testid={`button-save-note-${connection.id}`}
                                     >
                                       Save
                                     </Button>
@@ -5923,6 +5850,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                         setConnectionNoteText('');
                                       }}
                                       className="h-6 px-2 text-xs"
+                                      data-testid={`button-cancel-note-${connection.id}`}
                                     >
                                       Cancel
                                     </Button>
@@ -5930,18 +5858,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 </div>
                               ) : (
                                 <div 
-                                  className="cursor-pointer text-xs text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 rounded px-2 py-1 mt-1 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                  className="cursor-pointer text-xs text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700/50 rounded px-2 py-1.5 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors border border-dashed border-gray-300 dark:border-gray-600"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     setEditingConnectionNote(connection.id);
                                     setConnectionNoteText(connection.connectionNote || '');
                                   }}
-                                  title="Click to edit how you met"
+                                  title="Click to add/edit how you met"
+                                  data-testid={`button-edit-note-${connection.id}`}
                                 >
                                   {connection.connectionNote ? (
-                                    <span className="text-blue-600 dark:text-blue-400">📍 {connection.connectionNote}</span>
+                                    <span className="text-blue-600 dark:text-blue-400 font-medium">📍 {connection.connectionNote}</span>
                                   ) : (
-                                    <span className="text-gray-400 italic">+ How did we meet?</span>
+                                    <span className="text-gray-500 dark:text-gray-400">+ How did we meet?</span>
                                   )}
                                 </div>
                               )}
