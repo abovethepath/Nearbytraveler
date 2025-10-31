@@ -385,10 +385,10 @@ export default function SimpleChatroomPage() {
         </Card>
 
         {/* Messages */}
-        <Card className="mb-6">
-          <CardHeader className="border-b">
+        <Card className="mb-6 bg-white dark:bg-gray-800">
+          <CardHeader className="border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg flex items-center gap-2">
+              <CardTitle className="text-lg flex items-center gap-2 text-gray-900 dark:text-white">
                 <MessageCircle className="w-5 h-5" />
                 Messages
               </CardTitle>
@@ -397,7 +397,7 @@ export default function SimpleChatroomPage() {
               )}
             </div>
           </CardHeader>
-          <CardContent className="p-0">
+          <CardContent className="p-0 bg-white dark:bg-gray-900">
             <div className="h-96 overflow-y-auto p-4 space-y-3">
               {messages.length === 0 ? (
                 <div className="text-center text-gray-500 dark:text-gray-400 py-8">
@@ -422,7 +422,7 @@ export default function SimpleChatroomPage() {
                           {new Date(message.created_at).toLocaleTimeString()}
                         </span>
                       </div>
-                      <div className="text-sm text-gray-700 dark:text-gray-300 break-words">
+                      <div className="text-sm text-gray-900 dark:text-gray-100 break-words">
                         {message.content}
                       </div>
                     </div>
@@ -436,7 +436,7 @@ export default function SimpleChatroomPage() {
 
         {/* Message Input */}
         {userIsMember ? (
-          <Card>
+          <Card className="bg-white dark:bg-gray-800">
             <CardContent className="p-4">
               <form onSubmit={handleSendMessage} className="flex gap-3">
                 <Input
@@ -461,7 +461,7 @@ export default function SimpleChatroomPage() {
             </CardContent>
           </Card>
         ) : (
-          <Card>
+          <Card className="bg-white dark:bg-gray-800">
             <CardContent className="p-4 text-center">
               <p className="text-gray-600 dark:text-gray-400 mb-4">
                 Join this chatroom to send messages
