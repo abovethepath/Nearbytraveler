@@ -1798,9 +1798,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       referenceForm.reset();
     },
     onError: (error: any) => {
+      console.error('❌ REFERENCE SUBMISSION ERROR:', error);
+      const errorMessage = error?.message || error?.response?.data?.message || "Failed to submit reference. Please try again.";
       toast({
-        title: "Submission failed",
-        description: error?.message || "Failed to submit reference. Please try again.",
+        title: "Cannot Submit Reference",
+        description: errorMessage,
         variant: "destructive",
       });
     },
