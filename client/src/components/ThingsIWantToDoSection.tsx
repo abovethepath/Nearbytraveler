@@ -376,11 +376,11 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
           })}
         </div>
       ) : (
-        <div className="text-center py-8">
-          <p className={`text-gray-600 dark:text-gray-400 mb-4 ${isMobile ? 'text-sm' : 'text-base'}`}>
+        <div className="text-center py-12">
+          <p className={`text-orange-600 dark:text-orange-500 font-semibold mb-3 ${isMobile ? 'text-base' : 'text-xl'}`}>
             No activities or events selected yet.
           </p>
-          <p className={`text-gray-500 dark:text-gray-500 ${isMobile ? 'text-xs' : 'text-sm'}`}>
+          <p className={`text-orange-500 dark:text-orange-400 ${isMobile ? 'text-sm' : 'text-lg'}`}>
             Go to city match pages to select activities and events!
           </p>
         </div>
