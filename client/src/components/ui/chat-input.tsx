@@ -10,6 +10,7 @@ export const ChatInput = React.forwardRef<HTMLInputElement, ChatInputProps>(
         style={{
           backgroundColor: '#f3f4f6',
           color: '#111827',
+          WebkitTextFillColor: '#111827',
           borderColor: '#9ca3af',
           padding: '0.5rem 0.75rem',
           borderRadius: '0.375rem',
@@ -18,7 +19,7 @@ export const ChatInput = React.forwardRef<HTMLInputElement, ChatInputProps>(
           fontSize: '0.875rem',
           outline: 'none',
           ...style
-        }}
+        } as React.CSSProperties}
         className={className}
         {...props}
       />
