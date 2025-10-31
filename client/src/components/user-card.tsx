@@ -21,7 +21,9 @@ export interface User {
   avatarColor?: string;
   userType?: string;
   businessName?: string;
+  businessType?: string;
   streetAddress?: string;
+  phoneNumber?: string;
   city?: string;
   state?: string;
   country?: string;
@@ -141,11 +143,16 @@ export default function UserCard({
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white truncate bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text">
                   {user.businessName}
                 </h3>
-                {user.streetAddress && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    {user.streetAddress}
-                  </p>
-                )}
+                <div className="flex items-center justify-center gap-2 mt-2">
+                  <span className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100 border border-green-300 dark:border-green-600">
+                    Nearby Business
+                  </span>
+                  {(user as any).businessType && (
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      {(user as any).businessType}
+                    </span>
+                  )}
+                </div>
               </>
             ) : (
               <h3 className="text-xl font-bold text-gray-900 dark:text-white truncate bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text">
@@ -156,36 +163,62 @@ export default function UserCard({
           
           {/* Location and Travel Info */}
           <div className="space-y-2">
-            {(() => {
-              // Check if user has travel plans data and use new logic
-              if ((user as any).travelPlans && Array.isArray((user as any).travelPlans)) {
-                const currentOrNextTrip = getCurrentOrNextTrip((user as any).travelPlans);
-                if (currentOrNextTrip) {
-                  return (
-                    <div className="flex items-center justify-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-lg">
-                      {currentOrNextTrip.isCurrent ? '🧳' : '✈️'} 
-                      <span className="text-center">
-                        {currentOrNextTrip.isCurrent ? 'Traveling to' : 'Next trip to'} {currentOrNextTrip.destination.split(',')[0]}
-                      </span>
-                    </div>
-                  );
-                }
-              }
-              
-              // Fallback to existing logic for backward compatibility
-              if (user.isCurrentlyTraveling && user.travelDestination) {
-                return (
-                  <div className="flex items-center justify-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-lg">
-                    🧳 <span className="text-center">Traveling to {user.travelDestination.split(',')[0]}</span>
+            {user.userType === 'business' ? (
+              /* Business Contact Information */
+              <div className="space-y-2 text-sm">
+                {user.streetAddress && (
+                  <div className="flex items-center justify-center gap-2 text-gray-700 dark:text-gray-300">
+                    <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span className="truncate">{user.streetAddress}</span>
                   </div>
-                );
-              }
-              
-              return null;
-            })() as React.ReactNode}
-            <div className="flex items-center justify-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700/30 px-3 py-1.5 rounded-lg">
-              🏠 <span className="text-center">Local in {user.hometownCity ? user.hometownCity.split(',')[0] : getLocation()}</span>
-            </div>
+                )}
+                {(user as any).phoneNumber && (
+                  <div className="flex items-center justify-center gap-2 text-gray-700 dark:text-gray-300">
+                    <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
+                    <span>{(user as any).phoneNumber}</span>
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* Regular User Travel/Location Info */
+              <>
+                {(() => {
+                  // Check if user has travel plans data and use new logic
+                  if ((user as any).travelPlans && Array.isArray((user as any).travelPlans)) {
+                    const currentOrNextTrip = getCurrentOrNextTrip((user as any).travelPlans);
+                    if (currentOrNextTrip) {
+                      return (
+                        <div className="flex items-center justify-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-lg">
+                          {currentOrNextTrip.isCurrent ? '🧳' : '✈️'} 
+                          <span className="text-center">
+                            {currentOrNextTrip.isCurrent ? 'Traveling to' : 'Next trip to'} {currentOrNextTrip.destination.split(',')[0]}
+                          </span>
+                        </div>
+                      );
+                    }
+                  }
+                  
+                  // Fallback to existing logic for backward compatibility
+                  if (user.isCurrentlyTraveling && user.travelDestination) {
+                    return (
+                      <div className="flex items-center justify-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-lg">
+                        🧳 <span className="text-center">Traveling to {user.travelDestination.split(',')[0]}</span>
+                      </div>
+                    );
+                  }
+                  
+                  return null;
+                })() as React.ReactNode}
+                <div className="flex items-center justify-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700/30 px-3 py-1.5 rounded-lg">
+                  🏠 <span className="text-center">Local in {user.hometownCity ? user.hometownCity.split(',')[0] : getLocation()}</span>
+                </div>
+              </>
+            )}
           </div>
           
           {/* Bio - Fixed height to ensure alignment */}
