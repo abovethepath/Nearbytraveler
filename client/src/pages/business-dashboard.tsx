@@ -332,7 +332,20 @@ export default function BusinessDashboard() {
   const pastOffers = allOffers.filter(offer => new Date(offer.validUntil) < new Date());
 
   // Fetch analytics
-  const { data: analytics = { totalOffers: 0, totalViews: 0, totalRedemptions: 0, activeOffers: 0, monthlyUsage: 0, monthlyLimit: 10, monthlyQuickDeals: 0, monthlyBusinessDeals: 0 }, refetch: refetchAnalytics } = useQuery<{
+  const { data: analytics = { 
+    totalOffers: 0, 
+    totalViews: 0, 
+    totalRedemptions: 0, 
+    activeOffers: 0, 
+    monthlyUsage: 0, 
+    monthlyLimit: 10, 
+    monthlyQuickDeals: 0, 
+    monthlyQuickDealsLimit: 10,
+    monthlyQuickDealsRemaining: 10,
+    monthlyBusinessDeals: 0,
+    monthlyBusinessDealsLimit: 10,
+    monthlyBusinessDealsRemaining: 10
+  }, refetch: refetchAnalytics } = useQuery<{
     totalOffers: number;
     totalViews: number;
     totalRedemptions: number;
@@ -340,7 +353,11 @@ export default function BusinessDashboard() {
     monthlyUsage: number;
     monthlyLimit: number;
     monthlyQuickDeals: number;
+    monthlyQuickDealsLimit: number;
+    monthlyQuickDealsRemaining: number;
     monthlyBusinessDeals: number;
+    monthlyBusinessDealsLimit: number;
+    monthlyBusinessDealsRemaining: number;
   }>({
     queryKey: ['/api/business-deals/analytics'],
     enabled: !!storageUser?.id && storageUser?.userType === 'business',
@@ -807,9 +824,19 @@ export default function BusinessDashboard() {
             <CardContent className="p-3 sm:p-6 text-center">
               <CalendarDays className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-orange-600 dark:text-orange-400" />
               <div className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
-                {analytics.currentMonthDeals}/{analytics.monthlyDealLimit}
+                {analytics.monthlyBusinessDeals}/{analytics.monthlyBusinessDealsLimit}
               </div>
-              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Deals This Month</div>
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Regular Deals This Month</div>
+            </CardContent>
+          </Card>
+
+          <Card className="col-span-1 border-2 border-green-500 dark:border-green-400 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950 dark:to-emerald-950">
+            <CardContent className="p-3 sm:p-6 text-center">
+              <Zap className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-green-600 dark:text-green-400" />
+              <div className="text-lg sm:text-2xl font-bold text-green-700 dark:text-green-300">
+                {analytics.monthlyQuickDealsRemaining}/{analytics.monthlyQuickDealsLimit}
+              </div>
+              <div className="text-xs sm:text-sm font-semibold text-green-600 dark:text-green-400">Quick Deals Left!</div>
             </CardContent>
           </Card>
         </div>
