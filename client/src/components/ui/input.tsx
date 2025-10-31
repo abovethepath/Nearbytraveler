@@ -12,14 +12,14 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
           "flex h-10 w-full rounded-md border px-3 py-2 text-base md:text-sm",
           // Light mode colors
           "bg-white border-gray-300 text-gray-900",
-          // Dark mode colors (ensures text is visible)
-          "dark:bg-gray-700 dark:border-gray-600 dark:text-white",
+          // Dark mode colors with !important to force override
+          "dark:!bg-gray-700 dark:!border-gray-600 dark:!text-white",
           // Focus states - light mode
           "focus:bg-white focus:text-gray-900",
-          // Focus states - dark mode (prevents white on white)
-          "dark:focus:bg-gray-700 dark:focus:text-white",
+          // Focus states - dark mode with !important
+          "dark:focus:!bg-gray-700 dark:focus:!text-white",
           // Placeholder
-          "placeholder:text-gray-500 dark:placeholder:text-gray-400",
+          "placeholder:text-gray-500 dark:placeholder:!text-gray-400",
           // Focus ring
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
           // Disabled state
