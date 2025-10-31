@@ -134,17 +134,29 @@ export const INTERESTS = [
 ];
 
 // ========================================
-// ACTIVITIES (6 items)
+// ACTIVITIES (18 items)
 // ========================================
-// Concrete activities users want to do together (no overlap with Top Choices or Interests)
+// Concrete activities users want to do together - specific "let's do this" actions
 
 export const ACTIVITIES = [
-  "Zoo & Aquarium Visits",
-  "Creative Sessions",
+  "Restaurant Hopping",
+  "Coffee Shop Crawling",
+  "Bar Hopping",
+  "Beach Hangouts",
+  "Photography Walks",
+  "Shopping Adventures",
+  "Day Trips & Excursions",
+  "Group Workouts",
+  "Sports & Recreation",
   "Cooking Together",
   "Game Nights",
-  "Exploring Local Spots",
-  "Meetup Organizing"
+  "Movie Watching",
+  "Concert Going",
+  "Festival Hopping",
+  "Museum & Gallery Tours",
+  "Language Practice Meetups",
+  "Study & Coworking Sessions",
+  "Exploring Hidden Gems"
 ];
 
 // ========================================
@@ -317,10 +329,10 @@ export const getSexualPreferenceOptions = () => SEXUAL_PREFERENCE_OPTIONS;
 // ========================================
 // SUMMARY
 // ========================================
-// Total taxonomy: 115 items (cleaned up redundancies October 2025)
+// Total taxonomy: 127 items (cleaned up redundancies October 2025)
 // - TOP_CHOICES: 30 items (broad categories for meeting travelers and locals)
 // - INTERESTS: 79 items (specific interests and preferences for deeper matching)
-// - ACTIVITIES: 6 items (unique concrete activities with zero overlap)
+// - ACTIVITIES: 18 items (concrete "let's do this" activities for meetups and planning)
 // 
 // SPLIT COMBINED OPTIONS (October 2025):
 // To improve clarity and precision, confusing combined options were split into individual choices:
