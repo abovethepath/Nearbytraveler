@@ -1779,7 +1779,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       
       console.log('📥 RESPONSE STATUS:', response.status, response.ok);
       
-      if (!response.ok) throw new Error('Failed to create reference');
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.log('❌ SERVER ERROR:', errorData);
+        throw new Error(errorData.message || 'Failed to create reference');
+      }
       const result = await response.json();
       console.log('✅ REFERENCE CREATED:', result);
       return result;
