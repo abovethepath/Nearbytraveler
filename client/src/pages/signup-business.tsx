@@ -141,7 +141,7 @@ export default function SignupBusinessSimple() {
       username: accountData?.username || "",
       email: accountData?.email || "",
       password: accountData?.password || "",
-      ownerName: accountData?.businessName || "", // Business name for contact database
+      ownerName: accountData?.name || "", // Business name for contact database (from step 1 "name" field)
       contactName: "", // Contact person name - user enters manually
       ownerPhone: "",
       // businessName comes from step 1, no need to collect again
@@ -183,8 +183,8 @@ export default function SignupBusinessSimple() {
       const processedData = { ...data };
       
       // CRITICAL: Add required fields using data from step 1 and current form
-      (processedData as any).name = accountData?.businessName || "";
-      (processedData as any).businessName = accountData?.businessName || "";
+      (processedData as any).name = accountData?.name || "";
+      (processedData as any).businessName = accountData?.name || "";
       
       // Handle website URL - add https:// if missing protocol and set to websiteUrl
       let finalWebsiteUrl = "";
@@ -213,7 +213,7 @@ export default function SignupBusinessSimple() {
         body: JSON.stringify({
           ...processedData,
           userType: "business",
-          businessName: accountData?.businessName || "", // Include businessName from step 1
+          businessName: accountData?.name || "", // Include businessName from step 1 "name" field
           websiteUrl: (processedData as any).websiteUrl, // Ensure websiteUrl is included
           // Include referral information if available
           ...(referralCode && { referralCode }),
@@ -295,7 +295,7 @@ export default function SignupBusinessSimple() {
     const registrationData = {
       ...data,
       userType: "business",
-      businessName: accountData?.businessName || "",
+      businessName: accountData?.name || "",
     };
     sessionStorage.setItem('registrationData', JSON.stringify(registrationData));
     
@@ -318,7 +318,7 @@ export default function SignupBusinessSimple() {
           body: JSON.stringify({
             ...data,
             userType: "business",
-            businessName: accountData?.businessName || "",
+            businessName: accountData?.name || "",
           })
         });
 
