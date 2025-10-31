@@ -43,7 +43,7 @@ export const TOP_CHOICES = [
 ];
 
 // ========================================
-// INTERESTS (79 items)
+// INTERESTS (73 items)
 // ========================================
 // Extended interests for deeper user matching and personalization
 
@@ -72,12 +72,9 @@ export const INTERESTS = [
   "Rooftop Bars",
   "Cocktail Bars & Speakeasies",
   "Jazz Clubs",
-  "Concerts",
   "Theater",
   "Performing Arts",
-  "Movies",
   "Film Festivals",
-  "Gaming",
   "Electronic/DJ Scene",
   "Ghost Tours",
   "Architecture",
@@ -111,12 +108,10 @@ export const INTERESTS = [
   "Indie Music Scene",
   "Vintage & Thrift Shopping",
   "Antiques & Collectibles",
-  "Language Exchange",
   "Book Clubs",
   "Reading",
   "Tech Meetups",
   "Innovation",
-  "Coworking & Networking",
   "Digital Nomads",
   "Hot Air Balloons",
   "Beach Volleyball",
@@ -124,8 +119,6 @@ export const INTERESTS = [
   "Stargazing",
   "Fine Dining",
   "Cheap Eats",
-  "City Tours & Sightseeing",
-  "Art Galleries",
   "Outdoor BBQ",
   "Sunset Watching",
   "Park Picnics",
@@ -329,10 +322,19 @@ export const getSexualPreferenceOptions = () => SEXUAL_PREFERENCE_OPTIONS;
 // ========================================
 // SUMMARY
 // ========================================
-// Total taxonomy: 127 items (cleaned up redundancies October 2025)
+// Total taxonomy: 121 items (cleaned up redundancies October 2025)
 // - TOP_CHOICES: 30 items (broad categories for meeting travelers and locals)
-// - INTERESTS: 79 items (specific interests and preferences for deeper matching)
+// - INTERESTS: 73 items (specific interests and preferences for deeper matching)
 // - ACTIVITIES: 18 items (concrete "let's do this" activities for meetups and planning)
+//
+// Items removed from INTERESTS that now exist only as ACTIVITIES:
+// - "Concerts" → "Concert Going"
+// - "Movies" → "Movie Watching"
+// - "Gaming" → "Game Nights"
+// - "Language Exchange" → "Language Practice Meetups"
+// - "Art Galleries" → "Museum & Gallery Tours"
+// - "Coworking & Networking" → "Study & Coworking Sessions"
+// - "City Tours & Sightseeing" → "Exploring Hidden Gems" / "Day Trips & Excursions"
 // 
 // SPLIT COMBINED OPTIONS (October 2025):
 // To improve clarity and precision, confusing combined options were split into individual choices:
