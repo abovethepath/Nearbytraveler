@@ -3830,25 +3830,27 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 )}
               </button>
 
-              <button
-                role="tab"
-                aria-selected={activeTab === 'references'}
-                aria-controls="panel-references"
-                onClick={() => openTab('references')}
-                className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
-                  activeTab === 'references'
-                    ? 'bg-blue-600 text-white border border-blue-600'
-                    : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
-                }`}
-                data-testid="tab-references"
-              >
-                References
-                {!!(userReferences?.references?.length || userReferences?.counts?.total) && (
-                  <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
-                    {userReferences?.references?.length || userReferences?.counts?.total || 0}
-                  </span>
-                )}
-              </button>
+              {user?.userType !== 'business' && (
+                <button
+                  role="tab"
+                  aria-selected={activeTab === 'references'}
+                  aria-controls="panel-references"
+                  onClick={() => openTab('references')}
+                  className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
+                    activeTab === 'references'
+                      ? 'bg-blue-600 text-white border border-blue-600'
+                      : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
+                  }`}
+                  data-testid="tab-references"
+                >
+                  References
+                  {!!(userReferences?.references?.length || userReferences?.counts?.total) && (
+                    <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
+                      {userReferences?.references?.length || userReferences?.counts?.total || 0}
+                    </span>
+                  )}
+                </button>
+              )}
 
               {user?.userType !== 'business' && (
                 <button
@@ -3872,48 +3874,52 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </button>
               )}
 
-              <button
-                role="tab"
-                aria-selected={activeTab === 'countries'}
-                aria-controls="panel-countries"
-                onClick={() => openTab('countries')}
-                className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
-                  activeTab === 'countries'
-                    ? 'bg-blue-600 text-white border border-blue-600'
-                    : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
-                }`}
-                data-testid="tab-countries"
-              >
-                Countries
-                {!!(countriesVisited?.length) && (
-                  <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
-                    {countriesVisited.length}
-                  </span>
-                )}
-              </button>
+              {user?.userType !== 'business' && (
+                <button
+                  role="tab"
+                  aria-selected={activeTab === 'countries'}
+                  aria-controls="panel-countries"
+                  onClick={() => openTab('countries')}
+                  className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
+                    activeTab === 'countries'
+                      ? 'bg-blue-600 text-white border border-blue-600'
+                      : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
+                  }`}
+                  data-testid="tab-countries"
+                >
+                  Countries
+                  {!!(countriesVisited?.length) && (
+                    <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
+                      {countriesVisited.length}
+                    </span>
+                  )}
+                </button>
+              )}
             </div>
             
-            {/* Let's Meet Now CTA */}
-            <Button
-              onClick={() => {
-                // Simply scroll to the QuickMeetupWidget and trigger the create form
-                const widget = document.querySelector('[data-testid="quick-meet-widget"]');
-                if (widget) {
-                  widget.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-                // Trigger the create form without rapid state changes
-                setTriggerQuickMeetup(true);
-                // Reset after scrolling completes
-                setTimeout(() => setTriggerQuickMeetup(false), 500);
-              }}
-              className="bg-gradient-to-r from-green-500 to-blue-500 text-white border-0 hover:from-green-600 hover:to-blue-600 
-                         px-4 sm:px-6 py-2 sm:py-2 text-sm font-medium rounded-lg
-                         w-full sm:w-auto flex items-center justify-center transition-all duration-200"
-              data-testid="button-lets-meet-now"
-            >
-              <Calendar className="w-4 h-4 mr-2" />
-              Let's Meet Now
-            </Button>
+            {/* Let's Meet Now CTA - Only for travelers and locals, not businesses */}
+            {user?.userType !== 'business' && (
+              <Button
+                onClick={() => {
+                  // Simply scroll to the QuickMeetupWidget and trigger the create form
+                  const widget = document.querySelector('[data-testid="quick-meet-widget"]');
+                  if (widget) {
+                    widget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  }
+                  // Trigger the create form without rapid state changes
+                  setTriggerQuickMeetup(true);
+                  // Reset after scrolling completes
+                  setTimeout(() => setTriggerQuickMeetup(false), 500);
+                }}
+                className="bg-gradient-to-r from-green-500 to-blue-500 text-white border-0 hover:from-green-600 hover:to-blue-600 
+                           px-4 sm:px-6 py-2 sm:py-2 text-sm font-medium rounded-lg
+                           w-full sm:w-auto flex items-center justify-center transition-all duration-200"
+                data-testid="button-lets-meet-now"
+              >
+                <Calendar className="w-4 h-4 mr-2" />
+                Let's Meet Now
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -3929,9 +3935,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               <CardHeader className="pb-3 sm:pb-4 px-3 sm:px-4 lg:px-6 pt-3 sm:pt-4 lg:pt-6">
                 <div className="flex items-center justify-between w-full">
                   <CardTitle className="text-base sm:text-lg lg:text-xl font-bold break-words text-left leading-tight flex-1 pr-2">
-                    ABOUT {user?.userType === 'business'
-                      ? (user?.businessName || user?.name || user?.username)
-                      : (user?.username || 'User')}
+                    {user?.userType === 'business'
+                      ? `ABOUT OUR BUSINESS`
+                      : `ABOUT ${user?.username || 'User'}`}
                   </CardTitle>
 
                   {isOwnProfile && (
@@ -4006,7 +4012,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 })()}
 
                 {/* What you have in common (for other profiles) - Mobile and Desktop */}
-                {!isOwnProfile && currentUser && user?.id && (
+                {!isOwnProfile && currentUser && user?.id && user?.userType !== 'business' && (
                   <div>
                     <WhatYouHaveInCommon currentUserId={currentUser.id} otherUserId={user.id} />
                   </div>
