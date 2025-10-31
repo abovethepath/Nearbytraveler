@@ -712,31 +712,29 @@ export class DatabaseStorage implements IStorage {
       description: "Welcome all new travelers and locals to the Nearby Traveler community!"
     });
     
-    // 2. HOMETOWN CHATROOMS: Only for locals and businesses (NOT for active travelers)
-    if (!user.isCurrentlyTraveling) {
-      let hometownCity = user.hometownCity;
-      let hometownState = user.hometownState;
-      let hometownCountry = user.hometownCountry;
-      
-      // Handle LA Metro consolidation for hometowns
-      if (hometownCountry === 'United States' && hometownCity && LA_METRO_AREAS.includes(hometownCity)) {
-        hometownCity = 'Los Angeles Metro';
-        hometownState = 'California';
-      }
-      
-      if (hometownCity) {
-        // Hometown Chatroom - SINGLE CHATROOM PER CITY
-        await this.ensureAndJoinChatroom(user, {
-          name: `Let's Meet Up in ${hometownCity}`,
-          city: hometownCity || 'Unknown',
-          state: hometownState,
-          country: hometownCountry || 'United States',
-          description: `Connect with locals and travelers in ${hometownCity}`
-        });
-      }
+    // 2. HOMETOWN CHATROOMS: EVERYONE gets their hometown chatroom (locals, businesses, AND travelers)
+    let hometownCity = user.hometownCity;
+    let hometownState = user.hometownState;
+    let hometownCountry = user.hometownCountry;
+    
+    // Handle LA Metro consolidation for hometowns
+    if (hometownCountry === 'United States' && hometownCity && LA_METRO_AREAS.includes(hometownCity)) {
+      hometownCity = 'Los Angeles Metro';
+      hometownState = 'California';
     }
     
-    // 3. TRAVEL DESTINATION CHATROOM: ONLY for currently traveling users
+    if (hometownCity) {
+      // Hometown Chatroom - SINGLE CHATROOM PER CITY
+      await this.ensureAndJoinChatroom(user, {
+        name: `Let's Meet Up in ${hometownCity}`,
+        city: hometownCity || 'Unknown',
+        state: hometownState,
+        country: hometownCountry || 'United States',
+        description: `Connect with locals and travelers in ${hometownCity}`
+      });
+    }
+    
+    // 3. TRAVEL DESTINATION CHATROOM: Travelers ALSO get their destination chatroom (in addition to hometown)
     if (user.isCurrentlyTraveling && user.destinationCity) {
       let destinationCity = user.destinationCity;
       let destinationState = user.destinationState;
@@ -748,7 +746,7 @@ export class DatabaseStorage implements IStorage {
         destinationState = 'California';
       }
       
-      // Destination Chatroom - SINGLE CHATROOM PER CITY (travelers only see destination)
+      // Destination Chatroom - SINGLE CHATROOM PER CITY
       await this.ensureAndJoinChatroom(user, {
         name: `Let's Meet Up in ${destinationCity}`,
         city: destinationCity || 'Unknown',
