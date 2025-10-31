@@ -10165,22 +10165,12 @@ Questions? Just reply to this message. Welcome aboard!
       const businessId = parseInt(userId as string || '0');
       if (process.env.NODE_ENV === 'development') console.log(`Creating business deal for business ID: ${businessId}`);
 
-      // Check combined monthly deal limit (10 total deals per month: Quick Deals + Regular Deals)
+      // Check monthly deal limit (10 regular business deals per month - Instant Deals don't count)
       const now = new Date();
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
       const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
       
-      // Count Quick Deals this month
-      const monthlyQuickDealsCount = await db
-        .select({ count: sql<number>`count(*)` })
-        .from(quickDeals)
-        .where(and(
-          eq(quickDeals.businessId, businessId),
-          gte(quickDeals.createdAt, startOfMonth),
-          lte(quickDeals.createdAt, endOfMonth)
-        ));
-      
-      // Count Regular Business Deals this month
+      // Count ONLY Regular Business Deals this month (Instant Deals don't count towards limit)
       const monthlyBusinessDealsCount = await db
         .select({ count: sql<number>`count(*)` })
         .from(businessOffers)
@@ -10190,21 +10180,19 @@ Questions? Just reply to this message. Welcome aboard!
           lte(businessOffers.createdAt, endOfMonth)
         ));
       
-      const quickDealsCount = Number(monthlyQuickDealsCount[0]?.count || 0);
       const businessDealsCount = Number(monthlyBusinessDealsCount[0]?.count || 0);
-      const totalDealsCount = quickDealsCount + businessDealsCount;
       
-      if (totalDealsCount >= 10) {
+      if (businessDealsCount >= 10) {
         if (process.env.NODE_ENV === 'development') {
-          console.log(`🚫 TOTAL DEAL LIMIT: Business ${businessId} has ${totalDealsCount}/10 total deals this month (${quickDealsCount} Quick + ${businessDealsCount} Regular)`);
+          console.log(`🚫 DEAL LIMIT: Business ${businessId} has ${businessDealsCount}/10 business deals this month (Instant Deals don't count)`);
         }
         return res.status(400).json({ 
-          message: `Monthly deal limit reached (${totalDealsCount}/10 total deals this month). This includes both Quick Deals and regular business offers.`
+          message: `Monthly deal limit reached (${businessDealsCount}/10 business deals this month). Note: Instant Deals don't count towards this limit.`
         });
       }
       
       if (process.env.NODE_ENV === 'development') {
-        console.log(`✅ TOTAL DEAL LIMIT CHECK: Business ${businessId} has ${totalDealsCount}/10 total deals this month (${quickDealsCount} Quick + ${businessDealsCount} Regular)`);
+        console.log(`✅ DEAL LIMIT CHECK: Business ${businessId} has ${businessDealsCount}/10 business deals this month (Instant Deals don't count towards limit)`);
       }
 
       // Process tags properly
@@ -11801,22 +11789,12 @@ Questions? Just reply to this message. Welcome aboard!
 
       const businessId = parseInt(userId as string || '0');
       
-      // Check combined monthly deal limit (10 total deals per month: Quick Deals + Regular Deals)
+      // Check monthly deal limit (10 regular business deals per month - Instant Deals don't count)
       const now = new Date();
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
       const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
       
-      // Count Quick Deals this month
-      const monthlyQuickDealsCount = await db
-        .select({ count: sql<number>`count(*)` })
-        .from(quickDeals)
-        .where(and(
-          eq(quickDeals.businessId, businessId),
-          gte(quickDeals.createdAt, startOfMonth),
-          lte(quickDeals.createdAt, endOfMonth)
-        ));
-      
-      // Count Regular Business Deals this month
+      // Count ONLY Regular Business Deals this month (Instant Deals don't count towards limit)
       const monthlyBusinessDealsCount = await db
         .select({ count: sql<number>`count(*)` })
         .from(businessOffers)
@@ -11826,21 +11804,19 @@ Questions? Just reply to this message. Welcome aboard!
           lte(businessOffers.createdAt, endOfMonth)
         ));
       
-      const quickDealsCount = Number(monthlyQuickDealsCount[0]?.count || 0);
       const businessDealsCount = Number(monthlyBusinessDealsCount[0]?.count || 0);
-      const totalDealsCount = quickDealsCount + businessDealsCount;
       
-      if (totalDealsCount >= 10) {
+      if (businessDealsCount >= 10) {
         if (process.env.NODE_ENV === 'development') {
-          console.log(`🚫 TOTAL DEAL LIMIT: Business ${businessId} has ${totalDealsCount}/10 total deals this month (${quickDealsCount} Quick + ${businessDealsCount} Regular)`);
+          console.log(`🚫 DEAL LIMIT: Business ${businessId} has ${businessDealsCount}/10 business deals this month (Instant Deals don't count)`);
         }
         return res.status(400).json({ 
-          message: `Monthly deal limit reached (${totalDealsCount}/10 total deals this month). This includes both Quick Deals and regular business offers.`
+          message: `Monthly deal limit reached (${businessDealsCount}/10 business deals this month). Note: Instant Deals don't count towards this limit.`
         });
       }
       
       if (process.env.NODE_ENV === 'development') {
-        console.log(`✅ TOTAL DEAL LIMIT CHECK: Business ${businessId} has ${totalDealsCount}/10 total deals this month (${quickDealsCount} Quick + ${businessDealsCount} Regular)`);
+        console.log(`✅ DEAL LIMIT CHECK: Business ${businessId} has ${businessDealsCount}/10 business deals this month (Instant Deals don't count towards limit)`);
       }
 
       // FIX TIMER BUG: Ensure timestamp fields are properly converted to Date objects
