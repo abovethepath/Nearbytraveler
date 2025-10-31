@@ -1804,6 +1804,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     onError: (error: any) => {
       console.error('❌ REFERENCE SUBMISSION ERROR:', error);
       const errorMessage = error?.message || error?.response?.data?.message || "Failed to submit reference. Please try again.";
+      
+      // Show alert as fallback
+      alert(`ERROR: ${errorMessage}`);
+      
       toast({
         title: "Cannot Submit Reference",
         description: errorMessage,
@@ -8556,7 +8560,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           </DialogHeader>
           
           <Form {...referenceForm}>
-            <form onSubmit={referenceForm.handleSubmit((data) => createReference.mutate(data))} className="space-y-4">
+            <form onSubmit={referenceForm.handleSubmit((data) => {
+              console.log('🚀🚀🚀 FORM SUBMITTED - DATA:', data);
+              createReference.mutate(data);
+            })} className="space-y-4">
               <FormField
                 control={referenceForm.control}
                 name="content"
