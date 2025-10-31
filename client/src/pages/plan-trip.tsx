@@ -1033,12 +1033,33 @@ export default function PlanTrip() {
                 </div>
               </div>
 
-              {/* Activities Section - Mobile Responsive */}
+              {/* City Activities Information - MOVED ABOVE - Mobile Responsive */}
+              <div className="mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 p-6 rounded-xl border-2 border-white/20 shadow-xl overflow-hidden break-words">
+                <div className="flex items-start gap-3 mb-3">
+                  <div className="flex-shrink-0 w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                    <Compass className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-xl sm:text-2xl font-bold text-white drop-shadow-lg mb-2 break-words">
+                      📍 Plan Specific Activities for Your Trip!
+                    </p>
+                    <p className="text-sm sm:text-base text-white/95 font-medium break-words leading-relaxed">
+                      After creating your trip, go to the <strong>Discover</strong> page and search for your destination city. There you can add specific things you want to do, check off activities, and find locals and travelers doing the same things!
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-4 flex items-center justify-center gap-2 text-white/90 text-sm">
+                  <MapPin className="w-4 h-4" />
+                  <span className="font-medium">Real activity planning happens in your city's match page →</span>
+                </div>
+              </div>
+
+              {/* Activities Section - General Preferences Only - Mobile Responsive */}
               <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-700 rounded-lg p-6">
                 <div className="text-center mb-6">
                   <Coffee className="w-8 h-8 mx-auto text-green-600 mb-2" />
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">What Do You Want To Do? 🎯</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">Tap the ones that sound fun!</p>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">General Activity Preferences</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Quick picks to help match you with similar travelers</p>
                 </div>
                 
                 <div className="bg-white dark:bg-gray-700 rounded-lg p-4 border border-green-200 dark:border-green-600">
@@ -1077,17 +1098,6 @@ export default function PlanTrip() {
                 </div>
                 
                 
-              </div>
-
-
-              {/* City Activities Information - Mobile Responsive */}
-              <div className="mb-3 sm:mb-4 bg-gradient-to-r from-blue-600 to-green-600 p-4 sm:p-6 rounded-lg border-2 border-blue-400 overflow-hidden break-words">
-                <p className="text-lg sm:text-2xl font-bold text-white text-center drop-shadow-lg mb-2 break-words">
-                  🎯 Want to Find People Doing Specific Activities ON THIS TRIP?
-                </p>
-                <p className="text-sm sm:text-lg text-white/90 text-center font-medium break-words">
-                  After completing your trip plan, visit the City Match page to add and check off specific activities, events, and plans to THIS CITY. Find others who want to do the exact same things!
-                </p>
               </div>
 
 
