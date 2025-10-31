@@ -15663,6 +15663,56 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // ========================================
+  // BUSINESS SUBSCRIPTION ROUTES
+  // ========================================
+
+  // Get business subscription status
+  app.get("/api/business/subscription-status", async (req, res) => {
+    try {
+      // For beta/testing: all businesses get free access
+      res.json({
+        hasSubscription: true,
+        status: "beta_free",
+        isActive: true,
+        trialActive: true,
+        freeMode: true,
+        needsSubscription: false
+      });
+    } catch (error: any) {
+      console.error('Error getting subscription status:', error);
+      res.status(500).json({ message: "Failed to get subscription status" });
+    }
+  });
+
+  // Create/Start business subscription
+  app.post("/api/business/create-subscription", async (req, res) => {
+    try {
+      // For beta/testing: just return success without actually charging
+      res.json({
+        success: true,
+        message: "During beta testing, all businesses have free access to all features!"
+      });
+    } catch (error: any) {
+      console.error('Error creating subscription:', error);
+      res.status(500).json({ message: "Failed to create subscription" });
+    }
+  });
+
+  // Cancel business subscription
+  app.post("/api/business/cancel-subscription", async (req, res) => {
+    try {
+      // For beta/testing: just return success
+      res.json({
+        success: true,
+        message: "Subscription canceled successfully"
+      });
+    } catch (error: any) {
+      console.error('Error canceling subscription:', error);
+      res.status(500).json({ message: "Failed to cancel subscription" });
+    }
+  });
+
+  // ========================================
   // ADMIN ROUTES
   // ========================================
 
