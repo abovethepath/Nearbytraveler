@@ -1708,7 +1708,7 @@ export default function BusinessDashboard() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-gray-900 dark:text-white">Category *</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select category" />
@@ -1749,7 +1749,7 @@ export default function BusinessDashboard() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-gray-900 dark:text-white">Discount Type *</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select discount type" />
