@@ -13,7 +13,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useLocation } from "wouter";
 import { Building, MapPin, User, Zap } from "lucide-react";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
-import { BUSINESS_TYPES } from "../../../shared/base-options";
+import { BUSINESS_TYPES, getHometownInterests, getAllActivities } from "../../../shared/base-options";
 import { useAuth } from "@/App";
 import { useEffect } from "react";
 
@@ -58,6 +58,12 @@ const businessSignupSchema = z.object({
   currentLongitude: z.number().optional(),
   locationSharingEnabled: z.boolean().default(true),
   
+  // Interests and Activities (NO minimum required for businesses)
+  interests: z.array(z.string()).optional().default([]),
+  activities: z.array(z.string()).optional().default([]),
+  customInterests: z.string().optional(),
+  customActivities: z.string().optional(),
+  
   // Community Pledge
   pledgeAccepted: z.boolean().refine(val => val === true, {
     message: "You must accept the NearbyTraveler Pledge to continue",
@@ -73,6 +79,8 @@ export default function SignupBusinessSimple() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [locationCaptured, setLocationCaptured] = useState(false);
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
 
   // Get account data from sessionStorage (from join page step 1)
   const getAccountData = () => {
@@ -161,9 +169,34 @@ export default function SignupBusinessSimple() {
       currentLatitude: undefined,
       currentLongitude: undefined,
       locationSharingEnabled: true,
+      interests: [],
+      activities: [],
+      customInterests: "",
+      customActivities: "",
       pledgeAccepted: false,
     },
   });
+
+  // Toggle functions for interests and activities
+  const toggleInterest = (interest: string) => {
+    const currentInterests = form.getValues('interests') || [];
+    if (currentInterests.includes(interest)) {
+      form.setValue('interests', currentInterests.filter(i => i !== interest));
+    } else {
+      form.setValue('interests', [...currentInterests, interest]);
+    }
+    setSelectedInterests(form.getValues('interests') || []);
+  };
+
+  const toggleActivity = (activity: string) => {
+    const currentActivities = form.getValues('activities') || [];
+    if (currentActivities.includes(activity)) {
+      form.setValue('activities', currentActivities.filter(a => a !== activity));
+    } else {
+      form.setValue('activities', [...currentActivities, activity]);
+    }
+    setSelectedActivities(form.getValues('activities') || []);
+  };
 
   const signupMutation = useMutation({
     mutationFn: async (data: BusinessSignupData) => {
@@ -562,6 +595,114 @@ export default function SignupBusinessSimple() {
                         ✅ Location captured for proximity notifications
                       </div>
                     )}
+                  </div>
+                </div>
+
+                {/* Business Interests & Activities - NO MINIMUM REQUIRED */}
+                <div className="space-y-4">
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white">What Describes Your Business? (Optional - No Minimum)</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Help travelers and locals discover your business by selecting relevant interests and activities. The more you select, the better we can match you!
+                  </p>
+
+                  <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg space-y-6">
+                    {/* Interests Section */}
+                    <div>
+                      <FormLabel className="text-gray-900 dark:text-white font-medium flex items-center justify-between">
+                        <span>🎯 What interests does your business serve?</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                          {selectedInterests.length} selected
+                        </span>
+                      </FormLabel>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {getHometownInterests().map((interest) => (
+                          <button
+                            key={interest}
+                            type="button"
+                            onClick={() => toggleInterest(interest)}
+                            className={`px-3 py-2 rounded-full text-sm font-medium transition-all ${
+                              (form.getValues('interests') || []).includes(interest)
+                                ? 'bg-gradient-to-r from-blue-600 to-orange-500 text-white shadow-md transform scale-105'
+                                : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
+                            }`}
+                            data-testid={`interest-${interest}`}
+                          >
+                            {interest}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Activities Section */}
+                    <div>
+                      <FormLabel className="text-gray-900 dark:text-white font-medium flex items-center justify-between">
+                        <span>🎪 What activities do you offer or cater to?</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                          {selectedActivities.length} selected
+                        </span>
+                      </FormLabel>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {getAllActivities().map((activity) => (
+                          <button
+                            key={activity}
+                            type="button"
+                            onClick={() => toggleActivity(activity)}
+                            className={`px-3 py-2 rounded-full text-sm font-medium transition-all ${
+                              (form.getValues('activities') || []).includes(activity)
+                                ? 'bg-gradient-to-r from-blue-600 to-orange-500 text-white shadow-md transform scale-105'
+                                : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
+                            }`}
+                            data-testid={`activity-${activity}`}
+                          >
+                            {activity}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Custom Interests */}
+                    <FormField
+                      control={form.control}
+                      name="customInterests"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-900 dark:text-white font-medium">✨ Add Custom Interests (Optional)</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="e.g., Craft Beer, Vegan Options, Live Music"
+                              {...field}
+                              data-testid="input-custom-interests"
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Separate multiple interests with commas
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Custom Activities */}
+                    <FormField
+                      control={form.control}
+                      name="customActivities"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-900 dark:text-white font-medium">✨ Add Custom Activities (Optional)</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="e.g., Cooking Classes, Wine Tastings, Workshops"
+                              {...field}
+                              data-testid="input-custom-activities"
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Separate multiple activities with commas
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                 </div>
 
