@@ -1948,7 +1948,11 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         .from(users)
         .where(
           and(
-            or(...searchCities.map(searchCity => eq(users.hometownCity, searchCity))),
+            or(
+              ...searchCities.map(searchCity => eq(users.hometownCity, searchCity)),
+              ...searchCities.map(searchCity => eq(users.city, searchCity)),
+              ...searchCities.map(searchCity => ilike(users.location, `%${searchCity}%`))
+            ),
             eq(users.userType, 'business')
           )
         );
