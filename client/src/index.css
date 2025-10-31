@@ -984,39 +984,3 @@ img[alt*="profile" i],
   aspect-ratio: 1 / 1 !important;
 }
 
-/* CRITICAL FIX: ALL text and links on gradient backgrounds MUST be BLACK for readability */
-[class*="bg-gradient"] a,
-[class*="bg-gradient"] span,
-[class*="bg-gradient"] .text-black,
-[class*="bg-gradient"] a.text-black,
-[class*="from-blue"] a,
-[class*="from-blue"] span,
-[class*="from-blue"] .text-black,
-[class*="from-blue"] a.text-black,
-[class*="from-purple"] a,
-[class*="from-purple"] span,
-[class*="from-purple"] .text-black,
-[class*="from-purple"] a.text-black,
-[class*="from-pink"] a,
-[class*="from-pink"] span,
-[class*="from-pink"] .text-black,
-[class*="from-pink"] a.text-black,
-[class*="to-purple"] a,
-[class*="to-purple"] span,
-[class*="to-blue"] a,
-[class*="to-blue"] span,
-[class*="to-pink"] a,
-[class*="to-pink"] span,
-[class*="to-orange"] a,
-[class*="to-orange"] span {
-  color: rgb(0, 0, 0) !important;
-}
-
-/* Force black for SVG icons too */
-[class*="bg-gradient"] svg,
-[class*="from-blue"] svg,
-[class*="from-purple"] svg,
-[class*="from-pink"] svg {
-  color: rgb(0, 0, 0) !important;
-  fill: currentColor !important;
-}
