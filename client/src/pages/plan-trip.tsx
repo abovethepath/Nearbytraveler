@@ -635,9 +635,9 @@ export default function PlanTrip() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-blue-50 to-orange-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-gray-900 overflow-hidden break-words">
+    <div className="min-h-screen bg-gray-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-gray-900 overflow-hidden break-words">
       {/* Hero Section - Mobile vs Desktop Layout */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-blue-600/30 via-purple-600/30 to-orange-600/30">
+      <div className="relative overflow-hidden bg-gradient-to-br from-blue-700 via-purple-700 to-orange-600">
         {/* Close Button - Always positioned at top right */}
         <button
           onClick={() => {
@@ -699,7 +699,7 @@ export default function PlanTrip() {
                         Edit Your
                       </span>
                       <br />
-                      <span className="bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400 bg-clip-text text-transparent drop-shadow-lg">
+                      <span className="text-orange-300 drop-shadow-lg">
                         Adventure
                       </span>
                     </>
@@ -709,7 +709,7 @@ export default function PlanTrip() {
                         Plan Your Next
                       </span>
                       <br />
-                      <span className="bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400 bg-clip-text text-transparent drop-shadow-lg">
+                      <span className="text-orange-300 drop-shadow-lg">
                         Adventure
                       </span>
                     </>
@@ -717,10 +717,10 @@ export default function PlanTrip() {
                 </h1>
                 
                 <div className="max-w-2xl space-y-4">
-                  <p className="text-xl text-white/90 leading-relaxed font-medium drop-shadow-md">
+                  <p className="text-xl text-white leading-relaxed font-medium drop-shadow-md">
                     {isEditMode 
-                      ? <>Perfect your journey — <em className="text-yellow-300 font-semibold">every detail matters.</em></>
-                      : <>Adventures begin with a plan — <em className="text-yellow-300 font-semibold">connections make them unforgettable.</em></>
+                      ? <>Perfect your journey — <em className="text-orange-200 font-semibold">every detail matters.</em></>
+                      : <>Adventures begin with a plan — <em className="text-orange-200 font-semibold">connections make them unforgettable.</em></>
                     }
                   </p>
                   <p className="text-base text-white/80 leading-relaxed">
@@ -792,7 +792,7 @@ export default function PlanTrip() {
                 />
               </div>
               
-              <p className="mt-2 text-xs md:text-sm italic text-yellow-300 text-center">
+              <p className="mt-2 text-xs md:text-sm italic text-orange-200 text-center font-medium">
                 Where Great Adventures Begin
               </p>
             </div>
