@@ -10163,7 +10163,7 @@ Questions? Just reply to this message. Welcome aboard!
         targetAudience = [targetAudience];
       }
 
-      // Create instant deal with current time (no date parsing issues)
+      // Create business deal with ALL form fields
       const result = await db.insert(businessOffers).values({
         businessId,
         title: (req.body as any).title || 'Instant Deal',
@@ -10171,20 +10171,89 @@ Questions? Just reply to this message. Welcome aboard!
         category: (req.body as any).category || 'instant_deal',
         discountType: (req.body as any).discountType || 'percentage',
         discountValue: (req.body as any).discountValue || '20',
+        discountCode: (req.body as any).discountCode || null,
         targetAudience,
         city: (req.body as any).city || 'Los Angeles',
         state: (req.body as any).state || 'California',
         country: (req.body as any).country || 'United States',
-        validFrom: new Date(),
-        validUntil: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+        validFrom: (req.body as any).validFrom ? new Date((req.body as any).validFrom) : new Date(),
+        validUntil: (req.body as any).validUntil ? new Date((req.body as any).validUntil) : new Date(Date.now() + 24 * 60 * 60 * 1000),
+        imageUrl: (req.body as any).imageUrl || null,
+        termsConditions: (req.body as any).termsConditions || null,
+        contactInfo: (req.body as any).contactInfo || null,
+        websiteUrl: (req.body as any).websiteUrl || null,
+        maxRedemptions: (req.body as any).maxRedemptions ? parseInt((req.body as any).maxRedemptions) : null,
+        maxRedemptionsPerUser: (req.body as any).maxRedemptionsPerUser ? parseInt((req.body as any).maxRedemptionsPerUser) : null,
         currentRedemptions: 0,
         isActive: true,
+        monthCreated: now.getMonth() + 1,
+        yearCreated: now.getFullYear(),
         tags
       }).returning();
       const [newOffer] = result;
       
-      if (process.env.NODE_ENV === 'development') console.log('✅ INSTANT DEAL CREATED:', newOffer);
-      return res.json(newOffer);
+      if (process.env.NODE_ENV === 'development') console.log('✅ BUSINESS DEAL CREATED:', newOffer);
+      
+      // Fetch the complete deal with business information (JOIN with users table)
+      const [completeOffer] = await db
+        .select({
+          // All business offer fields
+          id: businessOffers.id,
+          businessId: businessOffers.businessId,
+          title: businessOffers.title,
+          description: businessOffers.description,
+          category: businessOffers.category,
+          discountType: businessOffers.discountType,
+          discountValue: businessOffers.discountValue,
+          discountCode: businessOffers.discountCode,
+          targetAudience: businessOffers.targetAudience,
+          city: businessOffers.city,
+          state: businessOffers.state,
+          country: businessOffers.country,
+          validFrom: businessOffers.validFrom,
+          validUntil: businessOffers.validUntil,
+          maxRedemptions: businessOffers.maxRedemptions,
+          currentRedemptions: businessOffers.currentRedemptions,
+          isActive: businessOffers.isActive,
+          imageUrl: businessOffers.imageUrl,
+          termsConditions: businessOffers.termsConditions,
+          contactInfo: businessOffers.contactInfo,
+          websiteUrl: businessOffers.websiteUrl,
+          tags: businessOffers.tags,
+          viewCount: businessOffers.viewCount,
+          createdAt: businessOffers.createdAt,
+          updatedAt: businessOffers.updatedAt,
+          maxRedemptionsPerUser: businessOffers.maxRedemptionsPerUser,
+          monthCreated: businessOffers.monthCreated,
+          yearCreated: businessOffers.yearCreated,
+          autoRenewMonthly: businessOffers.autoRenewMonthly,
+          isTemplate: businessOffers.isTemplate,
+          pausedDueToPayment: businessOffers.pausedDueToPayment,
+          // Business information
+          businessName: users.businessName,
+          fallbackName: users.name,
+          businessDescription: users.businessDescription,
+          businessType: users.businessType,
+          businessLocation: users.location,
+          businessImage: users.profileImage,
+          businessPhone: users.phoneNumber,
+          businessAddress: users.streetAddress,
+          businessWebsite: users.websiteUrl,
+          businessEmail: users.email,
+        })
+        .from(businessOffers)
+        .leftJoin(users, eq(businessOffers.businessId, users.id))
+        .where(eq(businessOffers.id, newOffer.id));
+      
+      // Apply fallback logic for business name
+      const finalOffer = {
+        ...completeOffer,
+        businessName: completeOffer.businessName || completeOffer.fallbackName || 'Business Name Missing',
+        fallbackName: undefined
+      };
+      
+      if (process.env.NODE_ENV === 'development') console.log('✅ RETURNING COMPLETE DEAL WITH BUSINESS INFO:', finalOffer);
+      return res.json(finalOffer);
       
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("🚨 INSTANT DEAL CREATION ERROR:", error);
