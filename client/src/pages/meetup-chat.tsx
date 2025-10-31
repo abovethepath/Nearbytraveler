@@ -273,7 +273,7 @@ export default function MeetupChat() {
 
                 {/* Message Input */}
                 <div className="border-t border-gray-200 dark:border-gray-700 p-4">
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 chat-input-wrapper">
                     <Input
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
@@ -281,11 +281,13 @@ export default function MeetupChat() {
                       placeholder="Type your message..."
                       className="flex-1"
                       disabled={sendMessageMutation.isPending}
+                      data-testid="input-message"
                     />
                     <Button 
                       onClick={handleSendMessage}
                       disabled={!message.trim() || sendMessageMutation.isPending}
                       size="sm"
+                      data-testid="button-send-message"
                     >
                       <Send className="h-4 w-4" />
                     </Button>

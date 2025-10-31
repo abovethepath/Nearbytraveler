@@ -252,7 +252,7 @@ export default function ChatroomPage() {
             </div>
 
             {/* Message Input */}
-            <form onSubmit={handleSendMessage} className="flex gap-2">
+            <form onSubmit={handleSendMessage} className="flex gap-2 chat-input-wrapper">
               <Input
                 value={messageText}
                 onChange={(e) => setMessageText(e.target.value)}

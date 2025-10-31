@@ -438,18 +438,20 @@ export default function SimpleChatroomPage() {
         {userIsMember ? (
           <Card className="bg-white dark:bg-gray-800">
             <CardContent className="p-4">
-              <form onSubmit={handleSendMessage} className="flex gap-3">
+              <form onSubmit={handleSendMessage} className="flex gap-3 chat-input-wrapper">
                 <Input
                   value={messageText}
                   onChange={(e) => setMessageText(e.target.value)}
                   placeholder="Type your message..."
                   className="flex-1"
                   maxLength={1000}
+                  data-testid="input-message"
                 />
                 <Button
                   type="submit"
                   disabled={!messageText.trim() || sendMessageMutation.isPending}
                   className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-0"
+                  data-testid="button-send-message"
                 >
                   {sendMessageMutation.isPending ? (
                     <Loader2 className="w-4 h-4 animate-spin" />

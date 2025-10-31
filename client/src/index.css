@@ -305,10 +305,8 @@ div[class*="pill-events"] {
   text-transform: none !important;
 }
 
-/* SAFE FIX: Only target chat/message inputs in dark mode */
-.dark input[placeholder*="Type your message"],
-.dark input[placeholder*="message"],
-.dark input[data-testid="input-message"] {
+/* BULLETPROOF FIX: Only chat inputs via wrapper class */
+.dark .chat-input-wrapper input {
   background-color: #374151 !important;
   background: #374151 !important;
   color: #ffffff !important;
@@ -316,9 +314,7 @@ div[class*="pill-events"] {
   -webkit-text-fill-color: #ffffff !important;
 }
 
-.dark input[placeholder*="Type your message"]::placeholder,
-.dark input[placeholder*="message"]::placeholder,
-.dark input[data-testid="input-message"]::placeholder {
+.dark .chat-input-wrapper input::placeholder {
   color: #9ca3af !important;
 }
 

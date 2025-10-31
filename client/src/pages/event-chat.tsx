@@ -442,7 +442,7 @@ export default function EventChat() {
 
               {/* Message Input */}
               <div className="border-t p-4">
-                <div className="flex gap-2">
+                <div className="flex gap-2 chat-input-wrapper">
                   <Input
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
@@ -450,11 +450,13 @@ export default function EventChat() {
                     placeholder="Type your message..."
                     className="flex-1"
                     disabled={sendMessageMutation.isPending}
+                    data-testid="input-message"
                   />
                   <Button
                     onClick={handleSendMessage}
                     disabled={!message.trim() || sendMessageMutation.isPending}
                     className="px-3"
+                    data-testid="button-send-message"
                   >
                     <Send className="w-4 h-4" />
                   </Button>

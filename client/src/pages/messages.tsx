@@ -533,18 +533,20 @@ export default function Messages() {
 
             {/* Message Input */}
             <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800">
-              <div className="flex gap-2">
+              <div className="flex gap-2 chat-input-wrapper">
                 <Input
                   value={newMessage}
                   onChange={(e) => handleTyping(e.target.value)}
                   placeholder="Type your message..."
                   className="flex-1"
                   onKeyPress={(e) => e.key === 'Enter' && newMessage.trim() && handleSendMessage()}
+                  data-testid="input-message"
                 />
                 <Button
                   onClick={handleSendMessage}
                   disabled={!newMessage.trim() || sendMessageMutation.isPending}
                   className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600"
+                  data-testid="button-send-message"
                 >
                   <Send className="w-4 h-4" />
                 </Button>
