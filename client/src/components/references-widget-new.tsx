@@ -201,9 +201,14 @@ function ReferencesWidgetNew({ userId, currentUserId }: ReferencesWidgetProps) {
                             onChange={(e) => setEditContent(e.target.value)}
                             placeholder="Write your reference..."
                             className="min-h-[80px] text-xs"
+                            disabled={updateReferenceMutation.isPending}
                             data-testid="textarea-edit-reference"
                           />
-                          <Select value={editExperience} onValueChange={(val: 'positive' | 'neutral' | 'negative') => setEditExperience(val)}>
+                          <Select 
+                            value={editExperience} 
+                            onValueChange={(val: 'positive' | 'neutral' | 'negative') => setEditExperience(val)}
+                            disabled={updateReferenceMutation.isPending}
+                          >
                             <SelectTrigger className="text-xs h-8" data-testid="select-edit-experience">
                               <SelectValue />
                             </SelectTrigger>
@@ -228,6 +233,7 @@ function ReferencesWidgetNew({ userId, currentUserId }: ReferencesWidgetProps) {
                               size="sm"
                               variant="outline"
                               onClick={cancelEdit}
+                              disabled={updateReferenceMutation.isPending}
                               className="text-xs h-7"
                               data-testid="button-cancel-edit"
                             >
