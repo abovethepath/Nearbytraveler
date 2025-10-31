@@ -1652,6 +1652,24 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           };
         }
         
+        // Also check city_pages table as fallback (for cities created during signup)
+        const cityPageQuery = await db.execute(sql`
+          SELECT country, state
+          FROM city_pages
+          WHERE city = ${cityName}
+          AND country IS NOT NULL 
+          AND country != ''
+          LIMIT 1
+        `);
+        
+        if (cityPageQuery.rows.length > 0) {
+          const row = cityPageQuery.rows[0] as any;
+          return { 
+            state: row.state || '', 
+            country: row.country
+          };
+        }
+        
         // If still no country found, this is a data quality issue
         console.error(`🚨 MISSING COUNTRY DATA for city: ${cityName} - This should never happen!`);
         throw new Error(`Missing country data for ${cityName}`);
