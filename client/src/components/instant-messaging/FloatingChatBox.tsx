@@ -234,11 +234,11 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
               <div
                 className={`max-w-[70%] p-2 rounded-lg text-sm ${
                   msg.senderId === user?.id
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-blue-600 dark:bg-blue-600 text-white dark:text-white'
                     : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
                 }`}
               >
-                {msg.content}
+                <span className="text-white dark:text-white">{msg.content}</span>
               </div>
             </div>
           ))
