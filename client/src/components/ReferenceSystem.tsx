@@ -382,10 +382,12 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
                   variant="outline"
                   style={{ 
                     background: 'linear-gradient(to right, rgb(249, 115, 22), rgb(59, 130, 246))',
-                    border: '2px solid black',
-                    color: 'white'
+                    border: '3px solid black !important',
+                    borderRadius: '6px',
+                    color: 'white',
+                    fontWeight: '500'
                   }}
-                  className="w-full sm:w-auto min-h-[48px] hover:opacity-90"
+                  className="w-full sm:w-auto min-h-[48px] hover:opacity-90 !border-[3px] !border-black"
                   type="button"
                   data-testid="button-submit-reference"
                 >
