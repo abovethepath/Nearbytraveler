@@ -10358,7 +10358,20 @@ Questions? Just reply to this message. Welcome aboard!
       
       // Check if deal is still valid (not expired)
       const now = new Date();
-      if (new Date(deal.validUntil) < now) {
+      const expiryDate = new Date(deal.validUntil);
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🎫 CLAIM DEAL CHECK:', {
+          dealId: deal.id,
+          title: deal.title,
+          validUntil: deal.validUntil,
+          expiryDate: expiryDate.toISOString(),
+          now: now.toISOString(),
+          isExpired: expiryDate < now
+        });
+      }
+      
+      if (expiryDate < now) {
         return res.status(400).json({ message: "Deal has expired" });
       }
       
