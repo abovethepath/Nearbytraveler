@@ -164,6 +164,21 @@ const offerSchema = z.object({
   contactInfo: z.string().optional(),
   websiteUrl: z.string().optional(),
   tags: z.string().optional(),
+}).refine((data) => {
+  const validFrom = new Date(data.validFrom);
+  const validUntil = new Date(data.validUntil);
+  return validUntil > validFrom;
+}, {
+  message: "End date must be after start date",
+  path: ["validUntil"],
+}).refine((data) => {
+  const validFrom = new Date(data.validFrom);
+  const validUntil = new Date(data.validUntil);
+  const diffDays = Math.ceil((validUntil.getTime() - validFrom.getTime()) / (1000 * 60 * 60 * 24));
+  return diffDays <= 30;
+}, {
+  message: "Promotion cannot be longer than 30 days",
+  path: ["validUntil"],
 });
 
 type OfferFormData = z.infer<typeof offerSchema> & {
