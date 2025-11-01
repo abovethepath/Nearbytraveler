@@ -326,15 +326,15 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
           />
         </div>
 
-        {/* Filters */}
-        <Card className="mb-6 sm:mb-8 w-full max-w-full">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-lg sm:text-xl">Filter Offers</CardTitle>
+        {/* Filters - COMPACT VERSION */}
+        <Card className="mb-3 w-full max-w-full">
+          <CardHeader className="pb-2 pt-3">
+            <CardTitle className="text-sm font-semibold">Filter Offers</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 gap-4 w-full max-w-full overflow-x-hidden">
+          <CardContent className="pb-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 w-full max-w-full overflow-x-hidden">
               <div>
-                <label className="text-sm font-medium mb-2 block text-gray-900 dark:text-white">Location Override</label>
+                <label className="text-xs font-medium mb-1 block text-gray-700 dark:text-gray-300">Location Override</label>
                 <SmartLocationInput
                   city={filters.city}
                   state={filters.state}
@@ -346,24 +346,19 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
                     country: location.country
                   }))}
                   placeholder={{
-                    country: nearbyCity ? `Currently showing: ${nearbyCity}` : "Select country to override",
-                    state: "Select state/region",
-                    city: "Select city"
+                    country: nearbyCity ? `Currently showing: ${nearbyCity}` : "Country",
+                    state: "State",
+                    city: "City"
                   }}
                 />
-                {(filters.country || filters.state || filters.city) && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    Clear location fields to return to your nearby offers
-                  </p>
-                )}
               </div>
               <div>
-                <label className="text-sm font-medium mb-2 block text-gray-900 dark:text-white">Category</label>
+                <label className="text-xs font-medium mb-1 block text-gray-700 dark:text-gray-300">Category</label>
                 <Select 
                   value={filters.category} 
                   onValueChange={(value) => setFilters(prev => ({ ...prev, category: value }))}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="h-8 text-xs">
                     <SelectValue placeholder="All categories" />
                   </SelectTrigger>
                   <SelectContent>
@@ -377,12 +372,12 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
                 </Select>
               </div>
               <div>
-                <label className="text-sm font-medium mb-2 block text-gray-900 dark:text-white">Target Audience</label>
+                <label className="text-xs font-medium mb-1 block text-gray-700 dark:text-gray-300">Target Audience</label>
                 <Select 
                   value={filters.targetAudience} 
                   onValueChange={(value) => setFilters(prev => ({ ...prev, targetAudience: value }))}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="h-8 text-xs">
                     <SelectValue placeholder="All audiences" />
                   </SelectTrigger>
                   <SelectContent>
