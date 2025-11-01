@@ -4331,19 +4331,47 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   ) : (
                     <div className="space-y-4">
                       {businessDeals.slice(0, 3).map((deal: any) => (
-                        <div key={deal.id} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:shadow-md dark:hover:shadow-gray-800/50 transition-shadow bg-white dark:bg-gray-800">
+                        <div 
+                          key={deal.id} 
+                          className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:shadow-lg dark:hover:shadow-gray-800/50 transition-all cursor-pointer bg-white dark:bg-gray-800 hover:border-orange-400 dark:hover:border-orange-500"
+                          onClick={() => {
+                            // Navigate to deals page with this specific deal
+                            setLocation(`/deals?dealId=${deal.id}`);
+                          }}
+                          data-testid={`deal-card-${deal.id}`}
+                        >
                           <div className="flex items-start justify-between mb-2">
                             <h4 className="font-semibold text-gray-900 dark:text-white">{deal.title}</h4>
                             <div className="flex items-center gap-2">
-                              <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-white text-black border border-black">
-                                {deal.discountValue}
+                              <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-bold whitespace-nowrap leading-none bg-gradient-to-r from-green-500 to-blue-500 text-white">
+                                {(() => {
+                                  // Format discount display based on deal type
+                                  const value = deal.discountValue?.trim() || '';
+                                  const type = deal.discountType?.toLowerCase() || '';
+                                  
+                                  // If it's already well-formatted, return as-is
+                                  if (value.includes('%') && value.includes('OFF')) return value;
+                                  if (value.toUpperCase().includes('BOGO')) return 'BOGO';
+                                  if (value.toUpperCase().includes('FREE')) return value;
+                                  
+                                  // Format based on type
+                                  if (type === 'percentage') return `${value}% OFF`;
+                                  if (type === 'fixed_amount') return `$${value} OFF`;
+                                  if (type === 'buy_one_get_one') return 'BOGO';
+                                  if (type === 'free_service') return '100% FREE';
+                                  
+                                  // Default: just add % OFF if it's a number
+                                  if (!isNaN(parseFloat(value))) return `${value}% OFF`;
+                                  
+                                  return value;
+                                })()}
                               </div>
                               {isOwnProfile && (
                                 <Button
                                   size="sm"
                                   variant="ghost"
-                                  onClick={() => {
-                                    // Navigate to business dashboard with deal ID to edit
+                                  onClick={(e) => {
+                                    e.stopPropagation(); // Prevent card click when editing
                                     setLocation(`/business-dashboard?editDeal=${deal.id}`);
                                   }}
                                   className="h-6 px-2 text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20"
