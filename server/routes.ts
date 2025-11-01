@@ -11945,7 +11945,25 @@ Questions? Just reply to this message. Welcome aboard!
       }
 
       if (city && typeof city === 'string') {
-        dealsWithBusiness = dealsWithBusiness.filter(deal => deal.city === city);
+        // LA METRO CONSOLIDATION: Apply metro area logic to show deals from entire metro
+        const userMetroArea = getMetroArea(city);
+        
+        if (userMetroArea) {
+          // User is in a metro area - show deals from ALL cities in that metro
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`🛍️ QUICK DEALS: User in metro area "${userMetroArea.name}", filtering for ${userMetroArea.cities.length} cities`);
+          }
+          dealsWithBusiness = dealsWithBusiness.filter(deal => 
+            userMetroArea.cities.some((metroCity: string) => 
+              metroCity.toLowerCase() === (deal.city || '').toLowerCase()
+            )
+          );
+        } else {
+          // Not in a metro area - exact city match only
+          dealsWithBusiness = dealsWithBusiness.filter(deal => 
+            (deal.city || '').toLowerCase() === city.toLowerCase()
+          );
+        }
       }
 
       if (process.env.NODE_ENV === 'development') {
