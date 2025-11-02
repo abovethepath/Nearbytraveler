@@ -1522,9 +1522,7 @@ export default function Home() {
       </div>
       
       <p className="text-lg text-gray-700 dark:text-gray-200 leading-relaxed max-w-2xl mx-auto px-4 font-medium">
-        {effectiveUser?.userType === "business"
-          ? "Reach customers through interest-based matching, business notifications, and location-targeted discovery."
-          : "Discover amazing people & make meaningful connections based on demographics, activities, interests, and events."}
+        Nearby Traveler helps travelers meet locals and other travelers through shared interests, activities, and events — building friendships that last a lifetime.
       </p>
       
       {effectiveUser?.userType === "business" && (
@@ -1598,14 +1596,9 @@ export default function Home() {
               )}
             </h1>
             
-            <div className="max-w-2xl space-y-4">
+            <div className="max-w-2xl">
               <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
-                Travel doesn't change you — <em className="text-orange-600 dark:text-orange-400 font-semibold">the people you meet do.</em>
-              </p>
-              <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed">
-                {effectiveUser?.userType === "business"
-                  ? "Reach customers through smart matching, targeted notifications, and location-based discovery. Build lasting relationships with travelers and locals who value authentic experiences."
-                  : "Discover authentic experiences and build meaningful connections based on shared interests, activities, and travel plans. Connect with verified locals and fellow travelers worldwide."}
+                Nearby Traveler helps travelers meet locals and other travelers through shared interests, activities, and events — building friendships that last a lifetime.
               </p>
             </div>
           </div>
@@ -1714,16 +1707,6 @@ export default function Home() {
           
           {/* Main image container with enhanced styling */}
           <div className="relative group">
-            {/* Quote above image */}
-            <div className="text-center mb-4 relative z-10">
-              <p className="text-lg md:text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-200 italic leading-tight">
-                <span className="sm:hidden">
-                  Travel doesn't change you<br />
-                  The People you meet do
-                </span>
-              </p>
-            </div>
-            
             {/* Enhanced image container */}
             <div className="relative">
               {/* Subtle background glow */}
