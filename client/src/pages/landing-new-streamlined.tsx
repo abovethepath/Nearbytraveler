@@ -159,7 +159,7 @@ export default function LandingStreamlined() {
               {/* Right image side */}
               <div className="order-1 lg:order-2 flex flex-col items-center">
                 {/* Quote above photo */}
-                <p className="text-lg sm:text-xl md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-600 via-blue-500 to-orange-500 italic mb-4 sm:mb-6 text-center leading-snug">
+                <p className="text-lg sm:text-xl md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-orange-500 italic mb-4 sm:mb-6 text-center leading-snug">
                   Travel doesn't change you.<br />
                   The people you meet do.
                 </p>
