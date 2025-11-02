@@ -90,21 +90,6 @@ export default function LandingStreamlined() {
   return (
     <div className="bg-white dark:bg-gray-900 font-sans transition-colors duration-200">
       
-      {/* Fixed Theme Toggle and CTA Button */}
-      <div className="fixed top-4 right-4 z-50">
-        <Button
-          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          size="icon"
-          className="bg-white dark:bg-gray-800 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 shadow-lg border border-gray-200 dark:border-gray-700 h-12 w-12"
-          data-testid="button-theme-toggle"
-        >
-          {theme === 'dark' ? (
-            <Sun className="h-6 w-6" />
-          ) : (
-            <Moon className="h-6 w-6" />
-          )}
-        </Button>
-      </div>
       
       <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
         <Button 
