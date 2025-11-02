@@ -124,15 +124,15 @@ export default function LandingStreamlined() {
               {/* Left text side */}
               <div className="order-2 lg:order-1 text-center lg:text-left">
                 <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 dark:text-white mb-4">
-                  Connect with Locals & Travelers Worldwide
+                  Connect with <span className="dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-blue-400 dark:to-orange-400">Locals & Travelers</span> Worldwide
                 </h1>
                 
                 {/* Quote line beneath headline */}
-                <p className="text-base sm:text-lg md:text-xl font-bold text-gray-700 dark:text-gray-300 italic mb-6 sm:mb-8">
+                <p className="text-base sm:text-lg md:text-xl font-bold text-gray-700 dark:text-orange-400 italic mb-6 sm:mb-8">
                   Travel doesn't change you. The people you meet do.
                 </p>
                 
-                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-200 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
                   Nearby Traveler connects travelers and locals through shared interests, activities, and events — making it easy to meet people and build friendships that last a lifetime.
                 </p>
                 
