@@ -41,6 +41,7 @@ const staticHeroImage = "/travelers_1756778615408.jpg";
 
 import ResponsiveUserGrid from "@/components/ResponsiveUserGrid";
 import { SimpleAvatar } from "@/components/simple-avatar";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 import MessagesWidget from "@/components/MessagesWidget";
 import EventsWidget from "@/components/EventsWidget";
@@ -1423,10 +1424,10 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
 
-{/* Hero Toggle Button */}
+{/* Hero Toggle Button & Theme Toggle (when hero is hidden) */}
 {!isHeroVisible && (
   <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
-    <div className="max-w-7xl mx-auto px-4 py-3">
+    <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
       <Button
         variant="outline"
         size="sm"
@@ -1437,6 +1438,7 @@ export default function Home() {
         <ChevronDown className="w-4 h-4 mr-2" />
         Show Welcome Message
       </Button>
+      <ThemeToggle />
     </div>
   </div>
 )}
@@ -1769,8 +1771,9 @@ export default function Home() {
     </div>
   )}
   
-  {/* Hide Hero Button */}
-  <div className="absolute top-4 right-4 z-10">
+  {/* Theme Toggle & Hide Hero Buttons */}
+  <div className="absolute top-4 right-4 z-10 flex gap-2">
+    <ThemeToggle />
     <Button
       variant="ghost"
       size="sm"
