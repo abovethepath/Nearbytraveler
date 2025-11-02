@@ -6,6 +6,7 @@ import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import { Users, MapPin, Globe, Coffee, Heart, Car, RefreshCw, Home, Shield } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useTheme } from "@/components/theme-provider";
+import { ThemeToggle } from "@/components/theme-toggle";
 // Import images as URLs - using JPG/PNG for iPhone compatibility
 const localsHeaderImage = "/assets/locals_1756777112458.png";
 const travelersHeaderImage = "/assets/travelers_1756778615408.jpg";
@@ -49,11 +50,7 @@ export default function LandingStreamlined() {
     return () => clearInterval(imageInterval);
   }, [heroImages.length]);
 
-  // FORCE LIGHT MODE for landing page - user requirement
-  useEffect(() => {
-    // Force light mode for unauthenticated landing page
-    setTheme('light');
-  }, [setTheme]);
+  // Theme toggle available - removed forced light mode
 
   // Smooth scroll behavior
   useEffect(() => {
@@ -91,9 +88,13 @@ export default function LandingStreamlined() {
   };
 
   return (
-    <div className="bg-white font-sans">
+    <div className="bg-white dark:bg-gray-900 font-sans transition-colors duration-200">
       
-      {/* Fixed CTA Button */}
+      {/* Fixed Theme Toggle and CTA Button */}
+      <div className="fixed top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
+      
       <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
         <Button 
           onClick={() => {
