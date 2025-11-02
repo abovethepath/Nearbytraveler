@@ -1604,7 +1604,8 @@ export default function Home() {
             
             <div className="max-w-2xl space-y-4">
               <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
-                Travel doesn't change you — <em className="text-orange-600 dark:text-orange-400 font-semibold">the people you meet do.</em>
+                Travel doesn't change you.<br />
+                <em className="text-orange-600 dark:text-orange-400 font-semibold">The people you meet do.</em>
               </p>
               <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed">
                 Nearby Traveler helps travelers meet locals and other travelers through shared interests, activities, and events — building friendships that last a lifetime.
