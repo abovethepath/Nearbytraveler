@@ -33,13 +33,13 @@ export function ThemeProvider({
   ...props
 }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>(() => {
-    // Check localStorage first, then system preference
+    // Check localStorage first
     const saved = localStorage.getItem(storageKey) as Theme;
     if (saved && ["dark", "light", "system"].includes(saved)) {
       return saved;
     }
-    // Default to system to be adaptive
-    return defaultTheme;
+    // Default to dark for new visitors
+    return "dark";
   })
 
   const [resolvedTheme, setResolvedTheme] = useState<"dark" | "light">("light")
