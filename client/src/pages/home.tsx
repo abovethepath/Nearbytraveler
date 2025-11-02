@@ -1524,7 +1524,7 @@ export default function Home() {
       <div className="max-w-2xl mx-auto px-4 space-y-4">
         <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
           Travel doesn't change you.<br />
-          <em className="text-orange-600 dark:text-orange-400 font-semibold">The people you meet do.</em>
+          The people you meet do.
         </p>
         <p className="text-lg text-gray-700 dark:text-gray-200 leading-relaxed font-medium">
           Nearby Traveler helps travelers meet locals and other travelers through shared interests, activities, and events — building friendships that last a lifetime.
@@ -1605,7 +1605,7 @@ export default function Home() {
             <div className="max-w-2xl space-y-4">
               <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
                 Travel doesn't change you.<br />
-                <em className="text-orange-600 dark:text-orange-400 font-semibold">The people you meet do.</em>
+                The people you meet do.
               </p>
               <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed">
                 Nearby Traveler helps travelers meet locals and other travelers through shared interests, activities, and events — building friendships that last a lifetime.
