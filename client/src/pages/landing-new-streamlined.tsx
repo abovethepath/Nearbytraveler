@@ -159,8 +159,9 @@ export default function LandingStreamlined() {
               {/* Right image side */}
               <div className="order-1 lg:order-2 flex flex-col items-center">
                 {/* Quote above photo */}
-                <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-700 dark:text-orange-400 italic mb-4 sm:mb-6 text-center">
-                  Travel doesn't change you. The people you meet do.
+                <p className="text-lg sm:text-xl md:text-2xl font-bold text-orange-600 dark:text-orange-400 italic mb-4 sm:mb-6 text-center leading-snug">
+                  Travel doesn't change you.<br />
+                  The people you meet do.
                 </p>
                 
                 {/* Hero Image - Rotating with smooth crossfade */}
