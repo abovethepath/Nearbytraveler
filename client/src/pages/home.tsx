@@ -1521,9 +1521,14 @@ export default function Home() {
         </div>
       </div>
       
-      <p className="text-lg text-gray-700 dark:text-gray-200 leading-relaxed max-w-2xl mx-auto px-4 font-medium">
-        Nearby Traveler helps travelers meet locals and other travelers through shared interests, activities, and events — building friendships that last a lifetime.
-      </p>
+      <div className="max-w-2xl mx-auto px-4 space-y-4">
+        <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
+          Travel doesn't change you — <em className="text-orange-600 dark:text-orange-400 font-semibold">the people you meet do.</em>
+        </p>
+        <p className="text-lg text-gray-700 dark:text-gray-200 leading-relaxed font-medium">
+          Nearby Traveler helps travelers meet locals and other travelers through shared interests, activities, and events — building friendships that last a lifetime.
+        </p>
+      </div>
       
       {effectiveUser?.userType === "business" && (
         <div className="flex flex-col gap-4 justify-center pt-8">
@@ -1596,8 +1601,11 @@ export default function Home() {
               )}
             </h1>
             
-            <div className="max-w-2xl">
+            <div className="max-w-2xl space-y-4">
               <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
+                Travel doesn't change you — <em className="text-orange-600 dark:text-orange-400 font-semibold">the people you meet do.</em>
+              </p>
+              <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed">
                 Nearby Traveler helps travelers meet locals and other travelers through shared interests, activities, and events — building friendships that last a lifetime.
               </p>
             </div>
