@@ -202,9 +202,9 @@ export default function LandingStreamlined() {
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-              <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Users className="w-8 h-8 text-gray-700 dark:text-gray-200" />
+              <div className="text-center bg-white dark:bg-gradient-to-br dark:from-blue-900/40 dark:to-blue-800/30 p-8 rounded-xl shadow-sm border border-transparent dark:border-blue-700/30">
+                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-600/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Users className="w-8 h-8 text-blue-600 dark:text-blue-300" />
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Share Meals with Travelers & Locals</h3>
                 <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
@@ -212,9 +212,9 @@ export default function LandingStreamlined() {
                 </p>
               </div>
 
-              <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <MapPin className="w-8 h-8 text-gray-700 dark:text-gray-200" />
+              <div className="text-center bg-white dark:bg-gradient-to-br dark:from-orange-900/40 dark:to-orange-800/30 p-8 rounded-xl shadow-sm border border-transparent dark:border-orange-700/30">
+                <div className="w-16 h-16 bg-orange-100 dark:bg-orange-600/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <MapPin className="w-8 h-8 text-orange-600 dark:text-orange-300" />
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Explore Authentic Spots Beyond Guidebooks</h3>
                 <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
@@ -222,9 +222,9 @@ export default function LandingStreamlined() {
                 </p>
               </div>
 
-              <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Globe className="w-8 h-8 text-gray-700 dark:text-gray-200" />
+              <div className="text-center bg-white dark:bg-gradient-to-br dark:from-blue-900/40 dark:to-blue-800/30 p-8 rounded-xl shadow-sm border border-transparent dark:border-blue-700/30">
+                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-600/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Globe className="w-8 h-8 text-blue-600 dark:text-blue-300" />
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Build a Global Circle of Connections</h3>
                 <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
@@ -232,9 +232,9 @@ export default function LandingStreamlined() {
                 </p>
               </div>
 
-              <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <RefreshCw className="w-8 h-8 text-gray-700 dark:text-gray-200" />
+              <div className="text-center bg-white dark:bg-gradient-to-br dark:from-orange-900/40 dark:to-orange-800/30 p-8 rounded-xl shadow-sm border border-transparent dark:border-orange-700/30">
+                <div className="w-16 h-16 bg-orange-100 dark:bg-orange-600/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <RefreshCw className="w-8 h-8 text-orange-600 dark:text-orange-300" />
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Reconnect When Paths Cross Again</h3>
                 <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
@@ -242,9 +242,9 @@ export default function LandingStreamlined() {
                 </p>
               </div>
 
-              <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Home className="w-8 h-8 text-gray-700 dark:text-gray-200" />
+              <div className="text-center bg-white dark:bg-gradient-to-br dark:from-blue-900/40 dark:to-blue-800/30 p-8 rounded-xl shadow-sm border border-transparent dark:border-blue-700/30">
+                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-600/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Home className="w-8 h-8 text-blue-600 dark:text-blue-300" />
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Create Events and Welcome the World</h3>
                 <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
@@ -252,9 +252,9 @@ export default function LandingStreamlined() {
                 </p>
               </div>
 
-              <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Shield className="w-8 h-8 text-gray-700 dark:text-gray-200" />
+              <div className="text-center bg-white dark:bg-gradient-to-br dark:from-orange-900/40 dark:to-orange-800/30 p-8 rounded-xl shadow-sm border border-transparent dark:border-orange-700/30">
+                <div className="w-16 h-16 bg-orange-100 dark:bg-orange-600/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Shield className="w-8 h-8 text-orange-600 dark:text-orange-300" />
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Vouched Connections & Verified Profiles</h3>
                 <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
@@ -360,8 +360,8 @@ export default function LandingStreamlined() {
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
-              <div className="text-center bg-white dark:bg-gray-700 p-6 sm:p-8 lg:p-10 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
+              <div className="text-center bg-white dark:bg-gradient-to-br dark:from-blue-900/40 dark:to-blue-800/30 p-6 sm:p-8 lg:p-10 rounded-xl shadow-sm border border-transparent dark:border-blue-700/30">
+                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-600/40 text-blue-600 dark:text-blue-200 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
                   1
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Share Your Vibe</h3>
@@ -370,8 +370,8 @@ export default function LandingStreamlined() {
                 </p>
               </div>
 
-              <div className="text-center bg-white dark:bg-gray-700 p-6 sm:p-8 lg:p-10 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
+              <div className="text-center bg-white dark:bg-gradient-to-br dark:from-orange-900/40 dark:to-orange-800/30 p-6 sm:p-8 lg:p-10 rounded-xl shadow-sm border border-transparent dark:border-orange-700/30">
+                <div className="w-16 h-16 bg-orange-100 dark:bg-orange-600/40 text-orange-600 dark:text-orange-200 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
                   2
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Connect Authentically</h3>
@@ -380,8 +380,8 @@ export default function LandingStreamlined() {
                 </p>
               </div>
 
-              <div className="text-center bg-white dark:bg-gray-700 p-6 sm:p-8 lg:p-10 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
+              <div className="text-center bg-white dark:bg-gradient-to-br dark:from-blue-900/40 dark:to-blue-800/30 p-6 sm:p-8 lg:p-10 rounded-xl shadow-sm border border-transparent dark:border-blue-700/30">
+                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-600/40 text-blue-600 dark:text-blue-200 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
                   3
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Create Epic Memories</h3>
@@ -445,23 +445,23 @@ export default function LandingStreamlined() {
             </h2>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6">
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
+              <div className="bg-gray-50 dark:bg-gradient-to-br dark:from-blue-900/40 dark:to-blue-800/30 rounded-xl p-4 sm:p-6 shadow-sm border border-transparent dark:border-blue-700/30">
                 <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900 dark:text-white">Solo Travelers</h3>
                 <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Turn exploring alone into shared adventures</p>
               </div>
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
+              <div className="bg-gray-50 dark:bg-gradient-to-br dark:from-orange-900/40 dark:to-orange-800/30 rounded-xl p-4 sm:p-6 shadow-sm border border-transparent dark:border-orange-700/30">
                 <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900 dark:text-white">Locals</h3>
                 <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Share your city and meet the world</p>
               </div>
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
+              <div className="bg-gray-50 dark:bg-gradient-to-br dark:from-blue-900/40 dark:to-blue-800/30 rounded-xl p-4 sm:p-6 shadow-sm border border-transparent dark:border-blue-700/30">
                 <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900 dark:text-white">New in Town</h3>
                 <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Find your tribe fast</p>
               </div>
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
+              <div className="bg-gray-50 dark:bg-gradient-to-br dark:from-orange-900/40 dark:to-orange-800/30 rounded-xl p-4 sm:p-6 shadow-sm border border-transparent dark:border-orange-700/30">
                 <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900 dark:text-white">Families</h3>
                 <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Connect with local families and fellow travelers</p>
               </div>
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
+              <div className="bg-gray-50 dark:bg-gradient-to-br dark:from-blue-900/40 dark:to-blue-800/30 rounded-xl p-4 sm:p-6 shadow-sm border border-transparent dark:border-blue-700/30">
                 <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900 dark:text-white">Business Travelers</h3>
                 <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Make work trips more than meetings</p>
               </div>
