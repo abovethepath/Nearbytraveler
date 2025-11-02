@@ -288,35 +288,6 @@ export default function LandingStreamlined() {
           </div>
         </section>
 
-        {/* Trusted by Real Communities */}
-        <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-8 sm:mb-12">
-              🧭 Trusted by Real Communities
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-              <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl">
-                <p className="text-3xl sm:text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">400+</p>
-                <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300">
-                  Travelers hosted by our founder
-                </p>
-              </div>
-              <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl">
-                <p className="text-3xl sm:text-4xl font-bold text-orange-600 dark:text-orange-400 mb-2">5</p>
-                <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300">
-                  Community ambassadors in Los Angeles
-                </p>
-              </div>
-              <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl">
-                <p className="text-3xl sm:text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">🌎</p>
-                <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300">
-                  Inspired by Couchsurfing & Meetup
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* When Travelers Meet Locals */}
         <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
           <div className="max-w-6xl mx-auto text-center">
