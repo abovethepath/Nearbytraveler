@@ -114,16 +114,16 @@ export default function LandingStreamlined() {
       <div className="w-full">
         
         {/* HERO SECTION - Fully Mobile Responsive */}
-        <div className="pt-4 pb-8 sm:pt-8 sm:pb-12 bg-white">
+        <div className="pt-4 pb-8 sm:pt-8 sm:pb-12 bg-white dark:bg-gray-900">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid gap-6 md:gap-8 lg:gap-12 lg:grid-cols-2 items-center">
               
               {/* Left text side */}
               <div className="order-2 lg:order-1 text-center lg:text-left">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 mb-6 sm:mb-8">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 dark:text-white mb-6 sm:mb-8">
                   Connect with Locals & Travelers Worldwide
                 </h1>
-                <p className="text-base sm:text-lg text-gray-600 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
                   Nearby Traveler connects travelers and locals through shared interests, activities, and events — making it easy to meet people and build friendships that last a lifetime.
                 </p>
                 
