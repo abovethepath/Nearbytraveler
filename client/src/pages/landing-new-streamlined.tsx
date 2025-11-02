@@ -112,7 +112,7 @@ export default function LandingStreamlined() {
         {/* Social Proof Banner */}
         <div className="bg-blue-600 dark:bg-blue-700 py-3 px-4 text-center">
           <p className="text-white text-sm sm:text-base font-medium">
-            💬 Join 100+ travelers and locals already waiting for launch in Los Angeles
+            👥 Join 100+ travelers and locals already waiting for launch in Los Angeles
           </p>
         </div>
 
@@ -123,15 +123,21 @@ export default function LandingStreamlined() {
               
               {/* Left text side */}
               <div className="order-2 lg:order-1 text-center lg:text-left">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 dark:text-white mb-6 sm:mb-8">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 dark:text-white mb-4">
                   Connect with Locals & Travelers Worldwide
                 </h1>
-                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                
+                {/* Quote line beneath headline */}
+                <p className="text-base sm:text-lg md:text-xl font-bold text-gray-700 dark:text-gray-300 italic mb-6 sm:mb-8">
+                  Travel doesn't change you. The people you meet do.
+                </p>
+                
+                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-8 sm:mb-10 leading-relaxed max-w-prose mx-auto lg:mx-0" style={{ maxWidth: '35ch' }}>
                   Nearby Traveler connects travelers and locals through shared interests, activities, and events — making it easy to meet people and build friendships that last a lifetime.
                 </p>
                 
-                {/* CTA Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                {/* CTA Buttons - Stack on mobile */}
+                <div className="flex flex-col gap-4 justify-center lg:justify-start">
                   <Button
                     onClick={handleGetStarted}
                     size="lg"
@@ -157,14 +163,6 @@ export default function LandingStreamlined() {
 
               {/* Right image side */}
               <div className="order-1 lg:order-2 flex flex-col items-center">
-                {/* Static powerful quote */}
-                <div className="mb-4 sm:mb-6 text-center w-full">
-                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 dark:text-white italic px-2">
-                    Travel doesn't change you.<br />
-                    The people you meet do.
-                  </p>
-                </div>
-                
                 {/* Hero Image - Rotating with smooth crossfade */}
                 <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-2xl shadow-lg">
                   {heroImages.map((image, index) => (
@@ -190,6 +188,31 @@ export default function LandingStreamlined() {
             </div>
           </div>
         </div>
+
+        {/* From the Founder */}
+        <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 to-orange-500">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-8 sm:mb-12">From the Founder</h2>
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 sm:p-8 lg:p-10 text-white">
+              <p className="text-lg sm:text-xl lg:text-2xl leading-relaxed mb-6 sm:mb-8 italic">
+                "After hosting 400+ travelers from 50 countries, I learned that one connection can change everything… I built the solution I wished existed."
+              </p>
+              <p className="text-lg sm:text-xl font-bold mb-6">— Aaron Lefkowitz, Founder</p>
+              <p className="text-base sm:text-lg leading-relaxed">
+                🌍 Nearby Traveler grew out of real travel communities—Couchsurfing bonfires to LA meetups. Our mission is to keep that spirit alive for a new generation.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Credibility Bar */}
+        <section className="py-4 sm:py-6 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 border-t border-b border-gray-200 dark:border-gray-700">
+          <div className="max-w-6xl mx-auto">
+            <p className="text-xs sm:text-sm text-center text-gray-600 dark:text-gray-400 leading-relaxed">
+              ✈️ 400+ travelers hosted by our founder | 🌆 5 community ambassadors in Los Angeles | 🌎 Inspired by global travel communities like Couchsurfing & Meetup
+            </p>
+          </div>
+        </section>
 
         {/* Why Nearby Traveler */}
         <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800">
@@ -261,24 +284,6 @@ export default function LandingStreamlined() {
                   Every member can be vouched for by others they've met, and profiles include optional verification for extra confidence.
                 </p>
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* From the Founder */}
-        <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 to-orange-500">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-8 sm:mb-12">From the Founder</h2>
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 sm:p-8 lg:p-10 text-white">
-              <p className="text-lg sm:text-xl lg:text-2xl leading-relaxed mb-6 sm:mb-8 italic">
-                "After hosting 400+ travelers from 50 countries, I learned that one connection can change everything. 
-                Travelers spend billions on flights and hotels, yet the most valuable part — the people you meet — is left to chance. 
-                I built the solution I wished existed."
-              </p>
-              <p className="text-lg sm:text-xl font-bold mb-6">— Aaron Lefkowitz, Founder</p>
-              <p className="text-base sm:text-lg leading-relaxed">
-                🌍 Nearby Traveler grew out of real travel communities — from Couchsurfing bonfires to local meetups in Los Angeles. Our mission is to keep that spirit alive for a new generation.
-              </p>
             </div>
           </div>
         </section>
