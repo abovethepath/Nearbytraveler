@@ -123,7 +123,7 @@ export default function LandingStreamlined() {
               
               {/* Left text side */}
               <div className="order-2 lg:order-1 text-center lg:text-left">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-orange-600 dark:text-orange-400 mb-6 sm:mb-8">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 dark:text-white mb-6 sm:mb-8">
                   Connect with <span className="dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-blue-400 dark:to-orange-400">Locals & Travelers</span> Worldwide
                 </h1>
                 
@@ -159,7 +159,7 @@ export default function LandingStreamlined() {
               {/* Right image side */}
               <div className="order-1 lg:order-2 flex flex-col items-center">
                 {/* Quote above photo */}
-                <p className="text-lg sm:text-xl md:text-2xl font-bold text-orange-600 dark:text-orange-400 italic mb-4 sm:mb-6 text-center leading-snug">
+                <p className="text-lg sm:text-xl md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-600 via-blue-500 to-orange-500 italic mb-4 sm:mb-6 text-center leading-snug">
                   Travel doesn't change you.<br />
                   The people you meet do.
                 </p>
