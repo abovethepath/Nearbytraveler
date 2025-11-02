@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
-import { Users, MapPin, Globe, Coffee, Heart, Car, RefreshCw, Home, Shield } from "lucide-react";
+import { Users, MapPin, Globe, Coffee, Heart, Car, RefreshCw, Home, Shield, Moon, Sun } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useTheme } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -15,7 +15,7 @@ const travelersHomeImage = "/assets/locals_1756777112458.png";
 export default function LandingStreamlined() {
   const [, setLocation] = useLocation();
   const [isMobile, setIsMobile] = useState(false);
-  const { setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const [currentImage, setCurrentImage] = useState(0);
   
   // Rotating images from locals and travelers landing pages
@@ -92,7 +92,18 @@ export default function LandingStreamlined() {
       
       {/* Fixed Theme Toggle and CTA Button */}
       <div className="fixed top-4 right-4 z-50">
-        <ThemeToggle />
+        <Button
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          size="icon"
+          className="bg-white dark:bg-gray-800 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 shadow-lg border border-gray-200 dark:border-gray-700 h-12 w-12"
+          data-testid="button-theme-toggle"
+        >
+          {theme === 'dark' ? (
+            <Sun className="h-6 w-6" />
+          ) : (
+            <Moon className="h-6 w-6" />
+          )}
+        </Button>
       </div>
       
       <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
