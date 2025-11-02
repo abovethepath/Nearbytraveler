@@ -109,6 +109,13 @@ export default function LandingStreamlined() {
 
       <div className="w-full">
         
+        {/* Social Proof Banner */}
+        <div className="bg-blue-600 dark:bg-blue-700 py-3 px-4 text-center">
+          <p className="text-white text-sm sm:text-base font-medium">
+            💬 Join 100+ travelers and locals already waiting for launch in Los Angeles
+          </p>
+        </div>
+
         {/* HERO SECTION - Fully Mobile Responsive */}
         <div className="pt-4 pb-8 sm:pt-8 sm:pb-12 bg-white dark:bg-gray-900">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -249,9 +256,9 @@ export default function LandingStreamlined() {
                 <div className="w-16 h-16 bg-gray-100 dark:bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Shield className="w-8 h-8 text-gray-700 dark:text-gray-200" />
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Build Trust with References & Verification</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Vouched Connections & Verified Profiles</h3>
                 <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
-                  Build trust through mutual connections and community references.
+                  Every member can be vouched for by others they've met, and profiles include optional verification for extra confidence.
                 </p>
               </div>
             </div>
@@ -268,7 +275,39 @@ export default function LandingStreamlined() {
                 Travelers spend billions on flights and hotels, yet the most valuable part — the people you meet — is left to chance. 
                 I built the solution I wished existed."
               </p>
-              <p className="text-lg sm:text-xl font-bold">— Aaron Lefkowitz, Founder</p>
+              <p className="text-lg sm:text-xl font-bold mb-6">— Aaron Lefkowitz, Founder</p>
+              <p className="text-base sm:text-lg leading-relaxed">
+                🌍 Nearby Traveler grew out of real travel communities — from Couchsurfing bonfires to local meetups in Los Angeles. Our mission is to keep that spirit alive for a new generation.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Trusted by Real Communities */}
+        <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-8 sm:mb-12">
+              🧭 Trusted by Real Communities
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+              <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl">
+                <p className="text-3xl sm:text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">400+</p>
+                <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300">
+                  Travelers hosted by our founder
+                </p>
+              </div>
+              <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl">
+                <p className="text-3xl sm:text-4xl font-bold text-orange-600 dark:text-orange-400 mb-2">5</p>
+                <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300">
+                  Community ambassadors in Los Angeles
+                </p>
+              </div>
+              <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl">
+                <p className="text-3xl sm:text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">🌎</p>
+                <p className="text-base sm:text-lg text-gray-700 dark:text-gray-300">
+                  Inspired by Couchsurfing & Meetup
+                </p>
+              </div>
             </div>
           </div>
         </section>
@@ -445,6 +484,29 @@ export default function LandingStreamlined() {
             >
               Start Connecting Now
             </Button>
+          </div>
+        </section>
+
+        {/* Launch Cities & Features */}
+        <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+          <div className="max-w-4xl mx-auto text-center">
+            <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-300 mb-6">
+              🌍 Launching soon in <span className="font-bold">Los Angeles, New York, London, and Lisbon</span>
+            </p>
+            <div className="flex flex-wrap justify-center gap-4 text-sm sm:text-base text-gray-600 dark:text-gray-400">
+              <span className="flex items-center gap-2">
+                <span className="text-blue-600 dark:text-blue-400">🔹</span>
+                Verified profiles
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="text-blue-600 dark:text-blue-400">🔹</span>
+                Community references
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="text-blue-600 dark:text-blue-400">🔹</span>
+                Vouched connections
+              </span>
+            </div>
           </div>
         </section>
       </div>
