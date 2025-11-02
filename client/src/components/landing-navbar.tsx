@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import Logo from "@/components/logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function LandingNavbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -46,6 +47,7 @@ export default function LandingNavbar() {
 
           {/* CTA Buttons - Fixed Width, Always Right */}
           <div className="hidden lg:flex items-center space-x-3 flex-shrink-0">
+            <ThemeToggle />
             <span className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-3 py-1.5 rounded-full font-medium">
               Beta Launch
             </span>
@@ -65,6 +67,7 @@ export default function LandingNavbar() {
 
           {/* Mobile Menu Button with Beta Badge */}
           <div className="flex items-center lg:hidden gap-2">
+            <ThemeToggle />
             <span className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-2 py-1 rounded-full font-medium">
               Beta Launch
             </span>
