@@ -140,7 +140,7 @@ export default function LandingStreamlined() {
                     }}
                     variant="outline"
                     size="lg"
-                    className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-4 rounded-xl text-lg font-medium transition-all duration-200"
+                    className="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800 px-8 py-4 rounded-xl text-lg font-medium transition-all duration-200"
                     data-testid="button-learn-more"
                   >
                     See How It Works
@@ -152,7 +152,7 @@ export default function LandingStreamlined() {
               <div className="order-1 lg:order-2 flex flex-col items-center">
                 {/* Static powerful quote */}
                 <div className="mb-4 sm:mb-6 text-center w-full">
-                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 italic px-2">
+                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 dark:text-white italic px-2">
                     Travel doesn't change you.<br />
                     The people you meet do.
                   </p>
@@ -185,72 +185,72 @@ export default function LandingStreamlined() {
         </div>
 
         {/* Why Nearby Traveler */}
-        <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
+        <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800">
           <div className="max-w-7xl mx-auto text-center">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-8 sm:mb-12">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-8 sm:mb-12">
               Why Nearby Traveler
             </h2>
-            <p className="text-lg sm:text-xl text-gray-600 mb-12 sm:mb-16 leading-relaxed">
+            <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-12 sm:mb-16 leading-relaxed">
               Whether you're traveling or at home, Nearby Traveler helps you create real connections that last.
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-              <div className="text-center bg-white p-8 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Users className="w-8 h-8 text-gray-700" />
+              <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
+                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Users className="w-8 h-8 text-gray-700 dark:text-gray-200" />
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Share Meals with Travelers & Locals</h3>
-                <p className="text-base sm:text-lg text-gray-600">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Share Meals with Travelers & Locals</h3>
+                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
                   Connect with travelers & locals before your trip starts.
                 </p>
               </div>
 
-              <div className="text-center bg-white p-8 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <MapPin className="w-8 h-8 text-gray-700" />
+              <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
+                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <MapPin className="w-8 h-8 text-gray-700 dark:text-gray-200" />
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Explore Authentic Spots Beyond Guidebooks</h3>
-                <p className="text-base sm:text-lg text-gray-600">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Explore Authentic Spots Beyond Guidebooks</h3>
+                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
                   Explore authentic spots shared by locals, not tourist traps.
                 </p>
               </div>
 
-              <div className="text-center bg-white p-8 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Globe className="w-8 h-8 text-gray-700" />
+              <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
+                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Globe className="w-8 h-8 text-gray-700 dark:text-gray-200" />
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Build a Global Circle of Connections</h3>
-                <p className="text-base sm:text-lg text-gray-600">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Build a Global Circle of Connections</h3>
+                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
                   Build a global network of real connections around the world.
                 </p>
               </div>
 
-              <div className="text-center bg-white p-8 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <RefreshCw className="w-8 h-8 text-gray-700" />
+              <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
+                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <RefreshCw className="w-8 h-8 text-gray-700 dark:text-gray-200" />
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Reconnect When Paths Cross Again</h3>
-                <p className="text-base sm:text-lg text-gray-600">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Reconnect When Paths Cross Again</h3>
+                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
                   Know when a friend you met in one city shows up in your next destination.
                 </p>
               </div>
 
-              <div className="text-center bg-white p-8 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Home className="w-8 h-8 text-gray-700" />
+              <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
+                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Home className="w-8 h-8 text-gray-700 dark:text-gray-200" />
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Create Events and Welcome the World</h3>
-                <p className="text-base sm:text-lg text-gray-600">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Create Events and Welcome the World</h3>
+                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
                   Welcome travelers, create events, and meet the world without leaving home.
                 </p>
               </div>
 
-              <div className="text-center bg-white p-8 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Shield className="w-8 h-8 text-gray-700" />
+              <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
+                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Shield className="w-8 h-8 text-gray-700 dark:text-gray-200" />
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Build Trust with References & Verification</h3>
-                <p className="text-base sm:text-lg text-gray-600">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Build Trust with References & Verification</h3>
+                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
                   Build trust through mutual connections and community references.
                 </p>
               </div>
@@ -274,79 +274,79 @@ export default function LandingStreamlined() {
         </section>
 
         {/* When Travelers Meet Locals */}
-        <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-white">
+        <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
           <div className="max-w-6xl mx-auto text-center">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-8 sm:mb-12">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-8 sm:mb-12">
               When Travelers Meet Locals, Magic Happens
             </h2>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12">
-              <div className="flex items-center justify-center p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 rounded-xl">
-                <Coffee className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500 mr-2 sm:mr-3 flex-shrink-0" />
-                <span className="text-sm sm:text-base text-gray-900 font-medium">Join authentic social scenes</span>
+              <div className="flex items-center justify-center p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl">
+                <Coffee className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500 dark:text-orange-400 mr-2 sm:mr-3 flex-shrink-0" />
+                <span className="text-sm sm:text-base text-gray-900 dark:text-white font-medium">Join authentic social scenes</span>
               </div>
-              <div className="flex items-center justify-center p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 rounded-xl">
-                <Car className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mr-2 sm:mr-3 flex-shrink-0" />
-                <span className="text-sm sm:text-base text-gray-900 font-medium">Discover day trip adventures</span>
+              <div className="flex items-center justify-center p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl">
+                <Car className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400 mr-2 sm:mr-3 flex-shrink-0" />
+                <span className="text-sm sm:text-base text-gray-900 dark:text-white font-medium">Discover day trip adventures</span>
               </div>
-              <div className="flex items-center justify-center p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 rounded-xl">
-                <Globe className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500 mr-2 sm:mr-3 flex-shrink-0" />
-                <span className="text-sm sm:text-base text-gray-900 font-medium">Practice language exchange</span>
+              <div className="flex items-center justify-center p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl">
+                <Globe className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500 dark:text-orange-400 mr-2 sm:mr-3 flex-shrink-0" />
+                <span className="text-sm sm:text-base text-gray-900 dark:text-white font-medium">Practice language exchange</span>
               </div>
-              <div className="flex items-center justify-center p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 rounded-xl">
-                <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mr-2 sm:mr-3 flex-shrink-0" />
-                <span className="text-sm sm:text-base text-gray-900 font-medium">Find meaningful relationships</span>
+              <div className="flex items-center justify-center p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl">
+                <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400 mr-2 sm:mr-3 flex-shrink-0" />
+                <span className="text-sm sm:text-base text-gray-900 dark:text-white font-medium">Find meaningful relationships</span>
               </div>
-              <div className="flex items-center justify-center p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 rounded-xl">
-                <Users className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500 mr-2 sm:mr-3 flex-shrink-0" />
-                <span className="text-sm sm:text-base text-gray-900 font-medium">Experience local culture</span>
+              <div className="flex items-center justify-center p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl">
+                <Users className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500 dark:text-orange-400 mr-2 sm:mr-3 flex-shrink-0" />
+                <span className="text-sm sm:text-base text-gray-900 dark:text-white font-medium">Experience local culture</span>
               </div>
-              <div className="flex items-center justify-center p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 rounded-xl">
-                <Users className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 mr-2 sm:mr-3 flex-shrink-0" />
-                <span className="text-sm sm:text-base text-gray-900 font-medium">Meet local families</span>
+              <div className="flex items-center justify-center p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl">
+                <Users className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400 mr-2 sm:mr-3 flex-shrink-0" />
+                <span className="text-sm sm:text-base text-gray-900 dark:text-white font-medium">Meet local families</span>
               </div>
             </div>
 
-            <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
+            <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
               This isn't just travel. This is transformation.
             </p>
           </div>
         </section>
 
         {/* How It Works */}
-        <section id="how-it-works" className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
+        <section id="how-it-works" className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center text-gray-900 mb-12 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center text-gray-900 dark:text-white mb-12 sm:mb-16">
               How It Works
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
-              <div className="text-center bg-white p-6 sm:p-8 lg:p-10 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-gray-100 text-gray-700 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
+              <div className="text-center bg-white dark:bg-gray-700 p-6 sm:p-8 lg:p-10 rounded-xl shadow-sm">
+                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
                   1
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Share Your Vibe</h3>
-                <p className="text-base sm:text-lg text-gray-600">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Share Your Vibe</h3>
+                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
                   Tell us your interests, activities and events planned at your destination.
                 </p>
               </div>
 
-              <div className="text-center bg-white p-6 sm:p-8 lg:p-10 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-gray-100 text-gray-700 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
+              <div className="text-center bg-white dark:bg-gray-700 p-6 sm:p-8 lg:p-10 rounded-xl shadow-sm">
+                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
                   2
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Connect Authentically</h3>
-                <p className="text-base sm:text-lg text-gray-600">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Connect Authentically</h3>
+                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
                   Meet Nearby Locals and Nearby Travelers who match your interests.
                 </p>
               </div>
 
-              <div className="text-center bg-white p-6 sm:p-8 lg:p-10 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-gray-100 text-gray-700 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
+              <div className="text-center bg-white dark:bg-gray-700 p-6 sm:p-8 lg:p-10 rounded-xl shadow-sm">
+                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
                   3
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Create Epic Memories</h3>
-                <p className="text-base sm:text-lg text-gray-600">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Create Epic Memories</h3>
+                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
                   Join experiences and build friendships that last.
                 </p>
               </div>
@@ -355,42 +355,42 @@ export default function LandingStreamlined() {
         </section>
 
         {/* Community in Action */}
-        <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-white">
+        <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center text-gray-900 mb-8 sm:mb-12">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center text-gray-900 dark:text-white mb-8 sm:mb-12">
               See Our Community in Action
             </h2>
-            <p className="text-center text-lg sm:text-xl text-gray-600 mb-12 sm:mb-16 max-w-4xl mx-auto leading-relaxed">
+            <p className="text-center text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-12 sm:mb-16 max-w-4xl mx-auto leading-relaxed">
               Every week, Nearby Traveler sponsors authentic local experiences hosted by passionate Nearby Locals. From cultural tours to food adventures, these events bring our community together and showcase the real heart of each city.
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-              <div className="bg-gradient-to-br from-blue-50 to-orange-50 rounded-xl p-6 sm:p-8">
+              <div className="bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl p-6 sm:p-8">
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-900">Beach Bonfire & BBQ</h3>
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Beach Bonfire & BBQ</h3>
                   <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold self-start">Free</span>
                 </div>
-                <p className="text-sm sm:text-base text-gray-700">
+                <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300">
                   Sunset gathering with locals — authentic LA beach culture, music, and new friends.
                 </p>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-orange-50 rounded-xl p-6 sm:p-8">
+              <div className="bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl p-6 sm:p-8">
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-900">Taco Tuesday</h3>
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Taco Tuesday</h3>
                   <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold self-start">$1.50</span>
                 </div>
-                <p className="text-sm sm:text-base text-gray-700">
+                <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300">
                   Weekly street taco adventure with fellow food lovers at the city's best Mexican spots.
                 </p>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-orange-50 rounded-xl p-6 sm:p-8">
+              <div className="bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl p-6 sm:p-8">
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-900">Hollywood Sign Hike</h3>
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Hollywood Sign Hike</h3>
                   <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold self-start">Free</span>
                 </div>
-                <p className="text-sm sm:text-base text-gray-700">
+                <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300">
                   Saturday morning hikes with locals and travelers — amazing views, great photos, real LA.
                 </p>
               </div>
@@ -399,41 +399,41 @@ export default function LandingStreamlined() {
         </section>
 
         {/* Everyone's Welcome */}
-        <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-white">
+        <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-800">
           <div className="max-w-6xl mx-auto text-center">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-12 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-12 sm:mb-16">
               Everyone's Welcome
             </h2>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6">
-              <div className="bg-gray-50 rounded-xl p-4 sm:p-6 shadow-sm">
-                <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900">Solo Travelers</h3>
-                <p className="text-sm sm:text-base text-gray-600">Turn exploring alone into shared adventures</p>
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
+                <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900 dark:text-white">Solo Travelers</h3>
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Turn exploring alone into shared adventures</p>
               </div>
-              <div className="bg-gray-50 rounded-xl p-4 sm:p-6 shadow-sm">
-                <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900">Locals</h3>
-                <p className="text-sm sm:text-base text-gray-600">Share your city and meet the world</p>
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
+                <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900 dark:text-white">Locals</h3>
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Share your city and meet the world</p>
               </div>
-              <div className="bg-gray-50 rounded-xl p-4 sm:p-6 shadow-sm">
-                <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900">New in Town</h3>
-                <p className="text-sm sm:text-base text-gray-600">Find your tribe fast</p>
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
+                <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900 dark:text-white">New in Town</h3>
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Find your tribe fast</p>
               </div>
-              <div className="bg-gray-50 rounded-xl p-4 sm:p-6 shadow-sm">
-                <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900">Families</h3>
-                <p className="text-sm sm:text-base text-gray-600">Connect with local families and fellow travelers</p>
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
+                <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900 dark:text-white">Families</h3>
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Connect with local families and fellow travelers</p>
               </div>
-              <div className="bg-gray-50 rounded-xl p-4 sm:p-6 shadow-sm">
-                <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900">Business Travelers</h3>
-                <p className="text-sm sm:text-base text-gray-600">Make work trips more than meetings</p>
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
+                <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900 dark:text-white">Business Travelers</h3>
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Make work trips more than meetings</p>
               </div>
             </div>
           </div>
         </section>
 
         {/* Final CTA */}
-        <section className="animate-on-scroll py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white">
+        <section className="animate-on-scroll py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
           <div className="max-w-4xl mx-auto text-center">
-            <p className="text-xl sm:text-2xl lg:text-3xl text-gray-600 mb-8 sm:mb-12 leading-relaxed font-bold">
+            <p className="text-xl sm:text-2xl lg:text-3xl text-gray-600 dark:text-gray-300 mb-8 sm:mb-12 leading-relaxed font-bold">
               Be part of a new way to travel where weekly events and instant connections mean you're never really traveling alone.
             </p>
             
