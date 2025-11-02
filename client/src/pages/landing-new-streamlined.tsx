@@ -132,7 +132,7 @@ export default function LandingStreamlined() {
                   Travel doesn't change you. The people you meet do.
                 </p>
                 
-                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-8 sm:mb-10 leading-relaxed max-w-prose mx-auto lg:mx-0" style={{ maxWidth: '35ch' }}>
+                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
                   Nearby Traveler connects travelers and locals through shared interests, activities, and events — making it easy to meet people and build friendships that last a lifetime.
                 </p>
                 
