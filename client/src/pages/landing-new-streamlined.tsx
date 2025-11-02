@@ -123,7 +123,7 @@ export default function LandingStreamlined() {
                   Connect with Locals & Travelers Worldwide
                 </h1>
                 <p className="text-base sm:text-lg text-gray-600 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                  Nearby Traveler solves traveler loneliness by connecting you with locals and fellow travelers based on common interests, activities, demographics and events planned. Build real friendships that last a lifetime.
+                  Nearby Traveler helps travelers meet locals and other travelers through shared interests, activities, and events — building friendships that last a lifetime.
                 </p>
                 
                 {/* CTA Buttons */}
