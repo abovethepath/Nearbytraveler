@@ -46,6 +46,9 @@ export default function LandingNavbar() {
 
           {/* CTA Buttons - Fixed Width, Always Right */}
           <div className="hidden lg:flex items-center space-x-3 flex-shrink-0">
+            <span className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-3 py-1.5 rounded-full font-medium">
+              Beta Launch
+            </span>
             <button 
               onClick={() => setLocation('/signin')}
               className="bg-gray-100 dark:bg-blue-600 hover:bg-gray-200 dark:hover:bg-blue-700 text-black dark:text-white border-2 border-gray-300 dark:border-transparent px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap"
