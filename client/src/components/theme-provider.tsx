@@ -42,7 +42,7 @@ export function ThemeProvider({
     return "dark";
   })
 
-  const [resolvedTheme, setResolvedTheme] = useState<"dark" | "light">("light")
+  const [resolvedTheme, setResolvedTheme] = useState<"dark" | "light">("dark")
   const [isSystemTheme, setIsSystemTheme] = useState(theme === "system")
 
   // Listen for system theme changes
