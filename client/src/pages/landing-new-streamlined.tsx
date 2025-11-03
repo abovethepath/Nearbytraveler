@@ -35,7 +35,7 @@ export default function LandingStreamlined() {
   // Rotating taglines
   const taglines = [
     { line1: "Travel doesn't change you.", line2: "The people you meet do." },
-    { line1: "Meet once.", line2: "Reconnect everywhere." }
+    { line1: "When old friends are nearby,", line2: "we let you know." }
   ];
 
   useEffect(() => {
