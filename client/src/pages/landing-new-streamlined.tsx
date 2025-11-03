@@ -383,9 +383,9 @@ export default function LandingStreamlined() {
                 <div className="w-16 h-16 bg-blue-100 dark:bg-blue-600 text-blue-600 dark:text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
                   1
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Share Your Vibe</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Create Your Profile</h3>
                 <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
-                  Tell us your interests and what you enjoy in your hometown.
+                  Sign up as a local or traveler. Add your hometown, interests, and activities you enjoy. Set your travel plans if you're heading somewhere.
                 </p>
               </div>
 
@@ -393,9 +393,9 @@ export default function LandingStreamlined() {
                 <div className="w-16 h-16 bg-orange-100 dark:bg-orange-600 text-orange-600 dark:text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
                   2
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Connect Authentically</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Discover & Connect</h3>
                 <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
-                  Meet nearby locals and travelers who match your interests. Get notified when past connections are in your city.
+                  Browse locals and travelers in your city or destination. Message them, join community events, and make plans to meet up.
                 </p>
               </div>
 
@@ -403,9 +403,9 @@ export default function LandingStreamlined() {
                 <div className="w-16 h-16 bg-blue-100 dark:bg-blue-600 text-blue-600 dark:text-white rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
                   3
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Create Epic Memories</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Get Proximity Alerts</h3>
                 <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
-                  Join experiences and build friendships that last.
+                  When someone you connected with shows up in your city—or you travel to theirs—we notify you so you can reconnect.
                 </p>
               </div>
             </div>
