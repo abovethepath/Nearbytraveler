@@ -271,27 +271,53 @@ export default function LandingStreamlined() {
         </section>
 
         {/* Reconnect Across Cities - NEW SECTION */}
-        <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center text-gray-900 dark:text-white mb-8 sm:mb-12">
+        <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center text-gray-900 dark:text-white mb-12 sm:mb-16">
               Reconnect Across Cities
             </h2>
             
-            <div className="space-y-6 sm:space-y-8 mb-8 sm:mb-12">
-              <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
-                Remember that person you met in Barcelona? They just landed in your city.
-              </p>
-              <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
-                The traveler you hosted last year? They're in Tokyo—where you're heading next week.
-              </p>
-              <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-300 leading-relaxed font-semibold">
+            {/* Example Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mb-12 sm:mb-16">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 sm:p-8 shadow-lg border-l-4 border-blue-500">
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                    <MapPin className="w-6 h-6 text-blue-600 dark:text-white" />
+                  </div>
+                  <p className="text-lg sm:text-xl text-gray-900 dark:text-white font-semibold leading-relaxed">
+                    Remember that person you met in Barcelona? They just landed in your city.
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 sm:p-8 shadow-lg border-l-4 border-orange-500">
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-12 h-12 bg-orange-100 dark:bg-orange-600 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Globe className="w-6 h-6 text-orange-600 dark:text-white" />
+                  </div>
+                  <p className="text-lg sm:text-xl text-gray-900 dark:text-white font-semibold leading-relaxed">
+                    The traveler you hosted last year? They're in Tokyo—where you're heading next week.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Key Feature Highlight */}
+            <div className="bg-gradient-to-r from-blue-600 to-orange-500 rounded-2xl p-8 sm:p-10 lg:p-12 shadow-xl mb-12 sm:mb-16">
+              <p className="text-xl sm:text-2xl lg:text-3xl text-white text-center font-bold leading-relaxed">
                 Nearby Traveler notifies you when friends from past travels are nearby. Turn one-time encounters into lifelong connections that span the globe.
               </p>
             </div>
             
-            <p className="text-xl sm:text-2xl text-center text-gray-900 dark:text-white font-bold leading-relaxed">
-              One coffee in Paris becomes dinner in New York. A hiking buddy in Bali reconnects with you in Berlin. Your travel friendships don't end when the trip does—they follow you around the world.
-            </p>
+            {/* Bottom Statement */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 sm:p-10 lg:p-12 shadow-lg">
+              <p className="text-xl sm:text-2xl lg:text-3xl text-center text-gray-900 dark:text-white font-bold leading-relaxed mb-6">
+                One coffee in Paris becomes dinner in New York. A hiking buddy in Bali reconnects with you in Berlin.
+              </p>
+              <p className="text-lg sm:text-xl text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-orange-500 font-bold">
+                Your travel friendships don't end when the trip does—they follow you around the world.
+              </p>
+            </div>
           </div>
         </section>
 
