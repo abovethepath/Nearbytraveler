@@ -315,7 +315,7 @@ export default function LandingStreamlined() {
                 One coffee in Paris becomes dinner in New York. A hiking buddy in Bali reconnects with you in Berlin.
               </p>
               <p className="text-lg sm:text-xl text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-orange-500 font-bold">
-                Your travel friendships don't end when the trip does—they follow you around the world.
+                Your travel friendships don't end when the trip does. Keep those connections alive, no matter where life takes you next.
               </p>
             </div>
           </div>
