@@ -126,10 +126,22 @@ export default function LandingStreamlined() {
       <div className="w-full">
         
         {/* Social Proof Banner */}
-        <div className="bg-blue-600 dark:bg-blue-700 py-3 px-4 text-center">
-          <p className="text-white text-sm sm:text-base font-medium">
-            👥 Join 100+ travelers and locals already waiting for launch in Los Angeles
-          </p>
+        <div className="bg-gradient-to-r from-blue-600 to-orange-500 py-6 sm:py-8 px-4 text-center">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
+              <div className="flex items-center gap-3">
+                <Users className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+                <div className="text-left">
+                  <p className="text-3xl sm:text-4xl font-bold text-white">100+</p>
+                  <p className="text-sm sm:text-base text-white/90">Members Waiting</p>
+                </div>
+              </div>
+              <div className="hidden sm:block w-px h-12 bg-white/30"></div>
+              <p className="text-lg sm:text-xl text-white font-semibold">
+                Join travelers and locals waiting for launch in Los Angeles
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* HERO SECTION - Fully Mobile Responsive */}
