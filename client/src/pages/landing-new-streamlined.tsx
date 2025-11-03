@@ -17,6 +17,7 @@ export default function LandingStreamlined() {
   const [isMobile, setIsMobile] = useState(false);
   const { theme, setTheme } = useTheme();
   const [currentImage, setCurrentImage] = useState(0);
+  const [currentTagline, setCurrentTagline] = useState(0);
   
   // Rotating images from locals and travelers landing pages
   const heroImages = [
@@ -29,6 +30,12 @@ export default function LandingStreamlined() {
     "Locals sharing experiences and welcoming travelers",
     "Travelers connecting with arms around each other",
     "Travelers exploring together"
+  ];
+
+  // Rotating taglines
+  const taglines = [
+    { line1: "Travel doesn't change you.", line2: "The people you meet do." },
+    { line1: "Meet once.", line2: "Reconnect everywhere." }
   ];
 
   useEffect(() => {
@@ -49,6 +56,15 @@ export default function LandingStreamlined() {
 
     return () => clearInterval(imageInterval);
   }, [heroImages.length]);
+
+  // Rotate taglines every 10 seconds
+  useEffect(() => {
+    const taglineInterval = setInterval(() => {
+      setCurrentTagline(prev => (prev + 1) % taglines.length);
+    }, 10000);
+
+    return () => clearInterval(taglineInterval);
+  }, [taglines.length]);
 
   // Theme toggle available - removed forced light mode
 
@@ -158,10 +174,10 @@ export default function LandingStreamlined() {
 
               {/* Right image side */}
               <div className="order-1 lg:order-2 flex flex-col items-center">
-                {/* Quote above photo */}
-                <p className="text-lg sm:text-xl md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-orange-500 italic mb-4 sm:mb-6 text-center leading-snug">
-                  Travel doesn't change you.<br />
-                  The people you meet do.
+                {/* Rotating Quote above photo */}
+                <p className="text-lg sm:text-xl md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-orange-500 italic mb-4 sm:mb-6 text-center leading-snug transition-opacity duration-500">
+                  {taglines[currentTagline].line1}<br />
+                  {taglines[currentTagline].line2}
                 </p>
                 
                 {/* Hero Image - Rotating with smooth crossfade */}
