@@ -206,31 +206,6 @@ export default function LandingStreamlined() {
           </div>
         </div>
 
-        {/* From the Founder */}
-        <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 to-orange-500">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-8 sm:mb-12">From the Founder</h2>
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 sm:p-8 lg:p-10 text-white">
-              <p className="text-lg sm:text-xl lg:text-2xl leading-relaxed mb-6 sm:mb-8 italic">
-                "After hosting 400+ travelers from 50 countries, I learned that one connection can change everything… I built the solution I wished existed."
-              </p>
-              <p className="text-lg sm:text-xl font-bold mb-6">— Aaron Lefkowitz, Founder</p>
-              <p className="text-base sm:text-lg leading-relaxed">
-                🌍 Nearby Traveler grew out of real travel communities—Couchsurfing bonfires to LA meetups. Our mission is to keep that spirit alive for a new generation.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Credibility Bar */}
-        <section className="py-4 sm:py-6 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 border-t border-b border-gray-200 dark:border-gray-700">
-          <div className="max-w-6xl mx-auto">
-            <p className="text-xs sm:text-sm text-center text-gray-600 dark:text-gray-400 leading-relaxed">
-              ✈️ 400+ travelers hosted by our founder | 🌆 5 community ambassadors in Los Angeles | 🌎 Inspired by global travel communities like Couchsurfing & Meetup
-            </p>
-          </div>
-        </section>
-
         {/* Why Nearby Traveler */}
         <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800">
           <div className="max-w-7xl mx-auto text-center">
@@ -244,64 +219,79 @@ export default function LandingStreamlined() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
               <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
                 <div className="w-16 h-16 bg-blue-100 dark:bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Users className="w-8 h-8 text-blue-600 dark:text-white" />
-                </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Share Meals with Travelers & Locals</h3>
-                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
-                  Connect with travelers & locals before your trip starts.
-                </p>
-              </div>
-
-              <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-orange-100 dark:bg-orange-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <MapPin className="w-8 h-8 text-orange-600 dark:text-white" />
-                </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Explore Authentic Spots Beyond Guidebooks</h3>
-                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
-                  Explore authentic spots shared by locals, not tourist traps.
-                </p>
-              </div>
-
-              <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Globe className="w-8 h-8 text-blue-600 dark:text-white" />
-                </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Build a Global Circle of Connections</h3>
-                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
-                  Build a global network of real connections around the world.
-                </p>
-              </div>
-
-              <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-orange-100 dark:bg-orange-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <RefreshCw className="w-8 h-8 text-orange-600 dark:text-white" />
+                  <RefreshCw className="w-8 h-8 text-blue-600 dark:text-white" />
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Reconnect When Paths Cross Again</h3>
                 <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
-                  Know when a friend you met in one city shows up in your next destination.
-                </p>
-              </div>
-
-              <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Home className="w-8 h-8 text-blue-600 dark:text-white" />
-                </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Create Events and Welcome the World</h3>
-                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
-                  Welcome travelers, create events, and meet the world without leaving home.
+                  Know when a friend you met in one city shows up in your next destination—the only app that notifies you when travel friends are nearby.
                 </p>
               </div>
 
               <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
                 <div className="w-16 h-16 bg-orange-100 dark:bg-orange-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Shield className="w-8 h-8 text-orange-600 dark:text-white" />
+                  <Coffee className="w-8 h-8 text-orange-600 dark:text-white" />
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Share Meals with Travelers & Locals</h3>
+                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
+                  Connect with people before your trip starts and turn dinners into friendships.
+                </p>
+              </div>
+
+              <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
+                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <MapPin className="w-8 h-8 text-blue-600 dark:text-white" />
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Explore Authentic Spots Beyond Guidebooks</h3>
+                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
+                  Discover hidden gems shared by locals, not tourist traps.
+                </p>
+              </div>
+
+              <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
+                <div className="w-16 h-16 bg-orange-100 dark:bg-orange-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Home className="w-8 h-8 text-orange-600 dark:text-white" />
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Create Events and Welcome the World</h3>
+                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
+                  Host travelers, organize meetups, and meet the world without leaving home.
+                </p>
+              </div>
+
+              <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
+                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Shield className="w-8 h-8 text-blue-600 dark:text-white" />
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Vouched Connections & Verified Profiles</h3>
                 <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
-                  Every member can be vouched for by others they've met, and profiles include optional verification for extra confidence.
+                  Every member can be vouched for by others they've met, with optional verification for added trust.
                 </p>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Reconnect Across Cities - NEW SECTION */}
+        <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center text-gray-900 dark:text-white mb-8 sm:mb-12">
+              Reconnect Across Cities
+            </h2>
+            
+            <div className="space-y-6 sm:space-y-8 mb-8 sm:mb-12">
+              <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
+                Remember that person you met in Barcelona? They just landed in your city.
+              </p>
+              <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
+                The traveler you hosted last year? They're in Tokyo—where you're heading next week.
+              </p>
+              <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-300 leading-relaxed font-semibold">
+                Nearby Traveler notifies you when friends from past travels are nearby. Turn one-time encounters into lifelong connections that span the globe.
+              </p>
+            </div>
+            
+            <p className="text-xl sm:text-2xl text-center text-gray-900 dark:text-white font-bold leading-relaxed">
+              One coffee in Paris becomes dinner in New York. A hiking buddy in Bali reconnects with you in Berlin. Your travel friendships don't end when the trip does—they follow you around the world.
+            </p>
           </div>
         </section>
 
@@ -340,7 +330,7 @@ export default function LandingStreamlined() {
             </div>
 
             <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
-              This isn't just travel. This is transformation.
+              This isn't just travel. This is connection.
             </p>
           </div>
         </section>
@@ -369,7 +359,7 @@ export default function LandingStreamlined() {
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Connect Authentically</h3>
                 <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
-                  Meet Nearby Locals and Nearby Travelers who match your interests.
+                  Meet nearby locals and travelers who match your interests. Get notified when past connections are in your city.
                 </p>
               </div>
 
@@ -393,7 +383,7 @@ export default function LandingStreamlined() {
               See Our Community in Action
             </h2>
             <p className="text-center text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-12 sm:mb-16 max-w-4xl mx-auto leading-relaxed">
-              Every week, Nearby Traveler sponsors authentic local experiences hosted by passionate Nearby Locals. From cultural tours to food adventures, these events bring our community together and showcase the real heart of each city.
+              Every week, Nearby Traveler sponsors authentic local experiences hosted by passionate community members. From cultural tours to food adventures, these events bring our community together and showcase the real heart of each city.
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
@@ -430,35 +420,64 @@ export default function LandingStreamlined() {
           </div>
         </section>
 
+        {/* From the Founder */}
+        <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 to-orange-500">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-8 sm:mb-12">From the Founder</h2>
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 sm:p-8 lg:p-10 text-white">
+              <p className="text-lg sm:text-xl lg:text-2xl leading-relaxed mb-6 sm:mb-8 italic">
+                "After hosting 400+ travelers from 50 countries, I learned that one connection can change everything… I built the solution I wished existed."
+              </p>
+              <p className="text-lg sm:text-xl font-bold mb-6">— Aaron Lefkowitz, Founder</p>
+              <p className="text-base sm:text-lg leading-relaxed">
+                🌍 Nearby Traveler grew out of real travel communities—from Couchsurfing bonfires to LA meetups. Our mission is to keep that spirit alive for a new generation.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Credibility Bar */}
+        <section className="py-4 sm:py-6 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 border-t border-b border-gray-200 dark:border-gray-700">
+          <div className="max-w-6xl mx-auto">
+            <p className="text-xs sm:text-sm text-center text-gray-600 dark:text-gray-400 leading-relaxed">
+              ✈️ 400+ travelers hosted by our founder | 🌆 5 community ambassadors in Los Angeles | 🌎 Inspired by global travel communities like Couchsurfing & Meetup
+            </p>
+          </div>
+        </section>
+
         {/* Everyone's Welcome */}
-        <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-800">
+        <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800">
           <div className="max-w-6xl mx-auto text-center">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-12 sm:mb-16">
               Everyone's Welcome
             </h2>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6">
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
+              <div className="bg-white dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
                 <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900 dark:text-white">Solo Travelers</h3>
                 <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Turn exploring alone into shared adventures</p>
               </div>
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
+              <div className="bg-white dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
                 <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900 dark:text-white">Locals</h3>
                 <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Share your city and meet the world</p>
               </div>
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
+              <div className="bg-white dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
                 <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900 dark:text-white">New in Town</h3>
                 <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Find your tribe fast</p>
               </div>
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
+              <div className="bg-white dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
                 <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900 dark:text-white">Families</h3>
                 <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Connect with local families and fellow travelers</p>
               </div>
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
+              <div className="bg-white dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
                 <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900 dark:text-white">Business Travelers</h3>
                 <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Make work trips more than meetings</p>
               </div>
             </div>
+            
+            <p className="mt-12 sm:mt-16 text-lg sm:text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
+              Be part of a new way to travel where weekly events and instant connections mean you're never really traveling alone.
+            </p>
           </div>
         </section>
 
