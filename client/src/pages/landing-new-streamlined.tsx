@@ -266,6 +266,16 @@ export default function LandingStreamlined() {
                   Every member can be vouched for by others they've met, with optional verification for added trust.
                 </p>
               </div>
+
+              <div className="text-center bg-white dark:bg-gray-700 p-8 rounded-xl shadow-sm">
+                <div className="w-16 h-16 bg-orange-100 dark:bg-orange-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Users className="w-8 h-8 text-orange-600 dark:text-white" />
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Build a Global Network of Friends</h3>
+                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
+                  Create a worldwide circle of connections who share your interests and values.
+                </p>
+              </div>
             </div>
           </div>
         </section>
