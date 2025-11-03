@@ -251,9 +251,9 @@ export default function LandingStreamlined() {
                 <div className="w-16 h-16 bg-orange-100 dark:bg-orange-600 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Home className="w-8 h-8 text-orange-600 dark:text-white" />
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Create Events and Welcome the World</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Build Your Local Community</h3>
                 <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
-                  Host travelers, organize meetups, and meet the world without leaving home.
+                  Organize events, welcome travelers, and build community without leaving home.
                 </p>
               </div>
 
