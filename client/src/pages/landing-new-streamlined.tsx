@@ -331,7 +331,7 @@ export default function LandingStreamlined() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12">
               <div className="flex items-center justify-center p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl">
                 <Coffee className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500 dark:text-orange-400 mr-2 sm:mr-3 flex-shrink-0" />
-                <span className="text-sm sm:text-base text-gray-900 dark:text-white font-medium">Join authentic social scenes</span>
+                <span className="text-sm sm:text-base text-gray-900 dark:text-white font-medium">Expand your social life</span>
               </div>
               <div className="flex items-center justify-center p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl">
                 <Car className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400 mr-2 sm:mr-3 flex-shrink-0" />
