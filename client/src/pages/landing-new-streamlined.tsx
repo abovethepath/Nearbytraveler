@@ -385,7 +385,7 @@ export default function LandingStreamlined() {
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Share Your Vibe</h3>
                 <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
-                  Tell us your interests, activities and events planned at your destination.
+                  Tell us your interests and what you enjoy in your hometown.
                 </p>
               </div>
 
