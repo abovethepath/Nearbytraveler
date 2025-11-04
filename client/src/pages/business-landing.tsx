@@ -44,7 +44,7 @@ export default function BusinessLanding() {
         <Button 
           onClick={() => {
             trackEvent('signup_cta_click', 'business_landing', 'floating_join_now');
-            setLocation('/launching-soon');
+            setLocation('/signup');
           }}
           className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 sm:px-6 sm:py-3 rounded-lg shadow-sm transition-all duration-200 text-sm sm:text-base"
           data-testid="button-floating-join-now"
@@ -82,7 +82,7 @@ export default function BusinessLanding() {
                   <Button
                     onClick={() => {
                       trackEvent('signup_cta_click', 'business_landing', 'main_cta');
-                      setLocation('/auth/signup');
+                      setLocation('/signup');
                     }}
                     size="lg"
                     className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
