@@ -129,7 +129,7 @@ export default function LandingStreamlined() {
         <div className="bg-gradient-to-r from-orange-600 to-red-600 py-4 sm:py-5 px-4 text-center">
           <div className="max-w-4xl mx-auto">
             <p className="text-xl sm:text-2xl text-white font-bold">
-              🔥 Join the Prelaunch Waitlist - Limited Spots Available
+              🔥 Join the Prelaunch Waitlist - Launching Soon in LA
             </p>
           </div>
         </div>
