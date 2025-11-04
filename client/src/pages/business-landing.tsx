@@ -78,10 +78,11 @@ export default function BusinessLanding() {
                 
                 {/* CTA Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                  {/* REAL SIGNUP BUTTON - Secret tester access only */}
                   <Button
                     onClick={() => {
                       trackEvent('signup_cta_click', 'business_landing', 'main_cta');
-                      setLocation('/launching-soon');
+                      setLocation('/auth/signup');
                     }}
                     size="lg"
                     className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
