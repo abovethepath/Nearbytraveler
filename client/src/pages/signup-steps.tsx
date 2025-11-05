@@ -408,7 +408,7 @@ export default function SignupSteps() {
             {/* Step 1: Account Information */}
             {currentStep === 1 && (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
                   {[
                     { type: "local", icon: User, title: "Nearby Local", desc: "I live here and want to meet travelers" },
                     { type: "traveler", icon: Plane, title: "Traveling Now", desc: "I'm currently traveling and want to meet locals" },
@@ -417,17 +417,18 @@ export default function SignupSteps() {
                     <div
                       key={type}
                       onClick={() => setFormData({ ...formData, userType: type })}
-                      className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                      className={`p-3 border-2 rounded-lg cursor-pointer transition-all ${
                         formData.userType === type
                           ? 'border-teal-500 bg-teal-50'
                           : 'border-gray-200 hover:border-teal-300'
                       }`}
+                      data-testid={`button-usertype-${type}`}
                     >
-                      <Icon className={`w-8 h-8 mx-auto mb-2 ${
+                      <Icon className={`w-6 h-6 mx-auto mb-1.5 ${
                         formData.userType === type ? 'text-teal-600' : 'text-gray-400'
                       }`} />
-                      <h3 className="font-semibold text-center">{title}</h3>
-                      <p className="text-sm text-gray-600 text-center">{desc}</p>
+                      <h3 className="font-semibold text-center text-sm">{title}</h3>
+                      <p className="text-xs text-gray-600 text-center">{desc}</p>
                     </div>
                   ))}
                 </div>
