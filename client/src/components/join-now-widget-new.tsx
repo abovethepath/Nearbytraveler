@@ -45,10 +45,10 @@ export default function JoinNowWidgetNew() {
           <button
             onClick={() => handleUserTypeClick("local")}
             type="button"
-            className={`w-full cursor-pointer rounded-lg p-3.5 text-center transition-all shadow-md border-3 ${
+            className={`w-full cursor-pointer rounded-lg p-3.5 text-center transition-all border-2 border-l-4 ${
               userType === "local" 
-                ? "border-blue-600 bg-blue-50 dark:bg-blue-900 dark:border-blue-400 shadow-xl scale-[1.02] ring-2 ring-blue-200 dark:ring-blue-800" 
-                : "border-gray-400 dark:border-gray-500 hover:border-blue-400 dark:hover:border-blue-500 bg-white dark:bg-gray-800 hover:shadow-lg"
+                ? "border-blue-600 border-l-blue-600 bg-blue-50 dark:bg-blue-900 dark:border-blue-400 dark:border-l-blue-400 shadow-xl scale-[1.02] ring-2 ring-blue-200 dark:ring-blue-800" 
+                : "border-gray-300 dark:border-gray-600 border-l-blue-500 dark:border-l-blue-400 hover:border-blue-400 dark:hover:border-blue-500 bg-blue-50/30 dark:bg-blue-900/20 hover:shadow-lg"
             }`}
             data-testid="button-select-local"
           >
@@ -64,17 +64,17 @@ export default function JoinNowWidgetNew() {
           <button
             onClick={() => handleUserTypeClick("traveler")}
             type="button"
-            className={`w-full cursor-pointer rounded-lg p-3.5 text-center transition-all shadow-md border-3 ${
+            className={`w-full cursor-pointer rounded-lg p-3.5 text-center transition-all border-2 border-l-4 ${
               userType === "traveler" 
-                ? "border-blue-600 bg-blue-50 dark:bg-blue-900 dark:border-blue-400 shadow-xl scale-[1.02] ring-2 ring-blue-200 dark:ring-blue-800" 
-                : "border-gray-400 dark:border-gray-500 hover:border-blue-400 dark:hover:border-blue-500 bg-white dark:bg-gray-800 hover:shadow-lg"
+                ? "border-orange-600 border-l-orange-600 bg-orange-50 dark:bg-orange-900 dark:border-orange-400 dark:border-l-orange-400 shadow-xl scale-[1.02] ring-2 ring-orange-200 dark:ring-orange-800" 
+                : "border-gray-300 dark:border-gray-600 border-l-orange-500 dark:border-l-orange-400 hover:border-orange-400 dark:hover:border-orange-500 bg-orange-50/30 dark:bg-orange-900/20 hover:shadow-lg"
             }`}
             data-testid="button-select-traveler"
           >
-            <div className={`text-base md:text-lg font-bold mb-1 ${userType === "traveler" ? "text-blue-900 dark:text-white" : "text-gray-900 dark:text-white"}`}>
+            <div className={`text-base md:text-lg font-bold mb-1 ${userType === "traveler" ? "text-orange-900 dark:text-white" : "text-gray-900 dark:text-white"}`}>
               Nearby Traveler
             </div>
-            <div className={`text-xs md:text-sm ${userType === "traveler" ? "text-blue-700 dark:text-blue-100" : "text-gray-600 dark:text-gray-400"}`}>
+            <div className={`text-xs md:text-sm ${userType === "traveler" ? "text-orange-700 dark:text-orange-100" : "text-gray-600 dark:text-gray-400"}`}>
               Currently Traveling
             </div>
           </button>
@@ -83,17 +83,17 @@ export default function JoinNowWidgetNew() {
           <button
             onClick={() => handleUserTypeClick("business")}
             type="button"
-            className={`w-full cursor-pointer rounded-lg p-3.5 text-center transition-all shadow-md border-3 ${
+            className={`w-full cursor-pointer rounded-lg p-3.5 text-center transition-all border-2 border-l-4 ${
               userType === "business" 
-                ? "border-blue-600 bg-blue-50 dark:bg-blue-900 dark:border-blue-400 shadow-xl scale-[1.02] ring-2 ring-blue-200 dark:ring-blue-800" 
-                : "border-gray-400 dark:border-gray-500 hover:border-blue-400 dark:hover:border-blue-500 bg-white dark:bg-gray-800 hover:shadow-lg"
+                ? "border-teal-600 border-l-teal-600 bg-teal-50 dark:bg-teal-900 dark:border-teal-400 dark:border-l-teal-400 shadow-xl scale-[1.02] ring-2 ring-teal-200 dark:ring-teal-800" 
+                : "border-gray-300 dark:border-gray-600 border-l-teal-500 dark:border-l-teal-400 hover:border-teal-400 dark:hover:border-teal-500 bg-teal-50/30 dark:bg-teal-900/20 hover:shadow-lg"
             }`}
             data-testid="button-select-business"
           >
-            <div className={`text-base md:text-lg font-bold mb-1 ${userType === "business" ? "text-blue-900 dark:text-white" : "text-gray-900 dark:text-white"}`}>
+            <div className={`text-base md:text-lg font-bold mb-1 ${userType === "business" ? "text-teal-900 dark:text-white" : "text-gray-900 dark:text-white"}`}>
               Nearby Business
             </div>
-            <div className={`text-xs md:text-sm ${userType === "business" ? "text-blue-700 dark:text-blue-100" : "text-gray-600 dark:text-gray-400"}`}>
+            <div className={`text-xs md:text-sm ${userType === "business" ? "text-teal-700 dark:text-teal-100" : "text-gray-600 dark:text-gray-400"}`}>
               Local Business Owner
             </div>
           </button>
