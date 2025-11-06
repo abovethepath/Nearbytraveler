@@ -646,10 +646,10 @@ export default function PlanTrip() {
             // Navigate to home
             setLocation('/');
           }}
-          className="absolute top-2 right-2 sm:top-4 sm:right-4 z-20 bg-white/90 hover:bg-white text-gray-800 rounded-full p-1.5 sm:p-2 shadow-lg transition-all hover:scale-110"
+          className="absolute top-2 right-2 sm:top-4 sm:right-4 z-20 bg-white/90 hover:bg-white text-gray-800 dark:bg-white dark:text-gray-900 rounded-full p-1.5 sm:p-2 shadow-lg transition-all hover:scale-110"
           aria-label="Close"
         >
-          <X className="w-4 h-4 sm:w-6 sm:h-6" />
+          <X className="w-4 h-4 sm:w-6 sm:h-6 text-gray-800 dark:text-gray-900" />
         </button>
 
         {/* Mobile: Modern gradient layout */}
