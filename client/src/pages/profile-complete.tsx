@@ -1011,22 +1011,54 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     }
   };
 
-  // Robust authentication with emergency recovery
-  let currentUser = authContextUser || authStorage.getUser();
+  // CRITICAL FIX: Robust authentication with multiple fallbacks
+  const [authUser, setLocalAuthUser] = useState<any>(null);
   
-  // If no user found, try to refresh from API without reload
+  // Check all possible auth sources in priority order
+  let currentUser = authUser || authContextUser || authStorage.getUser();
+  
+  // Force refresh authentication on mount and when auth context changes
   React.useEffect(() => {
-    if (!currentUser) {
-      authStorage.forceRefreshUser().then(refreshedUser => {
+    const refreshAuth = async () => {
+      // Try to get user from storage first
+      const storageUser = authStorage.getUser();
+      if (storageUser) {
+        setLocalAuthUser(storageUser);
+        return;
+      }
+      
+      // If no storage user, try API refresh
+      try {
+        const refreshedUser = await authStorage.forceRefreshUser();
         if (refreshedUser) {
-          setAuthUser(refreshedUser); // Update context instead of reload
+          setLocalAuthUser(refreshedUser);
+          setAuthUser(refreshedUser);
         }
-      });
+      } catch (error) {
+        console.error('Failed to refresh user:', error);
+      }
+    };
+    
+    if (!currentUser) {
+      refreshAuth();
     }
-  }, [currentUser, setAuthUser]);
+  }, [authContextUser, setAuthUser]);
   
   const effectiveUserId = propUserId || currentUser?.id;
-  const isOwnProfile = propUserId ? (parseInt(String(propUserId)) === currentUser?.id) : true;
+  
+  // CRITICAL FIX: More robust isOwnProfile calculation with proper type handling
+  const isOwnProfile = React.useMemo(() => {
+    if (!currentUser?.id) return false;
+    
+    // If no propUserId, we're viewing our own profile from /profile route
+    if (!propUserId) return true;
+    
+    // Compare IDs with type coercion
+    const propId = parseInt(String(propUserId));
+    const currentId = parseInt(String(currentUser.id));
+    
+    return propId === currentId;
+  }, [propUserId, currentUser?.id]);
   
   console.log('🔧 AUTHENTICATION STATE:', {
     currentUserId: currentUser?.id,
