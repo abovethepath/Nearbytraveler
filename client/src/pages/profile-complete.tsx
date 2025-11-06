@@ -1111,10 +1111,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return response.json();
     },
     enabled: !!effectiveUserId,
-    staleTime: 0, // Always refetch
-    gcTime: 0, // Don't cache (updated for TanStack Query v5)
-    refetchOnMount: 'always',
-    refetchOnWindowFocus: true,
+    staleTime: 30000, // Cache for 30 seconds to prevent constant refetching
+    gcTime: 60000, // Keep in cache for 1 minute
+    refetchOnMount: false, // Don't refetch on every mount
+    refetchOnWindowFocus: false, // Don't refetch when window gains focus
     retry: 1, // Retry once in case of network issues
 
   });
