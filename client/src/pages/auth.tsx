@@ -130,12 +130,16 @@ export default function Auth() {
     >
       <div className="w-full max-w-2xl">
         <Card className="bg-white/95 backdrop-blur-sm shadow-2xl border-0">
-          <CardHeader className="text-center pb-8 relative">
+          <CardHeader className="text-center pb-8 relative overflow-visible">
             {/* Back Button */}
             <button
-              onClick={() => setLocation('/')}
-              className="absolute left-4 top-4 flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors group bg-white/50 px-3 py-1 rounded-md"
+              onClick={() => {
+                console.log('Back button clicked!');
+                setLocation('/');
+              }}
+              className="absolute left-4 top-4 flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors group bg-white/50 px-3 py-1 rounded-md z-50"
               data-testid="button-back-home"
+              style={{ display: 'flex' }}
             >
               <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
               <span className="text-sm font-semibold">Back</span>
@@ -217,12 +221,16 @@ export default function Auth() {
             ) : null}
 
             {!isSignupPage && (
-              <div className="text-center pt-4 border-t border-gray-200 mt-4">
+              <div className="text-center pt-4 border-t border-gray-200 mt-4" style={{ display: 'block' }}>
                 {isLogin && (
                   <button
-                    onClick={() => window.location.href = '/signup'}
+                    onClick={() => {
+                      console.log('Signup link clicked!');
+                      window.location.href = '/signup';
+                    }}
                     className="text-blue-600 hover:text-blue-800 font-semibold text-base mt-4"
                     data-testid="link-signup-from-login"
+                    style={{ display: 'inline-block' }}
                   >
                     Not a Current User? Sign up Here
                   </button>
