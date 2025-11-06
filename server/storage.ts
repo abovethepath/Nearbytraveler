@@ -4812,6 +4812,7 @@ export class DatabaseStorage implements IStorage {
           .from(cityPages)
           .where(and(
             eq(cityPages.city, city),
+            eq(cityPages.state, state || ''),
             eq(cityPages.country, country)
           ))
           .limit(1);
