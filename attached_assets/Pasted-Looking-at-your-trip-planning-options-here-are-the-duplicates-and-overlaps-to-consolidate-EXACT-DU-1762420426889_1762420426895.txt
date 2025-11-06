@@ -1,0 +1,108 @@
+Looking at your trip planning options, here are the duplicates and overlaps to consolidate:
+EXACT DUPLICATES:
+
+Local Hidden Gems = Exploring Hidden Gems (exact same)
+Restaurants & Food Scene = Restaurant Hopping (same concept)
+Coffee Shops & Cafes = Coffee Shop Crawling (same concept)
+Museums = Museum & Gallery Tours (same thing)
+Photography & Scenic Spots = Photography Walks (same activity)
+Cultural Experiences = Cultural Learning (same thing)
+
+HIGHLY REPETITIVE - CONSOLIDATE:
+Food/Dining (Too Many Subcategories):
+
+Main: Restaurants & Food Scene, Brunch Spots, Street Food, Late Night Eats, Fine Dining, Cheap Eats, Outdoor BBQ
+More Options: Food Tours, Bakeries & Desserts, Ethnic Cuisine, Farm-to-Table Dining, Food Trucks, Pop-up Restaurants
+General: Restaurant Hopping
+
+Suggestion: Consolidate into 3-4 main food categories:
+
+Restaurants & Dining (covers fine dining, ethnic, farm-to-table)
+Street Food & Food Trucks (combine these)
+Brunch & Coffee Spots (combine brunch + coffee shops)
+Food Tours & Experiences
+
+Bars/Drinking (Too Fragmented):
+
+Main: Happy Hour, Craft Beer & Breweries, Wine Bars & Vineyards
+More Options: Rooftop Bars, Cocktail Bars & Speakeasies, Hookah Lounges
+General: Bar Hopping
+
+Suggestion: Consolidate to:
+
+Bars & Nightlife (covers happy hour, cocktails, rooftop bars)
+Breweries & Wine Bars
+Bar Hopping (as activity preference)
+
+Music (Overlapping):
+
+Main: Live Music
+More Options: Jazz Clubs, Classical Music, Indie Music Scene, Electronic/DJ Scene
+General: Concert Going
+
+Suggestion: Keep "Live Music" as main, others as sub-preferences or combine into "Music Venues & Concerts"
+Fitness/Sports (Fragmented):
+
+Main: Fitness Classes, Working Out, Golf, Pickleball
+More Options: Tennis, Running & Jogging, Team Sports, Yoga & Meditation, Extreme Sports, Rock Climbing, Cycling & Biking
+General: Group Workouts, Sports & Recreation
+
+Suggestion: Consolidate to:
+
+Fitness & Workouts (covers classes, yoga, running)
+Team Sports (covers tennis, pickleball, team sports)
+Outdoor Sports (hiking, cycling, rock climbing)
+Water Sports (keep as is)
+
+Beach Activities (Repetitive):
+
+Main: Beach Activities
+More Options: Beach Volleyball
+General: Beach Hangouts
+
+Suggestion: Just "Beach Activities" (includes volleyball and hangouts)
+Water Sports (Redundant Subcategories):
+
+Main: Water Sports
+More Options: Surfing, Scuba Diving, Kayaking & Canoeing, Sailing & Boating
+
+Suggestion: Keep "Water Sports" as main category, others as optional filters
+Family (Repetitive):
+
+Main: Family-Oriented
+More Options: Kid-Friendly Activities, Parenting Meetups, Family Travel
+
+Suggestion: Combine to "Family & Kids" or just "Family-Oriented"
+Festivals (Overlapping):
+
+More Options: Food & Wine Festivals, Beer Festivals, Street Festivals, Community Events, Film Festivals
+General: Festival Hopping
+
+Suggestion: "Festivals & Events" as one category
+Tours (Overlapping):
+
+Main: Historical Sites & Tours
+More Options: Ghost Tours, Architecture
+
+Suggestion: "Historical Tours & Architecture"
+Nature/Hiking (Similar):
+
+Main: Hiking
+More Options: Nature Walks, Camping & RV Travel
+
+Suggestion: "Hiking & Nature" (combine)
+Arts/Creative (Scattered):
+
+More Options: Arts, Crafts, Street Art, Vintage & Thrift Shopping, Antiques & Collectibles, Fashion & Style
+
+Suggestion: Consolidate to "Arts & Crafts" and "Shopping & Style"
+RECOMMENDATIONS:
+Reduce from 100+ options to ~40-50 well-organized categories by:
+
+Eliminate exact duplicates (6 items)
+Consolidate food (from 15+ to 4-5 categories)
+Consolidate bars/drinking (from 8 to 3 categories)
+Consolidate fitness/sports (from 12+ to 4-5 categories)
+Combine family options (from 4 to 1)
+Merge festival types (from 5+ to 1-2)
+Consolidate music genres into sub-options under "Live Music"
