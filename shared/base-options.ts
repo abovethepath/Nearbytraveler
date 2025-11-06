@@ -181,6 +181,7 @@ export const TRAVEL_ACTIVITIES = [
   "Comedy Shows",
   "Theater & Performing Arts",
   "Movie Watching",
+  "Shopping Districts",
   
   // Culture & Sightseeing (removed duplicate "Local Hidden Gems")
   "Historical Tours & Architecture",
@@ -188,6 +189,7 @@ export const TRAVEL_ACTIVITIES = [
   "Cultural Experiences",
   "Photography & Scenic Spots",
   "Local Markets & Bazaars",
+  "Sunset & Sunrise Watching",
   
   // Outdoor & Sports (consolidated sports categories)
   "Hiking & Nature",
@@ -197,6 +199,7 @@ export const TRAVEL_ACTIVITIES = [
   "Team Sports",
   "Fitness & Workouts",
   "Yoga & Meditation",
+  "Adventure Sports",
   
   // Social & Community (TRAVEL-FOCUSED ONLY)
   "Meeting New People",

@@ -1,25 +1,16 @@
-// Generic activity toggle buttons that every city should have
-// NOTE: These are CITY-SPECIFIC activities that DO NOT overlap with the 39 universal frontend activities
-// Universal activities (Meet Locals, Single, Family Activities, etc.) are handled in frontend only
+// Generic activity toggle buttons that every city should have (29 items)
+// UPDATED JANUARY 2025: Aligned with new TRAVEL_ACTIVITIES (40 items) to eliminate ALL duplicates
+// These are CITY-SPECIFIC venue types and micro-experiences unique to cities
+// Trip planning uses TRAVEL_ACTIVITIES (40 items) for broad categories
+//
+// REMOVED DUPLICATES (9 items):
+// - Street Food Tours, Craft Beer Scene, Coffee Shop Hopping (covered by TRAVEL_ACTIVITIES)
+// - Local Music Venues, Stand-Up Comedy, Karaoke Bars (covered by TRAVEL_ACTIVITIES)
+// - Wine Bars, Late Night Diners, Brunch Restaurants, Vegan/Vegetarian Spots (covered by TRAVEL_ACTIVITIES)
 export const GENERIC_CITY_ACTIVITIES = [
   {
     name: "Local Food Specialties",
     description: "Try signature dishes and local culinary traditions unique to this city",
-    category: "food"
-  },
-  {
-    name: "Street Food Tours",
-    description: "Explore the best street food vendors and local markets",
-    category: "food"
-  },
-  {
-    name: "Craft Beer Scene",
-    description: "Visit local breweries and craft beer taprooms",
-    category: "food"
-  },
-  {
-    name: "Coffee Shop Hopping",
-    description: "Discover the best local coffee roasters and cafes",
     category: "food"
   },
   {
@@ -31,21 +22,6 @@ export const GENERIC_CITY_ACTIVITIES = [
     name: "Hidden Speakeasies",
     description: "Find secret bars and speakeasy-style venues",
     category: "nightlife"
-  },
-  {
-    name: "Local Music Venues",
-    description: "Catch live performances at intimate music clubs",
-    category: "entertainment"
-  },
-  {
-    name: "Stand-Up Comedy",
-    description: "Laugh at local comedy clubs and open mics",
-    category: "entertainment"
-  },
-  {
-    name: "Karaoke Bars",
-    description: "Sing your heart out at popular karaoke spots",
-    category: "entertainment"
   },
   {
     name: "Trivia Nights",
@@ -163,28 +139,8 @@ export const GENERIC_CITY_ACTIVITIES = [
     category: "food"
   },
   {
-    name: "Wine Bars",
-    description: "Sample wines at cozy wine bars and bistros",
-    category: "food"
-  },
-  {
-    name: "Late Night Diners",
-    description: "Find 24-hour diners and late-night eats",
-    category: "food"
-  },
-  {
-    name: "Brunch Restaurants",
-    description: "Discover the best weekend brunch spots",
-    category: "food"
-  },
-  {
     name: "Food Halls",
     description: "Try multiple vendors at food hall markets",
-    category: "food"
-  },
-  {
-    name: "Vegan/Vegetarian Spots",
-    description: "Find plant-based dining options",
     category: "food"
   },
   {
