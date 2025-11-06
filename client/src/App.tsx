@@ -596,6 +596,26 @@ function Router() {
       }
     }
 
+    // ✅ CRITICAL FIX: Handle all profile routes BEFORE authentication check
+    // This prevents redirect loops when user state fluctuates
+    if (location.startsWith('/profile/')) {
+      const userId = parseInt(location.split('/')[2]);
+      console.log('🔍 PROFILE ROUTE (pre-auth): userId:', userId, 'location:', location);
+      return <ProfileComplete userId={userId} />;
+    }
+    
+    // Handle own profile route (no ID)
+    if (location === '/profile') {
+      console.log('🔍 OWN PROFILE ROUTE (pre-auth)');
+      return <ProfileComplete />;
+    }
+    
+    // Handle business profile routes
+    if (location.startsWith('/business/') && !location.includes('/offers')) {
+      const businessId = location.split('/')[2];
+      console.log('🔍 BUSINESS PROFILE ROUTE (pre-auth): businessId:', businessId);
+      return <ProfileComplete userId={parseInt(businessId)} />;
+    }
 
     if (!isActuallyAuthenticated) {
       console.log('🏠 STREAMLINED LANDING - User not authenticated, showing streamlined landing page for:', location);
@@ -719,13 +739,6 @@ function Router() {
       // Show minimal landing page for comparison
       if (location === '/landing-minimal') {
         return <LandingMinimal />;
-      }
-
-      // CRITICAL FIX: Allow profile routes even when user state is loading
-      if (location.startsWith('/profile/')) {
-        const userId = parseInt(location.split('/')[2]);
-        console.log('🔍 UNAUTHENTICATED PROFILE ACCESS: Allowing profile access for userId:', userId);
-        return <ProfileComplete userId={userId} />;
       }
 
       // Show appropriate page for root path based on authentication
@@ -856,11 +869,6 @@ function Router() {
       return <WelcomeBusiness />;
     }
 
-    if (location.startsWith('/profile/')) {
-      const userId = parseInt(location.split('/')[2]);
-      return <ProfileComplete userId={userId} />;
-    }
-
     if (location.startsWith('/quick-meetups/') && location.includes('/manage')) {
       return <MeetupManagePage />;
     }
@@ -974,19 +982,6 @@ function Router() {
       return <BusinessOffers businessId={businessId} />;
     }
 
-    if (location.startsWith('/business/')) {
-      const businessId = location.split('/')[2];
-      return <ProfileComplete userId={parseInt(businessId)} />;
-    }
-
-    // ✅ CRITICAL FIX: Handle dynamic routes BEFORE the switch statement
-    // This ensures /profile/:id is processed before /profile
-    if (location.startsWith('/profile/')) {
-      const userId = parseInt(location.split('/')[2]);
-      console.log('🔍 AUTHENTICATED PROFILE ROUTE WITH ID: userId:', userId, 'location:', location);
-      return <ProfileComplete userId={userId} />;
-    }
-
     switch (location) {
       case '/events':
         return <Events />;
@@ -1002,10 +997,7 @@ function Router() {
         return <ComingSoon />;
       case '/business-registration':
         return <BusinessRegistration />;
-      case '/profile':
-        // USING COMPLETE PROFILE - Has ThingsIWantToDoSection, no cover photo, no travel personality
-        return <ProfileComplete />;
-      // OLD PROFILE ROUTES REMOVED - ONLY ProfileComplete EXISTS
+      // Profile routes handled before authentication check to prevent redirect loops
       case '/messages':
         return <Messages />;
       case '/meetups':
@@ -1113,10 +1105,7 @@ function Router() {
         return <Home />;
       default:
         // Handle dynamic routes first before showing NotFound
-        if (location.startsWith('/profile/')) {
-          const userId = parseInt(location.split('/')[2]);
-          return <ProfileComplete userId={userId} />;
-        }
+        // Profile routes now handled before authentication check to prevent redirect loops
         if (location.startsWith('/events/')) {
           const eventId = location.split('/')[2];
           return <EventDetails eventId={eventId} />;
