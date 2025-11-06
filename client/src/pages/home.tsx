@@ -1953,8 +1953,8 @@ export default function Home() {
                 <Button
                   onClick={() => {
                     setShowAllUsers(!showAllUsers);
-                    if (!showAllUsers) {
-                      // Scroll to top when showing all users
+                    if (showAllUsers) {
+                      // Only scroll to top when collapsing (Load Less)
                       setTimeout(() => {
                         const discoverSection = document.querySelector('[data-testid="discover-people-section"]');
                         if (discoverSection) {
@@ -1962,6 +1962,7 @@ export default function Home() {
                         }
                       }, 100);
                     }
+                    // When expanding (Load More), no scroll - stay in place
                   }}
                   className="bg-gray-50 hover:bg-gray-100 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white dark:border-gray-500"
                   data-testid="button-load-more-users"
