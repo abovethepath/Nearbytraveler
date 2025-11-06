@@ -77,10 +77,19 @@ export default function ProfilePageResponsive() {
 
   // Extract user data
   const displayName = user.name || user.username || "User";
-  const location = user.location || `${user.hometownCity}, ${user.hometownState}` || "Location not set";
-  const userType = user.userType === 'local' ? 'Local' : user.userType === 'traveler' ? 'Traveler' : 'User';
   const profileImage = user.profileImage || "https://placehold.co/320x320";
   const bio = user.bio || "No bio available";
+  
+  // CRITICAL: Build hometown location (ALWAYS shown)
+  const hometownLocation = user.hometown || 
+    (user.hometownCity && user.hometownState && user.hometownCountry 
+      ? `${user.hometownCity}, ${user.hometownState}, ${user.hometownCountry}` 
+      : user.location || "Location not set");
+  
+  // Build destination location (shown only when actively traveling)
+  const destinationLocation = user.isCurrentlyTraveling && user.destinationCity && user.destinationCountry
+    ? `${user.destinationCity}${user.destinationState ? ', ' + user.destinationState : ''}, ${user.destinationCountry}`
+    : null;
   
   // Combine standard interests with custom interests
   const standardInterests = user.interests || [];
@@ -110,7 +119,16 @@ export default function ProfilePageResponsive() {
           <div className="space-y-3">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold" data-testid="text-name">{displayName}</h1>
-              <p className="text-sm text-gray-600" data-testid="text-location">{userType} • {location}</p>
+              {/* CRITICAL: Always show hometown location */}
+              <p className="text-sm text-gray-600" data-testid="text-hometown-location">
+                Nearby Local • {hometownLocation}
+              </p>
+              {/* CRITICAL: Show destination location when actively traveling */}
+              {destinationLocation && (
+                <p className="text-sm text-blue-600 font-medium" data-testid="text-destination-location">
+                  Nearby Traveler • {destinationLocation}
+                </p>
+              )}
             </div>
 
             {/* Actions bar: turns into 2x2 grid on mobile */}

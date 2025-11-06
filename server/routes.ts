@@ -4027,6 +4027,31 @@ Questions? Just reply to this message!
         console.error('❌ Failed to create destination city infrastructure:', error);
       }
 
+      // CRITICAL: Create travel plan for currently traveling users
+      // This enables travel plan tracking and auto-joins user to destination chatrooms
+      try {
+        if (user.isCurrentlyTraveling && user.destinationCity && user.destinationCountry) {
+          const destination = `${user.destinationCity}, ${user.destinationState || ''}, ${user.destinationCountry}`.replace(', ,', ',');
+          
+          const travelPlanData = {
+            userId: user.id,
+            destination: destination,
+            startDate: user.travelStartDate || new Date().toISOString().split('T')[0],
+            endDate: user.travelEndDate || new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0],
+            status: 'active' as const,
+            notes: 'Currently traveling',
+            interests: user.interests || [],
+            activities: user.activities || [],
+            events: user.events || []
+          };
+          
+          await storage.createTravelPlan(travelPlanData);
+          console.log(`✅ TRAVEL PLAN: Created active travel plan for ${user.username} to ${destination}`);
+        }
+      } catch (error) {
+        console.error('❌ Failed to create travel plan:', error);
+      }
+
       if (process.env.NODE_ENV === 'development') console.log("💾 USER CREATED IN DATABASE - Location data stored:", {
         id: user.id,
         username: user.username,
