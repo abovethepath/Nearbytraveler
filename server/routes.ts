@@ -26,6 +26,7 @@ import { smsService } from "./services/smsService";
 import QRCode from "qrcode";
 import { detectMetroArea, getMetroAreaName } from '../shared/metro-areas';
 import { getMetroArea } from '../shared/constants';
+import { setupAuth } from "./replitAuth";
 
 import { 
   secretLocalExperienceLikes, 
@@ -829,43 +830,9 @@ async function sendWeeklyDigestEmails() {
 export async function registerRoutes(app: Express, httpServer?: Server): Promise<Server> {
   if (process.env.NODE_ENV === 'development') console.log("Starting routes registration...");
 
-  // FIRST: Setup simple authentication for investor demo - NO POPUPS
-  
-  // Direct login - no OAuth popup
-  app.get("/api/login", async (req, res) => {
-    console.log("🔐 Direct login - fetching real user data");
-    
-    try {
-      // Get the real user from database
-      const user = await storage.getUser("2");
-      
-      if (user) {
-        // Create session with real user data
-        (req as any).session.user = {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          profileImageUrl: user.profileImage
-        };
-        
-        // CRITICAL: Save the session
-        (req as any).session.save((err: any) => {
-          if (err) {
-            console.error("Session save error:", err);
-          } else {
-            console.log("✅ Session saved! User logged in:", user.username);
-          }
-          res.redirect("/");
-        });
-      } else {
-        console.error("User not found in database");
-        res.redirect("/");
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      res.redirect("/");
-    }
-  });
+  // Setup Replit Auth (must be called before any protected routes)
+  await setupAuth(app);
+  console.log("✅ Replit Auth setup complete");
 
   // Real login endpoint with credentials
   app.post("/api/auth/login", async (req, res) => {

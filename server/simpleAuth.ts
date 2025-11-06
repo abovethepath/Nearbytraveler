@@ -14,13 +14,7 @@ export function setupSimpleAuth(app: Express) {
   }));
   console.log("🔐 Setting up simple authentication redirect...");
   
-  // Simple login route that redirects to Replit OAuth
-  app.get("/api/login", (req, res) => {
-    console.log("🔐 Login route hit, redirecting to Replit OAuth...");
-    const redirectUrl = `https://replit.com/oauth/authorize?client_id=${process.env.REPL_ID}&response_type=code&scope=openid+email+profile&redirect_uri=https://${req.hostname}/api/callback`;
-    console.log("🔐 Redirecting to:", redirectUrl);
-    res.redirect(redirectUrl);
-  });
+  // Login is handled by server/replitAuth.ts (Replit Auth blueprint)
 
   // Development bypass login - immediate login without OAuth
   app.get("/api/dev-login", (req, res) => {
