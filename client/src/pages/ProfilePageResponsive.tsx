@@ -81,7 +81,13 @@ export default function ProfilePageResponsive() {
   const userType = user.userType === 'local' ? 'Local' : user.userType === 'traveler' ? 'Traveler' : 'User';
   const profileImage = user.profileImage || "https://placehold.co/320x320";
   const bio = user.bio || "No bio available";
-  const interests = user.interests || [];
+  
+  // Combine standard interests with custom interests
+  const standardInterests = user.interests || [];
+  const customInterestsArray = user.customInterests 
+    ? user.customInterests.split(',').map((i: string) => i.trim()).filter((i: string) => i.length > 0)
+    : [];
+  const interests = [...standardInterests, ...customInterestsArray];
 
   return (
     <div className="min-screen flex flex-col">

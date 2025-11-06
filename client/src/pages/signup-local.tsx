@@ -163,6 +163,10 @@ export default function SignupLocal() {
         // top choices (require at least 3)
         interests: formData.interests,
         
+        // custom entries
+        customInterests: formData.customInterests?.trim() || "",
+        customActivities: formData.customActivities?.trim() || "",
+        
         // languages
         languagesSpoken,
         
