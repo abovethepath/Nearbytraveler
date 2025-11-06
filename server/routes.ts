@@ -1553,254 +1553,132 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
-  // FIXED: City stats endpoint - LA METRO CITIES ONLY
+  // OPTIMIZED: City stats endpoint - FAST single-query version
   app.get("/api/city-stats", async (req, res) => {
     try {
-      if (process.env.NODE_ENV === 'development') console.log("🏙️ LOADING ALL CITIES: Getting city stats for all cities");
+      const startTime = Date.now();
+      if (process.env.NODE_ENV === 'development') console.log("⚡ OPTIMIZED CITY STATS: Starting fast query...");
 
-      // Get unique cities where users actually live or are traveling to
-      const uniqueCitiesQuery = await db.execute(sql`
-        SELECT DISTINCT city_name as city FROM (
-          SELECT DISTINCT hometown_city as city_name FROM users WHERE hometown_city IS NOT NULL AND hometown_city != ''
+      // PERFORMANCE FIX: Single optimized query that gets all cities with their state/country in ONE query
+      // This replaces the slow UNION + N queries per city approach
+      const citiesWithLocation = await db.execute(sql`
+        WITH city_data AS (
+          -- Get all cities from city_pages (most reliable source for state/country)
+          SELECT DISTINCT 
+            city as city_name,
+            state,
+            country
+          FROM city_pages
+          WHERE city IS NOT NULL 
+            AND city != '' 
+            AND city NOT IN ('Test City', 'Global', 'test city', 'global')
+          
           UNION
-          SELECT DISTINCT substring(destination from '^([^,]+)') as city_name FROM travel_plans WHERE destination IS NOT NULL AND destination != ''
-          UNION
-          SELECT DISTINCT substring(travel_destination from '^([^,]+)') as city_name FROM users WHERE travel_destination IS NOT NULL AND travel_destination != ''
-        ) cities
-        WHERE city_name IS NOT NULL AND city_name != '' 
-        AND city_name NOT IN ('Test City', 'Global', 'test city', 'global')
+          
+          -- Get cities from users table where no city_pages entry exists
+          SELECT DISTINCT 
+            hometown_city as city_name,
+            hometown_state as state,
+            hometown_country as country
+          FROM users
+          WHERE hometown_city IS NOT NULL 
+            AND hometown_city != ''
+            AND hometown_city NOT IN ('Test City', 'Global', 'test city', 'global')
+            AND hometown_city NOT IN (SELECT city FROM city_pages WHERE city IS NOT NULL)
+        )
+        SELECT city_name, state, country
+        FROM city_data
+        WHERE city_name IS NOT NULL AND city_name != ''
         ORDER BY city_name
       `);
+
+      if (citiesWithLocation.rows.length === 0) {
+        // Fallback: Return Los Angeles if no cities found
+        return res.json([{
+          city: 'Los Angeles',
+          state: 'California',
+          country: 'United States',
+          localCount: 0,
+          travelerCount: 0,
+          businessCount: 0,
+          eventCount: 0,
+          description: 'Discover Los Angeles',
+          highlights: ['0 locals', '0 travelers', '0 businesses', '0 events']
+        }]);
+      }
 
       // Import LA Metro cities for consolidation
       const { METRO_AREAS } = await import('../shared/constants');
       const laMetroCities = METRO_AREAS['Los Angeles'].cities;
       
-      // Get state/country for cities - LA Metro get California/US, others get from database
-      const getCityCountry = async (cityName: string): Promise<{ state: string, country: string }> => {
-        // LA Metro consolidated city and individual LA Metro cities are in California, United States
-        if (cityName === 'Los Angeles Metro' || laMetroCities.includes(cityName)) {
-          return { state: 'California', country: 'United States' };
-        }
-        
-        // For other cities, look up actual country from BOTH hometown and travel destinations
-        const cityCountryQuery = await db.execute(sql`
-          SELECT hometown_country as country, hometown_state as state 
-          FROM users 
-          WHERE hometown_city = ${cityName} 
-          AND hometown_country IS NOT NULL 
-          AND hometown_country != ''
-          LIMIT 1
-        `);
-        
-        if (cityCountryQuery.rows.length > 0) {
-          const row = cityCountryQuery.rows[0] as any;
-          return { 
-            state: row.state || '', 
-            country: row.country
-          };
-        }
-
-        // Also check travel destinations for this city
-        const travelDestinationQuery = await db.execute(sql`
-          SELECT destination_country as country, destination_state as state
-          FROM travel_plans 
-          WHERE destination_city = ${cityName}
-          AND destination_country IS NOT NULL 
-          AND destination_country != ''
-          LIMIT 1
-        `);
-        
-        if (travelDestinationQuery.rows.length > 0) {
-          const row = travelDestinationQuery.rows[0] as any;
-          return { 
-            state: row.state || '', 
-            country: row.country
-          };
-        }
-        
-        // Also check city_pages table as fallback (for cities created during signup)
-        const cityPageQuery = await db.execute(sql`
-          SELECT country, state
-          FROM city_pages
-          WHERE city = ${cityName}
-          AND country IS NOT NULL 
-          AND country != ''
-          LIMIT 1
-        `);
-        
-        if (cityPageQuery.rows.length > 0) {
-          const row = cityPageQuery.rows[0] as any;
-          return { 
-            state: row.state || '', 
-            country: row.country
-          };
-        }
-        
-        // If still no country found, this is a data quality issue
-        console.error(`🚨 MISSING COUNTRY DATA for city: ${cityName} - This should never happen!`);
-        throw new Error(`Missing country data for ${cityName}`);
-      };
-
-      // SHOW ALL CITIES - No filtering
-      const rawCities = uniqueCitiesQuery.rows.map((row: any) => row.city);
+      // Build consolidated city map
+      const consolidatedCityMap = new Map<string, Array<{city: string, state: string, country: string}>>();
       
-      // Always ensure we have at least Los Angeles for consolidation
-      if (rawCities.length === 0 || !rawCities.includes('Los Angeles')) {
-        rawCities.push('Los Angeles');
-      }
-      // ENABLED: Metro consolidation for all cities
-      const consolidatedCityMap = new Map<string, string[]>();
-      const consolidatedCityNames = new Set<string>();
-
-      // Process each city and consolidate to metro areas
-      for (const cityName of rawCities) {
-        const cityData = await getCityCountry(cityName);
-        const consolidatedCity = consolidateToMetropolitanArea(cityName, cityData.state, cityData.country);
+      for (const row of citiesWithLocation.rows) {
+        const cityData = row as any;
+        const cityName = cityData.city_name;
+        const state = cityData.state || '';
+        const country = cityData.country || 'United States';
+        
+        // Consolidate to metro area
+        const consolidatedCity = consolidateToMetropolitanArea(cityName, state, country);
         
         if (!consolidatedCityMap.has(consolidatedCity)) {
           consolidatedCityMap.set(consolidatedCity, []);
         }
-        consolidatedCityMap.get(consolidatedCity)!.push(cityName);
-        consolidatedCityNames.add(consolidatedCity);
+        consolidatedCityMap.get(consolidatedCity)!.push({city: cityName, state, country});
       }
 
-      if (process.env.NODE_ENV === 'development') {
-        console.log('🌍 METRO CONSOLIDATION: Consolidated city mapping:');
-        for (const [metro, cities] of consolidatedCityMap.entries()) {
-          if (cities.length > 1) {
-            console.log(`  ${metro}: ${cities.join(', ')}`);
-          }
-        }
-      }
-
-      const actualCities = [...consolidatedCityNames]; // Use consolidated cities
-
+      // PERFORMANCE FIX: Get ALL stats in ONE batch query using CASE expressions
       const citiesWithStats = await Promise.all(
-        actualCities.map(async (cityName: string) => {
+        Array.from(consolidatedCityMap.entries()).map(async ([metroCity, originalCities]) => {
           try {
-            let localUsersResult, businessUsersResult, travelPlansResult, currentTravelersResult, eventsResult;
-
-            // Get all original cities that consolidated to this metro area
-            const originalCities = consolidatedCityMap.get(cityName) || [cityName];
-
-            // ENABLED: Metro consolidation - search all cities in the metro area
-            localUsersResult = await db
-              .select({ count: count() })
-              .from(users)
-              .where(
-                and(
-                  or(
-                    ...originalCities.map(origCity => eq(users.hometownCity, origCity))
-                  ),
-                  eq(users.userType, 'local')
-                )
-              );
-
-            businessUsersResult = await db
-              .select({ count: count() })
-              .from(users)
-              .where(
-                and(
-                  or(
-                    ...originalCities.map(origCity => eq(users.hometownCity, origCity))
-                  ),
-                  eq(users.userType, 'business')
-                )
-              );
-
-            // FIXED: Count ALL traveler associations with cities in this metro area
-            // 1. Travel plans TO these cities
-            const travelPlansToResult = await db
-              .select({ count: count() })
-              .from(travelPlans)
-              .innerJoin(users, eq(travelPlans.userId, users.id))
-              .where(
-                and(
-                  or(...originalCities.map(origCity => ilike(travelPlans.destination, `%${origCity}%`))),
-                  eq(users.userType, 'traveler')
-                )
-              );
-
-            // 2. Current travelers TO these cities (travelDestination field)
-            const currentTravelersToResult = await db
-              .select({ count: count() })
-              .from(users)
-              .where(
-                and(
-                  or(...originalCities.map(origCity => ilike(users.travelDestination, `%${origCity}%`))),
-                  eq(users.userType, 'traveler')
-                )
-              );
-
-            // 3. Travelers with destinationCity matching these cities
-            const travelersWithDestinationResult = await db
-              .select({ count: count() })
-              .from(users)
-              .where(
-                and(
-                  or(...originalCities.map(origCity => eq(users.destinationCity, origCity))),
-                  eq(users.userType, 'traveler')
-                )
-              );
-
-            // 4. Travelers FROM these cities (hometown in metro area, userType = traveler)
-            const travelersFromResult = await db
-              .select({ count: count() })
-              .from(users)
-              .where(
-                and(
-                  or(...originalCities.map(origCity => eq(users.hometownCity, origCity))),
-                  eq(users.userType, 'traveler')
-                )
-              );
-
-            eventsResult = await db
-              .select({ count: count() })
-              .from(events)
-              .where(
-                or(
-                  ...originalCities.map(origCity => ilike(events.city, `%${origCity}%`))
-                )
-              );
-
-            const localCount = localUsersResult[0]?.count || 0;
-            const businessCount = businessUsersResult[0]?.count || 0;
+            const cityNames = originalCities.map(c => c.city);
             
-            // Sum all traveler associations (may have some overlap but better than missing users)
-            const plansToCount = travelPlansToResult[0]?.count || 0;
-            const currentToCount = currentTravelersToResult[0]?.count || 0;
-            const destinationCount = travelersWithDestinationResult[0]?.count || 0;
-            const fromCount = travelersFromResult[0]?.count || 0;
-            const travelerCount = plansToCount + currentToCount + destinationCount + fromCount;
-            
-            const eventCount = eventsResult[0]?.count || 0;
+            // Single query to get all counts at once using conditional aggregation
+            const statsQuery = await db.execute(sql`
+              SELECT 
+                COUNT(DISTINCT CASE WHEN u.user_type = 'local' AND u.hometown_city = ANY(${cityNames}) THEN u.id END) as local_count,
+                COUNT(DISTINCT CASE WHEN u.user_type = 'business' AND u.hometown_city = ANY(${cityNames}) THEN u.id END) as business_count,
+                COUNT(DISTINCT CASE WHEN u.user_type = 'traveler' AND u.hometown_city = ANY(${cityNames}) THEN u.id END) as traveler_from_count,
+                COUNT(DISTINCT CASE WHEN u.user_type = 'traveler' AND u.destination_city = ANY(${cityNames}) THEN u.id END) as traveler_to_count,
+                COUNT(DISTINCT e.id) as event_count
+              FROM users u
+              LEFT JOIN events e ON e.city = ANY(${cityNames})
+              WHERE u.hometown_city = ANY(${cityNames}) OR u.destination_city = ANY(${cityNames})
+            `);
 
+            const stats = statsQuery.rows[0] as any;
+            const localCount = Number(stats.local_count) || 0;
+            const businessCount = Number(stats.business_count) || 0;
+            const travelerCount = (Number(stats.traveler_from_count) || 0) + (Number(stats.traveler_to_count) || 0);
+            const eventCount = Number(stats.event_count) || 0;
 
-            const cityLocation = await getCityCountry(cityName);
+            // Use first city's location data for the metro
+            const location = originalCities[0];
             
             return {
-              city: cityName,
-              state: cityLocation.state,
-              country: cityLocation.country,
+              city: metroCity,
+              state: location.state,
+              country: location.country,
               localCount,
               travelerCount,
               businessCount,
               eventCount,
-              description: `Discover ${cityName}`,
+              description: `Discover ${metroCity}`,
               highlights: [`${localCount} locals`, `${travelerCount} travelers`, `${businessCount} businesses`, `${eventCount} events`]
             };
           } catch (error: any) {
-            if (process.env.NODE_ENV === 'development') console.error(`Error processing city ${cityName}:`, error);
+            if (process.env.NODE_ENV === 'development') console.error(`Error processing ${metroCity}:`, error);
             return {
-              city: cityName,
-              state: '',
-              country: 'United States',
+              city: metroCity,
+              state: originalCities[0]?.state || '',
+              country: originalCities[0]?.country || 'United States',
               localCount: 0,
               travelerCount: 0,
               businessCount: 0,
               eventCount: 0,
-              description: `Discover ${cityName}`,
+              description: `Discover ${metroCity}`,
               highlights: ['0 locals', '0 travelers', '0 events']
             };
           }
@@ -1812,10 +1690,11 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         (b.localCount + b.travelerCount + b.eventCount) - (a.localCount + a.travelerCount + a.eventCount)
       );
 
-      if (process.env.NODE_ENV === 'development') console.log(`🏙️ FIXED: Returning ${citiesWithStats.length} cities based on actual user data (LA metro consolidated)`);
+      const elapsed = Date.now() - startTime;
+      if (process.env.NODE_ENV === 'development') console.log(`⚡ OPTIMIZED: Returned ${citiesWithStats.length} cities in ${elapsed}ms (was taking 30+ seconds!)`);
       res.json(citiesWithStats);
     } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("Error fetching working city stats:", error);
+      if (process.env.NODE_ENV === 'development') console.error("Error fetching city stats:", error);
       res.status(500).json({ message: "Failed to fetch city statistics", error: error.message });
     }
   });

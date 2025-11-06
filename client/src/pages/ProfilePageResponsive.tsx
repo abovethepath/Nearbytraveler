@@ -1,10 +1,48 @@
 import ResponsiveNavbar from "@/components/ResponsiveNavbar";
 import { useAuth } from "@/App";
+import { useEffect, useState } from "react";
 
 export default function ProfilePageResponsive() {
-  const { user, isAuthenticated } = useAuth();
+  const authContext = useAuth();
+  const [actualUser, setActualUser] = useState<any>(null);
+  const [isReady, setIsReady] = useState(false);
+  
+  // CRITICAL FIX: Use multi-source authentication check to prevent blinking
+  useEffect(() => {
+    // Try multiple sources for user data to ensure stable authentication
+    const contextUser = authContext.user;
+    const storageUser = localStorage.getItem('user');
+    const travelConnectUser = localStorage.getItem('travelConnectUser');
+    const auth_token = localStorage.getItem('auth_token');
+    
+    // Use the first available user data source
+    if (contextUser) {
+      setActualUser(contextUser);
+      setIsReady(true);
+    } else if (storageUser) {
+      try {
+        setActualUser(JSON.parse(storageUser));
+        setIsReady(true);
+      } catch (e) {
+        console.error('Failed to parse user from localStorage');
+        setIsReady(true); // Still mark as ready to avoid infinite loading
+      }
+    } else if (travelConnectUser) {
+      try {
+        setActualUser(JSON.parse(travelConnectUser));
+        setIsReady(true);
+      } catch (e) {
+        console.error('Failed to parse travelConnectUser');
+        setIsReady(true); // Still mark as ready to avoid infinite loading
+      }
+    } else {
+      // No usable user data found (even if auth_token exists, it's stale/invalid)
+      // Mark as ready to show login prompt instead of infinite loading
+      setIsReady(true);
+    }
+  }, [authContext.user]);
 
-  if (!isAuthenticated || !user) {
+  if (!isReady) {
     return (
       <div className="min-screen flex flex-col">
         <ResponsiveNavbar />
@@ -19,6 +57,23 @@ export default function ProfilePageResponsive() {
       </div>
     );
   }
+  
+  if (!actualUser) {
+    return (
+      <div className="min-screen flex flex-col">
+        <ResponsiveNavbar />
+        <main className="container-default py-6 md:py-10 flex-1">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <p className="text-gray-600">Please log in to view your profile</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+  
+  const user = actualUser;
 
   // Extract user data
   const displayName = user.name || user.username || "User";
