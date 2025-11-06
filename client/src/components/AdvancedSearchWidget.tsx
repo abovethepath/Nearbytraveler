@@ -206,7 +206,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
 
   return (
     <div 
-      className="fixed inset-0 z-[999999] flex items-center justify-center"
+      className="fixed inset-x-0 top-0 bottom-16 md:bottom-0 z-[999999] flex items-center justify-center"
       style={{ zIndex: 999999 }}
     >
       {/* Backdrop */}
@@ -216,7 +216,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
       />
       
       {/* Modal Content */}
-      <div className="relative w-full max-w-4xl max-h-[90vh] mx-4 bg-white dark:bg-gray-900 rounded-lg shadow-2xl overflow-y-auto">
+      <div className="relative w-full max-w-4xl max-h-[85vh] md:max-h-[90vh] mx-4 bg-white dark:bg-gray-900 rounded-lg shadow-2xl overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex-1 min-w-0">
