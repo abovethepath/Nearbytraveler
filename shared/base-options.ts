@@ -50,6 +50,7 @@ export const TOP_CHOICES = [
 export const INTERESTS = [
   "Sober/Alcohol-Free Lifestyle",
   "420-Friendly",
+  "Nudism",
   "Religious & Spiritual Sites",
   "Wellness & Mindfulness",
   "Volunteering",
@@ -127,7 +128,7 @@ export const INTERESTS = [
 ];
 
 // ========================================
-// ACTIVITIES (18 items)
+// ACTIVITIES (18 items) - GENERAL USE
 // ========================================
 // Concrete activities users want to do together - specific "let's do this" actions
 
@@ -150,6 +151,70 @@ export const ACTIVITIES = [
   "Language Practice Meetups",
   "Study & Coworking Sessions",
   "Exploring Hidden Gems"
+];
+
+// ========================================
+// TRAVEL_ACTIVITIES (40 items) - TRIP PLANNING ONLY
+// ========================================
+// Clean, travel-focused activities for trip planning
+// Removes duplicates and non-travel items (activism, tech, volunteering, book clubs, coworking)
+// Based on Claude's consolidation recommendations
+
+export const TRAVEL_ACTIVITIES = [
+  // Food & Dining (consolidated from 15+ options)
+  "Restaurants & Dining",
+  "Street Food & Food Trucks",
+  "Brunch & Coffee Spots",
+  "Late Night Eats",
+  "Vegan/Vegetarian",
+  "Food Tours & Experiences",
+  
+  // Bars & Nightlife (consolidated from 8 options)
+  "Bars & Happy Hour",
+  "Craft Beer & Breweries",
+  "Wine Bars & Vineyards",
+  "Nightlife & Dancing",
+  
+  // Entertainment
+  "Live Music",
+  "Karaoke",
+  "Comedy Shows",
+  "Theater & Performing Arts",
+  "Movie Watching",
+  
+  // Culture & Sightseeing (removed duplicate "Local Hidden Gems")
+  "Historical Tours & Architecture",
+  "Museums & Galleries",
+  "Cultural Experiences",
+  "Photography & Scenic Spots",
+  "Local Markets & Bazaars",
+  
+  // Outdoor & Sports (consolidated sports categories)
+  "Hiking & Nature",
+  "Beach Activities",
+  "Water Sports",
+  "Cycling & Biking",
+  "Team Sports",
+  "Fitness & Workouts",
+  "Yoga & Meditation",
+  
+  // Social & Community (TRAVEL-FOCUSED ONLY)
+  "Meeting New People",
+  "Open to Dating",
+  "Language Practice",
+  
+  // Lifestyle & Wellness
+  "Wellness & Mindfulness",
+  "Sober/Alcohol-Free",
+  "420-Friendly",
+  "Religious & Spiritual Sites",
+  
+  // Family & Kids (consolidated)
+  "Family-Oriented Activities",
+  
+  // Travel Style
+  "Luxury Experiences",
+  "Budget Travel"
 ];
 
 // ========================================
@@ -272,6 +337,9 @@ export const getAllInterests = () => ALL_INTERESTS;
 
 // Get all activities
 export const getAllActivities = () => ALL_ACTIVITIES;
+
+// Get travel-focused activities (for trip planning)
+export const getTravelActivities = () => TRAVEL_ACTIVITIES;
 
 // DEPRECATED - use getTopChoices instead
 export const getHometownInterests = () => TOP_CHOICES;
@@ -409,10 +477,11 @@ export const getSexualPreferenceOptions = () => SEXUAL_PREFERENCE_OPTIONS;
 // ========================================
 // SUMMARY
 // ========================================
-// Total taxonomy: 121 items (cleaned up redundancies October 2025)
+// Total taxonomy: 162 items (updated January 2025)
 // - TOP_CHOICES: 30 items (broad categories for meeting travelers and locals)
-// - INTERESTS: 73 items (specific interests and preferences for deeper matching)
+// - INTERESTS: 74 items (specific interests and preferences for deeper matching - added Nudism)
 // - ACTIVITIES: 18 items (concrete "let's do this" activities for meetups and planning)
+// - TRAVEL_ACTIVITIES: 40 items (clean, travel-focused activities for trip planning - no duplicates, no non-travel items)
 //
 // Items removed from INTERESTS that now exist only as ACTIVITIES:
 // - "Concerts" → "Concert Going"

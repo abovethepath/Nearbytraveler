@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar, MapPin, Users, Building2, Heart, MessageCircle, Star, ArrowLeft, Home, User, Plus, X, Compass, Sparkles, Camera, Coffee, Utensils, Palette, Music, TreePine, ChevronDown } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { getAllInterests, getAllActivities, getAllLanguages, validateSelections, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS } from "@shared/base-options";
+import { getAllInterests, getAllActivities, getTravelActivities, getAllLanguages, validateSelections, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS } from "@shared/base-options";
 import { BASE_TRAVELER_TYPES } from "@shared/base-options";
 import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/locationData";
 import { US_CITIES_BY_STATE } from "@shared/locationData";
@@ -1064,7 +1064,7 @@ export default function PlanTrip() {
                 
                 <div className="bg-white dark:bg-gray-700 rounded-lg p-4 border border-green-200 dark:border-green-600">
                   <div className="flex flex-wrap gap-2">
-                    {getAllActivities().map((activity, index) => {
+                    {getTravelActivities().map((activity, index) => {
                       const displayText = activity.startsWith("**") && activity.endsWith("**") ? 
                         activity.slice(2, -2) : activity;
                       const isSelected = tripPlan.activities.includes(activity);
