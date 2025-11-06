@@ -34,12 +34,13 @@ export default function Messages() {
     enabled: !!user?.id,
   });
 
-  // Fetch messages
+  // Fetch messages with automatic polling for instant updates
   const { data: messages = [], isLoading: messagesLoading, refetch: refetchMessages } = useQuery({
     queryKey: [`/api/messages/${user?.id}`],
     enabled: !!user?.id,
     staleTime: 0, // Always fetch fresh data
     refetchOnWindowFocus: true,
+    refetchInterval: 2000, // Poll every 2 seconds for new messages
   });
 
   // Debug: Log messages data
