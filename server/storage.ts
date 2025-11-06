@@ -4854,7 +4854,7 @@ export class DatabaseStorage implements IStorage {
               city,
               state: state || '',
               country,
-              createdById: 2, // Admin user
+              createdById: 1, // System user (prevents notification spam)
               isActive: true,
               isPublic: true,
               maxMembers: 500,
