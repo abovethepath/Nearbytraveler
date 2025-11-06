@@ -296,17 +296,23 @@ app.use("/api/", rateLimit({
 }));
 
 // Configure session middleware with Redis for production
+// CRITICAL: Sessions persist indefinitely with rolling renewal - users stay logged in forever unless they logout
 const redis = process.env.REDIS_URL ? new Redis(process.env.REDIS_URL) : null;
+
+// Detect if we're in production
+const isProduction = process.env.NODE_ENV === 'production';
+
 app.use(session({
-  store: redis ? new RedisStore({ client: redis }) : undefined, // Use Redis if available, fallback to memory store for dev
+  store: redis ? new RedisStore({ client: redis, ttl: 365 * 24 * 60 * 60 }) : undefined, // Use Redis with 1-year TTL if available
   secret: process.env.SESSION_SECRET || 'nearby-traveler-secret-key-dev',
   resave: false,
   saveUninitialized: false,
+  rolling: true, // CRITICAL: Renews session on every request - provides sliding window for indefinite login
   cookie: {
-    secure: false, // Set to false for mobile compatibility
+    secure: isProduction, // Secure cookies in production with HTTPS, allow insecure for dev/mobile testing
     httpOnly: true,
     sameSite: "lax",
-    maxAge: 24 * 60 * 60 * 1000
+    maxAge: 365 * 24 * 60 * 60 * 1000 // 365 days - rolling renewal means this resets on every activity
   },
   name: "nt.sid"
 }));
