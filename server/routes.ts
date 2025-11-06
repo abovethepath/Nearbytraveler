@@ -3180,9 +3180,10 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 I'm Aaron - excited to have you join our community connecting travelers and locals through shared interests.
 
 **Get Started:**
+• Complete your profile to match better with others
+• Visit your city match page to connect on local activities
 • Browse people and events in ${user.hometownCity}${user.travelDestination ? ` and ${user.travelDestination}` : ''}
 • Join city chat rooms to start conversations
-• Create meetups or RSVP to events
 
 ${user.travelDestination ? `As a traveler to ${user.travelDestination}, you'll be matched with locals and other travelers there!` : `As a local, you'll be notified when travelers visit ${user.hometownCity} who share your interests!`}
 
@@ -4249,9 +4250,10 @@ Aaron`
 I'm Aaron - excited to have you join our community connecting travelers and locals through shared interests.
 
 **Get Started:**
+• Complete your profile to match better with others
+• Visit your city match page to connect on local activities
 • Browse people and events in ${user.hometownCity}${hasExistingTravelPlan ? ` and your travel destination` : ''}
 • Join city chat rooms to start conversations
-• Create meetups or RSVP to events
 
 ${hasExistingTravelPlan ? `As a traveler, you'll be matched with locals and other travelers who share your interests!` : `As a local, you'll be notified when travelers visit ${user.hometownCity} who share your interests!`}
 
