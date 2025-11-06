@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { SimpleAvatar } from "./simple-avatar";
 import { InterestPills } from "./InterestPills";
 import ConnectButton from "./ConnectButton";
+import { METRO_AREAS } from "@/shared/constants";
 
 export interface User {
   id: number;
@@ -249,8 +250,25 @@ export default function UserCard({
             })()}
           </div>
 
-          {/* Secret Activities - For hometown city pages */}
-          {user.secretActivities && searchLocation && user.hometownCity?.toLowerCase().includes(searchLocation.toLowerCase()) && (
+          {/* Secret Activities - For hometown city pages (with metro area support) */}
+          {user.secretActivities && searchLocation && (() => {
+            // Check if hometown matches search location directly
+            if (user.hometownCity?.toLowerCase().includes(searchLocation.toLowerCase())) {
+              return true;
+            }
+            
+            // Check metro area consolidation (e.g., Playa del Rey shows on Los Angeles page)
+            for (const metro of Object.values(METRO_AREAS)) {
+              if (metro.mainCity.toLowerCase() === searchLocation.toLowerCase()) {
+                // User viewing the main metro city page
+                return metro.cities.some(city => 
+                  user.hometownCity?.toLowerCase().includes(city.toLowerCase())
+                );
+              }
+            }
+            
+            return false;
+          })() && (
             <div className="mt-3 p-3 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-orange-900/20 dark:to-blue-900/20 rounded-lg border border-orange-200 dark:border-orange-700/30">
               <h4 className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Secret things I would do if my closest friends came to town:</h4>
               <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">{user.secretActivities}</p>
