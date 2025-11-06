@@ -264,8 +264,17 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           };
         });
         
-        setAllCities(citiesWithPhotos);
-        console.log('🏙️ MATCH: Cities loaded successfully:', citiesWithPhotos.length);
+        // Sort cities: Los Angeles first (launch city), then alphabetically
+        const sortedCities = citiesWithPhotos.sort((a: any, b: any) => {
+          // Los Angeles always first
+          if (a.city === 'Los Angeles' && b.city !== 'Los Angeles') return -1;
+          if (b.city === 'Los Angeles' && a.city !== 'Los Angeles') return 1;
+          // All others alphabetically
+          return a.city.localeCompare(b.city);
+        });
+        
+        setAllCities(sortedCities);
+        console.log('🏙️ MATCH: Cities loaded successfully:', sortedCities.length, '- Los Angeles is first');
       } else {
         console.error('🏙️ MATCH: Failed to fetch cities from API, falling back to hardcoded');
         // Fallback to original cities if API fails
