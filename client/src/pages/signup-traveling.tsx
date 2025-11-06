@@ -375,6 +375,26 @@ export default function SignupTraveling() {
                     </div>
                   )}
                 </div>
+
+                {/* NEW TO HOMETOWN QUESTION */}
+                {formData.hometownCity && (
+                  <div className="flex items-start space-x-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <input
+                      type="checkbox"
+                      id="isNewToTown"
+                      checked={formData.isNewToTown}
+                      onChange={(e) => setFormData(prev => ({ ...prev, isNewToTown: e.target.checked }))}
+                      className="mt-1 h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
+                      data-testid="checkbox-new-to-town"
+                    />
+                    <label htmlFor="isNewToTown" className="text-sm text-gray-900 cursor-pointer">
+                      <strong>Are you new to {formData.hometownCity}?</strong>
+                      <p className="text-gray-600 mt-1">
+                        Check this if you recently moved here and want to connect with other newcomers
+                      </p>
+                    </label>
+                  </div>
+                )}
               </div>
 
               {/* TRAVEL DESTINATION - NEW SECTION */}
