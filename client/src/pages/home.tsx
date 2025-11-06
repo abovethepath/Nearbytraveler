@@ -1027,8 +1027,13 @@ export default function Home() {
 
   // Debug disabled for performance
 
+  // CRITICAL FIX: Apply location-based prioritization ONLY for default browsing
+  // When user selects filters or searches, skip prioritization to respect their intent
+  // This allows getSortedUsers() to properly apply the user's selected sort
+  const isDefaultBrowsing = !filters.location && !filters.search && activeFilter !== 'best-matches';
+  const usersBeforeFilter = isDefaultBrowsing ? prioritizeUsers(usersToFilter) : usersToFilter;
 
-  const filteredUsers = prioritizeUsers(usersToFilter).filter(otherUser => {
+  const filteredUsers = usersBeforeFilter.filter(otherUser => {
     // Debug logging
     if (activeFilter === "location" && filters.location) {
       console.log(`Filtering user ${otherUser.username}:`, {
@@ -1912,30 +1917,37 @@ export default function Home() {
             </div>
 
             {/* User Grid Display */}
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-4">{filteredUsers.length > 0 ? (
-                filteredUsers.slice(0, showAllUsers ? filteredUsers.length : 8).map((otherUser) => (
-                  <div key={otherUser.id} className="transform hover:scale-[1.02] transition-transform min-w-0 overflow-hidden">
-                    <UserCard 
-                      user={otherUser} 
-                      currentUserId={effectiveUser?.id}
-                      isCurrentUser={otherUser.id === effectiveUser?.id}
-                      compatibilityData={compatibilityData?.find((match: any) => match.userId === otherUser.id)}
-                    />
+            {(() => {
+              // CRITICAL FIX: Apply sorting BEFORE displaying users
+              const sortedAndFilteredUsers = getSortedUsers(filteredUsers);
+              
+              return (
+                <>
+                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-4">
+                    {sortedAndFilteredUsers.length > 0 ? (
+                      sortedAndFilteredUsers.slice(0, showAllUsers ? sortedAndFilteredUsers.length : 8).map((otherUser) => (
+                        <div key={otherUser.id} className="transform hover:scale-[1.02] transition-transform min-w-0 overflow-hidden">
+                          <UserCard 
+                            user={otherUser} 
+                            currentUserId={effectiveUser?.id}
+                            isCurrentUser={otherUser.id === effectiveUser?.id}
+                            compatibilityData={compatibilityData?.find((match: any) => match.userId === otherUser.id)}
+                          />
+                        </div>
+                      ))
+                    ) : (
+                      <div className="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">
+                        {filters.location || filters.search || activeFilter !== "all" ? (
+                          <>No users found matching your current filters. Try adjusting your search criteria.</>
+                        ) : (
+                          <>No users available to discover right now.</>
+                        )}
+                      </div>
+                    )}
                   </div>
-                ))
-              ) : (
-                <div className="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">
-                  {filters.location || filters.search || activeFilter !== "all" ? (
-                    <>No users found matching your current filters. Try adjusting your search criteria.</>
-                  ) : (
-                    <>No users available to discover right now.</>
-                  )}
-                </div>
-              )}
-            </div>
 
-            {/* Load More Button */}
-            {filteredUsers.length > 8 && (
+                  {/* Load More Button */}
+                  {sortedAndFilteredUsers.length > 8 && (
               <div className="flex justify-center mt-6">
                 <Button
                   onClick={() => {
@@ -1953,10 +1965,13 @@ export default function Home() {
                   className="bg-gray-50 hover:bg-gray-100 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white dark:border-gray-500"
                   data-testid="button-load-more-users"
                 >
-                  {showAllUsers ? 'Load Less' : `Load More (${filteredUsers.length - 8} more)`}
+                  {showAllUsers ? 'Load Less' : `Load More (${sortedAndFilteredUsers.length - 8} more)`}
                 </Button>
               </div>
-            )}
+                  )}
+                </>
+              );
+            })()}
             
             </div>
             {/* End Glass Morphism Content Panel */}
