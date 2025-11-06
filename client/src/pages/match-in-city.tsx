@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/App";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
+import { getTravelActivities } from "@shared/base-options";
 import { 
   MapPin, 
   Plus, 
@@ -1238,19 +1239,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   {cityActivities.length > 0 && (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                       {(() => {
-                        // Universal activities list for comparison
-                        const universalActivities = [
-                          "Meet Locals", "Meet Travelers", "Single and Looking",
-                          "Family Activities", "Traveling with Children", "Local Food Specialties", "Restaurants & Dining",
-                          "Coffee Culture", "Craft Beer & Breweries", "Wine Tasting", "Cocktail Bars",
-                          "Museums", "Art Galleries", "Historical Tours", "Architecture",
-                          "City Tours & Sightseeing", "Walking Tours", "Bike Tours", "Photography",
-                          "Nightlife & Dancing", "Live Music & Concerts", "LGBTQ+ Friendly", "Theater & Shows", "Comedy Clubs",
-                          "Beach Activities", "Hiking & Nature", "Parks & Recreation", "Outdoor Adventures",
-                          "Shopping", "Local Markets", "Street Food", "Brunch Spots",
-                          "Festivals & Events", "Cultural Experiences", "Networking & Business",
-                          "Sports & Fitness", "Yoga & Wellness", "Volunteer Opportunities", "Language Exchange"
-                        ];
+                        // Universal activities list for comparison - use TRAVEL_ACTIVITIES
+                        const universalActivities = getTravelActivities();
                         
                         // Check if a city activity is too similar to a universal activity
                         const isSimilarToUniversal = (activityName: string) => {
@@ -1348,32 +1338,19 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   )}
                 </div>
 
-                {/* Universal Activities - Always show these for every city */}
+                {/* Universal Travel Activities - Always show these for every city */}
                 <div className="mt-8">
                   <div className="text-center mb-6">
-                    <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-orange-500 bg-clip-text text-transparent mb-2">🎯 Popular Activities & Interests</h3>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm">Click to add to your "Things I Want To Do" profile</p>
+                    <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-orange-500 bg-clip-text text-transparent mb-2">✈️ Universal Travel Activities</h3>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm">Match with travelers & locals who want to do these same things in {selectedCity}</p>
                     <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-orange-500 mx-auto rounded-full mt-2"></div>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
                     {(() => {
-                      const universalActivities = [
-                        "Meet Locals", "Meet Travelers", "Single and Looking",
-                        "Family Activities", "Traveling with Children", "Local Food Specialties", "Restaurants & Dining",
-                        "Coffee Culture", "Craft Beer & Breweries", "Wine Tasting", "Cocktail Bars",
-                        "Museums", "Art Galleries", "Historical Tours", "Architecture",
-                        "City Tours & Sightseeing", "Walking Tours", "Bike Tours", "Photography",
-                        "Nightlife & Dancing", "Live Music & Concerts", "LGBTQ+ Friendly", "Theater & Shows", "Comedy Clubs",
-                        "Beach Activities", "Hiking & Nature", "Parks & Recreation", "Outdoor Adventures",
-                        "Shopping", "Local Markets", "Street Food", "Brunch Spots",
-                        "Festivals & Events", "Cultural Experiences", "Networking & Business",
-                        "Sports & Fitness", "Yoga & Wellness", "Volunteer Opportunities", "Language Exchange"
-                      ];
+                      // Use the proper TRAVEL_ACTIVITIES from base-options.ts
+                      const travelActivities = getTravelActivities();
                       
-                      // Remove duplicates - keep only unique values
-                      const uniqueActivities = [...new Set(universalActivities)];
-                      
-                      return uniqueActivities.map((activity, index) => {
+                      return travelActivities.map((activity, index) => {
                       // Check if user already has this activity in their interests
                       const isSelected = userActivities.some(ua => ua.activityName === activity && ua.cityName === selectedCity);
                       
