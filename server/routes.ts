@@ -1635,18 +1635,23 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           try {
             const cityNames = originalCities.map(c => c.city);
             
-            // Single query to get all counts at once using conditional aggregation
-            const statsQuery = await db.execute(sql`
+            // Build PostgreSQL array literal safely for use with IN clause
+            // Wrap each city name in single quotes and escape internal quotes
+            const cityList = cityNames.map(city => `'${city.replace(/'/g, "''")}'`).join(', ');
+            
+            // Single query to get all counts at once using conditional aggregation  
+            // Using IN clause with properly escaped literal values
+            const statsQuery = await db.execute(sql.raw(`
               SELECT 
-                COUNT(DISTINCT CASE WHEN u.user_type = 'local' AND u.hometown_city = ANY(${cityNames}) THEN u.id END) as local_count,
-                COUNT(DISTINCT CASE WHEN u.user_type = 'business' AND u.hometown_city = ANY(${cityNames}) THEN u.id END) as business_count,
-                COUNT(DISTINCT CASE WHEN u.user_type = 'traveler' AND u.hometown_city = ANY(${cityNames}) THEN u.id END) as traveler_from_count,
-                COUNT(DISTINCT CASE WHEN u.user_type = 'traveler' AND u.destination_city = ANY(${cityNames}) THEN u.id END) as traveler_to_count,
+                COUNT(DISTINCT CASE WHEN u.user_type = 'local' AND u.hometown_city IN (${cityList}) THEN u.id END) as local_count,
+                COUNT(DISTINCT CASE WHEN u.user_type = 'business' AND u.hometown_city IN (${cityList}) THEN u.id END) as business_count,
+                COUNT(DISTINCT CASE WHEN u.user_type = 'traveler' AND u.hometown_city IN (${cityList}) THEN u.id END) as traveler_from_count,
+                COUNT(DISTINCT CASE WHEN u.user_type = 'traveler' AND u.destination_city IN (${cityList}) THEN u.id END) as traveler_to_count,
                 COUNT(DISTINCT e.id) as event_count
               FROM users u
-              LEFT JOIN events e ON e.city = ANY(${cityNames})
-              WHERE u.hometown_city = ANY(${cityNames}) OR u.destination_city = ANY(${cityNames})
-            `);
+              LEFT JOIN events e ON e.city IN (${cityList})
+              WHERE u.hometown_city IN (${cityList}) OR u.destination_city IN (${cityList})
+            `));
 
             const stats = statsQuery.rows[0] as any;
             const localCount = Number(stats.local_count) || 0;
