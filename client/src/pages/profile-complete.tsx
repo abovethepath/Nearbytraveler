@@ -3438,6 +3438,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     );
   }
 
+  // Show loading while waiting for authentication to load
+  if (!effectiveUserId) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
   if (!user && !userLoading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
