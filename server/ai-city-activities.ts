@@ -72,19 +72,35 @@ CRITICAL REQUIREMENTS:
 2. NO DUPLICATES - Each activity must be completely different and unique
 3. NO similar variations (e.g., don't include both "Hollywood Walk of Fame Tours" and "Hollywood Walk of Fame Photography")
 4. NO generic descriptions
+5. ONLY GENERATE CITY-SPECIFIC PLACES, LANDMARKS, AND VENUES - NOT generic social categories
 
-Examples of GOOD specific activities:
-- "Sagrada Familia Tours" (Barcelona)
-- "Picasso Museum Visit" (Barcelona) 
-- "Hollywood Walk of Fame" (Los Angeles)
-- "Central Park Picnics" (New York)
-- "Tower Bridge Walking" (London)
+DO NOT GENERATE these generic social/meeting activities (they're handled separately):
+❌ "Single" / "Open to Dating" / "Looking for Romance"
+❌ "Meet Locals Here" / "Meet Other Travelers" / "Meeting New People"
+❌ "Solo Traveler Meetups" / "Solo Travel"
+❌ "Family Friendly Activities" / "Family Activities" / "Traveling with Children"
+❌ "Business Networking" / "Coworking" / "Digital Nomad"
+❌ "Workout Buddy" / "Fitness Partner"
+❌ "Language Exchange" / "Language Practice"
+❌ "LGBTQ+ Events" / "LGBTQ+ Friendly"
+❌ Any other generic social matching categories
+
+Examples of GOOD specific activities (city landmarks/venues):
+✅ "Sagrada Familia Tours" (Barcelona)
+✅ "Picasso Museum Visit" (Barcelona) 
+✅ "Salt Lick BBQ" (Austin)
+✅ "Franklin Barbecue" (Austin)
+✅ "Hollywood Walk of Fame" (Los Angeles)
+✅ "Central Park Picnics" (New York)
+✅ "Tower Bridge Walking" (London)
 
 Examples of BAD generic activities to AVOID:
-- "Visit Museums" 
-- "Food Tours"
-- "Sightseeing"
-- "Local Markets"
+❌ "Visit Museums" (too generic)
+❌ "Food Tours" (too generic)
+❌ "Sightseeing" (too generic)
+❌ "Meet Locals" (generic social category)
+❌ "Single" (generic social category)
+❌ "Family Activities" (generic social category)
 
 For ${cityName}, include SPECIFIC and DIVERSE:
 - Named landmarks and monuments (exact names)
@@ -118,12 +134,27 @@ CRITICAL: Return ONLY valid JSON, no markdown formatting, no code blocks, no exp
 
     const response = await anthropic.messages.create({
       max_tokens: 2000,
+      system: `You are a LOCAL EXPERT who lives in the city and knows EXACT landmark names, museum names, neighborhood names, restaurant names, and specific locations.
+
+CRITICAL RULES YOU MUST ALWAYS FOLLOW:
+1. NEVER use generic terms - always mention specific, real places by their actual names
+2. Generate completely unique activities - no duplicates or similar variations
+3. ABSOLUTELY NO GENERIC SOCIAL CATEGORIES - these are strictly forbidden:
+   - NO "Single", "Open to Dating", "Looking for Romance"
+   - NO "Meet Locals", "Meet Travelers", "Meeting New People"
+   - NO "Solo Traveler", "Solo Travel Meetups"
+   - NO "Family Activities", "Family Friendly", "Traveling with Children"
+   - NO "Business Networking", "Coworking", "Digital Nomad"
+   - NO "Workout Buddy", "Fitness Partner", "Looking for Workout Buddy"
+   - NO "Language Exchange", "Language Practice"
+   - NO "LGBTQ+ Events", "LGBTQ+ Friendly"
+   - NO any other generic social matching categories
+4. ONLY generate actual city-specific PLACES, LANDMARKS, RESTAURANTS, VENUES, MUSEUMS, PARKS with real names
+5. Return valid JSON only`,
       messages: [
         {
           role: "user",
-          content: `You are a LOCAL EXPERT who lives in the city and knows EXACT landmark names, museum names, neighborhood names, restaurant names, and specific locations. NEVER use generic terms - always mention specific, real places by their actual names. You know the actual names of museums, parks, restaurants, districts, and attractions that exist in each city. CRITICAL: Generate completely unique activities - no duplicates or similar variations. Each activity must be distinctly different. Return valid JSON only.
-
-${prompt}`
+          content: prompt
         }
       ],
       // "claude-sonnet-4-20250514"
@@ -131,7 +162,8 @@ ${prompt}`
     });
 
     // Clean the response to remove markdown formatting if present
-    let responseText = response.content[0].text || '{"activities": []}';
+    const firstContent = response.content[0];
+    let responseText = (firstContent.type === 'text' ? firstContent.text : '') || '{"activities": []}';
     
     // Remove markdown code blocks if they exist
     if (responseText.includes('```json')) {
