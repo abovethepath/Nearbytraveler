@@ -769,51 +769,6 @@ export default function SignupSteps() {
             {/* Step 5: Final Details */}
             {currentStep === 5 && (
               <>
-                <div>
-                  <h4 className="text-lg font-medium mb-3 text-gray-900">Events</h4>
-                  <div className="grid grid-cols-4 gap-1 border rounded-lg p-3 bg-orange-50 mb-4">
-                    {().map((event) => (
-                      <div key={event} className="flex items-center space-x-1">
-                        <Checkbox
-                          id={`event-${event}`}
-                          checked={formData.events.includes(event)}
-                          onCheckedChange={() => 
-                            toggleArrayValue(formData.events, event, (newEvents) => 
-                              setFormData({ ...formData, events: newEvents })
-                            )
-                          }
-                        />
-                        <Label htmlFor={`event-${event}`} className="text-xs">{event}</Label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-
-            {/* Step 5: Final Details */}
-            {currentStep === 5 && (
-              <>
-                <div>
-                  <h3 className="text-lg font-medium mb-4 text-teal-700">Events</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
-                    {().map((event) => (
-                      <div key={event} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`event-${event}`}
-                          checked={formData.events.includes(event)}
-                          onCheckedChange={() => 
-                            toggleArrayValue(formData.events, event, (newEvents) => 
-                              setFormData({ ...formData, events: newEvents })
-                            )
-                          }
-                        />
-                        <Label htmlFor={`event-${event}`} className="text-xs">{event}</Label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
                 {(formData.userType === 'traveler' || formData.userType === 'local') && (
                   <div>
                     <h3 className="text-lg font-medium mb-4 text-teal-700">Currently Traveling?</h3>

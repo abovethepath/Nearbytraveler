@@ -28,6 +28,13 @@ interface MatchInCityProps {
   cityName?: string;
 }
 
+interface UserProfile {
+  id: number;
+  username: string;
+  activities?: string[];
+  [key: string]: any;
+}
+
 export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [location, setLocation] = useLocation();
   const { user } = useAuth();
@@ -118,7 +125,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   }, [citySearchTerm, allCities]);
 
   // Fetch user profile to sync with existing activities
-  const { data: userProfile } = useQuery({
+  const { data: userProfile } = useQuery<UserProfile>({
     queryKey: ['/api/users', user?.id],
     enabled: !!user?.id
   });
