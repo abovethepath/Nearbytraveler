@@ -4845,29 +4845,11 @@ export class DatabaseStorage implements IStorage {
           ))
           .limit(2);
 
-        if (existingChatrooms.length < 2) {
-          // Create Welcome Newcomers chatroom
-          if (!existingChatrooms.some(room => room.name.includes('Welcome Newcomers'))) {
-            await db.insert(citychatrooms).values({
-              name: `Welcome Newcomers ${city}`,
-              description: `Welcome new visitors and locals to ${city}`,
-              city,
-              state: state || '',
-              country,
-              createdById: 1, // System user
-              isActive: true,
-              isPublic: true,
-              maxMembers: 500,
-              tags: ['welcome', 'newcomers', 'locals', 'travelers'],
-              rules: 'Be respectful and helpful to fellow travelers and locals'
-            });
-            console.log(`✅ CITY SETUP: Created Welcome Newcomers chatroom for ${city}`);
-          }
-
-          // Create Let's Meet Up chatroom
+        if (existingChatrooms.length < 1) {
+          // Create single Let's Meet Up chatroom
           if (!existingChatrooms.some(room => room.name.includes("Let's Meet Up"))) {
             await db.insert(citychatrooms).values({
-              name: `Let's Meet Up ${city}`,
+              name: `Let's Meet Up in ${city}`,
               description: `Plan meetups and events with locals and travelers in ${city}`,
               city,
               state: state || '',
@@ -4875,9 +4857,9 @@ export class DatabaseStorage implements IStorage {
               createdById: 1, // System user
               isActive: true,
               isPublic: true,
-              maxMembers: 300,
+              maxMembers: 500,
               tags: ['meetup', 'events', 'social'],
-              rules: 'Share helpful local tips and coordinate meetups'
+              rules: 'Be respectful and helpful to fellow travelers and locals'
             });
             console.log(`✅ CITY SETUP: Created Let's Meet Up chatroom for ${city}`);
           }
@@ -7912,25 +7894,22 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  // Auto-join user to both Welcome Newcomers and Let's Meet Up chatrooms for their city
+  // Auto-join user to Let's Meet Up chatroom for their city
   async autoJoinWelcomeChatroom(userId: number, city: string, country: string): Promise<void> {
     try {
-      console.log(`🎯 AUTO-JOIN: Finding chatrooms for user ${userId} in city: ${city}`);
+      console.log(`🎯 AUTO-JOIN: Finding chatroom for user ${userId} in city: ${city}`);
       
       // Apply metro consolidation to find the correct chatroom city
       const consolidatedCity = this.consolidateToMetropolitanArea(city, null, country);
       console.log(`🎯 AUTO-JOIN: ${city} consolidated to ${consolidatedCity} for chatroom lookup`);
       
-      // Find chatrooms for the consolidated city
+      // Find Let's Meet Up chatroom for the consolidated city
       const cityChatrooms = await db
         .select()
         .from(citychatrooms)
         .where(and(
           eq(citychatrooms.city, consolidatedCity),
-          or(
-            ilike(citychatrooms.name, `Welcome Newcomers ${consolidatedCity}`),
-            ilike(citychatrooms.name, `Let's Meet Up ${consolidatedCity}`)
-          )
+          ilike(citychatrooms.name, `Let's Meet Up in ${consolidatedCity}`)
         ));
 
       console.log(`🎯 AUTO-JOIN: Found ${cityChatrooms.length} chatrooms for ${consolidatedCity}`);
