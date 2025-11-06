@@ -134,11 +134,11 @@ export default function Auth() {
             {/* Back Button */}
             <button
               onClick={() => setLocation('/')}
-              className="absolute left-4 top-4 flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 transition-colors group"
+              className="absolute left-4 top-4 flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors group bg-white/50 px-3 py-1 rounded-md"
               data-testid="button-back-home"
             >
               <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-              <span className="text-sm font-medium">Back</span>
+              <span className="text-sm font-semibold">Back</span>
             </button>
             
             <div className="flex justify-center mb-6">
@@ -207,7 +207,8 @@ export default function Auth() {
                 <div className="text-center">
                   <button
                     onClick={() => window.location.href = '/forgot-password'}
-                    className="text-sm text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 underline"
+                    className="text-sm text-gray-700 hover:text-gray-900 font-medium underline"
+                    data-testid="link-forgot-password"
                   >
                     Forgot your password?
                   </button>
@@ -216,14 +217,14 @@ export default function Auth() {
             ) : null}
 
             {!isSignupPage && (
-              <div className="text-center pt-4">
+              <div className="text-center pt-4 border-t border-gray-200 mt-4">
                 {isLogin && (
                   <button
                     onClick={() => window.location.href = '/signup'}
-                    className="text-blue-600 hover:text-blue-800 font-medium"
+                    className="text-blue-600 hover:text-blue-800 font-semibold text-base mt-4"
                     data-testid="link-signup-from-login"
                   >
-                    Need an account? Sign up
+                    Not a Current User? Sign up Here
                   </button>
                 )}
               </div>
