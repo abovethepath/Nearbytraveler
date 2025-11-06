@@ -135,11 +135,10 @@ export default function Auth() {
             <button
               onClick={() => setLocation('/')}
               className="absolute left-4 top-4 flex items-center gap-2 transition-colors group bg-white/50 px-3 py-1 rounded-md z-50"
-              style={{ color: '#1f2937' }}
               data-testid="button-back-home"
             >
-              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-              <span className="text-sm font-semibold">Back</span>
+              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" style={{ color: '#1f2937' }} />
+              <span className="text-sm font-semibold" style={{ color: '#1f2937' }}>Back</span>
             </button>
             
             <div className="flex justify-center mb-6">
@@ -215,10 +214,9 @@ export default function Auth() {
                 <button
                   onClick={() => window.location.href = '/forgot-password'}
                   className="text-sm font-medium underline"
-                  style={{ color: '#1f2937' }}
                   data-testid="link-forgot-password"
                 >
-                  Forgot your password?
+                  <span style={{ color: '#2563eb' }}>Forgot your password?</span>
                 </button>
               </div>
             )}
@@ -228,10 +226,9 @@ export default function Auth() {
                 <button
                   onClick={() => window.location.href = '/signup'}
                   className="font-semibold text-base mt-4 block mx-auto"
-                  style={{ color: '#2563eb' }}
                   data-testid="link-signup-from-login"
                 >
-                  Not a Current User? Sign up Here
+                  <span style={{ color: '#2563eb' }}>Not a Current User? Sign up Here</span>
                 </button>
               </div>
             )}
