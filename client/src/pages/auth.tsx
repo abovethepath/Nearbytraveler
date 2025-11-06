@@ -145,7 +145,7 @@ export default function Auth() {
               <Logo variant="header" />
             </div>
             <CardTitle className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
-              {isLogin ? 'Welcome Back' : 'Join Nearby Traveler'}
+              {isLogin ? 'Welcome Back' : 'Join Nearby Traveler'} v2
             </CardTitle>
             {!isLogin && (
               <p className="text-lg text-gray-600 mt-2">
