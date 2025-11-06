@@ -3177,26 +3177,18 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           if (nearbytravAccount) {
             await storage.sendSystemMessage(2, user.id, `Welcome to Nearby Traveler, ${user.name || user.username}! ✈️
 
-I'm Aaron, and I'm excited to welcome you to our community of travelers, locals, and businesses who believe in authentic human connections.
+I'm Aaron - excited to have you join our community connecting travelers and locals through shared interests.
 
-🌍 **What You Can Do:**
-• **Connect with Real People**: Find travelers and locals who share your interests
-• **Join Live Events & Meetups**: Discover what's happening in your area right now
-• **City Chat Rooms**: Jump into conversations with people in ${user.hometownCity}${user.travelDestination ? ` and ${user.travelDestination}` : ''}
-• **Quick Meetups**: Create spontaneous hangouts when you're feeling social
-• **AI-Powered Discovery**: Get personalized recommendations for activities and connections
+**Get Started:**
+• Browse people and events in ${user.hometownCity}${user.travelDestination ? ` and ${user.travelDestination}` : ''}
+• Join city chat rooms to start conversations
+• Create meetups or RSVP to events
 
-🎯 **Your Next Steps:**
-1. Complete your profile with interests and a photo
-2. Browse people and events in your areas
-3. Join your city chat rooms to start conversations
-4. Create your first meetup or RSVP to an event
+${user.travelDestination ? `As a traveler to ${user.travelDestination}, you'll be matched with locals and other travelers there!` : `As a local, you'll be notified when travelers visit ${user.hometownCity} who share your interests!`}
 
-${user.travelDestination ? `Since you're traveling to ${user.travelDestination}, you'll get matched with locals and other travelers there who share your interests!` : `As a local in ${user.hometownCity}, you'll be notified when travelers with similar interests visit your area!`}
+Questions? Just reply to this message!
 
-Questions? Just reply to this message. Welcome to the community!
-
-- Aaron (your fellow nearby traveler)`);
+- Aaron`);
             console.log(`✓ PROFILE COMPLETION: Sent welcome message from nearbytrav to ${user.username}`);
           } else {
             console.error('PROFILE COMPLETION ERROR: nearbytrav account (ID 2) not found');
@@ -4243,47 +4235,29 @@ Questions? Just reply to this message. Welcome to the community!
           const welcomeMessage = user.userType === 'business'
             ? `Welcome to Nearby Traveler Business, @${user.username}! 🏢
 
-Key features for your business:
+**Key Features:**
+• Create deals & flash sales for immediate foot traffic
+• Get matched with travelers/locals who share your business interests
+• Appear on our interactive map for discovery
+• Host business events and track analytics
 
-**📊 Business Dashboard**: Track offer analytics, views, and customer redemptions
-
-**🎯 Smart Offers**: Create deals with multiple discount types (%, fixed, BOGO, free items with purchase, combos)
-
-**⚡ Instant Deals**: Flash sales that expire in 1-24 hours for immediate foot traffic
-
-**🔔 Customer Matching**: Get notified when travelers/locals with interests matching your business are nearby
-
-**🗺️ Map Presence**: Appear on our interactive map for location-based discovery
-
-**🎪 Event Hosting**: Create business events to showcase your offerings
-
-**🔍 Target Marketing**: Search specifically for locals and nearby travelers coming to or already in your location to market your offers and deals directly to them
-
-Start by creating your first offer and setting up location notifications!
+Start by creating your first offer from your Business Dashboard!
 
 Aaron`
             : `Welcome to Nearby Traveler, ${user.name || user.username}! ✈️
 
-I'm Aaron, and I'm excited to welcome you to our community of travelers, locals, and businesses who believe in authentic human connections.
+I'm Aaron - excited to have you join our community connecting travelers and locals through shared interests.
 
-🌍 **What You Can Do:**
-• **Connect with Real People**: Find travelers and locals who share your interests
-• **Join Live Events & Meetups**: Discover what's happening in your area right now
-• **City Chat Rooms**: Jump into conversations with people in ${user.hometownCity}${hasExistingTravelPlan ? ` and your travel destination` : ''}
-• **Quick Meetups**: Create spontaneous hangouts when you're feeling social
-• **AI-Powered Discovery**: Get personalized recommendations for activities and connections
+**Get Started:**
+• Browse people and events in ${user.hometownCity}${hasExistingTravelPlan ? ` and your travel destination` : ''}
+• Join city chat rooms to start conversations
+• Create meetups or RSVP to events
 
-🎯 **Your Next Steps:**
-1. Complete your profile with interests and a photo
-2. Browse people and events in your areas
-3. Join your city chat rooms to start conversations
-4. Create your first meetup or RSVP to an event
+${hasExistingTravelPlan ? `As a traveler, you'll be matched with locals and other travelers who share your interests!` : `As a local, you'll be notified when travelers visit ${user.hometownCity} who share your interests!`}
 
-${hasExistingTravelPlan ? `Since you're planning to travel, you'll get matched with locals and other travelers who share your interests!` : `As a local in ${user.hometownCity}, you'll be notified when travelers with similar interests visit your area!`}
+Questions? Just reply to this message!
 
-Questions? Just reply to this message. Welcome to the community!
-
-- Aaron (your fellow nearby traveler)`;
+- Aaron`;
 
           await storage.sendSystemMessage(2, user.id, welcomeMessage);
           console.log(`✓ REGISTRATION: Sent ${user.userType === 'business' ? 'business' : 'user'} welcome message from nearbytrav to ${user.username}`);
