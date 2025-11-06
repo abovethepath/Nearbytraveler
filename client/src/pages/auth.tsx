@@ -120,7 +120,7 @@ export default function Auth() {
 
   return (
     <div 
-      className="min-h-screen flex items-center justify-center p-4"
+      className="light min-h-screen flex items-center justify-center p-4"
       style={{
         background: `linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.1) 100%), url('/hero-image-7.webp')`,
         backgroundSize: 'cover',
