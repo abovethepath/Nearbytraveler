@@ -7,39 +7,61 @@ export default function ProfilePageResponsive() {
   const [actualUser, setActualUser] = useState<any>(null);
   const [isReady, setIsReady] = useState(false);
   
-  // CRITICAL FIX: Use multi-source authentication check to prevent blinking
+  // CRITICAL FIX: Fetch fresh user data from API to ensure latest data (including secretActivities)
   useEffect(() => {
-    // Try multiple sources for user data to ensure stable authentication
-    const contextUser = authContext.user;
-    const storageUser = localStorage.getItem('user');
-    const travelConnectUser = localStorage.getItem('travelConnectUser');
-    const auth_token = localStorage.getItem('auth_token');
-    
-    // Use the first available user data source
-    if (contextUser) {
-      setActualUser(contextUser);
-      setIsReady(true);
-    } else if (storageUser) {
+    async function fetchFreshUserData() {
       try {
-        setActualUser(JSON.parse(storageUser));
+        // First check if user is authenticated
+        const contextUser = authContext.user;
+        const storageUser = localStorage.getItem('user');
+        const travelConnectUser = localStorage.getItem('travelConnectUser');
+        
+        if (!contextUser && !storageUser && !travelConnectUser) {
+          // Not authenticated
+          setIsReady(true);
+          return;
+        }
+        
+        // Fetch fresh data from API
+        const response = await fetch('/api/auth/user', {
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          const freshUser = await response.json();
+          setActualUser(freshUser);
+          // Update localStorage with fresh data
+          localStorage.setItem('user', JSON.stringify(freshUser));
+        } else {
+          // Fallback to cached data if API fails
+          if (contextUser) {
+            setActualUser(contextUser);
+          } else if (storageUser) {
+            setActualUser(JSON.parse(storageUser));
+          } else if (travelConnectUser) {
+            setActualUser(JSON.parse(travelConnectUser));
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch user data:', error);
+        // Fallback to cached data
+        const contextUser = authContext.user;
+        const storageUser = localStorage.getItem('user');
+        if (contextUser) {
+          setActualUser(contextUser);
+        } else if (storageUser) {
+          try {
+            setActualUser(JSON.parse(storageUser));
+          } catch (e) {
+            console.error('Failed to parse cached user');
+          }
+        }
+      } finally {
         setIsReady(true);
-      } catch (e) {
-        console.error('Failed to parse user from localStorage');
-        setIsReady(true); // Still mark as ready to avoid infinite loading
       }
-    } else if (travelConnectUser) {
-      try {
-        setActualUser(JSON.parse(travelConnectUser));
-        setIsReady(true);
-      } catch (e) {
-        console.error('Failed to parse travelConnectUser');
-        setIsReady(true); // Still mark as ready to avoid infinite loading
-      }
-    } else {
-      // No usable user data found (even if auth_token exists, it's stale/invalid)
-      // Mark as ready to show login prompt instead of infinite loading
-      setIsReady(true);
     }
+    
+    fetchFreshUserData();
   }, [authContext.user]);
 
   if (!isReady) {
