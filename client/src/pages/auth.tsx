@@ -207,34 +207,30 @@ export default function Auth() {
                 >
                   {isLoading ? "Signing In..." : "Sign In"}
                 </Button>
-                
-                <div className="text-center">
-                  <button
-                    onClick={() => window.location.href = '/forgot-password'}
-                    className="text-sm text-gray-700 hover:text-gray-900 font-medium underline"
-                    data-testid="link-forgot-password"
-                  >
-                    Forgot your password?
-                  </button>
-                </div>
               </div>
             ) : null}
 
-            {!isSignupPage && (
-              <div className="text-center pt-4 border-t border-gray-200 mt-4" style={{ display: 'block' }}>
-                {isLogin && (
-                  <button
-                    onClick={() => {
-                      console.log('Signup link clicked!');
-                      window.location.href = '/signup';
-                    }}
-                    className="text-blue-600 hover:text-blue-800 font-semibold text-base mt-4"
-                    data-testid="link-signup-from-login"
-                    style={{ display: 'inline-block' }}
-                  >
-                    Not a Current User? Sign up Here
-                  </button>
-                )}
+            {isLogin && (
+              <div className="text-center mt-4">
+                <button
+                  onClick={() => window.location.href = '/forgot-password'}
+                  className="text-sm text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 font-medium underline"
+                  data-testid="link-forgot-password"
+                >
+                  Forgot your password?
+                </button>
+              </div>
+            )}
+
+            {!isSignupPage && isLogin && (
+              <div className="text-center pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
+                <button
+                  onClick={() => window.location.href = '/signup'}
+                  className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-semibold text-base mt-4 block mx-auto"
+                  data-testid="link-signup-from-login"
+                >
+                  Not a Current User? Sign up Here
+                </button>
               </div>
             )}
             
