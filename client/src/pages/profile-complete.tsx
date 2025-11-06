@@ -1049,6 +1049,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     parsedResult: parseInt(String(propUserId || '')) === currentUser?.id
   });
   
+  // TEMPORARY DEBUG - REMOVE AFTER TESTING
+  console.warn('⚠️ PROFILE DEBUG:', { 
+    isOwnProfile, 
+    propUserId, 
+    currentUserId: currentUser?.id,
+    authContextUser: !!authContextUser,
+    storageUser: !!authStorage.getUser()
+  });
+  
 
 
   // Fetch user data with fallback to localStorage
