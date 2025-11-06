@@ -167,7 +167,8 @@ export default function Auth() {
                       value={formData.email}
                       onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                       placeholder="Enter your email or username"
-                      className="text-base py-3"
+                      className="text-base py-3 bg-white border-2 border-gray-300 text-gray-900"
+                      data-testid="input-login-email"
                     />
                   </div>
                   <div>
@@ -179,7 +180,8 @@ export default function Auth() {
                         value={formData.password}
                         onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
                         placeholder="Enter your password"
-                        className="text-base py-3 pr-10"
+                        className="text-base py-3 pr-10 bg-white border-2 border-gray-300 text-gray-900"
+                        data-testid="input-login-password"
                       />
                       <button
                         type="button"
@@ -197,6 +199,7 @@ export default function Auth() {
                   onClick={handleLogin}
                   disabled={isLoading || !formData.email || !formData.password}
                   className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-orange-500 text-white font-semibold rounded-md hover:opacity-90 transition-opacity"
+                  data-testid="button-login-submit"
                 >
                   {isLoading ? "Signing In..." : "Sign In"}
                 </Button>
@@ -218,6 +221,7 @@ export default function Auth() {
                   <button
                     onClick={() => window.location.href = '/signup'}
                     className="text-blue-600 hover:text-blue-800 font-medium"
+                    data-testid="link-signup-from-login"
                   >
                     Need an account? Sign up
                   </button>
