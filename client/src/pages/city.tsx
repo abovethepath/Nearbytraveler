@@ -418,7 +418,8 @@ export default function CityPage({ cityName }: CityPageProps) {
                             hometownCountry: user.hometownCountry || "",
                             profileImage: user.profileImage || "",
                             interests: user.interests || [],
-                            isCurrentlyTraveling: user.isCurrentlyTraveling || false
+                            isCurrentlyTraveling: user.isCurrentlyTraveling || false,
+                            secretActivities: user.secretActivities || ""
                           }} 
                           searchLocation={decodedCityName} 
                         />
