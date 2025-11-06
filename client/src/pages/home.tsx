@@ -808,8 +808,8 @@ export default function Home() {
       return unique;
     },
     enabled: discoveryLocations.allCities.length > 0,
-    staleTime: 0,
-    gcTime: 0,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes (events don't change that often)
+    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
   });
 
   // Filter events to only show upcoming ones with user priority and recurring deduplication
@@ -984,9 +984,10 @@ export default function Home() {
       }
     },
     enabled: true, // Always enabled
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnMount: 'always',
+    staleTime: 30000, // Cache for 30 seconds to prevent constant refetching
+    gcTime: 60000, // Keep in cache for 1 minute
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 
   // Enrich ALL users with travel data and apply prioritization

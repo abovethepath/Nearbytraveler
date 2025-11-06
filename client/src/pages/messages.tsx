@@ -38,9 +38,10 @@ export default function Messages() {
   const { data: messages = [], isLoading: messagesLoading, refetch: refetchMessages } = useQuery({
     queryKey: [`/api/messages/${user?.id}`],
     enabled: !!user?.id,
-    staleTime: 0, // Always fetch fresh data
-    refetchOnWindowFocus: true,
-    refetchInterval: 2000, // Poll every 2 seconds for new messages
+    staleTime: 5000, // Cache for 5 seconds to reduce excessive requests
+    gcTime: 10000, // Keep in cache for 10 seconds
+    refetchOnWindowFocus: true, // Still refetch when user returns to tab
+    refetchInterval: 10000, // Poll every 10 seconds instead of 2 (much more reasonable)
   });
 
   // Debug: Log messages data

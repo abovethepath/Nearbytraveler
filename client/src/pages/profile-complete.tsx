@@ -1167,8 +1167,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const { data: travelPlans = [], isLoading: isLoadingTravelPlans } = useQuery<any[]>({
     queryKey: [`/api/travel-plans-with-itineraries/${effectiveUserId}`],
     enabled: !!effectiveUserId,
-    staleTime: 0,
-    gcTime: 0,
+    staleTime: 30000, // Cache for 30 seconds
+    gcTime: 60000, // Keep in cache for 1 minute
   });
 
   // Fetch user's chatrooms for Travel Stats display (created AND joined)
@@ -1364,16 +1364,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const { data: userReferences = [] } = useQuery<any[]>({
     queryKey: [`/api/users/${effectiveUserId}/references`],
     enabled: !!effectiveUserId,
-    staleTime: 0,
-    gcTime: 0,
+    staleTime: 30000, // Cache for 30 seconds
+    gcTime: 60000, // Keep in cache for 1 minute
   });
 
   // Fetch vouches received by this user (visible to all)
   const { data: userVouches = [] } = useQuery<any[]>({
     queryKey: [`/api/users/${effectiveUserId}/vouches`],
     enabled: !!effectiveUserId,
-    staleTime: 0,
-    gcTime: 0,
+    staleTime: 30000, // Cache for 30 seconds
+    gcTime: 60000, // Keep in cache for 1 minute
   });
 
   // Fetch connection status between current user and profile user (for non-own profiles)
@@ -1384,16 +1384,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   }>({
     queryKey: [`/api/connections/status/${currentUser?.id}/${effectiveUserId}`],
     enabled: !!currentUser?.id && !!effectiveUserId && !isOwnProfile,
-    staleTime: 0,
-    gcTime: 0,
+    staleTime: 30000, // Cache for 30 seconds
+    gcTime: 60000, // Keep in cache for 1 minute
   });
 
   // Fetch user photos for cover photo selection
   const { data: userPhotos = [] } = useQuery<any[]>({
     queryKey: [`/api/users/${effectiveUserId}/photos`],
     enabled: !!effectiveUserId && isOwnProfile,
-    staleTime: 0,
-    gcTime: 0,
+    staleTime: 30000, // Cache for 30 seconds
+    gcTime: 60000, // Keep in cache for 1 minute
   });
 
 
@@ -1404,16 +1404,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const { data: userTravelMemories = [] } = useQuery<any[]>({
     queryKey: [`/api/users/${effectiveUserId}/travel-memories`],
     enabled: !!effectiveUserId,
-    staleTime: 0,
-    gcTime: 0,
+    staleTime: 30000, // Cache for 30 seconds
+    gcTime: 60000, // Keep in cache for 1 minute
   });
 
   // Fetch business offers for business users
   const { data: businessDeals = [], isLoading: businessDealsLoading } = useQuery<any[]>({
     queryKey: [`/api/business-deals/business/${effectiveUserId}`],
     enabled: !!user && user.userType === 'business' && user.id.toString() === effectiveUserId?.toString(),
-    staleTime: 0,
-    gcTime: 0,
+    staleTime: 30000, // Cache for 30 seconds
+    gcTime: 60000, // Keep in cache for 1 minute
   });
 
   // Travel plans query moved above for proper dependency order

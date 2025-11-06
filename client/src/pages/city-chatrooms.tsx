@@ -54,7 +54,9 @@ export default function CityChatroomsPage() {
   // Fetch chatrooms with proper member counts
   const { data: chatrooms = [], isLoading, refetch } = useQuery<CityChatroom[]>({
     queryKey: ['/api/chatrooms/my-locations'],
-    refetchInterval: 10000, // Refresh every 10 seconds
+    staleTime: 30000, // Cache for 30 seconds
+    gcTime: 60000, // Keep in cache for 1 minute
+    refetchInterval: 60000, // Refresh every minute instead of 10 seconds
     refetchOnWindowFocus: true,
     onSuccess: (data) => {
       console.log('🔍 DEBUG: Chatrooms received from API:', data);

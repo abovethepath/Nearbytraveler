@@ -85,10 +85,13 @@ export default function Events() {
   // Get current user from localStorage
   const currentUser = JSON.parse(localStorage.getItem('travelconnect_user') || '{}');
 
-  // Get user data from API to ensure fresh data
+  // Get user data from API
   const { data: apiUser } = useQuery({
     queryKey: [`/api/users/${currentUser?.id || 1}`],
-    staleTime: 0, // Always fetch fresh data
+    staleTime: 30000, // Cache for 30 seconds to prevent constant refetching
+    gcTime: 60000, // Keep in cache for 1 minute
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     enabled: !!currentUser?.id,
   });
 

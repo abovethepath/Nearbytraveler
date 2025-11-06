@@ -301,9 +301,10 @@ export default function BusinessDashboard() {
       return data;
     },
     enabled: !!storageUser?.id,
-    staleTime: 0,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true
+    staleTime: 30000, // Cache for 30 seconds
+    gcTime: 60000, // Keep in cache for 1 minute
+    refetchOnMount: false,
+    refetchOnWindowFocus: false
   });
 
   // Use fresh data if available, fallback to storage user
@@ -313,19 +314,20 @@ export default function BusinessDashboard() {
   const { data: offers = [], isLoading, refetch: refetchOffers } = useQuery<BusinessOffer[]>({
     queryKey: [`/api/business-deals/business/${storageUser?.id}`],
     enabled: !!storageUser?.id && storageUser?.userType === 'business',
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnMount: 'always',
-    refetchOnWindowFocus: true,
-    refetchInterval: 5000 // Refresh every 5 seconds
+    staleTime: 30000, // Cache for 30 seconds
+    gcTime: 60000, // Keep in cache for 1 minute
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchInterval: 60000 // Refresh every minute instead of every 5 seconds
   });
 
   // Fetch past offers - filter client-side for expired offers
   const { data: allOffers = [], isLoading: isPastOffersLoading } = useQuery<BusinessOffer[]>({
     queryKey: [`/api/business-deals/business/${storageUser?.id}`],
     enabled: !!storageUser?.id && storageUser?.userType === 'business',
-    staleTime: 0,
-    refetchOnMount: true
+    staleTime: 30000, // Cache for 30 seconds
+    gcTime: 60000, // Keep in cache for 1 minute
+    refetchOnMount: false
   });
 
   // Filter past offers (expired ones)
@@ -361,9 +363,10 @@ export default function BusinessDashboard() {
   }>({
     queryKey: ['/api/business-deals/analytics'],
     enabled: !!storageUser?.id && storageUser?.userType === 'business',
-    staleTime: 0,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true
+    staleTime: 30000, // Cache for 30 seconds
+    gcTime: 60000, // Keep in cache for 1 minute
+    refetchOnMount: false,
+    refetchOnWindowFocus: false
   });
 
   // Fetch subscription status for usage limits
@@ -371,8 +374,9 @@ export default function BusinessDashboard() {
     queryKey: ['/api/business/subscription-status'],
     enabled: !!storageUser?.id && storageUser?.userType === 'business',
     retry: 1,
-    staleTime: 0,
-    refetchOnMount: true
+    staleTime: 60000, // Cache for 1 minute (subscription status doesn't change often)
+    gcTime: 120000, // Keep in cache for 2 minutes
+    refetchOnMount: false
   });
 
   // Fetch business events
@@ -385,8 +389,9 @@ export default function BusinessDashboard() {
       return response.json();
     },
     enabled: !!storageUser?.id && storageUser?.userType === 'business',
-    staleTime: 0,
-    refetchOnMount: true
+    staleTime: 30000, // Cache for 30 seconds
+    gcTime: 60000, // Keep in cache for 1 minute
+    refetchOnMount: false
   });
 
   // Fetch Quick Deals history
