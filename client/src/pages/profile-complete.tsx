@@ -1345,7 +1345,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return data;
     },
     enabled: !!user?.id && user?.userType === 'business',
-    refetchInterval: 30000 // Refresh every 30 seconds for real-time updates
+    staleTime: 60000, // Cache for 60 seconds
+    gcTime: 120000, // Keep in cache for 2 minutes
   });
 
   // Fetch connection requests (only for own profile)
@@ -1418,39 +1419,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Travel plans query moved above for proper dependency order
 
-  // Clear cache and refetch when viewing different user profiles
-  React.useEffect(() => {
-    if (effectiveUserId) {
-      queryClient.removeQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
-      queryClient.removeQueries({ queryKey: [`/api/users/${effectiveUserId}/references`] });
-      queryClient.removeQueries({ queryKey: [`/api/users/${effectiveUserId}/photos`] });
-      queryClient.removeQueries({ queryKey: [`/api/connections/${effectiveUserId}`] });
-    }
-  }, [effectiveUserId, queryClient]);
-
-  // Force refresh user data when component mounts to get latest travel status
-  React.useEffect(() => {
-    if (effectiveUserId && isOwnProfile) {
-      // Clear ALL localStorage cache to prevent stale data
-      localStorage.removeItem('currentUser');
-      localStorage.removeItem('user');
-      localStorage.removeItem(`user_${effectiveUserId}`);
-      localStorage.removeItem('authStorage');
-      localStorage.removeItem('travelconnect_user');
-      
-      // Force fresh fetch from database
-      queryClient.removeQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
-      
-      // Also clear auth context and force reload
-      if (setAuthUser) {
-        setAuthUser(null);
-        setTimeout(() => {
-          queryClient.refetchQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
-        }, 100);
-      }
-    }
-  }, [effectiveUserId, isOwnProfile, queryClient, setAuthUser]);
+  // NOTE: Removed aggressive cache clearing useEffects that were causing constant blinking
+  // Cache is now managed by staleTime/gcTime settings on individual queries
 
   // Event discovery logic - same as home page to show current travel destination events
   const eventDiscoveryCity = useMemo(() => {
@@ -1495,7 +1465,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     },
     enabled: !!effectiveUserId && !isLoadingTravelPlans && !userLoading,
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    refetchOnWindowFocus: true, // Ensure fresh data when returning to tab
+    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
   });
 
 
