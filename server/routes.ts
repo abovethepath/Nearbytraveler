@@ -6746,10 +6746,11 @@ Questions? Just reply to this message. Welcome aboard!
         connectionNote: conn.connectionNote,
         connectedUser: {
           id: conn.userId,
-          username: conn.username,
-          name: conn.name,
+          username: conn.username || `user${conn.userId}`,
+          name: conn.name || conn.username || `User ${conn.userId}`,
           profileImage: conn.profileImage,
-          location: conn.location
+          location: conn.location,
+          hometownCity: conn.location?.split(',')[0]?.trim() || 'Unknown'
         }
       }));
 
