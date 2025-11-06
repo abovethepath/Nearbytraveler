@@ -1,5 +1,5 @@
 import { db, pool } from "./db";
-import { users, connections, messages, events, eventParticipants, travelPlans, tripItineraries, itineraryItems, sharedItineraries, notifications, blockedUsers, travelMemories, travelMemoryLikes, travelMemoryComments, userPhotos, photoTags, userReferences, referrals, proximityNotifications, customLocationActivities, cityActivities, userCustomActivities, userCityInterests, cityLandmarks, landmarkRatings, secretLocalExperiences, secretLocalExperienceLikes, secretExperienceLikes, cityPages, citychatrooms, chatroomMembers, chatroomMessages, chatroomAccessRequests, chatroomInvitations, meetupChatrooms, meetupChatroomMessages, businessOffers, businessOfferRedemptions, businessReferrals, businessLocations, businessInterestNotifications, businessCustomerPhotos, cityPhotos, travelBlogPosts, travelBlogLikes, travelBlogComments, instagramPosts, quickMeetups, quickMeetupParticipants, quickMeetupTemplates, quickDeals, userNotificationSettings, businessSubscriptions, photoAlbums, externalEventInterests, vouches, vouchCredits, waitlistLeads, type User, type InsertUser, type Connection, type InsertConnection, type Message, type InsertMessage, type Event, type InsertEvent, type EventParticipant, type EventParticipantWithUser, type TravelPlan, type InsertTravelPlan, type TripItinerary, type InsertTripItinerary, type ItineraryItem, type InsertItineraryItem, type SharedItinerary, type InsertSharedItinerary, type Notification, type InsertNotification, type PhotoTag, type InsertPhotoTag, type UserReference, type Referral, type InsertReferral, type ProximityNotification, type InsertProximityNotification, type CityLandmark, type InsertCityLandmark, type LandmarkRating, type InsertLandmarkRating, type SecretLocalExperience, type InsertSecretLocalExperience, type ChatroomInvitation, type InsertChatroomInvitation, type BusinessOffer, type InsertBusinessOffer, type BusinessOfferRedemption, type InsertBusinessOfferRedemption, type BusinessLocation, type InsertBusinessLocation, type BusinessInterestNotification, type InsertBusinessInterestNotification, type WaitlistLead, type InsertWaitlistLead, type BusinessCustomerPhoto, type InsertBusinessCustomerPhoto, type CityPhoto, type InsertCityPhoto, type TravelBlogPost, type InsertTravelBlogPost, type TravelBlogLike, type InsertTravelBlogLike, type TravelBlogComment, type InsertTravelBlogComment, type InstagramPost, type InsertInstagramPost, type QuickMeetupTemplate, type InsertQuickMeetupTemplate, type UserNotificationSettings, type InsertUserNotificationSettings, type BusinessSubscription, type InsertBusinessSubscription, type PhotoAlbum, type InsertPhotoAlbum, type ExternalEventInterest, type InsertExternalEventInterest, type Vouch, type VouchCredits, type VouchWithUsers } from "@shared/schema";
+import { users, connections, messages, events, eventParticipants, travelPlans, tripItineraries, itineraryItems, sharedItineraries, notifications, blockedUsers, travelMemories, travelMemoryLikes, travelMemoryComments, userPhotos, photoTags, userReferences, referrals, proximityNotifications, customLocationActivities, cityActivities, userCustomActivities, userCityInterests, cityLandmarks, landmarkRatings, secretLocalExperiences, secretLocalExperienceLikes, secretExperienceLikes, cityPages, citychatrooms, chatroomMembers, chatroomMessages, chatroomAccessRequests, chatroomInvitations, meetupChatrooms, meetupChatroomMessages, businessOffers, businessOfferRedemptions, businessReferrals, businessLocations, businessInterestNotifications, businessCustomerPhotos, cityPhotos, travelBlogPosts, travelBlogLikes, travelBlogComments, instagramPosts, quickMeetups, quickMeetupParticipants, quickMeetupTemplates, quickDeals, userNotificationSettings, businessSubscriptions, photoAlbums, externalEventInterests, vouches, waitlistLeads, type User, type InsertUser, type Connection, type InsertConnection, type Message, type InsertMessage, type Event, type InsertEvent, type EventParticipant, type EventParticipantWithUser, type TravelPlan, type InsertTravelPlan, type TripItinerary, type InsertTripItinerary, type ItineraryItem, type InsertItineraryItem, type SharedItinerary, type InsertSharedItinerary, type Notification, type InsertNotification, type PhotoTag, type InsertPhotoTag, type UserReference, type Referral, type InsertReferral, type ProximityNotification, type InsertProximityNotification, type CityLandmark, type InsertCityLandmark, type LandmarkRating, type InsertLandmarkRating, type SecretLocalExperience, type InsertSecretLocalExperience, type ChatroomInvitation, type InsertChatroomInvitation, type BusinessOffer, type InsertBusinessOffer, type BusinessOfferRedemption, type InsertBusinessOfferRedemption, type BusinessLocation, type InsertBusinessLocation, type BusinessInterestNotification, type InsertBusinessInterestNotification, type WaitlistLead, type InsertWaitlistLead, type BusinessCustomerPhoto, type InsertBusinessCustomerPhoto, type CityPhoto, type InsertCityPhoto, type TravelBlogPost, type InsertTravelBlogPost, type TravelBlogLike, type InsertTravelBlogLike, type TravelBlogComment, type InsertTravelBlogComment, type InstagramPost, type InsertInstagramPost, type QuickMeetupTemplate, type InsertQuickMeetupTemplate, type UserNotificationSettings, type InsertUserNotificationSettings, type BusinessSubscription, type InsertBusinessSubscription, type PhotoAlbum, type InsertPhotoAlbum, type ExternalEventInterest, type InsertExternalEventInterest, type Vouch, type VouchWithUsers } from "@shared/schema";
 import { eq, and, or, ilike, gte, desc, avg, count, sql, isNotNull, ne, lte, lt, gt, asc, like, inArray, getTableColumns, isNull } from "drizzle-orm";
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -438,10 +438,8 @@ export interface IStorage {
   createVouch(voucherUserId: number, vouchedUserId: number, vouchMessage?: string, vouchCategory?: string): Promise<any>;
   getUserVouches(userId: number): Promise<any[]>; // Vouches received by this user
   getUserVouchesGiven(userId: number): Promise<any[]>; // Vouches given by this user
-  getUserVouchCredits(userId: number): Promise<any>;
   canUserVouch(userId: number, targetUserId?: number): Promise<{ canVouch: boolean; availableCredits: number; reason?: string; alreadyVouched?: boolean }>;
   getVouchNetworkStats(userId: number): Promise<{ totalReceived: number; totalGiven: number; networkSize: number }>;
-  initializeSeedMember(userId: number, credits: number): Promise<void>;
   // Connection validation for VOUCH security
   areUsersConnected(userId1: number, userId2: number): Promise<boolean>;
   hasUserVouchedFor(voucherUserId: number, vouchedUserId: number): Promise<boolean>;
@@ -10839,32 +10837,6 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async getUserVouchCredits(userId: number): Promise<any> {
-    try {
-      const [credits] = await db
-        .select()
-        .from(vouchCredits)
-        .where(eq(vouchCredits.userId, userId));
-
-      return credits || {
-        userId,
-        totalCredits: 0,
-        usedCredits: 0,
-        availableCredits: 0,
-        seedMember: false
-      };
-    } catch (error) {
-      console.error('Error getting user vouch credits:', error);
-      return {
-        userId,
-        totalCredits: 0,
-        usedCredits: 0,
-        availableCredits: 0,
-        seedMember: false
-      };
-    }
-  }
-
   async canUserVouch(userId: number, targetUserId?: number): Promise<{ canVouch: boolean; availableCredits: number; reason?: string; alreadyVouched?: boolean }> {
     try {
       // If targetUserId provided, check if already vouched for this specific person
@@ -10880,7 +10852,7 @@ export class DatabaseStorage implements IStorage {
         }
       }
 
-      // Check if user has received at least 1 vouch OR is seed member
+      // Check if user has received at least 1 vouch
       const [vouchReceived] = await db
         .select({ count: count() })
         .from(vouches)
@@ -10889,11 +10861,9 @@ export class DatabaseStorage implements IStorage {
           eq(vouches.isActive, true)
         ));
 
-      const credits = await this.getUserVouchCredits(userId);
-      const isSeedMember = credits.seedMember;
       const hasReceivedVouch = (vouchReceived?.count || 0) > 0;
 
-      if (isSeedMember || hasReceivedVouch) {
+      if (hasReceivedVouch) {
         return {
           canVouch: true,
           availableCredits: 999, // Unlimited once you have 1 vouch
@@ -10961,31 +10931,6 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async initializeSeedMember(userId: number, credits: number): Promise<void> {
-    try {
-      await db.insert(vouchCredits).values({
-        userId,
-        totalCredits: credits,
-        usedCredits: 0,
-        availableCredits: credits,
-        seedMember: true
-      }).onConflictDoUpdate({
-        target: vouchCredits.userId,
-        set: {
-          totalCredits: credits,
-          availableCredits: credits,
-          seedMember: true,
-          updatedAt: new Date()
-        }
-      });
-
-      console.log(`🌱 VOUCH: Initialized seed member ${userId} with ${credits} credits`);
-    } catch (error) {
-      console.error('Error initializing seed member:', error);
-      throw error;
-    }
-  }
-
   // CRITICAL MISSING METHODS FOR VOUCH CONNECTION REQUIREMENT
   
   // Check if two users are connected (required for vouching)
@@ -11050,7 +10995,14 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getVouchCredits(userId: number): Promise<any> {
-    return this.getUserVouchCredits(userId);
+    // Vouch credits system removed - all users have unlimited vouches after receiving 1 vouch
+    return {
+      userId,
+      totalCredits: 999,
+      usedCredits: 0,
+      availableCredits: 999,
+      seedMember: false
+    };
   }
 
   // Create vouch with object parameter (API compatibility)

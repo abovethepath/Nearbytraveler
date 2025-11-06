@@ -821,20 +821,6 @@ export const vouches = pgTable("vouches", {
   unique().on(table.voucherUserId, table.vouchedUserId, table.vouchCategory), // One vouch per category per user pair
 ]);
 
-// Track vouch credits (how many people each user can vouch for)
-export const vouchCredits = pgTable("vouch_credits", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  totalCredits: integer("total_credits").notNull().default(0), // Total vouch credits earned
-  usedCredits: integer("used_credits").notNull().default(0), // Credits already used
-  availableCredits: integer("available_credits").notNull().default(0), // Remaining credits to give
-  seedMember: boolean("seed_member").notNull().default(false), // Original founding member (nearbytraveler)
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-}, (table) => [
-  unique().on(table.userId), // One credit record per user
-]);
-
 // Local hangouts table (spontaneous meetups)
 export const hangouts = pgTable("hangouts", {
   id: serial("id").primaryKey(),
@@ -921,16 +907,8 @@ export const insertVouchSchema = createInsertSchema(vouches).omit({
   createdAt: true,
 });
 
-export const insertVouchCreditsSchema = createInsertSchema(vouchCredits).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
 export type Vouch = typeof vouches.$inferSelect;
 export type InsertVouch = z.infer<typeof insertVouchSchema>;
-export type VouchCredits = typeof vouchCredits.$inferSelect;
-export type InsertVouchCredits = z.infer<typeof insertVouchCreditsSchema>;
 
 // Extended types for vouch data with user information
 export type VouchWithUsers = Vouch & {
