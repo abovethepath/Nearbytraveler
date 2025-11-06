@@ -4846,22 +4846,22 @@ export class DatabaseStorage implements IStorage {
           .limit(2);
 
         if (existingChatrooms.length < 1) {
-          // Create single Let's Meet Up chatroom
-          if (!existingChatrooms.some(room => room.name.includes("Let's Meet Up"))) {
+          // Create single Welcome Newcomers chatroom
+          if (!existingChatrooms.some(room => room.name.includes("Welcome Newcomers"))) {
             await db.insert(citychatrooms).values({
-              name: `Let's Meet Up in ${city}`,
-              description: `Plan meetups and events with locals and travelers in ${city}`,
+              name: `Welcome Newcomers ${city}`,
+              description: `Welcome new visitors and locals to ${city}`,
               city,
               state: state || '',
               country,
-              createdById: 1, // System user
+              createdById: 2, // Admin user
               isActive: true,
               isPublic: true,
               maxMembers: 500,
-              tags: ['meetup', 'events', 'social'],
+              tags: ['welcome', 'newcomers', 'locals', 'travelers'],
               rules: 'Be respectful and helpful to fellow travelers and locals'
             });
-            console.log(`✅ CITY SETUP: Created Let's Meet Up chatroom for ${city}`);
+            console.log(`✅ CITY SETUP: Created Welcome Newcomers chatroom for ${city}`);
           }
         }
       } catch (error) {
@@ -7939,13 +7939,13 @@ export class DatabaseStorage implements IStorage {
       const consolidatedCity = this.consolidateToMetropolitanArea(city, null, country);
       console.log(`🎯 AUTO-JOIN: ${city} consolidated to ${consolidatedCity} for chatroom lookup`);
       
-      // Find Let's Meet Up chatroom for the consolidated city
+      // Find Welcome Newcomers chatroom for the consolidated city
       const cityChatrooms = await db
         .select()
         .from(citychatrooms)
         .where(and(
           eq(citychatrooms.city, consolidatedCity),
-          ilike(citychatrooms.name, `Let's Meet Up in ${consolidatedCity}`)
+          ilike(citychatrooms.name, `Welcome Newcomers ${consolidatedCity}`)
         ));
 
       console.log(`🎯 AUTO-JOIN: Found ${cityChatrooms.length} chatrooms for ${consolidatedCity}`);
