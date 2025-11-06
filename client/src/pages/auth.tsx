@@ -161,19 +161,20 @@ export default function Auth() {
               <div className="space-y-6">
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="loginEmail" className="text-base font-medium text-gray-900">Email or Username</Label>
+                    <Label htmlFor="loginEmail" className="text-base font-medium" style={{ color: '#111827' }}>Email or Username</Label>
                     <Input
                       id="loginEmail"
                       type="text"
                       value={formData.email}
                       onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                       placeholder="Enter your email or username"
-                      className="text-base py-3 bg-white border-2 border-gray-300 text-gray-900"
+                      className="text-base py-3 border-2"
+                      style={{ backgroundColor: '#ffffff', borderColor: '#d1d5db', color: '#111827' }}
                       data-testid="input-login-email"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="loginPassword" className="text-base font-medium text-gray-900">Password</Label>
+                    <Label htmlFor="loginPassword" className="text-base font-medium" style={{ color: '#111827' }}>Password</Label>
                     <div className="relative">
                       <Input
                         id="loginPassword"
@@ -181,13 +182,15 @@ export default function Auth() {
                         value={formData.password}
                         onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
                         placeholder="Enter your password"
-                        className="text-base py-3 pr-10 bg-white border-2 border-gray-300 text-gray-900"
+                        className="text-base py-3 pr-10 border-2"
+                        style={{ backgroundColor: '#ffffff', borderColor: '#d1d5db', color: '#111827' }}
                         data-testid="input-login-password"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700"
+                        className="absolute inset-y-0 right-0 flex items-center pr-3"
+                        style={{ color: '#6b7280' }}
                         data-testid="toggle-login-password-visibility"
                       >
                         {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
