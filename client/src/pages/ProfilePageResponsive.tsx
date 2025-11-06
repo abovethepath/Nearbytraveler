@@ -218,7 +218,7 @@ export default function ProfilePageResponsive() {
               <h2 className="text-lg font-semibold mb-3">More Info</h2>
               {user.secretActivities && (
                 <div className="mb-4">
-                  <h3 className="font-medium text-sm mb-1">Local Recommendations:</h3>
+                  <h3 className="font-medium text-sm mb-1">Secret things I would do if my closest friends came to town:</h3>
                   <p className="text-sm text-gray-700" data-testid="text-secret-activities">{user.secretActivities}</p>
                 </div>
               )}
