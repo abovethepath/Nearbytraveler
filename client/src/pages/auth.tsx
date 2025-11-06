@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import Logo from "@/components/logo";
 import { authStorage } from "@/lib/auth";
 import JoinNowWidgetNew from "@/components/join-now-widget-new";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 // Background image handled via direct path in CSS
 
 
@@ -34,6 +34,7 @@ export default function Auth() {
   });
   
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
     console.log('handleLogin called with email:', formData.email, 'password length:', formData.password?.length);
@@ -171,14 +172,24 @@ export default function Auth() {
                   </div>
                   <div>
                     <Label htmlFor="loginPassword" className="text-base font-medium text-gray-900">Password</Label>
-                    <Input
-                      id="loginPassword"
-                      type="password"
-                      value={formData.password}
-                      onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                      placeholder="Enter your password"
-                      className="text-base py-3"
-                    />
+                    <div className="relative">
+                      <Input
+                        id="loginPassword"
+                        type={showPassword ? "text" : "password"}
+                        value={formData.password}
+                        onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                        placeholder="Enter your password"
+                        className="text-base py-3 pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700"
+                        data-testid="toggle-login-password-visibility"
+                      >
+                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
+                    </div>
                   </div>
                 </div>
 
