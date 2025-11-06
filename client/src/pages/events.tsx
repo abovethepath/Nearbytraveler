@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Calendar, Clock, MapPin, Users, Search, Filter, Plus, Info, X, Heart, UserCheck, CheckCircle, Star, Sparkles } from "lucide-react";
+import { Calendar, Clock, MapPin, Users, Search, Filter, Plus, Info, X, Heart, UserCheck, CheckCircle, Star, Sparkles, ChevronDown } from "lucide-react";
 import { useIsMobile, useIsDesktop } from "@/hooks/useDeviceType";
 
 import { type Event, type EventParticipant, type User as UserType } from "@shared/schema";
@@ -56,6 +56,18 @@ export default function Events() {
   const [, setLocation] = useLocation();
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
+
+  // Hero section visibility state
+  const [isHeroVisible, setIsHeroVisible] = useState<boolean>(() => {
+    const saved = localStorage.getItem('hideEventsHeroSection');
+    return saved !== 'true'; // Default to visible
+  });
+
+  const toggleHeroVisibility = () => {
+    const newValue = !isHeroVisible;
+    setIsHeroVisible(newValue);
+    localStorage.setItem('hideEventsHeroSection', String(!newValue));
+  };
 
   // Add/remove body class for modal
   React.useEffect(() => {
@@ -474,22 +486,56 @@ export default function Events() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950 w-full max-w-[100vw] overflow-x-hidden box-border">
       {/* MobileNav removed - using global MobileTopNav and MobileBottomNav */}
-      {/* HERO SECTION — Airbnb Style Layout (Landing Page Layout) */}
-      <section className="bg-white dark:bg-gray-900 py-8 sm:py-12 lg:py-16">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-          <div className="flex items-start justify-between mb-6">
-            <BackButton fallbackRoute="/events-landing" />
-            {isDesktop && (
-              <Button 
-                onClick={() => setShowCreateEvent(true)}
-                className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white px-6 py-3 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg text-base font-semibold"
-                data-testid="create-event-hero-button"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                Create Event
-              </Button>
-            )}
+      
+      {/* Show Hero Button - Only visible when hero is hidden */}
+      {!isHeroVisible && (
+        <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+          <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleHeroVisibility}
+              className="text-sm"
+              data-testid="button-show-events-hero"
+            >
+              <ChevronDown className="w-4 h-4 mr-2" />
+              Show Events Hero
+            </Button>
           </div>
+        </div>
+      )}
+
+      {/* HERO SECTION — Airbnb Style Layout (Landing Page Layout) */}
+      {isHeroVisible && (
+        <section className="bg-white dark:bg-gray-900 py-8 sm:py-12 lg:py-16 relative">
+          {/* Hide Hero Button */}
+          <div className="absolute top-4 right-4 z-10">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleHeroVisibility}
+              className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+              data-testid="button-hide-events-hero"
+            >
+              <X className="w-4 h-4 mr-1" />
+              Hide
+            </Button>
+          </div>
+
+          <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+            <div className="flex items-start justify-between mb-6">
+              <BackButton fallbackRoute="/events-landing" />
+              {isDesktop && (
+                <Button 
+                  onClick={() => setShowCreateEvent(true)}
+                  className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white px-6 py-3 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg text-base font-semibold"
+                  data-testid="create-event-hero-button"
+                >
+                  <Plus className="w-5 h-5 mr-2" />
+                  Create Event
+                </Button>
+              )}
+            </div>
           
           {isMobile ? (
             // Mobile: Keep vertical layout
@@ -649,6 +695,7 @@ export default function Events() {
           )}
         </div>
       </section>
+      )}
       
       {/* PROMINENT CREATE EVENT CTA - FIRST THING AFTER HERO */}
       <div className="bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-950/30 dark:to-orange-950/30 py-8 sm:py-12">
