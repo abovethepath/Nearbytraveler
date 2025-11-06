@@ -7796,15 +7796,51 @@ export class DatabaseStorage implements IStorage {
   // Auto-join new users to chatrooms for their hometown and travel destination
   async autoJoinUserCityChatrooms(userId: number, hometownCity: string, hometownCountry: string, travelCity?: string, travelCountry?: string): Promise<void> {
     try {
-      console.log(`🎯 AUTO-JOIN CITIES: Adding user ${userId} to their city chatrooms`);
+      console.log(`🎯 AUTO-JOIN CITIES: Adding user ${userId} to their chatrooms`);
       
-      // Always join hometown chatrooms
+      // 1. Join Global "Welcome to Nearby Traveler" chatroom (everyone joins this)
+      try {
+        const globalChatroom = await db
+          .select()
+          .from(citychatrooms)
+          .where(and(
+            eq(citychatrooms.city, 'Global'),
+            ilike(citychatrooms.name, 'Welcome to Nearby Traveler')
+          ))
+          .limit(1);
+
+        if (globalChatroom.length > 0) {
+          const existingMembership = await db
+            .select()
+            .from(chatroomMembers)
+            .where(and(
+              eq(chatroomMembers.chatroomId, globalChatroom[0].id),
+              eq(chatroomMembers.userId, userId)
+            ))
+            .limit(1);
+
+          if (existingMembership.length === 0) {
+            await db.insert(chatroomMembers).values({
+              chatroomId: globalChatroom[0].id,
+              userId: userId,
+              role: 'member',
+              isActive: true,
+              joinedAt: new Date()
+            });
+            console.log(`✅ Auto-joined user ${userId} to Global chatroom`);
+          }
+        }
+      } catch (error) {
+        console.error('Error joining global chatroom:', error);
+      }
+      
+      // 2. Join hometown chatrooms
       if (hometownCity && hometownCountry) {
         await this.autoJoinWelcomeChatroom(userId, hometownCity, hometownCountry);
         console.log(`✅ Auto-joined user ${userId} to hometown chatrooms: ${hometownCity}`);
       }
       
-      // If traveling, also join travel destination chatrooms
+      // 3. If traveling, also join travel destination chatrooms
       if (travelCity && travelCountry) {
         await this.autoJoinWelcomeChatroom(userId, travelCity, travelCountry);
         console.log(`✅ Auto-joined user ${userId} to travel destination chatrooms: ${travelCity}`);
