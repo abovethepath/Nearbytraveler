@@ -133,13 +133,10 @@ export default function Auth() {
           <CardHeader className="text-center pb-8 relative overflow-visible">
             {/* Back Button */}
             <button
-              onClick={() => {
-                console.log('Back button clicked!');
-                setLocation('/');
-              }}
-              className="absolute left-4 top-4 flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors group bg-white/50 px-3 py-1 rounded-md z-50"
+              onClick={() => setLocation('/')}
+              className="absolute left-4 top-4 flex items-center gap-2 transition-colors group bg-white/50 px-3 py-1 rounded-md z-50"
               data-testid="button-back-home"
-              style={{ display: 'flex' }}
+              style={{ display: 'flex', color: '#374151' }}
             >
               <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
               <span className="text-sm font-semibold">Back</span>
@@ -214,7 +211,8 @@ export default function Auth() {
               <div className="text-center mt-4">
                 <button
                   onClick={() => window.location.href = '/forgot-password'}
-                  className="text-sm text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 font-medium underline"
+                  className="text-sm font-medium underline"
+                  style={{ color: '#4b5563' }}
                   data-testid="link-forgot-password"
                 >
                   Forgot your password?
@@ -223,10 +221,11 @@ export default function Auth() {
             )}
 
             {!isSignupPage && isLogin && (
-              <div className="text-center pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
+              <div className="text-center pt-4 border-t border-gray-200 mt-4">
                 <button
                   onClick={() => window.location.href = '/signup'}
-                  className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-semibold text-base mt-4 block mx-auto"
+                  className="font-semibold text-base mt-4 block mx-auto"
+                  style={{ color: '#2563eb' }}
                   data-testid="link-signup-from-login"
                 >
                   Not a Current User? Sign up Here
