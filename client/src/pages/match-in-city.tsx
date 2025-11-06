@@ -264,11 +264,11 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           };
         });
         
-        // Sort cities: Los Angeles first (launch city), then alphabetically
+        // Sort cities: Los Angeles Metro first (launch city), then alphabetically
         const sortedCities = citiesWithPhotos.sort((a: any, b: any) => {
-          // Los Angeles always first
-          if (a.city === 'Los Angeles' && b.city !== 'Los Angeles') return -1;
-          if (b.city === 'Los Angeles' && a.city !== 'Los Angeles') return 1;
+          // Los Angeles Metro always first
+          if (a.city === 'Los Angeles Metro' && b.city !== 'Los Angeles Metro') return -1;
+          if (b.city === 'Los Angeles Metro' && a.city !== 'Los Angeles Metro') return 1;
           // All others alphabetically
           return a.city.localeCompare(b.city);
         });
