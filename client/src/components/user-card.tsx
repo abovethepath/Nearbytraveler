@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { SimpleAvatar } from "./simple-avatar";
 import { InterestPills } from "./InterestPills";
 import ConnectButton from "./ConnectButton";
-import { METRO_AREAS } from "@/shared/constants";
+import { METRO_AREAS } from "@shared/constants";
 
 export interface User {
   id: number;
