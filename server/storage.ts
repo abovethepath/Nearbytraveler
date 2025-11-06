@@ -439,7 +439,7 @@ export interface IStorage {
   getUserVouches(userId: number): Promise<any[]>; // Vouches received by this user
   getUserVouchesGiven(userId: number): Promise<any[]>; // Vouches given by this user
   getUserVouchCredits(userId: number): Promise<any>;
-  canUserVouch(userId: number): Promise<{ canVouch: boolean; availableCredits: number; reason?: string }>;
+  canUserVouch(userId: number, targetUserId?: number): Promise<{ canVouch: boolean; availableCredits: number; reason?: string; alreadyVouched?: boolean }>;
   getVouchNetworkStats(userId: number): Promise<{ totalReceived: number; totalGiven: number; networkSize: number }>;
   initializeSeedMember(userId: number, credits: number): Promise<void>;
   // Connection validation for VOUCH security
@@ -10849,8 +10849,21 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async canUserVouch(userId: number): Promise<{ canVouch: boolean; availableCredits: number; reason?: string }> {
+  async canUserVouch(userId: number, targetUserId?: number): Promise<{ canVouch: boolean; availableCredits: number; reason?: string; alreadyVouched?: boolean }> {
     try {
+      // If targetUserId provided, check if already vouched for this specific person
+      if (targetUserId) {
+        const alreadyVouched = await this.hasUserVouchedFor(userId, targetUserId);
+        if (alreadyVouched) {
+          return {
+            canVouch: false,
+            availableCredits: 0,
+            alreadyVouched: true,
+            reason: 'You have already vouched for this user'
+          };
+        }
+      }
+
       // Check if user has received at least 1 vouch OR is seed member
       const [vouchReceived] = await db
         .select({ count: count() })
@@ -10868,6 +10881,7 @@ export class DatabaseStorage implements IStorage {
         return {
           canVouch: true,
           availableCredits: 999, // Unlimited once you have 1 vouch
+          alreadyVouched: false,
           reason: 'Can vouch unlimited times'
         };
       }
@@ -10875,6 +10889,7 @@ export class DatabaseStorage implements IStorage {
       return {
         canVouch: false,
         availableCredits: 0,
+        alreadyVouched: false,
         reason: 'You must receive at least 1 vouch before you can vouch for others'
       };
     } catch (error) {
@@ -10882,6 +10897,7 @@ export class DatabaseStorage implements IStorage {
       return {
         canVouch: false,
         availableCredits: 0,
+        alreadyVouched: false,
         reason: 'Error checking vouch eligibility'
       };
     }

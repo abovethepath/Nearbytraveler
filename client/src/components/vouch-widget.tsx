@@ -163,12 +163,24 @@ export function VouchWidget({ userId, isOwnProfile, currentUserId, variant = 'de
         {/* CTA button - always visible but disabled if user can't vouch */}
         {currentUserId && (
           <>
-            {canVouchData?.canVouch ? (
+            {canVouchData?.alreadyVouched ? (
+              <Card className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-600">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
+                    <CheckCircle className="h-5 w-5" />
+                    <p className="text-sm font-medium">
+                      You have already vouched for this person
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : canVouchData?.canVouch ? (
               <div className="space-y-3">
                 <Button 
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white" 
                   size="sm"
                   onClick={() => setShowVouchDialog(true)}
+                  data-testid="button-vouch"
                 >
                   <CheckCircle className="h-4 w-4 mr-2" />
                   Vouch for This Person
@@ -191,6 +203,7 @@ export function VouchWidget({ userId, isOwnProfile, currentUserId, variant = 'de
                         value={vouchMessage}
                         onChange={(e) => setVouchMessage(e.target.value)}
                         rows={3}
+                        data-testid="textarea-vouch-message"
                       />
                     </div>
                     <div className="flex gap-2">
@@ -198,6 +211,7 @@ export function VouchWidget({ userId, isOwnProfile, currentUserId, variant = 'de
                         onClick={handleVouch}
                         disabled={!vouchMessage.trim() || createVouchMutation.isPending}
                         className="flex-1"
+                        data-testid="button-confirm-vouch"
                       >
                         {createVouchMutation.isPending ? 'Creating...' : 'Confirm Vouch'}
                       </Button>
@@ -205,6 +219,7 @@ export function VouchWidget({ userId, isOwnProfile, currentUserId, variant = 'de
                         variant="outline" 
                         onClick={() => setShowVouchDialog(false)}
                         className="flex-1"
+                        data-testid="button-cancel-vouch"
                       >
                         Cancel
                       </Button>
@@ -219,6 +234,7 @@ export function VouchWidget({ userId, isOwnProfile, currentUserId, variant = 'de
                     className="w-full bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-400 dark:border-gray-600 cursor-not-allowed hover:bg-gray-300 dark:hover:bg-gray-700" 
                     size="sm" 
                     disabled
+                    data-testid="button-vouch-disabled"
                   >
                     <CheckCircle className="h-4 w-4 mr-2 opacity-60" />
                     Vouch for This Person
