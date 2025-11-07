@@ -78,7 +78,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
         <Button
           variant="ghost"
           size="sm"
-          className="relative p-2"
+          className="relative p-2 bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent border-none shadow-none"
         >
           <Bell className="w-8 h-8 text-gray-600 dark:text-gray-300" />
           {totalNotifications > 0 && (
