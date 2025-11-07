@@ -11,7 +11,7 @@ import { queryClient } from '@/lib/queryClient';
 import { SimpleAvatar } from '@/components/simple-avatar';
 import websocketService from '@/services/websocketService';
 import { useLocation } from 'wouter';
-import { openFloatingChat } from '@/components/instant-messaging/FloatingChatManager';
+// REMOVED: openFloatingChat import - IM functionality removed
 import { UniversalBackButton } from '@/components/UniversalBackButton';
 
 export default function Messages() {
@@ -617,28 +617,16 @@ export default function Messages() {
                     </div>
                   </div>
                   
-                  {/* Dual Button System - Exact Match to Screenshots */}
+                  {/* Single Button - IM functionality removed */}
                   <div className="flex gap-2">
                     <Button
                       size="sm"
                       onClick={() => connection.connectedUser?.id && setSelectedConversation(connection.connectedUser.id)}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium"
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium"
                       disabled={!connection.connectedUser?.id}
+                      data-testid={`button-open-chat-${connection.connectedUser?.id}`}
                     >
                       Open Chat
-                    </Button>
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        // Open floating chat box
-                        if (connection.connectedUser) {
-                          openFloatingChat(connection.connectedUser);
-                        }
-                      }}
-                      className="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-medium"
-                      disabled={!connection.connectedUser}
-                    >
-                      Instantly Message
                     </Button>
                   </div>
                 </div>

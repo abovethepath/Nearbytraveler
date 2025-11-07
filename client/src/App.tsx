@@ -165,10 +165,7 @@ import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { MobileTopNav } from "@/components/MobileTopNav";
 import Footer from "@/components/footer";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
-import IMAlert from "@/components/instant-messaging/IMAlert";
-import OnlineBuddyList from "@/components/instant-messaging/OnlineBuddyList";
-import { FloatingChatManager } from "@/components/instant-messaging/FloatingChatManager";
-import IMNotificationManager from "@/components/instant-messaging/IMNotification";
+// REMOVED: IM components (IMAlert, OnlineBuddyList, FloatingChatManager, IMNotificationManager) - obsolete functionality
 import type { User } from "@shared/schema";
 import { authStorage } from "@/lib/auth";
 import { getMetroArea } from "@shared/constants";
@@ -1240,13 +1237,7 @@ function Router() {
               </div>
             )}
 
-            {/* Instant Messaging Components */}
-            <IMAlert />
-            <OnlineBuddyList />
-            {/* Floating Chat Popup System */}
-            <FloatingChatManager />
-            {/* IM Notifications */}
-            <IMNotificationManager />
+            {/* REMOVED: Instant Messaging Components - obsolete functionality */}
           </div>
         </>
       )}
@@ -1273,8 +1264,7 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <Router />
-          {/* Global Floating Chat Manager */}
-          <FloatingChatManager />
+          {/* REMOVED: Global Floating Chat Manager - obsolete functionality */}
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>
