@@ -3784,7 +3784,7 @@ Questions? Just reply to this message!
         });
       }
 
-      // Map traveler signup fields
+      // Map traveler signup fields - SECONDARY MAPPING (after primary mapping at lines 3584-3644)
       if (processedData.userType === 'currently_traveling' || processedData.userType === 'traveler') {
         // CRITICAL: Set traveling status flag for users who signed up as travelers
         processedData.isCurrentlyTraveling = true;
@@ -3792,28 +3792,39 @@ Questions? Just reply to this message!
         // CRITICAL: Normalize userType to 'traveler' for database storage
         processedData.userType = 'traveler';
         
-        // CRITICAL: Map destination fields from travel signup form
-        if (processedData.currentTripDestinationCity) {
-          let destination = processedData.currentTripDestinationCity;
-          if (processedData.currentTripDestinationState) {
-            destination += `, ${processedData.currentTripDestinationState}`;
+        // CRITICAL: Map destination fields - this code ensures destinationCity/State/Country are set
+        // The primary mapping (lines 3584-3644) should have already handled this, but this is a fallback
+        // Accept either currentTripDestinationCity (old forms) OR destinationCity (new signup form)
+        const sourceCity = processedData.currentTripDestinationCity || processedData.destinationCity;
+        const sourceState = processedData.currentTripDestinationState || processedData.destinationState;
+        const sourceCountry = processedData.currentTripDestinationCountry || processedData.destinationCountry;
+        
+        if (sourceCity && sourceCountry) {
+          // Build travelDestination string if not already set
+          if (!processedData.travelDestination) {
+            let destination = sourceCity;
+            if (sourceState) {
+              destination += `, ${sourceState}`;
+            }
+            if (sourceCountry) {
+              destination += `, ${sourceCountry}`;
+            }
+            processedData.travelDestination = destination;
           }
-          if (processedData.currentTripDestinationCountry) {
-            destination += `, ${processedData.currentTripDestinationCountry}`;
-          }
-          processedData.travelDestination = destination;
           
-          // CRITICAL: Set individual destination fields for city discovery and matching
-          processedData.destinationCity = processedData.currentTripDestinationCity;
-          processedData.destinationState = processedData.currentTripDestinationState || '';
-          processedData.destinationCountry = processedData.currentTripDestinationCountry;
+          // CRITICAL: Ensure destination fields are set for profile display and city matching
+          if (!processedData.destinationCity) {
+            processedData.destinationCity = sourceCity;
+            processedData.destinationState = sourceState || '';
+            processedData.destinationCountry = sourceCountry;
+          }
           
           if (process.env.NODE_ENV === 'development') {
-            console.log('🧳 TRAVEL DESTINATION MAPPING:', {
-              city: processedData.currentTripDestinationCity,
-              state: processedData.currentTripDestinationState,
-              country: processedData.currentTripDestinationCountry,
-              finalDestination: destination,
+            console.log('🧳 TRAVEL DESTINATION MAPPING (SECONDARY):', {
+              sourceCity,
+              sourceState,
+              sourceCountry,
+              finalDestination: processedData.travelDestination,
               destinationCity: processedData.destinationCity,
               destinationState: processedData.destinationState,
               destinationCountry: processedData.destinationCountry
