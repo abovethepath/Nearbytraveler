@@ -604,24 +604,24 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                         
                         console.log('📥 Imported event data:', eventData);
                         
-                        // Auto-fill the form with scraped data
-                        if (eventData.title) setValue("title", eventData.title);
-                        if (eventData.description) setValue("description", eventData.description);
-                        if (eventData.venueName) setValue("venueName", eventData.venueName);
+                        // Auto-fill the form with scraped data - using shouldValidate/shouldDirty to force input updates
+                        if (eventData.title) setValue("title", eventData.title, { shouldValidate: true, shouldDirty: true });
+                        if (eventData.description) setValue("description", eventData.description, { shouldValidate: true, shouldDirty: true });
+                        if (eventData.venueName) setValue("venueName", eventData.venueName, { shouldValidate: true, shouldDirty: true });
                         
                         // Handle location - street address comes separately now
                         if (eventData.street) {
-                          setValue("street", eventData.street);
+                          setValue("street", eventData.street, { shouldValidate: true, shouldDirty: true });
                         } else if (eventData.location) {
                           // Fallback: parse from full location
                           const addressParts = eventData.location.split(',').map((p: string) => p.trim());
-                          if (addressParts.length > 0) setValue("street", addressParts[0]);
+                          if (addressParts.length > 0) setValue("street", addressParts[0], { shouldValidate: true, shouldDirty: true });
                         }
                         
-                        if (eventData.city) setValue("city", eventData.city);
-                        if (eventData.state) setValue("state", eventData.state);
-                        if (eventData.country) setValue("country", eventData.country);
-                        if (eventData.zipcode) setValue("zipcode", eventData.zipcode);
+                        if (eventData.city) setValue("city", eventData.city, { shouldValidate: true, shouldDirty: true });
+                        if (eventData.state) setValue("state", eventData.state, { shouldValidate: true, shouldDirty: true });
+                        if (eventData.country) setValue("country", eventData.country, { shouldValidate: true, shouldDirty: true });
+                        if (eventData.zipcode) setValue("zipcode", eventData.zipcode, { shouldValidate: true, shouldDirty: true });
                         
                         // Handle date - convert to YYYY-MM-DD format
                         if (eventData.date) {
@@ -629,7 +629,7 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                             const parsedDate = new Date(eventData.date);
                             if (!isNaN(parsedDate.getTime())) {
                               const formattedDate = parsedDate.toISOString().split('T')[0];
-                              setValue("date", formattedDate);
+                              setValue("date", formattedDate, { shouldValidate: true, shouldDirty: true });
                               console.log('📅 Set date:', formattedDate, 'from', eventData.date);
                               
                               // Handle end date for multi-day events
@@ -638,14 +638,14 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                                 const parsedEndDate = new Date(eventData.endDate);
                                 if (!isNaN(parsedEndDate.getTime())) {
                                   const formattedEndDate = parsedEndDate.toISOString().split('T')[0];
-                                  setValue("isSameDay", false);
-                                  setValue("endDate", formattedEndDate);
+                                  setValue("isSameDay", false, { shouldValidate: true, shouldDirty: true });
+                                  setValue("endDate", formattedEndDate, { shouldValidate: true, shouldDirty: true });
                                   console.log('📅 Set end date:', formattedEndDate, 'from', eventData.endDate, '(multi-day event)');
                                 }
                               } else {
                                 // Same-day event - use same date for both start and end
-                                setValue("isSameDay", false);
-                                setValue("endDate", formattedDate);
+                                setValue("isSameDay", false, { shouldValidate: true, shouldDirty: true });
+                                setValue("endDate", formattedDate, { shouldValidate: true, shouldDirty: true });
                                 console.log('📅 Set end date:', formattedDate, '(same-day event)');
                               }
                             }
@@ -673,18 +673,18 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                         
                         if (eventData.startTime) {
                           const time24h = convert12to24Hour(eventData.startTime);
-                          setValue("startTime", time24h);
+                          setValue("startTime", time24h, { shouldValidate: true, shouldDirty: true });
                           console.log('⏰ Set start time:', time24h, 'from', eventData.startTime);
                         }
                         if (eventData.endTime) {
                           const time24h = convert12to24Hour(eventData.endTime);
-                          setValue("endTime", time24h);
+                          setValue("endTime", time24h, { shouldValidate: true, shouldDirty: true });
                           console.log('⏰ Set end time:', time24h, 'from', eventData.endTime);
                         }
                         
                         // Handle image URL
                         if (eventData.imageUrl) {
-                          setValue("imageUrl", eventData.imageUrl);
+                          setValue("imageUrl", eventData.imageUrl, { shouldValidate: true, shouldDirty: true });
                           setImagePreview(eventData.imageUrl);
                           console.log('🖼️ Set image:', eventData.imageUrl);
                         }
