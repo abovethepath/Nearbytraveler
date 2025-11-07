@@ -54,7 +54,19 @@ export default function SignupLocal() {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // Helper functions to match traveling signup exactly
+  // Helper functions to count all interests including custom ones
+  const getCustomInterestsCount = () => {
+    const customItems = formData.customInterests
+      ?.split(',')
+      .map(s => s.trim())
+      .filter(s => s.length > 0) || [];
+    return customItems.length;
+  };
+
+  const getTotalInterestsCount = () => {
+    return formData.interests.length + getCustomInterestsCount();
+  };
+
   const getTotalSelections = () => {
     return formData.interests.length + formData.activities.length + formData.events.length;
   };
@@ -188,8 +200,15 @@ export default function SignupLocal() {
         errors.push("Hometown city and country are required.");
       }
 
-      if ((registrationData.interests?.length ?? 0) < 7) {
-        errors.push("Please choose at least 7 interests.");
+      // Count standard interests + custom interests
+      const customInterestsCount = formData.customInterests
+        ?.split(',')
+        .map(s => s.trim())
+        .filter(s => s.length > 0).length || 0;
+      const totalInterestsCount = (registrationData.interests?.length ?? 0) + customInterestsCount;
+      
+      if (totalInterestsCount < 7) {
+        errors.push("Please choose at least 7 interests (standard + custom combined).");
       }
 
       if (errors.length) {
@@ -380,7 +399,7 @@ export default function SignupLocal() {
                 <div className="flex items-center justify-between">
                   <h3 className="text-xl font-bold text-gray-900">Top Choices to Meet Travelers and Locals * (Choose at least 7)</h3>
                   <span className="text-sm text-gray-600">
-                    {formData.interests.length}/7 minimum selected
+                    {getTotalInterestsCount()}/7 minimum selected
                   </span>
                 </div>
                 <p className="text-gray-700 text-sm">
@@ -464,7 +483,7 @@ export default function SignupLocal() {
               <div className="pt-6">
                 <Button
                   type="submit"
-                  disabled={isLoading || formData.interests.length < 3 || !formData.pledgeAccepted}
+                  disabled={isLoading || getTotalInterestsCount() < 7 || !formData.pledgeAccepted}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 text-lg font-semibold rounded-lg shadow-lg disabled:bg-gray-400"
                   data-testid="button-complete-signup"
                 >
@@ -474,7 +493,7 @@ export default function SignupLocal() {
                       Creating Your Account...
                     </div>
                   ) : (
-                    `Complete Signup (${formData.interests.length}/7 interests selected)`
+                    `Complete Signup (${getTotalInterestsCount()}/7 interests selected)`
                   )}
                 </Button>
                 {!formData.pledgeAccepted && (
