@@ -37,7 +37,11 @@ import SmartPhotoGallery from "@/components/smart-photo-gallery";
 import SmartLocationInput from "@/components/SmartLocationInput";
 import AICityEventsWidget from "@/components/ai-city-events";
 import TravelMatches from "@/components/travel-matches";
-const staticHeroImage = "/travelers_1756778615408.jpg";
+// Hero media - supports both images (.jpg, .png, .webp) and videos (.mp4, .webm)
+const staticHeroMedia = "/travelers_1756778615408.jpg";
+
+// Detect if the media is a video based on file extension
+const isVideoMedia = staticHeroMedia.match(/\.(mp4|webm|ogg)$/i);
 
 import ResponsiveUserGrid from "@/components/ResponsiveUserGrid";
 import { SimpleAvatar } from "@/components/simple-avatar";
@@ -639,7 +643,7 @@ export default function Home() {
 
   // Use static hero image to prevent caching issues - try URL encoding for space
 
-  console.log('🖼️ Home Hero: Using static image:', staticHeroImage);
+  console.log('🖼️ Home Hero: Using static media:', staticHeroMedia, isVideoMedia ? '(VIDEO)' : '(IMAGE)');
   
   // Verify image exists
   const checkImageExists = async (url: string) => {
@@ -1734,25 +1738,45 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center">
                   <div className="text-center">
                     <Coffee className="w-12 h-12 text-gray-400 mx-auto mb-2 animate-pulse" />
-                    <p className="text-gray-500 text-sm">Loading image...</p>
+                    <p className="text-gray-500 text-sm">Loading {isVideoMedia ? 'video' : 'image'}...</p>
                   </div>
                 </div>
                 
-                <img
-                  src={staticHeroImage}
-                  alt="Travelers connecting at coffee shop"
-                  className="w-full h-full object-cover transition-opacity duration-500 relative z-10"
-                  loading="eager"
-                  fetchPriority="high"
-                  decoding="async"
-                  onLoad={(e) => {
-                    e.currentTarget.style.opacity = '1';
-                    // Hide the loading placeholder
-                    const placeholder = e.currentTarget.previousElementSibling as HTMLElement;
-                    if (placeholder) placeholder.style.display = 'none';
-                  }}
-                  style={{ opacity: '0' }}
-                />
+                {isVideoMedia ? (
+                  <video
+                    src={staticHeroMedia}
+                    className="w-full h-full object-cover transition-opacity duration-500 relative z-10"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    onLoadedData={(e) => {
+                      e.currentTarget.style.opacity = '1';
+                      // Hide the loading placeholder
+                      const placeholder = e.currentTarget.previousElementSibling as HTMLElement;
+                      if (placeholder) placeholder.style.display = 'none';
+                    }}
+                    style={{ opacity: '0' }}
+                  >
+                    Your browser does not support the video tag.
+                  </video>
+                ) : (
+                  <img
+                    src={staticHeroMedia}
+                    alt="Travelers connecting at coffee shop"
+                    className="w-full h-full object-cover transition-opacity duration-500 relative z-10"
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="async"
+                    onLoad={(e) => {
+                      e.currentTarget.style.opacity = '1';
+                      // Hide the loading placeholder
+                      const placeholder = e.currentTarget.previousElementSibling as HTMLElement;
+                      if (placeholder) placeholder.style.display = 'none';
+                    }}
+                    style={{ opacity: '0' }}
+                  />
+                )}
                 
                 {/* Enhanced overlay with better contrast */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10">
