@@ -593,11 +593,7 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                       
                       setIsImportingEvent(true);
                       try {
-                        const response = await apiRequest({
-                          method: 'POST',
-                          url: '/api/events/import-url',
-                          data: { url: eventUrl }
-                        });
+                        const response = await apiRequest('POST', '/api/events/import-url', { url: eventUrl });
                         
                         if (!response.ok) {
                           // Parse error message from backend
