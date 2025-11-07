@@ -631,6 +631,10 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                               const formattedDate = parsedDate.toISOString().split('T')[0];
                               setValue("date", formattedDate);
                               console.log('📅 Set date:', formattedDate, 'from', eventData.date);
+                              
+                              // Auto-fill end date to same date for same-day events
+                              setValue("endDate", formattedDate);
+                              console.log('📅 Set end date:', formattedDate, '(same-day event)');
                             }
                           } catch (e) {
                             console.error('Date parse error:', e);
