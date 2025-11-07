@@ -8271,23 +8271,35 @@ Questions? Just reply to this message. Welcome aboard!
           let startDate = '';
           let startTime = '';
           let endTime = '';
+          let foundTimeInDOM = false; // Track if we found time from DOM
           
           // First, try to get times from DOM (more reliable than JSON-LD for Couchsurfing)
           $('*').each((i, el) => {
             if (startDate && startTime && endTime) return false;
             const text = $(el).text();
             
-            // First try: Match time range like "7:45 PM to 11:45 PM" (simplest)
+            // First try: Match time range like "7:45 PM to 11:45 PM"
             if (!startTime || !endTime) {
-              const timeRangeMatch = text.match(/(\d{1,2}:\d{2}\s+[AP]M)\s+(?:to|-)\s+(\d{1,2}:\d{2}\s+[AP]M)/i);
+              const timeRangeMatch = text.match(/(\d{1,2}:\d{2}\s+[AP]M)\s+(?:to|—)\s+(\d{1,2}:\d{2}\s+[AP]M)/i);
               if (timeRangeMatch) {
                 startTime = timeRangeMatch[1];
                 endTime = timeRangeMatch[2];
+                foundTimeInDOM = true;
                 if (process.env.NODE_ENV === 'development') console.log('⏰ DOM found time range:', {startTime, endTime}, 'from:', text.substring(0, 100));
               }
             }
             
-            // Second try: Match full date like "Tue Nov 11" or "Nov 12, 2025"
+            // Second try: Match single time like "12:00 PM" (for events without end times)
+            if (!startTime) {
+              const singleTimeMatch = text.match(/(?:at |, )(\d{1,2}:\d{2}\s+[AP]M)/i);
+              if (singleTimeMatch) {
+                startTime = singleTimeMatch[1];
+                foundTimeInDOM = true;
+                if (process.env.NODE_ENV === 'development') console.log('⏰ DOM found single time:', startTime, 'from:', text.substring(0, 100));
+              }
+            }
+            
+            // Third try: Match full date like "Tue Nov 11" or "Nov 12, 2025"
             if (!startDate) {
               // Try with year first
               let dateMatch = text.match(/(?:\w{3}\s+)?(\w{3}\s+\d{1,2}(?:,)?\s+\d{4})/i);
@@ -8323,7 +8335,9 @@ Questions? Just reply to this message. Welcome aboard!
             if (process.env.NODE_ENV === 'development') console.log('⏰ JSON-LD fallback startTime:', startTime);
           }
           
-          if (!endTime && jsonLdData?.endDate) {
+          // Only use JSON-LD end time if we DIDN'T find time from DOM
+          // (DOM is more reliable than JSON-LD for Couchsurfing)
+          if (!endTime && !foundTimeInDOM && jsonLdData?.endDate) {
             const end = new Date(jsonLdData.endDate);
             const jsonEndTime = end.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
             // Only use end time if it's different from start time
