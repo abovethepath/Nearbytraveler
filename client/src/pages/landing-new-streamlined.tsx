@@ -182,22 +182,18 @@ export default function LandingStreamlined() {
                   {taglines[currentTagline].line2}
                 </p>
                 
-                {/* Hero Image - Rotating with smooth crossfade */}
+                {/* Hero Video - Autoplay looping background */}
                 <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-2xl shadow-lg">
-                  {heroImages.map((image, index) => (
-                    <img
-                      key={index}
-                      src={image}
-                      alt={heroImageAlts[index]}
-                      className={`absolute top-0 left-0 w-full h-full object-cover rounded-2xl transition-all duration-1000 ease-in-out ${
-                        index === currentImage 
-                          ? 'opacity-100 translate-x-0' 
-                          : index === (currentImage - 1 + heroImages.length) % heroImages.length
-                          ? 'opacity-0 -translate-x-full'
-                          : 'opacity-0 translate-x-full'
-                      }`}
-                    />
-                  ))}
+                  <video
+                    src="/hero-video.mp4"
+                    className="w-full h-full object-cover rounded-2xl"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                  >
+                    Your browser does not support the video tag.
+                  </video>
                 </div>
                 
                 <p className="mt-3 sm:mt-4 text-sm sm:text-base italic text-orange-600 text-center font-medium">
