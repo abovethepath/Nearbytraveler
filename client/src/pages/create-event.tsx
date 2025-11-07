@@ -637,14 +637,32 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                           }
                         }
                         
-                        // Handle start and end times
+                        // Handle start and end times - convert from 12-hour to 24-hour format
+                        const convert12to24Hour = (time12h: string): string => {
+                          const match = time12h.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+                          if (!match) return time12h; // Return as-is if format doesn't match
+                          
+                          let [_, hours, minutes, period] = match;
+                          let hour = parseInt(hours);
+                          
+                          if (period.toUpperCase() === 'PM' && hour !== 12) {
+                            hour += 12;
+                          } else if (period.toUpperCase() === 'AM' && hour === 12) {
+                            hour = 0;
+                          }
+                          
+                          return `${hour.toString().padStart(2, '0')}:${minutes}`;
+                        };
+                        
                         if (eventData.startTime) {
-                          setValue("startTime", eventData.startTime);
-                          console.log('⏰ Set start time:', eventData.startTime);
+                          const time24h = convert12to24Hour(eventData.startTime);
+                          setValue("startTime", time24h);
+                          console.log('⏰ Set start time:', time24h, 'from', eventData.startTime);
                         }
                         if (eventData.endTime) {
-                          setValue("endTime", eventData.endTime);
-                          console.log('⏰ Set end time:', eventData.endTime);
+                          const time24h = convert12to24Hour(eventData.endTime);
+                          setValue("endTime", time24h);
+                          console.log('⏰ Set end time:', time24h, 'from', eventData.endTime);
                         }
                         
                         // Handle image URL
