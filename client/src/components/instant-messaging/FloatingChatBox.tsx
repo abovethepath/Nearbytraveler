@@ -189,7 +189,7 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
   }
 
   return (
-    <div className="fixed bottom-4 right-4 w-80 h-96 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-xl z-50 flex flex-col">
+    <div className="fixed bottom-20 right-4 w-80 h-96 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-xl z-50 flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-600 bg-blue-600 text-white rounded-t-lg">
         <div className="flex items-center gap-2">
@@ -222,7 +222,7 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-3 space-y-2">
         {conversationMessages.length === 0 ? (
-          <div className="text-center text-gray-500 text-sm">
+          <div className="text-center text-gray-500 dark:text-gray-400 text-sm">
             Start your conversation with {targetUser.username}!
           </div>
         ) : (
@@ -235,7 +235,7 @@ export function FloatingChatBox({ targetUser, onClose, onMinimize, isMinimized }
                 className={`max-w-[70%] p-2 rounded-lg text-sm ${
                   msg.senderId === user?.id
                     ? 'bg-blue-600 dark:bg-blue-600 text-white dark:text-white'
-                    : 'bg-gray-200 dark:bg-gray-200 text-gray-900 dark:text-gray-900'
+                    : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
                 }`}
               >
                 {msg.content}
