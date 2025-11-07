@@ -8267,34 +8267,59 @@ Questions? Just reply to this message. Welcome aboard!
             country = locationParts[3] || '';
           }
           
-          // Extract start/end date and time from JSON-LD
+          // Extract times - try DOM first (more reliable), then JSON-LD as fallback
           let startDate = '';
           let startTime = '';
           let endTime = '';
           
-          if (jsonLdData?.startDate) {
+          // First, try to get times from DOM (more reliable than JSON-LD for Couchsurfing)
+          $('*').each((i, el) => {
+            if (startDate && startTime && endTime) return false;
+            const text = $(el).text();
+            
+            // First try: Match time range like "7:45 PM to 11:45 PM" (simplest)
+            if (!startTime || !endTime) {
+              const timeRangeMatch = text.match(/(\d{1,2}:\d{2}\s+[AP]M)\s+(?:to|-)\s+(\d{1,2}:\d{2}\s+[AP]M)/i);
+              if (timeRangeMatch) {
+                startTime = timeRangeMatch[1];
+                endTime = timeRangeMatch[2];
+                if (process.env.NODE_ENV === 'development') console.log('⏰ DOM found time range:', {startTime, endTime}, 'from:', text.substring(0, 100));
+              }
+            }
+            
+            // Second try: Match full date like "Tue Nov 12 2025" or "Nov 12, 2025"
+            if (!startDate) {
+              const dateMatch = text.match(/(?:\w{3}\s+)?(\w{3}\s+\d{1,2}(?:,)?\s+\d{4})/i);
+              if (dateMatch) {
+                startDate = dateMatch[1].replace(',', '');
+                if (process.env.NODE_ENV === 'development') console.log('⏰ DOM found date:', startDate);
+              }
+            }
+            
+            if (startDate && startTime && endTime) return false; // Found everything
+          });
+          
+          // If DOM parsing didn't work, fall back to JSON-LD
+          if (!startDate && jsonLdData?.startDate) {
             const start = new Date(jsonLdData.startDate);
             startDate = start.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            if (process.env.NODE_ENV === 'development') console.log('⏰ JSON-LD fallback startDate:', startDate);
+          }
+          
+          if (!startTime && jsonLdData?.startDate) {
+            const start = new Date(jsonLdData.startDate);
             startTime = start.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+            if (process.env.NODE_ENV === 'development') console.log('⏰ JSON-LD fallback startTime:', startTime);
           }
           
-          if (jsonLdData?.endDate) {
+          if (!endTime && jsonLdData?.endDate) {
             const end = new Date(jsonLdData.endDate);
-            endTime = end.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-          }
-          
-          // Fallback: parse from DOM
-          if (!startDate || !startTime) {
-            $('div, span').each((i, el) => {
-              const text = $(el).text();
-              const match = text.match(/(\w{3}\s+\d{1,2},\s+\d{4}),?\s+(\d{1,2}:\d{2}\s+[AP]M)(?:\s*-\s*(\d{1,2}:\d{2}\s+[AP]M))?/);
-              if (match && !startDate) {
-                startDate = match[1];
-                startTime = match[2];
-                endTime = match[3] || '';
-                return false;
-              }
-            });
+            const jsonEndTime = end.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+            // Only use end time if it's different from start time
+            if (jsonEndTime !== startTime) {
+              endTime = jsonEndTime;
+              if (process.env.NODE_ENV === 'development') console.log('⏰ JSON-LD fallback endTime:', endTime);
+            }
           }
           
           // Extract event cover image from JSON-LD or main event container
