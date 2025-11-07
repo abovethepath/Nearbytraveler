@@ -176,11 +176,9 @@ export function MobileBottomNav() {
                   <Icon className={`w-6 h-6 md:w-7 md:h-7 mb-1 ${isActive ? 'text-orange-500' : 'text-gray-400 dark:text-gray-500'}`} />
                   {/* Unread message badge */}
                   {isMessagesItem && unreadCount > 0 && (
-                    <div className="absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-red-500 rounded-full flex items-center justify-center px-1">
-                      <span className="text-white text-[10px] font-bold">
-                        {unreadCount > 99 ? '99+' : unreadCount}
-                      </span>
-                    </div>
+                    <span className="absolute -top-1 -right-1 text-red-500 text-[10px] font-bold">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
                   )}
                 </div>
                 <span className={`text-xs md:text-sm font-medium ${isActive ? 'text-orange-500' : 'text-gray-500 dark:text-gray-500'}`}>{item.label}</span>
