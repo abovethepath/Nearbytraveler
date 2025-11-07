@@ -19,12 +19,13 @@ export default function LandingStreamlined() {
   const [currentVideo, setCurrentVideo] = useState(0);
   const [currentTagline, setCurrentTagline] = useState(0);
   
-  // Rotating hero videos
+  // Rotating hero videos with custom durations (in milliseconds)
   const heroVideos = [
-    "/hero-video-1.mp4",
-    "/hero-video-2.mp4",
-    "/hero-video-3.mp4",
-    "/hero-video-4.mp4"
+    { src: "/hero-video-1.mp4", duration: 15000 }, // 15 seconds
+    { src: "/hero-video-2.mp4", duration: 15000 }, // 15 seconds
+    { src: "/hero-video-3.mp4", duration: 10000 }, // 10 seconds
+    { src: "/hero-video-4.mp4", duration: 15000 }, // 15 seconds
+    { src: "/hero-video-5.mp4", duration: 10000 }  // 10 seconds
   ];
 
   // Rotating taglines
@@ -43,14 +44,16 @@ export default function LandingStreamlined() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Rotate videos every 20 seconds
+  // Rotate videos with custom durations for each video
   useEffect(() => {
-    const videoInterval = setInterval(() => {
+    const currentDuration = heroVideos[currentVideo].duration;
+    
+    const videoTimeout = setTimeout(() => {
       setCurrentVideo(prev => (prev + 1) % heroVideos.length);
-    }, 20000);
+    }, currentDuration);
 
-    return () => clearInterval(videoInterval);
-  }, [heroVideos.length]);
+    return () => clearTimeout(videoTimeout);
+  }, [currentVideo, heroVideos]);
 
   // Rotate taglines every 10 seconds
   useEffect(() => {
@@ -132,10 +135,10 @@ export default function LandingStreamlined() {
         {/* HERO SECTION - Full Video Background with Rotation */}
         <div className="relative min-h-[600px] sm:min-h-[700px] overflow-hidden">
           {/* Rotating Video Backgrounds with Crossfade */}
-          {heroVideos.map((videoSrc, index) => (
+          {heroVideos.map((video, index) => (
             <video
               key={index}
-              src={videoSrc}
+              src={video.src}
               className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
                 index === currentVideo ? 'opacity-100' : 'opacity-0'
               }`}
