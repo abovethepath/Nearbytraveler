@@ -16,20 +16,15 @@ export default function LandingStreamlined() {
   const [, setLocation] = useLocation();
   const [isMobile, setIsMobile] = useState(false);
   const { theme, setTheme } = useTheme();
-  const [currentImage, setCurrentImage] = useState(0);
+  const [currentVideo, setCurrentVideo] = useState(0);
   const [currentTagline, setCurrentTagline] = useState(0);
   
-  // Rotating images from locals and travelers landing pages
-  const heroImages = [
-    localsHeaderImage,
-    travelersHeaderImage,
-    travelersHomeImage
-  ];
-
-  const heroImageAlts = [
-    "Locals sharing experiences and welcoming travelers",
-    "Travelers connecting with arms around each other",
-    "Travelers exploring together"
+  // Rotating hero videos
+  const heroVideos = [
+    "/hero-video-1.mp4",
+    "/hero-video-2.mp4",
+    "/hero-video-3.mp4",
+    "/hero-video-4.mp4"
   ];
 
   // Rotating taglines
@@ -48,14 +43,14 @@ export default function LandingStreamlined() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Rotate images every 15 seconds
+  // Rotate videos every 20 seconds
   useEffect(() => {
-    const imageInterval = setInterval(() => {
-      setCurrentImage(prev => (prev + 1) % heroImages.length);
-    }, 15000);
+    const videoInterval = setInterval(() => {
+      setCurrentVideo(prev => (prev + 1) % heroVideos.length);
+    }, 20000);
 
-    return () => clearInterval(imageInterval);
-  }, [heroImages.length]);
+    return () => clearInterval(videoInterval);
+  }, [heroVideos.length]);
 
   // Rotate taglines every 10 seconds
   useEffect(() => {
@@ -134,19 +129,24 @@ export default function LandingStreamlined() {
           </div>
         </div>
 
-        {/* HERO SECTION - Full Video Background */}
+        {/* HERO SECTION - Full Video Background with Rotation */}
         <div className="relative min-h-[600px] sm:min-h-[700px] overflow-hidden">
-          {/* Video Background */}
-          <video
-            src="/hero-video.mp4"
-            className="absolute top-0 left-0 w-full h-full object-cover"
-            autoPlay
-            loop
-            muted
-            playsInline
-          >
-            Your browser does not support the video tag.
-          </video>
+          {/* Rotating Video Backgrounds with Crossfade */}
+          {heroVideos.map((videoSrc, index) => (
+            <video
+              key={index}
+              src={videoSrc}
+              className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
+                index === currentVideo ? 'opacity-100' : 'opacity-0'
+              }`}
+              autoPlay
+              loop
+              muted
+              playsInline
+            >
+              Your browser does not support the video tag.
+            </video>
+          ))}
           
           {/* Dark overlay for text readability */}
           <div className="absolute top-0 left-0 w-full h-full bg-black/50"></div>
