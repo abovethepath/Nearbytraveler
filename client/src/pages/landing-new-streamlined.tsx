@@ -134,27 +134,50 @@ export default function LandingStreamlined() {
           </div>
         </div>
 
-        {/* HERO SECTION - Fully Mobile Responsive */}
-        <div className="pt-4 pb-8 sm:pt-8 sm:pb-12 bg-white dark:bg-gray-900">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid gap-6 md:gap-8 lg:gap-12 lg:grid-cols-2 items-center">
-              
-              {/* Left text side */}
-              <div className="order-2 lg:order-1 text-center lg:text-left">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 dark:text-white mb-6 sm:mb-8">
-                  Connect with <span className="dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-blue-400 dark:to-orange-400">Locals & Travelers</span> Worldwide
+        {/* HERO SECTION - Full Video Background */}
+        <div className="relative min-h-[600px] sm:min-h-[700px] overflow-hidden">
+          {/* Video Background */}
+          <video
+            src="/hero-video.mp4"
+            className="absolute top-0 left-0 w-full h-full object-cover"
+            autoPlay
+            loop
+            muted
+            playsInline
+          >
+            Your browser does not support the video tag.
+          </video>
+          
+          {/* Dark overlay for text readability */}
+          <div className="absolute top-0 left-0 w-full h-full bg-black/50"></div>
+          
+          {/* Content overlay */}
+          <div className="relative z-10 pt-8 pb-12 sm:pt-12 sm:pb-16">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex flex-col items-center justify-center text-center min-h-[500px] sm:min-h-[600px]">
+                
+                {/* Rotating Quote */}
+                <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white italic mb-8 sm:mb-10 leading-snug transition-opacity duration-500 drop-shadow-lg">
+                  {taglines[currentTagline].line1}<br />
+                  {taglines[currentTagline].line2}
+                </p>
+                
+                {/* Main Headline */}
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-white mb-6 sm:mb-8 drop-shadow-2xl">
+                  Connect with <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-orange-400">Locals & Travelers</span> Worldwide
                 </h1>
                 
-                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-200 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                {/* Subheadline */}
+                <p className="text-lg sm:text-xl md:text-2xl text-white mb-10 sm:mb-12 leading-relaxed max-w-4xl drop-shadow-lg">
                   Nearby Traveler connects travelers and locals through shared interests, activities, and events. We also let you know when you cross paths with friends in another city — making it easy to meet people, reconnect, and build friendships that last a lifetime.
                 </p>
                 
-                {/* CTA Buttons - Stack on mobile */}
-                <div className="flex flex-col gap-4 justify-center lg:justify-start">
+                {/* CTA Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                   <Button
                     onClick={handleGetStarted}
                     size="lg"
-                    className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                    className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-10 py-5 rounded-xl text-xl font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105"
                     data-testid="button-main-cta"
                   >
                     Join Now
@@ -166,37 +189,15 @@ export default function LandingStreamlined() {
                     }}
                     variant="outline"
                     size="lg"
-                    className="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800 px-8 py-4 rounded-xl text-lg font-medium transition-all duration-200"
+                    className="border-2 border-white text-white hover:bg-white/20 backdrop-blur-sm px-10 py-5 rounded-xl text-xl font-medium transition-all duration-200 hover:scale-105"
                     data-testid="button-learn-more"
                   >
                     See How It Works
                   </Button>
                 </div>
-              </div>
-
-              {/* Right image side */}
-              <div className="order-1 lg:order-2 flex flex-col items-center">
-                {/* Rotating Quote above photo */}
-                <p className="text-lg sm:text-xl md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-orange-500 italic mb-4 sm:mb-6 text-center leading-snug transition-opacity duration-500">
-                  {taglines[currentTagline].line1}<br />
-                  {taglines[currentTagline].line2}
-                </p>
                 
-                {/* Hero Video - Autoplay looping background */}
-                <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-2xl shadow-lg">
-                  <video
-                    src="/hero-video.mp4"
-                    className="w-full h-full object-cover rounded-2xl"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                  >
-                    Your browser does not support the video tag.
-                  </video>
-                </div>
-                
-                <p className="mt-3 sm:mt-4 text-sm sm:text-base italic text-orange-600 text-center font-medium">
+                {/* Tagline */}
+                <p className="mt-8 sm:mt-10 text-base sm:text-lg md:text-xl italic text-orange-400 font-semibold drop-shadow-lg">
                   Where Local Experiences Meet Worldwide Connections
                 </p>
               </div>
