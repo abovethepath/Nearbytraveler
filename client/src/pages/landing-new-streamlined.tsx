@@ -24,7 +24,8 @@ export default function LandingStreamlined() {
     { src: "/hero-video-1.mp4", duration: 15000 }, // 15 seconds
     { src: "/hero-video-2.mp4", duration: 15000 }, // 15 seconds
     { src: "/hero-video-4.mp4", duration: 15000 }, // 15 seconds
-    { src: "/hero-video-5.mp4", duration: 10000 }  // 10 seconds
+    { src: "/hero-video-5.mp4", duration: 10000 }, // 10 seconds
+    { src: "/hero-video-6.mp4", duration: 8000 }   // 8 seconds
   ];
 
   // Rotating taglines
