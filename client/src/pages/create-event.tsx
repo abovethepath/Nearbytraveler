@@ -608,15 +608,14 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                         if (eventData.title) setValue("title", eventData.title);
                         if (eventData.description) setValue("description", eventData.description);
                         if (eventData.venueName) setValue("venueName", eventData.venueName);
-                        if (eventData.organizer) setValue("venueName", eventData.organizer); // Use organizer name as venue for now
                         
-                        // Handle location - Couchsurfing returns parsed location
-                        if (eventData.location) {
-                          // Parse full location string for street address
+                        // Handle location - street address comes separately now
+                        if (eventData.street) {
+                          setValue("street", eventData.street);
+                        } else if (eventData.location) {
+                          // Fallback: parse from full location
                           const addressParts = eventData.location.split(',').map((p: string) => p.trim());
                           if (addressParts.length > 0) setValue("street", addressParts[0]);
-                        } else if (eventData.street) {
-                          setValue("street", eventData.street);
                         }
                         
                         if (eventData.city) setValue("city", eventData.city);
@@ -624,9 +623,8 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                         if (eventData.country) setValue("country", eventData.country);
                         if (eventData.zipcode) setValue("zipcode", eventData.zipcode);
                         
-                        // Handle date/time - Couchsurfing might have different format
+                        // Handle date - convert to YYYY-MM-DD format
                         if (eventData.date) {
-                          // Try to parse the date and convert to YYYY-MM-DD format
                           try {
                             const parsedDate = new Date(eventData.date);
                             if (!isNaN(parsedDate.getTime())) {
@@ -636,16 +634,18 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                             }
                           } catch (e) {
                             console.error('Date parse error:', e);
-                            setValue("date", eventData.date);
                           }
                         }
-                        if (eventData.time || eventData.startTime) {
-                          setValue("startTime", eventData.time || eventData.startTime);
-                          console.log('⏰ Set time:', eventData.time || eventData.startTime);
+                        
+                        // Handle start and end times
+                        if (eventData.startTime) {
+                          setValue("startTime", eventData.startTime);
+                          console.log('⏰ Set start time:', eventData.startTime);
                         }
-                        if (eventData.endDate) setValue("endDate", eventData.endDate);
-                        if (eventData.endTime) setValue("endTime", eventData.endTime);
-                        if (eventData.maxParticipants) setValue("maxParticipants", eventData.maxParticipants);
+                        if (eventData.endTime) {
+                          setValue("endTime", eventData.endTime);
+                          console.log('⏰ Set end time:', eventData.endTime);
+                        }
                         
                         // Handle image URL
                         if (eventData.imageUrl) {

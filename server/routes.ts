@@ -8154,106 +8154,195 @@ Questions? Just reply to this message. Welcome aboard!
       // Check if it's a Couchsurfing URL
       if (url.includes('couchsurfing.com')) {
         try {
-          // Extract organizer name - look for "Organized by" text pattern
-          let organizer = '';
-          $('*').each((i, el) => {
-            const text = $(el).text();
-            if (text.includes('Organized by')) {
-              // Find the next link after "Organized by"
-              const orgLink = $(el).find('a[href*="/people/"]').first();
-              if (orgLink.length) {
-                organizer = orgLink.text().trim();
+          // Try to extract JSON-LD structured data first (most reliable)
+          let jsonLdData: any = null;
+          $('script[type="application/ld+json"]').each((i, el) => {
+            try {
+              const json = JSON.parse($(el).html() || '{}');
+              if (json['@type'] === 'Event' || json['@type'] === 'SocialEvent') {
+                jsonLdData = json;
                 return false; // break
               }
+            } catch (e) {
+              // Skip invalid JSON
             }
           });
           
-          // Fallback: just get any people link
-          if (!organizer) {
-            organizer = $('a[href*="/people/"]').first().text().trim() || '';
+          // Extract title from JSON-LD or DOM
+          let title = jsonLdData?.name || '';
+          if (!title) {
+            $('h1').each((i, el) => {
+              const text = $(el).text().trim();
+              if (text && text !== 'Related Events') {
+                title = text;
+              }
+            });
           }
           
-          // Extract event title - get the last H1 that's not "Related Events"
-          let title = '';
-          $('h1').each((i, el) => {
-            const text = $(el).text().trim();
-            if (text && text !== 'Related Events') {
-              title = text; // Keep updating to get the last one
-            }
-          });
-          
-          // Verify we got a title (critical field)
           if (!title) {
             throw new Error('Could not extract event title from page');
           }
           
-          // Extract location - look for address in link
-          const locationLink = $('a[href*="maps.google"]').first();
-          const location = locationLink.attr('href')?.match(/q=([^&]+)/)?.[1];
-          let decodedLocation = location ? decodeURIComponent(location.replace(/\+/g, ' ')) : '';
-          
-          // Parse location into city, state, country
-          const locationParts = decodedLocation.split(',').map(p => p.trim());
-          const city = locationParts[1] || '';
-          const stateZip = locationParts[2] || '';
-          const country = locationParts[3] || '';
-          
-          // Extract state from "State ZIP" format
-          const state = stateZip.split(' ')[0] || '';
-          const zipcode = stateZip.split(' ')[1] || '';
-          
-          // Extract date/time - look specifically near the event location/organizer section
-          let dateStr = '';
-          let timeStr = '';
-          $('div').each((i, el) => {
-            const text = $(el).text();
-            // Look for date pattern like "Nov 06, 2025, 7:30 PM"
-            const match = text.match(/(\w{3}\s+\d{1,2},\s+\d{4}),?\s+(\d{1,2}:\d{2}\s+[AP]M)/);
-            if (match && !dateStr) {
-              dateStr = match[1];
-              timeStr = match[2];
-            }
-          });
-          
-          // Extract cover image
-          const imageUrl = $('img[src*="amazonaws.com"]').first().attr('src') || 
-                          $('img[src*="tcdn.couchsurfing.com"]').first().attr('src') || '';
-          
-          // Extract description - look for paragraphs near event details
-          let description = '';
-          $('p').each((i, el) => {
-            const text = $(el).text().trim();
-            // Skip short paragraphs, navigation text, and common UI elements
-            if (text.length > 50 && 
-                !text.includes('Organized by') && 
-                !text.includes('Related Events') &&
-                !text.includes('Sign up') &&
-                !text.includes('Join now')) {
-              if (!description) description = text; // Get first meaningful paragraph
-            }
-          });
-          
-          // Fallback: try div with substantial text content
-          if (!description) {
-            $('div').each((i, el) => {
-              const text = $(el).text().trim();
-              if (text.length > 100 && text.length < 1000 && !description) {
-                description = text;
+          // Extract organizer
+          let organizer = jsonLdData?.organizer?.name || '';
+          if (!organizer) {
+            $('*').each((i, el) => {
+              const text = $(el).text();
+              if (text.includes('Organized by')) {
+                const orgLink = $(el).find('a[href*="/people/"]').first();
+                if (orgLink.length) {
+                  organizer = orgLink.text().trim();
+                  return false;
+                }
               }
             });
+          }
+          if (!organizer) {
+            organizer = $('a[href*="/people/"]').first().text().trim() || '';
+          }
+          
+          // Extract venue name and address from JSON-LD location.name (often contains full address)
+          let venueName = jsonLdData?.location?.name || '';
+          let fullAddress = venueName; // venue name often IS the full address
+          
+          if (!venueName) {
+            const venueElement = $('[data-testid="venue"]').first();
+            venueName = venueElement.text().trim();
+            fullAddress = venueName;
+          }
+          
+          // Extract location/address components
+          let street = '';
+          let city = '';
+          let state = '';
+          let zipcode = '';
+          let country = '';
+          let decodedLocation = '';
+          
+          // Try JSON-LD structured address first
+          if (jsonLdData?.location?.address) {
+            const addr = jsonLdData.location.address;
+            city = addr.addressLocality || '';
+            state = addr.addressRegion || '';
+            zipcode = addr.postalCode || '';
+            country = addr.addressCountry || '';
+            street = addr.streetAddress || '';
+            
+            decodedLocation = [
+              addr.streetAddress,
+              addr.addressLocality,
+              `${addr.addressRegion || ''} ${addr.postalCode || ''}`.trim(),
+              addr.addressCountry
+            ].filter(Boolean).join(', ');
+          }
+          
+          // If we got venueName but no street, parse it
+          if (!street && fullAddress) {
+            const parts = fullAddress.split(',').map(p => p.trim());
+            if (parts.length >= 4) {
+              // Format: "729 South Spring Street, Los Angeles, California 90014, USA"
+              street = parts[0];
+              if (!city) city = parts[1];
+              if (!state || !zipcode) {
+                const stateZip = parts[2].split(' ');
+                if (!state) state = stateZip[0];
+                if (!zipcode && stateZip[1]) zipcode = stateZip[1];
+              }
+              if (!country) country = parts[3];
+            }
+          }
+          
+          // Final fallback: Google Maps link
+          if (!street && !city) {
+            const locationLink = $('a[href*="maps.google"]').first();
+            const location = locationLink.attr('href')?.match(/q=([^&]+)/)?.[1];
+            decodedLocation = location ? decodeURIComponent(location.replace(/\+/g, ' ')) : '';
+            
+            const locationParts = decodedLocation.split(',').map(p => p.trim());
+            street = locationParts[0] || '';
+            city = locationParts[1] || '';
+            const stateZip = locationParts[2] || '';
+            state = stateZip.split(' ')[0] || '';
+            zipcode = stateZip.split(' ')[1] || '';
+            country = locationParts[3] || '';
+          }
+          
+          // Extract start/end date and time from JSON-LD
+          let startDate = '';
+          let startTime = '';
+          let endTime = '';
+          
+          if (jsonLdData?.startDate) {
+            const start = new Date(jsonLdData.startDate);
+            startDate = start.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            startTime = start.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+          }
+          
+          if (jsonLdData?.endDate) {
+            const end = new Date(jsonLdData.endDate);
+            endTime = end.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+          }
+          
+          // Fallback: parse from DOM
+          if (!startDate || !startTime) {
+            $('div, span').each((i, el) => {
+              const text = $(el).text();
+              const match = text.match(/(\w{3}\s+\d{1,2},\s+\d{4}),?\s+(\d{1,2}:\d{2}\s+[AP]M)(?:\s*-\s*(\d{1,2}:\d{2}\s+[AP]M))?/);
+              if (match && !startDate) {
+                startDate = match[1];
+                startTime = match[2];
+                endTime = match[3] || '';
+                return false;
+              }
+            });
+          }
+          
+          // Extract event cover image from JSON-LD or main event container
+          let imageUrl = jsonLdData?.image || '';
+          if (!imageUrl) {
+            // Look for main event image (NOT in related events section)
+            const mainContainer = $('.event-profile, .event-detail, [class*="event-header"]').first();
+            if (mainContainer.length) {
+              imageUrl = mainContainer.find('img[src*="amazonaws"], img[src*="tcdn.couchsurfing"]').first().attr('src') || '';
+            }
+            // Fallback: first large image before "Related Events"
+            if (!imageUrl) {
+              let foundRelated = false;
+              $('img[src*="amazonaws"], img[src*="tcdn.couchsurfing"]').each((i, el) => {
+                const $el = $(el);
+                // Stop if we hit "Related Events" section
+                if ($el.closest(':has(h2:contains("Related Events"), h3:contains("Related"))').length) {
+                  foundRelated = true;
+                  return false;
+                }
+                if (!foundRelated && !imageUrl) {
+                  imageUrl = $el.attr('src') || '';
+                }
+              });
+            }
+          }
+          
+          // Extract description from JSON-LD
+          let description = jsonLdData?.description || '';
+          if (!description) {
+            // Description is often behind auth wall - note this limitation
+            description = '';
           }
           
           eventData = {
             title: title,
             organizer: organizer,
+            venueName: venueName,
             description: description,
             location: decodedLocation,
+            street: street,
             city: city,
             state: state,
             country: country,
             zipcode: zipcode,
-            date: dateStr,
-            time: timeStr,
+            date: startDate,
+            startTime: startTime,
+            endTime: endTime,
             imageUrl: imageUrl,
             sourceUrl: url,
             source: 'Couchsurfing'
