@@ -3582,11 +3582,15 @@ Questions? Just reply to this message!
       if (processedData.userType === 'traveler' || processedData.userType === 'currently_traveling') {
         if (process.env.NODE_ENV === 'development') console.log("✈️ PROCESSING TRAVELER USER - Travel mapping:");
         if (process.env.NODE_ENV === 'development') console.log("  Input travel data:", {
+          destinationCity: processedData.destinationCity,
+          destinationState: processedData.destinationState,
+          destinationCountry: processedData.destinationCountry,
           currentCity: processedData.currentCity,
           currentState: processedData.currentState,
           currentCountry: processedData.currentCountry,
           travelStartDate: processedData.travelStartDate,
           travelEndDate: processedData.travelEndDate,
+          travelReturnDate: processedData.travelReturnDate,
           isCurrentlyTraveling: processedData.isCurrentlyTraveling,
           travelDestination: processedData.travelDestination
         });
@@ -3594,15 +3598,46 @@ Questions? Just reply to this message!
         // Set travel status for travelers
         processedData.isCurrentlyTraveling = true;
 
-        // Build travel destination from current travel location
-        if (processedData.currentCity && processedData.currentCountry) {
+        // CRITICAL: Accept destination fields from new signup form
+        // The signup form sends destinationCity/State/Country, not currentCity
+        if (processedData.destinationCity && processedData.destinationCountry) {
+          // Store in both destination fields AND current travel fields for compatibility
+          processedData.currentTravelCity = processedData.destinationCity;
+          processedData.currentTravelState = processedData.destinationState || '';
+          processedData.currentTravelCountry = processedData.destinationCountry;
+          
+          // Build travel destination string if not already provided
+          if (!processedData.travelDestination) {
+            const travelDestinationParts = [
+              processedData.destinationCity,
+              processedData.destinationState,
+              processedData.destinationCountry
+            ].filter(Boolean);
+            processedData.travelDestination = travelDestinationParts.join(', ');
+          }
+          if (process.env.NODE_ENV === 'development') console.log("  ✓ Set travel destination from destinationCity:", processedData.travelDestination);
+        }
+        // Fallback: Build travel destination from current travel location (old form compatibility)
+        else if (processedData.currentCity && processedData.currentCountry) {
           const travelDestinationParts = [
             processedData.currentCity,
             processedData.currentState,
             processedData.currentCountry
           ].filter(Boolean);
           processedData.travelDestination = travelDestinationParts.join(', ');
-          if (process.env.NODE_ENV === 'development') console.log("  ✓ Set travel destination:", processedData.travelDestination);
+          if (process.env.NODE_ENV === 'development') console.log("  ✓ Set travel destination from currentCity:", processedData.travelDestination);
+        }
+        
+        // Set travel dates - accept either travelReturnDate or travelEndDate
+        if (processedData.travelReturnDate && !processedData.travelEndDate) {
+          processedData.travelEndDate = processedData.travelReturnDate;
+          if (process.env.NODE_ENV === 'development') console.log("  ✓ Mapped travelReturnDate to travelEndDate");
+        }
+        
+        // Set travel start date to today if not provided
+        if (!processedData.travelStartDate) {
+          processedData.travelStartDate = new Date().toISOString().split('T')[0];
+          if (process.env.NODE_ENV === 'development') console.log("  ✓ Set travelStartDate to today");
         }
 
         // Always populate hometown and location fields for travelers too
