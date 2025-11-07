@@ -332,6 +332,11 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
       setIsRecurring(false);
       setRecurrenceType("");
       onEventCreated?.();
+      
+      // Redirect to events page after successful creation
+      setTimeout(() => {
+        setLocation('/events');
+      }, 1500); // Small delay to show the success toast
     },
     onError: (error) => {
       // CRITICAL: Enhanced error handling with visible error messages
