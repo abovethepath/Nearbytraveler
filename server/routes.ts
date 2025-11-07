@@ -6914,6 +6914,51 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Accept/reject connection request
+  app.put("/api/connections/:id", async (req, res) => {
+    try {
+      const connectionId = parseInt(req.params.id);
+      const { status } = req.body;
+      const userId = parseInt(req.headers['x-user-id'] as string || '0');
+
+      if (!status || (status !== 'accepted' && status !== 'rejected')) {
+        return res.status(400).json({ message: "Invalid status" });
+      }
+
+      // Get the connection
+      const [connection] = await db
+        .select()
+        .from(connections)
+        .where(eq(connections.id, connectionId))
+        .limit(1);
+
+      if (!connection) {
+        return res.status(404).json({ message: "Connection request not found" });
+      }
+
+      // Verify that the user is the receiver (only receiver can accept/reject)
+      if (connection.receiverId !== userId) {
+        return res.status(403).json({ message: "Only the receiver can accept or reject this request" });
+      }
+
+      // Update the connection status
+      const [updatedConnection] = await db
+        .update(connections)
+        .set({ status })
+        .where(eq(connections.id, connectionId))
+        .returning();
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`✅ Connection ${status}: ${connection.requesterId} ↔ ${connection.receiverId}`);
+      }
+
+      return res.json({ success: true, connection: updatedConnection });
+    } catch (error: any) {
+      console.error("Error updating connection:", error);
+      return res.status(500).json({ message: "Failed to update connection", error: error.message });
+    }
+  });
+
   // CRITICAL: Get ALL messages for user (needed for full conversation history) with JOIN for user data
   app.get("/api/messages/:userId", async (req, res) => {
     try {
