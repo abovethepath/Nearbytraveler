@@ -203,7 +203,7 @@ export default function UserCard({
                   // Check if user has travel plans data and use new logic
                   if ((user as any).travelPlans && Array.isArray((user as any).travelPlans)) {
                     const currentOrNextTrip = getCurrentOrNextTrip((user as any).travelPlans);
-                    if (currentOrNextTrip) {
+                    if (currentOrNextTrip && currentOrNextTrip.destination) {
                       return (
                         <div className="flex items-center justify-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-lg">
                           {currentOrNextTrip.isCurrent ? '🧳' : '✈️'} 

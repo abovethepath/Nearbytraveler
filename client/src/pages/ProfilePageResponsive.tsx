@@ -139,18 +139,20 @@ export default function ProfilePageResponsive() {
 
           {/* Name + actions */}
           <div className="space-y-3">
-            <div>
+            <div className="space-y-1">
               <h1 className="text-2xl md:text-3xl font-bold" data-testid="text-name">{displayName}</h1>
-              {/* CRITICAL: Always show hometown location */}
-              <p className="text-sm text-gray-600" data-testid="text-hometown-location">
-                Nearby Local • {hometownLocation}
-              </p>
-              {/* CRITICAL: Show destination location when actively traveling */}
-              {destinationLocation && (
-                <p className="text-sm text-blue-600 font-medium" data-testid="text-destination-location">
-                  Nearby Traveler • {destinationLocation}
+              {/* CRITICAL: Always show hometown location - consistent mobile sizing */}
+              <div className="flex flex-col gap-1">
+                <p className="text-sm text-gray-600 font-medium" data-testid="text-hometown-location">
+                  Nearby Local • {hometownLocation}
                 </p>
-              )}
+                {/* CRITICAL: Show destination location when actively traveling - same size as hometown */}
+                {destinationLocation && (
+                  <p className="text-sm text-blue-600 font-medium" data-testid="text-destination-location">
+                    Nearby Traveler • {destinationLocation}
+                  </p>
+                )}
+              </div>
             </div>
 
             {/* Actions bar: turns into 2x2 grid on mobile */}

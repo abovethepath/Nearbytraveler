@@ -643,10 +643,26 @@ export class DatabaseStorage implements IStorage {
       }
     }
     
-    // DEFAULT COUNTRY: Automatically add hometown country to countries visited
-    if (insertUser.hometownCountry && (!insertUser.countriesVisited || insertUser.countriesVisited.length === 0)) {
-      cleanUserData.countriesVisited = [insertUser.hometownCountry];
-      console.log("🏠 DEFAULT COUNTRY: Added hometown country to countries visited:", insertUser.hometownCountry);
+    // DEFAULT COUNTRIES: Automatically add hometown AND destination countries to countries visited
+    if (!insertUser.countriesVisited || insertUser.countriesVisited.length === 0) {
+      const visitedCountries: string[] = [];
+      
+      // Add hometown country
+      if (insertUser.hometownCountry) {
+        visitedCountries.push(insertUser.hometownCountry);
+        console.log("🏠 DEFAULT COUNTRY: Added hometown country:", insertUser.hometownCountry);
+      }
+      
+      // Add destination country for travelers
+      if (insertUser.isCurrentlyTraveling && insertUser.destinationCountry && insertUser.destinationCountry !== insertUser.hometownCountry) {
+        visitedCountries.push(insertUser.destinationCountry);
+        console.log("✈️ TRAVEL COUNTRY: Added destination country:", insertUser.destinationCountry);
+      }
+      
+      if (visitedCountries.length > 0) {
+        cleanUserData.countriesVisited = visitedCountries;
+        console.log(`🌍 COUNTRIES VISITED: Set to ${visitedCountries.length} countries:`, visitedCountries);
+      }
     }
     
     // Ensure dateOfBirth is properly handled if provided
