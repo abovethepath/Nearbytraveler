@@ -4783,7 +4783,7 @@ Questions? Just reply to this message. Welcome aboard!
         const prefList = sexualPreference.split(',').map(p => p.trim()).filter(Boolean);
         if (prefList.length > 0) {
           whereConditions.push(or(
-            ...prefList.map(pref => ilike(users.sexualPreference, `%${pref}%`))
+            ...prefList.map(pref => sql`array_to_string(${users.sexualPreference}, ',') ILIKE ${`%${pref}%`}`)
           ));
         }
       }
