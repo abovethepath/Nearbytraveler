@@ -8090,6 +8090,92 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Import event from external URL (Couchsurfing, Meetup, etc.)
+  app.post("/api/events/import-url", async (req, res) => {
+    try {
+      const { url } = req.body;
+      
+      if (!url) {
+        return res.status(400).json({ message: "URL is required" });
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`🔗 IMPORT: Fetching event from ${url}`);
+
+      // Fetch the URL
+      const axios = require('axios');
+      const cheerio = require('cheerio');
+      
+      const response = await axios.get(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        }
+      });
+
+      const $ = cheerio.load(response.data);
+      let eventData: any = {};
+
+      // Check if it's a Couchsurfing URL
+      if (url.includes('couchsurfing.com')) {
+        // Extract event title
+        const title = $('h1').first().text().trim();
+        
+        // Extract organizer name
+        const organizerLink = $('a[href*="/people/"]').first();
+        const organizer = organizerLink.text().trim();
+        
+        // Extract location - look for address in link
+        const locationLink = $('a[href*="maps.google"]').first();
+        const location = locationLink.attr('href')?.match(/q=([^&]+)/)?.[1];
+        const decodedLocation = location ? decodeURIComponent(location) : '';
+        
+        // Parse location into city, state, country
+        const locationParts = decodedLocation.split(',').map(p => p.trim());
+        const city = locationParts[1] || locationParts[0] || '';
+        const state = locationParts[2] || '';
+        const country = locationParts[3] || locationParts[2] || '';
+        
+        // Extract date/time from text
+        const dateText = $('div:contains("PST"), div:contains("EST"), div:contains("CST"), div:contains("MST")').first().text();
+        const dateMatch = dateText.match(/(\w{3}\s+\d{1,2},\s+\d{4},\s+\d{1,2}:\d{2}\s+[AP]M)/);
+        const timeMatch = dateText.match(/(\d{1,2}:\d{2}\s+[AP]M)/);
+        
+        // Extract cover image
+        const imageUrl = $('img[src*="amazonaws.com"]').first().attr('src') || 
+                        $('img[src*="tcdn.couchsurfing.com"]').first().attr('src');
+        
+        eventData = {
+          title: title || '',
+          organizer: organizer || '',
+          location: decodedLocation,
+          city: city,
+          state: state,
+          country: country,
+          date: dateMatch ? dateMatch[1] : '',
+          time: timeMatch ? timeMatch[1] : '',
+          imageUrl: imageUrl || '',
+          sourceUrl: url,
+          source: 'Couchsurfing'
+        };
+      }
+      // Can add more platforms here (Meetup, Eventbrite, etc.)
+      else {
+        return res.status(400).json({ 
+          message: "Unsupported URL. Currently supports Couchsurfing events." 
+        });
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`✅ IMPORT: Extracted event data:`, eventData);
+      
+      return res.json(eventData);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error importing event:", error);
+      return res.status(500).json({ 
+        message: "Failed to import event. Please check the URL and try again.",
+        error: error.message 
+      });
+    }
+  });
+
   // CRITICAL: Create new event with enhanced error handling
   app.post("/api/events", async (req, res) => {
     let cleanEventData: any = null;
