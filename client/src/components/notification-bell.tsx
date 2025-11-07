@@ -76,9 +76,10 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="relative p-2 bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent data-[state=open]:bg-transparent focus-visible:ring-0 focus:outline-none border-none shadow-none cursor-pointer"
+          className="relative p-0 bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent data-[state=open]:bg-transparent focus-visible:ring-0 focus:outline-none border-0 shadow-none cursor-pointer"
+          style={{ background: 'transparent !important' }}
         >
-          <Bell className="w-8 h-8 text-gray-600 dark:text-gray-300" />
+          <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
           {totalNotifications > 0 && (
             <Badge
               variant="destructive"
