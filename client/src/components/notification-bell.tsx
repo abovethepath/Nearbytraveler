@@ -78,9 +78,9 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
         <Button
           variant="ghost"
           size="sm"
-          className="relative p-2 hover:bg-gray-100"
+          className="relative p-2"
         >
-          <Bell className="w-8 h-8 text-gray-600" />
+          <Bell className="w-8 h-8 text-gray-600 dark:text-gray-300" />
           {totalNotifications > 0 && (
             <Badge
               variant="destructive"
