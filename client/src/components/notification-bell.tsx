@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Bell, MessageCircle, UserPlus } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -75,10 +74,9 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="relative p-2 bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent border-none shadow-none"
+        <button
+          type="button"
+          className="relative p-2 bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent data-[state=open]:bg-transparent focus-visible:ring-0 focus:outline-none border-none shadow-none cursor-pointer"
         >
           <Bell className="w-8 h-8 text-gray-600 dark:text-gray-300" />
           {totalNotifications > 0 && (
@@ -89,7 +87,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
               {totalNotifications > 9 ? "9+" : totalNotifications}
             </Badge>
           )}
-        </Button>
+        </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-80 bg-white dark:bg-gray-900">
         <DropdownMenuLabel className="text-gray-900 dark:text-white">Notifications</DropdownMenuLabel>
