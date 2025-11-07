@@ -8219,9 +8219,34 @@ Questions? Just reply to this message. Welcome aboard!
           const imageUrl = $('img[src*="amazonaws.com"]').first().attr('src') || 
                           $('img[src*="tcdn.couchsurfing.com"]').first().attr('src') || '';
           
+          // Extract description - look for paragraphs near event details
+          let description = '';
+          $('p').each((i, el) => {
+            const text = $(el).text().trim();
+            // Skip short paragraphs, navigation text, and common UI elements
+            if (text.length > 50 && 
+                !text.includes('Organized by') && 
+                !text.includes('Related Events') &&
+                !text.includes('Sign up') &&
+                !text.includes('Join now')) {
+              if (!description) description = text; // Get first meaningful paragraph
+            }
+          });
+          
+          // Fallback: try div with substantial text content
+          if (!description) {
+            $('div').each((i, el) => {
+              const text = $(el).text().trim();
+              if (text.length > 100 && text.length < 1000 && !description) {
+                description = text;
+              }
+            });
+          }
+          
           eventData = {
             title: title,
             organizer: organizer,
+            description: description,
             location: decodedLocation,
             city: city,
             state: state,
