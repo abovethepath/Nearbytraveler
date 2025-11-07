@@ -632,6 +632,10 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                               setValue("date", formattedDate);
                               console.log('📅 Set date:', formattedDate, 'from', eventData.date);
                               
+                              // Uncheck "Same day event" checkbox to show end date field
+                              setValue("isSameDay", false);
+                              console.log('✅ Unchecked isSameDay to show end date field');
+                              
                               // Auto-fill end date to same date for same-day events
                               setValue("endDate", formattedDate);
                               console.log('📅 Set end date:', formattedDate, '(same-day event)');
