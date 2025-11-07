@@ -687,9 +687,14 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                     {isImportingEvent ? "Importing..." : "Import"}
                   </Button>
                 </div>
-                <p className="text-xs text-purple-600 dark:text-purple-400">
-                  💡 Tip: Works with Couchsurfing and Meetup events! Just paste the URL and click Import to auto-fill all fields.
-                </p>
+                <div className="space-y-1">
+                  <p className="text-xs text-purple-600 dark:text-purple-400">
+                    💡 Tip: Works with Couchsurfing and Meetup events! Automatically imports title, organizer, location, date/time, and cover image.
+                  </p>
+                  <p className="text-xs text-purple-500/80 dark:text-purple-400/80 italic">
+                    Note: Event descriptions are often hidden behind login walls and cannot be imported. You'll need to add the description manually.
+                  </p>
+                </div>
               </CardContent>
             </Card>
 
