@@ -600,7 +600,9 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                         });
                         
                         if (!response.ok) {
-                          throw new Error("Failed to import event");
+                          // Parse error message from backend
+                          const errorData = await response.json();
+                          throw new Error(errorData.message || "Failed to import event");
                         }
                         const eventData = await response.json();
                         

@@ -8101,13 +8101,51 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(400).json({ message: "URL is required" });
       }
 
+      // Validate URL format and allowed domains (SSRF protection)
+      let parsedUrl;
+      try {
+        parsedUrl = new URL(url);
+      } catch (e) {
+        return res.status(400).json({ message: "Invalid URL format" });
+      }
+
+      // Whitelist of allowed domains to prevent SSRF attacks
+      const allowedDomains = [
+        'couchsurfing.com',
+        'www.couchsurfing.com',
+        'meetup.com',
+        'www.meetup.com'
+      ];
+
+      // Check protocol (only allow https)
+      if (parsedUrl.protocol !== 'https:') {
+        return res.status(400).json({ 
+          message: "Only HTTPS URLs are supported for security reasons" 
+        });
+      }
+
+      // Check if domain is in whitelist
+      const hostname = parsedUrl.hostname.toLowerCase();
+      const isAllowed = allowedDomains.some(domain => 
+        hostname === domain || hostname.endsWith('.' + domain)
+      );
+
+      if (!isAllowed) {
+        return res.status(400).json({ 
+          message: "Unsupported platform. Currently supports Couchsurfing and Meetup events only." 
+        });
+      }
+
       if (process.env.NODE_ENV === 'development') console.log(`🔗 IMPORT: Fetching event from ${url}`);
 
-      // Fetch the URL
+      // Fetch the URL with timeout and size limit
       const response = await axios.get(url, {
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-        }
+        },
+        timeout: 10000, // 10 second timeout
+        maxContentLength: 5 * 1024 * 1024, // 5MB max response size
+        maxRedirects: 5
       });
 
       const $ = cheerio.load(response.data);
@@ -8115,77 +8153,91 @@ Questions? Just reply to this message. Welcome aboard!
 
       // Check if it's a Couchsurfing URL
       if (url.includes('couchsurfing.com')) {
-        // Extract organizer name first to find the event section
-        const organizerLink = $('a[href*="/people/"]').filter((i, el) => {
-          return $(el).parent().text().includes('Organized by');
-        }).first();
-        const organizer = organizerLink.text().trim();
-        
-        // Extract event title - find H1 closest to the organizer section
-        let title = '';
-        if (organizerLink.length) {
-          // Get the H1 that appears near the "Organized by" text
-          title = organizerLink.closest('div').parent().find('h1').first().text().trim() ||
-                  organizerLink.parent().parent().find('h1').first().text().trim() ||
-                  organizerLink.parent().parent().parent().find('h1').first().text().trim();
-        }
-        
-        // Fallback: get the last H1 that's not "Related Events"
-        if (!title) {
-          $('h1').each((i, el) => {
-            const text = $(el).text().trim();
-            if (text && text !== 'Related Events') {
-              title = text; // Keep updating to get the last one
+        try {
+          // Extract organizer name first to find the event section
+          const organizerLink = $('a[href*="/people/"]').filter((i, el) => {
+            return $(el).parent().text().includes('Organized by');
+          }).first();
+          const organizer = organizerLink.text().trim() || '';
+          
+          // Extract event title - find H1 closest to the organizer section
+          let title = '';
+          if (organizerLink.length) {
+            // Get the H1 that appears near the "Organized by" text
+            title = organizerLink.closest('div').parent().find('h1').first().text().trim() ||
+                    organizerLink.parent().parent().find('h1').first().text().trim() ||
+                    organizerLink.parent().parent().parent().find('h1').first().text().trim();
+          }
+          
+          // Fallback: get the last H1 that's not "Related Events"
+          if (!title) {
+            $('h1').each((i, el) => {
+              const text = $(el).text().trim();
+              if (text && text !== 'Related Events') {
+                title = text; // Keep updating to get the last one
+              }
+            });
+          }
+          
+          // Verify we got a title (critical field)
+          if (!title) {
+            throw new Error('Could not extract event title from page');
+          }
+          
+          // Extract location - look for address in link
+          const locationLink = $('a[href*="maps.google"]').first();
+          const location = locationLink.attr('href')?.match(/q=([^&]+)/)?.[1];
+          let decodedLocation = location ? decodeURIComponent(location.replace(/\+/g, ' ')) : '';
+          
+          // Parse location into city, state, country
+          const locationParts = decodedLocation.split(',').map(p => p.trim());
+          const city = locationParts[1] || '';
+          const stateZip = locationParts[2] || '';
+          const country = locationParts[3] || '';
+          
+          // Extract state from "State ZIP" format
+          const state = stateZip.split(' ')[0] || '';
+          const zipcode = stateZip.split(' ')[1] || '';
+          
+          // Extract date/time - look specifically near the event location/organizer section
+          let dateStr = '';
+          let timeStr = '';
+          $('div').each((i, el) => {
+            const text = $(el).text();
+            // Look for date pattern like "Nov 06, 2025, 7:30 PM"
+            const match = text.match(/(\w{3}\s+\d{1,2},\s+\d{4}),?\s+(\d{1,2}:\d{2}\s+[AP]M)/);
+            if (match && !dateStr) {
+              dateStr = match[1];
+              timeStr = match[2];
             }
           });
-        }
-        
-        // Extract location - look for address in link
-        const locationLink = $('a[href*="maps.google"]').first();
-        const location = locationLink.attr('href')?.match(/q=([^&]+)/)?.[1];
-        let decodedLocation = location ? decodeURIComponent(location.replace(/\+/g, ' ')) : '';
-        
-        // Parse location into city, state, country
-        const locationParts = decodedLocation.split(',').map(p => p.trim());
-        const city = locationParts[1] || '';
-        const stateZip = locationParts[2] || '';
-        const country = locationParts[3] || '';
-        
-        // Extract state from "State ZIP" format
-        const state = stateZip.split(' ')[0] || '';
-        const zipcode = stateZip.split(' ')[1] || '';
-        
-        // Extract date/time - look specifically near the event location/organizer section
-        let dateStr = '';
-        let timeStr = '';
-        $('div').each((i, el) => {
-          const text = $(el).text();
-          // Look for date pattern like "Nov 06, 2025, 7:30 PM"
-          const match = text.match(/(\w{3}\s+\d{1,2},\s+\d{4}),?\s+(\d{1,2}:\d{2}\s+[AP]M)/);
-          if (match && !dateStr) {
-            dateStr = match[1];
-            timeStr = match[2];
+          
+          // Extract cover image
+          const imageUrl = $('img[src*="amazonaws.com"]').first().attr('src') || 
+                          $('img[src*="tcdn.couchsurfing.com"]').first().attr('src') || '';
+          
+          eventData = {
+            title: title,
+            organizer: organizer,
+            location: decodedLocation,
+            city: city,
+            state: state,
+            country: country,
+            zipcode: zipcode,
+            date: dateStr,
+            time: timeStr,
+            imageUrl: imageUrl,
+            sourceUrl: url,
+            source: 'Couchsurfing'
+          };
+        } catch (parseError: any) {
+          if (process.env.NODE_ENV === 'development') {
+            console.error('🔗 IMPORT: Couchsurfing parse error:', parseError.message);
           }
-        });
-        
-        // Extract cover image
-        const imageUrl = $('img[src*="amazonaws.com"]').first().attr('src') || 
-                        $('img[src*="tcdn.couchsurfing.com"]').first().attr('src');
-        
-        eventData = {
-          title: title || '',
-          organizer: organizer || '',
-          location: decodedLocation,
-          city: city,
-          state: state,
-          country: country,
-          zipcode: zipcode,
-          date: dateStr || '',
-          time: timeStr || '',
-          imageUrl: imageUrl || '',
-          sourceUrl: url,
-          source: 'Couchsurfing'
-        };
+          return res.status(422).json({ 
+            message: `Failed to parse event data: ${parseError.message}. The page structure may have changed.`
+          });
+        }
       }
       // Can add more platforms here (Meetup, Eventbrite, etc.)
       else {
@@ -8198,10 +8250,29 @@ Questions? Just reply to this message. Welcome aboard!
       
       return res.json(eventData);
     } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("Error importing event:", error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('🔗 IMPORT: Error fetching URL:', error.message);
+      }
+      
+      // Handle specific axios errors
+      if (error.code === 'ECONNABORTED') {
+        return res.status(504).json({ 
+          message: 'Request timed out. The event page took too long to load. Please try again.' 
+        });
+      }
+      if (error.response?.status === 404) {
+        return res.status(404).json({ 
+          message: 'Event not found. Please check the URL and try again.' 
+        });
+      }
+      if (error.response?.status === 403 || error.response?.status === 401) {
+        return res.status(403).json({ 
+          message: 'Access denied. This event may be private or require login.' 
+        });
+      }
+      
       return res.status(500).json({ 
-        message: "Failed to import event. Please check the URL and try again.",
-        error: error.message 
+        message: 'Failed to import event. Please verify the URL and try again.' 
       });
     }
   });
