@@ -81,12 +81,9 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
         >
           <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
           {totalNotifications > 0 && (
-            <Badge
-              variant="destructive"
-              className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs"
-            >
+            <div className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs font-semibold bg-red-500 text-white rounded-full">
               {totalNotifications > 9 ? "9+" : totalNotifications}
-            </Badge>
+            </div>
           )}
         </button>
       </DropdownMenuTrigger>
