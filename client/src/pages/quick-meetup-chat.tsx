@@ -29,6 +29,7 @@ interface QuickMeetup {
   title: string;
   description: string;
   meetingPoint: string;
+  street?: string;
   city: string;
   state: string;
   location: string;
@@ -36,6 +37,7 @@ interface QuickMeetup {
   expiresAt: string;
   availableAt: string;
   participantCount: number;
+  organizerNotes?: string;
   creator?: User;
 }
 
@@ -427,19 +429,24 @@ function QuickMeetupChat() {
           {/* Meetup Info Header */}
           <Card className="border-orange-200 dark:border-orange-700">
             <CardHeader className="pb-3">
-              <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle className="text-orange-800 dark:text-orange-200 text-xl">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                <div className="flex-1 min-w-0">
+                  <CardTitle className="text-orange-800 dark:text-orange-200 text-lg sm:text-xl break-words">
                     {meetup.title}
                   </CardTitle>
-                  <div className="flex items-center gap-4 mt-2 text-sm text-gray-600 dark:text-gray-400">
+                  <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2 sm:gap-4 mt-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                     <div className="flex items-center gap-1">
-                      <MapPin className="w-4 h-4" />
-                      <span>{meetup.meetingPoint}</span>
+                      <MapPin className="w-4 h-4 flex-shrink-0" />
+                      <span className="break-words">{meetup.meetingPoint}</span>
                     </div>
+                    {meetup.street && (
+                      <div className="flex items-center gap-1 ml-5 sm:ml-0">
+                        <span className="text-gray-500 dark:text-gray-500 break-words">{meetup.street}</span>
+                      </div>
+                    )}
                     <div className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" />
-                      <span>Available: {new Date(meetup.availableAt).toLocaleString('en-US', { 
+                      <Clock className="w-4 h-4 flex-shrink-0" />
+                      <span className="break-words">Available: {new Date(meetup.availableAt).toLocaleString('en-US', { 
                         weekday: 'short',
                         month: 'short', 
                         day: 'numeric',
@@ -449,12 +456,21 @@ function QuickMeetupChat() {
                       })}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Users className="w-4 h-4" />
+                      <Users className="w-4 h-4 flex-shrink-0" />
                       <span>{participants.length} participants</span>
                     </div>
                   </div>
+                  
+                  {/* Contact Notes - Mobile Responsive */}
+                  {meetup.organizerNotes && (
+                    <div className="mt-3 bg-blue-50 dark:bg-blue-900/20 p-3 rounded-md border border-blue-200 dark:border-blue-800" data-testid="organizer-notes">
+                      <p className="text-sm sm:text-base text-blue-800 dark:text-blue-300 font-medium break-words">
+                        📞 Contact Info: {meetup.organizerNotes}
+                      </p>
+                    </div>
+                  )}
                 </div>
-                <Badge variant="outline" className="bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400">
+                <Badge variant="outline" className="bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 self-start whitespace-nowrap">
                   {formatTimeRemaining(meetup.expiresAt)}
                 </Badge>
               </div>
