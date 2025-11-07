@@ -550,14 +550,14 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
             }}
             className="space-y-6"
           >
-            {/* Import from Meetup */}
+            {/* Import from URL - Couchsurfing, Meetup, etc. */}
             <Card className="border-2 border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/20">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2 text-purple-800 dark:text-purple-200">
-                  🚀 Quick Import from Meetup
+                  🚀 Quick Import from URL
                 </CardTitle>
                 <p className="text-sm text-purple-700 dark:text-purple-300">
-                  Paste a Meetup.com event URL to auto-fill the form in seconds!
+                  Paste a Couchsurfing or Meetup event URL to auto-fill the form in seconds!
                 </p>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -565,7 +565,7 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                   <Input
                     value={eventUrl}
                     onChange={(e) => setEventUrl(e.target.value)}
-                    placeholder="https://www.meetup.com/..."
+                    placeholder="https://www.couchsurfing.com/events/... or https://www.meetup.com/..."
                     className="flex-1 bg-white dark:bg-gray-800"
                     data-testid="input-event-url"
                   />
@@ -575,17 +575,17 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                       if (!eventUrl.trim()) {
                         toast({
                           title: "Missing URL",
-                          description: "Please paste a Meetup.com event URL",
+                          description: "Please paste a Couchsurfing or Meetup event URL",
                           variant: "destructive"
                         });
                         return;
                       }
                       
-                      // Check if it's a Meetup URL
-                      if (!eventUrl.includes('meetup.com')) {
+                      // Check if it's a supported URL
+                      if (!eventUrl.includes('meetup.com') && !eventUrl.includes('couchsurfing.com')) {
                         toast({
                           title: "Invalid URL",
-                          description: "Please paste a Meetup.com event URL",
+                          description: "Please paste a Couchsurfing or Meetup event URL",
                           variant: "destructive"
                         });
                         return;
@@ -593,9 +593,14 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                       
                       setIsImportingEvent(true);
                       try {
-                        const response = await fetch(`/api/scrape-meetup?url=${encodeURIComponent(eventUrl)}`);
+                        const response = await apiRequest({
+                          method: 'POST',
+                          url: '/api/events/import-url',
+                          data: { url: eventUrl }
+                        });
+                        
                         if (!response.ok) {
-                          throw new Error("Failed to fetch Meetup event");
+                          throw new Error("Failed to import event");
                         }
                         const eventData = await response.json();
                         
@@ -603,13 +608,35 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                         if (eventData.title) setValue("title", eventData.title);
                         if (eventData.description) setValue("description", eventData.description);
                         if (eventData.venueName) setValue("venueName", eventData.venueName);
-                        if (eventData.street) setValue("street", eventData.street);
+                        
+                        // Handle location - Couchsurfing returns parsed location
+                        if (eventData.location) {
+                          // Parse full location string for street address
+                          const addressParts = eventData.location.split(',').map((p: string) => p.trim());
+                          if (addressParts.length > 0) setValue("street", addressParts[0]);
+                        } else if (eventData.street) {
+                          setValue("street", eventData.street);
+                        }
+                        
                         if (eventData.city) setValue("city", eventData.city);
                         if (eventData.state) setValue("state", eventData.state);
                         if (eventData.country) setValue("country", eventData.country);
                         if (eventData.zipcode) setValue("zipcode", eventData.zipcode);
-                        if (eventData.date) setValue("date", eventData.date);
-                        if (eventData.startTime) setValue("startTime", eventData.startTime);
+                        
+                        // Handle date/time - Couchsurfing might have different format
+                        if (eventData.date) {
+                          // Try to parse the date and convert to YYYY-MM-DD format
+                          try {
+                            const parsedDate = new Date(eventData.date);
+                            if (!isNaN(parsedDate.getTime())) {
+                              const formattedDate = parsedDate.toISOString().split('T')[0];
+                              setValue("date", formattedDate);
+                            }
+                          } catch (e) {
+                            setValue("date", eventData.date);
+                          }
+                        }
+                        if (eventData.time || eventData.startTime) setValue("startTime", eventData.time || eventData.startTime);
                         if (eventData.endDate) setValue("endDate", eventData.endDate);
                         if (eventData.endTime) setValue("endTime", eventData.endTime);
                         if (eventData.maxParticipants) setValue("maxParticipants", eventData.maxParticipants);
@@ -619,13 +646,14 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                         if (eventData.state) setSelectedState(eventData.state);
                         
                         // Mark as imported and track platform
+                        const sourcePlatform = eventData.source || (eventUrl.includes('couchsurfing') ? 'Couchsurfing' : 'Meetup');
                         setImportedFromUrl(true);
-                        setImportedPlatform('Meetup');
+                        setImportedPlatform(sourcePlatform);
                         setIsOriginalOrganizer(null); // Reset to require user confirmation
                         
                         toast({
                           title: "✨ Event imported!",
-                          description: "Successfully imported from Meetup. Please confirm if you are the original organizer.",
+                          description: `Successfully imported from ${sourcePlatform}. Please confirm if you are the original organizer.`,
                         });
                       } catch (error) {
                         toast({
@@ -645,7 +673,7 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                   </Button>
                 </div>
                 <p className="text-xs text-purple-600 dark:text-purple-400">
-                  💡 Tip: This works with any public Meetup event. Just paste the URL and click Import!
+                  💡 Tip: Works with Couchsurfing and Meetup events! Just paste the URL and click Import to auto-fill all fields.
                 </p>
               </CardContent>
             </Card>

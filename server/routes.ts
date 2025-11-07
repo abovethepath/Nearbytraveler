@@ -27,6 +27,8 @@ import QRCode from "qrcode";
 import { detectMetroArea, getMetroAreaName } from '../shared/metro-areas';
 import { getMetroArea } from '../shared/constants';
 import { setupAuth } from "./replitAuth";
+import axios from "axios";
+import * as cheerio from "cheerio";
 
 import { 
   secretLocalExperienceLikes, 
@@ -8102,9 +8104,6 @@ Questions? Just reply to this message. Welcome aboard!
       if (process.env.NODE_ENV === 'development') console.log(`🔗 IMPORT: Fetching event from ${url}`);
 
       // Fetch the URL
-      const axios = require('axios');
-      const cheerio = require('cheerio');
-      
       const response = await axios.get(url, {
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
@@ -8116,28 +8115,58 @@ Questions? Just reply to this message. Welcome aboard!
 
       // Check if it's a Couchsurfing URL
       if (url.includes('couchsurfing.com')) {
-        // Extract event title
-        const title = $('h1').first().text().trim();
-        
-        // Extract organizer name
-        const organizerLink = $('a[href*="/people/"]').first();
+        // Extract organizer name first to find the event section
+        const organizerLink = $('a[href*="/people/"]').filter((i, el) => {
+          return $(el).parent().text().includes('Organized by');
+        }).first();
         const organizer = organizerLink.text().trim();
+        
+        // Extract event title - find H1 closest to the organizer section
+        let title = '';
+        if (organizerLink.length) {
+          // Get the H1 that appears near the "Organized by" text
+          title = organizerLink.closest('div').parent().find('h1').first().text().trim() ||
+                  organizerLink.parent().parent().find('h1').first().text().trim() ||
+                  organizerLink.parent().parent().parent().find('h1').first().text().trim();
+        }
+        
+        // Fallback: get the last H1 that's not "Related Events"
+        if (!title) {
+          $('h1').each((i, el) => {
+            const text = $(el).text().trim();
+            if (text && text !== 'Related Events') {
+              title = text; // Keep updating to get the last one
+            }
+          });
+        }
         
         // Extract location - look for address in link
         const locationLink = $('a[href*="maps.google"]').first();
         const location = locationLink.attr('href')?.match(/q=([^&]+)/)?.[1];
-        const decodedLocation = location ? decodeURIComponent(location) : '';
+        let decodedLocation = location ? decodeURIComponent(location.replace(/\+/g, ' ')) : '';
         
         // Parse location into city, state, country
         const locationParts = decodedLocation.split(',').map(p => p.trim());
-        const city = locationParts[1] || locationParts[0] || '';
-        const state = locationParts[2] || '';
-        const country = locationParts[3] || locationParts[2] || '';
+        const city = locationParts[1] || '';
+        const stateZip = locationParts[2] || '';
+        const country = locationParts[3] || '';
         
-        // Extract date/time from text
-        const dateText = $('div:contains("PST"), div:contains("EST"), div:contains("CST"), div:contains("MST")').first().text();
-        const dateMatch = dateText.match(/(\w{3}\s+\d{1,2},\s+\d{4},\s+\d{1,2}:\d{2}\s+[AP]M)/);
-        const timeMatch = dateText.match(/(\d{1,2}:\d{2}\s+[AP]M)/);
+        // Extract state from "State ZIP" format
+        const state = stateZip.split(' ')[0] || '';
+        const zipcode = stateZip.split(' ')[1] || '';
+        
+        // Extract date/time - look specifically near the event location/organizer section
+        let dateStr = '';
+        let timeStr = '';
+        $('div').each((i, el) => {
+          const text = $(el).text();
+          // Look for date pattern like "Nov 06, 2025, 7:30 PM"
+          const match = text.match(/(\w{3}\s+\d{1,2},\s+\d{4}),?\s+(\d{1,2}:\d{2}\s+[AP]M)/);
+          if (match && !dateStr) {
+            dateStr = match[1];
+            timeStr = match[2];
+          }
+        });
         
         // Extract cover image
         const imageUrl = $('img[src*="amazonaws.com"]').first().attr('src') || 
@@ -8150,8 +8179,9 @@ Questions? Just reply to this message. Welcome aboard!
           city: city,
           state: state,
           country: country,
-          date: dateMatch ? dateMatch[1] : '',
-          time: timeMatch ? timeMatch[1] : '',
+          zipcode: zipcode,
+          date: dateStr || '',
+          time: timeStr || '',
           imageUrl: imageUrl || '',
           sourceUrl: url,
           source: 'Couchsurfing'
