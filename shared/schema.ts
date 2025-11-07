@@ -427,6 +427,7 @@ export const events = pgTable("events", {
   importedPlatform: text("imported_platform"), // 'Meetup', 'Eventbrite', or null if created manually
   isOriginalOrganizer: boolean("is_original_organizer").default(true), // True if user is the original creator, false if just sharing
   sharedBy: integer("shared_by"), // User ID who shared/imported this event (null if original creator)
+  externalOrganizerName: text("external_organizer_name"), // Name of the organizer from external platform (e.g., "Dan Cullen" from Couchsurfing)
   attendeeCount: integer("attendee_count"), // Number of attendees from source platform (for imported events)
   
   createdAt: timestamp("created_at").defaultNow(),

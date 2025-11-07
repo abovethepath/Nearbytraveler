@@ -85,6 +85,7 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
   const [importedFromUrl, setImportedFromUrl] = useState(false);
   const [isOriginalOrganizer, setIsOriginalOrganizer] = useState<boolean | null>(null);
   const [importedPlatform, setImportedPlatform] = useState("");
+  const [externalOrganizerName, setExternalOrganizerName] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
@@ -487,6 +488,7 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
         importedFromUrl: importedFromUrl,
         importedPlatform: importedFromUrl ? importedPlatform : null,
         isOriginalOrganizer: importedFromUrl ? (isOriginalOrganizer === true) : true,
+        externalOrganizerName: (importedFromUrl && externalOrganizerName) ? externalOrganizerName : null,
       };
 
       await createEventMutation.mutateAsync(eventData);
@@ -700,10 +702,11 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                         
                         console.log('✅ Import complete - check form fields above');
                         
-                        // Mark as imported and track platform
+                        // Mark as imported and track platform AND organizer
                         const sourcePlatform = eventData.source || (eventUrl.includes('couchsurfing') ? 'Couchsurfing' : 'Meetup');
                         setImportedFromUrl(true);
                         setImportedPlatform(sourcePlatform);
+                        setExternalOrganizerName(eventData.organizer || ''); // Store external organizer name (e.g., "Dan Cullen")
                         setIsOriginalOrganizer(null); // Reset to require user confirmation
                         
                         toast({

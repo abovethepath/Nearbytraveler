@@ -363,12 +363,25 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                 <div className="flex items-center gap-3">
                   <User className="w-5 h-5 text-travel-blue" />
                   <div>
-                    <p className="font-medium">
-                      {event.isOriginalOrganizer === false || event.sharedBy ? 'Shared by' : 'Organized by'}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {organizer?.username || 'Unknown'}
-                    </p>
+                    {event.externalOrganizerName && (event.isOriginalOrganizer === false || event.sharedBy) ? (
+                      // Imported event - show external organizer AND who shared it
+                      <>
+                        <p className="font-medium">Event by {event.externalOrganizerName}</p>
+                        <p className="text-sm text-gray-500">
+                          Shared by {organizer?.username || 'Unknown'}
+                        </p>
+                      </>
+                    ) : (
+                      // Regular event - show organizer
+                      <>
+                        <p className="font-medium">
+                          {event.isOriginalOrganizer === false || event.sharedBy ? 'Shared by' : 'Organized by'}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {organizer?.username || 'Unknown'}
+                        </p>
+                      </>
+                    )}
                   </div>
                 </div>
 

@@ -8694,6 +8694,7 @@ Questions? Just reply to this message. Welcome aboard!
       if (body.isOriginalOrganizer !== undefined) cleanEventData.isOriginalOrganizer = body.isOriginalOrganizer;
       if (body.importedFromUrl) cleanEventData.importedFromUrl = body.importedFromUrl;
       if (body.importedPlatform) cleanEventData.importedPlatform = body.importedPlatform;
+      if (body.externalOrganizerName) cleanEventData.externalOrganizerName = body.externalOrganizerName;
       
       // Handle attendee count - guard against NaN
       if (body.attendeeCount !== undefined && body.attendeeCount !== null) {
