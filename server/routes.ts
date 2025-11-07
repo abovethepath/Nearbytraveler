@@ -8269,16 +8269,31 @@ Questions? Just reply to this message. Welcome aboard!
           
           // Extract times - try DOM first (more reliable), then JSON-LD as fallback
           let startDate = '';
+          let endDate = '';
           let startTime = '';
           let endTime = '';
           let foundTimeInDOM = false; // Track if we found time from DOM
           
           // First, try to get times from DOM (more reliable than JSON-LD for Couchsurfing)
           $('*').each((i, el) => {
-            if (startDate && startTime && endTime) return false;
+            if (startDate && startTime && endTime && endDate) return false;
             const text = $(el).text();
             
-            // First try: Match time range like "7:45 PM to 11:45 PM"
+            // First try: Match FULL date-time range like "Dec 28, 2025, 12:00 PM — Jan 02, 2026, 12:00 PM (PST)"
+            // This captures both dates AND times for multi-day events
+            if (!startDate || !endDate || !startTime || !endTime) {
+              const fullRangeMatch = text.match(/(\w{3}\s+\d{1,2},\s+\d{4}),\s+(\d{1,2}:\d{2}\s+[AP]M)\s+—\s+(\w{3}\s+\d{1,2},\s+\d{4}),\s+(\d{1,2}:\d{2}\s+[AP]M)/i);
+              if (fullRangeMatch) {
+                startDate = fullRangeMatch[1]; // "Dec 28, 2025"
+                startTime = fullRangeMatch[2]; // "12:00 PM"
+                endDate = fullRangeMatch[3];   // "Jan 02, 2026"
+                endTime = fullRangeMatch[4];   // "12:00 PM"
+                foundTimeInDOM = true;
+                if (process.env.NODE_ENV === 'development') console.log('⏰ DOM found full date-time range:', {startDate, startTime, endDate, endTime}, 'from:', text.substring(0, 150));
+              }
+            }
+            
+            // Second try: Match time range like "7:45 PM to 11:45 PM"
             if (!startTime || !endTime) {
               const timeRangeMatch = text.match(/(\d{1,2}:\d{2}\s+[AP]M)\s+(?:to|—)\s+(\d{1,2}:\d{2}\s+[AP]M)/i);
               if (timeRangeMatch) {
@@ -8289,7 +8304,7 @@ Questions? Just reply to this message. Welcome aboard!
               }
             }
             
-            // Second try: Match single time like "12:00 PM" (for events without end times)
+            // Third try: Match single time like "12:00 PM" (for events without end times)
             if (!startTime) {
               const singleTimeMatch = text.match(/(?:at |, )(\d{1,2}:\d{2}\s+[AP]M)/i);
               if (singleTimeMatch) {
@@ -8379,10 +8394,9 @@ Questions? Just reply to this message. Welcome aboard!
             description = '';
           }
           
-          // Extract end date from description for multi-day events
+          // Extract end date from description for multi-day events (FALLBACK if not found in DOM)
           // Look for patterns like "December 28th, to Friday, January 2nd"
-          let endDate = '';
-          if (description) {
+          if (!endDate && description) {
             const dateRangeMatch = description.match(/(\w+\s+\d{1,2}(?:st|nd|rd|th)?)[,\s]+to\s+(?:\w+,?\s+)?(\w+\s+\d{1,2}(?:st|nd|rd|th)?)/i);
             if (dateRangeMatch) {
               const startDateText = dateRangeMatch[1].replace(/(st|nd|rd|th)/gi, '');
@@ -8404,7 +8418,7 @@ Questions? Just reply to this message. Welcome aboard!
               }
               
               endDate = `${endDateText}, ${year}`;
-              if (process.env.NODE_ENV === 'development') console.log('📅 Found multi-day event end date:', endDate, 'from description');
+              if (process.env.NODE_ENV === 'development') console.log('📅 Found multi-day event end date:', endDate, 'from description (fallback)');
             }
           }
           
