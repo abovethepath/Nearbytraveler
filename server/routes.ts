@@ -8379,6 +8379,35 @@ Questions? Just reply to this message. Welcome aboard!
             description = '';
           }
           
+          // Extract end date from description for multi-day events
+          // Look for patterns like "December 28th, to Friday, January 2nd"
+          let endDate = '';
+          if (description) {
+            const dateRangeMatch = description.match(/(\w+\s+\d{1,2}(?:st|nd|rd|th)?)[,\s]+to\s+(?:\w+,?\s+)?(\w+\s+\d{1,2}(?:st|nd|rd|th)?)/i);
+            if (dateRangeMatch) {
+              const startDateText = dateRangeMatch[1].replace(/(st|nd|rd|th)/gi, '');
+              const endDateText = dateRangeMatch[2].replace(/(st|nd|rd|th)/gi, '');
+              
+              // Get year from URL or use current year
+              const yearMatch = url.match(/-(\d{4})-/);
+              let year = yearMatch ? parseInt(yearMatch[1]) : new Date().getFullYear();
+              
+              // Check if end month comes before start month (crosses New Year)
+              const months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
+              const startMonth = months.indexOf(startDateText.split(' ')[0].toLowerCase());
+              const endMonth = months.indexOf(endDateText.split(' ')[0].toLowerCase());
+              
+              // If end month < start month, event crosses into next year
+              if (endMonth >= 0 && startMonth >= 0 && endMonth < startMonth) {
+                year = year + 1;
+                if (process.env.NODE_ENV === 'development') console.log('📅 Detected year rollover - incrementing year to', year);
+              }
+              
+              endDate = `${endDateText}, ${year}`;
+              if (process.env.NODE_ENV === 'development') console.log('📅 Found multi-day event end date:', endDate, 'from description');
+            }
+          }
+          
           eventData = {
             title: title,
             organizer: organizer,
@@ -8391,6 +8420,7 @@ Questions? Just reply to this message. Welcome aboard!
             country: country,
             zipcode: zipcode,
             date: startDate,
+            endDate: endDate, // Multi-day event end date (if found)
             startTime: startTime,
             endTime: endTime,
             imageUrl: imageUrl,

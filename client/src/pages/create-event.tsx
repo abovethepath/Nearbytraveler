@@ -632,13 +632,22 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                               setValue("date", formattedDate);
                               console.log('📅 Set date:', formattedDate, 'from', eventData.date);
                               
-                              // Uncheck "Same day event" checkbox to show end date field
-                              setValue("isSameDay", false);
-                              console.log('✅ Unchecked isSameDay to show end date field');
-                              
-                              // Auto-fill end date to same date for same-day events
-                              setValue("endDate", formattedDate);
-                              console.log('📅 Set end date:', formattedDate, '(same-day event)');
+                              // Handle end date for multi-day events
+                              if (eventData.endDate) {
+                                // Multi-day event - use provided end date
+                                const parsedEndDate = new Date(eventData.endDate);
+                                if (!isNaN(parsedEndDate.getTime())) {
+                                  const formattedEndDate = parsedEndDate.toISOString().split('T')[0];
+                                  setValue("isSameDay", false);
+                                  setValue("endDate", formattedEndDate);
+                                  console.log('📅 Set end date:', formattedEndDate, 'from', eventData.endDate, '(multi-day event)');
+                                }
+                              } else {
+                                // Same-day event - use same date for both start and end
+                                setValue("isSameDay", false);
+                                setValue("endDate", formattedDate);
+                                console.log('📅 Set end date:', formattedDate, '(same-day event)');
+                              }
                             }
                           } catch (e) {
                             console.error('Date parse error:', e);
