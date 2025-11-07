@@ -724,7 +724,7 @@ export class DatabaseStorage implements IStorage {
     if (hometownCity) {
       // Hometown Chatroom - SINGLE CHATROOM PER CITY
       await this.ensureAndJoinChatroom(user, {
-        name: `Let's Meet Up in ${hometownCity}`,
+        name: `Welcome to ${hometownCity}`,
         city: hometownCity || 'Unknown',
         state: hometownState,
         country: hometownCountry || 'United States',
@@ -746,7 +746,7 @@ export class DatabaseStorage implements IStorage {
       
       // Destination Chatroom - SINGLE CHATROOM PER CITY
       await this.ensureAndJoinChatroom(user, {
-        name: `Let's Meet Up in ${destinationCity}`,
+        name: `Welcome to ${destinationCity}`,
         city: destinationCity || 'Unknown',
         state: destinationState,
         country: destinationCountry || 'United States',

@@ -223,6 +223,13 @@ export default function SignupLocal() {
 
       console.log('✅ VALIDATION PASSED - Proceeding with local registration');
 
+      // Show loading message
+      toast({
+        title: "Creating your account...",
+        description: "This may take 10-15 seconds. Please wait.",
+        variant: "default",
+      });
+
       try {
         console.log('🚀 Starting local registration with data:', registrationData);
         

@@ -245,6 +245,13 @@ export default function SignupTraveling() {
 
       console.log('✅ VALIDATION PASSED - Proceeding with traveler registration');
 
+      // Show loading message
+      toast({
+        title: "Creating your account...",
+        description: "This may take 10-15 seconds. Please wait.",
+        variant: "default",
+      });
+
       try {
         console.log('🚀 Starting traveler registration with data:', registrationData);
         
