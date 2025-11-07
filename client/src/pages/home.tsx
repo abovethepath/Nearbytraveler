@@ -38,7 +38,7 @@ import SmartLocationInput from "@/components/SmartLocationInput";
 import AICityEventsWidget from "@/components/ai-city-events";
 import TravelMatches from "@/components/travel-matches";
 // Hero media - supports both images (.jpg, .png, .webp) and videos (.mp4, .webm)
-const staticHeroMedia = "/travelers_1756778615408.jpg";
+const staticHeroMedia = "/hero-video.mp4";
 
 // Detect if the media is a video based on file extension
 const isVideoMedia = staticHeroMedia.match(/\.(mp4|webm|ogg)$/i);
