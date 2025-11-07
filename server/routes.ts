@@ -8154,30 +8154,33 @@ Questions? Just reply to this message. Welcome aboard!
       // Check if it's a Couchsurfing URL
       if (url.includes('couchsurfing.com')) {
         try {
-          // Extract organizer name first to find the event section
-          const organizerLink = $('a[href*="/people/"]').filter((i, el) => {
-            return $(el).parent().text().includes('Organized by');
-          }).first();
-          const organizer = organizerLink.text().trim() || '';
-          
-          // Extract event title - find H1 closest to the organizer section
-          let title = '';
-          if (organizerLink.length) {
-            // Get the H1 that appears near the "Organized by" text
-            title = organizerLink.closest('div').parent().find('h1').first().text().trim() ||
-                    organizerLink.parent().parent().find('h1').first().text().trim() ||
-                    organizerLink.parent().parent().parent().find('h1').first().text().trim();
-          }
-          
-          // Fallback: get the last H1 that's not "Related Events"
-          if (!title) {
-            $('h1').each((i, el) => {
-              const text = $(el).text().trim();
-              if (text && text !== 'Related Events') {
-                title = text; // Keep updating to get the last one
+          // Extract organizer name - look for "Organized by" text pattern
+          let organizer = '';
+          $('*').each((i, el) => {
+            const text = $(el).text();
+            if (text.includes('Organized by')) {
+              // Find the next link after "Organized by"
+              const orgLink = $(el).find('a[href*="/people/"]').first();
+              if (orgLink.length) {
+                organizer = orgLink.text().trim();
+                return false; // break
               }
-            });
+            }
+          });
+          
+          // Fallback: just get any people link
+          if (!organizer) {
+            organizer = $('a[href*="/people/"]').first().text().trim() || '';
           }
+          
+          // Extract event title - get the last H1 that's not "Related Events"
+          let title = '';
+          $('h1').each((i, el) => {
+            const text = $(el).text().trim();
+            if (text && text !== 'Related Events') {
+              title = text; // Keep updating to get the last one
+            }
+          });
           
           // Verify we got a title (critical field)
           if (!title) {

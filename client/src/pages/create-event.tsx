@@ -602,10 +602,13 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                         }
                         const eventData = await response.json();
                         
+                        console.log('📥 Imported event data:', eventData);
+                        
                         // Auto-fill the form with scraped data
                         if (eventData.title) setValue("title", eventData.title);
                         if (eventData.description) setValue("description", eventData.description);
                         if (eventData.venueName) setValue("venueName", eventData.venueName);
+                        if (eventData.organizer) setValue("venueName", eventData.organizer); // Use organizer name as venue for now
                         
                         // Handle location - Couchsurfing returns parsed location
                         if (eventData.location) {
@@ -629,19 +632,33 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                             if (!isNaN(parsedDate.getTime())) {
                               const formattedDate = parsedDate.toISOString().split('T')[0];
                               setValue("date", formattedDate);
+                              console.log('📅 Set date:', formattedDate, 'from', eventData.date);
                             }
                           } catch (e) {
+                            console.error('Date parse error:', e);
                             setValue("date", eventData.date);
                           }
                         }
-                        if (eventData.time || eventData.startTime) setValue("startTime", eventData.time || eventData.startTime);
+                        if (eventData.time || eventData.startTime) {
+                          setValue("startTime", eventData.time || eventData.startTime);
+                          console.log('⏰ Set time:', eventData.time || eventData.startTime);
+                        }
                         if (eventData.endDate) setValue("endDate", eventData.endDate);
                         if (eventData.endTime) setValue("endTime", eventData.endTime);
                         if (eventData.maxParticipants) setValue("maxParticipants", eventData.maxParticipants);
                         
+                        // Handle image URL
+                        if (eventData.imageUrl) {
+                          setValue("imageUrl", eventData.imageUrl);
+                          setImagePreview(eventData.imageUrl);
+                          console.log('🖼️ Set image:', eventData.imageUrl);
+                        }
+                        
                         // Update location state
                         if (eventData.country) setSelectedCountry(eventData.country);
                         if (eventData.state) setSelectedState(eventData.state);
+                        
+                        console.log('✅ Import complete - check form fields above');
                         
                         // Mark as imported and track platform
                         const sourcePlatform = eventData.source || (eventUrl.includes('couchsurfing') ? 'Couchsurfing' : 'Meetup');
