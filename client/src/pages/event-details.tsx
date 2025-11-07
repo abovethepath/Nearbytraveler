@@ -363,7 +363,9 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                 <div className="flex items-center gap-3">
                   <User className="w-5 h-5 text-travel-blue" />
                   <div>
-                    <p className="font-medium">Organized by</p>
+                    <p className="font-medium">
+                      {event.isOriginalOrganizer === false || event.sharedBy ? 'Shared by' : 'Organized by'}
+                    </p>
                     <p className="text-sm text-gray-500">
                       {organizer?.username || 'Unknown'}
                     </p>

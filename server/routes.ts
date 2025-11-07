@@ -8674,6 +8674,26 @@ Questions? Just reply to this message. Welcome aboard!
       cleanEventData.isPublic = eventData.isPublic !== false;
       cleanEventData.isRecurring = eventData.isRecurring || false;
       
+      // Import attribution fields
+      if (body.isOriginalOrganizer !== undefined) cleanEventData.isOriginalOrganizer = body.isOriginalOrganizer;
+      if (body.importedFromUrl) cleanEventData.importedFromUrl = body.importedFromUrl;
+      if (body.importedPlatform) cleanEventData.importedPlatform = body.importedPlatform;
+      
+      // Handle attendee count - guard against NaN
+      if (body.attendeeCount !== undefined && body.attendeeCount !== null) {
+        const count = parseInt(body.attendeeCount);
+        if (!isNaN(count) && count >= 0) {
+          cleanEventData.attendeeCount = count;
+        }
+      }
+      
+      // CRITICAL: If user indicated they didn't create the event, record WHO SHARED IT
+      // sharedBy should be the CURRENT USER (importer), not the external organizer
+      if (body.isOriginalOrganizer === false) {
+        cleanEventData.sharedBy = eventData.organizerId; // The logged-in user who is importing/sharing
+        // Note: organizerId here still refers to the current user creating the event entry
+      }
+      
       // Recurring fields - only add if recurring is true
       if (eventData.isRecurring) {
         if (eventData.recurrenceType) cleanEventData.recurrenceType = eventData.recurrenceType;
@@ -9189,28 +9209,32 @@ Questions? Just reply to this message. Welcome aboard!
       
       if (process.env.NODE_ENV === 'development') console.log(`🎪 PROFILE EVENTS: Getting all events for user ${userId}`);
 
-      // Get all events that the user is attending (from event_participants table)
+      // Get all events that the user is attending, organizing, or sharing (imported)
       const userEvents = await db.execute(sql`
-        SELECT 
+        SELECT DISTINCT
           e.id,
           e.title,
           e.description,
           e.location,
           e.date,
-          e.end_date,
-          e.image_url,
-          e.cost_estimate,
-          e.is_spontaneous,
-          e.is_recurring,
-          e.organizer_id,
+          e.end_date AS "endDate",
+          e.image_url AS "imageUrl",
+          e.cost_estimate AS "costEstimate",
+          e.is_spontaneous AS "isSpontaneous",
+          e.is_recurring AS "isRecurring",
+          e.organizer_id AS "organizerId",
           e.category,
           e.tags,
-          COALESCE(e.is_ai_generated, false) as is_ai_generated,
-          ep.user_id as userId,
-          ep.event_id as eventId
+          COALESCE(e.is_ai_generated, false) AS "isAiGenerated",
+          e.shared_by AS "sharedBy",
+          e.is_original_organizer AS "isOriginalOrganizer",
+          e.attendee_count AS "attendeeCount"
         FROM events e 
-        JOIN event_participants ep ON e.id = ep.event_id
-        WHERE ep.user_id = ${userId}
+        WHERE e.id IN (
+          SELECT ep.event_id FROM event_participants ep WHERE ep.user_id = ${userId}
+        )
+        OR e.organizer_id = ${userId}
+        OR e.shared_by = ${userId}
         ORDER BY e.date ASC
       `);
 
