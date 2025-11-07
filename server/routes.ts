@@ -8394,6 +8394,29 @@ Questions? Just reply to this message. Welcome aboard!
             description = '';
           }
           
+          // Extract attendee/participant count
+          let attendeeCount = 0;
+          $('*').each((i, el) => {
+            if (attendeeCount > 0) return false; // Already found
+            const text = $(el).text();
+            // Look for patterns like "20 attending", "20 Going", "20 people going", "Attendees: 20"
+            const attendeeMatch = text.match(/(\d+)\s+(?:attending|going|people\s+going|attendees?)/i) || 
+                                 text.match(/(?:attendees?|going):\s*(\d+)/i);
+            if (attendeeMatch) {
+              attendeeCount = parseInt(attendeeMatch[1]);
+              if (process.env.NODE_ENV === 'development') console.log('👥 Found attendee count:', attendeeCount, 'from:', text.substring(0, 100));
+            }
+          });
+          
+          // Fallback: check JSON-LD for maxAttendees or performer count
+          if (attendeeCount === 0 && jsonLdData?.attendee) {
+            if (Array.isArray(jsonLdData.attendee)) {
+              attendeeCount = jsonLdData.attendee.length;
+            } else if (typeof jsonLdData.attendee === 'number') {
+              attendeeCount = jsonLdData.attendee;
+            }
+          }
+          
           // Extract end date from description for multi-day events (FALLBACK if not found in DOM)
           // Look for patterns like "December 28th, to Friday, January 2nd"
           if (!endDate && description) {
@@ -8438,6 +8461,7 @@ Questions? Just reply to this message. Welcome aboard!
             startTime: startTime,
             endTime: endTime,
             imageUrl: imageUrl,
+            attendeeCount: attendeeCount, // Participant count from source platform
             sourceUrl: url,
             source: 'Couchsurfing'
           };
