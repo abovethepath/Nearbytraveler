@@ -8287,12 +8287,23 @@ Questions? Just reply to this message. Welcome aboard!
               }
             }
             
-            // Second try: Match full date like "Tue Nov 12 2025" or "Nov 12, 2025"
+            // Second try: Match full date like "Tue Nov 11" or "Nov 12, 2025"
             if (!startDate) {
-              const dateMatch = text.match(/(?:\w{3}\s+)?(\w{3}\s+\d{1,2}(?:,)?\s+\d{4})/i);
+              // Try with year first
+              let dateMatch = text.match(/(?:\w{3}\s+)?(\w{3}\s+\d{1,2}(?:,)?\s+\d{4})/i);
               if (dateMatch) {
                 startDate = dateMatch[1].replace(',', '');
-                if (process.env.NODE_ENV === 'development') console.log('⏰ DOM found date:', startDate);
+                if (process.env.NODE_ENV === 'development') console.log('⏰ DOM found date with year:', startDate);
+              } else {
+                // Try without year (like "Tue Nov 11 from...")
+                dateMatch = text.match(/(\w{3}\s+\w{3}\s+\d{1,2})\s+(?:from|at)/i);
+                if (dateMatch) {
+                  // Add the current or next year based on URL
+                  const yearMatch = url.match(/-(\d{4})-/);
+                  const year = yearMatch ? yearMatch[1] : new Date().getFullYear().toString();
+                  startDate = `${dateMatch[1].split(' ').slice(1).join(' ')} ${year}`; // "Nov 11 2025"
+                  if (process.env.NODE_ENV === 'development') console.log('⏰ DOM found date without year:', startDate, 'from:', text.substring(0, 50));
+                }
               }
             }
             
