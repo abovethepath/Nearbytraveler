@@ -23,7 +23,6 @@ export default function LandingStreamlined() {
   const heroVideos = [
     { src: "/hero-video-1.mp4", duration: 15000 }, // 15 seconds
     { src: "/hero-video-2.mp4", duration: 15000 }, // 15 seconds
-    { src: "/hero-video-3.mp4", duration: 10000 }, // 10 seconds
     { src: "/hero-video-4.mp4", duration: 15000 }, // 15 seconds
     { src: "/hero-video-5.mp4", duration: 10000 }  // 10 seconds
   ];
