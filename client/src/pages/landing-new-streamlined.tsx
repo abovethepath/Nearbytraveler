@@ -164,7 +164,7 @@ export default function LandingStreamlined() {
               <div className="flex flex-col items-center justify-center text-center min-h-[500px] sm:min-h-[600px]">
                 
                 {/* Rotating Quote */}
-                <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white italic mb-8 sm:mb-10 leading-snug transition-opacity duration-500 drop-shadow-lg">
+                <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-orange-400 italic mb-8 sm:mb-10 leading-snug transition-opacity duration-500 drop-shadow-lg">
                   {taglines[currentTagline].line1}<br />
                   {taglines[currentTagline].line2}
                 </p>
