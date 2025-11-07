@@ -8314,7 +8314,23 @@ Questions? Just reply to this message. Welcome aboard!
               }
             }
             
-            // Third try: Match full date like "Tue Nov 11" or "Nov 12, 2025"
+            // Third try: Match Couchsurfing-specific format like "Fri Nov 7 from  8:00 PM to 11:30 PM (PST)"
+            if (!startDate || !startTime || !endTime) {
+              const csFormatMatch = text.match(/(\w{3})\s+(\w{3})\s+(\d{1,2})\s+from\s+(\d{1,2}:\d{2}\s+[AP]M)\s+to\s+(\d{1,2}:\d{2}\s+[AP]M)/i);
+              if (csFormatMatch) {
+                const month = csFormatMatch[2];
+                const day = csFormatMatch[3];
+                const yearFromUrl = url.match(/-(\d{4})-/);
+                const year = yearFromUrl ? yearFromUrl[1] : new Date().getFullYear().toString();
+                startDate = `${month} ${day} ${year}`;
+                startTime = csFormatMatch[4];
+                endTime = csFormatMatch[5];
+                foundTimeInDOM = true;
+                if (process.env.NODE_ENV === 'development') console.log('⏰ DOM found CS format:', {startDate, startTime, endTime}, 'from:', text.substring(0, 100));
+              }
+            }
+            
+            // Fourth try: Match full date like "Tue Nov 11" or "Nov 12, 2025"
             if (!startDate) {
               // Try with year first
               let dateMatch = text.match(/(?:\w{3}\s+)?(\w{3}\s+\d{1,2}(?:,)?\s+\d{4})/i);
