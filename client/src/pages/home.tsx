@@ -658,7 +658,7 @@ export default function Home() {
   };
   
   React.useEffect(() => {
-    checkImageExists(staticHeroImage);
+    checkImageExists(staticHeroMedia);
   }, []);
   const { toast } = useToast();
   const [, setLocation] = useLocation();
@@ -1515,7 +1515,7 @@ export default function Home() {
           {/* Main image with glass morphism overlay */}
           <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/20">
             <img 
-              src={staticHeroImage}
+              src={staticHeroMedia}
               alt="Travelers connecting at coffee shop"
               className="w-full h-auto object-cover"
             />
