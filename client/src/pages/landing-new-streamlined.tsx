@@ -46,13 +46,18 @@ export default function LandingStreamlined() {
   // Rotate videos with custom durations for each video
   useEffect(() => {
     const currentDuration = heroVideos[currentVideo].duration;
+    console.log(`🎬 Video ${currentVideo + 1} playing for ${currentDuration/1000} seconds`);
     
     const videoTimeout = setTimeout(() => {
-      setCurrentVideo(prev => (prev + 1) % heroVideos.length);
+      setCurrentVideo(prev => {
+        const nextVideo = (prev + 1) % heroVideos.length;
+        console.log(`🔄 Switching from video ${prev + 1} to video ${nextVideo + 1}`);
+        return nextVideo;
+      });
     }, currentDuration);
 
     return () => clearTimeout(videoTimeout);
-  }, [currentVideo, heroVideos]);
+  }, [currentVideo]);
 
   // Rotate taglines every 10 seconds
   useEffect(() => {
