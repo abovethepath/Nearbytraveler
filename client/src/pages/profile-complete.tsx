@@ -5937,7 +5937,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         />
                         <div className="w-full">
                           <p className="font-medium text-sm truncate text-gray-900 dark:text-white">
-                            {connection.connectedUser?.name || connection.connectedUser?.username}
+                            {connection.connectedUser?.username}
                           </p>
                           <p className="text-xs truncate text-gray-500 dark:text-gray-400">
                             {connection.connectedUser?.hometownCity && connection.connectedUser?.hometownCountry
