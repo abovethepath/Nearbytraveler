@@ -8351,12 +8351,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </div>
               </div>
 
-              <div className="flex gap-2 pt-4">
+              {/* Save/Cancel buttons - sticky at bottom on mobile for easy access */}
+              <div className="flex gap-2 pt-4 sticky bottom-0 bg-white dark:bg-gray-900 pb-4 border-t mt-4 -mx-6 px-6 md:relative md:border-t-0 md:mx-0 md:px-0 z-10">
                 <Button 
                   type="button" 
                   variant="outline" 
                   onClick={() => setIsEditMode(false)}
                   className="flex-1"
+                  data-testid="button-cancel-edit"
                 >
                   Cancel
                 </Button>
@@ -8370,6 +8372,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     console.log('🔥 Form values:', profileForm.getValues());
                     console.log('🔥 Form valid:', profileForm.formState.isValid);
                   }}
+                  data-testid="button-save-profile"
                 >
                   {editProfile.isPending ? "Saving..." : "Save Changes"}
                 </Button>

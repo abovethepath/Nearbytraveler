@@ -2678,6 +2678,60 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
+  // 🏠 CHATROOM BACKFILL: Manually assign chatrooms to existing users
+  app.post("/api/admin/backfill-chatrooms", async (req, res) => {
+    try {
+      const { userId } = req.body;
+      
+      let usersToProcess: any[] = [];
+      
+      if (userId) {
+        // Process single user
+        const user = await storage.getUser(userId);
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+        usersToProcess = [user];
+      } else {
+        // Process all users
+        const allUsers = await db.select().from(users);
+        usersToProcess = allUsers;
+      }
+      
+      let successCount = 0;
+      let errorCount = 0;
+      const errors: string[] = [];
+      
+      for (const user of usersToProcess) {
+        try {
+          await storage.assignUserToChatrooms(user);
+          successCount++;
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`✅ CHATROOM BACKFILL: Assigned chatrooms to user ${user.id} (${user.username})`);
+          }
+        } catch (error: any) {
+          errorCount++;
+          const errorMsg = `User ${user.id}: ${error.message}`;
+          errors.push(errorMsg);
+          if (process.env.NODE_ENV === 'development') {
+            console.error(`❌ CHATROOM BACKFILL ERROR: ${errorMsg}`);
+          }
+        }
+      }
+      
+      res.json({ 
+        message: "Chatroom backfill completed",
+        totalProcessed: usersToProcess.length,
+        successCount,
+        errorCount,
+        errors: errors.length > 0 ? errors.slice(0, 10) : [] // Return first 10 errors
+      });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Chatroom backfill error:", error);
+      res.status(500).json({ message: "Failed to backfill chatrooms", error: error.message });
+    }
+  });
+
 
   // Email validation endpoint
   app.post("/api/auth/check-email", async (req, res) => {
