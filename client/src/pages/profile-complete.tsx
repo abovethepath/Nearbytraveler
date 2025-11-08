@@ -3838,6 +3838,27 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   targetUserId={user?.id || 0}
                   targetUsername={user?.username}
                 />
+                {/* Write Reference Button - visible at top for mobile accessibility */}
+                {userConnections.some((conn: any) => conn.status === 'accepted') ? (
+                  <Button
+                    onClick={() => setShowWriteReferenceModal(true)}
+                    className="bg-green-600 hover:bg-green-700 text-white border-0 px-6 py-2 rounded-lg shadow-md transition-all"
+                    data-testid="button-write-reference"
+                  >
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    Write Reference
+                  </Button>
+                ) : (
+                  <Button
+                    disabled
+                    className="bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 border-0 px-6 py-2 rounded-lg cursor-not-allowed"
+                    title="Connect with this user to write a reference"
+                    data-testid="button-write-reference-disabled"
+                  >
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    Write Reference
+                  </Button>
+                )}
               </div>
             ) : (
               <div className="flex items-center gap-3 flex-wrap min-w-0">
