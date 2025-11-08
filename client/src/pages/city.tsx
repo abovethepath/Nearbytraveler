@@ -327,20 +327,20 @@ export default function CityPage({ cityName }: CityPageProps) {
                       </Select>
                     </div>
 
-                    {/* Sort By Dropdown */}
+                    {/* Sort By Dropdown - SOLID backgrounds per UI/UX standards */}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button
                           variant="outline"
                           size="sm"
-                          className="w-full sm:w-auto sm:ml-2 bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm border border-gray-200/50 dark:border-gray-600/50 text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-orange-50 dark:hover:from-blue-900/30 dark:hover:to-orange-900/30 transition-all duration-300 rounded-xl hover:scale-105"
+                          className="w-full sm:w-auto sm:ml-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                         >
                           <ArrowUpDown className="w-4 h-4 mr-2" />
                           Sort By
                           <ChevronDown className="w-4 h-4 ml-2" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-56">
+                      <DropdownMenuContent align="end" className="w-56 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
                         <DropdownMenuItem onClick={() => setSortBy('closest_nearby')}>
                           <MapPin className="w-4 h-4 mr-2" />
                           Closest Nearby
