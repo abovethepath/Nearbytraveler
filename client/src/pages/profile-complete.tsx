@@ -4233,13 +4233,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   );
                 })()}
 
-                {/* What you have in common (for other profiles) - Mobile and Desktop */}
-                {!isOwnProfile && currentUser && user?.id && user?.userType !== 'business' && (
-                  <div>
-                    <WhatYouHaveInCommon currentUserId={currentUser.id} otherUserId={user.id} />
-                  </div>
-                )}
-
                 {/* Basic Info — grid so lines never run together */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
                   <div className="flex items-start">
@@ -4448,9 +4441,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </Card>
             )}
 
-            {/* What You Have in Common Section - MOVED TO ABOUT SECTION FOR BETTER VISIBILITY */}
-
-
+            {/* What You Have in Common Section - Separate Card for clean mobile layout */}
+            {!isOwnProfile && currentUser && user?.id && user?.userType !== 'business' && (
+              <Card>
+                <CardContent className="p-0">
+                  <WhatYouHaveInCommon currentUserId={currentUser.id} otherUserId={user.id} />
+                </CardContent>
+              </Card>
+            )}
 
             {/* Interests, Activities & Events Section */}
             {user?.userType !== 'business' && (

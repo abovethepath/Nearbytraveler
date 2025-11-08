@@ -98,10 +98,17 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
   });
 
   // Fetch mutual connections between the two users
-  const { data: mutualConnections = [] } = useQuery<any[]>({
+  const { data: rawMutualConnections = [] } = useQuery<any[]>({
     queryKey: [`/api/mutual-connections/${currentUserId}/${otherUserId}`],
     enabled: !!(currentUserId && otherUserId && currentUserId !== otherUserId)
   });
+
+  // Filter out common test/admin accounts from mutual connections
+  const mutualConnections = rawMutualConnections.filter((connection: any) => 
+    connection.username !== 'nearbytrav' && 
+    connection.username !== 'admin' &&
+    connection.username !== 'test'
+  );
 
   // Fetch direct compatibility data from the API (consistent with discover page)
   const { data: compatibilityData, isLoading } = useQuery<{
