@@ -3533,7 +3533,11 @@ Questions? Just reply to this message!
       if (process.env.NODE_ENV === 'development') console.log("🏠 ORIGINAL LOCATION DATA RECEIVED:", {
         hometownCity: (req.body as any).hometownCity,
         hometownState: (req.body as any).hometownState,
-        hometownCountry: (req.body as any).hometownCountry
+        hometownCountry: (req.body as any).hometownCountry,
+        hometownCountryType: typeof (req.body as any).hometownCountry,
+        hometownCountryIsNull: (req.body as any).hometownCountry === null,
+        hometownCountryIsUndefined: (req.body as any).hometownCountry === undefined,
+        hometownCountryIsEmptyString: (req.body as any).hometownCountry === ''
       });
       if (process.env.NODE_ENV === 'development') console.log("✈️ ORIGINAL TRAVEL DATA RECEIVED:", {
         isCurrentlyTraveling: (req.body as any).isCurrentlyTraveling,
@@ -4060,6 +4064,10 @@ Questions? Just reply to this message!
         hometownCity: userData.hometownCity,
         hometownState: userData.hometownState,
         hometownCountry: userData.hometownCountry,
+        hometownCountryType: typeof userData.hometownCountry,
+        hometownCountryIsNull: userData.hometownCountry === null,
+        hometownCountryIsUndefined: userData.hometownCountry === undefined,
+        hometownCountryIsEmptyString: userData.hometownCountry === '',
         location: userData.location,
         hometown: userData.hometown,
         userType: userData.userType
@@ -11260,12 +11268,38 @@ Questions? Just reply to this message. Welcome aboard!
       // Build conditions array for proper AND/OR logic
       const conditions = [eq(quickMeetups.isActive, true)];
 
-      // Add userId filtering if specified (for profile page)
+      // CRITICAL FIX: Get country for filtering to prevent cross-border meetup leaking
+      let userCountry: string | null = null;
+      
+      // Case 1: When viewing a specific user's profile (userId param), use their country
       if (userId && typeof userId === 'string') {
         const targetUserId = parseInt(userId as string);
         if (!isNaN(targetUserId)) {
-          if (process.env.NODE_ENV === 'development') console.log(`QUICK MEETUPS: Filtering by userId: ${targetUserId}`);
+          if (process.env.NODE_ENV === 'development') console.log(`🌍 QUICK MEETUPS: Filtering by userId: ${targetUserId}`);
           conditions.push(eq(quickMeetups.organizerId, targetUserId));
+          
+          // Fetch the user's country for filtering
+          try {
+            const user = await storage.getUser(targetUserId);
+            if (user && user.hometownCountry) {
+              userCountry = user.hometownCountry;
+              if (process.env.NODE_ENV === 'development') console.log(`🌍 QUICK MEETUPS: Profile owner country detected: ${userCountry}`);
+            }
+          } catch (error) {
+            if (process.env.NODE_ENV === 'development') console.error('Error fetching user for country filter:', error);
+          }
+        }
+      }
+      // Case 2: For general discovery, use current logged-in user's country
+      else if (req.user?.id) {
+        try {
+          const currentUser = await storage.getUser(req.user.id);
+          if (currentUser && currentUser.hometownCountry) {
+            userCountry = currentUser.hometownCountry;
+            if (process.env.NODE_ENV === 'development') console.log(`🌍 QUICK MEETUPS: Current user country detected: ${userCountry}`);
+          }
+        } catch (error) {
+          if (process.env.NODE_ENV === 'development') console.error('Error fetching current user for country filter:', error);
         }
       }
 
@@ -11287,6 +11321,12 @@ Questions? Just reply to this message. Welcome aboard!
         );
         
         conditions.push(or(...cityConditions));
+      }
+
+      // BUG FIX: Add country filtering to prevent cross-border meetups from appearing
+      if (userCountry) {
+        conditions.push(eq(quickMeetups.country, userCountry));
+        if (process.env.NODE_ENV === 'development') console.log(`🌍 QUICK MEETUPS: Added country filter: ${userCountry}`);
       }
 
       // Use Drizzle ORM query builder with combined conditions
@@ -11907,9 +11947,72 @@ Questions? Just reply to this message. Welcome aboard!
       const { city, userId } = req.query;
       const now = new Date();
 
-      console.log(`🔧 QUICK MEETS DEBUG: Using basic query with user join to get organizer info`);
+      console.log(`🔧 QUICK MEETS DEBUG: Building filtered query with user join to get organizer info`);
 
-      // Basic query with JOIN to get organizer information including displayNamePreference
+      // Build conditions array for proper AND/OR logic
+      const conditions = [eq(quickMeetups.isActive, true)];
+
+      // CRITICAL FIX: Get country for filtering to prevent cross-border meetup leaking
+      let userCountry: string | null = null;
+      
+      // Case 1: When viewing a specific user's profile (userId param), use their country
+      if (userId && typeof userId === 'string') {
+        const targetUserId = parseInt(userId as string);
+        if (!isNaN(targetUserId)) {
+          if (process.env.NODE_ENV === 'development') console.log(`🌍 QUICK MEETS: Filtering by userId: ${targetUserId}`);
+          conditions.push(eq(quickMeetups.organizerId, targetUserId));
+          
+          // Fetch the user's country for filtering
+          try {
+            const user = await storage.getUser(targetUserId);
+            if (user && user.hometownCountry) {
+              userCountry = user.hometownCountry;
+              if (process.env.NODE_ENV === 'development') console.log(`🌍 QUICK MEETS: Profile owner country detected: ${userCountry}`);
+            }
+          } catch (error) {
+            if (process.env.NODE_ENV === 'development') console.error('Error fetching user for country filter:', error);
+          }
+        }
+      }
+      // Case 2: For general discovery, use current logged-in user's country
+      else if (req.user?.id) {
+        try {
+          const currentUser = await storage.getUser(req.user.id);
+          if (currentUser && currentUser.hometownCountry) {
+            userCountry = currentUser.hometownCountry;
+            if (process.env.NODE_ENV === 'development') console.log(`🌍 QUICK MEETS: Current user country detected: ${userCountry}`);
+          }
+        } catch (error) {
+          if (process.env.NODE_ENV === 'development') console.error('Error fetching current user for country filter:', error);
+        }
+      }
+
+      // Add city filtering if specified
+      if (city && typeof city === 'string') {
+        const cityName = city.toString().split(',')[0].trim();
+        if (process.env.NODE_ENV === 'development') console.log(`QUICK MEETS: Filtering by city: ${cityName}`);
+        
+        const searchCities = [cityName];
+        
+        if (process.env.NODE_ENV === 'development') console.log(`🌍 QUICK MEETS: Searching single city:`, searchCities);
+        
+        const cityConditions = searchCities.map(searchCity => 
+          or(
+            ilike(quickMeetups.location, `%${searchCity}%`),
+            ilike(quickMeetups.city, `%${searchCity}%`)
+          )
+        );
+        
+        conditions.push(or(...cityConditions));
+      }
+
+      // BUG FIX: Add country filtering to prevent cross-border meetups from appearing
+      if (userCountry) {
+        conditions.push(eq(quickMeetups.country, userCountry));
+        if (process.env.NODE_ENV === 'development') console.log(`🌍 QUICK MEETS: Added country filter: ${userCountry}`);
+      }
+
+      // Query with filters and JOIN to get organizer information including displayNamePreference
       const queryResult = await db
         .select({
           quickMeetups,
@@ -11923,6 +12026,7 @@ Questions? Just reply to this message. Welcome aboard!
         })
         .from(quickMeetups)
         .leftJoin(users, eq(quickMeetups.organizerId, users.id))
+        .where(conditions.length > 0 ? and(...conditions) : undefined)
         .limit(20);
       
       if (process.env.NODE_ENV === 'development') {

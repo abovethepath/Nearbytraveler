@@ -588,18 +588,24 @@ export class DatabaseStorage implements IStorage {
   async createUserSession(userId: number, sessionToken: string): Promise<void> {
     // For now, we'll use the existing authentication system
     // In a production environment, you'd want a proper sessions table
-    console.log(`Session created for user ${userId} with token ${sessionToken}`);
+    if (process.env.NODE_ENV === 'development') console.log(`Session created for user ${userId} with token ${sessionToken}`);
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    console.log("🔍 STORAGE: createUser called with data:", {
+    if (process.env.NODE_ENV === 'development') console.log("🔍 STORAGE: createUser called with data:", {
       userType: insertUser.userType,
       isCurrentlyTraveling: insertUser.isCurrentlyTraveling,
       travelDestination: insertUser.travelDestination,
       dateOfBirth: insertUser.dateOfBirth,
       username: insertUser.username,
       email: insertUser.email,
-      hometownCity: insertUser.hometownCity
+      hometownCity: insertUser.hometownCity,
+      hometownState: insertUser.hometownState,
+      hometownCountry: insertUser.hometownCountry,
+      hometownCountryType: typeof insertUser.hometownCountry,
+      hometownCountryIsNull: insertUser.hometownCountry === null,
+      hometownCountryIsUndefined: insertUser.hometownCountry === undefined,
+      hometownCountryIsEmptyString: insertUser.hometownCountry === ''
     });
     
     // LA Metro cities that should consolidate to "Los Angeles Metro"
@@ -626,15 +632,26 @@ export class DatabaseStorage implements IStorage {
     const cleanUserData: any = {};
     
     // Copy all defined fields from insertUser, ensuring proper data types
+    // BUG FIX: Explicitly preserve hometownCountry even if it's an empty string
     for (const [key, value] of Object.entries(insertUser)) {
       if (value !== undefined && value !== null) {
         cleanUserData[key] = value;
+      } else if (key === 'hometownCountry' || key === 'hometownState' || key === 'destinationCountry' || key === 'destinationState') {
+        // Log when location fields are null/undefined to help debugging
+        if (process.env.NODE_ENV === 'development') console.log(`⚠️ STORAGE WARNING: Location field "${key}" is ${value === null ? 'null' : 'undefined'}`);
       }
     }
+    
+    // Defensive logging for country data
+    if (process.env.NODE_ENV === 'development') console.log("🔍 STORAGE: After cleaning, hometownCountry status:", {
+      hasHometownCountry: 'hometownCountry' in cleanUserData,
+      hometownCountryValue: cleanUserData.hometownCountry,
+      hometownCountryType: typeof cleanUserData.hometownCountry
+    });
 
     // LA METRO CONSOLIDATION AT SIGNUP: Consolidate all LA Metro cities to "Los Angeles Metro"
     if (cleanUserData.hometownCity && laMetroCities.includes(cleanUserData.hometownCity)) {
-      console.log(`🏙️ LA METRO SIGNUP CONSOLIDATION: ${cleanUserData.hometownCity} → Los Angeles Metro`);
+      if (process.env.NODE_ENV === 'development') console.log(`🏙️ LA METRO SIGNUP CONSOLIDATION: ${cleanUserData.hometownCity} → Los Angeles Metro`);
       cleanUserData.hometownCity = 'Los Angeles Metro';
       
       // Also update location field if it exists
@@ -650,18 +667,18 @@ export class DatabaseStorage implements IStorage {
       // Add hometown country
       if (insertUser.hometownCountry) {
         visitedCountries.push(insertUser.hometownCountry);
-        console.log("🏠 DEFAULT COUNTRY: Added hometown country:", insertUser.hometownCountry);
+        if (process.env.NODE_ENV === 'development') console.log("🏠 DEFAULT COUNTRY: Added hometown country:", insertUser.hometownCountry);
       }
       
       // Add destination country for travelers
       if (insertUser.isCurrentlyTraveling && insertUser.destinationCountry && insertUser.destinationCountry !== insertUser.hometownCountry) {
         visitedCountries.push(insertUser.destinationCountry);
-        console.log("✈️ TRAVEL COUNTRY: Added destination country:", insertUser.destinationCountry);
+        if (process.env.NODE_ENV === 'development') console.log("✈️ TRAVEL COUNTRY: Added destination country:", insertUser.destinationCountry);
       }
       
       if (visitedCountries.length > 0) {
         cleanUserData.countriesVisited = visitedCountries;
-        console.log(`🌍 COUNTRIES VISITED: Set to ${visitedCountries.length} countries:`, visitedCountries);
+        if (process.env.NODE_ENV === 'development') console.log(`🌍 COUNTRIES VISITED: Set to ${visitedCountries.length} countries:`, visitedCountries);
       }
     }
     
@@ -674,7 +691,7 @@ export class DatabaseStorage implements IStorage {
       }
     }
     
-    console.log("🔍 STORAGE: Clean user data for insert:", {
+    if (process.env.NODE_ENV === 'development') console.log("🔍 STORAGE: Clean user data for insert:", {
       fieldCount: Object.keys(cleanUserData).length,
       hasDateOfBirth: !!cleanUserData.dateOfBirth,
       userType: cleanUserData.userType,
@@ -687,21 +704,28 @@ export class DatabaseStorage implements IStorage {
       .values(cleanUserData)
       .returning();
     
-    console.log("🔍 STORAGE: User created successfully with ID:", newUser.id);
-    console.log("🔍 STORAGE: Final user data:", {
+    if (process.env.NODE_ENV === 'development') console.log("🔍 STORAGE: User created successfully with ID:", newUser.id);
+    if (process.env.NODE_ENV === 'development') console.log("🔍 STORAGE: Final user data:", {
       id: newUser.id,
       username: newUser.username,
       userType: newUser.userType,
       isCurrentlyTraveling: newUser.isCurrentlyTraveling,
       hasDateOfBirth: !!newUser.dateOfBirth,
       location: newUser.location,
-      hometown: newUser.hometown
+      hometown: newUser.hometown,
+      hometownCity: newUser.hometownCity,
+      hometownState: newUser.hometownState,
+      hometownCountry: newUser.hometownCountry,
+      hometownCountryType: typeof newUser.hometownCountry,
+      destinationCity: newUser.destinationCity,
+      destinationState: newUser.destinationState,
+      destinationCountry: newUser.destinationCountry
     });
     
     // 🏠 AUTOMATIC CHATROOM ASSIGNMENT: Add new user to appropriate chatrooms
     try {
       await this.assignUserToChatrooms(newUser);
-      console.log("✅ CHATROOM ASSIGNMENT: User automatically assigned to chatrooms");
+      if (process.env.NODE_ENV === 'development') console.log("✅ CHATROOM ASSIGNMENT: User automatically assigned to chatrooms");
     } catch (error) {
       console.error("❌ CHATROOM ASSIGNMENT ERROR:", error);
       // Don't fail user creation if chatroom assignment fails
@@ -712,7 +736,7 @@ export class DatabaseStorage implements IStorage {
 
   // 🏠 AUTOMATIC CHATROOM ASSIGNMENT SYSTEM
   async assignUserToChatrooms(user: User): Promise<void> {
-    console.log("🏠 CHATROOM ASSIGNMENT: Starting assignment for user", user.id, user.username);
+    if (process.env.NODE_ENV === 'development') console.log("🏠 CHATROOM ASSIGNMENT: Starting assignment for user", user.id, user.username);
     
     // Import metro area constants
     const { METRO_AREAS } = await import('@shared/constants');
@@ -770,7 +794,7 @@ export class DatabaseStorage implements IStorage {
       });
     }
     
-    console.log("✅ CHATROOM ASSIGNMENT: Completed for user", user.username);
+    if (process.env.NODE_ENV === 'development') console.log("✅ CHATROOM ASSIGNMENT: Completed for user", user.username);
   }
   
   // Helper function to create chatroom if it doesn't exist and add user as member
@@ -798,7 +822,7 @@ export class DatabaseStorage implements IStorage {
       
       if (existingChatroom.length > 0) {
         chatroom = existingChatroom[0];
-        console.log("🔄 CHATROOM: Using existing chatroom", chatroom.name);
+        if (process.env.NODE_ENV === 'development') console.log("🔄 CHATROOM: Using existing chatroom", chatroom.name);
       } else {
         // Create new chatroom
         const [newChatroom] = await db
@@ -817,7 +841,7 @@ export class DatabaseStorage implements IStorage {
           .returning();
         
         chatroom = newChatroom;
-        console.log("✨ CHATROOM: Created new chatroom", chatroom.name);
+        if (process.env.NODE_ENV === 'development') console.log("✨ CHATROOM: Created new chatroom", chatroom.name);
       }
       
       // Check if user is already a member
@@ -843,9 +867,9 @@ export class DatabaseStorage implements IStorage {
             isActive: true
           });
         
-        console.log("👥 MEMBERSHIP: Added", user.username, "to chatroom", chatroom.name);
+        if (process.env.NODE_ENV === 'development') console.log("👥 MEMBERSHIP: Added", user.username, "to chatroom", chatroom.name);
       } else {
-        console.log("👥 MEMBERSHIP: User", user.username, "already in chatroom", chatroom.name);
+        if (process.env.NODE_ENV === 'development') console.log("👥 MEMBERSHIP: User", user.username, "already in chatroom", chatroom.name);
       }
       
     } catch (error) {
@@ -923,7 +947,7 @@ export class DatabaseStorage implements IStorage {
         }
       }
       
-      console.log('🔧 STORAGE UPDATE v2: Applying clean data update:', {
+      if (process.env.NODE_ENV === 'development') console.log('🔧 STORAGE UPDATE v2: Applying clean data update:', {
         userId: id,
         fieldCount: Object.keys(cleanData).length,
         fields: Object.keys(cleanData),
@@ -932,7 +956,7 @@ export class DatabaseStorage implements IStorage {
 
       // TEMPORARY FIX: Use direct pool query to bypass Drizzle ORM issue
       if (Object.keys(cleanData).length === 0) {
-        console.log('🔧 STORAGE UPDATE: No fields to update');
+        if (process.env.NODE_ENV === 'development') console.log('🔧 STORAGE UPDATE: No fields to update');
         return await this.getUserById(id);
       }
 
@@ -995,17 +1019,17 @@ export class DatabaseStorage implements IStorage {
       const dbCleanData: any = {};
       
       try {
-        console.log('🔧 STORAGE UPDATE: Starting field mapping...');
+        if (process.env.NODE_ENV === 'development') console.log('🔧 STORAGE UPDATE: Starting field mapping...');
         for (const [key, value] of Object.entries(cleanData)) {
           // Skip if already snake_case (from route handler)
           if (key.includes('_')) {
             dbCleanData[key] = value;
-            console.log(`🔧 STORAGE UPDATE: Keeping snake_case field: ${key}`);
+            if (process.env.NODE_ENV === 'development') console.log(`🔧 STORAGE UPDATE: Keeping snake_case field: ${key}`);
           } else {
             const dbKey = fieldNameMap[key] || key;
             dbCleanData[dbKey] = value;
             if (dbKey !== key) {
-              console.log(`🔧 STORAGE UPDATE: Mapped ${key} → ${dbKey}`);
+              if (process.env.NODE_ENV === 'development') console.log(`🔧 STORAGE UPDATE: Mapped ${key} → ${dbKey}`);
             }
           }
         }
@@ -1014,7 +1038,7 @@ export class DatabaseStorage implements IStorage {
         throw mappingError;
       }
 
-      console.log('🔧 STORAGE UPDATE: Field mapping completed:', {
+      if (process.env.NODE_ENV === 'development') console.log('🔧 STORAGE UPDATE: Field mapping completed:', {
         original: Object.keys(cleanData),
         converted: Object.keys(dbCleanData)
       });
@@ -1033,20 +1057,20 @@ export class DatabaseStorage implements IStorage {
         RETURNING *
       `;
       
-      console.log('🔧 STORAGE UPDATE v2: Executing SQL with mapped fields');
-      console.log('🔧 STORAGE UPDATE v2: SQL Query:', sqlQuery);
-      console.log('🔧 STORAGE UPDATE v2: With values:', values);
+      if (process.env.NODE_ENV === 'development') console.log('🔧 STORAGE UPDATE v2: Executing SQL with mapped fields');
+      if (process.env.NODE_ENV === 'development') console.log('🔧 STORAGE UPDATE v2: SQL Query:', sqlQuery);
+      if (process.env.NODE_ENV === 'development') console.log('🔧 STORAGE UPDATE v2: With values:', values);
       
       // Use direct pool query instead of Drizzle
       const result = await pool.query(sqlQuery, values);
       const user = result.rows[0] as any;
       
       if (!user) {
-        console.log('🔧 STORAGE UPDATE: No user found with ID:', id);
+        if (process.env.NODE_ENV === 'development') console.log('🔧 STORAGE UPDATE: No user found with ID:', id);
         return undefined;
       }
       
-      console.log('🔧 STORAGE UPDATE: Successfully updated user:', user.id);
+      if (process.env.NODE_ENV === 'development') console.log('🔧 STORAGE UPDATE: Successfully updated user:', user.id);
       
       // Handle secret activities sync if needed
       if (data.secretActivities !== undefined && user) {

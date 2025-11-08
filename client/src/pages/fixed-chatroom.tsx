@@ -444,6 +444,23 @@ export default function FixedChatroom() {
     loadAllData();
   }, [chatroomId, currentUserId]);
   
+  // Auto-refresh messages every 3 seconds if user is a member
+  useEffect(() => {
+    if (!userIsMember || !currentUserId) {
+      return;
+    }
+    
+    const intervalId = setInterval(async () => {
+      try {
+        await loadMessages();
+      } catch (error: any) {
+        // Silently handle errors during auto-refresh
+      }
+    }, 3000); // Refresh every 3 seconds
+    
+    return () => clearInterval(intervalId);
+  }, [userIsMember, currentUserId, chatroomId]);
+  
   // Auto-scroll messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
