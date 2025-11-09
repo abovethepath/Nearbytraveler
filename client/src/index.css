@@ -411,6 +411,17 @@ p, span, div, button, input, textarea, select {
   
   /* UNIVERSAL PILL SIZE STANDARDIZATION - Updated for compact h-6 sizing */
   --pill-font-size: 0.875rem; /* matches text-sm */
+  
+  /* WhatsApp-Style Messaging Theme - Light Mode */
+  --msg-bg: 230 35% 95%;
+  --msg-header-bg: 230 35% 98%;
+  --msg-bubble-self: 271 76% 53%;
+  --msg-bubble-other: 220 13% 46%;
+  --msg-text-self: 0 0% 100%;
+  --msg-text-other: 0 0% 100%;
+  --msg-timestamp: 220 9% 46%;
+  --msg-input-bg: 0 0% 100%;
+  --msg-input-border: 220 13% 91%;
 }
 
 .dark {
@@ -439,6 +450,17 @@ p, span, div, button, input, textarea, select {
   --chart-3: 30 80% 55%;
   --chart-4: 280 65% 60%;
   --chart-5: 340 75% 55%;
+  
+  /* WhatsApp-Style Messaging Theme - Dark Mode */
+  --msg-bg: 210 40% 16%;
+  --msg-header-bg: 210 40% 18%;
+  --msg-bubble-self: 271 76% 53%;
+  --msg-bubble-other: 217 19% 35%;
+  --msg-text-self: 0 0% 100%;
+  --msg-text-other: 0 0% 100%;
+  --msg-timestamp: 220 14% 71%;
+  --msg-input-bg: 217 33% 20%;
+  --msg-input-border: 217 33% 25%;
 }
 
 /* Global Dark Mode Fix - Ensures all text is visible in dark mode */
