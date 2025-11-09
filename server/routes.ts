@@ -4845,11 +4845,19 @@ Questions? Just reply to this message. Welcome aboard!
         const searchCity = locationParts[0];
         
         if (process.env.NODE_ENV === 'development') console.log('🌴 ADVANCED SEARCH LOCATION: Searching for users in:', location);
-      if (process.env.NODE_ENV === 'development') console.log('🌴 SEARCH CITY EXTRACTED:', searchCity);
+        if (process.env.NODE_ENV === 'development') console.log('🌴 SEARCH CITY EXTRACTED:', searchCity);
         
-        // NO HARDCODED CONSOLIDATION - Use exact city search based on user's actual data
-        const citiesToSearch = [searchCity];
-        if (process.env.NODE_ENV === 'development') console.log('🎯 ADVANCED SEARCH EXACT CITY:', searchCity);
+        // LA Metro consolidation - if searching for any LA Metro city, include all 76 cities
+        let citiesToSearch = [searchCity];
+        const { METRO_AREAS } = await import('../shared/constants');
+        const isLAMetroCity = METRO_AREAS['Los Angeles'].cities.includes(searchCity);
+        
+        if (isLAMetroCity || searchCity === 'Los Angeles') {
+          citiesToSearch = METRO_AREAS['Los Angeles'].cities;
+          if (process.env.NODE_ENV === 'development') console.log('🌴 LA METRO DETECTED: Expanding search to all', citiesToSearch.length, 'LA Metro cities');
+        } else {
+          if (process.env.NODE_ENV === 'development') console.log('🎯 ADVANCED SEARCH EXACT CITY:', searchCity);
+        }
         
         if (process.env.NODE_ENV === 'development') console.log('🌴 CITIES TO SEARCH:', citiesToSearch.slice(0, 5), '... (total:', citiesToSearch.length, ')');
         
