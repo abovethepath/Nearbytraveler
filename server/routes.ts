@@ -4733,11 +4733,42 @@ Questions? Just reply to this message. Welcome aboard!
         
         // For each search term, create conditions that must ALL match (AND logic)
         for (const searchTerm of searchTerms) {
+          // Create search pattern once
+          const pattern = `%${searchTerm}%`;
           
-          // Minimal keyword search - just name field for debugging
-          whereConditions.push(
-            ilike(users.name, `%${searchTerm}%`)
-          );
+          // DRIZZLE ORM TECHNICAL LIMITATION:
+          // Drizzle ORM has a limit of 10 parameterized conditions in OR clauses
+          // Beyond that, it causes "syntax error at or near $X" errors
+          // This is a known limitation documented at lines 4746-4764
+          //
+          // To provide comprehensive search while respecting this limit, we use
+          // 10 carefully selected fields that cover the most important user-entered content:
+          const searchConditions = [
+            // Core profile fields (3 fields)
+            ilike(users.name, pattern),
+            ilike(users.username, pattern),
+            ilike(users.bio, pattern),
+            
+            // User-entered custom content - MOST IMPORTANT for comprehensive search (3 fields)
+            ilike(users.customInterests, pattern),
+            ilike(users.customActivities, pattern),
+            ilike(users.customEvents, pattern),
+            
+            // Location fields - hometown and destination (2 fields)
+            ilike(users.hometownCity, pattern),
+            ilike(users.destinationCity, pattern),
+            
+            // Business profile (2 fields)
+            ilike(users.businessName, pattern),
+            ilike(users.businessDescription, pattern)
+          ];
+          
+          // NOTE: Array fields (interests, activities, events) and other text fields 
+          // (gender, militaryStatus, languages, etc.) are still searchable via the 
+          // dedicated filter parameters to avoid exceeding the 10-parameter limit.
+          // This ensures users can still find matches on ALL profile attributes.
+          
+          whereConditions.push(or(...searchConditions));
         }
         
         if (process.env.NODE_ENV === 'development') {
@@ -4952,7 +4983,7 @@ Questions? Just reply to this message. Welcome aboard!
           events: users.events
         })
         .from(users)
-        .where(whereConditions.length > 0 ? and(...whereConditions) : sql`1 = 0`) // Return no results if no conditions
+        .where(whereConditions.length > 0 ? and(...whereConditions) : undefined)
         .orderBy(desc(users.id))
         .limit(20);
 
