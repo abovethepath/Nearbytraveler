@@ -2486,16 +2486,14 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         .select({
           id: users.id,
           username: users.username,
-          firstName: users.firstName,
-          lastName: users.lastName,
+          name: users.name,
           profileImage: users.profileImage,
         })
         .from(users)
         .where(
           or(
             ilike(users.username, `%${query}%`),
-            ilike(users.firstName, `%${query}%`),
-            ilike(users.lastName, `%${query}%`)
+            ilike(users.name, `%${query}%`)
           )
         )
         .limit(20);
