@@ -4734,93 +4734,10 @@ Questions? Just reply to this message. Welcome aboard!
         // For each search term, create conditions that must ALL match (AND logic)
         for (const searchTerm of searchTerms) {
           
-          // Each search term must match somewhere in the user's profile (AND logic)
-          const searchConditions = [
-            // Basic profile fields
-            ilike(users.name, `%${searchTerm}%`),
-            ilike(users.username, `%${searchTerm}%`),
-            ilike(users.bio, `%${searchTerm}%`),
-            ilike(users.gender, `%${searchTerm}%`),
-            
-            // Interests, Activities, Events - Standard arrays
-            sql`array_to_string(${users.interests}, ',') ILIKE ${'%' + searchTerm + '%'}`,
-            sql`array_to_string(${users.privateInterests}, ',') ILIKE ${'%' + searchTerm + '%'}`,
-            sql`array_to_string(${users.activities}, ',') ILIKE ${'%' + searchTerm + '%'}`,
-            sql`array_to_string(${users.events}, ',') ILIKE ${'%' + searchTerm + '%'}`,
-            sql`array_to_string(${users.travelerTypes}, ',') ILIKE ${'%' + searchTerm + '%'}`,
-            
-            // Custom text fields - User typed interests/activities/events
-            ilike(users.customInterests, `%${searchTerm}%`),
-            ilike(users.customActivities, `%${searchTerm}%`),
-            ilike(users.customEvents, `%${searchTerm}%`),
-            
-            // Sexual preference & relationship
-            sql`array_to_string(${users.sexualPreference}, ',') ILIKE ${'%' + searchTerm + '%'}`,
-            
-            // Military & veteran status
-            ilike(users.militaryStatus, `%${searchTerm}%`),
-            
-            // Travel style, languages, countries
-            sql`array_to_string(${users.travelStyle}, ',') ILIKE ${'%' + searchTerm + '%'}`,
-            sql`array_to_string(${users.languagesSpoken}, ',') ILIKE ${'%' + searchTerm + '%'}`,
-            sql`array_to_string(${users.countriesVisited}, ',') ILIKE ${'%' + searchTerm + '%'}`,
-            
-            // Family & children
-            ilike(users.childrenAges, `%${searchTerm}%`),
-            
-            // Travel intent fields (Why/What/How)
-            ilike(users.travelWhy, `%${searchTerm}%`),
-            sql`array_to_string(${users.travelWhat}, ',') ILIKE ${'%' + searchTerm + '%'}`,
-            ilike(users.travelHow, `%${searchTerm}%`),
-            ilike(users.travelBudget, `%${searchTerm}%`),
-            ilike(users.travelGroup, `%${searchTerm}%`),
-            
-            // Secret activities & special profile content
-            ilike(users.secretActivities, `%${searchTerm}%`),
-            
-            // Default travel preferences for all trips
-            sql`array_to_string(${users.defaultTravelInterests}, ',') ILIKE ${'%' + searchTerm + '%'}`,
-            sql`array_to_string(${users.defaultTravelActivities}, ',') ILIKE ${'%' + searchTerm + '%'}`,
-            sql`array_to_string(${users.defaultTravelEvents}, ',') ILIKE ${'%' + searchTerm + '%'}`,
-            
-            // City-specific activities search - CRITICAL for city-specific searches like "Empire State Building"
-            sql`EXISTS (SELECT 1 FROM user_city_interests WHERE user_city_interests.user_id = ${users.id} AND user_city_interests.activity_name ILIKE ${'%' + searchTerm + '%'})`,
-            
-            // Business profile fields
-            ilike(users.businessName, `%${searchTerm}%`),
-            ilike(users.businessType, `%${searchTerm}%`),
-            ilike(users.businessDescription, `%${searchTerm}%`),
-            ilike(users.specialty, `%${searchTerm}%`),
-            sql`array_to_string(${users.tags}, ',') ILIKE ${'%' + searchTerm + '%'}`,
-            
-            // Location fields - hometown and current
-            ilike(users.location, `%${searchTerm}%`),
-            ilike(users.hometownCity, `%${searchTerm}%`),
-            ilike(users.hometownState, `%${searchTerm}%`),
-            ilike(users.hometownCountry, `%${searchTerm}%`),
-            ilike(users.destinationCity, `%${searchTerm}%`),
-            ilike(users.destinationState, `%${searchTerm}%`),
-            ilike(users.destinationCountry, `%${searchTerm}%`)
-          ];
-          
-          // Special keyword: "new to town" should match users with isNewToTown status
-          if (searchTerm.includes('new') || searchTerm.includes('town')) {
-            searchConditions.push(
-              and(
-                sql`${users.isNewToTown} = true`,
-                sql`${users.newToTownUntil} > NOW()`
-              )
-            );
-          }
-          
-          // Special keywords: "family" or "children" should match users traveling with children
-          if (searchTerm.includes('family') || searchTerm.includes('children') || searchTerm.includes('kid') || searchTerm.includes('parent')) {
-            searchConditions.push(
-              sql`${users.travelingWithChildren} = true`
-            );
-          }
-          
-          whereConditions.push(or(...searchConditions));
+          // Minimal keyword search - just name field for debugging
+          whereConditions.push(
+            ilike(users.name, `%${searchTerm}%`)
+          );
         }
         
         if (process.env.NODE_ENV === 'development') {
@@ -4861,14 +4778,20 @@ Questions? Just reply to this message. Welcome aboard!
         
         if (process.env.NODE_ENV === 'development') console.log('🌴 CITIES TO SEARCH:', citiesToSearch.slice(0, 5), '... (total:', citiesToSearch.length, ')');
         
-        const locationFilter = or(
-          inArray(users.hometownCity, citiesToSearch),
-          ...citiesToSearch.map(city => ilike(users.location, `%${city}%`))
-        );
-        whereConditions.push(locationFilter);
+        // Build location conditions using text matching only (safer for nullable fields)
+        const locationConditions = [];
+        citiesToSearch.forEach(city => {
+          locationConditions.push(ilike(users.hometownCity, `%${city}%`));
+          locationConditions.push(ilike(users.location, `%${city}%`));
+          // CRITICAL: Also search destination cities (where people are traveling TO)
+          locationConditions.push(ilike(users.destinationCity, `%${city}%`));
+          locationConditions.push(ilike(users.travelDestination, `%${city}%`));
+        });
+        
+        whereConditions.push(or(...locationConditions));
         
         if (process.env.NODE_ENV === 'development') {
-          console.log('🔍 LOCATION FILTER: Searching for users where hometownCity in:', citiesToSearch.slice(0, 3), '... OR location contains any of these cities');
+          console.log('🔍 LOCATION FILTER: Searching hometown AND destination cities:', citiesToSearch.slice(0, 3));
         }
       }
 
@@ -5029,7 +4952,7 @@ Questions? Just reply to this message. Welcome aboard!
           events: users.events
         })
         .from(users)
-        .where(whereConditions.length > 0 ? and(...whereConditions) : eq(sql`1`, 0)) // Return no results if no conditions
+        .where(whereConditions.length > 0 ? and(...whereConditions) : sql`1 = 0`) // Return no results if no conditions
         .orderBy(desc(users.id))
         .limit(20);
 
