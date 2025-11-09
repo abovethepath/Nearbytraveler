@@ -9,7 +9,7 @@ export function MessageGroup({ timestampLabel, children }: MessageGroupProps) {
       {/* Centered timestamp separator */}
       <div className="flex justify-center mb-4">
         <div 
-          className="bg-gray-200/80 dark:bg-gray-700/80 px-3 py-1 rounded-full"
+          className="bg-[hsl(var(--msg-header-bg))] border border-[hsl(var(--msg-input-border))] px-3 py-1 rounded-full"
           data-testid={`text-timestamp-group-${timestampLabel}`}
         >
           <p className="text-xs text-[hsl(var(--msg-timestamp))] font-medium">

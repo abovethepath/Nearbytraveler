@@ -23,7 +23,7 @@ export function MessagingLayout({ header, messages, input, sidebar }: MessagingL
     <div className="h-screen flex overflow-hidden">
       {/* Optional sidebar (desktop) */}
       {sidebar && (
-        <div className="hidden md:flex md:w-80 border-r border-gray-200 dark:border-gray-700">
+        <div className="hidden md:flex md:w-80 border-r border-[hsl(var(--msg-input-border))]">
           {sidebar}
         </div>
       )}
@@ -43,7 +43,7 @@ export function MessagingLayout({ header, messages, input, sidebar }: MessagingL
         </div>
 
         {/* Input area (sticky) */}
-        <div className="border-t border-gray-200 dark:border-gray-700 p-4">
+        <div className="border-t border-[hsl(var(--msg-input-border))] p-4">
           {input}
         </div>
       </div>

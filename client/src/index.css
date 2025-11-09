@@ -422,6 +422,10 @@ p, span, div, button, input, textarea, select {
   --msg-timestamp: 220 9% 46%;
   --msg-input-bg: 0 0% 100%;
   --msg-input-border: 220 13% 91%;
+  --msg-reaction-bg: 220 13% 95%;
+  --msg-reaction-text: 220 13% 30%;
+  --msg-hover-bg: 220 13% 90%;
+  --msg-focus-ring: 221.2 83.2% 53.3%;
 }
 
 .dark {
@@ -461,6 +465,10 @@ p, span, div, button, input, textarea, select {
   --msg-timestamp: 220 14% 71%;
   --msg-input-bg: 217 33% 20%;
   --msg-input-border: 217 33% 25%;
+  --msg-reaction-bg: 217 33% 25%;
+  --msg-reaction-text: 220 14% 85%;
+  --msg-hover-bg: 217 33% 22%;
+  --msg-focus-ring: 217.2 91.2% 59.8%;
 }
 
 /* Global Dark Mode Fix - Ensures all text is visible in dark mode */

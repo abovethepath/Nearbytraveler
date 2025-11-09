@@ -1,13 +1,13 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Heart } from 'lucide-react';
-import { MessageWithMeta } from '@/types/messaging';
+import { Heart, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { MessageWithMeta, MessageReaction } from '@/types/messaging';
 
 interface MessageBubbleProps {
   message: MessageWithMeta;
   isSender: boolean;
   showAvatar?: boolean;
   onAvatarClick?: () => void;
-  onReact?: (messageId: number | string, reactionType: string) => void;
+  onReact?: (messageId: number | string, reactionType: MessageReaction['type']) => void;
 }
 
 export function MessageBubble({ message, isSender, showAvatar = true, onAvatarClick, onReact }: MessageBubbleProps) {
@@ -23,22 +23,24 @@ export function MessageBubble({ message, isSender, showAvatar = true, onAvatarCl
     >
       {/* Recipient avatar (left side) */}
       {!isSender && showAvatar && (
-        <div 
-          className="cursor-pointer flex-shrink-0"
+        <button
+          type="button"
+          className="cursor-pointer flex-shrink-0 rounded-full focus:outline-none focus:ring-2 focus:ring-[hsl(var(--msg-focus-ring))]"
           onClick={onAvatarClick}
+          aria-label={`View ${message.senderName || 'user'} profile`}
           data-testid={`avatar-${message.senderId}`}
         >
-          <Avatar className="w-10 h-10">
+          <Avatar className="w-12 h-12">
             <AvatarImage src={message.senderAvatar} alt={message.senderName || 'User'} />
             <AvatarFallback className="bg-blue-600 text-white text-sm">
               {message.senderName?.charAt(0)?.toUpperCase() || '?'}
             </AvatarFallback>
           </Avatar>
-        </div>
+        </button>
       )}
 
       {/* Spacer when avatar is hidden but not sender */}
-      {!isSender && !showAvatar && <div className="w-10 flex-shrink-0" />}
+      {!isSender && !showAvatar && <div className="w-12 flex-shrink-0" />}
 
       {/* Message bubble */}
       <div className="flex flex-col max-w-[75%] sm:max-w-[60%]">
@@ -54,7 +56,7 @@ export function MessageBubble({ message, isSender, showAvatar = true, onAvatarCl
           
           {/* Timestamp */}
           <p 
-            className={`text-xs mt-1 ${isSender ? 'text-white/70' : 'text-white/60'}`}
+            className="text-xs mt-1 text-[hsl(var(--msg-timestamp))]"
             data-testid={`text-timestamp-${message.id}`}
           >
             {timestamp}
@@ -64,17 +66,28 @@ export function MessageBubble({ message, isSender, showAvatar = true, onAvatarCl
         {/* Reactions */}
         {message.reactions && message.reactions.length > 0 && (
           <div className="flex gap-1 mt-1 ml-2">
-            {message.reactions.map((reaction, index) => (
-              <button
-                key={index}
-                onClick={() => onReact?.(message.id, reaction.type)}
-                className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                data-testid={`button-reaction-${reaction.type}-${message.id}`}
-              >
-                {reaction.type === 'heart' && <Heart className="w-3 h-3 fill-red-500 text-red-500" />}
-                <span className="text-xs text-gray-700 dark:text-gray-300">{reaction.count}</span>
-              </button>
-            ))}
+            {message.reactions.map((reaction, index) => {
+              const reactionLabels = {
+                heart: 'Like',
+                thumbsup: 'Thumbs up',
+                thumbsdown: 'Thumbs down'
+              };
+              return (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => onReact?.(message.id, reaction.type)}
+                  aria-label={`${reactionLabels[reaction.type]} this message (${reaction.count})`}
+                  className="flex items-center gap-1 px-3 py-2 min-h-[48px] rounded-full bg-[hsl(var(--msg-reaction-bg))] hover:bg-[hsl(var(--msg-hover-bg))] transition-colors focus:outline-none focus:ring-2 focus:ring-[hsl(var(--msg-focus-ring))]"
+                  data-testid={`button-reaction-${reaction.type}-${message.id}`}
+                >
+                  {reaction.type === 'heart' && <Heart className="w-4 h-4 fill-red-500 text-red-500" />}
+                  {reaction.type === 'thumbsup' && <ThumbsUp className="w-4 h-4 fill-green-500 text-green-500" />}
+                  {reaction.type === 'thumbsdown' && <ThumbsDown className="w-4 h-4 fill-orange-500 text-orange-500" />}
+                  <span className="text-sm text-[hsl(var(--msg-reaction-text))]">{reaction.count}</span>
+                </button>
+              );
+            })}
           </div>
         )}
       </div>
