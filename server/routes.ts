@@ -3297,19 +3297,14 @@ Questions? Just reply to this message!
         }
 
         // CRITICAL: Connect user to nearbytrav system account (USER ID 2)
-        // BUT skip if user came from a referral (QR code signup) - they should only connect to their referrer
+        // This happens for ALL users, including referral signups (they get BOTH connections)
         try {
-          const freshUser = await storage.getUser(user.id);
-          if (freshUser?.referredBy) {
-            console.log(`🔗 PROFILE COMPLETION: User ${user.username} came from referral (referredBy: ${freshUser.referredBy}) - SKIPPING nearbytrav connection`);
-          } else {
-            await storage.createConnection({
-              requesterId: 2,
-              receiverId: user.id,
-              status: 'accepted'
-            });
-            console.log(`✓ PROFILE COMPLETION: Connected user ${user.username} to nearbytrav system account`);
-          }
+          await storage.createConnection({
+            requesterId: 2,
+            receiverId: user.id,
+            status: 'accepted'
+          });
+          console.log(`✓ PROFILE COMPLETION: Connected user ${user.username} to nearbytrav system account`);
         } catch (error: any) {
           console.error('PROFILE COMPLETION ERROR: Creating connection to nearbytrav:', error);
         }
@@ -3503,19 +3498,15 @@ Questions? Just reply to this message!
     }
 
     // ✅ CONNECTION: Create connection to nearbytrav account (USER ID 2)
-    // BUT skip if user came from a referral (QR code signup) - they should only connect to their referrer
+    // This happens for ALL users, including referral signups (they get BOTH connections)
     try {
-      if (user.referredBy) {
-        console.log(`🔗 BOOTSTRAP: User ${user.username} came from referral (referredBy: ${user.referredBy}) - SKIPPING nearbytrav connection`);
-      } else {
-        console.log(`🤝 BOOTSTRAP: Creating connection to nearbytrav account`);
-        await storage.createConnection({
-          requesterId: 2,
-          receiverId: user.id,
-          status: 'accepted'
-        });
-        console.log(`✅ BOOTSTRAP: Connection created to nearbytrav account`);
-      }
+      console.log(`🤝 BOOTSTRAP: Creating connection to nearbytrav account`);
+      await storage.createConnection({
+        requesterId: 2,
+        receiverId: user.id,
+        status: 'accepted'
+      });
+      console.log(`✅ BOOTSTRAP: Connection created to nearbytrav account`);
     } catch (error: any) {
       console.error('❌ BOOTSTRAP: Error creating connection to nearbytrav:', error);
     }
