@@ -127,6 +127,8 @@ export default function SignupTraveling() {
       // Get referral code and connection note from QR code signup flow
       const referralCode = sessionStorage.getItem('referralCode');
       const connectionNote = sessionStorage.getItem('connectionNote');
+      console.log('🔗 REFERRAL DEBUG - referralCode from sessionStorage:', referralCode);
+      console.log('🔗 REFERRAL DEBUG - connectionNote from sessionStorage:', connectionNote);
 
       // CRITICAL: Merge account data INTO formData to ensure submission has complete data
       const finalFormData = {
@@ -199,6 +201,10 @@ export default function SignupTraveling() {
         ...(referralCode && { referralCode }),
         ...(connectionNote && { connectionNote })
       };
+
+      console.log('🔗 REFERRAL DEBUG - registrationData includes referralCode?', 'referralCode' in registrationData);
+      console.log('🔗 REFERRAL DEBUG - registrationData.referralCode value:', registrationData.referralCode);
+      console.log('🔗 REFERRAL DEBUG - Full registrationData:', registrationData);
 
       // Simple validation for required fields (after data is built)
       const errors: string[] = [];
