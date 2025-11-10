@@ -1784,13 +1784,17 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       
       if (process.env.NODE_ENV === 'development') console.log(`🔍 CITY STATS FIXED: Searching for users in cities:`, searchCities);
         
+      // LOCALS = Anyone whose HOMETOWN is this city, regardless of userType
+      // This includes both userType='local' AND userType='traveler' users
+      // If your hometown is LA, you're a local in LA even if you travel elsewhere
       localUsersResult = await db
         .select({ count: count() })
         .from(users)
         .where(
           and(
             or(...searchCities.map(searchCity => eq(users.hometownCity, searchCity))),
-            eq(users.userType, 'local')
+            // Exclude businesses - they're counted separately
+            ne(users.userType, 'business')
           )
         );
           
@@ -1843,17 +1847,6 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           )
         );
 
-      // 4. Travelers FROM this city (hometown = city, userType = traveler) - permanent travelers
-      const travelersFromCityResult = await db
-        .select({ count: count() })
-        .from(users)
-        .where(
-          and(
-            or(...searchCities.map(searchCity => eq(users.hometownCity, searchCity))),
-            eq(users.userType, 'traveler')
-          )
-        );
-
       eventsResult = await db
         .select({ count: count() })
         .from(events)
@@ -1868,10 +1861,10 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const travelPlansCount = travelerUsersWithPlansResult[0]?.count || 0;
       const currentToCount = currentTravelersToResult[0]?.count || 0;
       const destinationCount = travelersWithDestinationResult[0]?.count || 0;
-      const fromCityCount = travelersFromCityResult[0]?.count || 0;
       
-      // For now, sum all counts (we may have some overlap but it's better than missing users)
-      const travelerCount = travelPlansCount + currentToCount + destinationCount + fromCityCount;
+      // FIX: Do NOT count hometown travelers as travelers - they are locals!
+      // Removed travelersFromCityResult to fix locals being incorrectly counted as travelers
+      const travelerCount = travelPlansCount + currentToCount + destinationCount;
       const eventCount = eventsResult[0]?.count || 0;
 
       const cityStats = {
