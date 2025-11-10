@@ -4197,6 +4197,11 @@ Questions? Just reply to this message!
       });
 
       // HANDLE REFERRAL CONNECTIONS
+      console.log('🔗 REFERRAL DEBUG - Checking for referralCode in request body...');
+      console.log('🔗 REFERRAL DEBUG - req.body.referralCode:', req.body.referralCode);
+      console.log('🔗 REFERRAL DEBUG - req.body.connectionNote:', req.body.connectionNote);
+      console.log('🔗 REFERRAL DEBUG - Has referralCode?', !!req.body.referralCode);
+      
       if (req.body.referralCode) {
         try {
           console.log('🔗 Processing referral signup with code:', req.body.referralCode);
@@ -4237,11 +4242,14 @@ Questions? Just reply to this message!
             console.log(`✅ Referral connection created: ${referrer.username} → ${user.username} (${connectionNote})`);
           } else {
             console.log('❌ Invalid referral code:', req.body.referralCode);
+            console.log('❌ No referrer found with this code in database');
           }
         } catch (error) {
-          console.error('Error processing referral:', error);
+          console.error('❌ Error processing referral:', error);
           // Don't fail registration if referral processing fails
         }
+      } else {
+        console.log('🔗 REFERRAL DEBUG - No referralCode in request, skipping referral processing');
       }
 
       // IMPORTANT: Award aura points to new users for signing up
