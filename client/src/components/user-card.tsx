@@ -203,7 +203,8 @@ export default function UserCard({
                   // Check if user has travel plans data and use new logic
                   if ((user as any).travelPlans && Array.isArray((user as any).travelPlans)) {
                     const currentOrNextTrip = getCurrentOrNextTrip((user as any).travelPlans);
-                    if (currentOrNextTrip && currentOrNextTrip.destination) {
+                    // FIX: Check for null/undefined/empty destination before displaying
+                    if (currentOrNextTrip && currentOrNextTrip.destination && currentOrNextTrip.destination.trim() && currentOrNextTrip.destination.toLowerCase() !== 'null') {
                       return (
                         <div className="flex items-center justify-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-lg">
                           {currentOrNextTrip.isCurrent ? '🧳' : '✈️'} 
@@ -216,7 +217,8 @@ export default function UserCard({
                   }
                   
                   // Fallback to existing logic for backward compatibility
-                  if (user.isCurrentlyTraveling && user.travelDestination) {
+                  // FIX: Check for null/undefined/empty destination before displaying
+                  if (user.isCurrentlyTraveling && user.travelDestination && user.travelDestination.trim() && user.travelDestination.toLowerCase() !== 'null') {
                     return (
                       <div className="flex items-center justify-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-lg">
                         🧳 <span className="text-center">Traveling to {user.travelDestination.split(',')[0]}</span>

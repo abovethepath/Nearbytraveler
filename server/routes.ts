@@ -1643,16 +1643,36 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             
             // Single query to get all counts at once using conditional aggregation  
             // Using IN clause with properly escaped literal values
+            // FIX: Use travel_destination and is_currently_traveling instead of destination_city
+            
+            // Build ILIKE patterns for traveler destination matching
+            const ilikePatternsArray = cityNames.map(city => `'%${city.replace(/'/g, "''")}%'`).join(', ');
+            
             const statsQuery = await db.execute(sql.raw(`
+              WITH city_patterns AS (
+                SELECT ARRAY[${ilikePatternsArray}] as patterns
+              )
               SELECT 
                 COUNT(DISTINCT CASE WHEN u.user_type = 'local' AND u.hometown_city IN (${cityList}) THEN u.id END) as local_count,
                 COUNT(DISTINCT CASE WHEN u.user_type = 'business' AND u.hometown_city IN (${cityList}) THEN u.id END) as business_count,
                 COUNT(DISTINCT CASE WHEN u.user_type = 'traveler' AND u.hometown_city IN (${cityList}) THEN u.id END) as traveler_from_count,
-                COUNT(DISTINCT CASE WHEN u.user_type = 'traveler' AND u.destination_city IN (${cityList}) THEN u.id END) as traveler_to_count,
+                COUNT(DISTINCT CASE 
+                  WHEN u.is_currently_traveling = true 
+                  AND EXISTS (
+                    SELECT 1 FROM city_patterns cp
+                    WHERE u.travel_destination ILIKE ANY(cp.patterns)
+                  )
+                  THEN u.id 
+                END) as traveler_to_count,
                 COUNT(DISTINCT e.id) as event_count
-              FROM users u
+              FROM users u, city_patterns
               LEFT JOIN events e ON e.city IN (${cityList})
-              WHERE u.hometown_city IN (${cityList}) OR u.destination_city IN (${cityList})
+              WHERE u.hometown_city IN (${cityList}) 
+                OR (u.is_currently_traveling = true 
+                    AND EXISTS (
+                      SELECT 1 FROM city_patterns cp  
+                      WHERE u.travel_destination ILIKE ANY(cp.patterns)
+                    ))
             `));
 
             const stats = statsQuery.rows[0] as any;

@@ -3030,7 +3030,8 @@ export class DatabaseStorage implements IStorage {
       }
       
       // Los Angeles Metropolitan Area expansion - CRITICAL FOR USER DISCOVERY
-      if (lowerSearchCity.includes('los angeles') && location.includes('California')) {
+      // FIX: Handle both "California" and "CA" abbreviation
+      if (lowerSearchCity.includes('los angeles') && (location.includes('California') || location.includes(', CA'))) {
         const laMetroCities = [
           'Playa del Rey', 'Santa Monica', 'Beverly Hills', 'Hollywood', 'Venice', 
           'Culver City', 'Manhattan Beach', 'Redondo Beach', 'El Segundo', 
