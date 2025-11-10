@@ -604,6 +604,12 @@ export const insertUserSchema = createInsertSchema(users).omit({
   hometownState: z.string().optional(),
   hometownCountry: z.string().min(1, "Hometown country is required"),
   interests: z.array(z.string()).optional().default([]),
+  // Travel destination fields for traveling user signup
+  destinationCity: z.string().optional(),
+  destinationState: z.string().optional(),
+  destinationCountry: z.string().optional(),
+  travelDestination: z.string().optional(),
+  isCurrentlyTraveling: z.boolean().optional(),
 });
 
 export const insertWaitlistLeadSchema = createInsertSchema(waitlistLeads).omit({

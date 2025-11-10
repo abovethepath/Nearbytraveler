@@ -183,9 +183,6 @@ export default function SignupTraveling() {
         destinationState: formData.destinationState?.trim() || "",
         destinationCountry: formData.destinationCountry.trim(),
         travelDestination: destination,
-        currentTravelCity: formData.destinationCity.trim(),
-        currentTravelState: formData.destinationState?.trim() || "",
-        currentTravelCountry: formData.destinationCountry.trim(),
         travelReturnDate: formData.travelReturnDate,
 
         // top choices (require at least 3)
