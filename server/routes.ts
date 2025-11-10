@@ -4780,7 +4780,8 @@ Questions? Just reply to this message. Welcome aboard!
               LOWER(array_to_string(${users.events}, ',')) LIKE ${pattern} OR
               LOWER(array_to_string(${users.travelerTypes}, ',')) LIKE ${pattern} OR
               LOWER(array_to_string(${users.languages}, ',')) LIKE ${pattern} OR
-              LOWER(array_to_string(${users.countriesVisited}, ',')) LIKE ${pattern}
+              LOWER(array_to_string(${users.countriesVisited}, ',')) LIKE ${pattern} OR
+              LOWER(array_to_string(${users.sexualPreference}, ',')) LIKE ${pattern}
             )`
           );
         }

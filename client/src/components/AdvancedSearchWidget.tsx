@@ -250,7 +250,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
             </p>
             <Input
               id="keyword-search"
-              placeholder="Try: veteran, spanish, france, luxury, gay, kids, photographer..."
+              placeholder="Try: veteran, spanish, france, luxury, polyamorous, kids, photographer..."
               value={advancedFilters.search}
               onChange={(e) => setAdvancedFilters(prev => ({ ...prev, search: e.target.value }))}
               onKeyDown={(e) => {
