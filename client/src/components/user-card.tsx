@@ -205,25 +205,39 @@ export default function UserCard({
                     const currentOrNextTrip = getCurrentOrNextTrip((user as any).travelPlans);
                     // FIX: Check for null/undefined/empty destination before displaying
                     if (currentOrNextTrip && currentOrNextTrip.destination && currentOrNextTrip.destination.trim() && currentOrNextTrip.destination.toLowerCase() !== 'null') {
-                      return (
-                        <div className="flex items-center justify-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-lg">
-                          {currentOrNextTrip.isCurrent ? '🧳' : '✈️'} 
-                          <span className="text-center">
-                            {currentOrNextTrip.isCurrent ? 'Traveling to' : 'Next trip to'} {currentOrNextTrip.destination.split(',')[0]}
-                          </span>
-                        </div>
-                      );
+                      // Extract first valid city (filter out null/undefined/empty parts)
+                      const cityParts = currentOrNextTrip.destination.split(',')
+                        .map(part => part.trim())
+                        .filter(part => part && part.toLowerCase() !== 'null' && part.toLowerCase() !== 'undefined');
+                      
+                      if (cityParts.length > 0) {
+                        return (
+                          <div className="flex items-center justify-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-lg">
+                            {currentOrNextTrip.isCurrent ? '🧳' : '✈️'} 
+                            <span className="text-center">
+                              {currentOrNextTrip.isCurrent ? 'Traveling to' : 'Next trip to'} {cityParts[0]}
+                            </span>
+                          </div>
+                        );
+                      }
                     }
                   }
                   
                   // Fallback to existing logic for backward compatibility
                   // FIX: Check for null/undefined/empty destination before displaying
                   if (user.isCurrentlyTraveling && user.travelDestination && user.travelDestination.trim() && user.travelDestination.toLowerCase() !== 'null') {
-                    return (
-                      <div className="flex items-center justify-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-lg">
-                        🧳 <span className="text-center">Traveling to {user.travelDestination.split(',')[0]}</span>
-                      </div>
-                    );
+                    // Extract first valid city (filter out null/undefined/empty parts)
+                    const cityParts = user.travelDestination.split(',')
+                      .map(part => part.trim())
+                      .filter(part => part && part.toLowerCase() !== 'null' && part.toLowerCase() !== 'undefined');
+                    
+                    if (cityParts.length > 0) {
+                      return (
+                        <div className="flex items-center justify-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-lg">
+                          🧳 <span className="text-center">Traveling to {cityParts[0]}</span>
+                        </div>
+                      );
+                    }
                   }
                   
                   return null;
