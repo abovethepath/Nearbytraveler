@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useLocation } from 'wouter';
 import { CheckCircle, Loader2, Users, MessageCircle, MapPin } from 'lucide-react';
 import { useAuth } from '@/App';
+import Navbar from '@/components/navbar';
 
 interface BootstrapStatus {
   status: 'pending' | 'completed' | 'error';
@@ -100,8 +101,10 @@ export default function AccountSuccess() {
   const isProfileReady = isAuthenticated && user && bootstrapTriggered;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
-      <div className="max-w-lg mx-auto">
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
+        <div className="max-w-lg mx-auto">
         <Card className="shadow-2xl border-2 border-green-200 dark:border-green-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md">
           <CardHeader className="text-center bg-green-50 dark:bg-green-900/20 rounded-t-lg pb-8">
             <div className="flex justify-center mb-4">
@@ -178,5 +181,6 @@ export default function AccountSuccess() {
         </Card>
       </div>
     </div>
+    </>
   );
 }
