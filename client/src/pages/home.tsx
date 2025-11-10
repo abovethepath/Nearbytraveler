@@ -178,7 +178,8 @@ export default function Home() {
     return {
       ...effectiveUser,
       isCurrentlyTraveling: !!currentTravelDestination,
-      travelDestination: currentTravelDestination,
+      // CRITICAL: Only set travelDestination if we have a valid sanitized value
+      travelDestination: currentTravelDestination || effectiveUser.travelDestination || null,
       actualCurrentLocation // Add this new field
     };
   }, [effectiveUser, travelPlans]);
@@ -257,7 +258,8 @@ export default function Home() {
       
       return {
         ...user,
-        travelDestination: currentTravelDestination || user.travelDestination,
+        // CRITICAL: Only set travelDestination if we have a valid sanitized value
+        travelDestination: currentTravelDestination || user.travelDestination || null,
         isCurrentlyTraveling,
         displayLocation: currentLocation, // This will show "Rome" instead of "Traveling"
         locationContext: isCurrentlyTraveling ? 'traveling' : 'hometown'
@@ -271,7 +273,8 @@ export default function Home() {
 
     return {
       ...user,
-      travelDestination: currentTravelDestination || user.travelDestination,
+      // CRITICAL: Only set travelDestination if we have a valid sanitized value
+      travelDestination: currentTravelDestination || user.travelDestination || null,
       isCurrentlyTraveling,
       displayLocation,
       locationContext: isCurrentlyTraveling ? 'traveling' : 'hometown'

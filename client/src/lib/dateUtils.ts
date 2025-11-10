@@ -252,6 +252,21 @@ export function getCurrentOrNextTrip(travelPlans: any[]): { destination: string;
 }
 
 /**
+ * Sanitize destination strings to reject placeholder/invalid values
+ * Rejects: 'null', 'undefined', empty strings, whitespace-only strings
+ */
+export function sanitizeDestination(destination: any): string | null {
+  if (!destination) return null;
+  
+  const trimmed = String(destination).trim();
+  const invalid = ['null', 'undefined', '', 'none', 'n/a'];
+  
+  if (invalid.includes(trimmed.toLowerCase())) return null;
+  
+  return trimmed;
+}
+
+/**
  * Check if a user is currently traveling based on their travel plans
  * CRITICAL: Users only become NEARBY TRAVELERS when trip dates are active
  * Returns destination string for display, null if not traveling
@@ -299,7 +314,9 @@ export function getCurrentTravelDestination(travelPlans: any[]): string | null {
         const cleanDestination = plan.destination
           .replace(/,\s*\w+\s+Prefecture/g, '') // Remove "Prefecture" mentions
           .replace(/(\w+),\s*\1/g, '$1'); // Remove duplicate city names
-        return cleanDestination; // Return the cleaned destination string for display
+        
+        // CRITICAL: Sanitize to reject placeholder values like 'null', 'undefined', etc.
+        return sanitizeDestination(cleanDestination);
       }
     }
   }
