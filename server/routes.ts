@@ -4755,12 +4755,10 @@ Questions? Just reply to this message. Welcome aboard!
         
         // For each search term, create conditions that must ALL match (AND logic)
         for (const searchTerm of searchTerms) {
-          // FIX: Use raw SQL to search ALL fields including arrays, avoiding Drizzle's 10-parameter OR limit
-          // This searches EVERY user-entered field: text fields, array fields, and profile data
+          // COMPREHENSIVE SEARCH: Search ALL profile fields, related tables, and "Things I Want To Do In..." sections
           const pattern = `%${searchTerm.toLowerCase()}%`;
           
-          // Single raw SQL condition that searches all relevant fields
-          // This includes array fields (interests, activities, events) using array_to_string
+          // Single raw SQL condition that searches EVERY user-visible field across users table and related tables
           whereConditions.push(
             sql`(
               LOWER(${users.name}) LIKE ${pattern} OR
@@ -4775,13 +4773,46 @@ Questions? Just reply to this message. Welcome aboard!
               LOWER(${users.businessDescription}) LIKE ${pattern} OR
               LOWER(${users.gender}) LIKE ${pattern} OR
               LOWER(${users.militaryStatus}) LIKE ${pattern} OR
-              LOWER(array_to_string(${users.interests}, ',')) LIKE ${pattern} OR
-              LOWER(array_to_string(${users.activities}, ',')) LIKE ${pattern} OR
-              LOWER(array_to_string(${users.events}, ',')) LIKE ${pattern} OR
-              LOWER(array_to_string(${users.travelerTypes}, ',')) LIKE ${pattern} OR
-              LOWER(array_to_string(${users.languages}, ',')) LIKE ${pattern} OR
-              LOWER(array_to_string(${users.countriesVisited}, ',')) LIKE ${pattern} OR
-              LOWER(array_to_string(${users.sexualPreference}, ',')) LIKE ${pattern}
+              LOWER(${users.secretActivities}) LIKE ${pattern} OR
+              LOWER(${users.travelWhy}) LIKE ${pattern} OR
+              LOWER(${users.travelHow}) LIKE ${pattern} OR
+              LOWER(${users.travelBudget}) LIKE ${pattern} OR
+              LOWER(${users.travelGroup}) LIKE ${pattern} OR
+              LOWER(${users.services}) LIKE ${pattern} OR
+              LOWER(${users.specialOffers}) LIKE ${pattern} OR
+              LOWER(${users.targetCustomers}) LIKE ${pattern} OR
+              LOWER(${users.certifications}) LIKE ${pattern} OR
+              LOWER(${users.businessType}) LIKE ${pattern} OR
+              LOWER(${users.customStatus}) LIKE ${pattern} OR
+              LOWER(${users.locationBasedStatus}) LIKE ${pattern} OR
+              LOWER(COALESCE(array_to_string(${users.interests}, ','), '')) LIKE ${pattern} OR
+              LOWER(COALESCE(array_to_string(${users.activities}, ','), '')) LIKE ${pattern} OR
+              LOWER(COALESCE(array_to_string(${users.events}, ','), '')) LIKE ${pattern} OR
+              LOWER(COALESCE(array_to_string(${users.travelerTypes}, ','), '')) LIKE ${pattern} OR
+              LOWER(COALESCE(array_to_string(${users.languages}, ','), '')) LIKE ${pattern} OR
+              LOWER(COALESCE(array_to_string(${users.languagesSpoken}, ','), '')) LIKE ${pattern} OR
+              LOWER(COALESCE(array_to_string(${users.countriesVisited}, ','), '')) LIKE ${pattern} OR
+              LOWER(COALESCE(array_to_string(${users.sexualPreference}, ','), '')) LIKE ${pattern} OR
+              LOWER(COALESCE(array_to_string(${users.travelWhat}, ','), '')) LIKE ${pattern} OR
+              LOWER(COALESCE(array_to_string(${users.travelStyle}, ','), '')) LIKE ${pattern} OR
+              LOWER(COALESCE(array_to_string(${users.localExpertise}, ','), '')) LIKE ${pattern} OR
+              LOWER(COALESCE(array_to_string(${users.localActivities}, ','), '')) LIKE ${pattern} OR
+              LOWER(COALESCE(array_to_string(${users.localEvents}, ','), '')) LIKE ${pattern} OR
+              LOWER(COALESCE(array_to_string(${users.plannedEvents}, ','), '')) LIKE ${pattern} OR
+              LOWER(COALESCE(array_to_string(${users.defaultTravelInterests}, ','), '')) LIKE ${pattern} OR
+              LOWER(COALESCE(array_to_string(${users.defaultTravelActivities}, ','), '')) LIKE ${pattern} OR
+              LOWER(COALESCE(array_to_string(${users.defaultTravelEvents}, ','), '')) LIKE ${pattern} OR
+              LOWER(COALESCE(array_to_string(${users.tags}, ','), '')) LIKE ${pattern} OR
+              EXISTS (
+                SELECT 1 FROM user_city_interests 
+                WHERE user_city_interests.user_id = users.id 
+                AND (LOWER(user_city_interests.activity_name) LIKE ${pattern} OR LOWER(user_city_interests.city_name) LIKE ${pattern})
+              ) OR
+              EXISTS (
+                SELECT 1 FROM user_event_interests 
+                WHERE user_event_interests.user_id = users.id 
+                AND (LOWER(user_event_interests.event_title) LIKE ${pattern} OR LOWER(user_event_interests.city_name) LIKE ${pattern})
+              )
             )`
           );
         }
