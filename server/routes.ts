@@ -3297,13 +3297,19 @@ Questions? Just reply to this message!
         }
 
         // CRITICAL: Connect user to nearbytrav system account (USER ID 2)
+        // BUT skip if user came from a referral (QR code signup) - they should only connect to their referrer
         try {
-          await storage.createConnection({
-            requesterId: 2,
-            receiverId: user.id,
-            status: 'accepted'
-          });
-          console.log(`✓ PROFILE COMPLETION: Connected user ${user.username} to nearbytrav system account`);
+          const freshUser = await storage.getUser(user.id);
+          if (freshUser?.referredBy) {
+            console.log(`🔗 PROFILE COMPLETION: User ${user.username} came from referral (referredBy: ${freshUser.referredBy}) - SKIPPING nearbytrav connection`);
+          } else {
+            await storage.createConnection({
+              requesterId: 2,
+              receiverId: user.id,
+              status: 'accepted'
+            });
+            console.log(`✓ PROFILE COMPLETION: Connected user ${user.username} to nearbytrav system account`);
+          }
         } catch (error: any) {
           console.error('PROFILE COMPLETION ERROR: Creating connection to nearbytrav:', error);
         }
@@ -3497,14 +3503,19 @@ Questions? Just reply to this message!
     }
 
     // ✅ CONNECTION: Create connection to nearbytrav account (USER ID 2)
+    // BUT skip if user came from a referral (QR code signup) - they should only connect to their referrer
     try {
-      console.log(`🤝 BOOTSTRAP: Creating connection to nearbytrav account`);
-      await storage.createConnection({
-        requesterId: 2,
-        receiverId: user.id,
-        status: 'accepted'
-      });
-      console.log(`✅ BOOTSTRAP: Connection created to nearbytrav account`);
+      if (user.referredBy) {
+        console.log(`🔗 BOOTSTRAP: User ${user.username} came from referral (referredBy: ${user.referredBy}) - SKIPPING nearbytrav connection`);
+      } else {
+        console.log(`🤝 BOOTSTRAP: Creating connection to nearbytrav account`);
+        await storage.createConnection({
+          requesterId: 2,
+          receiverId: user.id,
+          status: 'accepted'
+        });
+        console.log(`✅ BOOTSTRAP: Connection created to nearbytrav account`);
+      }
     } catch (error: any) {
       console.error('❌ BOOTSTRAP: Error creating connection to nearbytrav:', error);
     }
@@ -3955,6 +3966,14 @@ Questions? Just reply to this message!
 
       // CRITICAL: Preserve secret activities from original data before schema parsing
       const preservedSecretActivities = processedData.secretActivities || processedData.secretLocalQuestion;
+      
+      // CRITICAL: Preserve referral data from original data before schema parsing (QR code referrals)
+      const preservedReferralCode = processedData.referralCode;
+      const preservedConnectionNote = processedData.connectionNote;
+      if (process.env.NODE_ENV === 'development' && preservedReferralCode) {
+        console.log('🔗 REFERRAL: Preserved referralCode before schema parsing:', preservedReferralCode);
+        console.log('🔗 REFERRAL: Preserved connectionNote before schema parsing:', preservedConnectionNote);
+      }
 
       if (process.env.NODE_ENV === 'development') console.log(" BEFORE SCHEMA PARSING - processedData location fields:", {
         hometownCity: processedData.hometownCity,
@@ -3990,6 +4009,16 @@ Questions? Just reply to this message!
       // CRITICAL: Restore secret activities after schema parsing
       if (preservedSecretActivities) {
         userData.secretActivities = preservedSecretActivities;
+      }
+      
+      // CRITICAL: Restore referral data after schema parsing (QR code referrals)
+      if (preservedReferralCode) {
+        (userData as any).referralCode = preservedReferralCode;
+        if (process.env.NODE_ENV === 'development') console.log('🔗 REFERRAL: Restored referralCode after schema parsing:', preservedReferralCode);
+      }
+      if (preservedConnectionNote) {
+        (userData as any).connectionNote = preservedConnectionNote;
+        if (process.env.NODE_ENV === 'development') console.log('🔗 REFERRAL: Restored connectionNote after schema parsing:', preservedConnectionNote);
       }
 
       // Save signup preferences as default travel preferences for ALL user types
@@ -4197,14 +4226,17 @@ Questions? Just reply to this message!
       });
 
       // HANDLE REFERRAL CONNECTIONS
-      console.log('🔗 REFERRAL DEBUG - Checking for referralCode in request body...');
+      const referralCode = (userData as any).referralCode || req.body.referralCode;
+      const connectionNote = (userData as any).connectionNote || req.body.connectionNote;
+      console.log('🔗 REFERRAL DEBUG - Checking for referralCode...');
+      console.log('🔗 REFERRAL DEBUG - userData.referralCode:', (userData as any).referralCode);
       console.log('🔗 REFERRAL DEBUG - req.body.referralCode:', req.body.referralCode);
-      console.log('🔗 REFERRAL DEBUG - req.body.connectionNote:', req.body.connectionNote);
-      console.log('🔗 REFERRAL DEBUG - Has referralCode?', !!req.body.referralCode);
+      console.log('🔗 REFERRAL DEBUG - Final referralCode:', referralCode);
+      console.log('🔗 REFERRAL DEBUG - connectionNote:', connectionNote);
       
-      if (req.body.referralCode) {
+      if (referralCode) {
         try {
-          console.log('🔗 Processing referral signup with code:', req.body.referralCode);
+          console.log('🔗 Processing referral signup with code:', referralCode);
           
           // Find the referrer by their referral code
           const [referrer] = await db
@@ -4214,7 +4246,7 @@ Questions? Just reply to this message!
               referralCount: users.referralCount
             })
             .from(users)
-            .where(eq(users.referralCode, req.body.referralCode))
+            .where(eq(users.referralCode, referralCode))
             .limit(1);
 
           if (referrer) {
@@ -4223,15 +4255,15 @@ Questions? Just reply to this message!
               .set({ referredBy: referrer.id })
               .where(eq(users.id, user.id));
 
-            // Get connection note from request body if provided
-            const connectionNote = req.body.connectionNote || 'Connected through QR code share';
+            // Get connection note from above if provided
+            const finalConnectionNote = connectionNote || 'Connected through QR code share';
 
             // Create automatic connection between referrer and new user
             await db.insert(connections).values({
               requesterId: referrer.id,
               receiverId: user.id,
               status: 'accepted', // Auto-accept referral connections
-              connectionNote: connectionNote
+              connectionNote: finalConnectionNote
             });
 
             // Update referrer's referral count
@@ -4239,9 +4271,9 @@ Questions? Just reply to this message!
               .set({ referralCount: (referrer.referralCount || 0) + 1 })
               .where(eq(users.id, referrer.id));
 
-            console.log(`✅ Referral connection created: ${referrer.username} → ${user.username} (${connectionNote})`);
+            console.log(`✅ Referral connection created: ${referrer.username} → ${user.username} (${finalConnectionNote})`);
           } else {
-            console.log('❌ Invalid referral code:', req.body.referralCode);
+            console.log('❌ Invalid referral code:', referralCode);
             console.log('❌ No referrer found with this code in database');
           }
         } catch (error) {
