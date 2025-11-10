@@ -101,6 +101,39 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     
     fetchAllCities();
   }, []);
+  
+  // CRITICAL FIX: Re-filter cities when userProfile loads
+  useEffect(() => {
+    if (!userProfile || allCities.length === 0) return;
+    
+    console.log('🏙️ MATCH: Filtering cities based on user profile');
+    const relevantCities: any[] = [];
+    
+    // Add hometown city
+    if (userProfile.hometownCity) {
+      const hometownCity = allCities.find((c: any) => 
+        c.city.toLowerCase() === userProfile.hometownCity?.toLowerCase()
+      );
+      if (hometownCity) {
+        relevantCities.push(hometownCity);
+      }
+    }
+    
+    // Add destination city
+    if (userProfile.destinationCity) {
+      const destCity = allCities.find((c: any) => 
+        c.city.toLowerCase() === userProfile.destinationCity?.toLowerCase()
+      );
+      if (destCity && !relevantCities.some((c: any) => c.city === destCity.city)) {
+        relevantCities.push(destCity);
+      }
+    }
+    
+    if (relevantCities.length > 0) {
+      console.log('🏙️ MATCH: Filtered to user cities:', relevantCities.map((c: any) => c.city));
+      setFilteredCities(relevantCities);
+    }
+  }, [userProfile, allCities]);
 
   // Fetch city activities when a city is selected
   useEffect(() => {
@@ -244,61 +277,34 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
   const fetchAllCities = async () => {
     try {
-      // FIXED: Use dynamic city stats API instead of hardcoded cities
       console.log('🏙️ MATCH: Fetching cities from city stats API...');
       const response = await fetch('/api/city-stats');
       if (response.ok) {
         const citiesData = await response.json();
         console.log('🏙️ MATCH: Loaded', citiesData.length, 'cities from API');
         
-        // Add default photos and gradients to the dynamic cities
-        const citiesWithPhotos = citiesData.map((city: any, index: number) => {
-          // Using colorful gradients instead of photos for easier management
-          
-          const gradientOptions = [
-            "from-orange-400/20 to-blue-600/20",
-            "from-blue-400/20 to-orange-600/20",
-            "from-blue-300/20 to-orange-500/20", 
-            "from-orange-300/20 to-blue-500/20",
-            "from-blue-500/20 to-orange-400/20",
-            "from-orange-500/20 to-blue-400/20",
-            "from-blue-600/20 to-orange-300/20",
-            "from-orange-600/20 to-blue-300/20"
-          ];
-          
-          return {
-            ...city,
-            gradient: gradientOptions[index % gradientOptions.length]
-          };
-        });
-        
-        // Sort cities: Los Angeles Metro first (launch city), then alphabetically
-        const sortedCities = citiesWithPhotos.sort((a: any, b: any) => {
-          // Los Angeles Metro always first
-          if (a.city === 'Los Angeles Metro' && b.city !== 'Los Angeles Metro') return -1;
-          if (b.city === 'Los Angeles Metro' && a.city !== 'Los Angeles Metro') return 1;
-          // All others alphabetically
-          return a.city.localeCompare(b.city);
-        });
-        
-        setAllCities(sortedCities);
-        console.log('🏙️ MATCH: Cities loaded successfully:', sortedCities.length, '- Los Angeles is first');
-      } else {
-        console.error('🏙️ MATCH: Failed to fetch cities from API, falling back to hardcoded');
-        // Fallback to original cities if API fails
-        const launchCities = [
-          { 
-            city: "Los Angeles Metro", 
-            state: "California", 
-            country: "United States", 
-            gradient: "from-orange-400/20 to-red-600/20",
-            localCount: 0,
-            travelerCount: 0,
-            businessCount: 0,
-            eventCount: 0
-          }
+        const gradientOptions = [
+          "from-orange-400/20 to-blue-600/20",
+          "from-blue-400/20 to-orange-600/20",
+          "from-blue-300/20 to-orange-500/20", 
+          "from-orange-300/20 to-blue-500/20",
+          "from-blue-500/20 to-orange-400/20",
+          "from-orange-500/20 to-blue-400/20",
+          "from-blue-600/20 to-orange-300/20",
+          "from-orange-600/20 to-blue-300/20"
         ];
-        setAllCities(launchCities);
+        
+        const citiesWithPhotos = citiesData.map((city: any, index: number) => ({
+          ...city,
+          gradient: gradientOptions[index % gradientOptions.length]
+        }));
+        
+        // Store ALL cities - filtering happens in separate useEffect when userProfile loads
+        setAllCities(citiesWithPhotos);
+        console.log('🏙️ MATCH: Cities loaded successfully:', citiesWithPhotos.length);
+      } else {
+        console.error('🏙️ MATCH: Failed to fetch cities from API');
+        setAllCities([]);
       }
     } catch (error) {
       console.error('🏙️ MATCH: Error loading cities:', error);

@@ -62,8 +62,9 @@ function deduplicateActivities(activities: GeneratedActivity[]): GeneratedActivi
 
 export async function generateCityActivities(cityName: string): Promise<GeneratedActivity[]> {
   try {
-    // Start with generic activities that all cities should have
-    const allActivities: GeneratedActivity[] = [...GENERIC_CITY_ACTIVITIES];
+    // REMOVED: Don't start with generic activities - they cause poor quality results
+    // Only use AI-generated city-specific activities
+    const allActivities: GeneratedActivity[] = [];
     
     const prompt = `Generate a comprehensive list of 25-30 HIGHLY SPECIFIC and UNIQUE activities for ${cityName}. 
 
