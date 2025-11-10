@@ -85,6 +85,12 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     localStorage.setItem('hideMatchInitialHero', String(!newValue));
   };
 
+  // Fetch user profile to sync with existing activities
+  const { data: userProfile } = useQuery<UserProfile>({
+    queryKey: ['/api/users', user?.id],
+    enabled: !!user?.id
+  });
+
   // Fetch all cities on component mount
   useEffect(() => {
     // FORCE RESET - ensure we start with no city selected
@@ -157,12 +163,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       setFilteredCities(allCities);
     }
   }, [citySearchTerm, allCities]);
-
-  // Fetch user profile to sync with existing activities
-  const { data: userProfile } = useQuery<UserProfile>({
-    queryKey: ['/api/users', user?.id],
-    enabled: !!user?.id
-  });
 
   // Hydrate initial selections from user profile
   useEffect(() => {
