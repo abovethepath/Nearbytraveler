@@ -1653,9 +1653,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
                 SELECT ARRAY[${ilikePatternsArray}] as patterns
               )
               SELECT 
-                COUNT(DISTINCT CASE WHEN u.user_type = 'local' AND u.hometown_city IN (${cityList}) THEN u.id END) as local_count,
+                COUNT(DISTINCT CASE WHEN u.hometown_city IN (${cityList}) AND (u.user_type = 'local' OR NOT u.is_currently_traveling) THEN u.id END) as local_count,
                 COUNT(DISTINCT CASE WHEN u.user_type = 'business' AND u.hometown_city IN (${cityList}) THEN u.id END) as business_count,
-                COUNT(DISTINCT CASE WHEN u.user_type = 'traveler' AND u.hometown_city IN (${cityList}) THEN u.id END) as traveler_from_count,
                 COUNT(DISTINCT CASE 
                   WHEN u.is_currently_traveling = true 
                   AND EXISTS (
@@ -1663,7 +1662,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
                     WHERE u.travel_destination ILIKE ANY(cp.patterns)
                   )
                   THEN u.id 
-                END) as traveler_to_count,
+                END) as traveler_count,
                 COUNT(DISTINCT e.id) as event_count
               FROM users u, city_patterns
               LEFT JOIN events e ON e.city IN (${cityList})
@@ -1678,7 +1677,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             const stats = statsQuery.rows[0] as any;
             const localCount = Number(stats.local_count) || 0;
             const businessCount = Number(stats.business_count) || 0;
-            const travelerCount = (Number(stats.traveler_from_count) || 0) + (Number(stats.traveler_to_count) || 0);
+            const travelerCount = Number(stats.traveler_count) || 0;
             const eventCount = Number(stats.event_count) || 0;
 
             // Use first city's location data for the metro
