@@ -2309,6 +2309,10 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       
       const localUsers = await query;
       
+      // Create lookup maps for role assignment
+      const localUserIds = new Set(localUsers.map(u => u.id));
+      const travelerUserIds = new Set(travelersInCity.map(t => t.user?.id).filter(Boolean));
+      
       // Combine local residents with active travelers
       const allCityUsers = new Set();
       const combinedUsers = [];
@@ -2326,25 +2330,30 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         const traveler = travelRecord.user;
         if (traveler && !allCityUsers.has(traveler.id)) {
           allCityUsers.add(traveler.id);
-          // Mark user as currently traveling for display purposes
-          combinedUsers.push({
-            ...traveler,
-            isCurrentlyTraveling: true,
-            currentTravelDestination: city
-          });
+          combinedUsers.push(traveler);
         }
       }
       
-      // Remove passwords and prepare response
+      // Remove passwords and add city-specific role metadata
       const finalUsers = combinedUsers.map(user => {
         if (!user) return null;
         
         const { password: _, ...userWithoutPassword } = user;
         
+        // Determine roles in this specific city
+        const isLocalToCity = localUserIds.has(user.id);
+        const isTravelerToCity = travelerUserIds.has(user.id);
+        const rolesInCity: ('local' | 'traveler')[] = [];
+        if (isLocalToCity) rolesInCity.push('local');
+        if (isTravelerToCity) rolesInCity.push('traveler');
+        
         return {
           ...userWithoutPassword,
           hometownCity: user.hometownCity || '',
-          location: user.location
+          location: user.location,
+          isLocalToCity,
+          isTravelerToCity,
+          rolesInCity
         };
       }).filter(Boolean);
       

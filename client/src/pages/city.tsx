@@ -104,9 +104,8 @@ export default function CityPage({ cityName }: CityPageProps) {
       if (!response.ok) throw new Error('Failed to fetch users');
       const allUsers = await response.json();
       
-      // Apply filter on frontend since backend returns all users
-      if (filter === 'all') return allUsers;
-      return allUsers.filter((user: any) => user.user_type === filter);
+      // Return all users - filtering by city role happens in filteredUsers
+      return allUsers;
     },
     enabled: !!decodedCityName,
   });
@@ -139,16 +138,16 @@ export default function CityPage({ cityName }: CityPageProps) {
   });
 
   // Filter and sort users based on selected filter and sort option
-  // CRITICAL FIX: Exclude businesses from "Discover People" section regardless of filter
+  // CRITICAL FIX: Use city-specific roles instead of account type
   const filteredUsers = users
-    .filter((user: User) => {
+    .filter((user: any) => {
       // ALWAYS exclude businesses from people discovery section
       if (user.userType === "business") return false;
       
       if (filter === "all") return true;
-      if (filter === "travelers") return user.userType === "traveler";
-      if (filter === "locals") return user.userType === "local";
-      // businesses filter is now meaningless since businesses are excluded above
+      // Filter by relationship to THIS CITY, not account type
+      if (filter === "travelers") return user.isTravelerToCity === true;
+      if (filter === "locals") return user.isLocalToCity === true;
       return true;
     })
     .sort((a: User, b: User) => {
