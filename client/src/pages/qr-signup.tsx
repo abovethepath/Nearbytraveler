@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { UserPlus, QrCode, ArrowRight } from "lucide-react";
+import Navbar from "@/components/navbar";
 
 interface Referrer {
   name: string;
@@ -105,51 +106,59 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardContent className="p-8 text-center">
-            <QrCode className="w-12 h-12 mx-auto mb-4 text-gray-400 animate-pulse" />
-            <p className="text-gray-600">Loading invitation details...</p>
-          </CardContent>
-        </Card>
-      </div>
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center p-4">
+          <Card className="w-full max-w-md">
+            <CardContent className="p-8 text-center">
+              <QrCode className="w-12 h-12 mx-auto mb-4 text-gray-400 animate-pulse" />
+              <p className="text-gray-600">Loading invitation details...</p>
+            </CardContent>
+          </Card>
+        </div>
+      </>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle className="text-red-600">Invalid Invitation</CardTitle>
-            <CardDescription>{error}</CardDescription>
-          </CardHeader>
-          <CardContent className="text-center">
-            <Button onClick={() => setLocation('/auth')} variant="outline">
-              Go to Sign Up
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center p-4">
+          <Card className="w-full max-w-md">
+            <CardHeader className="text-center">
+              <CardTitle className="text-red-600">Invalid Invitation</CardTitle>
+              <CardDescription>{error}</CardDescription>
+            </CardHeader>
+            <CardContent className="text-center">
+              <Button onClick={() => setLocation('/auth')} variant="outline">
+                Go to Sign Up
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 p-3 rounded-full bg-blue-100">
-            <UserPlus className="w-8 h-8 text-blue-600" />
-          </div>
-          <CardTitle className="text-2xl">You're Invited!</CardTitle>
-          <CardDescription>
-            Join Nearby Traveler and connect with{' '}
-            <span className="font-semibold text-blue-600">{referrer?.name}</span>
-          </CardDescription>
-        </CardHeader>
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4 p-3 rounded-full bg-blue-100">
+              <UserPlus className="w-8 h-8 text-blue-600" />
+            </div>
+            <CardTitle className="text-2xl">You're Invited!</CardTitle>
+            <CardDescription>
+              Join Nearby Traveler and connect with{' '}
+              <span className="font-semibold text-blue-600">{referrer?.name}</span>
+            </CardDescription>
+          </CardHeader>
 
-        <CardContent className="space-y-6">
-          {/* Referrer Profile Card */}
+          <CardContent className="space-y-6">
+            {/* Referrer Profile Card */}
           <div className="p-4 bg-gray-50 rounded-lg">
             <div className="flex items-center space-x-3 mb-3">
               <Avatar className="w-12 h-12">
@@ -244,5 +253,6 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
         </CardContent>
       </Card>
     </div>
+    </>
   );
 }
