@@ -4244,10 +4244,14 @@ Questions? Just reply to this message!
         }
       }
 
-      // IMPORTANT: Award 1 aura point to all new users for signing up
+      // IMPORTANT: Award aura points to new users for signing up
+      // Travelers get 2 points (1 base + 1 bonus), others get 1 point
       try {
-        await storage.updateUser(user.id, { aura: 1 });
-        if (process.env.NODE_ENV === 'development') console.log(`✓ Awarded 1 signup aura point to new user ${user.id} (${user.username})`);
+        const signupAuraPoints = (userData.userType === 'traveler' || userData.userType === 'currently_traveling' || userData.isCurrentlyTraveling) ? 2 : 1;
+        await storage.updateUser(user.id, { aura: signupAuraPoints });
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`✓ Awarded ${signupAuraPoints} signup aura point(s) to new user ${user.id} (${user.username}) - Type: ${userData.userType}`);
+        }
       } catch (auraError) {
         if (process.env.NODE_ENV === 'development') console.error('Error awarding signup aura point:', auraError);
         // Don't fail registration if aura update fails
@@ -4359,12 +4363,12 @@ Questions? Just reply to this message!
 
           // CRITICAL: Update user to show as BOTH traveler AND local (dual status)
           // They remain a local in their hometown AND become a traveler in destination
+          // NOTE: Aura points already awarded at signup time (line 4253)
           await storage.updateUser(user.id, { 
             userType: 'traveler',  // FIXED: Use correct database column name
-            isCurrentlyTraveling: true,
-            aura: 2  // Award 2 aura points for travelers (1 base + 1 travel bonus)
+            isCurrentlyTraveling: true
           });
-          if (process.env.NODE_ENV === 'development') console.log(`User ${user.username} (${user.id}) is now a traveler with 2 aura points (1 base + 1 travel bonus)`);
+          if (process.env.NODE_ENV === 'development') console.log(`User ${user.username} (${user.id}) is now a traveler (aura points already awarded at signup)`);
 
         } catch (error: any) {
           if (process.env.NODE_ENV === 'development') console.error('Error creating travel plan during signup:', error);
