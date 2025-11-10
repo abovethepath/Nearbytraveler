@@ -570,8 +570,8 @@ export default function Events() {
                         <Star className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white">Meetups</h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Discover gatherings from Couchsurfing and Meetup communities</p>
+                        <h3 className="font-semibold text-gray-900 dark:text-white">Premium Experiences</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Concerts, shows, and exclusive events from trusted sources</p>
                       </div>
                     </div>
                     
@@ -709,8 +709,33 @@ export default function Events() {
           )}
         </div>
 
-        {/* Unified Location Selector - Works for ALL tabs */}
-        <div className="mb-6 space-y-4">
+
+
+        {selectedTab === 'explore' && (
+        <div className="space-y-6">
+
+          {/* Show loading skeleton immediately while data loads */}
+          {isLoading && (
+            <div className="space-y-6">
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="w-full md:w-64 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
+                <div className="w-full md:w-64 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
+              </div>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-6 max-w-full">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse">
+                    <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Show content when loaded */}
+          {!isLoading && (
+            <>
           {/* Location Selection */}
           <div className="w-full">
             <Select value={selectedLocation} onValueChange={setSelectedLocation}>
@@ -734,7 +759,7 @@ export default function Events() {
             </Select>
 
             {selectedLocation === "custom" && (
-              <div className="flex gap-2 mt-2">
+              <div className="flex gap-2">
                 <Input
                   placeholder="Enter city name..."
                   value={customCity}
@@ -758,7 +783,7 @@ export default function Events() {
           </div>
 
           {/* Search and Filters */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 mb-6">
             {/* Search Input */}
             <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-white w-4 h-4" />
@@ -796,38 +821,12 @@ export default function Events() {
                     setCustomCategory(e.target.value);
                     setShowCustomCategoryInput(true);
                   }}
-                  className="w-full sm:w-48 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 mt-2"
+                  className="w-full sm:w-48 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                 />
               )}
             </div>
           </div>
-        </div>
 
-        {selectedTab === 'explore' && (
-        <div className="space-y-6">
-
-          {/* Show loading skeleton immediately while data loads */}
-          {isLoading && (
-            <div className="space-y-6">
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="w-full md:w-64 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
-                <div className="w-full md:w-64 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
-              </div>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-6 max-w-full">
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse">
-                    <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
-                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Show content when loaded */}
-          {!isLoading && (
-            <>
           {/* Events Sections */}
           <div className="space-y-6 sm:space-y-8 max-w-full overflow-hidden">
             {/* User's Events Section - Show first */}
@@ -1412,6 +1411,597 @@ export default function Events() {
 
 
 
+        {/* City Events Tab */}
+        {selectedTab === 'allevents' && (
+          <div className="space-y-6">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                City Events in {cityToQuery}
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300">
+                Discover parties, concerts, shows, sports, and more happening in your city
+              </p>
+            </div>
+
+            {isAllEventsLoading && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse">
+                      <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {!isAllEventsLoading && (
+              <>
+                {allEventsData.events && allEventsData.events.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
+                    {allEventsData.events.map((event: any) => (
+                      <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200">
+                        {event.image && (
+                          <div className="relative h-40 bg-cover bg-center rounded-t-lg overflow-hidden">
+                            <img
+                              src={event.image}
+                              alt={event.title}
+                              className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                          </div>
+                        )}
+                        
+                        <CardContent className="p-6">
+                          <div className="flex items-start flex-wrap gap-2 mb-3">
+                            <Badge className="bg-red-100 text-red-800">
+                              City Event
+                            </Badge>
+                            {event.category && (
+                              <Badge variant="outline">
+                                {event.category}
+                              </Badge>
+                            )}
+                          </div>
+
+                          <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-2 line-clamp-2">
+                            {event.title}
+                          </h3>
+
+                          {event.description && (
+                            <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">
+                              {event.description}
+                            </p>
+                          )}
+
+                          <div className="space-y-2 mb-4">
+                            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                              <Calendar className="w-4 h-4" />
+                              <span>
+                                {new Date(event.date).toLocaleDateString([], {
+                                  weekday: 'short',
+                                  month: 'short',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </span>
+                            </div>
+                            {event.venue !== 'TBD' && (
+                              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                <MapPin className="w-4 h-4" />
+                                <span className="line-clamp-1">{event.venue}</span>
+                              </div>
+                            )}
+                            {event.address && (
+                              <div className="flex items-center gap-2 text-xs px-2 py-1 rounded">
+                                {event.address.includes(',') && event.address.split(',').length === 2 && /^-?\d+\.?\d*,\s*-?\d+\.?\d*$/.test(event.address.trim()) ? (
+                                  <>
+                                    <MapPin className="w-3 h-3" />
+                                    <span className="text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-1 rounded">GPS Available</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <MapPin className="w-3 h-3" />
+                                    <span className="text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-1 rounded">Address Available</span>
+                                  </>
+                                )}
+                              </div>
+                            )}
+                            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                              <Users className="w-4 h-4" />
+                              <span>{event.organizer}</span>
+                            </div>
+                            {event.price && (
+                              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                <span className="font-medium">{event.price}</span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Interest Button */}
+                          <div className="flex justify-center mb-3">
+                            <InterestButton 
+                              event={{...event, source: 'allevents'}} 
+                              userId={user?.id} 
+                              variant="minimal" 
+                            />
+                          </div>
+
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white border-0 hover:from-red-600 hover:to-red-700"
+                            onClick={() => {
+                              // Store event data for the details page
+                              localStorage.setItem(`external-event-${event.id}`, JSON.stringify(event));
+                              setLocation(`/external-events/${event.id}`);
+                            }}
+                          >
+                            View Event Details
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Calendar className="w-16 h-16 text-gray-300 dark:text-white mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-gray-600 dark:text-white mb-2">No City Events Found</h3>
+                    <p className="text-gray-500 dark:text-white">
+                      No events found in {cityToQuery}. Try searching a different city or check back later for new events.
+                    </p>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Ticketmaster Events Tab - Concerts & Shows */}
+        {selectedTab === 'ticketmaster' && (
+          <div className="space-y-6">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                Concerts & Shows in {cityToQuery}
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300">
+                Discover concerts, sports events, theater shows, and entertainment
+              </p>
+            </div>
+
+            {ticketmasterLoading && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse">
+                      <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {!ticketmasterLoading && (
+              <>
+                {ticketmasterEvents.events && ticketmasterEvents.events.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
+                    {ticketmasterEvents.events.map((event: any) => (
+                      <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200">
+                        {event.image && (
+                          <div className="relative h-40 bg-cover bg-center rounded-t-lg overflow-hidden">
+                            <img
+                              src={event.image}
+                              alt={event.title}
+                              className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                          </div>
+                        )}
+                        
+                        <CardContent className="p-6">
+                          <div className="flex items-start flex-wrap gap-2 mb-3">
+                            <Badge className="bg-blue-100 text-blue-800">
+                              Entertainment
+                            </Badge>
+                            {event.category && (
+                              <Badge variant="outline">
+                                {event.category}
+                              </Badge>
+                            )}
+                          </div>
+
+                          <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-2 line-clamp-2">
+                            {event.title}
+                          </h3>
+
+                          {event.description && (
+                            <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">
+                              {event.description}
+                            </p>
+                          )}
+
+                          <div className="space-y-2 mb-4">
+                            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                              <Calendar className="w-4 h-4" />
+                              <span>
+                                {new Date(event.date).toLocaleDateString([], {
+                                  weekday: 'short',
+                                  month: 'short',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </span>
+                            </div>
+                            {event.venue !== 'TBD' && (
+                              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                <MapPin className="w-4 h-4" />
+                                <span className="line-clamp-1">{event.venue}</span>
+                              </div>
+                            )}
+                            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                              <Users className="w-4 h-4" />
+                              <span>{event.organizer}</span>
+                            </div>
+                            {event.price && (
+                              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                <span className="font-medium">{event.price}</span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Interest Button */}
+                          <div className="flex justify-center mb-3">
+                            <InterestButton 
+                              event={{...event, source: 'ticketmaster'}} 
+                              userId={user?.id} 
+                              variant="minimal" 
+                            />
+                          </div>
+
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 hover:from-blue-600 hover:to-blue-700"
+                            onClick={() => {
+                              // Store event data for the details page
+                              localStorage.setItem(`external-event-${event.id}`, JSON.stringify(event));
+                              setLocation(`/external-events/${event.id}`);
+                            }}
+                          >
+                            View Event Details
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Calendar className="w-16 h-16 text-gray-300 dark:text-white mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-gray-600 dark:text-white mb-2">No Events Found</h3>
+                    <p className="text-gray-500 dark:text-white">
+                      {ticketmasterEvents.message || "No entertainment events found in this area. Try a different location."}
+                    </p>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Local Events Tab - RSS feeds and neighborhood events */}
+        {selectedTab === 'local-events' && (
+          <div className="space-y-6">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                Local {userCity} Events
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300">
+                Authentic local events and activities in {userCity}
+              </p>
+            </div>
+
+            {localLoading && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse">
+                      <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {!localLoading && (
+              <>
+                {localEvents.events && localEvents.events.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
+                    {localEvents.events.map((event: any) => (
+                      <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200">
+                        <CardContent className="p-6">
+                          <div className="flex items-start flex-wrap gap-2 mb-3">
+                            <Badge className="bg-purple-100 text-purple-800">
+                              {event.location || `Local ${userCity}`}
+                            </Badge>
+                            <Badge variant="outline">
+                              {event.source}
+                            </Badge>
+                          </div>
+
+                          <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-2 line-clamp-2">
+                            {event.title}
+                          </h3>
+
+                          {event.description && (
+                            <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-3">
+                              {event.description}
+                            </p>
+                          )}
+
+                          <div className="space-y-2 mb-4">
+                            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                              <Calendar className="w-4 h-4" />
+                              <span>
+                                {new Date(event.date).toLocaleDateString([], {
+                                  weekday: 'short',
+                                  month: 'short',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </span>
+                            </div>
+                            {event.venue && event.venue !== 'Various LA Locations' && (
+                              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                <MapPin className="w-4 h-4" />
+                                <span className="line-clamp-1">{event.venue}</span>
+                              </div>
+                            )}
+                            {event.address && (
+                              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                <span className="line-clamp-1">{event.address}</span>
+                              </div>
+                            )}
+                            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                              <span className="font-medium">{event.category}</span>
+                            </div>
+                          </div>
+
+                          {/* Interest Button */}
+                          <div className="flex justify-center mb-3">
+                            <InterestButton 
+                              event={{...event, source: 'local-events'}} 
+                              userId={user?.id} 
+                              variant="minimal" 
+                            />
+                          </div>
+
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0 hover:from-purple-600 hover:to-purple-700"
+                            onClick={() => window.open(event.url, '_blank')}
+                          >
+                            Learn More
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Calendar className="w-16 h-16 text-gray-300 dark:text-white mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-gray-600 dark:text-white mb-2">No Local Events Found</h3>
+                    <p className="text-gray-500 dark:text-white">
+                      {localEvents.message || `No local ${userCity} events available at the moment. Check back soon for updates from local sources.`}
+                    </p>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Travel Destination Tab - Shows events in current travel destination */}
+        {selectedTab === 'travel-destination' && getCurrentTravelDestination() && (
+          <div className="space-y-6">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                Traveler {getCurrentTravelDestination()?.split(',')[0]?.trim()} Events
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300">
+                Events where you're currently traveling: {getCurrentTravelDestination()}
+              </p>
+            </div>
+
+            {/* Reuse community events for the travel destination */}
+            {isLoading && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse">
+                      <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {!isLoading && events && events.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
+                {events
+                  .filter((event: Event) => {
+                    const travelDest = getCurrentTravelDestination()?.split(',')[0]?.trim();
+                    return event.city === travelDest;
+                  })
+                  .map((event: Event) => (
+                    <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200">
+                      <CardContent className="p-6">
+                        <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-2 line-clamp-2">
+                          {event.title}
+                        </h3>
+                        {event.description && (
+                          <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-3">
+                            {event.description}
+                          </p>
+                        )}
+                        <div className="space-y-2 mb-4">
+                          <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                            <Calendar className="w-4 h-4" />
+                            <span>{formatDateForDisplay(event.date)}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                            <MapPin className="w-4 h-4" />
+                            <span className="line-clamp-1">{formatEventLocation(event)}</span>
+                          </div>
+                        </div>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full bg-gradient-to-r from-teal-500 to-teal-600 text-white border-0 hover:from-teal-600 hover:to-teal-700"
+                          onClick={() => setSelectedEvent(event)}
+                        >
+                          View Details
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Calendar className="w-16 h-16 text-gray-300 dark:text-white mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-600 dark:text-white mb-2">No Events Found</h3>
+                <p className="text-gray-500 dark:text-white">
+                  No events found in {getCurrentTravelDestination()?.split(',')[0]?.trim()}. Check other tabs or create your own!
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Curated Events Tab */}
+        {selectedTab === 'curated' && (
+          <div className="space-y-6">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                Curated Events in {cityToQuery}
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300">
+                Handpicked events from trusted local publications like Timeout, LAist, and Gothamist
+              </p>
+            </div>
+
+            {false && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse">
+                      <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {true && (
+              <>
+                {(events as any)?.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
+                    {(events as any).map((event: any) => (
+                      <Card key={event.id} className="hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border border-gray-200">
+                        <CardContent className="p-6">
+                          <div className="flex items-start flex-wrap gap-2 mb-3">
+                            <Badge className="bg-orange-100 text-orange-800">
+                              {event.location || 'Curated'}
+                            </Badge>
+                            <Badge variant="outline">
+                              {event.source}
+                            </Badge>
+                          </div>
+
+                          <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-2 line-clamp-2">
+                            {event.title}
+                          </h3>
+
+                          {event.description && (
+                            <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-3">
+                              {event.description}
+                            </p>
+                          )}
+
+                          <div className="space-y-2 mb-4">
+                            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                              <Calendar className="w-4 h-4" />
+                              <span>
+                                {new Date(event.date).toLocaleDateString([], {
+                                  weekday: 'short',
+                                  month: 'short',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </span>
+                            </div>
+                            {event.venue && (
+                              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                <MapPin className="w-4 h-4" />
+                                <span className="line-clamp-1">{event.venue}</span>
+                              </div>
+                            )}
+                            {event.address && (
+                              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                <span className="line-clamp-1">{event.address}</span>
+                              </div>
+                            )}
+                            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                              <span className="font-medium">{event.category}</span>
+                            </div>
+                          </div>
+
+                          {/* Interest Button */}
+                          <div className="flex justify-center mb-3">
+                            <InterestButton 
+                              event={{...event, source: 'curated'}} 
+                              userId={user?.id} 
+                              variant="minimal" 
+                            />
+                          </div>
+
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 hover:from-orange-600 hover:to-orange-700"
+                            onClick={() => window.open(event.url, '_blank')}
+                          >
+                            Read More
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Calendar className="w-16 h-16 text-gray-300 dark:text-white mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-gray-600 dark:text-white mb-2">No Curated Events Found</h3>
+                    <p className="text-gray-500 dark:text-white">Check back later for new curated events from local publications, or explore other cities.</p>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
 
       </div>
     </div>
