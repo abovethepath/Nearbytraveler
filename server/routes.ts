@@ -3550,6 +3550,16 @@ Questions? Just reply to this message!
   // Streamlined registration handler - just create user, defer heavy operations
   const handleRegistration = async (req: any, res: any) => {
     try {
+      // CRITICAL DEBUG: Log referral data at the VERY beginning
+      if (process.env.NODE_ENV === 'development') {
+        console.log("🔗 RAW REFERRAL DATA IN REQ.BODY:", {
+          referralCode: req.body.referralCode,
+          connectionNote: req.body.connectionNote,
+          hasReferralCode: !!req.body.referralCode,
+          hasConnectionNote: !!req.body.connectionNote
+        });
+      }
+      
       if (process.env.NODE_ENV === 'development') console.log("🔍 FULL REGISTRATION DATA RECEIVED:", JSON.stringify(req.body, null, 2));
       if (process.env.NODE_ENV === 'development') console.log("🏠 ORIGINAL LOCATION DATA RECEIVED:", {
         hometownCity: (req.body as any).hometownCity,
@@ -4002,13 +4012,17 @@ Questions? Just reply to this message!
       }
       
       // CRITICAL: Restore referral data after schema parsing (QR code referrals)
-      if (preservedReferralCode) {
-        (userData as any).referralCode = preservedReferralCode;
-        if (process.env.NODE_ENV === 'development') console.log('🔗 REFERRAL: Restored referralCode after schema parsing:', preservedReferralCode);
+      // Also check raw req.body as backup to ensure we never lose the referralCode
+      const finalReferralCode = preservedReferralCode || req.body.referralCode;
+      const finalConnectionNote = preservedConnectionNote || req.body.connectionNote;
+      
+      if (finalReferralCode) {
+        (userData as any).referralCode = finalReferralCode;
+        if (process.env.NODE_ENV === 'development') console.log('🔗 REFERRAL: Restored referralCode after schema parsing:', finalReferralCode);
       }
-      if (preservedConnectionNote) {
-        (userData as any).connectionNote = preservedConnectionNote;
-        if (process.env.NODE_ENV === 'development') console.log('🔗 REFERRAL: Restored connectionNote after schema parsing:', preservedConnectionNote);
+      if (finalConnectionNote) {
+        (userData as any).connectionNote = finalConnectionNote;
+        if (process.env.NODE_ENV === 'development') console.log('🔗 REFERRAL: Restored connectionNote after schema parsing:', finalConnectionNote);
       }
 
       // Save signup preferences as default travel preferences for ALL user types
