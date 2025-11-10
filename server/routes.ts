@@ -4366,9 +4366,9 @@ Questions? Just reply to this message!
           await storage.updateUser(user.id, { 
             userType: 'traveler',  // FIXED: Use correct database column name
             isCurrentlyTraveling: true,
-            aura: 1  // Award initial 1 aura point
+            aura: 2  // Award 2 aura points for travelers (1 base + 1 travel bonus)
           });
-          if (process.env.NODE_ENV === 'development') console.log(`User ${user.username} (${user.id}) is now a traveler with 1 aura point`);
+          if (process.env.NODE_ENV === 'development') console.log(`User ${user.username} (${user.id}) is now a traveler with 2 aura points (1 base + 1 travel bonus)`);
 
         } catch (error: any) {
           if (process.env.NODE_ENV === 'development') console.error('Error creating travel plan during signup:', error);
@@ -6357,6 +6357,14 @@ Questions? Just reply to this message. Welcome aboard!
       const newTravelPlan = await storage.createTravelPlan(travelPlanData);
       if (process.env.NODE_ENV === 'development') console.log('=== TRAVEL PLAN CREATED ===');
       if (process.env.NODE_ENV === 'development') console.log('New travel plan:', newTravelPlan);
+      
+      // Award 1 aura point for creating a travel plan
+      try {
+        await awardAuraPoints(userId, 1, 'creating a travel plan');
+        if (process.env.NODE_ENV === 'development') console.log(`✨ AURA: Awarded 1 point to user ${userId} for creating travel plan`);
+      } catch (auraError) {
+        if (process.env.NODE_ENV === 'development') console.error('Error awarding aura for travel plan:', auraError);
+      }
       
       // Automatically set up city infrastructure for travel destination using new ensure endpoint
       if (travelPlanData.destinationCity && travelPlanData.destinationCountry) {
@@ -8910,8 +8918,8 @@ Questions? Just reply to this message. Welcome aboard!
       if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENT CREATE: Successfully created event ${newEvent.id} with organizer ${newEvent.organizerId}`);
       if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENT CREATE: Stored image length: ${newEvent.imageUrl ? newEvent.imageUrl.length : 'null'}`);
       
-      // Award 2 aura points for creating an event
-      await awardAuraPoints(newEvent.organizerId, 2, 'creating an event');
+      // Award 1 aura point for creating an event
+      await awardAuraPoints(newEvent.organizerId, 1, 'creating an event');
       
       // AUTOMATICALLY ADD CREATOR AS EVENT ATTENDEE - Organizers should always attend their own events
       try {
@@ -14849,6 +14857,14 @@ Questions? Just reply to this message. Welcome aboard!
       });
 
       if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM CREATED: ID ${newChatroom.id} with creator as automatic member`);
+      
+      // Award 1 aura point for creating a chatroom
+      try {
+        await awardAuraPoints(userId, 1, 'creating a chatroom');
+        if (process.env.NODE_ENV === 'development') console.log(`✨ AURA: Awarded 1 point to user ${userId} for creating chatroom`);
+      } catch (auraError) {
+        if (process.env.NODE_ENV === 'development') console.error('Error awarding aura for chatroom:', auraError);
+      }
       
       // Include consolidation message in response if applicable
       const response: any = { ...newChatroom };
