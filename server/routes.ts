@@ -3690,7 +3690,7 @@ Questions? Just reply to this message!
               processedData.destinationCity,
               processedData.destinationState,
               processedData.destinationCountry
-            ].filter(Boolean);
+            ].filter(part => part && part.trim() && part.toLowerCase() !== 'null' && part.trim().toLowerCase() !== 'undefined');
             processedData.travelDestination = travelDestinationParts.join(', ');
           }
           if (process.env.NODE_ENV === 'development') console.log("  ✓ Set travel destination from destinationCity:", processedData.travelDestination);
@@ -3701,7 +3701,7 @@ Questions? Just reply to this message!
             processedData.currentCity,
             processedData.currentState,
             processedData.currentCountry
-          ].filter(Boolean);
+          ].filter(part => part && part.trim() && part.toLowerCase() !== 'null' && part.trim().toLowerCase() !== 'undefined');
           processedData.travelDestination = travelDestinationParts.join(', ');
           if (process.env.NODE_ENV === 'development') console.log("  ✓ Set travel destination from currentCity:", processedData.travelDestination);
         }
@@ -3880,14 +3880,10 @@ Questions? Just reply to this message!
         if (sourceCity && sourceCountry) {
           // Build travelDestination string if not already set
           if (!processedData.travelDestination) {
-            let destination = sourceCity;
-            if (sourceState) {
-              destination += `, ${sourceState}`;
-            }
-            if (sourceCountry) {
-              destination += `, ${sourceCountry}`;
-            }
-            processedData.travelDestination = destination;
+            // Filter out "null" strings and empty values
+            const parts = [sourceCity, sourceState, sourceCountry]
+              .filter(part => part && part.trim() && part.toLowerCase() !== 'null' && part.trim().toLowerCase() !== 'undefined');
+            processedData.travelDestination = parts.join(', ');
           }
           
           // CRITICAL: Ensure destination fields are set for profile display and city matching
