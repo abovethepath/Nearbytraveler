@@ -7491,6 +7491,73 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Get members of a specific chatroom (AUTHENTICATED - requires membership)
+  app.get("/api/chatrooms/:chatroomId(\\d+)/members", async (req, res) => {
+    try {
+      const chatroomId = parseInt(req.params.chatroomId);
+      
+      // SECURITY: Require authentication
+      if (!req.isAuthenticated || !req.isAuthenticated()) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const currentUserId = (req.user as any)?.id;
+      if (!currentUserId) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`👥 User ${currentUserId} requesting members for chatroom ${chatroomId}`);
+
+      // SECURITY: Verify user is a member of this chatroom (accept both true and null for isActive)
+      const membership = await db
+        .select()
+        .from(chatroomMembers)
+        .where(and(
+          eq(chatroomMembers.chatroomId, chatroomId),
+          eq(chatroomMembers.userId, currentUserId)
+        ))
+        .limit(1);
+
+      if (!membership || membership.length === 0) {
+        if (process.env.NODE_ENV === 'development') console.log(`🚫 User ${currentUserId} is NOT a member of chatroom ${chatroomId}`);
+        return res.status(403).json({ message: "You must be a member of this chatroom to view members" });
+      }
+
+      // Check if membership is explicitly deactivated (false, not null)
+      if (membership[0].isActive === false) {
+        if (process.env.NODE_ENV === 'development') console.log(`🚫 User ${currentUserId} membership is deactivated in chatroom ${chatroomId}`);
+        return res.status(403).json({ message: "Your membership in this chatroom is not active" });
+      }
+
+      // Get all members (accept both true and null for isActive, exclude only explicit false)
+      const allMembers = await db
+        .select({
+          id: users.id,
+          username: users.username,
+          name: users.name,
+          profileImage: users.profileImage,
+          userType: users.userType,
+          hometownCity: users.hometownCity,
+          isAdmin: chatroomMembers.isAdmin,
+          joinedAt: chatroomMembers.joinedAt,
+          isActive: chatroomMembers.isActive,
+        })
+        .from(chatroomMembers)
+        .innerJoin(users, eq(chatroomMembers.userId, users.id))
+        .where(eq(chatroomMembers.chatroomId, chatroomId))
+        .orderBy(desc(chatroomMembers.isAdmin), users.username);
+
+      // Filter out explicitly deactivated members (false, not null)
+      const members = allMembers.filter(m => m.isActive !== false).map(({ isActive, ...member }) => member);
+
+      if (process.env.NODE_ENV === 'development') console.log(`👥 Found ${members.length} members in chatroom ${chatroomId}`);
+      return res.json(members);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error fetching chatroom members:", error);
+      return res.status(500).json({ message: "Failed to fetch chatroom members" });
+    }
+  });
+
   // CRITICAL: Get chatrooms for user
   app.get("/api/chatrooms/:userId", async (req, res) => {
     try {

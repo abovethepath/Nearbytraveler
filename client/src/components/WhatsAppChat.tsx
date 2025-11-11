@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical } from "lucide-react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Message {
@@ -21,6 +23,17 @@ interface Message {
     profileImage?: string;
   };
   replyTo?: Message;
+}
+
+interface ChatMember {
+  id: number;
+  username: string;
+  name: string;
+  profileImage?: string;
+  userType: string;
+  hometownCity: string;
+  isAdmin: boolean;
+  joinedAt: string;
 }
 
 interface WhatsAppChatProps {
@@ -41,10 +54,47 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
   const [typingUsers, setTypingUsers] = useState<Set<string>>(new Set());
   const [selectedMessage, setSelectedMessage] = useState<number | null>(null);
+  const [showMembers, setShowMembers] = useState(false);
+  const [memberSearch, setMemberSearch] = useState("");
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Fetch chatroom members (only for chatrooms)
+  const { data: members = [], error: membersError } = useQuery<ChatMember[]>({
+    queryKey: [`/api/chatrooms/${chatId}/members`],
+    enabled: chatType === 'chatroom' && Boolean(chatId)
+  });
+
+  // Show error toast if members fetch fails
+  useEffect(() => {
+    if (membersError) {
+      toast({
+        title: "Unable to load members",
+        description: "You may not have access to view this chatroom's members.",
+        variant: "destructive"
+      });
+    }
+  }, [membersError, toast]);
+
+  // Filter members based on search
+  const filteredMembers = members.filter(member => {
+    if (!memberSearch) return true;
+    const searchLower = memberSearch.toLowerCase();
+    return (
+      member.name?.toLowerCase().includes(searchLower) ||
+      member.username?.toLowerCase().includes(searchLower) ||
+      member.hometownCity?.toLowerCase().includes(searchLower)
+    );
+  });
+
+  // Safe first name extraction
+  const getFirstName = (fullName: string | null | undefined): string => {
+    if (!fullName || fullName.trim() === '') return 'User';
+    const parts = fullName.trim().split(' ');
+    return parts[0] || 'User';
+  };
 
   // Initialize WebSocket connection
   useEffect(() => {
@@ -220,6 +270,60 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           <h1 className="font-semibold">{title}</h1>
           {subtitle && <p className="text-xs text-gray-400">{subtitle}</p>}
         </div>
+        {chatType === 'chatroom' && (
+          <Sheet open={showMembers} onOpenChange={setShowMembers}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="text-white hover:bg-gray-700" data-testid="button-members">
+                <Users className="w-5 h-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="bg-gray-900 border-l border-gray-700 text-white w-80">
+              <SheetHeader>
+                <SheetTitle className="text-white">Members ({members.length})</SheetTitle>
+              </SheetHeader>
+              <div className="mt-4">
+                <input
+                  type="text"
+                  placeholder="Search members..."
+                  value={memberSearch}
+                  onChange={(e) => setMemberSearch(e.target.value)}
+                  className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-orange-500"
+                  data-testid="input-member-search"
+                />
+              </div>
+              <div className="mt-4 space-y-3 overflow-y-auto max-h-[calc(100vh-180px)]">
+                {filteredMembers.length === 0 ? (
+                  <p className="text-center text-gray-400 py-4">No members found</p>
+                ) : (
+                  filteredMembers.map((member) => (
+                    <div
+                      key={member.id}
+                      onClick={() => {
+                        setShowMembers(false);
+                        setMemberSearch("");
+                        navigate(`/profile/${member.id}`);
+                      }}
+                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 cursor-pointer transition-colors"
+                      data-testid={`member-item-${member.id}`}
+                    >
+                      <Avatar className="w-12 h-12">
+                        <AvatarImage src={member.profileImage || undefined} />
+                        <AvatarFallback>{(member.name || 'U')[0]}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-sm truncate">
+                          {getFirstName(member.name)}
+                          {member.isAdmin && <span className="ml-2 text-xs text-orange-400">Admin</span>}
+                        </p>
+                        <p className="text-xs text-gray-400 truncate">{member.hometownCity || 'Unknown'}</p>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
+        )}
         <Button variant="ghost" size="icon" className="text-white hover:bg-gray-700">
           <MoreVertical className="w-5 h-5" />
         </Button>
@@ -243,14 +347,14 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
               <div className={`relative max-w-[75%] ${isOwnMessage ? 'mr-2' : 'ml-2'}`} onClick={() => setSelectedMessage(selectedMessage === message.id ? null : message.id)}>
                 {message.replyToId && message.replyTo && (
                   <div className="mb-1 px-3 py-2 bg-gray-800/50 rounded-t-lg border-l-4 border-orange-500">
-                    <p className="text-xs text-orange-400 font-semibold">{message.replyTo.sender?.name?.split(' ')[0] || message.replyTo.sender?.name}</p>
+                    <p className="text-xs text-orange-400 font-semibold">{getFirstName(message.replyTo.sender?.name)}</p>
                     <p className="text-xs text-gray-400 truncate">{message.replyTo.content}</p>
                   </div>
                 )}
 
                 <div className={`px-4 py-2 rounded-2xl ${isOwnMessage ? 'bg-orange-600' : 'bg-gray-700'} ${message.replyToId ? 'rounded-tl-none' : ''}`}>
                   {!isOwnMessage && showAvatar && (
-                    <p className="text-xs font-semibold mb-1 text-orange-400">{message.sender?.name?.split(' ')[0] || message.sender?.name}</p>
+                    <p className="text-xs font-semibold mb-1 text-orange-400">{getFirstName(message.sender?.name)}</p>
                   )}
                   <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
                   
