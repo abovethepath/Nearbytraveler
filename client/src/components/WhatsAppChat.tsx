@@ -243,14 +243,14 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
               <div className={`relative max-w-[75%] ${isOwnMessage ? 'mr-2' : 'ml-2'}`} onClick={() => setSelectedMessage(selectedMessage === message.id ? null : message.id)}>
                 {message.replyToId && message.replyTo && (
                   <div className="mb-1 px-3 py-2 bg-gray-800/50 rounded-t-lg border-l-4 border-orange-500">
-                    <p className="text-xs text-orange-400 font-semibold">{message.replyTo.sender?.name}</p>
+                    <p className="text-xs text-orange-400 font-semibold">{message.replyTo.sender?.name?.split(' ')[0] || message.replyTo.sender?.name}</p>
                     <p className="text-xs text-gray-400 truncate">{message.replyTo.content}</p>
                   </div>
                 )}
 
                 <div className={`px-4 py-2 rounded-2xl ${isOwnMessage ? 'bg-orange-600' : 'bg-gray-700'} ${message.replyToId ? 'rounded-tl-none' : ''}`}>
                   {!isOwnMessage && showAvatar && (
-                    <p className="text-xs font-semibold mb-1 text-orange-400">{message.sender?.name}</p>
+                    <p className="text-xs font-semibold mb-1 text-orange-400">{message.sender?.name?.split(' ')[0] || message.sender?.name}</p>
                   )}
                   <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
                   
