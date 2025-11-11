@@ -23,7 +23,7 @@ export default function QuickMeetupChat() {
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-  const { data: meetup, isLoading, isError, error } = useQuery<QuickMeetup>({
+  const { data: meetup, isLoading, isError, error, failureCount } = useQuery<QuickMeetup>({
     queryKey: [`/api/quick-meets/${meetupId}`],
     enabled: !!meetupId,
     retry: 2,
@@ -31,8 +31,9 @@ export default function QuickMeetupChat() {
   });
 
   // Auto-redirect on 404 errors (expired/deleted meetups)
+  // Only redirect after all retry attempts are exhausted
   useEffect(() => {
-    if (isError && error) {
+    if (isError && error && failureCount >= 2) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       if (errorMessage.includes('404') || errorMessage.includes('not found')) {
         toast({
@@ -43,7 +44,7 @@ export default function QuickMeetupChat() {
         setLocation('/quick-meetups');
       }
     }
-  }, [isError, error, toast, setLocation]);
+  }, [isError, error, failureCount, toast, setLocation]);
 
   if (!meetupId) {
     return (
