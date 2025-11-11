@@ -33,6 +33,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [expandedMeetup, setExpandedMeetup] = useState<number | null>(null);
   const [isCustomActivity, setIsCustomActivity] = useState(false);
+  const [editingMeetupId, setEditingMeetupId] = useState<number | null>(null);
 
   // CRITICAL FIX: Get user data like navbar does (authStorage is more reliable)
   const actualUser = user || authStorage.getUser();
@@ -219,6 +220,28 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
         variant: "destructive"
       });
     }
+  });
+
+  // Update meetup mutation
+  const updateMutation = useMutation({
+    mutationFn: async ({ meetupId, updates }: { meetupId: number; updates: any }) => {
+      return await apiRequest('PUT', `/api/quick-meets/${meetupId}`, updates);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
+      setEditingMeetupId(null);
+      toast({
+        title: "Updated!",
+        description: "Your quick meet has been updated.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update quick meet",
+        variant: "destructive",
+      });
+    },
   });
 
   // Delete meetup mutation
@@ -614,23 +637,25 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      // TODO: Implement edit modal
-                                      console.log('Edit meetup:', meetup.id);
+                                      // Redirect to /quick-meetups page for full edit functionality
+                                      window.location.href = '/quick-meetups';
                                     }}
                                     className="p-1 rounded-full hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
                                     title="Edit quick meet"
+                                    data-testid={`button-edit-meetup-${meetup.id}`}
                                   >
                                     <Edit3 className="w-3 h-3 text-green-500" />
                                   </button>
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      if (confirm('Delete this quick meet? This action cannot be undone.')) {
+                                      if (confirm('Cancel this quick meet? This action cannot be undone.')) {
                                         deleteMeetup(meetup.id);
                                       }
                                     }}
                                     className="p-1 rounded-full hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
-                                    title="Delete quick meet"
+                                    title="Cancel quick meet"
+                                    data-testid={`button-cancel-meetup-${meetup.id}`}
                                   >
                                     <Trash2 className="w-3 h-3 text-red-500" />
                                   </button>

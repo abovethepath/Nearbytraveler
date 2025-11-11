@@ -8914,6 +8914,18 @@ export class DatabaseStorage implements IStorage {
         })
         .returning();
       
+      // CRITICAL FIX: Add creator to chatroom members so they can access the chat
+      await db
+        .insert(chatroomMembers)
+        .values({
+          chatroomId: meetupChatroom.id,
+          userId: meetup.organizerId,
+          role: 'admin', // Creator is admin of their own meetup chatroom
+          isActive: true
+        });
+      
+      console.log(`✅ STORAGE: Added creator (user ${meetup.organizerId}) to chatroom ${meetupChatroom.id} as admin`);
+      
       // Return meetup with chatroomId
       return {
         ...newMeetup,
@@ -9085,6 +9097,27 @@ export class DatabaseStorage implements IStorage {
           participantCount: sql`${meetupChatrooms.participantCount} + 1`
         })
         .where(eq(meetupChatrooms.meetupId, meetupId));
+
+      // CRITICAL FIX: Add participant to chatroom members so they can access the chat
+      const [meetupChatroom] = await db
+        .select()
+        .from(meetupChatrooms)
+        .where(eq(meetupChatrooms.meetupId, meetupId))
+        .limit(1);
+      
+      if (meetupChatroom) {
+        await db
+          .insert(chatroomMembers)
+          .values({
+            chatroomId: meetupChatroom.id,
+            userId: userId,
+            role: 'member',
+            isActive: true
+          })
+          .onConflictDoNothing(); // Prevent duplicate if they somehow already joined
+        
+        console.log(`✅ STORAGE: Added user ${userId} to chatroom ${meetupChatroom.id} as member`);
+      }
 
       return participant;
     } catch (error) {
