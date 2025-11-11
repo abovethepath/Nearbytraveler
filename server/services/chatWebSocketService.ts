@@ -123,6 +123,17 @@ export class ChatWebSocketService {
       // For DMs, chatroomId is actually the receiver's user ID
       const receiverId = chatroomId;
 
+      // SECURITY: Validate receiver exists
+      const receiver = await db.query.users.findFirst({
+        where: eq(users.id, receiverId),
+      });
+      
+      if (!receiver) {
+        console.log('🚫 SECURITY: Invalid receiver ID');
+        this.sendError(ws, 'Invalid recipient');
+        return;
+      }
+
       // Insert into messages table (DMs)
       const [newMessage] = await db.insert(messages).values({
         senderId: ws.userId!,
@@ -145,6 +156,49 @@ export class ChatWebSocketService {
         }
       });
 
+      // Fetch reply-to message if exists (for DMs) - SECURITY: Verify it's from the same conversation
+      let replyTo = null;
+      if (newMessage.replyToId) {
+        const replyMessage = await db.query.messages.findFirst({
+          where: eq(messages.id, newMessage.replyToId),
+        });
+        
+        // SECURITY: Verify the reply message is part of this DM conversation (between same participants)
+        if (replyMessage) {
+          const isValidReply = 
+            (replyMessage.senderId === ws.userId && replyMessage.receiverId === receiverId) ||
+            (replyMessage.senderId === receiverId && replyMessage.receiverId === ws.userId);
+          
+          if (!isValidReply) {
+            console.log('🚫 SECURITY: Attempted to reply to message from different conversation');
+            this.sendError(ws, 'Invalid reply: message not in this conversation');
+            return;
+          }
+          
+          const replySender = await db.query.users.findFirst({
+            where: eq(users.id, replyMessage.senderId),
+            columns: {
+              id: true,
+              username: true,
+              name: true,
+              profileImage: true,
+            }
+          });
+          
+          // SECURITY: Ensure sender lookup succeeded
+          if (!replySender) {
+            console.log('🚫 SECURITY: Reply sender not found');
+            this.sendError(ws, 'Reply message sender not found');
+            return;
+          }
+          
+          replyTo = {
+            ...replyMessage,
+            sender: replySender,
+          };
+        }
+      }
+
       // Send to both sender and receiver
       const dmEvent: ChatEvent = {
         type: 'message:new',
@@ -153,6 +207,7 @@ export class ChatWebSocketService {
         payload: {
           ...newMessage,
           sender,
+          replyTo,
         },
         correlationId: event.correlationId,
         senderId: ws.userId,
@@ -218,6 +273,45 @@ export class ChatWebSocketService {
 
       console.log('✅ Sender fetched:', sender?.username);
 
+      // Fetch reply-to message if exists - SECURITY: Verify it's from the same chatroom
+      let replyTo = null;
+      if (newMessage.replyToId) {
+        const replyMessage = await db.query.chatroomMessages.findFirst({
+          where: eq(chatroomMessages.id, newMessage.replyToId),
+        });
+        
+        // SECURITY: Verify the reply message is from the same chatroom
+        if (replyMessage) {
+          if (replyMessage.chatroomId !== chatroomId) {
+            console.log('🚫 SECURITY: Attempted to reply to message from different chatroom');
+            this.sendError(ws, 'Invalid reply: message not in this chatroom');
+            return;
+          }
+          
+          const replySender = await db.query.users.findFirst({
+            where: eq(users.id, replyMessage.senderId),
+            columns: {
+              id: true,
+              username: true,
+              name: true,
+              profileImage: true,
+            }
+          });
+          
+          // SECURITY: Ensure sender lookup succeeded
+          if (!replySender) {
+            console.log('🚫 SECURITY: Reply sender not found');
+            this.sendError(ws, 'Reply message sender not found');
+            return;
+          }
+          
+          replyTo = {
+            ...replyMessage,
+            sender: replySender,
+          };
+        }
+      }
+
       // Broadcast to all chatroom members
       const broadcastEvent: ChatEvent = {
         type: 'message:new',
@@ -226,6 +320,7 @@ export class ChatWebSocketService {
         payload: {
           ...newMessage,
           sender,
+          replyTo,
         },
         correlationId: event.correlationId,
         senderId: ws.userId,

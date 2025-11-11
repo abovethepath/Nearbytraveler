@@ -407,7 +407,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
         <div className="px-4 py-2 bg-gray-800 border-t border-gray-700">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className="text-xs text-orange-400 font-semibold">Replying to {replyingTo.sender?.name}</p>
+              <p className="text-xs text-orange-400 font-semibold">Replying to {getFirstName(replyingTo.sender?.name)}</p>
               <p className="text-sm text-gray-300 truncate">{replyingTo.content}</p>
             </div>
             <Button variant="ghost" size="sm" onClick={() => setReplyingTo(null)} className="text-gray-400">✕</Button>
