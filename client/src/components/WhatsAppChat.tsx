@@ -89,10 +89,29 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     );
   });
 
-  // Safe first name extraction
-  const getFirstName = (fullName: string | null | undefined): string => {
-    if (!fullName || fullName.trim() === '') return 'User';
-    const parts = fullName.trim().split(' ');
+  // Safe first name extraction - improved to handle usernames
+  const getFirstName = (fullName: string | null | undefined, username?: string): string => {
+    // If name is missing, use username
+    if (!fullName || fullName.trim() === '') {
+      return username || 'User';
+    }
+    
+    // Check if the name looks like a username (all uppercase, no spaces, etc.)
+    const trimmedName = fullName.trim();
+    
+    // If it's a single word and all uppercase or all lowercase, it's likely a username
+    // Use it as-is but capitalize first letter
+    if (!trimmedName.includes(' ')) {
+      // If it's all uppercase like "ELLIOTS" or "TEST", capitalize properly
+      if (trimmedName === trimmedName.toUpperCase() || trimmedName === trimmedName.toLowerCase()) {
+        return trimmedName.charAt(0).toUpperCase() + trimmedName.slice(1).toLowerCase();
+      }
+      // Otherwise use as-is (might be a real single name like "Aaron")
+      return trimmedName;
+    }
+    
+    // If it has spaces, extract first name
+    const parts = trimmedName.split(' ');
     return parts[0] || 'User';
   };
 
@@ -266,6 +285,26 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
         >
           <ArrowLeft className="w-5 h-5" />
         </Button>
+        
+        {/* WhatsApp-style member avatars for chatrooms */}
+        {chatType === 'chatroom' && members.length > 0 && (
+          <div className="flex -space-x-2">
+            {members.slice(0, 4).map((member, index) => (
+              <Avatar key={member.id} className="w-10 h-10 border-2 border-gray-800">
+                <AvatarImage src={member.profileImage || undefined} />
+                <AvatarFallback className="bg-orange-600 text-white text-xs">
+                  {getFirstName(member.name, member.username)[0]}
+                </AvatarFallback>
+              </Avatar>
+            ))}
+            {members.length > 4 && (
+              <div className="w-10 h-10 rounded-full bg-gray-700 border-2 border-gray-800 flex items-center justify-center">
+                <span className="text-xs text-gray-300">+{members.length - 4}</span>
+              </div>
+            )}
+          </div>
+        )}
+        
         <div className="flex-1">
           <h1 className="font-semibold">{title}</h1>
           {subtitle && <p className="text-xs text-gray-400">{subtitle}</p>}
@@ -308,11 +347,13 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                     >
                       <Avatar className="w-12 h-12">
                         <AvatarImage src={member.profileImage || undefined} />
-                        <AvatarFallback>{(member.name || 'U')[0]}</AvatarFallback>
+                        <AvatarFallback className="bg-orange-600 text-white">
+                          {getFirstName(member.name, member.username)[0]}
+                        </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-sm truncate">
-                          {getFirstName(member.name)}
+                          {getFirstName(member.name, member.username)}
                           {member.isAdmin && <span className="ml-2 text-xs text-orange-400">Admin</span>}
                         </p>
                         <p className="text-xs text-gray-400 truncate">{member.hometownCity || 'Unknown'}</p>
@@ -348,7 +389,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                 {message.replyToId && message.replyTo && (
                   <div className={`mb-1 px-3 py-2 rounded-t-lg border-l-4 ${isOwnMessage ? 'bg-orange-900/80 border-orange-300' : 'bg-gray-600/80 border-orange-500'}`}>
                     <p className={`text-xs font-bold mb-0.5 ${isOwnMessage ? 'text-orange-200' : 'text-orange-400'}`}>
-                      ↩ Replying to {getFirstName(message.replyTo.sender?.name)}
+                      ↩ Replying to {getFirstName(message.replyTo.sender?.name, message.replyTo.sender?.username)}
                     </p>
                     <p className={`text-xs ${isOwnMessage ? 'text-orange-100/90' : 'text-gray-200'} truncate italic`}>
                       "{message.replyTo.content}"
@@ -358,7 +399,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
 
                 <div className={`px-4 py-2 rounded-2xl ${isOwnMessage ? 'bg-orange-600' : 'bg-gray-700'} ${message.replyToId ? 'rounded-tl-none' : ''}`}>
                   {!isOwnMessage && showAvatar && (
-                    <p className="text-xs font-semibold mb-1 text-orange-400">{getFirstName(message.sender?.name)}</p>
+                    <p className="text-xs font-semibold mb-1 text-orange-400">{getFirstName(message.sender?.name, message.sender?.username)}</p>
                   )}
                   <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
                   
@@ -411,7 +452,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
         <div className="px-4 py-2 bg-gray-800 border-t border-gray-700">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className="text-xs text-orange-400 font-semibold">Replying to {getFirstName(replyingTo.sender?.name)}</p>
+              <p className="text-xs text-orange-400 font-semibold">Replying to {getFirstName(replyingTo.sender?.name, replyingTo.sender?.username)}</p>
               <p className="text-sm text-gray-300 truncate">{replyingTo.content}</p>
             </div>
             <Button variant="ghost" size="sm" onClick={() => setReplyingTo(null)} className="text-gray-400">✕</Button>
