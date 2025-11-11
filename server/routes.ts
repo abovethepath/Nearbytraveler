@@ -7496,8 +7496,21 @@ Questions? Just reply to this message. Welcome aboard!
     try {
       const chatroomId = parseInt(req.params.chatroomId);
       
+      // DEBUG: Log authentication details
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔐 Member list auth check:', {
+          chatroomId,
+          hasIsAuthenticated: !!req.isAuthenticated,
+          isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
+          hasUser: !!req.user,
+          userId: (req.user as any)?.id,
+          session: req.session?.id?.substring(0, 10) + '...'
+        });
+      }
+      
       // SECURITY: Require authentication
       if (!req.isAuthenticated || !req.isAuthenticated()) {
+        if (process.env.NODE_ENV === 'development') console.log('🚫 Authentication failed for member list');
         return res.status(401).json({ message: "Authentication required" });
       }
 
