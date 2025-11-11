@@ -70,6 +70,11 @@ function QuickMeetupsPage() {
   const [editForm, setEditForm] = useState({
     title: '',
     description: '',
+    meetingPoint: '',
+    street: '',
+    city: '',
+    state: '',
+    zipcode: '',
     duration: '1hour'
   });
 
@@ -577,6 +582,11 @@ function QuickMeetupsPage() {
                       setEditForm({
                         title: selectedMeetup.title,
                         description: selectedMeetup.description || '',
+                        meetingPoint: selectedMeetup.meetingPoint || '',
+                        street: selectedMeetup.street || '',
+                        city: selectedMeetup.city || '',
+                        state: selectedMeetup.state || '',
+                        zipcode: selectedMeetup.zipcode || '',
                         duration: '1hour'
                       });
                     }}
@@ -615,6 +625,63 @@ function QuickMeetupsPage() {
                     </div>
                     
                     <div>
+                      <Label htmlFor="edit-meeting-point">Meeting Point</Label>
+                      <Input
+                        id="edit-meeting-point"
+                        value={editForm.meetingPoint}
+                        onChange={(e) => setEditForm({ ...editForm, meetingPoint: e.target.value })}
+                        placeholder="e.g. Coffee shop entrance"
+                        data-testid="input-edit-meeting-point"
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <Label htmlFor="edit-street">Street Address</Label>
+                        <Input
+                          id="edit-street"
+                          value={editForm.street}
+                          onChange={(e) => setEditForm({ ...editForm, street: e.target.value })}
+                          placeholder="Street address"
+                          data-testid="input-edit-street"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="edit-city">City</Label>
+                        <Input
+                          id="edit-city"
+                          value={editForm.city}
+                          onChange={(e) => setEditForm({ ...editForm, city: e.target.value })}
+                          placeholder="City"
+                          data-testid="input-edit-city"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <Label htmlFor="edit-state">State</Label>
+                        <Input
+                          id="edit-state"
+                          value={editForm.state}
+                          onChange={(e) => setEditForm({ ...editForm, state: e.target.value })}
+                          placeholder="State"
+                          data-testid="input-edit-state"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="edit-zipcode">Zip Code</Label>
+                        <Input
+                          id="edit-zipcode"
+                          value={editForm.zipcode}
+                          onChange={(e) => setEditForm({ ...editForm, zipcode: e.target.value })}
+                          placeholder="Zip code"
+                          data-testid="input-edit-zipcode"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div>
                       <Label htmlFor="edit-duration">Extend Duration</Label>
                       <Select value={editForm.duration} onValueChange={(value) => setEditForm({ ...editForm, duration: value })}>
                         <SelectTrigger data-testid="select-edit-duration">
@@ -649,6 +716,11 @@ function QuickMeetupsPage() {
                             updates: {
                               title: editForm.title,
                               description: editForm.description,
+                              meetingPoint: editForm.meetingPoint,
+                              street: editForm.street,
+                              city: editForm.city,
+                              state: editForm.state,
+                              zipcode: editForm.zipcode,
                               duration: editForm.duration
                             }
                           });

@@ -12452,11 +12452,16 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(403).json({ message: "Only the organizer can edit this quick meet" });
       }
 
-      const { title, description, duration } = req.body;
+      const { title, description, meetingPoint, street, city, state, zipcode, duration } = req.body;
       const updates: any = {};
 
       if (title !== undefined) updates.title = title;
       if (description !== undefined) updates.description = description;
+      if (meetingPoint !== undefined) updates.meetingPoint = meetingPoint;
+      if (street !== undefined) updates.street = street;
+      if (city !== undefined) updates.city = city;
+      if (state !== undefined) updates.state = state;
+      if (zipcode !== undefined) updates.zipcode = zipcode;
       
       // Handle duration extension
       if (duration) {
