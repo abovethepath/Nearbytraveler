@@ -328,6 +328,11 @@ export class ChatWebSocketService {
       };
 
       console.log('📡 Broadcasting message to chatroom:', chatroomId);
+      
+      // Send to sender first so they see their own message with reply context
+      ws.send(JSON.stringify(broadcastEvent));
+      
+      // Then broadcast to all other members (excluding sender to avoid duplicate)
       await this.broadcastToChatroom(chatroomId, broadcastEvent, ws.userId);
       console.log('✅ Message broadcast complete');
       
@@ -540,7 +545,7 @@ export class ChatWebSocketService {
         )
       ).orderBy(desc(messages.createdAt)).limit(50);
 
-      // Fetch sender details for each message
+      // Fetch sender details and replyTo data for each message
       messagesData = await Promise.all(dmMessages.map(async (msg) => {
         const sender = await db.query.users.findFirst({
           where: eq(users.id, msg.senderId),
@@ -551,11 +556,37 @@ export class ChatWebSocketService {
             profileImage: true,
           }
         });
-        return { ...msg, sender };
+        
+        // Fetch reply-to message if exists
+        let replyTo = null;
+        if (msg.replyToId) {
+          const replyMessage = await db.query.messages.findFirst({
+            where: eq(messages.id, msg.replyToId),
+          });
+          
+          if (replyMessage) {
+            const replySender = await db.query.users.findFirst({
+              where: eq(users.id, replyMessage.senderId),
+              columns: {
+                id: true,
+                username: true,
+                name: true,
+                profileImage: true,
+              }
+            });
+            
+            replyTo = {
+              ...replyMessage,
+              sender: replySender,
+            };
+          }
+        }
+        
+        return { ...msg, sender, replyTo };
       }));
     } else {
-      // Handle chatroom history (original logic)
-      messagesData = await db.query.chatroomMessages.findMany({
+      // Handle chatroom history with reply metadata
+      const chatMessages = await db.query.chatroomMessages.findMany({
         where: and(
           eq(chatroomMessages.chatroomId, chatroomId),
           lastMessageTimestamp ? gt(chatroomMessages.createdAt, new Date(lastMessageTimestamp)) : undefined
@@ -573,6 +604,35 @@ export class ChatWebSocketService {
           }
         }
       });
+      
+      // Fetch replyTo data for each message
+      messagesData = await Promise.all(chatMessages.map(async (msg) => {
+        let replyTo = null;
+        if (msg.replyToId) {
+          const replyMessage = await db.query.chatroomMessages.findFirst({
+            where: eq(chatroomMessages.id, msg.replyToId),
+          });
+          
+          if (replyMessage) {
+            const replySender = await db.query.users.findFirst({
+              where: eq(users.id, replyMessage.senderId),
+              columns: {
+                id: true,
+                username: true,
+                name: true,
+                profileImage: true,
+              }
+            });
+            
+            replyTo = {
+              ...replyMessage,
+              sender: replySender,
+            };
+          }
+        }
+        
+        return { ...msg, replyTo };
+      }));
     }
 
     // Send sync response
