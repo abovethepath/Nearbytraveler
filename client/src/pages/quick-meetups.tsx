@@ -335,7 +335,11 @@ function QuickMeetupsPage() {
             )}
             
             <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 ml-5">
-              <span>{meetup.city}, {meetup.state}{meetup.zipcode && ` ${meetup.zipcode}`}</span>
+              <span>
+                {meetup.city}
+                {meetup.state && `, ${meetup.state}`}
+                {meetup.zipcode && ` ${meetup.zipcode}`}
+              </span>
             </div>
 
             <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
@@ -660,22 +664,22 @@ function QuickMeetupsPage() {
                     
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <Label htmlFor="edit-state">State</Label>
+                        <Label htmlFor="edit-state">State/Province (optional)</Label>
                         <Input
                           id="edit-state"
                           value={editForm.state}
                           onChange={(e) => setEditForm({ ...editForm, state: e.target.value })}
-                          placeholder="State"
+                          placeholder="If applicable"
                           data-testid="input-edit-state"
                         />
                       </div>
                       <div>
-                        <Label htmlFor="edit-zipcode">Zip Code</Label>
+                        <Label htmlFor="edit-zipcode">Postal Code (optional)</Label>
                         <Input
                           id="edit-zipcode"
                           value={editForm.zipcode}
                           onChange={(e) => setEditForm({ ...editForm, zipcode: e.target.value })}
-                          placeholder="Zip code"
+                          placeholder="If applicable"
                           data-testid="input-edit-zipcode"
                         />
                       </div>
