@@ -382,7 +382,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2">
+      <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2 min-h-0">
         {messages.map((message, index) => {
           const isOwnMessage = message.senderId === currentUserId;
           const showAvatar = index === 0 || messages[index - 1].senderId !== message.senderId;
