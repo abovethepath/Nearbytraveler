@@ -7574,7 +7574,11 @@ Questions? Just reply to this message. Welcome aboard!
         .orderBy(desc(chatroomMembers.role), users.username);
 
       // Filter out explicitly deactivated members (false, not null)
-      const members = allMembers.filter(m => m.isActive !== false).map(({ isActive, ...member }) => member);
+      // Convert role to isAdmin for frontend compatibility
+      const members = allMembers.filter(m => m.isActive !== false).map(({ isActive, role, ...member }) => ({
+        ...member,
+        isAdmin: role === 'admin'
+      }));
 
       if (process.env.NODE_ENV === 'development') console.log(`👥 Found ${members.length} members in chatroom ${chatroomId}`);
       return res.json(members);
