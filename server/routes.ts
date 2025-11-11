@@ -12477,7 +12477,7 @@ Questions? Just reply to this message. Welcome aboard!
 
         const currentExpiry = new Date(existingMeetup.expiresAt);
         const newExpiry = new Date(currentExpiry.getTime() + durationMs);
-        updates.expiresAt = newExpiry.toISOString();
+        updates.expiresAt = newExpiry;
       }
 
       if (process.env.NODE_ENV === 'development') console.log(`🔄 UPDATING QUICK MEET ${meetupId} for user ${userId}:`, updates);
