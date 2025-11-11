@@ -221,10 +221,69 @@ export class ChatWebSocketService {
 
   // Handle message reaction
   private async handleReaction(ws: AuthenticatedWebSocket, event: ChatEvent) {
-    const { chatroomId, payload } = event;
+    const { chatType, chatroomId, payload } = event;
     const { messageId, emoji } = payload;
 
-    // Get current message
+    // Handle DM reactions separately
+    if (chatType === 'dm') {
+      // Get message from messages table (DMs)
+      const message = await db.query.messages.findFirst({
+        where: eq(messages.id, messageId)
+      });
+
+      if (!message) {
+        this.sendError(ws, 'Message not found');
+        return;
+      }
+
+      // Update reactions
+      const reactions = (message.reactions as any) || {};
+      if (!reactions[emoji]) {
+        reactions[emoji] = [];
+      }
+
+      // Toggle reaction
+      const userIndex = reactions[emoji].indexOf(ws.userId);
+      if (userIndex > -1) {
+        reactions[emoji].splice(userIndex, 1);
+        if (reactions[emoji].length === 0) delete reactions[emoji];
+      } else {
+        reactions[emoji].push(ws.userId);
+      }
+
+      // Update database
+      await db.update(messages)
+        .set({ reactions })
+        .where(eq(messages.id, messageId));
+
+      // Send reaction update to both users
+      const receiverId = chatroomId; // For DMs, chatroomId is the other user's ID
+      const reactionEvent: ChatEvent = {
+        type: 'message:reaction',
+        chatType: 'dm',
+        chatroomId: receiverId,
+        payload: { messageId, reactions },
+        correlationId: event.correlationId,
+        senderId: ws.userId,
+        timestamp: Date.now(),
+      };
+
+      // Send to receiver
+      const receiverWs = this.connectedUsers.get(receiverId);
+      if (receiverWs && receiverWs.readyState === WebSocket.OPEN) {
+        receiverWs.send(JSON.stringify(reactionEvent));
+      }
+
+      // Echo back to sender
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(reactionEvent));
+      }
+
+      return;
+    }
+
+    // Handle chatroom reactions (original logic)
+    // Get current message from chatroomMessages table
     const message = await db.query.chatroomMessages.findFirst({
       where: eq(chatroomMessages.id, messageId)
     });
@@ -257,6 +316,7 @@ export class ChatWebSocketService {
     // Broadcast reaction update
     const broadcastEvent: ChatEvent = {
       type: 'message:reaction',
+      chatType,
       chatroomId,
       payload: { messageId, reactions },
       correlationId: event.correlationId,
