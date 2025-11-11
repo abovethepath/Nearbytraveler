@@ -14,6 +14,7 @@ import { useAuth } from '@/App';
 import { authStorage } from '@/lib/auth';
 import SmartLocationInput from '@/components/SmartLocationInput';
 import { isStateOptionalForCountry } from '@/lib/locationHelpers';
+import { useLocation } from 'wouter';
 
 interface NewMeetup {
   title: string;
@@ -30,6 +31,7 @@ interface NewMeetup {
 
 export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city?: string; profileUserId?: number; triggerCreate?: boolean }) {
   const { user } = useAuth();
+  const [, setLocation] = useLocation();
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [expandedMeetup, setExpandedMeetup] = useState<number | null>(null);
   const [isCustomActivity, setIsCustomActivity] = useState(false);
@@ -37,11 +39,6 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
 
   // CRITICAL FIX: Get user data like navbar does (authStorage is more reliable)
   const actualUser = user || authStorage.getUser();
-  console.log('🔧 USER DATA SOURCES:', { 
-    contextUser: user ? `ID:${user.id}` : 'null',
-    storageUser: authStorage.getUser() ? `ID:${authStorage.getUser()?.id}` : 'null',
-    actualUser: actualUser ? `ID:${actualUser.id} Username:${actualUser.username}` : 'null'
-  });
 
   // Fetch existing quick meetups
   const { data: quickMeetups, isLoading } = useQuery({
@@ -637,8 +634,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      // Redirect to /quick-meetups page for full edit functionality
-                                      window.location.href = '/quick-meetups';
+                                      setLocation(`/quick-meetups?id=${meetup.id}`);
                                     }}
                                     className="p-1 rounded-full hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
                                     title="Edit quick meet"
@@ -770,7 +766,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                             size="sm"
                             onClick={(e) => {
                               e.stopPropagation();
-                              window.location.href = '/quick-meetups';
+                              setLocation(`/quick-meetups?id=${meetup.id}`);
                             }}
                             variant="outline"
                             className="flex-1 sm:flex-auto inline-flex items-center justify-center gap-2 rounded-full

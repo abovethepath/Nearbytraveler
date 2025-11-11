@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
 import { Card, CardContent } from '@/components/ui/card';
@@ -72,6 +72,20 @@ function QuickMeetupsPage() {
     description: '',
     duration: '1hour'
   });
+
+  // Read URL parameter and auto-select meetup for management
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const meetupId = params.get('id');
+    if (meetupId) {
+      const id = parseInt(meetupId, 10);
+      if (!isNaN(id)) {
+        setSelectedMeetupId(id);
+        // Clear URL parameter to avoid confusion on page refresh
+        window.history.replaceState({}, '', '/quick-meetups');
+      }
+    }
+  }, []);
 
   const { data: allMeetups = [], isLoading } = useQuery<QuickMeetup[]>({
     queryKey: ['/api/quick-meets'],
