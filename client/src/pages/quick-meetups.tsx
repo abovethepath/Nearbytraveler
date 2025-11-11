@@ -438,8 +438,8 @@ function QuickMeetupsPage() {
                     size="sm" 
                     className="text-xs h-7 bg-blue-500 hover:bg-blue-600 text-white"
                     onClick={() => {
-                      // Navigate to dedicated meetup management page
-                      setLocation(`/quick-meetup-chat/${meetup.id}`);
+                      // Select this meetup to show participants and management options
+                      setSelectedMeetupId(meetup.id);
                     }}
                   >
                     <UserCheck className="w-3 h-3 mr-1" />
