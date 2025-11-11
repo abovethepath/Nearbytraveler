@@ -7564,14 +7564,14 @@ Questions? Just reply to this message. Welcome aboard!
           profileImage: users.profileImage,
           userType: users.userType,
           hometownCity: users.hometownCity,
-          isAdmin: chatroomMembers.isAdmin,
+          role: chatroomMembers.role,
           joinedAt: chatroomMembers.joinedAt,
           isActive: chatroomMembers.isActive,
         })
         .from(chatroomMembers)
         .innerJoin(users, eq(chatroomMembers.userId, users.id))
         .where(eq(chatroomMembers.chatroomId, chatroomId))
-        .orderBy(desc(chatroomMembers.isAdmin), users.username);
+        .orderBy(desc(chatroomMembers.role), users.username);
 
       // Filter out explicitly deactivated members (false, not null)
       const members = allMembers.filter(m => m.isActive !== false).map(({ isActive, ...member }) => member);
