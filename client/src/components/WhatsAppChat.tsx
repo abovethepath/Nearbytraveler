@@ -290,15 +290,26 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
         {chatType === 'chatroom' && members.length > 0 && (
           <div className="flex -space-x-2">
             {members.slice(0, 4).map((member, index) => (
-              <Avatar key={member.id} className="w-10 h-10 border-2 border-gray-800">
-                <AvatarImage src={member.profileImage || undefined} />
-                <AvatarFallback className="bg-orange-600 text-white text-xs">
-                  {getFirstName(member.name, member.username)[0]}
-                </AvatarFallback>
-              </Avatar>
+              <div
+                key={member.id}
+                onClick={() => navigate(`/profile/${member.id}`)}
+                className="cursor-pointer hover:scale-110 transition-transform duration-200"
+                data-testid={`avatar-member-${member.id}`}
+              >
+                <Avatar className="w-10 h-10 border-2 border-gray-800">
+                  <AvatarImage src={member.profileImage || undefined} />
+                  <AvatarFallback className="bg-orange-600 text-white text-xs">
+                    {getFirstName(member.name, member.username)[0]}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
             ))}
             {members.length > 4 && (
-              <div className="w-10 h-10 rounded-full bg-gray-700 border-2 border-gray-800 flex items-center justify-center">
+              <div 
+                onClick={() => setShowMembers(true)}
+                className="w-10 h-10 rounded-full bg-gray-700 border-2 border-gray-800 flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors"
+                data-testid="button-more-members"
+              >
                 <span className="text-xs text-gray-300">+{members.length - 4}</span>
               </div>
             )}
