@@ -8868,6 +8868,7 @@ export class DatabaseStorage implements IStorage {
           category: meetup.category || 'meetup',
           location: meetup.location,
           meetingPoint: meetup.meetingPoint,
+          organizerNotes: meetup.organizerNotes || '',
           maxParticipants: meetup.maxParticipants,
           costEstimate: meetup.costEstimate,
           responseTime: responseTime,
@@ -8909,7 +8910,7 @@ export class DatabaseStorage implements IStorage {
           country: newMeetup.country,
           isActive: true,
           expiresAt: newMeetup.expiresAt,
-          participantCount: 1 // Creator is first participant
+          participantCount: 1 // Creator is first participant - matches quick_meetups.participantCount
         })
         .returning();
       

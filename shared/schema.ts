@@ -962,6 +962,7 @@ export const quickMeetups = pgTable("quick_meetups", {
   category: text("category").notNull(),
   location: text("location").notNull(),
   meetingPoint: text("meeting_point").notNull(),
+  organizerNotes: text("organizer_notes"),
   street: text("street"),
   city: text("city").notNull(),
   state: text("state"),
