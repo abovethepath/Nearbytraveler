@@ -188,47 +188,58 @@ export class ChatWebSocketService {
     
     console.log('✅ User IS a member - inserting message');
 
+    try {
+      // Insert message into chatroom_messages table
+      const [newMessage] = await db.insert(chatroomMessages).values({
+        chatroomId,
+        senderId: ws.userId!,
+        content,
+        messageType,
+        replyToId: replyToId || null,
+        mediaUrl: mediaUrl || null,
+        voiceDuration: voiceDuration || null,
+        location: location || null,
+        reactions: {},
+        deliveredAt: new Date(), // Mark as delivered immediately
+      }).returning();
+      
+      console.log('✅ Message inserted successfully:', newMessage.id);
 
-    // Insert message into chatroom_messages table
-    const [newMessage] = await db.insert(chatroomMessages).values({
-      chatroomId,
-      senderId: ws.userId!,
-      content,
-      messageType,
-      replyToId: replyToId || null,
-      mediaUrl: mediaUrl || null,
-      voiceDuration: voiceDuration || null,
-      location: location || null,
-      reactions: {},
-      deliveredAt: new Date(), // Mark as delivered immediately
-    }).returning();
+      // Fetch sender details
+      const sender = await db.query.users.findFirst({
+        where: eq(users.id, ws.userId!),
+        columns: {
+          id: true,
+          username: true,
+          name: true,
+          profileImage: true,
+        }
+      });
 
-    // Fetch sender details
-    const sender = await db.query.users.findFirst({
-      where: eq(users.id, ws.userId!),
-      columns: {
-        id: true,
-        username: true,
-        name: true,
-        profileImage: true,
-      }
-    });
+      console.log('✅ Sender fetched:', sender?.username);
 
-    // Broadcast to all chatroom members
-    const broadcastEvent: ChatEvent = {
-      type: 'message:new',
-      chatType,
-      chatroomId,
-      payload: {
-        ...newMessage,
-        sender,
-      },
-      correlationId: event.correlationId,
-      senderId: ws.userId,
-      timestamp: Date.now(),
-    };
+      // Broadcast to all chatroom members
+      const broadcastEvent: ChatEvent = {
+        type: 'message:new',
+        chatType,
+        chatroomId,
+        payload: {
+          ...newMessage,
+          sender,
+        },
+        correlationId: event.correlationId,
+        senderId: ws.userId,
+        timestamp: Date.now(),
+      };
 
-    await this.broadcastToChatroom(chatroomId, broadcastEvent, ws.userId);
+      console.log('📡 Broadcasting message to chatroom:', chatroomId);
+      await this.broadcastToChatroom(chatroomId, broadcastEvent, ws.userId);
+      console.log('✅ Message broadcast complete');
+      
+    } catch (insertError: any) {
+      console.error('❌ ERROR during message insert/broadcast:', insertError.message, insertError.stack);
+      throw insertError;
+    }
   }
 
   // Handle message reaction
