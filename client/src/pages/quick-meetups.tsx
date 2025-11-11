@@ -612,6 +612,145 @@ function QuickMeetupsPage() {
         </DialogContent>
       </Dialog>
 
+      {/* Manage Quick Meet Dialog */}
+      <Dialog open={!!selectedMeetupId} onOpenChange={(open) => !open && setSelectedMeetupId(null)}>
+        <DialogContent className="sm:max-w-lg bg-white dark:bg-gray-900">
+          <DialogHeader>
+            <DialogTitle>Manage Quick Meet</DialogTitle>
+          </DialogHeader>
+          {selectedMeetupId && (() => {
+            const selectedMeetup = allMeetups.find(m => m.id === selectedMeetupId);
+            if (!selectedMeetup) return <div>Meetup not found</div>;
+            
+            return (
+              <div className="space-y-4">
+                {/* Meetup Details */}
+                <div className="space-y-2 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-700">
+                  <h3 className="font-bold text-lg text-orange-800 dark:text-orange-200">{selectedMeetup.title}</h3>
+                  {selectedMeetup.description && (
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{selectedMeetup.description}</p>
+                  )}
+                  <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                    <MapPin className="w-3 h-3" />
+                    <span>{selectedMeetup.meetingPoint}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                    <Clock className="w-3 h-3" />
+                    <span className="font-semibold text-orange-600 dark:text-orange-400">
+                      {formatTimeRemaining(selectedMeetup.expiresAt)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Participants List */}
+                <div>
+                  <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                    <Users className="w-4 h-4" />
+                    Participants ({participants.length})
+                  </h4>
+                  {participants.length === 0 ? (
+                    <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+                      No participants yet
+                    </p>
+                  ) : (
+                    <div className="space-y-2 max-h-60 overflow-y-auto">
+                      {participants.map((participant) => (
+                        <div
+                          key={participant.id}
+                          className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                          data-testid={`participant-${participant.userId}`}
+                        >
+                          <Avatar 
+                            className="w-10 h-10 cursor-pointer hover:ring-2 hover:ring-orange-400 transition-all"
+                            onClick={() => {
+                              setLocation(`/profile/${participant.user.id}`);
+                              setSelectedMeetupId(null);
+                            }}
+                            data-testid={`avatar-participant-${participant.userId}`}
+                          >
+                            <AvatarImage 
+                              src={participant.user.profileImage || ''} 
+                              alt={`${participant.user.username}'s profile`}
+                              className="object-cover" 
+                            />
+                            <AvatarFallback className="bg-gradient-to-br from-blue-500 to-orange-500 text-white font-semibold">
+                              {(participant.user.username || participant.user.name || 'U').charAt(0).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <p 
+                              className="text-sm font-medium cursor-pointer hover:text-orange-600 dark:hover:text-orange-400 truncate"
+                              onClick={() => {
+                                setLocation(`/profile/${participant.user.id}`);
+                                setSelectedMeetupId(null);
+                              }}
+                              data-testid={`name-participant-${participant.userId}`}
+                            >
+                              {participant.user.name || participant.user.username}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              @{participant.user.username}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            {participant.userId === actualUser?.id && (
+                              <span className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-2 py-1 rounded-full">
+                                You
+                              </span>
+                            )}
+                            {participant.userId === selectedMeetup.organizerId && (
+                              <span className="text-xs bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 px-2 py-1 rounded-full">
+                                Organizer
+                              </span>
+                            )}
+                            {participant.userId !== actualUser?.id && (
+                              <button
+                                onClick={() => {
+                                  setLocation(`/chat/${participant.user.id}`);
+                                  setSelectedMeetupId(null);
+                                }}
+                                className="p-1.5 rounded-full hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors"
+                                title="Send message"
+                                data-testid={`message-participant-${participant.userId}`}
+                              >
+                                <MessageCircle className="w-4 h-4 text-orange-500" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => setSelectedMeetupId(null)}
+                    data-testid="button-close-manage-dialog"
+                  >
+                    Close
+                  </Button>
+                  <Button
+                    className="flex-1 bg-blue-500 hover:bg-blue-600 text-white"
+                    onClick={() => {
+                      setLocation(`/quick-meetup-chat/${selectedMeetup.id}`);
+                      setSelectedMeetupId(null);
+                    }}
+                    data-testid="button-goto-chat"
+                  >
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    Go to Chat
+                  </Button>
+                </div>
+              </div>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
+
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-orange-50 to-red-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="container mx-auto p-6 max-w-4xl">
         <div className="mb-6">
