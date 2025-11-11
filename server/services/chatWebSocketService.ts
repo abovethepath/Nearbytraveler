@@ -17,6 +17,7 @@ export type ChatEventType =
   | 'presence:join'
   | 'presence:leave'
   | 'sync:history'
+  | 'sync:response'
   | 'system:error';
 
 export interface ChatEvent {
@@ -282,23 +283,35 @@ export class ChatWebSocketService {
     const { chatroomId, payload } = event;
     const { lastMessageTimestamp } = payload;
 
-    // Fetch messages since last timestamp
-    const messages = await db.query.chatroomMessages.findMany({
+    // Fetch messages since last timestamp with sender details
+    const messagesData = await db.query.chatroomMessages.findMany({
       where: and(
         eq(chatroomMessages.chatroomId, chatroomId),
         lastMessageTimestamp ? gt(chatroomMessages.createdAt, new Date(lastMessageTimestamp)) : undefined
       ),
       orderBy: desc(chatroomMessages.createdAt),
       limit: 50,
+      with: {
+        sender: {
+          columns: {
+            id: true,
+            username: true,
+            name: true,
+            profileImage: true,
+          }
+        }
+      }
     });
 
     // Send sync response
-    ws.send(JSON.stringify({
+    const responseEvent: ChatEvent = {
       type: 'sync:response',
       chatroomId,
-      payload: { messages },
+      payload: { messages: messagesData },
       timestamp: Date.now(),
-    }));
+    };
+    
+    ws.send(JSON.stringify(responseEvent));
   }
 
   // Broadcast event to all members of a chatroom
