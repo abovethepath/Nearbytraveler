@@ -9075,6 +9075,15 @@ Questions? Just reply to this message. Welcome aboard!
       // Award 1 aura point for creating an event
       await awardAuraPoints(newEvent.organizerId, 1, 'creating an event');
       
+      // AUTO-CREATE CHATROOM for the event (like Quick Meets)
+      try {
+        await storage.ensureEventChatroom(newEvent.id);
+        if (process.env.NODE_ENV === 'development') console.log(`💬 AUTO-CHATROOM: Created chatroom for event ${newEvent.id}`);
+      } catch (chatroomError: any) {
+        // Don't fail event creation if chatroom creation fails - log but continue
+        if (process.env.NODE_ENV === 'development') console.error(`⚠️ AUTO-CHATROOM: Failed to create chatroom:`, chatroomError.message);
+      }
+      
       // AUTOMATICALLY ADD CREATOR AS EVENT ATTENDEE - Organizers should always attend their own events
       try {
         await storage.joinEvent(newEvent.id, newEvent.organizerId);
@@ -11680,8 +11689,8 @@ Questions? Just reply to this message. Welcome aboard!
 
       const chatroom = await storage.getEventChatroom(eventId);
       if (!chatroom) {
-        // Create chatroom if it doesn't exist - FIX: pass object with eventId
-        const newChatroom = await storage.createEventChatroom({ eventId });
+        // Create chatroom if it doesn't exist
+        const newChatroom = await storage.createEventChatroom(eventId);
         return res.json(newChatroom);
       }
 
@@ -11689,6 +11698,24 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching event chatroom:", error);
       return res.status(500).json({ message: "Failed to fetch chatroom" });
+    }
+  });
+
+  // GET event chatroom members (participants)
+  app.get("/api/event-chatrooms/:eventId/members", async (req, res) => {
+    try {
+      const eventId = parseInt(req.params.eventId || '0');
+      
+      if (!eventId) {
+        return res.status(400).json({ message: "Invalid event ID" });
+      }
+
+      const members = await storage.getEventChatroomMembers(eventId);
+      if (process.env.NODE_ENV === 'development') console.log(`👥 Found ${members.length} members for event ${eventId}`);
+      return res.json(members);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error fetching event chatroom members:", error);
+      return res.status(500).json({ message: "Failed to fetch chatroom members" });
     }
   });
 

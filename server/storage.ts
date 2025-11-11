@@ -240,6 +240,12 @@ export interface IStorage {
   createQuickMeetupChatroomMessage(chatroomId: number, senderId: number, content: string): Promise<any>;
   joinQuickMeetupChatroom(chatroomId: number, userId: number): Promise<any>;
   
+  // Event Chatroom methods
+  getEventChatroom(eventId: number): Promise<any | undefined>;
+  createEventChatroom(eventId: number): Promise<any>;
+  ensureEventChatroom(eventId: number): Promise<any>;
+  getEventChatroomMembers(eventId: number): Promise<any[]>;
+  
   // Geolocation and proximity methods
   updateUserLocation(userId: number, latitude: number, longitude: number): Promise<User | undefined>;
   enableLocationSharing(userId: number): Promise<User | undefined>;
@@ -9648,6 +9654,102 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error('Error joining quick meetup chatroom:', error);
       throw error;
+    }
+  }
+
+  // Event Chatroom methods
+  async getEventChatroom(eventId: number): Promise<any | undefined> {
+    try {
+      const [chatroom] = await db
+        .select()
+        .from(meetupChatrooms)
+        .where(and(
+          eq(meetupChatrooms.eventId, eventId),
+          eq(meetupChatrooms.isActive, true)
+        ));
+      
+      return chatroom;
+    } catch (error) {
+      console.error('Error fetching event chatroom:', error);
+      return undefined;
+    }
+  }
+
+  async createEventChatroom(eventId: number): Promise<any> {
+    try {
+      // Get event details for chatroom name and location
+      const event = await this.getEvent(eventId);
+      if (!event) {
+        throw new Error('Event not found');
+      }
+
+      const [chatroom] = await db.insert(meetupChatrooms).values({
+        eventId: eventId,
+        chatroomName: `${event.title} - Group Chat`,
+        description: `Group chat for ${event.title}`,
+        city: event.city,
+        state: event.state || '',
+        country: event.country,
+        isActive: true,
+        expiresAt: new Date(event.date),
+        participantCount: 0
+      }).returning();
+
+      console.log(`Created Event chatroom: ${chatroom.chatroomName} for event ${eventId}`);
+      return chatroom;
+    } catch (error) {
+      console.error('Error creating event chatroom:', error);
+      throw error;
+    }
+  }
+
+  async ensureEventChatroom(eventId: number): Promise<any> {
+    try {
+      // Check if chatroom already exists
+      const existingChatroom = await this.getEventChatroom(eventId);
+      if (existingChatroom) {
+        return existingChatroom;
+      }
+      
+      // Create new chatroom
+      return await this.createEventChatroom(eventId);
+    } catch (error) {
+      console.error('Error ensuring event chatroom:', error);
+      throw error;
+    }
+  }
+
+  async getEventChatroomMembers(eventId: number): Promise<any[]> {
+    try {
+      // Get participants from eventParticipants table and join with users
+      const members = await db
+        .select({
+          id: users.id,
+          username: users.username,
+          name: users.name,
+          profileImage: users.profileImage,
+          userType: users.userType,
+          hometownCity: users.hometownCity,
+          role: eventParticipants.role,
+          joinedAt: eventParticipants.joinedAt,
+          status: eventParticipants.status
+        })
+        .from(eventParticipants)
+        .innerJoin(users, eq(eventParticipants.userId, users.id))
+        .where(and(
+          eq(eventParticipants.eventId, eventId),
+          eq(eventParticipants.status, 'going')
+        ))
+        .orderBy(desc(eventParticipants.role), users.username);
+
+      // Convert role to isAdmin for frontend compatibility
+      return members.map(({ role, status, ...member }) => ({
+        ...member,
+        isAdmin: role === 'organizer'
+      }));
+    } catch (error) {
+      console.error('Error fetching event chatroom members:', error);
+      return [];
     }
   }
 
