@@ -106,14 +106,16 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
       });
 
       console.log('✅ JOIN SUCCESS:', result);
-      return result;
+      return { meetupId, result };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
       toast({
         title: "Joined!",
         description: "You've successfully joined the quick meet.",
       });
+      // Navigate to chatroom after joining
+      window.location.href = `/quick-meetup-chat/${data.meetupId}`;
     },
     onError: (error: any) => {
       toast({
@@ -709,7 +711,10 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                       {!isOwn ? (
                         <Button
                           size="sm"
-                          onClick={() => handleJoinMeetup(meetup.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleJoinMeetup(meetup.id);
+                          }}
                           disabled={joinMutation.isPending}
                           className="w-full sm:w-auto max-w-full inline-flex items-center justify-center gap-2 rounded-full
                                      text-xs py-2 h-9 bg-gradient-to-r from-blue-500 to-orange-500

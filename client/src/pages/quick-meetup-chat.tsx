@@ -8,6 +8,7 @@ interface QuickMeetup {
   city: string;
   expiresAt: string;
   participantCount: number;
+  chatroomId: number;
 }
 
 export default function QuickMeetupChat() {
@@ -17,7 +18,7 @@ export default function QuickMeetupChat() {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
 
   const { data: meetup } = useQuery<QuickMeetup>({
-    queryKey: [`/api/quick-meetups/${meetupId}`],
+    queryKey: [`/api/quick-meets/${meetupId}`],
     enabled: !!meetupId
   });
 
@@ -25,10 +26,14 @@ export default function QuickMeetupChat() {
     return <div className="flex items-center justify-center h-screen bg-gray-900 text-white">Loading...</div>;
   }
 
+  if (!meetup.chatroomId) {
+    return <div className="flex items-center justify-center h-screen bg-gray-900 text-white">Chatroom not found</div>;
+  }
+
   return (
     <WhatsAppChat
-      chatId={meetupId}
-      chatType="meetup"
+      chatId={meetup.chatroomId}
+      chatType="chatroom"
       title={meetup.title}
       subtitle={`${meetup.participantCount} participants`}
       currentUserId={user.id}

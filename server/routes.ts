@@ -12236,6 +12236,7 @@ Questions? Just reply to this message. Welcome aboard!
           isActive: row.quickMeetups?.isActive,
           createdAt: row.quickMeetups?.createdAt,
           participantCount: row.quickMeetups?.participantCount,
+          organizerNotes: row.quickMeetups?.organizerNotes,
           organizerUsername: row.users?.username,
           organizerPublicName: row.users ? computePublicName(
             row.users.displayNamePreference || 'username',
