@@ -276,7 +276,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-white">
       {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-3 bg-gray-800 border-b border-gray-700">
+      <div className="flex items-center gap-2 px-3 py-2 bg-gray-800 border-b border-gray-700">
         <Button
           variant="ghost"
           size="icon"
@@ -296,9 +296,9 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                 className="cursor-pointer hover:scale-110 transition-transform duration-200"
                 data-testid={`avatar-member-${member.id}`}
               >
-                <Avatar className="w-10 h-10 border-2 border-gray-800">
+                <Avatar className="w-8 h-8 border-2 border-gray-800">
                   <AvatarImage src={member.profileImage || undefined} />
-                  <AvatarFallback className="bg-orange-600 text-white text-xs">
+                  <AvatarFallback className="bg-orange-600 text-white text-[10px]">
                     {getFirstName(member.name, member.username)[0]}
                   </AvatarFallback>
                 </Avatar>
@@ -307,18 +307,18 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
             {members.length > 4 && (
               <div 
                 onClick={() => setShowMembers(true)}
-                className="w-10 h-10 rounded-full bg-gray-700 border-2 border-gray-800 flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors"
+                className="w-8 h-8 rounded-full bg-gray-700 border-2 border-gray-800 flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors"
                 data-testid="button-more-members"
               >
-                <span className="text-xs text-gray-300">+{members.length - 4}</span>
+                <span className="text-[10px] text-gray-300">+{members.length - 4}</span>
               </div>
             )}
           </div>
         )}
         
         <div className="flex-1">
-          <h1 className="font-semibold">{title}</h1>
-          {subtitle && <p className="text-xs text-gray-400">{subtitle}</p>}
+          <h1 className="font-semibold text-sm">{title}</h1>
+          {subtitle && <p className="text-[10px] text-gray-400">{subtitle}</p>}
         </div>
         {chatType === 'chatroom' && (
           <Sheet open={showMembers} onOpenChange={setShowMembers}>
@@ -382,17 +382,17 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+      <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2">
         {messages.map((message, index) => {
           const isOwnMessage = message.senderId === currentUserId;
           const showAvatar = index === 0 || messages[index - 1].senderId !== message.senderId;
           
           return (
-            <div key={message.id} className={`flex gap-2 ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
+            <div key={message.id} className={`flex gap-1.5 ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
               {!isOwnMessage && (
-                <Avatar className={`w-8 h-8 ${showAvatar ? 'visible' : 'invisible'}`}>
+                <Avatar className={`w-7 h-7 ${showAvatar ? 'visible' : 'invisible'}`}>
                   <AvatarImage src={message.sender?.profileImage || undefined} />
-                  <AvatarFallback>{message.sender?.name?.[0] || '?'}</AvatarFallback>
+                  <AvatarFallback className="text-xs">{message.sender?.name?.[0] || '?'}</AvatarFallback>
                 </Avatar>
               )}
 
@@ -408,13 +408,13 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                   </div>
                 )}
 
-                <div className={`px-4 py-2 rounded-2xl ${isOwnMessage ? 'bg-orange-600' : 'bg-gray-700'} ${message.replyToId ? 'rounded-tl-none' : ''}`}>
+                <div className={`px-3 py-1.5 rounded-2xl ${isOwnMessage ? 'bg-orange-600' : 'bg-gray-700'} ${message.replyToId ? 'rounded-tl-none' : ''}`}>
                   {!isOwnMessage && showAvatar && (
-                    <p className="text-xs font-semibold mb-1 text-orange-400">{getFirstName(message.sender?.name, message.sender?.username)}</p>
+                    <p className="text-xs font-semibold mb-0.5 text-orange-400">{getFirstName(message.sender?.name, message.sender?.username)}</p>
                   )}
                   <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
                   
-                  <div className="flex items-center justify-end gap-1 mt-1">
+                  <div className="flex items-center justify-end gap-1 mt-0.5">
                     <span className="text-[10px] opacity-70">{formatTimestamp(message.createdAt)}</span>
                   </div>
                 </div>
@@ -454,35 +454,35 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
       </div>
 
       {typingUsers.size > 0 && (
-        <div className="px-4 py-2 text-sm text-gray-400">
+        <div className="px-3 py-1 text-xs text-gray-400">
           {Array.from(typingUsers).join(', ')} {typingUsers.size === 1 ? 'is' : 'are'} typing...
         </div>
       )}
 
       {replyingTo && (
-        <div className="px-4 py-2 bg-gray-800 border-t border-gray-700">
+        <div className="px-3 py-1.5 bg-gray-800 border-t border-gray-700">
           <div className="flex items-center justify-between">
             <div className="flex-1">
               <p className="text-xs text-orange-400 font-semibold">Replying to {getFirstName(replyingTo.sender?.name, replyingTo.sender?.username)}</p>
-              <p className="text-sm text-gray-300 truncate">{replyingTo.content}</p>
+              <p className="text-xs text-gray-300 truncate">{replyingTo.content}</p>
             </div>
-            <Button variant="ghost" size="sm" onClick={() => setReplyingTo(null)} className="text-gray-400">✕</Button>
+            <Button variant="ghost" size="sm" onClick={() => setReplyingTo(null)} className="text-gray-400 h-6 w-6 p-0">✕</Button>
           </div>
         </div>
       )}
 
-      <div className="px-4 py-3 bg-gray-800 border-t border-gray-700">
+      <div className="px-3 py-2 bg-gray-800 border-t border-gray-700">
         <div className="flex items-end gap-2">
           <Textarea
             value={messageText}
             onChange={(e) => handleTyping(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
             placeholder="Message"
-            className="flex-1 min-h-[44px] max-h-[120px] bg-gray-700 border-gray-600 text-white resize-none rounded-full px-4 py-3"
+            className="flex-1 min-h-[36px] max-h-[100px] bg-gray-700 border-gray-600 text-white resize-none rounded-full px-3 py-2 text-sm"
             rows={1}
           />
-          <Button onClick={sendMessage} disabled={!messageText.trim()} size="icon" className="bg-orange-600 hover:bg-orange-700 rounded-full h-11 w-11">
-            <Send className="w-5 h-5" />
+          <Button onClick={sendMessage} disabled={!messageText.trim()} size="icon" className="bg-orange-600 hover:bg-orange-700 rounded-full h-9 w-9 shrink-0">
+            <Send className="w-4 h-4" />
           </Button>
         </div>
       </div>
