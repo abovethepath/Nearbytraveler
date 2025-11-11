@@ -307,7 +307,7 @@ export default function CityChatroomsPage() {
               <Card 
                 key={chatroom.id} 
                 className="group cursor-pointer transform hover:scale-105 transition-all duration-300 overflow-hidden relative bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl border-gray-200 dark:border-gray-700"
-                onClick={() => navigate(`/simple-chatroom/${chatroom.id}`)}
+                onClick={() => navigate(`/chatroom/${chatroom.id}`)}
               >
                 {/* Header with gradient background */}
                 <div className="relative h-24 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
@@ -365,7 +365,7 @@ export default function CityChatroomsPage() {
                           className="flex-1 bg-green-600 hover:bg-green-700 text-white"
                           onClick={(e) => {
                             e.stopPropagation();
-                            navigate(`/simple-chatroom/${chatroom.id}`);
+                            navigate(`/chatroom/${chatroom.id}`);
                           }}
                         >
                           <MessageCircle className="w-4 h-4 mr-2" />
