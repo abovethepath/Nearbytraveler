@@ -1,6 +1,5 @@
 import { useParams } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "@/App";
 import WhatsAppChat from "@/components/WhatsAppChat";
 
 interface ChatroomDetails {
@@ -13,8 +12,9 @@ interface ChatroomDetails {
 
 export default function WhatsAppChatroom() {
   const params = useParams();
-  const { user } = useAuth();
   const chatroomId = parseInt(params.id || '0');
+
+  const user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || '{}');
 
   const { data: chatroomArray } = useQuery<ChatroomDetails[]>({
     queryKey: [`/api/chatrooms/${chatroomId}`],
