@@ -114,8 +114,12 @@ export class ChatWebSocketService {
     const { chatType, chatroomId, payload } = event;
     const { content, messageType = 'text', replyToId, mediaUrl, voiceDuration, location } = payload;
 
+    console.log('🔵 handleNewMessage called:', { chatType, chatroomId, userId: ws.userId });
+
     // Handle DM messages separately (different table structure)
     if (chatType === 'dm') {
+      console.log('📱 Processing DM message');
+
       // For DMs, chatroomId is actually the receiver's user ID
       const receiverId = chatroomId;
 
@@ -170,12 +174,20 @@ export class ChatWebSocketService {
     }
 
     // Handle chatroom messages (original logic)
+    console.log('💬 Processing chatroom message');
+    
     // Verify user is a member of the chatroom
     const isMember = await this.verifyChatroomMembership(ws.userId!, chatroomId);
+    console.log('🔐 Membership check result:', { isMember, userId: ws.userId, chatroomId });
+    
     if (!isMember) {
+      console.log('❌ User is NOT a member - sending error');
       this.sendError(ws, 'You are not a member of this chatroom');
       return;
     }
+    
+    console.log('✅ User IS a member - inserting message');
+
 
     // Insert message into chatroom_messages table
     const [newMessage] = await db.insert(chatroomMessages).values({
