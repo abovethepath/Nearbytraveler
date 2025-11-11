@@ -274,7 +274,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-60px)] bg-gray-900 text-white">
+    <div className="flex flex-col h-[calc(100vh-120px)] bg-gray-900 text-white">
       {/* Header */}
       <div className="flex items-center gap-1.5 px-2 py-1.5 bg-gray-800 border-b border-gray-700">
         <Button
