@@ -114,6 +114,7 @@ import CityChatrooms from "@/pages/city-chatrooms";
 import Chatroom from "@/pages/chatroom";
 import FixedChatroom from "@/pages/fixed-chatroom";
 import WhatsAppChatroom from "@/pages/whatsapp-chatroom";
+import DMChat from "@/pages/dm-chat";
 
 import BusinessOffers from "@/pages/business-offers";
 import BusinessDashboard from "@/pages/business-dashboard";
@@ -912,6 +913,11 @@ function Router() {
     if (location.startsWith('/chatroom/')) {
       const chatroomId = location.split('/')[2];
       return <WhatsAppChatroom />;
+    }
+
+    if (location.startsWith('/messages/') && location.split('/')[2]) {
+      const userId = location.split('/')[2];
+      return <DMChat />;
     }
 
     if (location.startsWith('/simple-chatroom/')) {

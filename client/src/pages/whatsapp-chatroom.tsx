@@ -16,11 +16,10 @@ export default function WhatsAppChatroom() {
 
   const user = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || '{}');
 
-  const { data: chatroomArray } = useQuery<ChatroomDetails[]>({
+  const { data: chatroom } = useQuery<ChatroomDetails>({
     queryKey: [`/api/chatrooms/${chatroomId}`],
     enabled: !!chatroomId
   });
-  const chatroom = chatroomArray?.[0];
 
   if (!chatroom) {
     return <div className="flex items-center justify-center h-screen bg-gray-900 text-white">Loading...</div>;
