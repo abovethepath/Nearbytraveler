@@ -595,13 +595,13 @@ function QuickMeetupsPage() {
                     onClick={() => {
                       setIsEditingMeetup(true);
                       setEditForm({
-                        title: selectedMeetup.title,
-                        description: selectedMeetup.description || '',
-                        meetingPoint: selectedMeetup.meetingPoint || '',
-                        street: selectedMeetup.street || '',
-                        city: selectedMeetup.city || '',
-                        state: selectedMeetup.state || '',
-                        zipcode: selectedMeetup.zipcode || '',
+                        title: selectedMeetup.title ?? '',
+                        description: selectedMeetup.description ?? '',
+                        meetingPoint: selectedMeetup.meetingPoint ?? '',
+                        street: selectedMeetup.street ?? '',
+                        city: selectedMeetup.city ?? '',
+                        state: selectedMeetup.state ?? '',
+                        zipcode: selectedMeetup.zipcode ?? '',
                         duration: '1hour'
                       });
                     }}
@@ -751,7 +751,7 @@ function QuickMeetupsPage() {
                             }
                           });
                         }}
-                        disabled={updateMeetupMutation.isPending || !editForm.title.trim()}
+                        disabled={updateMeetupMutation.isPending || !editForm.title?.trim()}
                         data-testid="button-save-edit"
                       >
                         {updateMeetupMutation.isPending ? (
