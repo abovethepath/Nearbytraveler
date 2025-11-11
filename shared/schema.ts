@@ -323,14 +323,20 @@ export const secretLocalExperienceLikes = pgTable("secret_local_experience_likes
   unique().on(table.experienceId, table.userId)
 ]);
 
-// Group chat and enhanced messaging support
+// Group chat and enhanced messaging support - WhatsApp-style real-time chat
 export const chatroomMessages = pgTable("chatroom_messages", {
   id: serial("id").primaryKey(),
   chatroomId: integer("chatroom_id").notNull().references(() => citychatrooms.id),
   senderId: integer("sender_id").notNull().references(() => users.id),
   content: text("content").notNull(),
-  messageType: text("message_type").default("text"), // 'text', 'image', 'system'
-  replyToId: integer("reply_to_id"), // Will be set up with self-reference later
+  messageType: text("message_type").default("text"), // 'text', 'image', 'voice', 'location', 'system'
+  replyToId: integer("reply_to_id"), // Reply to specific message (threaded)
+  mediaUrl: text("media_url"), // URL for images, voice messages, etc
+  voiceDuration: integer("voice_duration"), // Duration in seconds for voice messages
+  location: jsonb("location"), // {lat, lng, label} for location sharing
+  reactions: jsonb("reactions"), // {emoji: [userId, userId]} for message reactions
+  deliveredAt: timestamp("delivered_at"), // When message was delivered to all recipients
+  readAt: timestamp("read_at"), // When message was read by all recipients  
   isEdited: boolean("is_edited").default(false),
   editedAt: timestamp("edited_at"),
   createdAt: timestamp("created_at").defaultNow(),
