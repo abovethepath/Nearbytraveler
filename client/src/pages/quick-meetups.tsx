@@ -727,8 +727,11 @@ function QuickMeetupsPage() {
                               zipcode: editForm.zipcode,
                               duration: editForm.duration
                             }
+                          }, {
+                            onSuccess: () => {
+                              setIsEditingMeetup(false);
+                            }
                           });
-                          setIsEditingMeetup(false);
                         }}
                         disabled={updateMeetupMutation.isPending || !editForm.title.trim()}
                         data-testid="button-save-edit"
