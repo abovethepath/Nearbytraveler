@@ -200,13 +200,17 @@ function QuickMeetupsPage() {
       console.log('✅ Response data:', data);
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       console.log('🎉 MUTATION onSuccess callback fired');
       toast({
         title: "Success!",
         description: "Quick meet updated successfully.",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
+      // Ensure selectedMeetupId stays set to the correct ID after update
+      if (data?.meetup?.id) {
+        setSelectedMeetupId(data.meetup.id);
+      }
     },
     onError: (error: Error) => {
       console.error('💥 MUTATION onError callback fired:', error);

@@ -624,6 +624,38 @@ export class ChatWebSocketService {
         
         return { ...msg, sender, replyTo };
       }));
+    } else if (chatType === 'meetup') {
+      // Handle meetup chatroom history
+      const meetupMessages = await db.query.meetupChatroomMessages.findMany({
+        where: and(
+          eq(meetupChatroomMessages.meetupChatroomId, chatroomId),
+          lastMessageTimestamp ? gt(meetupChatroomMessages.sentAt, new Date(lastMessageTimestamp)) : undefined
+        ),
+        orderBy: desc(meetupChatroomMessages.sentAt),
+        limit: 50,
+      });
+      
+      // Fetch sender details for each message and map to expected format
+      messagesData = await Promise.all(meetupMessages.map(async (msg) => {
+        const sender = await db.query.users.findFirst({
+          where: eq(users.id, msg.userId),
+          columns: {
+            id: true,
+            username: true,
+            name: true,
+            profileImage: true,
+          }
+        });
+        
+        return {
+          id: msg.id,
+          content: msg.message,
+          createdAt: msg.sentAt,
+          senderId: msg.userId,
+          messageType: msg.messageType ?? 'text',
+          sender,
+        };
+      }));
     } else {
       // Handle chatroom history with reply metadata
       const chatMessages = await db.query.chatroomMessages.findMany({
