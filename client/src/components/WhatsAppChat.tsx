@@ -54,8 +54,10 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     const ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
     wsRef.current = ws;
 
+    let isAuthenticated = false;
+
     ws.onopen = () => {
-      console.log('🟢 WebSocket connected');
+      console.log('🟢 WhatsApp Chat: WebSocket connected');
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       
       // Authenticate
@@ -64,25 +66,32 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
         userId: currentUserId,
         username: user.username
       }));
-
-      // Request message history
-      ws.send(JSON.stringify({
-        type: 'sync:history',
-        chatroomId: chatId,
-        payload: {}
-      }));
     };
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
+      console.log('📨 WhatsApp Chat: Received WebSocket message:', data.type);
 
       switch (data.type) {
+        case 'auth:success':
+          console.log('✅ WhatsApp Chat: Authenticated, requesting message history');
+          isAuthenticated = true;
+          // Now request message history
+          ws.send(JSON.stringify({
+            type: 'sync:history',
+            chatroomId: chatId,
+            payload: {}
+          }));
+          break;
+
         case 'sync:response':
+          console.log('📬 WhatsApp Chat: Received', data.payload.messages.length, 'messages');
           setMessages(data.payload.messages.reverse());
           scrollToBottom();
           break;
 
         case 'message:new':
+          console.log('💬 WhatsApp Chat: New message received');
           setMessages(prev => [...prev, data.payload]);
           scrollToBottom();
           break;
@@ -112,6 +121,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           break;
 
         case 'system:error':
+          console.error('❌ WhatsApp Chat: Error:', data.payload.message);
           toast({
             title: "Error",
             description: data.payload.message,

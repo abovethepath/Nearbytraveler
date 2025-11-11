@@ -15052,6 +15052,16 @@ Questions? Just reply to this message. Welcome aboard!
             
             if (process.env.NODE_ENV === 'development') console.log(`✅ User ${data.username} (${data.userId}) authenticated via WebSocket`);
 
+            // Send authentication success response
+            ws.send(JSON.stringify({
+              type: 'auth:success',
+              payload: {
+                userId: data.userId,
+                username: data.username
+              },
+              timestamp: Date.now()
+            }));
+
             // Send any pending offline messages when user comes online
             await deliverOfflineMessages(data.userId);
             break;
