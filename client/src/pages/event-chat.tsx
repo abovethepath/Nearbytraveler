@@ -1,7 +1,9 @@
 import { useRoute, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import WhatsAppChat from "@/components/WhatsAppChat";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft } from "lucide-react";
 
 interface User {
@@ -21,16 +23,33 @@ interface Event {
 export default function EventChat() {
   const [, params] = useRoute("/event-chat/:eventId");
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
   const eventId = params?.eventId ? parseInt(params.eventId) : null;
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-  const { data: event, isLoading, isError, error } = useQuery<Event>({
+  const { data: event, isLoading, isError, error, failureCount } = useQuery<Event>({
     queryKey: [`/api/events/${eventId}`],
     enabled: !!eventId,
     retry: 2,
     retryDelay: 1000
   });
+
+  // Auto-redirect on 404 errors (expired/deleted events)
+  // Only redirect after all retry attempts are exhausted
+  useEffect(() => {
+    if (isError && error && failureCount >= 2) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes('404') || errorMessage.includes('not found')) {
+        toast({
+          title: "Event No Longer Available",
+          description: "This event has been deleted or is no longer accessible.",
+          variant: "default",
+        });
+        setLocation('/events');
+      }
+    }
+  }, [isError, error, failureCount, toast, setLocation]);
 
   if (!eventId) {
     return (

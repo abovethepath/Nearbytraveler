@@ -61,10 +61,14 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   const wsRef = useRef<WebSocket | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Fetch chatroom members (for both city chatrooms and meetup chatrooms)
+  // Fetch chatroom members (for city chatrooms, meetup chatrooms, and event chatrooms)
+  const membersEndpoint = chatType === 'event' 
+    ? `/api/event-chatrooms/${chatId}/members`
+    : `/api/chatrooms/${chatId}/members`;
+  
   const { data: members = [], error: membersError } = useQuery<ChatMember[]>({
-    queryKey: [`/api/chatrooms/${chatId}/members`],
-    enabled: (chatType === 'chatroom' || chatType === 'meetup') && Boolean(chatId)
+    queryKey: [membersEndpoint],
+    enabled: (chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && Boolean(chatId)
   });
 
   // Show error toast if members fetch fails
@@ -291,8 +295,8 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           <ArrowLeft className="w-4 h-4" />
         </Button>
         
-        {/* WhatsApp-style member avatars for chatrooms and meetups */}
-        {(chatType === 'chatroom' || chatType === 'meetup') && members.length > 0 && (
+        {/* WhatsApp-style member avatars for chatrooms, meetups, and events */}
+        {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && members.length > 0 && (
           <div className="flex -space-x-2">
             {members.slice(0, 4).map((member, index) => (
               <div
@@ -325,7 +329,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           <h1 className="font-semibold text-xs truncate">{title}</h1>
           {subtitle && <p className="text-[9px] text-gray-400 truncate">{subtitle}</p>}
         </div>
-        {(chatType === 'chatroom' || chatType === 'meetup') && (
+        {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
           <Sheet open={showMembers} onOpenChange={setShowMembers}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="text-white hover:bg-gray-700 h-8 w-8" data-testid="button-members">
