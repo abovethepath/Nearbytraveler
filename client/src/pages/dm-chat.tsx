@@ -26,11 +26,20 @@ export default function DMChat() {
     return <div className="flex items-center justify-center h-screen bg-gray-900 text-white">Loading...</div>;
   }
 
+  // PRIVACY: Extract first name only from full name
+  const getFirstName = (fullName: string | null | undefined): string => {
+    if (!fullName || fullName.trim() === '') return '';
+    const parts = fullName.trim().split(' ');
+    return parts[0] || '';
+  };
+
+  const displayName = getFirstName(otherUser.name) || otherUser.username;
+
   return (
     <WhatsAppChat
       chatId={otherUserId}
       chatType="dm"
-      title={otherUser.name || otherUser.username}
+      title={displayName}
       subtitle={otherUser.hometown || "Direct Message"}
       currentUserId={currentUser.id}
     />
