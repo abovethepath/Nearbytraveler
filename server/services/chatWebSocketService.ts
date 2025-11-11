@@ -1,7 +1,7 @@
 import { WebSocket } from 'ws';
 import { db } from '../db';
-import { chatroomMessages, chatroomMembers, users } from '../../shared/schema';
-import { eq, and, desc, gt } from 'drizzle-orm';
+import { chatroomMessages, chatroomMembers, users, messages } from '../../shared/schema';
+import { eq, and, desc, gt, or } from 'drizzle-orm';
 
 // WebSocket event types for WhatsApp-style chat
 export type ChatEventType =
@@ -114,17 +114,70 @@ export class ChatWebSocketService {
     const { chatType, chatroomId, payload } = event;
     const { content, messageType = 'text', replyToId, mediaUrl, voiceDuration, location } = payload;
 
-    // Skip membership check for DMs (direct messages don't have chatroom memberships)
-    if (chatType !== 'dm') {
-      // Verify user is a member of the chatroom for non-DM chats
-      const isMember = await this.verifyChatroomMembership(ws.userId!, chatroomId);
-      if (!isMember) {
-        this.sendError(ws, 'You are not a member of this chatroom');
-        return;
+    // Handle DM messages separately (different table structure)
+    if (chatType === 'dm') {
+      // For DMs, chatroomId is actually the receiver's user ID
+      const receiverId = chatroomId;
+
+      // Insert into messages table (DMs)
+      const [newMessage] = await db.insert(messages).values({
+        senderId: ws.userId!,
+        receiverId: receiverId,
+        content,
+        messageType,
+        replyToId: replyToId || null,
+        mediaUrl: mediaUrl || null,
+        reactions: {},
+      }).returning();
+
+      // Fetch sender details
+      const sender = await db.query.users.findFirst({
+        where: eq(users.id, ws.userId!),
+        columns: {
+          id: true,
+          username: true,
+          name: true,
+          profileImage: true,
+        }
+      });
+
+      // Send to both sender and receiver
+      const dmEvent: ChatEvent = {
+        type: 'message:new',
+        chatType: 'dm',
+        chatroomId: receiverId,
+        payload: {
+          ...newMessage,
+          sender,
+        },
+        correlationId: event.correlationId,
+        senderId: ws.userId,
+        timestamp: Date.now(),
+      };
+
+      // Send to receiver
+      const receiverWs = this.connectedUsers.get(receiverId);
+      if (receiverWs && receiverWs.readyState === WebSocket.OPEN) {
+        receiverWs.send(JSON.stringify(dmEvent));
       }
+
+      // Echo back to sender
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(dmEvent));
+      }
+
+      return;
     }
 
-    // Insert message into database
+    // Handle chatroom messages (original logic)
+    // Verify user is a member of the chatroom
+    const isMember = await this.verifyChatroomMembership(ws.userId!, chatroomId);
+    if (!isMember) {
+      this.sendError(ws, 'You are not a member of this chatroom');
+      return;
+    }
+
+    // Insert message into chatroom_messages table
     const [newMessage] = await db.insert(chatroomMessages).values({
       chatroomId,
       senderId: ws.userId!,
@@ -152,6 +205,7 @@ export class ChatWebSocketService {
     // Broadcast to all chatroom members
     const broadcastEvent: ChatEvent = {
       type: 'message:new',
+      chatType,
       chatroomId,
       payload: {
         ...newMessage,
@@ -284,32 +338,69 @@ export class ChatWebSocketService {
 
   // Handle history sync (for reconnection)
   private async handleHistorySync(ws: AuthenticatedWebSocket, event: ChatEvent) {
-    const { chatroomId, payload } = event;
+    const { chatType, chatroomId, payload } = event;
     const { lastMessageTimestamp } = payload;
 
-    // Fetch messages since last timestamp with sender details
-    const messagesData = await db.query.chatroomMessages.findMany({
-      where: and(
-        eq(chatroomMessages.chatroomId, chatroomId),
-        lastMessageTimestamp ? gt(chatroomMessages.createdAt, new Date(lastMessageTimestamp)) : undefined
-      ),
-      orderBy: desc(chatroomMessages.createdAt),
-      limit: 50,
-      with: {
-        sender: {
+    let messagesData: any[] = [];
+
+    // Handle DM history separately
+    if (chatType === 'dm') {
+      // For DMs, chatroomId is the other user's ID
+      const otherUserId = chatroomId;
+
+      // Fetch DM messages between the two users
+      const dmMessages = await db.select().from(messages).where(
+        or(
+          and(
+            eq(messages.senderId, ws.userId!),
+            eq(messages.receiverId, otherUserId)
+          ),
+          and(
+            eq(messages.senderId, otherUserId),
+            eq(messages.receiverId, ws.userId!)
+          )
+        )
+      ).orderBy(desc(messages.createdAt)).limit(50);
+
+      // Fetch sender details for each message
+      messagesData = await Promise.all(dmMessages.map(async (msg) => {
+        const sender = await db.query.users.findFirst({
+          where: eq(users.id, msg.senderId),
           columns: {
             id: true,
             username: true,
             name: true,
             profileImage: true,
           }
+        });
+        return { ...msg, sender };
+      }));
+    } else {
+      // Handle chatroom history (original logic)
+      messagesData = await db.query.chatroomMessages.findMany({
+        where: and(
+          eq(chatroomMessages.chatroomId, chatroomId),
+          lastMessageTimestamp ? gt(chatroomMessages.createdAt, new Date(lastMessageTimestamp)) : undefined
+        ),
+        orderBy: desc(chatroomMessages.createdAt),
+        limit: 50,
+        with: {
+          sender: {
+            columns: {
+              id: true,
+              username: true,
+              name: true,
+              profileImage: true,
+            }
+          }
         }
-      }
-    });
+      });
+    }
 
     // Send sync response
     const responseEvent: ChatEvent = {
       type: 'sync:response',
+      chatType,
       chatroomId,
       payload: { messages: messagesData },
       timestamp: Date.now(),
