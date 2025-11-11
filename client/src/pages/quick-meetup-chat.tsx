@@ -33,7 +33,7 @@ export default function QuickMeetupChat() {
   return (
     <WhatsAppChat
       chatId={meetup.chatroomId}
-      chatType="chatroom"
+      chatType="meetup"
       title={meetup.title}
       subtitle={`${meetup.participantCount} participants`}
       currentUserId={user.id}

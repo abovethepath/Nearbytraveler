@@ -8777,10 +8777,10 @@ export class DatabaseStorage implements IStorage {
           u.username as creator_username,
           u.name as creator_name,
           u.profile_image as creator_profile_image,
-          c.id as chatroom_id
+          mc.id as chatroom_id
         FROM quick_meetups qm
         LEFT JOIN users u ON qm.organizer_id = u.id
-        LEFT JOIN chatrooms c ON c.quick_meetup_id = qm.id AND c.is_active = true
+        LEFT JOIN meetup_chatrooms mc ON mc.meetup_id = qm.id AND mc.is_active = true
         WHERE qm.id = ${meetupId}
         LIMIT 1
       `);
@@ -8897,33 +8897,26 @@ export class DatabaseStorage implements IStorage {
           status: 'joined'
         });
       
-      // Create chatroom for the quick meet
-      const [chatroom] = await db
-        .insert(chatrooms)
+      // Create meetup chatroom for the quick meet
+      const [meetupChatroom] = await db
+        .insert(meetupChatrooms)
         .values({
-          name: `Quick Meet: ${newMeetup.title}`,
-          type: 'quick_meetup',
-          quickMeetupId: newMeetup.id,
+          meetupId: newMeetup.id,
+          chatroomName: `Quick Meet: ${newMeetup.title}`,
+          description: newMeetup.description || '',
           city: newMeetup.city,
-          state: newMeetup.state,
+          state: newMeetup.state || '',
           country: newMeetup.country,
-          isActive: true
+          isActive: true,
+          expiresAt: newMeetup.expiresAt,
+          participantCount: 1 // Creator is first participant
         })
         .returning();
-      
-      // Add creator as chatroom member
-      await db
-        .insert(chatroomMembers)
-        .values({
-          chatroomId: chatroom.id,
-          userId: meetup.organizerId,
-          joinedAt: new Date()
-        });
       
       // Return meetup with chatroomId
       return {
         ...newMeetup,
-        chatroomId: chatroom.id
+        chatroomId: meetupChatroom.id
       };
     } catch (error) {
       console.error('Error creating quick meetup:', error);
@@ -9076,7 +9069,7 @@ export class DatabaseStorage implements IStorage {
         })
         .returning();
 
-      // Update participant count
+      // Update participant count in quick_meetups table
       await db
         .update(quickMeetups)
         .set({
@@ -9084,38 +9077,13 @@ export class DatabaseStorage implements IStorage {
         })
         .where(eq(quickMeetups.id, meetupId));
 
-      // Find the associated chatroom and add user as a member
-      const [chatroom] = await db
-        .select()
-        .from(chatrooms)
-        .where(and(
-          eq(chatrooms.quickMeetupId, meetupId),
-          eq(chatrooms.isActive, true)
-        ))
-        .limit(1);
-      
-      if (chatroom) {
-        // Check if user is already a chatroom member
-        const [existingMember] = await db
-          .select()
-          .from(chatroomMembers)
-          .where(and(
-            eq(chatroomMembers.chatroomId, chatroom.id),
-            eq(chatroomMembers.userId, userId)
-          ))
-          .limit(1);
-        
-        // Add as chatroom member if not already a member
-        if (!existingMember) {
-          await db
-            .insert(chatroomMembers)
-            .values({
-              chatroomId: chatroom.id,
-              userId: userId,
-              joinedAt: new Date()
-            });
-        }
-      }
+      // Update participant count in meetup_chatrooms table
+      await db
+        .update(meetupChatrooms)
+        .set({
+          participantCount: sql`${meetupChatrooms.participantCount} + 1`
+        })
+        .where(eq(meetupChatrooms.meetupId, meetupId));
 
       return participant;
     } catch (error) {
