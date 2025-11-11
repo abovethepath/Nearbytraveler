@@ -7500,21 +7500,21 @@ Questions? Just reply to this message. Welcome aboard!
       if (process.env.NODE_ENV === 'development') {
         console.log('🔐 Member list auth check:', {
           chatroomId,
-          hasIsAuthenticated: !!req.isAuthenticated,
-          isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
-          hasUser: !!req.user,
-          userId: (req.user as any)?.id,
+          hasSession: !!(req as any).session,
+          hasSessionUser: !!(req as any).session?.user,
+          userId: (req as any).session?.user?.id,
           session: req.session?.id?.substring(0, 10) + '...'
         });
       }
       
-      // SECURITY: Require authentication
-      if (!req.isAuthenticated || !req.isAuthenticated()) {
+      // SECURITY: Require authentication (using custom session auth, not Passport)
+      const sessionUser = (req as any).session?.user;
+      if (!sessionUser || !sessionUser.id) {
         if (process.env.NODE_ENV === 'development') console.log('🚫 Authentication failed for member list');
         return res.status(401).json({ message: "Authentication required" });
       }
 
-      const currentUserId = (req.user as any)?.id;
+      const currentUserId = sessionUser.id;
       if (!currentUserId) {
         return res.status(401).json({ message: "User not found" });
       }
