@@ -125,6 +125,17 @@ function QuickMeetupsPage() {
     enabled: !!selectedMeetupId,
   });
 
+  // Auto-close dialog if selected meetup no longer exists
+  useEffect(() => {
+    if (selectedMeetupId && !isLoading && allMeetups.length > 0) {
+      const meetupExists = allMeetups.some(m => m.id === selectedMeetupId);
+      if (!meetupExists) {
+        setSelectedMeetupId(null);
+        setIsEditingMeetup(false);
+      }
+    }
+  }, [selectedMeetupId, allMeetups, isLoading]);
+
   // Restart meetup mutation
   const restartMeetupMutation = useMutation({
     mutationFn: async ({ meetupId, duration }: { meetupId: number; duration: string }) => {

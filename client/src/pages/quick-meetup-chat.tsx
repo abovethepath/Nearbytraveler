@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import WhatsAppChat from "@/components/WhatsAppChat";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface QuickMeetup {
   id: number;
@@ -16,6 +18,7 @@ interface QuickMeetup {
 export default function QuickMeetupChat() {
   const [, params] = useRoute("/quick-meetup-chat/:meetupId");
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
   const meetupId = params?.meetupId ? parseInt(params.meetupId) : null;
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -26,6 +29,21 @@ export default function QuickMeetupChat() {
     retry: 2,
     retryDelay: 1000
   });
+
+  // Auto-redirect on 404 errors (expired/deleted meetups)
+  useEffect(() => {
+    if (isError && error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes('404') || errorMessage.includes('not found')) {
+        toast({
+          title: "Meetup No Longer Available",
+          description: "This quick meet has expired or been deleted.",
+          variant: "default",
+        });
+        setLocation('/quick-meetups');
+      }
+    }
+  }, [isError, error, toast, setLocation]);
 
   if (!meetupId) {
     return (
