@@ -557,7 +557,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
             .filter((meetup: any) => new Date(meetup.expiresAt).getTime() > Date.now())
             .slice(0, 3)
             .map((meetup: any) => {
-              const isOwn = meetup.organizerId === user?.id;
+              const isOwn = meetup.organizerId === actualUser?.id;
               
               // ALWAYS USE LOCAL TIME for countdown calculations
               const now = new Date();
@@ -744,14 +744,60 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                           className="w-full sm:w-auto max-w-full inline-flex items-center justify-center gap-2 rounded-full
                                      text-xs py-2 h-9 bg-gradient-to-r from-blue-500 to-orange-500
                                      hover:from-blue-600 hover:to-orange-600 text-white border-0 overflow-hidden"
+                          data-testid={`button-join-meetup-${meetup.id}`}
                         >
                           <span className="truncate">
                             {joinMutation.isPending ? 'Joining...' : '🤝 Join Meetup'}
                           </span>
                         </Button>
                       ) : (
-                        <div className="text-center text-xs text-gray-500 dark:text-gray-400 py-2">
-                          You created this meetup
+                        <div className="flex gap-2 flex-wrap">
+                          <Button
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              window.location.href = `/quick-meetup-chat/${meetup.id}`;
+                            }}
+                            className="flex-1 sm:flex-auto inline-flex items-center justify-center gap-2 rounded-full
+                                       text-xs py-2 h-9 bg-gradient-to-r from-blue-500 to-cyan-500
+                                       hover:from-blue-600 hover:to-cyan-600 text-white border-0"
+                            data-testid={`button-join-chat-${meetup.id}`}
+                          >
+                            <MessageSquare className="w-3 h-3" />
+                            <span className="truncate">Join Chat</span>
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              window.location.href = '/quick-meetups';
+                            }}
+                            variant="outline"
+                            className="flex-1 sm:flex-auto inline-flex items-center justify-center gap-2 rounded-full
+                                       text-xs py-2 h-9 border-green-500 text-green-700 dark:text-green-400
+                                       hover:bg-green-50 dark:hover:bg-green-900/20"
+                            data-testid={`button-manage-meetup-${meetup.id}`}
+                          >
+                            <Edit3 className="w-3 h-3" />
+                            <span className="truncate">Manage</span>
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (confirm('Cancel this quick meet? This action cannot be undone.')) {
+                                deleteMeetup(meetup.id);
+                              }
+                            }}
+                            variant="outline"
+                            className="inline-flex items-center justify-center gap-2 rounded-full
+                                       text-xs py-2 h-9 px-3 border-red-500 text-red-700 dark:text-red-400
+                                       hover:bg-red-50 dark:hover:bg-red-900/20"
+                            data-testid={`button-cancel-meetup-main-${meetup.id}`}
+                          >
+                            <Trash2 className="w-3 h-3" />
+                            <span className="truncate">Cancel</span>
+                          </Button>
                         </div>
                       )}
                     </div>
