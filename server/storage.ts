@@ -1671,6 +1671,26 @@ export class DatabaseStorage implements IStorage {
           eq(eventParticipants.userId, userId)
         )
       );
+
+    // CRITICAL FIX: Remove user from event chatroom when they leave
+    try {
+      const eventChatroom = await this.getEventChatroom(eventId);
+      if (eventChatroom) {
+        await db
+          .delete(chatroomMembers)
+          .where(
+            and(
+              eq(chatroomMembers.chatroomId, eventChatroom.id),
+              eq(chatroomMembers.userId, userId)
+            )
+          );
+        console.log(`✅ STORAGE: Removed user ${userId} from event chatroom ${eventChatroom.id}`);
+      }
+    } catch (error) {
+      console.error('Failed to remove user from event chatroom:', error);
+      // Don't fail the leave if chatroom removal fails
+    }
+
     return true;
   }
 
@@ -9158,13 +9178,40 @@ export class DatabaseStorage implements IStorage {
         ));
 
       if (result.rowCount && result.rowCount > 0) {
-        // Update participant count
+        // Update participant count in quick_meetups
         await db
           .update(quickMeetups)
           .set({
             participantCount: sql`${quickMeetups.participantCount} - 1`
           })
           .where(eq(quickMeetups.id, meetupId));
+
+        // Update participant count in meetup_chatrooms
+        await db
+          .update(meetupChatrooms)
+          .set({
+            participantCount: sql`${meetupChatrooms.participantCount} - 1`
+          })
+          .where(eq(meetupChatrooms.meetupId, meetupId));
+
+        // CRITICAL FIX: Remove user from meetup chatroom when they leave
+        const [meetupChatroom] = await db
+          .select()
+          .from(meetupChatrooms)
+          .where(eq(meetupChatrooms.meetupId, meetupId))
+          .limit(1);
+        
+        if (meetupChatroom) {
+          await db
+            .delete(chatroomMembers)
+            .where(
+              and(
+                eq(chatroomMembers.chatroomId, meetupChatroom.id),
+                eq(chatroomMembers.userId, userId)
+              )
+            );
+          console.log(`✅ STORAGE: Removed user ${userId} from meetup chatroom ${meetupChatroom.id}`);
+        }
 
         return true;
       }
@@ -9785,6 +9832,31 @@ export class DatabaseStorage implements IStorage {
         tags: ['event', 'chat', `event-${data.eventId}`],
         rules: 'Be respectful and stay on topic related to the event.'
       });
+      
+      // CRITICAL FIX: Backfill existing event participants into the chatroom
+      try {
+        const participants = await this.getEventParticipants(data.eventId);
+        if (participants && participants.length > 0) {
+          console.log(`🔄 Backfilling ${participants.length} existing participants into event chatroom ${chatroom.id}`);
+          
+          for (const participant of participants) {
+            await db
+              .insert(chatroomMembers)
+              .values({
+                chatroomId: chatroom.id,
+                userId: participant.userId,
+                role: participant.isEventCreator ? 'admin' : 'member',
+                isActive: true
+              })
+              .onConflictDoNothing();
+          }
+          
+          console.log(`✅ Backfilled ${participants.length} participants into event chatroom`);
+        }
+      } catch (error) {
+        console.error('Failed to backfill event participants into chatroom:', error);
+        // Don't fail chatroom creation if backfill fails
+      }
       
       return chatroom;
     } catch (error) {
