@@ -210,6 +210,11 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
   };
 
+  // Scroll to bottom on mount and when messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages.length]);
+
   const sendMessage = () => {
     if (!messageText.trim() || !wsRef.current || !currentUserId) return;
 
@@ -274,7 +279,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-145px)] bg-gray-900 text-white">
+    <div className="flex flex-col h-[calc(100vh-145px)] bg-gray-900 text-white overflow-hidden">
       {/* Header */}
       <div className="flex items-center gap-1.5 px-2 py-1.5 bg-gray-800 border-b border-gray-700">
         <Button
