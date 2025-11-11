@@ -503,6 +503,17 @@ app.use((req, res, next) => {
     console.log("✅ DEPLOYMENT FIX v3: Custom setup complete - API routes preserved");
   } else {
     console.log("🔧 Development: Setting up Vite development server...");
+    
+    // CRITICAL: Catch-all for unhandled API routes before Vite intercepts them
+    // This prevents Vite's wildcard handler from serving index.html for API requests
+    app.use("/api", (req, res) => {
+      console.log("⚠️ Unhandled API route:", req.method, req.originalUrl);
+      res.status(404).json({ 
+        message: "API endpoint not found",
+        path: req.originalUrl,
+        method: req.method
+      });
+    });
     try {
       await setupVite(app, server);
       console.log("✅ Vite development setup successful");
