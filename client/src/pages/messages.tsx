@@ -443,131 +443,13 @@ export default function Messages() {
         </div>
       </div>
 
-      {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
-        {selectedConversation && selectedUser ? (
-          <>
-            {/* Chat Header */}
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800">
-              <div className="flex items-center gap-3">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSelectedConversation(null)}
-                  className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white md:hidden"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                </Button>
-                <div 
-                  className="cursor-pointer"
-                  onClick={() => navigate(`/profile/${selectedUser.id}`)}
-                >
-                  <Avatar className="w-10 h-10">
-                    <AvatarImage src={selectedUser?.profileImage} />
-                    <AvatarFallback className="bg-blue-600 text-white">
-                      {selectedUser.username?.charAt(0)?.toUpperCase() || '?'}
-                    </AvatarFallback>
-                  </Avatar>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white">
-                    @{selectedUser.username}
-                  </h3>
-                  {typingUsers[selectedConversation] && (
-                    <p className="text-xs text-blue-500 dark:text-blue-400">typing...</p>
-                  )}
-                  <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span>Online • {selectedUser.location}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 bg-white dark:bg-gray-900">
-              {conversationMessages.length === 0 ? (
-                <div className="text-center text-gray-600 dark:text-gray-500 py-12">
-                  <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                  <p className="font-medium">No messages yet</p>
-                  <p className="text-sm mt-1">Send the first message!</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {conversationMessages.map((message: any) => {
-                    const isOwnMessage = message.senderId === user?.id;
-                    return (
-                      <div
-                        key={message.id}
-                        className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
-                      >
-                        {!isOwnMessage && (
-                          <div 
-                            className="cursor-pointer mr-3 flex-shrink-0"
-                            onClick={() => window.location.href = `/profile/${selectedUser.id}`}
-                          >
-                            <Avatar className="w-8 h-8">
-                              <AvatarImage src={selectedUser?.profileImage} />
-                              <AvatarFallback className="bg-blue-600 text-white text-xs">
-                                {selectedUser.username?.charAt(0)?.toUpperCase() || '?'}
-                              </AvatarFallback>
-                            </Avatar>
-                          </div>
-                        )}
-                        <div
-                          className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                            isOwnMessage
-                              ? 'bg-blue-600 dark:bg-blue-600'
-                              : 'bg-gray-200 dark:bg-gray-200'
-                          }`}
-                          style={{
-                            color: isOwnMessage ? '#ffffff' : '#000000'
-                          }}
-                        >
-                          <p>{message.content}</p>
-                          <p className="text-xs opacity-70 mt-1">
-                            {new Date(message.createdAt).toLocaleTimeString()}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                  <div ref={messagesEndRef} />
-                </div>
-              )}
-            </div>
-
-            {/* Message Input */}
-            <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800">
-              <div className="flex gap-2">
-                <ChatInput
-                  value={newMessage}
-                  onChange={(e) => handleTyping(e.target.value)}
-                  placeholder="Type your message..."
-                  className="flex-1"
-                  onKeyPress={(e) => e.key === 'Enter' && newMessage.trim() && handleSendMessage()}
-                  data-testid="input-message"
-                />
-                <Button
-                  onClick={handleSendMessage}
-                  disabled={!newMessage.trim() || sendMessageMutation.isPending}
-                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600"
-                  data-testid="button-send-message"
-                >
-                  <Send className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-          </>
-        ) : (
-          <div className="flex-1 flex items-center justify-center bg-white dark:bg-gray-900">
-            <div className="text-center text-gray-600 dark:text-gray-500">
-              <MessageCircle className="w-20 h-20 mx-auto mb-6 opacity-30" />
-              <h3 className="text-2xl font-medium mb-2 text-gray-800 dark:text-gray-300">Welcome to Messages</h3>
-              <p className="text-gray-600 dark:text-gray-400">Select a conversation to start messaging</p>
-            </div>
-          </div>
-        )}
+      {/* Main Chat Area - Now navigates to WhatsApp DM chat */}
+      <div className="flex-1 flex items-center justify-center bg-white dark:bg-gray-900">
+        <div className="text-center text-gray-600 dark:text-gray-500">
+          <MessageCircle className="w-20 h-20 mx-auto mb-6 opacity-30" />
+          <h3 className="text-2xl font-medium mb-2 text-gray-800 dark:text-gray-300">Welcome to Messages</h3>
+          <p className="text-gray-600 dark:text-gray-400">Select a conversation to start messaging</p>
+        </div>
       </div>
 
       {/* Right Sidebar - Connections */}
@@ -621,7 +503,7 @@ export default function Messages() {
                   <div className="flex gap-2">
                     <Button
                       size="sm"
-                      onClick={() => connection.connectedUser?.id && setSelectedConversation(connection.connectedUser.id)}
+                      onClick={() => connection.connectedUser?.id && navigate(`/messages/${connection.connectedUser.id}`)}
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium"
                       disabled={!connection.connectedUser?.id}
                       data-testid={`button-open-chat-${connection.connectedUser?.id}`}
