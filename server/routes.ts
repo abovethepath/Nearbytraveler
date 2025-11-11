@@ -7496,27 +7496,40 @@ Questions? Just reply to this message. Welcome aboard!
     try {
       const chatroomId = parseInt(req.params.chatroomId);
       
+      // SECURITY: Get user from session OR header-based auth
+      let currentUserId: number | undefined;
+      const sessionUser = (req as any).session?.user;
+      
+      if (sessionUser?.id) {
+        currentUserId = sessionUser.id;
+      } else {
+        // Check header-based auth (used by frontend localStorage auth)
+        const userDataHeader = req.headers['x-user-data'] as string;
+        if (userDataHeader) {
+          try {
+            const userData = JSON.parse(userDataHeader);
+            currentUserId = userData.id;
+          } catch (e) {
+            // Invalid header data
+          }
+        }
+      }
+      
       // DEBUG: Log authentication details
       if (process.env.NODE_ENV === 'development') {
         console.log('🔐 Member list auth check:', {
           chatroomId,
           hasSession: !!(req as any).session,
-          hasSessionUser: !!(req as any).session?.user,
-          userId: (req as any).session?.user?.id,
+          hasSessionUser: !!sessionUser,
+          hasHeaderAuth: !!req.headers['x-user-data'],
+          userId: currentUserId,
           session: req.session?.id?.substring(0, 10) + '...'
         });
       }
       
-      // SECURITY: Require authentication (using custom session auth, not Passport)
-      const sessionUser = (req as any).session?.user;
-      if (!sessionUser || !sessionUser.id) {
+      if (!currentUserId) {
         if (process.env.NODE_ENV === 'development') console.log('🚫 Authentication failed for member list');
         return res.status(401).json({ message: "Authentication required" });
-      }
-
-      const currentUserId = sessionUser.id;
-      if (!currentUserId) {
-        return res.status(401).json({ message: "User not found" });
       }
 
       if (process.env.NODE_ENV === 'development') console.log(`👥 User ${currentUserId} requesting members for chatroom ${chatroomId}`);
