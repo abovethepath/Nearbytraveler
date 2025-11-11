@@ -20,12 +20,21 @@ export default function WhatsAppChatroom() {
   const currentUser = authStorage.getUser();
   const currentUserId = currentUser?.id;
 
-  const { data: chatroom } = useQuery<ChatroomDetails>({
+  // VALIDATION: Don't fetch if chatroomId is invalid (0 or NaN)
+  const isValidChatroomId = chatroomId > 0 && !isNaN(chatroomId);
+
+  const { data: chatroom, isLoading } = useQuery<ChatroomDetails>({
     queryKey: [`/api/chatrooms/${chatroomId}`],
-    enabled: Boolean(chatroomId) && !!currentUserId
+    enabled: isValidChatroomId && !!currentUserId
   });
 
-  if (!chatroom || !currentUserId) {
+  // VALIDATION: If chatroomId is invalid, redirect to chatrooms list
+  if (!isValidChatroomId) {
+    window.location.href = '/chatrooms';
+    return <div className="flex items-center justify-center h-screen bg-gray-900 text-white">Redirecting...</div>;
+  }
+
+  if (isLoading || !chatroom || !currentUserId) {
     return <div className="flex items-center justify-center h-screen bg-gray-900 text-white">Loading...</div>;
   }
 
