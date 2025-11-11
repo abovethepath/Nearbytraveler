@@ -388,7 +388,7 @@ export default function Messages() {
                   }`}
                   onClick={() => {
                     console.log('🔥 CONVERSATION CLICKED:', conv.username, 'ID:', conv.userId);
-                    setSelectedConversation(conv.userId);
+                    navigate(`/messages/${conv.userId}`);
                   }}
                 >
                   <div className="flex items-center gap-3">
