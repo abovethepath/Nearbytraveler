@@ -8901,78 +8901,89 @@ export class DatabaseStorage implements IStorage {
       
       console.log(`🔧 STORAGE: Creating meetup with street address:`, meetup.street);
       
-      const [newMeetup] = await db
-        .insert(quickMeetups)
-        .values({
-          organizerId: meetup.organizerId,
-          title: meetup.title,
-          description: meetup.description,
-          category: meetup.category || 'meetup',
-          location: meetup.location,
-          meetingPoint: meetup.meetingPoint,
-          organizerNotes: meetup.organizerNotes || '',
-          maxParticipants: meetup.maxParticipants,
-          costEstimate: meetup.costEstimate,
-          responseTime: responseTime,
-          minParticipants: meetup.minParticipants || 1,
-          autoCancel: meetup.autoCancel || false,
-          street: meetup.street || '',
-          city: meetup.city,
-          state: meetup.state || '',
-          country: meetup.country || 'United States',
-          zipcode: meetup.zipcode || '',
-          participantCount: 1,
-          isActive: true,
-          expiresAt: meetup.expiresAt ? new Date(meetup.expiresAt) : new Date(Date.now() + getExpirationTime(responseTime)),
-          availableAt: new Date(),
-          availability: 'available'
-        })
-        .returning();
+      // CRITICAL: Wrap all inserts in a transaction to ensure atomicity
+      const result = await db.transaction(async (tx) => {
+        // Step 1: Create the meetup
+        const [newMeetup] = await tx
+          .insert(quickMeetups)
+          .values({
+            organizerId: meetup.organizerId,
+            title: meetup.title,
+            description: meetup.description,
+            category: meetup.category || 'meetup',
+            location: meetup.location,
+            meetingPoint: meetup.meetingPoint,
+            organizerNotes: meetup.organizerNotes || '',
+            maxParticipants: meetup.maxParticipants,
+            costEstimate: meetup.costEstimate,
+            responseTime: responseTime,
+            minParticipants: meetup.minParticipants || 1,
+            autoCancel: meetup.autoCancel || false,
+            street: meetup.street || '',
+            city: meetup.city,
+            state: meetup.state || '',
+            country: meetup.country || 'United States',
+            zipcode: meetup.zipcode || '',
+            participantCount: 1,
+            isActive: true,
+            expiresAt: meetup.expiresAt ? new Date(meetup.expiresAt) : new Date(Date.now() + getExpirationTime(responseTime)),
+            availableAt: new Date(),
+            availability: 'available'
+          })
+          .returning();
 
-      console.log(`✅ STORAGE: Created meetup with street address:`, newMeetup.street);
+        console.log(`✅ STORAGE: Created meetup ID ${newMeetup.id}`);
 
-      // Auto-add creator as the first participant
-      await db
-        .insert(quickMeetupParticipants)
-        .values({
-          meetupId: newMeetup.id,
-          userId: meetup.organizerId,
-          status: 'joined'
-        });
+        // Step 2: Auto-add creator as the first participant
+        await tx
+          .insert(quickMeetupParticipants)
+          .values({
+            meetupId: newMeetup.id,
+            userId: meetup.organizerId,
+            status: 'joined'
+          });
+        
+        console.log(`✅ STORAGE: Added user ${meetup.organizerId} to participants for meetup ${newMeetup.id}`);
+        
+        // Step 3: Create meetup chatroom for the quick meet
+        const [meetupChatroom] = await tx
+          .insert(meetupChatrooms)
+          .values({
+            meetupId: newMeetup.id,
+            chatroomName: `Quick Meet: ${newMeetup.title}`,
+            description: newMeetup.description || '',
+            city: newMeetup.city,
+            state: newMeetup.state || '',
+            country: newMeetup.country,
+            isActive: true,
+            expiresAt: newMeetup.expiresAt,
+            participantCount: 1
+          })
+          .returning();
+        
+        console.log(`✅ STORAGE: Created chatroom ID ${meetupChatroom.id} for meetup ${newMeetup.id}`);
+        
+        // Step 4: CRITICAL - Add creator to chatroom members so they can access the chat
+        const [chatroomMember] = await tx
+          .insert(chatroomMembers)
+          .values({
+            chatroomId: meetupChatroom.id,
+            userId: meetup.organizerId,
+            role: 'admin',
+            isActive: true
+          })
+          .returning();
+        
+        console.log(`✅ STORAGE: Added user ${meetup.organizerId} to chatroom ${meetupChatroom.id} as admin (member ID: ${chatroomMember.id})`);
+        
+        // Return meetup with chatroomId
+        return {
+          ...newMeetup,
+          chatroomId: meetupChatroom.id
+        };
+      });
       
-      // Create meetup chatroom for the quick meet
-      const [meetupChatroom] = await db
-        .insert(meetupChatrooms)
-        .values({
-          meetupId: newMeetup.id,
-          chatroomName: `Quick Meet: ${newMeetup.title}`,
-          description: newMeetup.description || '',
-          city: newMeetup.city,
-          state: newMeetup.state || '',
-          country: newMeetup.country,
-          isActive: true,
-          expiresAt: newMeetup.expiresAt,
-          participantCount: 1 // Creator is first participant - matches quick_meetups.participantCount
-        })
-        .returning();
-      
-      // CRITICAL FIX: Add creator to chatroom members so they can access the chat
-      await db
-        .insert(chatroomMembers)
-        .values({
-          chatroomId: meetupChatroom.id,
-          userId: meetup.organizerId,
-          role: 'admin', // Creator is admin of their own meetup chatroom
-          isActive: true
-        });
-      
-      console.log(`✅ STORAGE: Added creator (user ${meetup.organizerId}) to chatroom ${meetupChatroom.id} as admin`);
-      
-      // Return meetup with chatroomId
-      return {
-        ...newMeetup,
-        chatroomId: meetupChatroom.id
-      };
+      return result;
     } catch (error) {
       console.error('Error creating quick meetup:', error);
       throw error;

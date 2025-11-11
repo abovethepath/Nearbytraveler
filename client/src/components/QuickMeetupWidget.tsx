@@ -557,14 +557,6 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
             .filter((meetup: any) => new Date(meetup.expiresAt).getTime() > Date.now())
             .slice(0, 3)
             .map((meetup: any) => {
-              console.log(`🔍 OWNERSHIP CHECK for meetup ${meetup.id}:`, {
-                organizerId: meetup.organizerId,
-                organizerIdType: typeof meetup.organizerId,
-                actualUserId: actualUser?.id,
-                actualUserIdType: typeof actualUser?.id,
-                strictEqual: meetup.organizerId === actualUser?.id,
-                looseEqual: meetup.organizerId == actualUser?.id
-              });
               const isOwn = meetup.organizerId === actualUser?.id;
               
               // ALWAYS USE LOCAL TIME for countdown calculations
