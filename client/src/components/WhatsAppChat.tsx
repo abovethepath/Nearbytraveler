@@ -346,9 +346,13 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
 
               <div className={`relative max-w-[75%] ${isOwnMessage ? 'mr-2' : 'ml-2'}`} onClick={() => setSelectedMessage(selectedMessage === message.id ? null : message.id)}>
                 {message.replyToId && message.replyTo && (
-                  <div className="mb-1 px-3 py-2 bg-gray-800/50 rounded-t-lg border-l-4 border-orange-500">
-                    <p className="text-xs text-orange-400 font-semibold">{getFirstName(message.replyTo.sender?.name)}</p>
-                    <p className="text-xs text-gray-400 truncate">{message.replyTo.content}</p>
+                  <div className={`mb-1 px-3 py-2 rounded-t-lg border-l-4 ${isOwnMessage ? 'bg-orange-900/80 border-orange-300' : 'bg-gray-600/80 border-orange-500'}`}>
+                    <p className={`text-xs font-bold mb-0.5 ${isOwnMessage ? 'text-orange-200' : 'text-orange-400'}`}>
+                      ↩ Replying to {getFirstName(message.replyTo.sender?.name)}
+                    </p>
+                    <p className={`text-xs ${isOwnMessage ? 'text-orange-100/90' : 'text-gray-200'} truncate italic`}>
+                      "{message.replyTo.content}"
+                    </p>
                   </div>
                 )}
 
