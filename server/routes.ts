@@ -12284,6 +12284,51 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // DELETE participant from quick meet (organizer only)
+  app.delete("/api/quick-meets/:id/participants/:participantId", async (req, res) => {
+    try {
+      const meetupId = parseInt(req.params.id || '0');
+      const participantId = parseInt(req.params.participantId || '0');
+      const userId = req.headers['x-user-id'];
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User ID required" });
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`🗑️ USER ${userId} REMOVING PARTICIPANT ${participantId} FROM QUICK MEET ${meetupId}`);
+
+      // Get the meetup to verify organizer
+      const meetup = await storage.getQuickMeetup(meetupId);
+      if (!meetup) {
+        return res.status(404).json({ message: "Quick meet not found" });
+      }
+
+      // Verify the requester is the organizer
+      if (meetup.organizerId !== parseInt(userId as string || '0')) {
+        return res.status(403).json({ message: "Only the organizer can remove participants" });
+      }
+
+      // Prevent organizer from removing themselves
+      if (participantId === parseInt(userId as string || '0')) {
+        return res.status(400).json({ message: "Organizer cannot remove themselves. Cancel the meetup instead." });
+      }
+
+      // Remove participant from meetup
+      const result = await storage.leaveQuickMeetup(meetupId, participantId);
+      
+      if (!result) {
+        return res.status(404).json({ message: "Participant not found in this meetup" });
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`✅ PARTICIPANT ${participantId} REMOVED FROM QUICK MEET ${meetupId}`);
+      
+      return res.json({ success: true, message: "Participant removed successfully" });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error removing participant:", error);
+      return res.status(500).json({ message: "Failed to remove participant" });
+    }
+  });
+
   // JOIN quick meet endpoint
   app.post("/api/quick-meets/:id/join", async (req, res) => {
     try {
