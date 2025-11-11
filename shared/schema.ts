@@ -1,4 +1,5 @@
 import { pgTable, text, serial, integer, boolean, timestamp, real, varchar, jsonb, unique, bigint, decimal } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -341,6 +342,17 @@ export const chatroomMessages = pgTable("chatroom_messages", {
   editedAt: timestamp("edited_at"),
   createdAt: timestamp("created_at").defaultNow(),
 });
+
+export const chatroomMessagesRelations = relations(chatroomMessages, ({ one }) => ({
+  sender: one(users, {
+    fields: [chatroomMessages.senderId],
+    references: [users.id],
+  }),
+  replyTo: one(chatroomMessages, {
+    fields: [chatroomMessages.replyToId],
+    references: [chatroomMessages.id],
+  }),
+}));
 
 // Chatroom Members
 export const chatroomMembers = pgTable("chatroom_members", {
