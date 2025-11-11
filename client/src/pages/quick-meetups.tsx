@@ -724,22 +724,29 @@ function QuickMeetupsPage() {
                         Cancel
                       </Button>
                       <Button
-                        className="flex-1 bg-blue-500 hover:bg-blue-600"
+                        className="flex-1 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
                         onClick={() => {
+                          console.log('💾 SAVE BUTTON CLICKED');
+                          console.log('📝 Edit Form Data:', editForm);
+                          console.log('🔒 Button disabled?:', updateMeetupMutation.isPending || !editForm.title.trim());
+                          console.log('⏳ Mutation pending?:', updateMeetupMutation.isPending);
+                          console.log('📋 Title empty?:', !editForm.title.trim());
+                          
                           updateMeetupMutation.mutate({
                             meetupId: selectedMeetup.id,
                             updates: {
-                              title: editForm.title,
-                              description: editForm.description,
-                              meetingPoint: editForm.meetingPoint,
-                              street: editForm.street,
-                              city: editForm.city,
-                              state: editForm.state,
-                              zipcode: editForm.zipcode,
+                              title: editForm.title.trim(),
+                              description: editForm.description.trim(),
+                              meetingPoint: editForm.meetingPoint.trim(),
+                              street: editForm.street.trim(),
+                              city: editForm.city.trim(),
+                              state: editForm.state.trim(),
+                              zipcode: editForm.zipcode.trim(),
                               duration: editForm.duration
                             }
                           }, {
                             onSuccess: () => {
+                              console.log('✅ Update successful, closing edit mode');
                               setIsEditingMeetup(false);
                             }
                           });
@@ -747,7 +754,14 @@ function QuickMeetupsPage() {
                         disabled={updateMeetupMutation.isPending || !editForm.title.trim()}
                         data-testid="button-save-edit"
                       >
-                        {updateMeetupMutation.isPending ? 'Updating...' : 'Save Changes'}
+                        {updateMeetupMutation.isPending ? (
+                          <span className="flex items-center gap-2">
+                            <span className="animate-spin">⏳</span>
+                            Saving...
+                          </span>
+                        ) : (
+                          'Save Changes'
+                        )}
                       </Button>
                     </div>
                   </div>
