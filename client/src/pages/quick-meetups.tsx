@@ -176,6 +176,9 @@ function QuickMeetupsPage() {
   // Update meetup mutation
   const updateMeetupMutation = useMutation({
     mutationFn: async ({ meetupId, updates }: { meetupId: number; updates: any }) => {
+      console.log('🚀 MUTATION FN CALLED with:', { meetupId, updates });
+      console.log('👤 User ID for header:', actualUser?.id);
+      
       const response = await fetch(`/api/quick-meets/${meetupId}`, {
         method: 'PUT',
         headers: {
@@ -185,14 +188,20 @@ function QuickMeetupsPage() {
         body: JSON.stringify(updates),
       });
       
+      console.log('📡 Response status:', response.status);
+      
       if (!response.ok) {
         const error = await response.json();
+        console.error('❌ Response error:', error);
         throw new Error(error.message || 'Failed to update quick meet');
       }
       
-      return response.json();
+      const data = await response.json();
+      console.log('✅ Response data:', data);
+      return data;
     },
     onSuccess: () => {
+      console.log('🎉 MUTATION onSuccess callback fired');
       toast({
         title: "Success!",
         description: "Quick meet updated successfully.",
@@ -200,6 +209,7 @@ function QuickMeetupsPage() {
       queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
     },
     onError: (error: Error) => {
+      console.error('💥 MUTATION onError callback fired:', error);
       toast({
         title: "Error",
         description: error.message,
