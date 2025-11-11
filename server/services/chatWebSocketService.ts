@@ -22,6 +22,7 @@ export type ChatEventType =
 
 export interface ChatEvent {
   type: ChatEventType;
+  chatType?: 'chatroom' | 'event' | 'meetup' | 'dm';
   chatroomId: number;
   payload: any;
   correlationId?: string;
@@ -110,14 +111,17 @@ export class ChatWebSocketService {
 
   // Handle new message
   private async handleNewMessage(ws: AuthenticatedWebSocket, event: ChatEvent) {
-    const { chatroomId, payload } = event;
+    const { chatType, chatroomId, payload } = event;
     const { content, messageType = 'text', replyToId, mediaUrl, voiceDuration, location } = payload;
 
-    // Verify user is a member of the chatroom
-    const isMember = await this.verifyChatroomMembership(ws.userId!, chatroomId);
-    if (!isMember) {
-      this.sendError(ws, 'You are not a member of this chatroom');
-      return;
+    // Skip membership check for DMs (direct messages don't have chatroom memberships)
+    if (chatType !== 'dm') {
+      // Verify user is a member of the chatroom for non-DM chats
+      const isMember = await this.verifyChatroomMembership(ws.userId!, chatroomId);
+      if (!isMember) {
+        this.sendError(ws, 'You are not a member of this chatroom');
+        return;
+      }
     }
 
     // Insert message into database

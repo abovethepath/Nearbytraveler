@@ -79,6 +79,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           // Now request message history
           ws.send(JSON.stringify({
             type: 'sync:history',
+            chatType,
             chatroomId: chatId,
             payload: {}
           }));
@@ -145,6 +146,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
 
     wsRef.current.send(JSON.stringify({
       type: 'message:new',
+      chatType,
       chatroomId: chatId,
       payload: {
         content: messageText.trim(),
@@ -158,6 +160,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     
     wsRef.current.send(JSON.stringify({
       type: 'typing:stop',
+      chatType,
       chatroomId: chatId
     }));
   };
@@ -169,6 +172,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
 
     wsRef.current.send(JSON.stringify({
       type: 'typing:start',
+      chatType,
       chatroomId: chatId
     }));
 
@@ -177,6 +181,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     typingTimeoutRef.current = setTimeout(() => {
       wsRef.current?.send(JSON.stringify({
         type: 'typing:stop',
+        chatType,
         chatroomId: chatId
       }));
     }, 3000);
@@ -187,6 +192,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
 
     wsRef.current.send(JSON.stringify({
       type: 'message:reaction',
+      chatType,
       chatroomId: chatId,
       payload: { messageId, emoji }
     }));
