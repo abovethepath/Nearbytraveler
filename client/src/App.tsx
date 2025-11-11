@@ -1131,16 +1131,30 @@ function Router() {
           }
         }
 
-        // Add this check before the business user redirect:
-        if (location === '/quick-meetups' || location.startsWith('/quick-meetup')) {
-          // These are valid routes, don't redirect them
-          return null;
-        }
-
-        // BUSINESS USER FIX: Only redirect business users to profile for specific routes
-        // NOT for root path - root should always go to home for everyone
-        if (user?.userType === 'business' && location !== '/') {
-          console.log('🏢 BUSINESS USER: Unknown route detected (not root), redirecting to home page');
+        // BUSINESS USER FIX: Whitelist allowed routes for business users
+        const businessAllowedRoutes = [
+          '/quick-meetups',
+          '/quick-meetup',
+          '/chatroom',
+          '/simple-chatroom',
+          '/city-chatrooms',
+          '/chatrooms',
+          '/event-chat',
+          '/quick-meetup-chat',
+          '/messages',
+          '/dm-chat',
+          '/meetups',
+          '/meetup-chat',
+          '/event-chat',
+        ];
+        
+        const isBusinessAllowedRoute = businessAllowedRoutes.some(route => 
+          location.startsWith(route)
+        );
+        
+        // Only redirect business users if route is NOT allowed
+        if (user?.userType === 'business' && location !== '/' && !isBusinessAllowedRoute) {
+          console.log('🏢 BUSINESS USER: Unknown route detected (not whitelisted), redirecting to home page');
           setLocation('/');
           return null;
         }
