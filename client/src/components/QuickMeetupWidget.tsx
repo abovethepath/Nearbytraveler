@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/App';
 import { authStorage } from '@/lib/auth';
 import SmartLocationInput from '@/components/SmartLocationInput';
+import { isStateOptionalForCountry } from '@/lib/locationHelpers';
 
 interface NewMeetup {
   title: string;
@@ -257,16 +258,23 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
       return;
     }
 
-    if (!newMeetup.city.trim() || !newMeetup.state.trim() || !newMeetup.country.trim()) {
+    // Check if state is required for this country
+    const stateOptional = isStateOptionalForCountry(newMeetup.country);
+    const stateRequired = !stateOptional && !newMeetup.state.trim();
+    
+    if (!newMeetup.city.trim() || !newMeetup.country.trim() || stateRequired) {
       console.log('🔥 VALIDATION FAILED: Missing location data');
       console.log('🔥 LOCATION VALUES:', { 
         city: `"${newMeetup.city}"`, 
         state: `"${newMeetup.state}"`, 
-        country: `"${newMeetup.country}"` 
+        country: `"${newMeetup.country}"`,
+        stateOptional,
+        stateRequired
       });
+      const stateText = stateOptional ? "" : ", state,";
       toast({
         title: "Missing Location",
-        description: "Please select country, state, and city.",
+        description: `Please select country${stateText} and city.`,
         variant: "destructive"
       });
       return;

@@ -389,7 +389,7 @@ export const events = pgTable("events", {
   venueName: text("venue_name"), // Name of the venue (e.g., "Jameson Pub")
   street: text("street").notNull(),
   city: text("city").notNull(),
-  state: text("state").notNull(),
+  state: text("state"), // Optional - only required for countries with states/provinces
   country: text("country").notNull().default("United States"),
   zipcode: text("zipcode").notNull(),
   location: text("location").notNull(), // Combined display address
