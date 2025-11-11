@@ -7471,7 +7471,20 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(404).json({ message: "Chatroom not found" });
       }
 
-      return res.json(chatroom[0]);
+      // Get member count
+      const memberCountResult = await db.select({ count: sql<number>`count(*)` })
+        .from(chatroomMembers)
+        .where(and(
+          eq(chatroomMembers.chatroomId, chatroomId),
+          eq(chatroomMembers.isActive, true)
+        ));
+      
+      const memberCount = memberCountResult[0]?.count || 0;
+
+      return res.json({
+        ...chatroom[0],
+        memberCount
+      });
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching chatroom details:", error);
       return res.status(500).json({ message: "Failed to fetch chatroom details" });
