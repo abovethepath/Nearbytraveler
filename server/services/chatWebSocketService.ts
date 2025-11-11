@@ -1,6 +1,6 @@
 import { WebSocket } from 'ws';
 import { db } from '../db';
-import { chatroomMessages, chatroomMembers, users, messages } from '../../shared/schema';
+import { chatroomMessages, chatroomMembers, users, messages, meetupChatroomMessages } from '../../shared/schema';
 import { eq, and, desc, gt, or } from 'drizzle-orm';
 
 // WebSocket event types for WhatsApp-style chat
@@ -229,7 +229,7 @@ export class ChatWebSocketService {
     }
 
     // Handle chatroom messages (original logic)
-    console.log('💬 Processing chatroom message');
+    console.log('💬 Processing chatroom message, chatType:', chatType);
     
     // Verify user is a member of the chatroom
     const isMember = await this.verifyChatroomMembership(ws.userId!, chatroomId);
@@ -244,19 +244,48 @@ export class ChatWebSocketService {
     console.log('✅ User IS a member - inserting message');
 
     try {
-      // Insert message into chatroom_messages table
-      const [newMessage] = await db.insert(chatroomMessages).values({
-        chatroomId,
-        senderId: ws.userId!,
-        content,
-        messageType,
-        replyToId: replyToId || null,
-        mediaUrl: mediaUrl || null,
-        voiceDuration: voiceDuration || null,
-        location: location || null,
-        reactions: {},
-        deliveredAt: new Date(), // Mark as delivered immediately
-      }).returning();
+      let newMessage: any;
+      
+      // Use different tables based on chatType
+      if (chatType === 'meetup') {
+        // For meetup chatrooms, use simplified meetup_chatroom_messages table
+        console.log('📝 Inserting into meetup_chatroom_messages table');
+        
+        // Fetch sender details first for meetup messages
+        const sender = await db.query.users.findFirst({
+          where: eq(users.id, ws.userId!),
+          columns: {
+            username: true,
+          }
+        });
+        
+        [newMessage] = await db.insert(meetupChatroomMessages).values({
+          meetupChatroomId: chatroomId,
+          userId: ws.userId!,
+          username: sender?.username || 'Unknown',
+          message: content,
+          messageType: messageType || 'text',
+        }).returning();
+        
+        console.log('✅ Meetup message inserted successfully:', newMessage.id);
+      } else {
+        // For city/event chatrooms, use standard chatroom_messages table
+        console.log('📝 Inserting into chatroom_messages table');
+        [newMessage] = await db.insert(chatroomMessages).values({
+          chatroomId,
+          senderId: ws.userId!,
+          content,
+          messageType,
+          replyToId: replyToId || null,
+          mediaUrl: mediaUrl || null,
+          voiceDuration: voiceDuration || null,
+          location: location || null,
+          reactions: {},
+          deliveredAt: new Date(), // Mark as delivered immediately
+        }).returning();
+        
+        console.log('✅ City chatroom message inserted successfully:', newMessage.id);
+      }
       
       console.log('✅ Message inserted successfully:', newMessage.id);
 
