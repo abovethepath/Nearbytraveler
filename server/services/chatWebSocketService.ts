@@ -342,15 +342,26 @@ export class ChatWebSocketService {
       }
 
       // Broadcast to all chatroom members
+      // For meetup messages, map field names to match frontend expectations
+      const messagePayload = chatType === 'meetup' ? {
+        id: newMessage.id,
+        content: newMessage.message,
+        createdAt: newMessage.sentAt,
+        senderId: newMessage.userId,
+        messageType: newMessage.messageType,
+        sender,
+        replyTo,
+      } : {
+        ...newMessage,
+        sender,
+        replyTo,
+      };
+
       const broadcastEvent: ChatEvent = {
         type: 'message:new',
         chatType,
         chatroomId,
-        payload: {
-          ...newMessage,
-          sender,
-          replyTo,
-        },
+        payload: messagePayload,
         correlationId: event.correlationId,
         senderId: ws.userId,
         timestamp: Date.now(),
