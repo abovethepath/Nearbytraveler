@@ -12,8 +12,9 @@ interface UserDetails {
 }
 
 export default function DMChat() {
-  const params = useParams();
-  const otherUserId = parseInt(params.userId || '0');
+  // CRITICAL FIX: Extract ID from window.location since useParams doesn't work with startsWith routes
+  const pathParts = window.location.pathname.split('/');
+  const otherUserId = parseInt(pathParts[2] || '0');
   const currentUser = authStorage.getUser();
 
   const { data: otherUser } = useQuery<UserDetails>({

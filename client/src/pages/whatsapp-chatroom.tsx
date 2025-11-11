@@ -12,8 +12,9 @@ interface ChatroomDetails {
 }
 
 export default function WhatsAppChatroom() {
-  const params = useParams();
-  const chatroomId = parseInt(params.id || '0');
+  // CRITICAL FIX: Extract ID from window.location since useParams doesn't work with startsWith routes
+  const pathParts = window.location.pathname.split('/');
+  const chatroomId = parseInt(pathParts[2] || '0');
   
   // CRITICAL FIX: Get currentUserId from authStorage
   const currentUser = authStorage.getUser();
@@ -21,7 +22,7 @@ export default function WhatsAppChatroom() {
 
   const { data: chatroom } = useQuery<ChatroomDetails>({
     queryKey: [`/api/chatrooms/${chatroomId}`],
-    enabled: Boolean(params.id) && !!currentUserId
+    enabled: Boolean(chatroomId) && !!currentUserId
   });
 
   if (!chatroom || !currentUserId) {
