@@ -1,8 +1,8 @@
-// CRITICAL Mobile Cache Busting Service Worker - v6-20251026
-const CACHE_NAME = 'mobile-layout-v6-20251026-LANDING-STANDARDIZE';
+// CRITICAL Mobile Cache Busting Service Worker - v7-20251111
+const CACHE_NAME = 'whatsapp-chat-unified-v7-20251111';
 
 self.addEventListener('install', function(event) {
-  console.log('SW: Installing cache-busting v3');
+  console.log('SW: Installing WHATSAPP CHAT v7-20251111');
   event.waitUntil(
     caches.keys().then(function(cacheNames) {
       return Promise.all(
@@ -17,7 +17,7 @@ self.addEventListener('install', function(event) {
 });
 
 self.addEventListener('activate', function(event) {
-  console.log('SW: Activating cache-busting v3');
+  console.log('SW: Activating WHATSAPP CHAT v7-20251111');
   event.waitUntil(self.clients.claim());
 });
 
