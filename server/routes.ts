@@ -15026,13 +15026,16 @@ Questions? Just reply to this message. Welcome aboard!
 
   wss.on("close", () => clearInterval(wsHeartbeat));
 
+  // Import chat WebSocket service
+  const { chatWebSocketService } = await import('./services/chatWebSocketService.js');
+
   wss.on('connection', (ws: AuthenticatedWebSocket) => {
-    if (process.env.NODE_ENV === 'development') console.log(' New WebSocket connection');
+    if (process.env.NODE_ENV === 'development') console.log('🔗 New WebSocket connection');
 
     ws.on('message', async (message) => {
       try {
         const data = JSON.parse(message.toString());
-        if (process.env.NODE_ENV === 'development') console.log('📥 WebSocket message received:', data);
+        if (process.env.NODE_ENV === 'development') console.log('📥 WebSocket message received:', data.type);
 
         switch (data.type) {
           case 'auth':
@@ -15040,10 +15043,28 @@ Questions? Just reply to this message. Welcome aboard!
             ws.username = data.username;
             ws.isAuthenticated = true;
             connectedUsers.set(data.userId, ws);
-            if (process.env.NODE_ENV === 'development') console.log(` User ${data.username} (${data.userId}) authenticated via WebSocket`);
+            
+            // Also authenticate for chat service
+            await chatWebSocketService.authenticateConnection(ws, {
+              userId: data.userId,
+              username: data.username
+            });
+            
+            if (process.env.NODE_ENV === 'development') console.log(`✅ User ${data.username} (${data.userId}) authenticated via WebSocket`);
 
             // Send any pending offline messages when user comes online
             await deliverOfflineMessages(data.userId);
+            break;
+
+          // WhatsApp-style chat events (chatrooms, events, meetups)
+          case 'message:new':
+          case 'message:reaction':
+          case 'message:reply':
+          case 'typing:start':
+          case 'typing:stop':
+          case 'receipt:read':
+          case 'sync:history':
+            await chatWebSocketService.handleEvent(ws, data);
             break;
 
           case 'instant_message':

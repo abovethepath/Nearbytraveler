@@ -113,6 +113,7 @@ import TravelIntentQuiz from "@/pages/TravelIntentQuiz";
 import CityChatrooms from "@/pages/city-chatrooms";
 import Chatroom from "@/pages/chatroom";
 import FixedChatroom from "@/pages/fixed-chatroom";
+import WhatsAppChatroom from "@/pages/whatsapp-chatroom";
 
 import BusinessOffers from "@/pages/business-offers";
 import BusinessDashboard from "@/pages/business-dashboard";
@@ -910,7 +911,7 @@ function Router() {
 
     if (location.startsWith('/chatroom/')) {
       const chatroomId = location.split('/')[2];
-      return <FixedChatroom />;
+      return <WhatsAppChatroom />;
     }
 
     if (location.startsWith('/simple-chatroom/')) {
