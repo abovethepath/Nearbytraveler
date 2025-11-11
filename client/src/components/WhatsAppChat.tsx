@@ -276,14 +276,14 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-white">
       {/* Header */}
-      <div className="flex items-center gap-2 px-3 py-2 bg-gray-800 border-b border-gray-700">
+      <div className="flex items-center gap-1.5 px-2 py-1.5 bg-gray-800 border-b border-gray-700">
         <Button
           variant="ghost"
           size="icon"
           onClick={() => onBack ? onBack() : navigate(-1)}
-          className="text-white hover:bg-gray-700"
+          className="text-white hover:bg-gray-700 h-8 w-8"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft className="w-4 h-4" />
         </Button>
         
         {/* WhatsApp-style member avatars for chatrooms */}
@@ -316,15 +316,15 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           </div>
         )}
         
-        <div className="flex-1">
-          <h1 className="font-semibold text-sm">{title}</h1>
-          {subtitle && <p className="text-[10px] text-gray-400">{subtitle}</p>}
+        <div className="flex-1 min-w-0">
+          <h1 className="font-semibold text-xs truncate">{title}</h1>
+          {subtitle && <p className="text-[9px] text-gray-400 truncate">{subtitle}</p>}
         </div>
         {chatType === 'chatroom' && (
           <Sheet open={showMembers} onOpenChange={setShowMembers}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-white hover:bg-gray-700" data-testid="button-members">
-                <Users className="w-5 h-5" />
+              <Button variant="ghost" size="icon" className="text-white hover:bg-gray-700 h-8 w-8" data-testid="button-members">
+                <Users className="w-4 h-4" />
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="bg-gray-900 border-l border-gray-700 text-white w-80">
@@ -376,8 +376,8 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
             </SheetContent>
           </Sheet>
         )}
-        <Button variant="ghost" size="icon" className="text-white hover:bg-gray-700">
-          <MoreVertical className="w-5 h-5" />
+        <Button variant="ghost" size="icon" className="text-white hover:bg-gray-700 h-8 w-8">
+          <MoreVertical className="w-4 h-4" />
         </Button>
       </div>
 
