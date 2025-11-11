@@ -14745,45 +14745,6 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // Get chatroom members
-  app.get("/api/chatrooms/:roomId/members", async (req, res) => {
-    try {
-      const roomId = parseInt(req.params.roomId || '0');
-      const userId = req.headers['x-user-id'];
-      
-      if (!userId) {
-        return res.status(401).json({ message: "User ID required" });
-      }
-
-      if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM MEMBERS: Getting members for chatroom ${roomId}`);
-
-      const members = await db
-        .select({
-          id: users.id,
-          username: users.username,
-          name: users.name,
-          profileImage: users.profileImage,
-          role: chatroomMembers.role,
-          joinedAt: chatroomMembers.joinedAt
-        })
-        .from(chatroomMembers)
-        .leftJoin(users, eq(chatroomMembers.userId, users.id))
-        .where(and(
-          eq(chatroomMembers.chatroomId, roomId),
-          eq(chatroomMembers.isActive, true)
-        ))
-        .orderBy(
-          sql`CASE WHEN ${chatroomMembers.role} = 'admin' THEN 0 ELSE 1 END`,
-          asc(chatroomMembers.joinedAt)
-        );
-
-      return res.json(members);
-    } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("Error fetching chatroom members:", error);
-      return res.status(500).json({ message: "Failed to fetch members" });
-    }
-  });
-
   // Join a chatroom
   app.post("/api/chatrooms/:roomId/join", async (req, res) => {
     try {
