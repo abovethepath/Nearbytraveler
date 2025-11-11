@@ -64,8 +64,8 @@ function QuickMeetupsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedMeetupId, setSelectedMeetupId] = useState<number | null>(null);
+  const [isEditingMeetup, setIsEditingMeetup] = useState(false);
   const [restartDuration, setRestartDuration] = useState<string>('1hour');
-  const [editingMeetup, setEditingMeetup] = useState<QuickMeetup | null>(null);
   const [deletingMeetup, setDeletingMeetup] = useState<QuickMeetup | null>(null);
   const [editForm, setEditForm] = useState({
     title: '',
@@ -215,6 +215,42 @@ function QuickMeetupsPage() {
         description: "Meetup deleted successfully.",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Remove participant mutation
+  const removeParticipantMutation = useMutation({
+    mutationFn: async ({ meetupId, participantId }: { meetupId: number; participantId: number }) => {
+      const response = await fetch(`/api/quick-meets/${meetupId}/participants/${participantId}`, {
+        method: 'DELETE',
+        headers: {
+          'x-user-id': actualUser?.id?.toString() || '',
+        },
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to remove participant');
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Participant Removed",
+        description: "The participant has been removed from the meetup.",
+      });
+      if (selectedMeetupId) {
+        queryClient.invalidateQueries({ queryKey: ['/api/quick-meets', selectedMeetupId, 'participants'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/quick-meets'] });
+      }
     },
     onError: (error: Error) => {
       toast({
@@ -436,7 +472,7 @@ function QuickMeetupsPage() {
                 <div className="flex gap-1 flex-1">
                   <Button 
                     size="sm" 
-                    className="text-xs h-7 bg-blue-500 hover:bg-blue-600 text-white"
+                    className="text-xs h-7 bg-blue-500 hover:bg-blue-600 text-white flex-1"
                     onClick={() => {
                       // Select this meetup to show participants and management options
                       setSelectedMeetupId(meetup.id);
@@ -444,23 +480,6 @@ function QuickMeetupsPage() {
                   >
                     <UserCheck className="w-3 h-3 mr-1" />
                     Manage ({meetup.participantCount})
-                  </Button>
-                  
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
-                    className="text-xs h-7 border-orange-300 text-orange-600 hover:bg-orange-50"
-                    onClick={() => {
-                      setEditingMeetup(meetup);
-                      setEditForm({
-                        title: meetup.title,
-                        description: meetup.description || '',
-                        duration: '1hour'
-                      });
-                    }}
-                  >
-                    <Edit className="w-3 h-3 mr-1" />
-                    Edit
                   </Button>
                   
                   <DropdownMenu>
@@ -533,85 +552,6 @@ function QuickMeetupsPage() {
 
   return (
     <>
-      {/* Edit Meetup Dialog */}
-      <Dialog open={!!editingMeetup} onOpenChange={(open) => !open && setEditingMeetup(null)}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Edit "{editingMeetup?.title}"</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="edit-title">Title</Label>
-              <Input
-                id="edit-title"
-                value={editForm.title}
-                onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                placeholder="Quick meet title"
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="edit-description">Description</Label>
-              <Textarea
-                id="edit-description"
-                value={editForm.description}
-                onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                placeholder="What are you planning to do?"
-                rows={3}
-                className="bg-white"
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="edit-duration">Extend Duration</Label>
-              <Select value={editForm.duration} onValueChange={(value) => setEditForm({ ...editForm, duration: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select additional time" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1hour">+1 Hour</SelectItem>
-                  <SelectItem value="2hours">+2 Hours</SelectItem>
-                  <SelectItem value="3hours">+3 Hours</SelectItem>
-                  <SelectItem value="4hours">+4 Hours</SelectItem>
-                  <SelectItem value="6hours">+6 Hours</SelectItem>
-                  <SelectItem value="12hours">+12 Hours</SelectItem>
-                  <SelectItem value="24hours">+24 Hours</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                className="flex-1"
-                onClick={() => setEditingMeetup(null)}
-              >
-                Cancel
-              </Button>
-              <Button
-                className="flex-1 bg-blue-500 hover:bg-blue-600"
-                onClick={() => {
-                  if (editingMeetup) {
-                    updateMeetupMutation.mutate({
-                      meetupId: editingMeetup.id,
-                      updates: {
-                        title: editForm.title,
-                        description: editForm.description,
-                        duration: editForm.duration
-                      }
-                    });
-                    setEditingMeetup(null);
-                  }
-                }}
-                disabled={updateMeetupMutation.isPending || !editForm.title.trim()}
-              >
-                {updateMeetupMutation.isPending ? 'Updating...' : 'Update Quick Meet'}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
       {/* Manage Quick Meet Dialog */}
       <Dialog open={!!selectedMeetupId} onOpenChange={(open) => !open && setSelectedMeetupId(null)}>
         <DialogContent className="sm:max-w-lg bg-white dark:bg-gray-900">
@@ -622,25 +562,124 @@ function QuickMeetupsPage() {
             const selectedMeetup = allMeetups.find(m => m.id === selectedMeetupId);
             if (!selectedMeetup) return <div>Meetup not found</div>;
             
+            const isOrganizer = selectedMeetup.organizerId === actualUser?.id;
+            
             return (
               <div className="space-y-4">
-                {/* Meetup Details */}
-                <div className="space-y-2 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-700">
-                  <h3 className="font-bold text-lg text-orange-800 dark:text-orange-200">{selectedMeetup.title}</h3>
-                  {selectedMeetup.description && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{selectedMeetup.description}</p>
-                  )}
-                  <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
-                    <MapPin className="w-3 h-3" />
-                    <span>{selectedMeetup.meetingPoint}</span>
+                {/* Edit Details Button (Organizer Only) */}
+                {isOrganizer && !isEditingMeetup && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => {
+                      setIsEditingMeetup(true);
+                      setEditForm({
+                        title: selectedMeetup.title,
+                        description: selectedMeetup.description || '',
+                        duration: '1hour'
+                      });
+                    }}
+                    data-testid="button-edit-details"
+                  >
+                    <Edit className="w-4 h-4 mr-2" />
+                    Edit Details
+                  </Button>
+                )}
+
+                {/* Edit Mode */}
+                {isEditingMeetup ? (
+                  <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+                    <div>
+                      <Label htmlFor="edit-title">Title</Label>
+                      <Input
+                        id="edit-title"
+                        value={editForm.title}
+                        onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                        placeholder="Quick meet title"
+                        data-testid="input-edit-title"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="edit-description">Description</Label>
+                      <Textarea
+                        id="edit-description"
+                        value={editForm.description}
+                        onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                        placeholder="What are you planning to do?"
+                        rows={3}
+                        className="bg-white dark:bg-gray-800"
+                        data-testid="textarea-edit-description"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="edit-duration">Extend Duration</Label>
+                      <Select value={editForm.duration} onValueChange={(value) => setEditForm({ ...editForm, duration: value })}>
+                        <SelectTrigger data-testid="select-edit-duration">
+                          <SelectValue placeholder="Select additional time" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="1hour">+1 Hour</SelectItem>
+                          <SelectItem value="2hours">+2 Hours</SelectItem>
+                          <SelectItem value="3hours">+3 Hours</SelectItem>
+                          <SelectItem value="4hours">+4 Hours</SelectItem>
+                          <SelectItem value="6hours">+6 Hours</SelectItem>
+                          <SelectItem value="12hours">+12 Hours</SelectItem>
+                          <SelectItem value="24hours">+24 Hours</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => setIsEditingMeetup(false)}
+                        data-testid="button-cancel-edit"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        className="flex-1 bg-blue-500 hover:bg-blue-600"
+                        onClick={() => {
+                          updateMeetupMutation.mutate({
+                            meetupId: selectedMeetup.id,
+                            updates: {
+                              title: editForm.title,
+                              description: editForm.description,
+                              duration: editForm.duration
+                            }
+                          });
+                          setIsEditingMeetup(false);
+                        }}
+                        disabled={updateMeetupMutation.isPending || !editForm.title.trim()}
+                        data-testid="button-save-edit"
+                      >
+                        {updateMeetupMutation.isPending ? 'Updating...' : 'Save Changes'}
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
-                    <Clock className="w-3 h-3" />
-                    <span className="font-semibold text-orange-600 dark:text-orange-400">
-                      {formatTimeRemaining(selectedMeetup.expiresAt)}
-                    </span>
+                ) : (
+                  /* View Mode - Meetup Details */
+                  <div className="space-y-2 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-700">
+                    <h3 className="font-bold text-lg text-orange-800 dark:text-orange-200">{selectedMeetup.title}</h3>
+                    {selectedMeetup.description && (
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{selectedMeetup.description}</p>
+                    )}
+                    <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                      <MapPin className="w-3 h-3" />
+                      <span>{selectedMeetup.meetingPoint}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                      <Clock className="w-3 h-3" />
+                      <span className="font-semibold text-orange-600 dark:text-orange-400">
+                        {formatTimeRemaining(selectedMeetup.expiresAt)}
+                      </span>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Participants List */}
                 <div>
@@ -715,6 +754,42 @@ function QuickMeetupsPage() {
                               >
                                 <MessageCircle className="w-4 h-4 text-orange-500" />
                               </button>
+                            )}
+                            {isOrganizer && participant.userId !== actualUser?.id && (
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <button
+                                    className="p-1.5 rounded-full hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+                                    title="Remove participant"
+                                    data-testid={`remove-participant-${participant.userId}`}
+                                  >
+                                    <Trash2 className="w-4 h-4 text-red-500" />
+                                  </button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent className="bg-white dark:bg-gray-900">
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Remove Participant?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Are you sure you want to remove {participant.user.name || participant.user.username} from this meetup? They will be removed from the chatroom as well.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel data-testid={`cancel-remove-${participant.userId}`}>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => {
+                                        removeParticipantMutation.mutate({
+                                          meetupId: selectedMeetup.id,
+                                          participantId: participant.userId
+                                        });
+                                      }}
+                                      className="bg-red-500 hover:bg-red-600"
+                                      data-testid={`confirm-remove-${participant.userId}`}
+                                    >
+                                      Remove
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
                             )}
                           </div>
                         </div>
