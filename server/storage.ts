@@ -1637,6 +1637,28 @@ export class DatabaseStorage implements IStorage {
         status
       })
       .returning();
+
+    // CRITICAL FIX: Add participant to event chatroom so they can access the chat
+    try {
+      const eventChatroom = await this.getEventChatroom(eventId);
+      if (eventChatroom) {
+        await db
+          .insert(chatroomMembers)
+          .values({
+            chatroomId: eventChatroom.id,
+            userId: userId,
+            role: 'member',
+            isActive: true
+          })
+          .onConflictDoNothing(); // Prevent duplicate if they somehow already joined
+        
+        console.log(`✅ STORAGE: Added user ${userId} to event chatroom ${eventChatroom.id} as member`);
+      }
+    } catch (error) {
+      console.error('Failed to add event participant to chatroom:', error);
+      // Don't fail the join if chatroom addition fails
+    }
+
     return participant;
   }
 
