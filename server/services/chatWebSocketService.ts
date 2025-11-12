@@ -1,6 +1,6 @@
 import { WebSocket } from 'ws';
 import { db } from '../db';
-import { chatroomMessages, chatroomMembers, users, messages, meetupChatroomMessages } from '../../shared/schema';
+import { chatroomMessages, chatroomMembers, users, messages, meetupChatroomMessages, meetupChatrooms, eventParticipants } from '../../shared/schema';
 import { eq, and, desc, gt, or } from 'drizzle-orm';
 
 // WebSocket event types for WhatsApp-style chat
