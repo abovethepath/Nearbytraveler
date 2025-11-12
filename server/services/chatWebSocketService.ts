@@ -452,14 +452,66 @@ export class ChatWebSocketService {
     }
 
     // Handle chatroom message edits (chatroom, event, meetup)
-    const messageTable = chatType === 'meetup' ? meetupChatroomMessages : chatroomMessages;
-    
-    const message = await db.query[chatType === 'meetup' ? 'meetupChatroomMessages' : 'chatroomMessages'].findFirst({
-      where: eq(messageTable.id, messageId)
+    if (chatType === 'meetup') {
+      const message = await db.query.meetupChatroomMessages.findFirst({
+        where: eq(meetupChatroomMessages.id, messageId)
+      });
+
+      if (!message) {
+        this.sendError(ws, 'Message not found');
+        return;
+      }
+
+      // SECURITY: Verify message belongs to the target chatroom to prevent cross-room spoofing
+      if (message.meetupChatroomId !== chatroomId) {
+        this.sendError(ws, 'Message does not belong to this chatroom');
+        return;
+      }
+
+      // Verify user owns the message
+      if (message.senderId !== ws.userId) {
+        this.sendError(ws, 'You can only edit your own messages');
+        return;
+      }
+
+      // Update the message (meetup messages use 'content' field)
+      const [updated] = await db.update(meetupChatroomMessages)
+        .set({ 
+          content: content.trim(),
+          isEdited: true,
+          editedAt: new Date()
+        })
+        .where(eq(meetupChatroomMessages.id, messageId))
+        .returning();
+
+      const editEvent: ChatEvent = {
+        type: 'message:edit',
+        chatType,
+        chatroomId,
+        payload: updated,
+        correlationId: event.correlationId,
+        senderId: ws.userId,
+        timestamp: Date.now(),
+      };
+
+      await this.broadcastToChatroom(chatroomId, editEvent);
+      console.log('✅ Meetup chatroom message edited and broadcast');
+      return;
+    }
+
+    // Handle regular chatroom/event message edits
+    const message = await db.query.chatroomMessages.findFirst({
+      where: eq(chatroomMessages.id, messageId)
     });
 
     if (!message) {
       this.sendError(ws, 'Message not found');
+      return;
+    }
+
+    // SECURITY: Verify message belongs to the target chatroom to prevent cross-room spoofing
+    if (message.chatroomId !== chatroomId) {
+      this.sendError(ws, 'Message does not belong to this chatroom');
       return;
     }
 
@@ -469,14 +521,14 @@ export class ChatWebSocketService {
       return;
     }
 
-    // Update the message
-    const [updated] = await db.update(messageTable)
+    // Update the message (chatroom messages use 'message' field)
+    const [updated] = await db.update(chatroomMessages)
       .set({ 
         message: content.trim(),
         isEdited: true,
         editedAt: new Date()
       })
-      .where(eq(messageTable.id, messageId))
+      .where(eq(chatroomMessages.id, messageId))
       .returning();
 
     const editEvent: ChatEvent = {
@@ -550,14 +602,60 @@ export class ChatWebSocketService {
     }
 
     // Handle chatroom message deletes (chatroom, event, meetup)
-    const messageTable = chatType === 'meetup' ? meetupChatroomMessages : chatroomMessages;
-    
-    const message = await db.query[chatType === 'meetup' ? 'meetupChatroomMessages' : 'chatroomMessages'].findFirst({
-      where: eq(messageTable.id, messageId)
+    if (chatType === 'meetup') {
+      const message = await db.query.meetupChatroomMessages.findFirst({
+        where: eq(meetupChatroomMessages.id, messageId)
+      });
+
+      if (!message) {
+        this.sendError(ws, 'Message not found');
+        return;
+      }
+
+      // SECURITY: Verify message belongs to the target chatroom to prevent cross-room spoofing
+      if (message.meetupChatroomId !== chatroomId) {
+        this.sendError(ws, 'Message does not belong to this chatroom');
+        return;
+      }
+
+      // Verify user owns the message
+      if (message.senderId !== ws.userId) {
+        this.sendError(ws, 'You can only delete your own messages');
+        return;
+      }
+
+      // Delete the message
+      await db.delete(meetupChatroomMessages)
+        .where(eq(meetupChatroomMessages.id, messageId));
+
+      const deleteEvent: ChatEvent = {
+        type: 'message:delete',
+        chatType,
+        chatroomId,
+        payload: { messageId },
+        correlationId: event.correlationId,
+        senderId: ws.userId,
+        timestamp: Date.now(),
+      };
+
+      await this.broadcastToChatroom(chatroomId, deleteEvent);
+      console.log('✅ Meetup chatroom message deleted and broadcast');
+      return;
+    }
+
+    // Handle regular chatroom/event message deletes
+    const message = await db.query.chatroomMessages.findFirst({
+      where: eq(chatroomMessages.id, messageId)
     });
 
     if (!message) {
       this.sendError(ws, 'Message not found');
+      return;
+    }
+
+    // SECURITY: Verify message belongs to the target chatroom to prevent cross-room spoofing
+    if (message.chatroomId !== chatroomId) {
+      this.sendError(ws, 'Message does not belong to this chatroom');
       return;
     }
 
@@ -568,8 +666,8 @@ export class ChatWebSocketService {
     }
 
     // Delete the message
-    await db.delete(messageTable)
-      .where(eq(messageTable.id, messageId));
+    await db.delete(chatroomMessages)
+      .where(eq(chatroomMessages.id, messageId));
 
     const deleteEvent: ChatEvent = {
       type: 'message:delete',

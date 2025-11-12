@@ -8,7 +8,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, VolumeX } from "lucide-react";
+import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, VolumeX, Edit2, Trash2, Check, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -21,6 +21,8 @@ interface Message {
   replyToId?: number;
   reactions?: { [emoji: string]: number[] };
   createdAt: string;
+  isEdited?: boolean;
+  editedAt?: string;
   sender?: {
     id: number;
     username: string;
@@ -66,6 +68,8 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   const [muteDialogOpen, setMuteDialogOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<ChatMember | null>(null);
   const [muteReason, setMuteReason] = useState("");
+  const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
+  const [editText, setEditText] = useState("");
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
@@ -229,6 +233,20 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           scrollToBottom();
           break;
 
+        case 'message:edit':
+          console.log('✏️ WhatsApp Chat: Message edited');
+          setMessages(prev => prev.map(msg => 
+            msg.id === data.payload.id
+              ? { ...msg, ...data.payload, isEdited: true }
+              : msg
+          ));
+          break;
+
+        case 'message:delete':
+          console.log('🗑️ WhatsApp Chat: Message deleted');
+          setMessages(prev => prev.filter(msg => msg.id !== data.payload.messageId));
+          break;
+
         case 'message:reaction':
           setMessages(prev => prev.map(msg => 
             msg.id === data.payload.messageId
@@ -351,6 +369,49 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
       payload: { messageId, emoji }
     }));
     setSelectedMessage(null);
+  };
+
+  const handleEditMessage = async (messageId: number) => {
+    if (!editText.trim()) return;
+    
+    try {
+      await apiRequest(`/api/messages/${messageId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ content: editText.trim(), userId: currentUserId }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      setEditingMessageId(null);
+      setEditText("");
+    } catch (error: any) {
+      toast({ title: "Failed to edit message", variant: "destructive" });
+    }
+  };
+
+  const handleDeleteMessage = async (messageId: number) => {
+    if (!confirm('Are you sure you want to delete this message?')) return;
+    
+    try {
+      await apiRequest(`/api/messages/${messageId}`, {
+        method: 'DELETE',
+        headers: { 'x-user-id': currentUserId?.toString() || '' }
+      });
+      
+      setSelectedMessage(null);
+    } catch (error: any) {
+      toast({ title: "Failed to delete message", variant: "destructive" });
+    }
+  };
+
+  const startEdit = (message: Message) => {
+    setEditingMessageId(message.id);
+    setEditText(message.content);
+    setSelectedMessage(null);
+  };
+
+  const cancelEdit = () => {
+    setEditingMessageId(null);
+    setEditText("");
   };
 
   const formatTimestamp = (date: string) => {
@@ -635,16 +696,39 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                       </div>
                     )}
 
-                    <div className={`px-3 py-1.5 rounded-2xl ${isOwnMessage ? 'bg-orange-600' : 'bg-gray-700'} ${message.replyToId ? 'rounded-tl-none' : ''}`}>
-                      {!isOwnMessage && showAvatar && (
-                        <p className="text-xs font-semibold mb-0.5 text-orange-400">{getFirstName(message.sender?.name, message.sender?.username)}</p>
-                      )}
-                      <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
-                      
-                      <div className="flex items-center justify-end gap-1 mt-0.5">
-                        <span className="text-[10px] opacity-70">{formatTimestamp(message.createdAt)}</span>
+                    {editingMessageId === message.id ? (
+                      <div className={`px-3 py-2 rounded-2xl ${isOwnMessage ? 'bg-orange-600' : 'bg-gray-700'} ${message.replyToId ? 'rounded-tl-none' : ''}`}>
+                        <Textarea
+                          value={editText}
+                          onChange={(e) => setEditText(e.target.value)}
+                          className="w-full mb-2 bg-gray-800 border-gray-600 text-white resize-none"
+                          rows={3}
+                          data-testid="textarea-edit-message"
+                        />
+                        <div className="flex gap-2">
+                          <Button size="sm" onClick={() => handleEditMessage(message.id)} className="bg-green-600 hover:bg-green-700" data-testid="button-save-edit">
+                            <Check className="w-4 h-4 mr-1" />
+                            Save
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={cancelEdit} data-testid="button-cancel-edit">
+                            <X className="w-4 h-4 mr-1" />
+                            Cancel
+                          </Button>
+                        </div>
                       </div>
-                    </div>
+                    ) : (
+                      <div className={`px-3 py-1.5 rounded-2xl ${isOwnMessage ? 'bg-orange-600' : 'bg-gray-700'} ${message.replyToId ? 'rounded-tl-none' : ''}`}>
+                        {!isOwnMessage && showAvatar && (
+                          <p className="text-xs font-semibold mb-0.5 text-orange-400">{getFirstName(message.sender?.name, message.sender?.username)}</p>
+                        )}
+                        <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
+                        
+                        <div className="flex items-center justify-end gap-1 mt-0.5">
+                          <span className="text-[10px] opacity-70">{formatTimestamp(message.createdAt)}</span>
+                          {message.isEdited && <span className="text-[10px] opacity-60 italic" data-testid="text-edited-indicator">Edited</span>}
+                        </div>
+                      </div>
+                    )}
 
                     {message.reactions && Object.keys(message.reactions).length > 0 && (
                       <div className="flex gap-1 mt-1 ml-2">
@@ -659,18 +743,30 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
 
                     {selectedMessage === message.id && (
                       <div className="absolute top-full mt-2 bg-gray-800 rounded-lg shadow-lg p-2 z-10 min-w-[150px]">
-                        <button onClick={() => { navigator.clipboard.writeText(message.content); toast({ title: "Copied" }); setSelectedMessage(null); }} className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-700 rounded-lg">
+                        <button onClick={() => { navigator.clipboard.writeText(message.content); toast({ title: "Copied" }); setSelectedMessage(null); }} className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-700 rounded-lg" data-testid="button-copy-message">
                           <Copy className="w-4 h-4" />
                           <span>Copy text</span>
                         </button>
-                        <button onClick={() => { setReplyingTo(message); setSelectedMessage(null); }} className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-700 rounded-lg">
+                        <button onClick={() => { setReplyingTo(message); setSelectedMessage(null); }} className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-700 rounded-lg" data-testid="button-reply-message">
                           <Reply className="w-4 h-4" />
                           <span>Reply</span>
                         </button>
-                        <button onClick={() => handleReaction(message.id, '❤️')} className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-700 rounded-lg">
+                        <button onClick={() => handleReaction(message.id, '❤️')} className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-700 rounded-lg" data-testid="button-react-message">
                           <Heart className="w-4 h-4" />
                           <span>React</span>
                         </button>
+                        {isOwnMessage && (
+                          <>
+                            <button onClick={() => startEdit(message)} className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-700 rounded-lg" data-testid="button-edit-message">
+                              <Edit2 className="w-4 h-4" />
+                              <span>Edit</span>
+                            </button>
+                            <button onClick={() => handleDeleteMessage(message.id)} className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-700 rounded-lg text-red-400" data-testid="button-delete-message">
+                              <Trash2 className="w-4 h-4" />
+                              <span>Delete</span>
+                            </button>
+                          </>
+                        )}
                       </div>
                     )}
                   </div>
