@@ -171,6 +171,12 @@ export default function EventCard({ event, compact = false, featured = false }: 
             </p>
           )}
 
+          {event.requirements && (
+            <p className="text-sm text-travel-blue dark:text-blue-400 font-medium leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere]">
+              📋 {event.requirements}
+            </p>
+          )}
+
           {/* Meta — wraps on small screens */}
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
             <div className="min-w-0 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
