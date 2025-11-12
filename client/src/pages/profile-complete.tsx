@@ -683,35 +683,47 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const shouldShowBackToChat = returnToChatData !== null;
   
   const handleBackToChat = () => {
-    console.log('Back to Chat clicked, context:', returnToChatData);
+    console.log('🔙 Back to Chat clicked!');
+    console.log('🔍 returnToChatData raw:', returnToChatData);
+    
     if (returnToChatData) {
       try {
         const context = JSON.parse(returnToChatData);
-        console.log('Parsed chat context:', context);
-        localStorage.removeItem('returnToChat');
+        console.log('✅ Parsed context:', JSON.stringify(context, null, 2));
+        console.log('🔍 chatType:', context.chatType);
+        console.log('🔍 eventId:', context.eventId);
+        console.log('🔍 chatId:', context.chatId);
         
         // Navigate to the appropriate chat based on chatType
         if (context.chatType === 'event' && context.eventId) {
-          // For event chats, use the stored eventId to navigate back
-          console.log('Navigating back to event chat:', context.eventId);
-          setLocation(`/event-chat/${context.eventId}`);
-        } else if (context.chatType === 'meetup') {
-          console.log('Navigating back to meetup chat');
-          setLocation('/quick-meetups'); // Or specific meetup chat route
-        } else if (context.chatType === 'chatroom') {
-          console.log('Navigating back to city chatroom');
-          setLocation('/city-chatrooms');
+          const targetPath = `/event-chat/${context.eventId}`;
+          console.log('🎯 EVENT CHAT - Navigating to:', targetPath);
+          localStorage.removeItem('returnToChat');
+          setLocation(targetPath);
+        } else if (context.chatType === 'meetup' && context.chatId) {
+          const targetPath = `/meetup-chat/${context.chatId}`;
+          console.log('🎯 MEETUP CHAT - Navigating to:', targetPath);
+          localStorage.removeItem('returnToChat');
+          setLocation(targetPath);
+        } else if (context.chatType === 'chatroom' && context.chatId) {
+          const targetPath = `/chat/${context.chatId}`;
+          console.log('🎯 CITY CHATROOM - Navigating to:', targetPath);
+          localStorage.removeItem('returnToChat');
+          setLocation(targetPath);
         } else {
-          // Fallback to chatrooms page
+          console.error('⚠️ Unknown chat type or missing IDs:', context);
+          console.log('📍 Fallback to city-chatrooms');
+          localStorage.removeItem('returnToChat');
           setLocation('/city-chatrooms');
         }
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (error) {
-        console.error('Error parsing chat context:', error);
+        console.error('❌ Error parsing chat context:', error);
+        localStorage.removeItem('returnToChat');
         setLocation('/city-chatrooms');
       }
     } else {
-      console.log('No chat context found');
+      console.log('❌ No returnToChatData found in localStorage');
       setLocation('/city-chatrooms');
     }
   };
