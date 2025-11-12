@@ -5,8 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, VolumeX } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useMutation, queryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 interface Message {
   id: number;
@@ -34,6 +39,7 @@ interface ChatMember {
   hometownCity: string;
   isAdmin: boolean;
   joinedAt: string;
+  isMuted?: boolean;
 }
 
 interface WhatsAppChatProps {
@@ -57,10 +63,55 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   const [selectedMessage, setSelectedMessage] = useState<number | null>(null);
   const [showMembers, setShowMembers] = useState(false);
   const [memberSearch, setMemberSearch] = useState("");
+  const [muteDialogOpen, setMuteDialogOpen] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<ChatMember | null>(null);
+  const [muteReason, setMuteReason] = useState("");
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Check if current user is admin
+  const currentMember = members.find(m => m.id === currentUserId);
+  const isCurrentUserAdmin = currentMember?.isAdmin || false;
+  
+  // Mute user mutation
+  const muteMutation = useMutation({
+    mutationFn: async ({ targetUserId, reason }: { targetUserId: number, reason?: string }) => {
+      return apiRequest(`/api/chatrooms/${chatId}/mute`, {
+        method: 'POST',
+        body: JSON.stringify({ targetUserId, reason }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+    },
+    onSuccess: () => {
+      toast({ title: "User muted successfully" });
+      setMuteDialogOpen(false);
+      setMuteReason("");
+      queryClient.invalidateQueries({ queryKey: [membersEndpoint] });
+    },
+    onError: () => {
+      toast({ title: "Failed to mute user", variant: "destructive" });
+    }
+  });
+  
+  // Unmute user mutation
+  const unmuteMutation = useMutation({
+    mutationFn: async (targetUserId: number) => {
+      return apiRequest(`/api/chatrooms/${chatId}/unmute`, {
+        method: 'POST',
+        body: JSON.stringify({ targetUserId }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+    },
+    onSuccess: () => {
+      toast({ title: "User unmuted successfully" });
+      queryClient.invalidateQueries({ queryKey: [membersEndpoint] });
+    },
+    onError: () => {
+      toast({ title: "Failed to unmute user", variant: "destructive" });
+    }
+  });
 
   // Fetch chatroom members (for city chatrooms, meetup chatrooms, and event chatrooms)
   const membersEndpoint = chatType === 'event' 
@@ -390,35 +441,69 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                   filteredMembers.map((member) => (
                     <div
                       key={member.id}
-                      onClick={() => {
-                        setShowMembers(false);
-                        setMemberSearch("");
-                        // Store chat return info before navigating
-                        localStorage.setItem('returnToChat', JSON.stringify({
-                          chatId,
-                          chatType,
-                          title,
-                          subtitle,
-                          eventId // For event chats, store the eventId so we can navigate back properly
-                        }));
-                        navigate(`/profile/${member.id}`);
-                      }}
-                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 cursor-pointer transition-colors"
+                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors"
                       data-testid={`member-item-${member.id}`}
                     >
-                      <Avatar className="w-12 h-12">
-                        <AvatarImage src={member.profileImage || undefined} />
-                        <AvatarFallback className="bg-orange-600 text-white">
-                          {getFirstName(member.name, member.username)[0]}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-sm truncate">
-                          {getFirstName(member.name, member.username)}
-                          {member.isAdmin && <span className="ml-2 text-xs text-orange-400">Admin</span>}
-                        </p>
-                        <p className="text-xs text-gray-400 truncate">{member.hometownCity || 'Unknown'}</p>
+                      <div 
+                        onClick={() => {
+                          setShowMembers(false);
+                          setMemberSearch("");
+                          // Store chat return info before navigating
+                          localStorage.setItem('returnToChat', JSON.stringify({
+                            chatId,
+                            chatType,
+                            title,
+                            subtitle,
+                            eventId // For event chats, store the eventId so we can navigate back properly
+                          }));
+                          navigate(`/profile/${member.id}`);
+                        }}
+                        className="flex items-center gap-3 flex-1 cursor-pointer"
+                      >
+                        <Avatar className="w-12 h-12">
+                          <AvatarImage src={member.profileImage || undefined} />
+                          <AvatarFallback className="bg-orange-600 text-white">
+                            {getFirstName(member.name, member.username)[0]}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-sm truncate">
+                            {getFirstName(member.name, member.username)}
+                            {member.isAdmin && <span className="ml-2 text-xs text-orange-400">Admin</span>}
+                            {member.isMuted && <span className="ml-2 text-xs text-red-400">Muted</span>}
+                          </p>
+                          <p className="text-xs text-gray-400 truncate">{member.hometownCity || 'Unknown'}</p>
+                        </div>
                       </div>
+                      {isCurrentUserAdmin && member.id !== currentUserId && (
+                        <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                          {member.isMuted ? (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-8 text-green-400 hover:text-green-300 hover:bg-gray-700"
+                              onClick={() => unmuteMutation.mutate(member.id)}
+                              disabled={unmuteMutation.isPending}
+                              data-testid={`button-unmute-${member.id}`}
+                            >
+                              <Volume2 className="w-4 h-4" />
+                            </Button>
+                          ) : (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-8 text-red-400 hover:text-red-300 hover:bg-gray-700"
+                              onClick={() => {
+                                setSelectedMember(member);
+                                setMuteDialogOpen(true);
+                              }}
+                              data-testid={`button-mute-${member.id}`}
+                            >
+                              <VolumeX className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+                      )}
                     </div>
                   ))
                 )}
@@ -565,37 +650,119 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
               filteredMembers.map((member) => (
                 <div
                   key={member.id}
-                  onClick={() => {
-                    localStorage.setItem('returnToChat', JSON.stringify({
-                      chatId,
-                      chatType,
-                      title,
-                      subtitle,
-                      eventId
-                    }));
-                    navigate(`/profile/${member.id}`);
-                  }}
-                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-700 cursor-pointer transition-colors"
+                  className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-700 transition-colors"
                 >
-                  <Avatar className="w-10 h-10">
-                    <AvatarImage src={member.profileImage || undefined} />
-                    <AvatarFallback className="bg-orange-600 text-white text-sm">
-                      {getFirstName(member.name, member.username)[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm truncate text-white">
-                      {getFirstName(member.name, member.username)}
-                      {member.isAdmin && <span className="ml-2 text-xs text-orange-400">Admin</span>}
-                    </p>
-                    <p className="text-xs text-gray-400 truncate">{member.hometownCity || 'Unknown'}</p>
+                  <div
+                    onClick={() => {
+                      localStorage.setItem('returnToChat', JSON.stringify({
+                        chatId,
+                        chatType,
+                        title,
+                        subtitle,
+                        eventId
+                      }));
+                      navigate(`/profile/${member.id}`);
+                    }}
+                    className="flex items-center gap-3 flex-1 cursor-pointer"
+                  >
+                    <Avatar className="w-10 h-10">
+                      <AvatarImage src={member.profileImage || undefined} />
+                      <AvatarFallback className="bg-orange-600 text-white text-sm">
+                        {getFirstName(member.name, member.username)[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-sm truncate text-white">
+                        {getFirstName(member.name, member.username)}
+                        {member.isAdmin && <span className="ml-2 text-xs text-orange-400">Admin</span>}
+                        {member.isMuted && <span className="ml-2 text-xs text-red-400">Muted</span>}
+                      </p>
+                      <p className="text-xs text-gray-400 truncate">{member.hometownCity || 'Unknown'}</p>
+                    </div>
                   </div>
+                  {isCurrentUserAdmin && member.id !== currentUserId && (
+                    <div onClick={(e) => e.stopPropagation()}>
+                      {member.isMuted ? (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 w-7 p-0 text-green-400 hover:text-green-300 hover:bg-gray-600"
+                          onClick={() => unmuteMutation.mutate(member.id)}
+                          disabled={unmuteMutation.isPending}
+                        >
+                          <Volume2 className="w-3.5 h-3.5" />
+                        </Button>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 w-7 p-0 text-red-400 hover:text-red-300 hover:bg-gray-600"
+                          onClick={() => {
+                            setSelectedMember(member);
+                            setMuteDialogOpen(true);
+                          }}
+                        >
+                          <VolumeX className="w-3.5 h-3.5" />
+                        </Button>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))
             )}
           </div>
         </div>
       )}
+      
+      {/* Mute Dialog */}
+      <Dialog open={muteDialogOpen} onOpenChange={setMuteDialogOpen}>
+        <DialogContent className="bg-white dark:bg-gray-900">
+          <DialogHeader>
+            <DialogTitle>Mute Member</DialogTitle>
+            <DialogDescription>
+              Mute {selectedMember?.username} from sending messages in this chatroom.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label htmlFor="mute-reason">Reason (optional)</Label>
+              <Input
+                id="mute-reason"
+                placeholder="Enter reason for muting..."
+                value={muteReason}
+                onChange={(e) => setMuteReason(e.target.value)}
+                className="mt-2"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setMuteDialogOpen(false);
+                setMuteReason("");
+                setSelectedMember(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                if (selectedMember) {
+                  muteMutation.mutate({ 
+                    targetUserId: selectedMember.id, 
+                    reason: muteReason || undefined 
+                  });
+                }
+              }}
+              disabled={muteMutation.isPending}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {muteMutation.isPending ? 'Muting...' : 'Mute User'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
