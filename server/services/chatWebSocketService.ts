@@ -7,6 +7,8 @@ import { eq, and, desc, gt, or } from 'drizzle-orm';
 export type ChatEventType =
   | 'message:new'
   | 'message:update'
+  | 'message:edit'
+  | 'message:delete'
   | 'message:reaction'
   | 'message:reply'
   | 'typing:start'
@@ -81,6 +83,12 @@ export class ChatWebSocketService {
       switch (event.type) {
         case 'message:new':
           await this.handleNewMessage(ws, event);
+          break;
+        case 'message:edit':
+          await this.handleEditMessage(ws, event);
+          break;
+        case 'message:delete':
+          await this.handleDeleteMessage(ws, event);
           break;
         case 'message:reaction':
           await this.handleReaction(ws, event);
@@ -380,6 +388,202 @@ export class ChatWebSocketService {
       console.error('❌ ERROR during message insert/broadcast:', insertError.message, insertError.stack);
       throw insertError;
     }
+  }
+
+  // Handle edit message
+  private async handleEditMessage(ws: AuthenticatedWebSocket, event: ChatEvent) {
+    const { chatType, chatroomId, payload } = event;
+    const { messageId, content } = payload;
+
+    console.log('✏️ handleEditMessage called:', { chatType, chatroomId, messageId, userId: ws.userId });
+
+    // Handle DM message edits
+    if (chatType === 'dm') {
+      const message = await db.query.messages.findFirst({
+        where: eq(messages.id, messageId)
+      });
+
+      if (!message) {
+        this.sendError(ws, 'Message not found');
+        return;
+      }
+
+      // Verify user owns the message
+      if (message.senderId !== ws.userId) {
+        this.sendError(ws, 'You can only edit your own messages');
+        return;
+      }
+
+      // Update the message
+      const [updated] = await db.update(messages)
+        .set({ 
+          content: content.trim(),
+          isEdited: true,
+          editedAt: new Date()
+        })
+        .where(eq(messages.id, messageId))
+        .returning();
+
+      // Send edit event to both users
+      const receiverId = chatroomId; // For DMs, chatroomId is the other user's ID
+      const editEvent: ChatEvent = {
+        type: 'message:edit',
+        chatType: 'dm',
+        chatroomId: receiverId,
+        payload: updated,
+        correlationId: event.correlationId,
+        senderId: ws.userId,
+        timestamp: Date.now(),
+      };
+
+      // Send to receiver
+      const receiverWs = this.connectedUsers.get(receiverId);
+      if (receiverWs && receiverWs.readyState === WebSocket.OPEN) {
+        receiverWs.send(JSON.stringify(editEvent));
+      }
+
+      // Echo back to sender
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(editEvent));
+      }
+
+      console.log('✅ DM message edited and broadcast');
+      return;
+    }
+
+    // Handle chatroom message edits (chatroom, event, meetup)
+    const messageTable = chatType === 'meetup' ? meetupChatroomMessages : chatroomMessages;
+    
+    const message = await db.query[chatType === 'meetup' ? 'meetupChatroomMessages' : 'chatroomMessages'].findFirst({
+      where: eq(messageTable.id, messageId)
+    });
+
+    if (!message) {
+      this.sendError(ws, 'Message not found');
+      return;
+    }
+
+    // Verify user owns the message
+    if (message.userId !== ws.userId) {
+      this.sendError(ws, 'You can only edit your own messages');
+      return;
+    }
+
+    // Update the message
+    const [updated] = await db.update(messageTable)
+      .set({ 
+        message: content.trim(),
+        isEdited: true,
+        editedAt: new Date()
+      })
+      .where(eq(messageTable.id, messageId))
+      .returning();
+
+    const editEvent: ChatEvent = {
+      type: 'message:edit',
+      chatType,
+      chatroomId,
+      payload: updated,
+      correlationId: event.correlationId,
+      senderId: ws.userId,
+      timestamp: Date.now(),
+    };
+
+    // Broadcast to all chatroom members
+    await this.broadcastToChatroom(chatroomId, editEvent);
+    console.log('✅ Chatroom message edited and broadcast');
+  }
+
+  // Handle delete message
+  private async handleDeleteMessage(ws: AuthenticatedWebSocket, event: ChatEvent) {
+    const { chatType, chatroomId, payload } = event;
+    const { messageId } = payload;
+
+    console.log('🗑️ handleDeleteMessage called:', { chatType, chatroomId, messageId, userId: ws.userId });
+
+    // Handle DM message deletes
+    if (chatType === 'dm') {
+      const message = await db.query.messages.findFirst({
+        where: eq(messages.id, messageId)
+      });
+
+      if (!message) {
+        this.sendError(ws, 'Message not found');
+        return;
+      }
+
+      // Verify user owns the message
+      if (message.senderId !== ws.userId) {
+        this.sendError(ws, 'You can only delete your own messages');
+        return;
+      }
+
+      // Delete the message
+      await db.delete(messages)
+        .where(eq(messages.id, messageId));
+
+      // Send delete event to both users
+      const receiverId = chatroomId; // For DMs, chatroomId is the other user's ID
+      const deleteEvent: ChatEvent = {
+        type: 'message:delete',
+        chatType: 'dm',
+        chatroomId: receiverId,
+        payload: { messageId },
+        correlationId: event.correlationId,
+        senderId: ws.userId,
+        timestamp: Date.now(),
+      };
+
+      // Send to receiver
+      const receiverWs = this.connectedUsers.get(receiverId);
+      if (receiverWs && receiverWs.readyState === WebSocket.OPEN) {
+        receiverWs.send(JSON.stringify(deleteEvent));
+      }
+
+      // Echo back to sender
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(deleteEvent));
+      }
+
+      console.log('✅ DM message deleted and broadcast');
+      return;
+    }
+
+    // Handle chatroom message deletes (chatroom, event, meetup)
+    const messageTable = chatType === 'meetup' ? meetupChatroomMessages : chatroomMessages;
+    
+    const message = await db.query[chatType === 'meetup' ? 'meetupChatroomMessages' : 'chatroomMessages'].findFirst({
+      where: eq(messageTable.id, messageId)
+    });
+
+    if (!message) {
+      this.sendError(ws, 'Message not found');
+      return;
+    }
+
+    // Verify user owns the message
+    if (message.userId !== ws.userId) {
+      this.sendError(ws, 'You can only delete your own messages');
+      return;
+    }
+
+    // Delete the message
+    await db.delete(messageTable)
+      .where(eq(messageTable.id, messageId));
+
+    const deleteEvent: ChatEvent = {
+      type: 'message:delete',
+      chatType,
+      chatroomId,
+      payload: { messageId },
+      correlationId: event.correlationId,
+      senderId: ws.userId,
+      timestamp: Date.now(),
+    };
+
+    // Broadcast to all chatroom members
+    await this.broadcastToChatroom(chatroomId, deleteEvent);
+    console.log('✅ Chatroom message deleted and broadcast');
   }
 
   // Handle message reaction
