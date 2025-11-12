@@ -1,5 +1,5 @@
 import { db, pool } from "./db";
-import { users, connections, messages, events, eventParticipants, travelPlans, tripItineraries, itineraryItems, sharedItineraries, notifications, blockedUsers, travelMemories, travelMemoryLikes, travelMemoryComments, userPhotos, photoTags, userReferences, referrals, proximityNotifications, customLocationActivities, cityActivities, userCustomActivities, userCityInterests, cityLandmarks, landmarkRatings, secretLocalExperiences, secretLocalExperienceLikes, secretExperienceLikes, cityPages, citychatrooms, chatroomMembers, chatroomMessages, chatroomAccessRequests, chatroomInvitations, meetupChatrooms, meetupChatroomMessages, businessOffers, businessOfferRedemptions, businessReferrals, businessLocations, businessInterestNotifications, businessCustomerPhotos, cityPhotos, travelBlogPosts, travelBlogLikes, travelBlogComments, instagramPosts, quickMeetups, quickMeetupParticipants, quickMeetupTemplates, quickDeals, userNotificationSettings, businessSubscriptions, photoAlbums, externalEventInterests, vouches, waitlistLeads, type User, type InsertUser, type Connection, type InsertConnection, type Message, type InsertMessage, type Event, type InsertEvent, type EventParticipant, type EventParticipantWithUser, type TravelPlan, type InsertTravelPlan, type TripItinerary, type InsertTripItinerary, type ItineraryItem, type InsertItineraryItem, type SharedItinerary, type InsertSharedItinerary, type Notification, type InsertNotification, type PhotoTag, type InsertPhotoTag, type UserReference, type Referral, type InsertReferral, type ProximityNotification, type InsertProximityNotification, type CityLandmark, type InsertCityLandmark, type LandmarkRating, type InsertLandmarkRating, type SecretLocalExperience, type InsertSecretLocalExperience, type ChatroomInvitation, type InsertChatroomInvitation, type BusinessOffer, type InsertBusinessOffer, type BusinessOfferRedemption, type InsertBusinessOfferRedemption, type BusinessLocation, type InsertBusinessLocation, type BusinessInterestNotification, type InsertBusinessInterestNotification, type WaitlistLead, type InsertWaitlistLead, type BusinessCustomerPhoto, type InsertBusinessCustomerPhoto, type CityPhoto, type InsertCityPhoto, type TravelBlogPost, type InsertTravelBlogPost, type TravelBlogLike, type InsertTravelBlogLike, type TravelBlogComment, type InsertTravelBlogComment, type InstagramPost, type InsertInstagramPost, type QuickMeetupTemplate, type InsertQuickMeetupTemplate, type UserNotificationSettings, type InsertUserNotificationSettings, type BusinessSubscription, type InsertBusinessSubscription, type PhotoAlbum, type InsertPhotoAlbum, type ExternalEventInterest, type InsertExternalEventInterest, type Vouch, type VouchWithUsers } from "@shared/schema";
+import { users, connections, messages, events, eventParticipants, travelPlans, tripItineraries, itineraryItems, sharedItineraries, notifications, blockedUsers, travelMemories, travelMemoryLikes, travelMemoryComments, userPhotos, photoTags, userReferences, referrals, proximityNotifications, customLocationActivities, cityActivities, userCustomActivities, userCityInterests, cityLandmarks, landmarkRatings, secretLocalExperiences, secretLocalExperienceLikes, secretExperienceLikes, cityPages, citychatrooms, chatroomMembers, chatroomMessages, chatroomAccessRequests, chatroomInvitations, chatroomModerationRecords, chatroomBlocks, meetupChatrooms, meetupChatroomMessages, businessOffers, businessOfferRedemptions, businessReferrals, businessLocations, businessInterestNotifications, businessCustomerPhotos, cityPhotos, travelBlogPosts, travelBlogLikes, travelBlogComments, instagramPosts, quickMeetups, quickMeetupParticipants, quickMeetupTemplates, quickDeals, userNotificationSettings, businessSubscriptions, photoAlbums, externalEventInterests, vouches, waitlistLeads, type User, type InsertUser, type Connection, type InsertConnection, type Message, type InsertMessage, type Event, type InsertEvent, type EventParticipant, type EventParticipantWithUser, type TravelPlan, type InsertTravelPlan, type TripItinerary, type InsertTripItinerary, type ItineraryItem, type InsertItineraryItem, type SharedItinerary, type InsertSharedItinerary, type Notification, type InsertNotification, type PhotoTag, type InsertPhotoTag, type UserReference, type Referral, type InsertReferral, type ProximityNotification, type InsertProximityNotification, type CityLandmark, type InsertCityLandmark, type LandmarkRating, type InsertLandmarkRating, type SecretLocalExperience, type InsertSecretLocalExperience, type ChatroomInvitation, type InsertChatroomInvitation, type BusinessOffer, type InsertBusinessOffer, type BusinessOfferRedemption, type InsertBusinessOfferRedemption, type BusinessLocation, type InsertBusinessLocation, type BusinessInterestNotification, type InsertBusinessInterestNotification, type WaitlistLead, type InsertWaitlistLead, type BusinessCustomerPhoto, type InsertBusinessCustomerPhoto, type CityPhoto, type InsertCityPhoto, type TravelBlogPost, type InsertTravelBlogPost, type TravelBlogLike, type InsertTravelBlogLike, type TravelBlogComment, type InsertTravelBlogComment, type InstagramPost, type InsertInstagramPost, type QuickMeetupTemplate, type InsertQuickMeetupTemplate, type UserNotificationSettings, type InsertUserNotificationSettings, type BusinessSubscription, type InsertBusinessSubscription, type PhotoAlbum, type InsertPhotoAlbum, type ExternalEventInterest, type InsertExternalEventInterest, type Vouch, type VouchWithUsers } from "@shared/schema";
 import { eq, and, or, ilike, gte, desc, avg, count, sql, isNotNull, ne, lte, lt, gt, asc, like, inArray, getTableColumns, isNull } from "drizzle-orm";
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -402,6 +402,13 @@ export interface IStorage {
   getChatroomMessages(): Promise<any>;
   updateChatroomMessage(): Promise<any>;
   deleteChatroomMessage(): Promise<any>;
+  
+  // Chatroom moderation methods
+  muteChatroomUser(chatroomId: number, targetUserId: number, actedById: number, reason?: string, expiresAt?: Date): Promise<any>;
+  unmuteChatroomUser(chatroomId: number, targetUserId: number, actedById: number): Promise<boolean>;
+  isUserMutedInChatroom(chatroomId: number, userId: number): Promise<boolean>;
+  getChatroomModerationRecords(chatroomId: number): Promise<any[]>;
+  isUserChatroomAdmin(chatroomId: number, userId: number): Promise<boolean>;
   createChatroomInvitation(): Promise<any>;
   getChatroomInvitations(): Promise<any>;
   getUserChatroomInvitations(): Promise<any>;
@@ -4630,6 +4637,167 @@ export class DatabaseStorage implements IStorage {
   }
   async updateChatroomMessage(): Promise<any> { return undefined; }
   async deleteChatroomMessage(): Promise<any> { return true; }
+  
+  // Chatroom moderation methods
+  async muteChatroomUser(chatroomId: number, targetUserId: number, actedById: number, reason?: string, expiresAt?: Date): Promise<any> {
+    try {
+      const [record] = await db.insert(chatroomModerationRecords).values({
+        chatroomId,
+        targetUserId,
+        actionType: 'mute',
+        actedById,
+        reason,
+        expiresAt
+      }).returning();
+      
+      return record;
+    } catch (error) {
+      console.error('Error muting chatroom user:', error);
+      throw error;
+    }
+  }
+
+  async unmuteChatroomUser(chatroomId: number, targetUserId: number, actedById: number): Promise<boolean> {
+    try {
+      // Get the most recent active mute record
+      const [muteRecord] = await db
+        .select()
+        .from(chatroomModerationRecords)
+        .where(and(
+          eq(chatroomModerationRecords.chatroomId, chatroomId),
+          eq(chatroomModerationRecords.targetUserId, targetUserId),
+          eq(chatroomModerationRecords.actionType, 'mute'),
+          isNull(chatroomModerationRecords.revokedAt)
+        ))
+        .orderBy(desc(chatroomModerationRecords.createdAt))
+        .limit(1);
+
+      if (!muteRecord) {
+        return false;
+      }
+
+      // Mark the mute as revoked
+      await db
+        .update(chatroomModerationRecords)
+        .set({
+          revokedAt: new Date(),
+          revokedById: actedById
+        })
+        .where(eq(chatroomModerationRecords.id, muteRecord.id));
+
+      // Create unmute record for audit trail
+      await db.insert(chatroomModerationRecords).values({
+        chatroomId,
+        targetUserId,
+        actionType: 'unmute',
+        actedById
+      });
+
+      return true;
+    } catch (error) {
+      console.error('Error unmuting chatroom user:', error);
+      throw error;
+    }
+  }
+
+  async isUserMutedInChatroom(chatroomId: number, userId: number): Promise<boolean> {
+    try {
+      const [muteRecord] = await db
+        .select()
+        .from(chatroomModerationRecords)
+        .where(and(
+          eq(chatroomModerationRecords.chatroomId, chatroomId),
+          eq(chatroomModerationRecords.targetUserId, userId),
+          eq(chatroomModerationRecords.actionType, 'mute'),
+          isNull(chatroomModerationRecords.revokedAt)
+        ))
+        .orderBy(desc(chatroomModerationRecords.createdAt))
+        .limit(1);
+
+      if (!muteRecord) {
+        return false;
+      }
+
+      // Check if mute has expired
+      if (muteRecord.expiresAt && new Date() > muteRecord.expiresAt) {
+        // Auto-revoke expired mute
+        await db
+          .update(chatroomModerationRecords)
+          .set({ revokedAt: new Date() })
+          .where(eq(chatroomModerationRecords.id, muteRecord.id));
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error checking if user is muted:', error);
+      return false;
+    }
+  }
+
+  async getChatroomModerationRecords(chatroomId: number): Promise<any[]> {
+    try {
+      const records = await db
+        .select({
+          id: chatroomModerationRecords.id,
+          chatroomId: chatroomModerationRecords.chatroomId,
+          targetUserId: chatroomModerationRecords.targetUserId,
+          actionType: chatroomModerationRecords.actionType,
+          actedById: chatroomModerationRecords.actedById,
+          reason: chatroomModerationRecords.reason,
+          createdAt: chatroomModerationRecords.createdAt,
+          expiresAt: chatroomModerationRecords.expiresAt,
+          revokedAt: chatroomModerationRecords.revokedAt,
+          revokedById: chatroomModerationRecords.revokedById,
+          targetUser: {
+            id: users.id,
+            username: users.username,
+            name: users.name,
+            profileImage: users.profileImage
+          }
+        })
+        .from(chatroomModerationRecords)
+        .leftJoin(users, eq(chatroomModerationRecords.targetUserId, users.id))
+        .where(eq(chatroomModerationRecords.chatroomId, chatroomId))
+        .orderBy(desc(chatroomModerationRecords.createdAt));
+
+      return records;
+    } catch (error) {
+      console.error('Error fetching moderation records:', error);
+      return [];
+    }
+  }
+
+  async isUserChatroomAdmin(chatroomId: number, userId: number): Promise<boolean> {
+    try {
+      // First check if user is the chatroom creator
+      const [chatroom] = await db
+        .select({ createdById: citychatrooms.createdById })
+        .from(citychatrooms)
+        .where(eq(citychatrooms.id, chatroomId))
+        .limit(1);
+
+      if (chatroom && chatroom.createdById === userId) {
+        return true;
+      }
+
+      // Check if user has admin role in chatroom members
+      const [member] = await db
+        .select({ role: chatroomMembers.role })
+        .from(chatroomMembers)
+        .where(and(
+          eq(chatroomMembers.chatroomId, chatroomId),
+          eq(chatroomMembers.userId, userId),
+          eq(chatroomMembers.isActive, true)
+        ))
+        .limit(1);
+
+      return member?.role === 'admin';
+    } catch (error) {
+      console.error('Error checking chatroom admin status:', error);
+      return false;
+    }
+  }
   
   async getChatroomsCreatedByUser(userId: number): Promise<any[]> {
     try {

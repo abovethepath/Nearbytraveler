@@ -13509,6 +13509,121 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Chatroom moderation endpoints
+  // Mute user in chatroom
+  app.post("/api/chatrooms/:chatroomId/mute", async (req, res) => {
+    try {
+      const chatroomId = parseInt(req.params.chatroomId || '0');
+      const { targetUserId, reason, expiresAt } = req.body;
+      const userId = req.headers['x-user-id'];
+
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      if (!targetUserId) {
+        return res.status(400).json({ message: "Target user ID is required" });
+      }
+
+      // Check if acting user is admin/organizer
+      const isAdmin = await storage.isUserChatroomAdmin(chatroomId, parseInt(userId as string));
+      if (!isAdmin) {
+        return res.status(403).json({ message: "Only chatroom admins can mute users" });
+      }
+
+      // Mute the user
+      const muteRecord = await storage.muteChatroomUser(
+        chatroomId,
+        targetUserId,
+        parseInt(userId as string),
+        reason,
+        expiresAt ? new Date(expiresAt) : undefined
+      );
+
+      res.json({ success: true, muteRecord });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error muting user:", error);
+      res.status(500).json({ message: "Failed to mute user" });
+    }
+  });
+
+  // Unmute user in chatroom
+  app.post("/api/chatrooms/:chatroomId/unmute", async (req, res) => {
+    try {
+      const chatroomId = parseInt(req.params.chatroomId || '0');
+      const { targetUserId } = req.body;
+      const userId = req.headers['x-user-id'];
+
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      if (!targetUserId) {
+        return res.status(400).json({ message: "Target user ID is required" });
+      }
+
+      // Check if acting user is admin/organizer
+      const isAdmin = await storage.isUserChatroomAdmin(chatroomId, parseInt(userId as string));
+      if (!isAdmin) {
+        return res.status(403).json({ message: "Only chatroom admins can unmute users" });
+      }
+
+      // Unmute the user
+      const success = await storage.unmuteChatroomUser(
+        chatroomId,
+        targetUserId,
+        parseInt(userId as string)
+      );
+
+      if (!success) {
+        return res.status(404).json({ message: "No active mute found for this user" });
+      }
+
+      res.json({ success: true });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error unmuting user:", error);
+      res.status(500).json({ message: "Failed to unmute user" });
+    }
+  });
+
+  // Get moderation records for chatroom
+  app.get("/api/chatrooms/:chatroomId/moderation", async (req, res) => {
+    try {
+      const chatroomId = parseInt(req.params.chatroomId || '0');
+      const userId = req.headers['x-user-id'];
+
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      // Check if user is admin/organizer
+      const isAdmin = await storage.isUserChatroomAdmin(chatroomId, parseInt(userId as string));
+      if (!isAdmin) {
+        return res.status(403).json({ message: "Only chatroom admins can view moderation records" });
+      }
+
+      const records = await storage.getChatroomModerationRecords(chatroomId);
+      res.json(records);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error fetching moderation records:", error);
+      res.status(500).json({ message: "Failed to fetch moderation records" });
+    }
+  });
+
+  // Check if user is muted (public endpoint for message validation)
+  app.get("/api/chatrooms/:chatroomId/is-muted/:userId", async (req, res) => {
+    try {
+      const chatroomId = parseInt(req.params.chatroomId || '0');
+      const targetUserId = parseInt(req.params.userId || '0');
+
+      const isMuted = await storage.isUserMutedInChatroom(chatroomId, targetUserId);
+      res.json({ isMuted });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error checking mute status:", error);
+      res.status(500).json({ message: "Failed to check mute status" });
+    }
+  });
+
   // CRITICAL: Get user photos endpoint (MISSING - RESTORED)
   app.get("/api/users/:id/photos", async (req, res) => {
     try {
