@@ -4961,7 +4961,7 @@ export class DatabaseStorage implements IStorage {
       // 3. Ensure city has activities
       try {
         const { ensureCityHasActivities } = await import('./auto-city-setup.js');
-        await ensureCityHasActivities(city, 1);
+        await ensureCityHasActivities(city, state, country, 1);
         console.log(`✅ CITY SETUP: Ensured activities for ${city}`);
       } catch (error) {
         console.error(`❌ CITY SETUP: Error setting up activities for ${city}:`, error);
