@@ -432,7 +432,9 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
       {/* Messages - Flex wrapper ensures proper spacing */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <div className="flex-1 overflow-y-auto px-3 py-2">
-          <div className="flex flex-col justify-end min-h-full space-y-2">
+          <div className="flex flex-col min-h-full">
+            <div className="flex-grow" />
+            <div className="space-y-2">
             {messages.map((message, index) => {
               const isOwnMessage = message.senderId === currentUserId;
               const showAvatar = index === 0 || messages[index - 1].senderId !== message.senderId;
@@ -501,6 +503,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
               );
             })}
             <div ref={messagesEndRef} />
+            </div>
           </div>
         </div>
 
