@@ -469,15 +469,15 @@ export class ChatWebSocketService {
       }
 
       // Verify user owns the message
-      if (message.senderId !== ws.userId) {
+      if (message.userId !== ws.userId) {
         this.sendError(ws, 'You can only edit your own messages');
         return;
       }
 
-      // Update the message (meetup messages use 'content' field)
+      // Update the message (meetup messages use 'message' field)
       const [updated] = await db.update(meetupChatroomMessages)
         .set({ 
-          content: content.trim(),
+          message: content.trim(),
           isEdited: true,
           editedAt: new Date()
         })
@@ -516,15 +516,15 @@ export class ChatWebSocketService {
     }
 
     // Verify user owns the message
-    if (message.userId !== ws.userId) {
+    if (message.senderId !== ws.userId) {
       this.sendError(ws, 'You can only edit your own messages');
       return;
     }
 
-    // Update the message (chatroom messages use 'message' field)
+    // Update the message (chatroom messages use 'content' field)
     const [updated] = await db.update(chatroomMessages)
       .set({ 
-        message: content.trim(),
+        content: content.trim(),
         isEdited: true,
         editedAt: new Date()
       })
@@ -619,7 +619,7 @@ export class ChatWebSocketService {
       }
 
       // Verify user owns the message
-      if (message.senderId !== ws.userId) {
+      if (message.userId !== ws.userId) {
         this.sendError(ws, 'You can only delete your own messages');
         return;
       }
@@ -660,7 +660,7 @@ export class ChatWebSocketService {
     }
 
     // Verify user owns the message
-    if (message.userId !== ws.userId) {
+    if (message.senderId !== ws.userId) {
       this.sendError(ws, 'You can only delete your own messages');
       return;
     }
