@@ -429,95 +429,99 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
         </Button>
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2 min-h-0">
-        {messages.map((message, index) => {
-          const isOwnMessage = message.senderId === currentUserId;
-          const showAvatar = index === 0 || messages[index - 1].senderId !== message.senderId;
-          
-          return (
-            <div key={message.id} className={`flex gap-1.5 ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
-              {!isOwnMessage && (
-                <Avatar className={`w-7 h-7 ${showAvatar ? 'visible' : 'invisible'}`}>
-                  <AvatarImage src={message.sender?.profileImage || undefined} />
-                  <AvatarFallback className="text-xs">{message.sender?.name?.[0] || '?'}</AvatarFallback>
-                </Avatar>
-              )}
-
-              <div className={`relative max-w-[75%] ${isOwnMessage ? 'mr-2' : 'ml-2'}`} onClick={() => setSelectedMessage(selectedMessage === message.id ? null : message.id)}>
-                {message.replyToId && message.replyTo && (
-                  <div className={`mb-1 px-3 py-2 rounded-t-lg border-l-4 ${isOwnMessage ? 'bg-orange-900/80 border-orange-300' : 'bg-gray-600/80 border-orange-500'}`}>
-                    <p className={`text-xs font-bold mb-0.5 ${isOwnMessage ? 'text-orange-200' : 'text-orange-400'}`}>
-                      ↩ Replying to {getFirstName(message.replyTo.sender?.name, message.replyTo.sender?.username)}
-                    </p>
-                    <p className={`text-xs ${isOwnMessage ? 'text-orange-100/90' : 'text-gray-200'} truncate italic`}>
-                      "{message.replyTo.content}"
-                    </p>
-                  </div>
-                )}
-
-                <div className={`px-3 py-1.5 rounded-2xl ${isOwnMessage ? 'bg-orange-600' : 'bg-gray-700'} ${message.replyToId ? 'rounded-tl-none' : ''}`}>
-                  {!isOwnMessage && showAvatar && (
-                    <p className="text-xs font-semibold mb-0.5 text-orange-400">{getFirstName(message.sender?.name, message.sender?.username)}</p>
+      {/* Messages - Flex wrapper ensures proper spacing */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 overflow-y-auto px-3 py-2">
+          <div className="flex flex-col justify-end min-h-full space-y-2">
+            {messages.map((message, index) => {
+              const isOwnMessage = message.senderId === currentUserId;
+              const showAvatar = index === 0 || messages[index - 1].senderId !== message.senderId;
+              
+              return (
+                <div key={message.id} className={`flex gap-1.5 ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
+                  {!isOwnMessage && (
+                    <Avatar className={`w-7 h-7 ${showAvatar ? 'visible' : 'invisible'}`}>
+                      <AvatarImage src={message.sender?.profileImage || undefined} />
+                      <AvatarFallback className="text-xs">{message.sender?.name?.[0] || '?'}</AvatarFallback>
+                    </Avatar>
                   )}
-                  <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
-                  
-                  <div className="flex items-center justify-end gap-1 mt-0.5">
-                    <span className="text-[10px] opacity-70">{formatTimestamp(message.createdAt)}</span>
+
+                  <div className={`relative max-w-[75%] ${isOwnMessage ? 'mr-2' : 'ml-2'}`} onClick={() => setSelectedMessage(selectedMessage === message.id ? null : message.id)}>
+                    {message.replyToId && message.replyTo && (
+                      <div className={`mb-1 px-3 py-2 rounded-t-lg border-l-4 ${isOwnMessage ? 'bg-orange-900/80 border-orange-300' : 'bg-gray-600/80 border-orange-500'}`}>
+                        <p className={`text-xs font-bold mb-0.5 ${isOwnMessage ? 'text-orange-200' : 'text-orange-400'}`}>
+                          ↩ Replying to {getFirstName(message.replyTo.sender?.name, message.replyTo.sender?.username)}
+                        </p>
+                        <p className={`text-xs ${isOwnMessage ? 'text-orange-100/90' : 'text-gray-200'} truncate italic`}>
+                          "{message.replyTo.content}"
+                        </p>
+                      </div>
+                    )}
+
+                    <div className={`px-3 py-1.5 rounded-2xl ${isOwnMessage ? 'bg-orange-600' : 'bg-gray-700'} ${message.replyToId ? 'rounded-tl-none' : ''}`}>
+                      {!isOwnMessage && showAvatar && (
+                        <p className="text-xs font-semibold mb-0.5 text-orange-400">{getFirstName(message.sender?.name, message.sender?.username)}</p>
+                      )}
+                      <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
+                      
+                      <div className="flex items-center justify-end gap-1 mt-0.5">
+                        <span className="text-[10px] opacity-70">{formatTimestamp(message.createdAt)}</span>
+                      </div>
+                    </div>
+
+                    {message.reactions && Object.keys(message.reactions).length > 0 && (
+                      <div className="flex gap-1 mt-1 ml-2">
+                        {Object.entries(message.reactions).map(([emoji, users]) => (
+                          <div key={emoji} className="flex items-center gap-1 px-2 py-0.5 bg-gray-800 rounded-full text-xs">
+                            <span>{emoji}</span>
+                            <span className="text-gray-400">{users.length}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {selectedMessage === message.id && (
+                      <div className="absolute top-full mt-2 bg-gray-800 rounded-lg shadow-lg p-2 z-10 min-w-[150px]">
+                        <button onClick={() => { navigator.clipboard.writeText(message.content); toast({ title: "Copied" }); setSelectedMessage(null); }} className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-700 rounded-lg">
+                          <Copy className="w-4 h-4" />
+                          <span>Copy text</span>
+                        </button>
+                        <button onClick={() => { setReplyingTo(message); setSelectedMessage(null); }} className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-700 rounded-lg">
+                          <Reply className="w-4 h-4" />
+                          <span>Reply</span>
+                        </button>
+                        <button onClick={() => handleReaction(message.id, '❤️')} className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-700 rounded-lg">
+                          <Heart className="w-4 h-4" />
+                          <span>React</span>
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
-
-                {message.reactions && Object.keys(message.reactions).length > 0 && (
-                  <div className="flex gap-1 mt-1 ml-2">
-                    {Object.entries(message.reactions).map(([emoji, users]) => (
-                      <div key={emoji} className="flex items-center gap-1 px-2 py-0.5 bg-gray-800 rounded-full text-xs">
-                        <span>{emoji}</span>
-                        <span className="text-gray-400">{users.length}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {selectedMessage === message.id && (
-                  <div className="absolute top-full mt-2 bg-gray-800 rounded-lg shadow-lg p-2 z-10 min-w-[150px]">
-                    <button onClick={() => { navigator.clipboard.writeText(message.content); toast({ title: "Copied" }); setSelectedMessage(null); }} className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-700 rounded-lg">
-                      <Copy className="w-4 h-4" />
-                      <span>Copy text</span>
-                    </button>
-                    <button onClick={() => { setReplyingTo(message); setSelectedMessage(null); }} className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-700 rounded-lg">
-                      <Reply className="w-4 h-4" />
-                      <span>Reply</span>
-                    </button>
-                    <button onClick={() => handleReaction(message.id, '❤️')} className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-700 rounded-lg">
-                      <Heart className="w-4 h-4" />
-                      <span>React</span>
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          );
-        })}
-        <div ref={messagesEndRef} />
-      </div>
-
-      {typingUsers.size > 0 && (
-        <div className="px-3 py-1 text-xs text-gray-400">
-          {Array.from(typingUsers).join(', ')} {typingUsers.size === 1 ? 'is' : 'are'} typing...
-        </div>
-      )}
-
-      {replyingTo && (
-        <div className="px-3 py-1.5 bg-gray-800 border-t border-gray-700">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <p className="text-xs text-orange-400 font-semibold">Replying to {getFirstName(replyingTo.sender?.name, replyingTo.sender?.username)}</p>
-              <p className="text-xs text-gray-300 truncate">{replyingTo.content}</p>
-            </div>
-            <Button variant="ghost" size="sm" onClick={() => setReplyingTo(null)} className="text-gray-400 h-6 w-6 p-0">✕</Button>
+              );
+            })}
+            <div ref={messagesEndRef} />
           </div>
         </div>
-      )}
+
+        {typingUsers.size > 0 && (
+          <div className="px-3 py-1 text-xs text-gray-400">
+            {Array.from(typingUsers).join(', ')} {typingUsers.size === 1 ? 'is' : 'are'} typing...
+          </div>
+        )}
+
+        {replyingTo && (
+          <div className="px-3 py-1.5 bg-gray-800 border-t border-gray-700">
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <p className="text-xs text-orange-400 font-semibold">Replying to {getFirstName(replyingTo.sender?.name, replyingTo.sender?.username)}</p>
+                <p className="text-xs text-gray-300 truncate">{replyingTo.content}</p>
+              </div>
+              <Button variant="ghost" size="sm" onClick={() => setReplyingTo(null)} className="text-gray-400 h-6 w-6 p-0">✕</Button>
+            </div>
+          </div>
+        )}
+      </div>
 
       <div className="px-3 py-2 bg-gray-800 border-t border-gray-700">
         <div className="flex items-end gap-2">
