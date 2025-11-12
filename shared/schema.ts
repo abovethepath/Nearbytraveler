@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, real, varchar, jsonb, unique, bigint, decimal } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, real, varchar, jsonb, unique, bigint, decimal, index } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -380,6 +380,37 @@ export const chatroomAccessRequests = pgTable("chatroom_access_requests", {
   responseMessage: text("response_message"), // Optional message from organizer when accepting/declining
 }, (table) => [
   unique().on(table.chatroomId, table.userId) // One request per user per chatroom
+]);
+
+// Chatroom Moderation Records - Audit trail for mute/unmute actions
+export const chatroomModerationRecords = pgTable("chatroom_moderation_records", {
+  id: serial("id").primaryKey(),
+  chatroomId: integer("chatroom_id").notNull().references(() => citychatrooms.id, { onDelete: 'cascade' }),
+  targetUserId: integer("target_user_id").notNull().references(() => users.id, { onDelete: 'cascade' }), // User being moderated
+  actionType: text("action_type").notNull(), // 'mute', 'unmute'
+  actedById: integer("acted_by_id").notNull().references(() => users.id, { onDelete: 'cascade' }), // Admin/organizer who took action
+  reason: text("reason"), // Why user was muted
+  createdAt: timestamp("created_at").defaultNow(),
+  expiresAt: timestamp("expires_at"), // Optional expiration for mute
+  revokedAt: timestamp("revoked_at"), // When unmute happened
+  revokedById: integer("revoked_by_id").references(() => users.id, { onDelete: 'set null' }), // Who unmuted
+}, (table) => [
+  index("moderation_chatroom_target_idx").on(table.chatroomId, table.targetUserId),
+  index("moderation_target_idx").on(table.targetUserId),
+]);
+
+// Chatroom Blocks - Permanent removal from chatroom
+export const chatroomBlocks = pgTable("chatroom_blocks", {
+  id: serial("id").primaryKey(),
+  chatroomId: integer("chatroom_id").notNull().references(() => citychatrooms.id, { onDelete: 'cascade' }),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  blockedById: integer("blocked_by_id").notNull().references(() => users.id, { onDelete: 'cascade' }), // Admin/organizer who blocked
+  reason: text("reason"),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  unique().on(table.chatroomId, table.userId), // One block record per user per chatroom
+  index("blocks_user_idx").on(table.userId), // Fast user-centric lookups
+  index("blocks_chatroom_idx").on(table.chatroomId), // Fast chatroom-centric lookups
 ]);
 
 export const events = pgTable("events", {
@@ -2192,6 +2223,17 @@ export const insertChatroomAccessRequestSchema = createInsertSchema(chatroomAcce
   respondedAt: true,
 });
 
+export const insertChatroomModerationRecordSchema = createInsertSchema(chatroomModerationRecords).omit({
+  id: true,
+  createdAt: true,
+  revokedAt: true,
+});
+
+export const insertChatroomBlockSchema = createInsertSchema(chatroomBlocks).omit({
+  id: true,
+  createdAt: true,
+});
+
 // City Pages insert schemas
 export const insertCityPageSchema = createInsertSchema(cityPages).omit({
   id: true,
@@ -2245,6 +2287,10 @@ export type ChatroomInvitation = typeof chatroomInvitations.$inferSelect;
 export type InsertChatroomInvitation = z.infer<typeof insertChatroomInvitationSchema>;
 export type ChatroomAccessRequest = typeof chatroomAccessRequests.$inferSelect;
 export type InsertChatroomAccessRequest = z.infer<typeof insertChatroomAccessRequestSchema>;
+export type ChatroomModerationRecord = typeof chatroomModerationRecords.$inferSelect;
+export type InsertChatroomModerationRecord = z.infer<typeof insertChatroomModerationRecordSchema>;
+export type ChatroomBlock = typeof chatroomBlocks.$inferSelect;
+export type InsertChatroomBlock = z.infer<typeof insertChatroomBlockSchema>;
 
 export const insertProximityNotificationSchema = createInsertSchema(proximityNotifications).omit({
   id: true,
