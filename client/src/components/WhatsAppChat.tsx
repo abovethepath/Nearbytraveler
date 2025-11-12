@@ -220,8 +220,25 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   }, [messages.length]);
 
   const sendMessage = () => {
-    if (!messageText.trim() || !wsRef.current || !currentUserId) return;
+    console.log('📤 sendMessage called:', { 
+      messageText: messageText.trim(), 
+      hasWs: !!wsRef.current, 
+      wsReady: wsRef.current?.readyState === WebSocket.OPEN,
+      currentUserId, 
+      chatType,
+      chatId
+    });
+    
+    if (!messageText.trim() || !wsRef.current || !currentUserId) {
+      console.log('❌ sendMessage blocked:', {
+        noText: !messageText.trim(),
+        noWs: !wsRef.current,
+        noUserId: !currentUserId
+      });
+      return;
+    }
 
+    console.log('✅ Sending message via WebSocket...');
     wsRef.current.send(JSON.stringify({
       type: 'message:new',
       chatType,
