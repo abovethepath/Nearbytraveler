@@ -614,7 +614,7 @@ export const insertUserSchema = createInsertSchema(users).omit({
   createdAt: true,
   isActive: true,
 }).extend({
-  username: z.string().min(6, "Username must be 6-20 characters").max(20, "Username must be 6-20 characters"),
+  username: z.string().min(6, "Username must be 6-12 characters").max(12, "Username must be 6-12 characters"),
   password: z.string().min(8, "Password must be 8 characters or more"),
   // Fields actually collected during signup forms
   dateOfBirth: z.date(), // ALWAYS required when collected - signup forms require this

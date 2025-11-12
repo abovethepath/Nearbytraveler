@@ -273,6 +273,7 @@ export default function SignupAccount() {
                   onChange={(e) => handleUsernameChange(e.target.value)}
                   placeholder="Choose a unique username (6-12 chars)"
                   className="text-base py-3"
+                  maxLength={12}
                   required
                 />
                 {usernameChecking && (
