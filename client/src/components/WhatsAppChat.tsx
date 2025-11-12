@@ -304,7 +304,9 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-145px)] bg-gray-900 text-white overflow-hidden">
+    <div className="flex h-[calc(100vh-145px)] bg-gray-900 text-white overflow-hidden">
+      {/* Main Chat Area */}
+      <div className="flex flex-col flex-1 min-w-0">
       {/* Header */}
       <div className="flex items-center gap-1.5 px-2 py-1.5 bg-gray-800 border-b border-gray-700">
         <Button
@@ -363,7 +365,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
         {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
           <Sheet open={showMembers} onOpenChange={setShowMembers}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-white hover:bg-gray-700 h-8 w-8" data-testid="button-members">
+              <Button variant="ghost" size="icon" className="lg:hidden text-white hover:bg-gray-700 h-8 w-8" data-testid="button-members">
                 <Users className="w-4 h-4" />
               </Button>
             </SheetTrigger>
@@ -541,6 +543,59 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           </Button>
         </div>
       </div>
+      </div>
+
+      {/* Desktop Members Sidebar - Always visible on lg+ screens */}
+      {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
+        <div className="hidden lg:flex lg:flex-col lg:w-[320px] bg-gray-800 border-l border-gray-700">
+          <div className="px-4 py-3 border-b border-gray-700">
+            <h2 className="font-semibold text-sm text-white mb-2">Members ({members.length})</h2>
+            <input
+              type="text"
+              placeholder="Search members..."
+              value={memberSearch}
+              onChange={(e) => setMemberSearch(e.target.value)}
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm placeholder-gray-400 focus:outline-none focus:border-orange-500"
+            />
+          </div>
+          <div className="flex-1 overflow-y-auto px-2 py-2 space-y-2">
+            {filteredMembers.length === 0 ? (
+              <p className="text-center text-gray-400 py-4 text-sm">No members found</p>
+            ) : (
+              filteredMembers.map((member) => (
+                <div
+                  key={member.id}
+                  onClick={() => {
+                    localStorage.setItem('returnToChat', JSON.stringify({
+                      chatId,
+                      chatType,
+                      title,
+                      subtitle,
+                      eventId
+                    }));
+                    navigate(`/profile/${member.id}`);
+                  }}
+                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-700 cursor-pointer transition-colors"
+                >
+                  <Avatar className="w-10 h-10">
+                    <AvatarImage src={member.profileImage || undefined} />
+                    <AvatarFallback className="bg-orange-600 text-white text-sm">
+                      {getFirstName(member.name, member.username)[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm truncate text-white">
+                      {getFirstName(member.name, member.username)}
+                      {member.isAdmin && <span className="ml-2 text-xs text-orange-400">Admin</span>}
+                    </p>
+                    <p className="text-xs text-gray-400 truncate">{member.hometownCity || 'Unknown'}</p>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
