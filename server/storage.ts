@@ -9911,20 +9911,13 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  // Event Chatroom Methods (using existing city chatroom infrastructure)
+  // Event Chatroom Methods (using meetup_chatrooms table with eventId field)
   async getEventChatroom(eventId: number): Promise<any> {
     try {
-      // For now, use a simplified approach that reuses existing chatroom infrastructure
-      // Look for a chatroom with the event ID in the name or description
       const [chatroom] = await db
         .select()
-        .from(citychatrooms)
-        .where(
-          and(
-            ilike(citychatrooms.name, `%Event ${eventId}%`),
-            eq(citychatrooms.isActive, true)
-          )
-        )
+        .from(meetupChatrooms)
+        .where(eq(meetupChatrooms.eventId, eventId))
         .limit(1);
       
       return chatroom;
@@ -9934,47 +9927,25 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async createEventChatroom(data: any): Promise<any> {
+  async createEventChatroom(eventId: number): Promise<any> {
     try {
-      // Create a dedicated chatroom for the event using existing infrastructure
-      const chatroom = await this.createCityChatroom({
-        name: `Event ${data.eventId} Chat`,
-        description: data.description || `Chat room for event: ${data.name}`,
-        city: 'Global', // Events can be global
-        state: null,
-        country: 'Global',
-        createdById: 2, // nearbytraveler as system user
-        isPublic: data.isPublic !== false,
-        maxMembers: data.maxMembers || 100,
-        tags: ['event', 'chat', `event-${data.eventId}`],
-        rules: 'Be respectful and stay on topic related to the event.'
-      });
-      
-      // CRITICAL FIX: Backfill existing event participants into the chatroom
-      try {
-        const participants = await this.getEventParticipants(data.eventId);
-        if (participants && participants.length > 0) {
-          console.log(`🔄 Backfilling ${participants.length} existing participants into event chatroom ${chatroom.id}`);
-          
-          for (const participant of participants) {
-            await db
-              .insert(chatroomMembers)
-              .values({
-                chatroomId: chatroom.id,
-                userId: participant.userId,
-                role: participant.isEventCreator ? 'admin' : 'member',
-                isActive: true
-              })
-              .onConflictDoNothing();
-          }
-          
-          console.log(`✅ Backfilled ${participants.length} participants into event chatroom`);
-        }
-      } catch (error) {
-        console.error('Failed to backfill event participants into chatroom:', error);
-        // Don't fail chatroom creation if backfill fails
+      // Get the event details to name the chatroom properly
+      const event = await this.getEvent(eventId);
+      if (!event) {
+        throw new Error(`Event ${eventId} not found`);
       }
+
+      const [chatroom] = await db
+        .insert(meetupChatrooms)
+        .values({
+          chatroomName: `${event.title} - Group Chat`,
+          eventId: eventId,
+          createdById: event.organizerId || 2,
+          isActive: true
+        })
+        .returning();
       
+      console.log(`Created event chatroom "${chatroom.chatroomName}" (ID ${chatroom.id}) for event ${eventId}`);
       return chatroom;
     } catch (error) {
       console.error('Error creating event chatroom:', error);
