@@ -9685,22 +9685,42 @@ export class DatabaseStorage implements IStorage {
         throw new Error('Event not found');
       }
 
+      console.log('📍 Creating event chatroom with event data:', {
+        id: event.id,
+        title: event.title,
+        city: event.city,
+        state: event.state,
+        country: event.country,
+        date: event.date
+      });
+
+      // Validate required fields before attempting insert
+      if (!event.city) {
+        throw new Error(`Event ${eventId} missing required city field`);
+      }
+      if (!event.country) {
+        throw new Error(`Event ${eventId} missing required country field`);
+      }
+      if (!event.date) {
+        throw new Error(`Event ${eventId} missing required date field`);
+      }
+
       const [chatroom] = await db.insert(meetupChatrooms).values({
         eventId: eventId,
         chatroomName: `${event.title} - Group Chat`,
         description: `Group chat for ${event.title}`,
         city: event.city,
         state: event.state || '',
-        country: event.country,
+        country: event.country || 'United States',
         isActive: true,
         expiresAt: new Date(event.date),
         participantCount: 0
       }).returning();
 
-      console.log(`Created Event chatroom: ${chatroom.chatroomName} for event ${eventId}`);
+      console.log(`✅ Created Event chatroom: ${chatroom.chatroomName} for event ${eventId}`);
       return chatroom;
     } catch (error) {
-      console.error('Error creating event chatroom:', error);
+      console.error('🚨 Error creating event chatroom:', error);
       throw error;
     }
   }
@@ -10229,20 +10249,6 @@ export class DatabaseStorage implements IStorage {
       return meetup;
     } catch (error) {
       console.error('Error fetching quick meetup:', error);
-      return undefined;
-    }
-  }
-
-  async getEvent(eventId: number): Promise<any> {
-    try {
-      const [event] = await db
-        .select()
-        .from(events)
-        .where(eq(events.id, eventId));
-      
-      return event;
-    } catch (error) {
-      console.error('Error fetching event:', error);
       return undefined;
     }
   }
