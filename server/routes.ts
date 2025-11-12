@@ -9075,8 +9075,10 @@ Questions? Just reply to this message. Welcome aboard!
         await storage.ensureEventChatroom(newEvent.id);
         if (process.env.NODE_ENV === 'development') console.log(`💬 AUTO-CHATROOM: Created chatroom for event ${newEvent.id}`);
       } catch (chatroomError: any) {
-        // Don't fail event creation if chatroom creation fails - log but continue
-        if (process.env.NODE_ENV === 'development') console.error(`⚠️ AUTO-CHATROOM: Failed to create chatroom:`, chatroomError.message);
+        // CRITICAL ERROR: Log full details when chatroom creation fails
+        console.error(`🚨 CRITICAL: Failed to create chatroom for event ${newEvent.id}:`, chatroomError);
+        console.error(`🚨 Event details:`, { id: newEvent.id, title: newEvent.title, city: newEvent.city, organizer: newEvent.organizerId });
+        // Still allow event creation to succeed, but make the error highly visible
       }
       
       // AUTOMATICALLY ADD CREATOR AS EVENT ATTENDEE - Organizers should always attend their own events
