@@ -20,6 +20,12 @@ interface Event {
   date: string;
 }
 
+interface EventChatroom {
+  id: number;
+  eventId: number;
+  chatroomName: string;
+}
+
 export default function EventChat() {
   const [, params] = useRoute("/event-chat/:eventId");
   const [, setLocation] = useLocation();
@@ -33,6 +39,13 @@ export default function EventChat() {
     enabled: !!eventId,
     retry: 2,
     retryDelay: 1000
+  });
+
+  // Fetch the event chatroom to get the actual chatroom ID
+  const { data: chatroom, isLoading: chatroomLoading } = useQuery<EventChatroom>({
+    queryKey: [`/api/event-chatrooms/${eventId}`],
+    enabled: !!eventId,
+    retry: 2
   });
 
   // Auto-redirect on 404 errors (expired/deleted events)
@@ -63,11 +76,11 @@ export default function EventChat() {
     );
   }
 
-  if (isLoading) {
+  if (isLoading || chatroomLoading) {
     return <div className="flex items-center justify-center h-screen bg-gray-900 text-white">Loading...</div>;
   }
 
-  if (isError || !event) {
+  if (isError || !event || !chatroom) {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4">
         <p className="text-lg">
@@ -83,7 +96,7 @@ export default function EventChat() {
 
   return (
     <WhatsAppChat
-      chatId={eventId}
+      chatId={chatroom.id}
       chatType="event"
       title={event.title}
       subtitle={new Date(event.date).toLocaleDateString()}
