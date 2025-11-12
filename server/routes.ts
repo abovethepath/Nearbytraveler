@@ -4140,18 +4140,10 @@ Questions? Just reply to this message!
       // REMOVED: Travel plan creation moved to fast registration section to prevent duplicates
 
       // INSTANT OPERATIONS: Chatroom assignments and city setup (as before)
-      try {
-        // Auto-assign user to chatrooms immediately (this was always fast)
-        if (user.hometownCity && user.hometownCountry) {
-          await storage.assignUserToChatrooms(user);
-          console.log('✅ CHATROOM ASSIGNMENT: User automatically assigned to chatrooms');
-        }
-      } catch (error) {
-        console.error('❌ Failed to assign user to chatrooms:', error);
-      }
-
-      // CRITICAL: Create city infrastructure for HOMETOWN (city page, chatrooms, activities)
-      // This enables organic growth tracking - we know which cities users are from
+      // CRITICAL: Create city infrastructure BEFORE assigning users to chatrooms
+      // This ensures chatrooms exist before trying to join them
+      
+      // 1. Create city infrastructure for HOMETOWN (city page, chatrooms, activities)
       try {
         if (user.hometownCity && user.hometownCountry) {
           await storage.ensureCityExists(
@@ -4165,8 +4157,7 @@ Questions? Just reply to this message!
         console.error('❌ Failed to create hometown city infrastructure:', error);
       }
 
-      // CRITICAL: Create city infrastructure for DESTINATION (if traveling)
-      // This enables organic growth tracking - we know which cities travelers are visiting
+      // 2. Create city infrastructure for DESTINATION (if traveling)
       try {
         if (user.isCurrentlyTraveling && user.destinationCity && user.destinationCountry) {
           await storage.ensureCityExists(
@@ -4178,6 +4169,14 @@ Questions? Just reply to this message!
         }
       } catch (error) {
         console.error('❌ Failed to create destination city infrastructure:', error);
+      }
+      
+      // 3. Auto-assign user to chatrooms (handles BOTH hometown AND destination in single call)
+      try {
+        await storage.assignUserToChatrooms(user);
+        console.log('✅ CHATROOM ASSIGNMENT: User automatically assigned to hometown and destination chatrooms');
+      } catch (error) {
+        console.error('❌ Failed to assign user to chatrooms:', error);
       }
 
       // CRITICAL: Create travel plan for currently traveling users
