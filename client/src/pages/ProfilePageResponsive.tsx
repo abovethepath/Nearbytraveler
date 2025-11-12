@@ -102,11 +102,11 @@ export default function ProfilePageResponsive() {
   const profileImage = user.profileImage || "https://placehold.co/320x320";
   const bio = user.bio || "No bio available";
   
-  // CRITICAL: Build hometown location (ALWAYS shown)
+  // CRITICAL: Build hometown location (ALWAYS shown) - NEVER use location field (contains metro area)
   const hometownLocation = user.hometown || 
     (user.hometownCity && user.hometownState && user.hometownCountry 
       ? `${user.hometownCity}, ${user.hometownState}, ${user.hometownCountry}` 
-      : user.location || "Location not set");
+      : user.hometownCity || "Location not set");
   
   // Build destination location (shown only when actively traveling)
   const destinationLocation = user.isCurrentlyTraveling && user.destinationCity && user.destinationCountry

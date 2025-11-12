@@ -3383,8 +3383,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return currentDestination;
     }
     
-    // Otherwise show their regular location
-    return user.hometownCity || user.location || "Not specified";
+    // Otherwise show their hometown - NEVER use location field (contains metro area)
+    return user.hometownCity || "Not specified";
   };
 
   if (userLoading) {

@@ -83,10 +83,14 @@ export default function UserCard({
   };
 
   const getLocation = () => {
+    // ALWAYS use hometownCity - never fall back to location field (which contains metro area)
     if (user.hometownCity && user.hometownCountry) {
       return `${user.hometownCity}, ${user.hometownCountry}`;
     }
-    return user.location || "Location not set";
+    if (user.hometownCity) {
+      return user.hometownCity;
+    }
+    return "Location not set";
   };
 
   // Get user's individual gradient - matches profile page gradient
@@ -180,9 +184,9 @@ export default function UserCard({
                       </svg>
                       <span className="truncate">{user.streetAddress}</span>
                     </div>
-                    {(user.city || user.hometownCity) && (
+                    {(user.hometownCity || user.city) && (
                       <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {user.city || user.hometownCity}{user.state && `, ${user.state}`}
+                        {user.hometownCity || user.city}{user.hometownState && `, ${user.hometownState}`}
                       </span>
                     )}
                   </div>
