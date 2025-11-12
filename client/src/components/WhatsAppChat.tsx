@@ -43,9 +43,10 @@ interface WhatsAppChatProps {
   subtitle?: string;
   currentUserId?: number;
   onBack?: () => void;
+  eventId?: number; // For event chats, this is the actual event ID (chatId is the chatroom ID)
 }
 
-export default function WhatsAppChat({ chatId, chatType, title, subtitle, currentUserId, onBack }: WhatsAppChatProps) {
+export default function WhatsAppChat({ chatId, chatType, title, subtitle, currentUserId, onBack, eventId }: WhatsAppChatProps) {
   const [, navigate] = useLocation();
   const { toast } = useToast();
   
@@ -318,7 +319,17 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
             {members.slice(0, 4).map((member, index) => (
               <div
                 key={member.id}
-                onClick={() => navigate(`/profile/${member.id}`)}
+                onClick={() => {
+                  // Store chat return info before navigating
+                  localStorage.setItem('returnToChat', JSON.stringify({
+                    chatId,
+                    chatType,
+                    title,
+                    subtitle,
+                    eventId // For event chats, store the eventId so we can navigate back properly
+                  }));
+                  navigate(`/profile/${member.id}`);
+                }}
                 className="cursor-pointer hover:scale-110 transition-transform duration-200"
                 data-testid={`avatar-member-${member.id}`}
               >
@@ -377,6 +388,14 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                       onClick={() => {
                         setShowMembers(false);
                         setMemberSearch("");
+                        // Store chat return info before navigating
+                        localStorage.setItem('returnToChat', JSON.stringify({
+                          chatId,
+                          chatType,
+                          title,
+                          subtitle,
+                          eventId // For event chats, store the eventId so we can navigate back properly
+                        }));
                         navigate(`/profile/${member.id}`);
                       }}
                       className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 cursor-pointer transition-colors"

@@ -101,6 +101,7 @@ export default function EventChat() {
       title={event.title}
       subtitle={new Date(event.date).toLocaleDateString()}
       currentUserId={user.id}
+      eventId={eventId} // Pass the eventId so navigation back works correctly
     />
   );
 }

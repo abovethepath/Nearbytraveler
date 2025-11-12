@@ -678,34 +678,40 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const { toast } = useToast();
   const { user: authContextUser, setUser: setAuthUser } = useContext(AuthContext);
   
-  // Check for chatroom return context
-  const chatroomReturnContext = localStorage.getItem('chatroom_return_context');
-  const shouldShowBackToChatroom = chatroomReturnContext !== null;
+  // Check for chat return context (from event chatrooms, meetup chatrooms, or city chatrooms)
+  const returnToChatData = localStorage.getItem('returnToChat');
+  const shouldShowBackToChat = returnToChatData !== null;
   
-  const handleBackToChatroom = () => {
-    console.log('Back button clicked, context:', chatroomReturnContext);
-    if (chatroomReturnContext) {
+  const handleBackToChat = () => {
+    console.log('Back to Chat clicked, context:', returnToChatData);
+    if (returnToChatData) {
       try {
-        const context = JSON.parse(chatroomReturnContext);
-        console.log('Parsed context:', context);
-        localStorage.removeItem('chatroom_return_context');
+        const context = JSON.parse(returnToChatData);
+        console.log('Parsed chat context:', context);
+        localStorage.removeItem('returnToChat');
         
-        // Set flag to auto-open member view before navigation
-        if (context.chatroomId) {
-          localStorage.setItem('open_chatroom_members', context.chatroomId.toString());
-          console.log('Set open_chatroom_members:', context.chatroomId);
+        // Navigate to the appropriate chat based on chatType
+        if (context.chatType === 'event' && context.eventId) {
+          // For event chats, use the stored eventId to navigate back
+          console.log('Navigating back to event chat:', context.eventId);
+          setLocation(`/event-chat/${context.eventId}`);
+        } else if (context.chatType === 'meetup') {
+          console.log('Navigating back to meetup chat');
+          setLocation('/quick-meetups'); // Or specific meetup chat route
+        } else if (context.chatType === 'chatroom') {
+          console.log('Navigating back to city chatroom');
+          setLocation('/city-chatrooms');
+        } else {
+          // Fallback to chatrooms page
+          setLocation('/city-chatrooms');
         }
-        
-        // Navigate back to chatrooms page
-        console.log('Navigating to /city-chatrooms');
-        setLocation('/city-chatrooms');
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } catch (error) {
-        console.error('Error parsing chatroom context:', error);
+        console.error('Error parsing chat context:', error);
         setLocation('/city-chatrooms');
       }
     } else {
-      console.log('No chatroom context found, navigating to chatrooms');
+      console.log('No chat context found');
       setLocation('/city-chatrooms');
     }
   };
@@ -3557,6 +3563,24 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       <MobileBottomNav />
       
       <div className="min-h-screen profile-page">
+
+      {/* Back to Chat Button - Show when navigated from a chatroom */}
+      {shouldShowBackToChat && (
+        <div className="w-full bg-blue-600 text-white px-4 py-2 shadow-md">
+          <div className="max-w-7xl mx-auto">
+            <Button
+              onClick={handleBackToChat}
+              variant="ghost"
+              size="sm"
+              className="text-white hover:bg-blue-700 -ml-2"
+              data-testid="button-back-to-chat"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Chat
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Profile Completion Warning - Only show for incomplete own profiles */}
       {isProfileIncomplete() && (
