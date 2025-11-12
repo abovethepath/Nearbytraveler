@@ -23,6 +23,7 @@ import { ParticipantAvatars } from "@/components/ParticipantAvatars";
 import { formatDateForDisplay } from "@/lib/dateUtils";
 import { PublicationSchedule } from "@/components/PublicationSchedule";
 import { InterestButton } from "@/components/InterestButton";
+import { getMetroArea } from "@shared/constants";
 const eventsBgImage = "/event%20page%20bbq%20party_1753299541268.png";
 // MobileNav removed - using global mobile navigation
 
@@ -129,7 +130,11 @@ export default function Events() {
   // Determine which city to query based on selected location
   const getCityToQuery = () => {
     if (selectedLocation === "custom") return customCity;
-    if (selectedLocation === "hometown") return user?.hometownCity || "Boston";
+    if (selectedLocation === "hometown") {
+      // Use metro area if hometown is part of a metro area (e.g., Venice → Los Angeles Metro)
+      const metroArea = getMetroArea(user?.hometownCity);
+      return metroArea || user?.hometownCity || "Boston";
+    }
     if (selectedLocation.startsWith("destination-")) {
       const planId = selectedLocation.replace("destination-", "");
       const plan = userTravelPlans.find((p: any) => p.id.toString() === planId);
@@ -146,7 +151,8 @@ export default function Events() {
 
     // Fallback to hometown if not traveling
     console.log(`Events page: User not traveling, using hometown ${user?.hometownCity}`);
-    return user?.hometownCity || "Boston";
+    const metroArea = getMetroArea(user?.hometownCity);
+    return metroArea || user?.hometownCity || "Boston";
   };
 
   console.log(`Events page: selectedLocation = ${selectedLocation}, userTravelPlans =`, userTravelPlans);
@@ -162,18 +168,8 @@ export default function Events() {
         throw new Error('Failed to fetch events');
       }
       const data = await response.json();
-      // CRITICAL: Filter events client-side as backup to ensure only correct city events show
-      const filteredEvents = data.filter((event: Event) => {
-        const eventCity = event.city?.toLowerCase() || '';
-        const requestedCity = cityToQuery.toLowerCase();
-        const isCorrectCity = eventCity === requestedCity || 
-          (requestedCity === 'austin' && eventCity === 'austin') ||
-          (requestedCity === 'las vegas' && eventCity === 'las vegas');
-        
-        return isCorrectCity;
-      });
-      
-      return filteredEvents;
+      // Backend handles metro area aggregation - return all events from API
+      return data;
     },
     enabled: !(selectedLocation === "custom" && showCustomInput), // Don't auto-fetch while typing
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
