@@ -10,8 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, VolumeX } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation, queryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 interface Message {
   id: number;
@@ -70,6 +70,16 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Fetch chatroom members (for city chatrooms, meetup chatrooms, and event chatrooms)
+  const membersEndpoint = chatType === 'event' 
+    ? `/api/event-chatrooms/${chatId}/members`
+    : `/api/chatrooms/${chatId}/members`;
+  
+  const { data: members = [], error: membersError } = useQuery<ChatMember[]>({
+    queryKey: [membersEndpoint],
+    enabled: (chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && Boolean(chatId)
+  });
   
   // Check if current user is admin
   const currentMember = members.find(m => m.id === currentUserId);
@@ -78,11 +88,13 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   // Mute user mutation
   const muteMutation = useMutation({
     mutationFn: async ({ targetUserId, reason }: { targetUserId: number, reason?: string }) => {
-      return apiRequest(`/api/chatrooms/${chatId}/mute`, {
+      const response = await fetch(`/api/chatrooms/${chatId}/mute`, {
         method: 'POST',
         body: JSON.stringify({ targetUserId, reason }),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json', 'x-user-id': currentUserId?.toString() || '' }
       });
+      if (!response.ok) throw new Error('Failed to mute user');
+      return response.json();
     },
     onSuccess: () => {
       toast({ title: "User muted successfully" });
@@ -98,11 +110,13 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   // Unmute user mutation
   const unmuteMutation = useMutation({
     mutationFn: async (targetUserId: number) => {
-      return apiRequest(`/api/chatrooms/${chatId}/unmute`, {
+      const response = await fetch(`/api/chatrooms/${chatId}/unmute`, {
         method: 'POST',
         body: JSON.stringify({ targetUserId }),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json', 'x-user-id': currentUserId?.toString() || '' }
       });
+      if (!response.ok) throw new Error('Failed to unmute user');
+      return response.json();
     },
     onSuccess: () => {
       toast({ title: "User unmuted successfully" });
@@ -111,16 +125,6 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     onError: () => {
       toast({ title: "Failed to unmute user", variant: "destructive" });
     }
-  });
-
-  // Fetch chatroom members (for city chatrooms, meetup chatrooms, and event chatrooms)
-  const membersEndpoint = chatType === 'event' 
-    ? `/api/event-chatrooms/${chatId}/members`
-    : `/api/chatrooms/${chatId}/members`;
-  
-  const { data: members = [], error: membersError } = useQuery<ChatMember[]>({
-    queryKey: [membersEndpoint],
-    enabled: (chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && Boolean(chatId)
   });
 
   // Show error toast if members fetch fails
@@ -749,10 +753,13 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
             <Button
               onClick={() => {
                 if (selectedMember) {
-                  muteMutation.mutate({ 
-                    targetUserId: selectedMember.id, 
-                    reason: muteReason || undefined 
-                  });
+                  const params: { targetUserId: number, reason?: string } = { 
+                    targetUserId: selectedMember.id
+                  };
+                  if (muteReason.trim()) {
+                    params.reason = muteReason.trim();
+                  }
+                  muteMutation.mutate(params);
                 }
               }}
               disabled={muteMutation.isPending}
