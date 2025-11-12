@@ -41,9 +41,12 @@ export default function ResponsiveUserGrid({
   const displayUsers = limit ? users.slice(0, limit) : users;
 
   const getLocation = (user: User) => {
-    if (user.location) return user.location;
+    // ALWAYS use hometownCity - never fall back to location field (which contains metro area)
     if (user.hometownCity && user.hometownCountry) {
       return `${user.hometownCity}, ${user.hometownCountry}`;
+    }
+    if (user.hometownCity) {
+      return user.hometownCity;
     }
     return "Location not set";
   };

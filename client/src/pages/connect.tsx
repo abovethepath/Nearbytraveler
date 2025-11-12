@@ -81,7 +81,7 @@ export default function ConnectPage() {
   // Initialize location based on user data
   useEffect(() => {
     if (user && !searchLocation) {
-      const currentLocation = user.location || user.hometownCity || "";
+      const currentLocation = user.hometownCity || "";
       setSearchLocation(currentLocation);
     }
   }, [user, searchLocation]);
@@ -144,8 +144,8 @@ export default function ConnectPage() {
         }
       }
       
-      // Otherwise show their regular location
-      return user.location || "";
+      // Otherwise show their hometown city - NEVER use location field (contains metro area)
+      return user.hometownCity || "";
     }
   };
 
