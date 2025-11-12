@@ -107,11 +107,25 @@ export default function EventCard({ event, compact = false, featured = false }: 
     }
   };
 
+  // Handle click - open external URL for external events, navigate to details for internal events
+  const handleEventClick = () => {
+    // Check if this is an external event (has externalUrl or non-numeric ID)
+    const isExternalEvent = (event as any).externalUrl || (event as any).origin === 'couchsurfing' || (event as any).origin === 'meetup' || isNaN(Number(event.id));
+    
+    if (isExternalEvent && (event as any).externalUrl) {
+      // Open external URL in new tab
+      window.open((event as any).externalUrl, '_blank');
+    } else {
+      // Navigate to internal event details
+      setLocation(`/events/${event.id}`);
+    }
+  };
+
   if (compact) {
     return (
       <div 
         className="pl-2 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-        onClick={() => setLocation(`/events/${event.id}`)}
+        onClick={handleEventClick}
       >
         <div className="flex items-start justify-between">
           <div className="flex-1 min-w-0">
@@ -147,7 +161,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
   return (
     <>
       <article className="event-card rounded-2xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300 cursor-pointer text-left"
-               onClick={() => setLocation(`/events/${event.id}`)}>
+               onClick={handleEventClick}>
         {/* Image */}
         {event.imageUrl && (
           <div className="relative">
