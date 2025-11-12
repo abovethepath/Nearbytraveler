@@ -215,18 +215,21 @@ export default function EventCard({ event, compact = false, featured = false }: 
 
           {/* Actions */}
           <div className="flex gap-2 pt-2">
-            <Button 
-              size="sm" 
-              variant="outline"
-              className="flex-shrink-0"
-              onClick={(e) => {
-                e.stopPropagation();
-                setLocation(`/event-chat/${event.id}`);
-              }}
-              data-testid="button-chat"
-            >
-              Chat
-            </Button>
+            {/* Only show Chat button for internal database events, not external CouchSurfing/Meetup events */}
+            {!((event as any).externalUrl || (event as any).origin === 'couchsurfing' || (event as any).origin === 'meetup' || isNaN(Number(event.id))) && (
+              <Button 
+                size="sm" 
+                variant="outline"
+                className="flex-shrink-0"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLocation(`/event-chat/${event.id}`);
+                }}
+                data-testid="button-chat"
+              >
+                Chat
+              </Button>
+            )}
             <Button 
               size="sm" 
               className="flex-1 text-white border-0"
