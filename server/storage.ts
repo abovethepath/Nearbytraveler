@@ -34,7 +34,7 @@ export interface IStorage {
   deleteEvent(id: number): Promise<boolean>;
   
   // Event participation methods
-  joinEvent(eventId: number, userId: number, notes?: string): Promise<EventParticipant>;
+  joinEvent(eventId: number, userId: number, notes?: string, status?: string, role?: string): Promise<EventParticipant>;
   leaveEvent(eventId: number, userId: number): Promise<boolean>;
   getEventParticipants(eventId: number): Promise<EventParticipantWithUser[]>;
   getUserEventParticipations(userId: number): Promise<EventParticipant[]>;
@@ -1613,7 +1613,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Event participation methods
-  async joinEvent(eventId: number, userId: number, notes?: string, status: string = 'going'): Promise<EventParticipant> {
+  async joinEvent(eventId: number, userId: number, notes?: string, status: string = 'going', role: string = 'participant'): Promise<EventParticipant> {
     // Check if user is already a participant
     const [existingParticipant] = await db
       .select()
@@ -1625,11 +1625,11 @@ export class DatabaseStorage implements IStorage {
         )
       );
 
-    // If already a participant, update their status
+    // If already a participant, update their status and role
     if (existingParticipant) {
       const [updated] = await db
         .update(eventParticipants)
-        .set({ status, notes: notes || existingParticipant.notes })
+        .set({ status, notes: notes || existingParticipant.notes, role })
         .where(eq(eventParticipants.id, existingParticipant.id))
         .returning();
       return updated;
@@ -1641,7 +1641,8 @@ export class DatabaseStorage implements IStorage {
         eventId,
         userId,
         notes: notes || "",
-        status
+        status,
+        role
       })
       .returning();
 

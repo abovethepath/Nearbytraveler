@@ -9081,10 +9081,10 @@ Questions? Just reply to this message. Welcome aboard!
         // Still allow event creation to succeed, but make the error highly visible
       }
       
-      // AUTOMATICALLY ADD CREATOR AS EVENT ATTENDEE - Organizers should always attend their own events
+      // AUTOMATICALLY ADD CREATOR AS EVENT ATTENDEE - Organizers should always attend their own events with ORGANIZER role
       try {
-        await storage.joinEvent(newEvent.id, newEvent.organizerId);
-        if (process.env.NODE_ENV === 'development') console.log(`✅ AUTO-ATTEND: Added organizer ${newEvent.organizerId} as attendee to event ${newEvent.id}`);
+        await storage.joinEvent(newEvent.id, newEvent.organizerId, undefined, 'going', 'organizer');
+        if (process.env.NODE_ENV === 'development') console.log(`✅ AUTO-ATTEND: Added organizer ${newEvent.organizerId} as ORGANIZER to event ${newEvent.id}`);
       } catch (autoAttendError: any) {
         // Don't fail event creation if auto-attend fails - log but continue
         if (process.env.NODE_ENV === 'development') console.error(`⚠️ AUTO-ATTEND: Failed to add organizer as attendee:`, autoAttendError.message);
@@ -9128,10 +9128,10 @@ Questions? Just reply to this message. Welcome aboard!
           // Award aura points
           await awardAuraPoints(newEvent.organizerId, 2, 'creating an event');
           
-          // AUTOMATICALLY ADD CREATOR AS EVENT ATTENDEE - Organizers should always attend their own events (retry scenario)
+          // AUTOMATICALLY ADD CREATOR AS EVENT ATTENDEE - Organizers should always attend their own events with ORGANIZER role (retry scenario)
           try {
-            await storage.joinEvent(newEvent.id, newEvent.organizerId);
-            if (process.env.NODE_ENV === 'development') console.log(`✅ AUTO-ATTEND (RETRY): Added organizer ${newEvent.organizerId} as attendee to event ${newEvent.id}`);
+            await storage.joinEvent(newEvent.id, newEvent.organizerId, undefined, 'going', 'organizer');
+            if (process.env.NODE_ENV === 'development') console.log(`✅ AUTO-ATTEND (RETRY): Added organizer ${newEvent.organizerId} as ORGANIZER to event ${newEvent.id}`);
           } catch (autoAttendError: any) {
             // Don't fail event creation if auto-attend fails - log but continue
             if (process.env.NODE_ENV === 'development') console.error(`⚠️ AUTO-ATTEND (RETRY): Failed to add organizer as attendee:`, autoAttendError.message);
