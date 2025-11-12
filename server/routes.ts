@@ -7261,6 +7261,88 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Edit message (only sender can edit their own messages)
+  app.patch("/api/messages/:id", async (req, res) => {
+    try {
+      const messageId = parseInt(req.params.id);
+      const { content, userId } = req.body;
+      
+      if (!content || !userId) {
+        return res.status(400).json({ message: "content and userId are required" });
+      }
+
+      // Get the message to verify ownership
+      const [message] = await db
+        .select()
+        .from(messages)
+        .where(eq(messages.id, messageId));
+      
+      if (!message) {
+        return res.status(404).json({ message: "Message not found" });
+      }
+
+      // Verify user owns the message
+      if (message.senderId !== parseInt(userId)) {
+        return res.status(403).json({ message: "You can only edit your own messages" });
+      }
+
+      // Update the message
+      const updated = await storage.updateMessage(messageId, content.trim());
+      
+      if (!updated) {
+        return res.status(500).json({ message: "Failed to update message" });
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`✏️ MESSAGE EDITED: Message ${messageId} edited by user ${userId}`);
+      
+      return res.json(updated);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error editing message:", error);
+      return res.status(500).json({ message: "Failed to edit message" });
+    }
+  });
+
+  // Delete message (only sender can delete their own messages)
+  app.delete("/api/messages/:id", async (req, res) => {
+    try {
+      const messageId = parseInt(req.params.id);
+      const userId = req.headers['x-user-id'];
+      
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Get the message to verify ownership
+      const [message] = await db
+        .select()
+        .from(messages)
+        .where(eq(messages.id, messageId));
+      
+      if (!message) {
+        return res.status(404).json({ message: "Message not found" });
+      }
+
+      // Verify user owns the message
+      if (message.senderId !== parseInt(userId as string)) {
+        return res.status(403).json({ message: "You can only delete your own messages" });
+      }
+
+      // Delete the message
+      const deleted = await storage.deleteMessage(messageId);
+      
+      if (!deleted) {
+        return res.status(500).json({ message: "Failed to delete message" });
+      }
+
+      if (process.env.NODE_ENV === 'development') console.log(`🗑️ MESSAGE DELETED: Message ${messageId} deleted by user ${userId}`);
+      
+      return res.json({ success: true });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error deleting message:", error);
+      return res.status(500).json({ message: "Failed to delete message" });
+    }
+  });
+
   // CRITICAL: Send message for IM system (handles offline message delivery)
   app.post("/api/messages", async (req, res) => {
     try {

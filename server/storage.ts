@@ -62,6 +62,8 @@ export interface IStorage {
   markMessageAsRead(id: number): Promise<Message | undefined>;
   markConversationAsRead(userId: number, otherUserId: number): Promise<void>;
   getRecentMessages(userId: number, limit?: number): Promise<Message[]>;
+  updateMessage(id: number, content: string): Promise<Message | undefined>;
+  deleteMessage(id: number): Promise<boolean>;
   
   // Blocking methods
   blockUser(blockerId: number, blockedId: number, reason?: string): Promise<boolean>;
@@ -2050,6 +2052,26 @@ export class DatabaseStorage implements IStorage {
       )
       .orderBy(desc(messages.createdAt))
       .limit(limit || 20);
+  }
+
+  async updateMessage(id: number, content: string): Promise<Message | undefined> {
+    const [updated] = await db
+      .update(messages)
+      .set({ 
+        content,
+        isEdited: true,
+        editedAt: new Date()
+      })
+      .where(eq(messages.id, id))
+      .returning();
+    return updated || undefined;
+  }
+
+  async deleteMessage(id: number): Promise<boolean> {
+    const result = await db
+      .delete(messages)
+      .where(eq(messages.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
   }
 
   // Notification methods
