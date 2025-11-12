@@ -31,18 +31,21 @@ export default function EventCard({ event, compact = false, featured = false }: 
   
   const currentUser = getCurrentUser();
 
-  // Join event mutation
+  // Join event mutation (with status: 'interested' or 'going')
   const joinEventMutation = useMutation({
-    mutationFn: async (eventId: number) => {
+    mutationFn: async ({ eventId, status }: { eventId: number; status: 'interested' | 'going' }) => {
       if (!currentUser?.id) throw new Error("User not authenticated");
       return await apiRequest("POST", `/api/events/${eventId}/join`, { 
-        userId: currentUser.id 
+        userId: currentUser.id,
+        status
       });
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       toast({
-        title: "Event Joined!",
-        description: "You've successfully joined this event. Get ready for an amazing experience!",
+        title: variables.status === 'going' ? "Going to Event!" : "Marked as Interested!",
+        description: variables.status === 'going' 
+          ? "You've successfully joined this event. Get ready for an amazing experience!" 
+          : "You're interested in this event. You can change to 'Going' anytime!",
       });
       
       // Invalidate events cache to refresh participant counts
@@ -68,8 +71,8 @@ export default function EventCard({ event, compact = false, featured = false }: 
     },
   });
 
-  const handleJoinEvent = () => {
-    joinEventMutation.mutate(event.id);
+  const handleJoinEvent = (status: 'interested' | 'going') => {
+    joinEventMutation.mutate({ eventId: event.id, status });
   };
 
   const formatEventDate = (date: Date | string) => {
@@ -206,15 +209,16 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 e.stopPropagation();
                 setLocation(`/event-chat/${event.id}`);
               }}
+              data-testid="button-chat"
             >
               Chat
             </Button>
             <Button 
               size="sm" 
-              className="flex-shrink-0 text-white border-0"
+              className="flex-1 text-white border-0"
               onClick={(e) => {
                 e.stopPropagation();
-                handleJoinEvent();
+                handleJoinEvent('going');
               }}
               disabled={joinEventMutation.isPending}
               style={{ 
@@ -222,8 +226,22 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 border: 'none',
                 color: 'white'
               }}
+              data-testid="button-going"
             >
-              {joinEventMutation.isPending ? "Joining..." : "Join"}
+              {joinEventMutation.isPending ? "..." : "Going"}
+            </Button>
+            <Button 
+              size="sm" 
+              variant="outline"
+              className="flex-1"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleJoinEvent('interested');
+              }}
+              disabled={joinEventMutation.isPending}
+              data-testid="button-interested"
+            >
+              {joinEventMutation.isPending ? "..." : "Interested"}
             </Button>
             <div onClick={(e) => e.stopPropagation()} className="flex-shrink-0">
               <InstagramShare event={event} />
