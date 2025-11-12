@@ -231,9 +231,9 @@ export class ChatWebSocketService {
     // Handle chatroom messages (original logic)
     console.log('💬 Processing chatroom message, chatType:', chatType);
     
-    // Verify user is a member of the chatroom
-    const isMember = await this.verifyChatroomMembership(ws.userId!, chatroomId);
-    console.log('🔐 Membership check result:', { isMember, userId: ws.userId, chatroomId });
+    // Verify user is a member of the chatroom (check appropriate table based on chatType)
+    const isMember = await this.verifyChatroomMembership(ws.userId!, chatroomId, chatType);
+    console.log('🔐 Membership check result:', { isMember, userId: ws.userId, chatroomId, chatType });
     
     if (!isMember) {
       console.log('❌ User is NOT a member - sending error');
@@ -773,8 +773,39 @@ export class ChatWebSocketService {
     });
   }
 
-  // Verify chatroom membership
-  private async verifyChatroomMembership(userId: number, chatroomId: number): Promise<boolean> {
+  // Verify chatroom membership - checks appropriate table based on chatType
+  private async verifyChatroomMembership(userId: number, chatroomId: number, chatType?: string): Promise<boolean> {
+    // For event chatrooms, check eventParticipants table
+    if (chatType === 'event') {
+      console.log(`🔍 EVENT CHAT: Checking eventParticipants for userId=${userId}, chatroomId=${chatroomId}`);
+      
+      // First get the eventId from the chatroom
+      const chatroom = await db.query.meetupChatrooms.findFirst({
+        where: eq(meetupChatrooms.id, chatroomId)
+      });
+      
+      if (!chatroom?.eventId) {
+        console.log(`❌ EVENT CHAT: No eventId found for chatroom ${chatroomId}`);
+        return false;
+      }
+      
+      // Check if user is a participant (going or interested)
+      const participant = await db.query.eventParticipants.findFirst({
+        where: and(
+          eq(eventParticipants.eventId, chatroom.eventId),
+          eq(eventParticipants.userId, userId),
+          or(
+            eq(eventParticipants.status, 'going'),
+            eq(eventParticipants.status, 'interested')
+          )
+        )
+      });
+      
+      console.log(`🔍 EVENT CHAT: Participant check result:`, !!participant);
+      return !!participant;
+    }
+    
+    // For regular city/meetup chatrooms, check chatroomMembers table
     const member = await db.query.chatroomMembers.findFirst({
       where: and(
         eq(chatroomMembers.chatroomId, chatroomId),
