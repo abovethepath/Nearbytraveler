@@ -9965,32 +9965,6 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async createEventChatroom(eventId: number): Promise<any> {
-    try {
-      // Get the event details to name the chatroom properly
-      const event = await this.getEvent(eventId);
-      if (!event) {
-        throw new Error(`Event ${eventId} not found`);
-      }
-
-      const [chatroom] = await db
-        .insert(meetupChatrooms)
-        .values({
-          chatroomName: `${event.title} - Group Chat`,
-          eventId: eventId,
-          createdById: event.organizerId || 2,
-          isActive: true
-        })
-        .returning();
-      
-      console.log(`Created event chatroom "${chatroom.chatroomName}" (ID ${chatroom.id}) for event ${eventId}`);
-      return chatroom;
-    } catch (error) {
-      console.error('Error creating event chatroom:', error);
-      throw error;
-    }
-  }
-
   // Event Chatroom Message Methods
   async getEventChatroomMessages(chatroomId: number): Promise<any[]> {
     try {
