@@ -247,9 +247,9 @@ export class ChatWebSocketService {
       let newMessage: any;
       
       // Use different tables based on chatType
-      if (chatType === 'meetup') {
-        // For meetup chatrooms, use simplified meetup_chatroom_messages table
-        console.log('📝 Inserting into meetup_chatroom_messages table');
+      if (chatType === 'meetup' || chatType === 'event') {
+        // For meetup/event chatrooms, use simplified meetup_chatroom_messages table
+        console.log('📝 Inserting into meetup_chatroom_messages table for', chatType);
         
         // Fetch sender details first for meetup messages
         const sender = await db.query.users.findFirst({
@@ -267,9 +267,9 @@ export class ChatWebSocketService {
           messageType: messageType || 'text',
         }).returning();
         
-        console.log('✅ Meetup message inserted successfully:', newMessage.id);
+        console.log('✅ Meetup/Event message inserted successfully:', newMessage.id);
       } else {
-        // For city/event chatrooms, use standard chatroom_messages table
+        // For city chatrooms, use standard chatroom_messages table
         console.log('📝 Inserting into chatroom_messages table');
         [newMessage] = await db.insert(chatroomMessages).values({
           chatroomId,
@@ -342,8 +342,8 @@ export class ChatWebSocketService {
       }
 
       // Broadcast to all chatroom members
-      // For meetup messages, map field names to match frontend expectations
-      const messagePayload = chatType === 'meetup' ? {
+      // For meetup/event messages, map field names to match frontend expectations
+      const messagePayload = (chatType === 'meetup' || chatType === 'event') ? {
         id: newMessage.id,
         content: newMessage.message,
         createdAt: newMessage.sentAt,
