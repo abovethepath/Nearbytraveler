@@ -7833,18 +7833,21 @@ Questions? Just reply to this message. Welcome aboard!
         const cityName = city.toString();
         console.log(`🎪 EVENTS: Getting events for city: ${cityName}`);
         
-        // Apply the same LA Metro consolidation as the users endpoint
-        const { METRO_AREAS } = await import('../shared/constants');
-        const isLAMetroCity = METRO_AREAS['Los Angeles'].cities.includes(cityName);
+        // Apply metro consolidation for ALL metro areas using shared helper (case-insensitive)
+        const { getMetroArea, METRO_AREAS } = await import('../shared/constants');
+        const metroAreaName = getMetroArea(cityName); // Returns "Los Angeles Metro" for Venice/Santa Monica/etc., null for non-metro cities
         
         let searchCities = [cityName];
         
-        if (isLAMetroCity || cityName === 'Los Angeles Metro') {
-          // Search for ALL LA metro cities
-          searchCities = METRO_AREAS['Los Angeles'].cities;
-          console.log(`🌍 LA METRO EVENTS: Searching for events in ALL LA metro cities:`, searchCities.length, 'cities');
+        if (metroAreaName) {
+          // Find the metro area config and search all its cities
+          const metroConfig = Object.values(METRO_AREAS).find(m => m.metroName === metroAreaName);
+          if (metroConfig) {
+            searchCities = metroConfig.cities;
+            console.log(`🌍 METRO EVENTS: City "${cityName}" → Metro "${metroAreaName}" → Searching ${searchCities.length} cities:`, searchCities.slice(0, 5).join(', '), '...');
+          }
         } else {
-          console.log(`🎯 EVENTS EXACT: Searching events only in ${cityName}`);
+          console.log(`🎯 EVENTS EXACT: "${cityName}" not in metro area, searching exact city only`);
         }
         
         if (process.env.NODE_ENV === 'development') console.log(`🌍 EVENTS: Final searchCities array:`, searchCities);

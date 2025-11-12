@@ -23,7 +23,6 @@ import { ParticipantAvatars } from "@/components/ParticipantAvatars";
 import { formatDateForDisplay } from "@/lib/dateUtils";
 import { PublicationSchedule } from "@/components/PublicationSchedule";
 import { InterestButton } from "@/components/InterestButton";
-import { getMetroArea } from "@shared/constants";
 const eventsBgImage = "/event%20page%20bbq%20party_1753299541268.png";
 // MobileNav removed - using global mobile navigation
 
@@ -130,11 +129,7 @@ export default function Events() {
   // Determine which city to query based on selected location
   const getCityToQuery = () => {
     if (selectedLocation === "custom") return customCity;
-    if (selectedLocation === "hometown") {
-      // Use metro area if hometown is part of a metro area (e.g., Venice → Los Angeles Metro)
-      const metroArea = getMetroArea(user?.hometownCity);
-      return metroArea || user?.hometownCity || "Boston";
-    }
+    if (selectedLocation === "hometown") return user?.hometownCity || "Boston";
     if (selectedLocation.startsWith("destination-")) {
       const planId = selectedLocation.replace("destination-", "");
       const plan = userTravelPlans.find((p: any) => p.id.toString() === planId);
@@ -151,8 +146,7 @@ export default function Events() {
 
     // Fallback to hometown if not traveling
     console.log(`Events page: User not traveling, using hometown ${user?.hometownCity}`);
-    const metroArea = getMetroArea(user?.hometownCity);
-    return metroArea || user?.hometownCity || "Boston";
+    return user?.hometownCity || "Boston";
   };
 
   console.log(`Events page: selectedLocation = ${selectedLocation}, userTravelPlans =`, userTravelPlans);
