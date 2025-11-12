@@ -1833,31 +1833,32 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           )
         );
 
-      // CUMULATIVE STATS: Count ALL travelers who have EVER visited or planned to visit this city
+      // CUMULATIVE STATS: Count UNIQUE travelers who have EVER visited or planned to visit this city
       // This is cumulative - it only increases over time, never decreases
-      const travelerUsersWithPlansResult = await db
-        .select({ count: count() })
+      // FIXED: Collect all unique user IDs instead of summing counts (prevents double-counting)
+      
+      // 1. Get unique user IDs from travel plans
+      const usersWithPlans = await db
+        .selectDistinct({ userId: travelPlans.userId })
         .from(travelPlans)
-        .innerJoin(users, eq(travelPlans.userId, users.id))
         .where(
           or(...searchCities.map(searchCity => ilike(travelPlans.destination, `%${searchCity}%`)))
-          // No date filter - count ALL travel plans (past, present, future)
         );
 
-      // 2. Travelers currently traveling TO this city (travelDestination field) - permanent travelers
-      const currentTravelersToResult = await db
-        .select({ count: count() })
+      // 2. Get unique user IDs with travelDestination field set
+      const usersWithTravelDestination = await db
+        .selectDistinct({ userId: users.id })
         .from(users)
         .where(
           and(
             or(...searchCities.map(searchCity => ilike(users.travelDestination, `%${searchCity}%`))),
-            eq(users.userType, 'traveler') // Only permanent travelers
+            eq(users.userType, 'traveler')
           )
         );
 
-      // 3. Travelers with destinationCity field (direct field match) - permanent travelers
-      const travelersWithDestinationResult = await db
-        .select({ count: count() })
+      // 3. Get unique user IDs with destinationCity field set
+      const usersWithDestinationCity = await db
+        .selectDistinct({ userId: users.id })
         .from(users)
         .where(
           and(
@@ -1876,14 +1877,15 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const localCount = localUsersResult[0]?.count || 0;
       const businessCount = businessUsersResult[0]?.count || 0;
       
-      // Sum all traveler associations with this city (avoiding double counts)
-      const travelPlansCount = travelerUsersWithPlansResult[0]?.count || 0;
-      const currentToCount = currentTravelersToResult[0]?.count || 0;
-      const destinationCount = travelersWithDestinationResult[0]?.count || 0;
+      // Create a Set of unique user IDs from all three sources to eliminate duplicates
+      const uniqueTravelerIds = new Set([
+        ...usersWithPlans.map(u => u.userId),
+        ...usersWithTravelDestination.map(u => u.userId),
+        ...usersWithDestinationCity.map(u => u.userId)
+      ]);
       
-      // FIX: Do NOT count hometown travelers as travelers - they are locals!
-      // Removed travelersFromCityResult to fix locals being incorrectly counted as travelers
-      const travelerCount = travelPlansCount + currentToCount + destinationCount;
+      // Count unique travelers - each person counted only ONCE regardless of how many ways they're associated
+      const travelerCount = uniqueTravelerIds.size;
       const eventCount = eventsResult[0]?.count || 0;
 
       const cityStats = {

@@ -9724,7 +9724,7 @@ export class DatabaseStorage implements IStorage {
   async getEventChatroomMembers(eventId: number): Promise<any[]> {
     try {
       // Get participants from eventParticipants table and join with users
-      // Include BOTH 'going' AND 'interested' participants so everyone can communicate
+      // Include 'going', 'interested', AND 'confirmed' (organizers) so everyone can communicate
       const members = await db
         .select({
           id: users.id,
@@ -9743,7 +9743,8 @@ export class DatabaseStorage implements IStorage {
           eq(eventParticipants.eventId, eventId),
           or(
             eq(eventParticipants.status, 'going'),
-            eq(eventParticipants.status, 'interested')
+            eq(eventParticipants.status, 'interested'),
+            eq(eventParticipants.status, 'confirmed') // Include organizers with 'confirmed' status
           )
         ))
         .orderBy(desc(eventParticipants.role), users.username);

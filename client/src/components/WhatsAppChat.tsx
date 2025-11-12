@@ -94,24 +94,27 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     );
   });
 
-  // Safe first name extraction - improved to handle usernames
+  // Display username instead of real name for privacy
   const getFirstName = (fullName: string | null | undefined, username?: string): string => {
-    // If name is missing, use username
-    if (!fullName || fullName.trim() === '') {
-      return username || 'User';
+    // ALWAYS prioritize username over real name for privacy
+    if (username && username.trim() !== '') {
+      const trimmed = username.trim();
+      // Capitalize first letter of username
+      return trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
     }
     
-    // Check if the name looks like a username (all uppercase, no spaces, etc.)
+    // Fallback to name only if username is missing
+    if (!fullName || fullName.trim() === '') {
+      return 'User';
+    }
+    
     const trimmedName = fullName.trim();
     
-    // If it's a single word and all uppercase or all lowercase, it's likely a username
-    // Use it as-is but capitalize first letter
+    // If it's a single word, use it
     if (!trimmedName.includes(' ')) {
-      // If it's all uppercase like "ELLIOTS" or "TEST", capitalize properly
       if (trimmedName === trimmedName.toUpperCase() || trimmedName === trimmedName.toLowerCase()) {
         return trimmedName.charAt(0).toUpperCase() + trimmedName.slice(1).toLowerCase();
       }
-      // Otherwise use as-is (might be a real single name like "Aaron")
       return trimmedName;
     }
     
