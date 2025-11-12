@@ -242,6 +242,7 @@ export interface IStorage {
   
   // Event Chatroom methods
   getEventChatroom(eventId: number): Promise<any | undefined>;
+  getEventChatroomById(chatroomId: number): Promise<any | undefined>;
   createEventChatroom(eventId: number): Promise<any>;
   ensureEventChatroom(eventId: number): Promise<any>;
   getEventChatroomMembers(eventId: number): Promise<any[]>;
@@ -9923,6 +9924,21 @@ export class DatabaseStorage implements IStorage {
       return chatroom;
     } catch (error) {
       console.error('Error fetching event chatroom:', error);
+      return undefined;
+    }
+  }
+
+  async getEventChatroomById(chatroomId: number): Promise<any> {
+    try {
+      const [chatroom] = await db
+        .select()
+        .from(meetupChatrooms)
+        .where(eq(meetupChatrooms.id, chatroomId))
+        .limit(1);
+      
+      return chatroom;
+    } catch (error) {
+      console.error('Error fetching event chatroom by ID:', error);
       return undefined;
     }
   }

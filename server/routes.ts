@@ -11702,16 +11702,23 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // GET event chatroom members (participants)
-  app.get("/api/event-chatrooms/:eventId/members", async (req, res) => {
+  // Accepts chatroomId, internally resolves to eventId for consistency with other chat types
+  app.get("/api/event-chatrooms/:chatroomId/members", async (req, res) => {
     try {
-      const eventId = parseInt(req.params.eventId || '0');
+      const chatroomId = parseInt(req.params.chatroomId || '0');
       
-      if (!eventId) {
-        return res.status(400).json({ message: "Invalid event ID" });
+      if (!chatroomId) {
+        return res.status(400).json({ message: "Invalid chatroom ID" });
       }
 
-      const members = await storage.getEventChatroomMembers(eventId);
-      if (process.env.NODE_ENV === 'development') console.log(`👥 Found ${members.length} members for event ${eventId}`);
+      // Look up the eventId from the chatroomId
+      const chatroom = await storage.getEventChatroomById(chatroomId);
+      if (!chatroom) {
+        return res.status(404).json({ message: "Chatroom not found" });
+      }
+
+      const members = await storage.getEventChatroomMembers(chatroom.eventId);
+      if (process.env.NODE_ENV === 'development') console.log(`👥 Found ${members.length} members for event chatroom ${chatroomId} (event ${chatroom.eventId})`);
       return res.json(members);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching event chatroom members:", error);
