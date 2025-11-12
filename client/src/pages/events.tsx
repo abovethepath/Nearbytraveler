@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Calendar, Clock, MapPin, Users, Search, Filter, Plus, Info, X, Heart, UserCheck, CheckCircle, Star, Sparkles, ChevronDown } from "lucide-react";
+import { Calendar, Clock, MapPin, Users, Search, Filter, Plus, Info, X, Heart, UserCheck, CheckCircle, Star, Sparkles, ChevronDown, MessageCircle } from "lucide-react";
 import { useIsMobile, useIsDesktop } from "@/hooks/useDeviceType";
 
 import { type Event, type EventParticipant, type User as UserType } from "@shared/schema";
@@ -934,76 +934,117 @@ export default function Events() {
 
                               {/* Management buttons for created events */}
                               {createdEvents.some(e => e.id === event.id) ? (
-                                <div className="flex gap-2">
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm" 
-                                    className="flex-1 bg-gradient-to-r from-orange-500 to-blue-600 text-white border-0 hover:from-orange-600 hover:to-blue-700"
-                                    style={{ transition: 'none' }}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setLocation(`/events/${event.id}`);
-                                    }}
-                                  >
-                                    View
-                                  </Button>
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm" 
-                                    className="flex-1 border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-700 dark:text-blue-300 dark:hover:bg-blue-900/20"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setLocation(`/events/${event.id}/edit`);
-                                    }}
-                                  >
-                                    Edit
-                                  </Button>
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm" 
-                                    className="flex-1 border-green-200 text-green-700 hover:bg-green-50 dark:border-green-700 dark:text-green-300 dark:hover:bg-green-900/20"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      console.log('Copy event:', event.id);
-                                    }}
-                                  >
-                                    Copy
-                                  </Button>
+                                <div className="space-y-2">
+                                  <div className="flex gap-2">
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm" 
+                                      className="flex-1 bg-gradient-to-r from-orange-500 to-blue-600 text-white border-0 hover:from-orange-600 hover:to-blue-700"
+                                      style={{ transition: 'none' }}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setLocation(`/events/${event.id}`);
+                                      }}
+                                      data-testid={`button-view-${event.id}`}
+                                    >
+                                      View
+                                    </Button>
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm" 
+                                      className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0 hover:from-green-600 hover:to-emerald-700"
+                                      style={{ transition: 'none' }}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setLocation(`/event-chat/${event.id}`);
+                                      }}
+                                      data-testid={`button-chat-${event.id}`}
+                                    >
+                                      <MessageCircle className="w-4 h-4 mr-1" />
+                                      Open Chat
+                                    </Button>
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm" 
+                                      className="flex-1 border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-700 dark:text-blue-300 dark:hover:bg-blue-900/20"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setLocation(`/events/${event.id}/edit`);
+                                      }}
+                                      data-testid={`button-edit-${event.id}`}
+                                    >
+                                      Edit
+                                    </Button>
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm" 
+                                      className="flex-1 border-green-200 text-green-700 hover:bg-green-50 dark:border-green-700 dark:text-green-300 dark:hover:bg-green-900/20"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        console.log('Copy event:', event.id);
+                                      }}
+                                      data-testid={`button-copy-${event.id}`}
+                                    >
+                                      Copy
+                                    </Button>
+                                  </div>
                                 </div>
                               ) : (
-                                <div className="flex items-center gap-2 pt-2">
-                                  <Button 
-                                    size="sm" 
-                                    variant="outline"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setLocation(`/events/${event.id}`);
-                                    }}
-                                    className="flex-1 bg-gradient-to-r from-blue-600 to-orange-500 text-white border-0 hover:from-blue-700 hover:to-orange-600"
-                                    style={{ 
-                                      background: 'linear-gradient(to right, #2563eb, #ea580c)',
-                                      border: 'none',
-                                      transition: 'none' 
-                                    }}
-                                  >
-                                    View Event
-                                  </Button>
-                                  <Button 
-                                    size="sm" 
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleJoinEvent(event);
-                                    }}
-                                    disabled={joinEventMutation.isPending || leaveEventMutation.isPending}
-                                    variant={isUserJoined(event.id) ? "outline" : "default"}
-                                    className={isUserJoined(event.id) ? "flex-1" : "flex-1 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0"}
-                                    style={!isUserJoined(event.id) ? { 
-                                      background: 'linear-gradient(to right, #2563eb, #ea580c)',
-                                      border: 'none'
-                                    } : {}}
-                                  >
-                                    {isUserJoined(event.id) ? "Leave" : "Join Event"}
-                                  </Button>
+                                <div className="space-y-2 pt-2">
+                                  <div className="flex items-center gap-2">
+                                    <Button 
+                                      size="sm" 
+                                      variant="outline"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setLocation(`/events/${event.id}`);
+                                      }}
+                                      className="flex-1 bg-gradient-to-r from-blue-600 to-orange-500 text-white border-0 hover:from-blue-700 hover:to-orange-600"
+                                      style={{ 
+                                        background: 'linear-gradient(to right, #2563eb, #ea580c)',
+                                        border: 'none',
+                                        transition: 'none' 
+                                      }}
+                                      data-testid={`button-view-event-${event.id}`}
+                                    >
+                                      View Event
+                                    </Button>
+                                    <Button 
+                                      size="sm" 
+                                      variant="outline"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setLocation(`/event-chat/${event.id}`);
+                                      }}
+                                      className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0 hover:from-green-600 hover:to-emerald-700"
+                                      style={{ transition: 'none' }}
+                                      data-testid={`button-chat-participant-${event.id}`}
+                                    >
+                                      <MessageCircle className="w-4 h-4 mr-1" />
+                                      Open Chat
+                                    </Button>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Button 
+                                      size="sm" 
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleJoinEvent(event);
+                                      }}
+                                      disabled={joinEventMutation.isPending || leaveEventMutation.isPending}
+                                      variant={isUserJoined(event.id) ? "outline" : "default"}
+                                      className={isUserJoined(event.id) ? "flex-1" : "flex-1 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0"}
+                                      style={!isUserJoined(event.id) ? { 
+                                        background: 'linear-gradient(to right, #2563eb, #ea580c)',
+                                        border: 'none'
+                                      } : {}}
+                                      data-testid={`button-join-leave-${event.id}`}
+                                    >
+                                      {isUserJoined(event.id) ? "Leave" : "Join Event"}
+                                    </Button>
+                                  </div>
                                 </div>
                               )}
                             </div>
