@@ -11757,6 +11757,15 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(400).json({ message: "Message content required" });
       }
 
+      // Check if user is muted in this chatroom
+      const isMuted = await storage.isUserMutedInChatroom(chatroomId, parseInt(userId as string || '0'));
+      if (isMuted) {
+        return res.status(403).json({ 
+          message: "You are muted in this chatroom and cannot send messages",
+          muted: true
+        });
+      }
+
       const message = await storage.createEventChatroomMessage(
         chatroomId,
         parseInt(userId as string || '0'),
