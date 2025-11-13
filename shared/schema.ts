@@ -1049,6 +1049,7 @@ export const meetupChatroomMessages = pgTable("meetup_chatroom_messages", {
   message: text("message").notNull(),
   messageType: text("message_type").default("text"), // 'text', 'location', 'meetup_update'
   replyToId: integer("reply_to_id").references(() => meetupChatroomMessages.id),
+  reactions: jsonb("reactions"), // {emoji: [userId, userId]} for message reactions - WhatsApp-style
   isEdited: boolean("is_edited").default(false),
   editedAt: timestamp("edited_at"),
   sentAt: timestamp("sent_at").defaultNow(),
