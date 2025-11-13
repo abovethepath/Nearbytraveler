@@ -480,73 +480,77 @@ export default function Messages() {
               </div>
             </div>
 
-            {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto px-4 py-2 bg-[#efeae2] dark:bg-[#0b141a]" style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23cccccc' stroke-width='2' opacity='0.08'%3E%3Ccircle cx='100' cy='100' r='50'/%3E%3Cpath d='M200 200 L250 250 M250 200 L200 250'/%3E%3Crect x='350' y='50' width='80' height='80' rx='10'/%3E%3Cpath d='M500 150 Q550 100 600 150 T700 150'/%3E%3Ccircle cx='150' cy='300' r='30'/%3E%3Cpath d='M300 350 L320 380 L340 340 L360 380 L380 340'/%3E%3Crect x='450' y='300' width='60' height='100' rx='30'/%3E%3Cpath d='M600 350 L650 300 L700 350 Z'/%3E%3Ccircle cx='100' cy='500' r='40'/%3E%3Cpath d='M250 500 C250 450 350 450 350 500 S250 550 250 500'/%3E%3Crect x='450' y='480' width='70' height='70' rx='15'/%3E%3Cpath d='M600 500 L650 520 L670 470 L620 450 Z'/%3E%3Ccircle cx='150' cy='700' r='35'/%3E%3Cpath d='M300 680 Q350 650 400 680'/%3E%3Crect x='500' y='650' width='90' height='60' rx='8'/%3E%3Cpath d='M150 150 L180 180 M180 150 L150 180'/%3E%3C/g%3E%3C/svg%3E")`,
-              minHeight: 0
-            }}>
-              <div className="max-w-4xl mx-auto space-y-2">
-                {conversationMessages.length === 0 ? (
-                  <div className="text-center text-gray-500 dark:text-gray-400 py-8">
-                    <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                    <p>No messages yet. Start the conversation!</p>
-                  </div>
-                ) : (
-                  conversationMessages.map((msg: any) => {
-                    const isOwnMessage = msg.senderId === user?.id;
-                    return (
-                      <div key={msg.id} className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[70%] px-4 py-2 rounded-2xl ${
-                          isOwnMessage 
-                            ? 'bg-green-600 dark:bg-green-600' 
-                            : 'bg-gray-200 dark:bg-gray-700'
-                        }`}>
-                          <p className={`text-sm whitespace-pre-wrap break-words ${
-                            isOwnMessage 
-                              ? 'text-white' 
-                              : 'text-gray-900 dark:text-gray-100'
-                          }`}>
-                            {msg.content}
-                          </p>
-                          <p className={`text-xs opacity-70 mt-1 ${
-                            isOwnMessage 
-                              ? 'text-white' 
-                              : 'text-gray-600 dark:text-gray-400'
-                          }`}>
-                            {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </p>
-                        </div>
+            {/* Messages - Flex wrapper ensures proper spacing */}
+            <div className="flex-1 flex flex-col overflow-hidden">
+              <div className="flex-1 overflow-y-auto px-4 py-2 bg-[#efeae2] dark:bg-[#0b141a]" style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23cccccc' stroke-width='2' opacity='0.08'%3E%3Ccircle cx='100' cy='100' r='50'/%3E%3Cpath d='M200 200 L250 250 M250 200 L200 250'/%3E%3Crect x='350' y='50' width='80' height='80' rx='10'/%3E%3Cpath d='M500 150 Q550 100 600 150 T700 150'/%3E%3Ccircle cx='150' cy='300' r='30'/%3E%3Cpath d='M300 350 L320 380 L340 340 L360 380 L380 340'/%3E%3Crect x='450' y='300' width='60' height='100' rx='30'/%3E%3Cpath d='M600 350 L650 300 L700 350 Z'/%3E%3Ccircle cx='100' cy='500' r='40'/%3E%3Cpath d='M250 500 C250 450 350 450 350 500 S250 550 250 500'/%3E%3Crect x='450' y='480' width='70' height='70' rx='15'/%3E%3Cpath d='M600 500 L650 520 L670 470 L620 450 Z'/%3E%3Ccircle cx='150' cy='700' r='35'/%3E%3Cpath d='M300 680 Q350 650 400 680'/%3E%3Crect x='500' y='650' width='90' height='60' rx='8'/%3E%3Cpath d='M150 150 L180 180 M180 150 L150 180'/%3E%3C/g%3E%3C/svg%3E")`
+              }}>
+                <div className="flex flex-col min-h-full">
+                  <div className="flex-grow" />
+                  <div className="space-y-2 max-w-4xl mx-auto w-full">
+                    {conversationMessages.length === 0 ? (
+                      <div className="text-center text-gray-500 dark:text-gray-400 py-8">
+                        <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                        <p>No messages yet. Start the conversation!</p>
                       </div>
-                    );
-                  })
-                )}
-                <div ref={messagesEndRef} />
+                    ) : (
+                      conversationMessages.map((msg: any) => {
+                        const isOwnMessage = msg.senderId === user?.id;
+                        return (
+                          <div key={msg.id} className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
+                            <div className={`max-w-[70%] px-4 py-2 rounded-2xl ${
+                              isOwnMessage 
+                                ? 'bg-green-600 dark:bg-green-600' 
+                                : 'bg-gray-200 dark:bg-gray-700'
+                            }`}>
+                              <p className={`text-sm whitespace-pre-wrap break-words ${
+                                isOwnMessage 
+                                  ? 'text-white' 
+                                  : 'text-gray-900 dark:text-gray-100'
+                              }`}>
+                                {msg.content}
+                              </p>
+                              <p className={`text-xs opacity-70 mt-1 ${
+                                isOwnMessage 
+                                  ? 'text-white' 
+                                  : 'text-gray-600 dark:text-gray-400'
+                              }`}>
+                                {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                    <div ref={messagesEndRef} />
+                  </div>
+                </div>
               </div>
-            </div>
 
-            {/* Message Input - Compact */}
-            <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex-shrink-0">
-              <div className="flex items-center gap-2 max-w-4xl mx-auto">
-                <Input
-                  value={newMessage}
-                  onChange={(e) => handleTyping(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSendMessage();
-                    }
-                  }}
-                  placeholder="Type a message..."
-                  className="flex-1 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
-                />
-                <Button
-                  onClick={handleSendMessage}
-                  disabled={!newMessage.trim() || sendMessageMutation.isPending}
-                  size="icon"
-                  className="bg-blue-600 hover:bg-blue-700 text-white shrink-0"
-                >
-                  <Send className="w-4 h-4" />
-                </Button>
+              {/* Message Input - Compact */}
+              <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                <div className="flex items-center gap-2 max-w-4xl mx-auto">
+                  <Input
+                    value={newMessage}
+                    onChange={(e) => handleTyping(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSendMessage();
+                      }
+                    }}
+                    placeholder="Type a message..."
+                    className="flex-1 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+                  />
+                  <Button
+                    onClick={handleSendMessage}
+                    disabled={!newMessage.trim() || sendMessageMutation.isPending}
+                    size="icon"
+                    className="bg-blue-600 hover:bg-blue-700 text-white shrink-0"
+                  >
+                    <Send className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
             </div>
           </>
