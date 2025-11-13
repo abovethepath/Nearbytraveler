@@ -569,9 +569,9 @@ export default function Messages() {
               </div>
             </div>
 
-            {/* Messages - Flex wrapper ensures proper spacing */}
+            {/* Messages - Flex wrapper with bottom padding for input space */}
             <div className="flex-1 flex flex-col overflow-hidden min-h-0">
-              <div className="flex-1 overflow-y-auto px-4 py-2 bg-[#efeae2] dark:bg-[#0b141a]" style={{
+              <div className="flex-1 overflow-y-auto px-4 py-2 pb-24 bg-[#efeae2] dark:bg-[#0b141a]" style={{
                 backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23cccccc' stroke-width='2' opacity='0.08'%3E%3Ccircle cx='100' cy='100' r='50'/%3E%3Cpath d='M200 200 L250 250 M250 200 L200 250'/%3E%3Crect x='350' y='50' width='80' height='80' rx='10'/%3E%3Cpath d='M500 150 Q550 100 600 150 T700 150'/%3E%3Ccircle cx='150' cy='300' r='30'/%3E%3Cpath d='M300 350 L320 380 L340 340 L360 380 L380 340'/%3E%3Crect x='450' y='300' width='60' height='100' rx='30'/%3E%3Cpath d='M600 350 L650 300 L700 350 Z'/%3E%3Ccircle cx='100' cy='500' r='40'/%3E%3Cpath d='M250 500 C250 450 350 450 350 500 S250 550 250 500'/%3E%3Crect x='450' y='480' width='70' height='70' rx='15'/%3E%3Cpath d='M600 500 L650 520 L670 470 L620 450 Z'/%3E%3Ccircle cx='150' cy='700' r='35'/%3E%3Cpath d='M300 680 Q350 650 400 680'/%3E%3Crect x='500' y='650' width='90' height='60' rx='8'/%3E%3Cpath d='M150 150 L180 180 M180 150 L150 180'/%3E%3C/g%3E%3C/svg%3E")`
               }}>
                 <div className="flex flex-col min-h-full">
@@ -687,8 +687,8 @@ export default function Messages() {
                 </div>
               </div>
 
-              {/* Message Input - Compact - Fixed at bottom */}
-              <div ref={inputContainerRef} className="px-4 py-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 shrink-0">
+              {/* Message Input - Compact - Absolutely positioned at bottom */}
+              <div ref={inputContainerRef} className="absolute bottom-0 left-0 right-0 px-4 py-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 z-10">
                 <div className="flex items-center gap-2 max-w-4xl mx-auto">
                   <Input
                     value={newMessage}
