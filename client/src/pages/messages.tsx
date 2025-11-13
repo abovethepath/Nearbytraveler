@@ -29,6 +29,7 @@ export default function Messages() {
   const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
   const [editText, setEditText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputContainerRef = useRef<HTMLDivElement>(null);
   const [, navigate] = useLocation();
   
   // Get target user ID from URL path (e.g., /messages/123)
@@ -101,7 +102,14 @@ export default function Messages() {
     };
   }, [user?.id]);
 
-  // Keep natural scroll position - don't auto-scroll when messages update
+  // Scroll to input box when conversation is selected
+  useEffect(() => {
+    if (selectedConversation && inputContainerRef.current) {
+      setTimeout(() => {
+        inputContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }, 300);
+    }
+  }, [selectedConversation]);
 
   // Fetch all users for name lookup
   const { data: allUsers = [] } = useQuery({
@@ -680,7 +688,7 @@ export default function Messages() {
               </div>
 
               {/* Message Input - Compact */}
-              <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+              <div ref={inputContainerRef} className="px-4 py-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                 <div className="flex items-center gap-2 max-w-4xl mx-auto">
                   <Input
                     value={newMessage}
