@@ -113,7 +113,7 @@ export default function Messages() {
         }
       }, 100);
     }
-  }, [selectedConversation, conversationMessages.length]);
+  }, [selectedConversation]);
 
   // Fetch all users for name lookup
   const { data: allUsers = [] } = useQuery({
