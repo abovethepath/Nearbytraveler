@@ -3,24 +3,31 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { authStorage } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { ChatInput } from '@/components/ui/chat-input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { MessageCircle, Send, Users, ArrowLeft } from 'lucide-react';
+import { MessageCircle, Send, Users, ArrowLeft, Heart, Reply, Copy, Edit2, Trash2, Check, X } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
 import { queryClient } from '@/lib/queryClient';
 import { SimpleAvatar } from '@/components/simple-avatar';
 import websocketService from '@/services/websocketService';
 import { useLocation } from 'wouter';
+import { useToast } from '@/hooks/use-toast';
 // REMOVED: openFloatingChat import - IM functionality removed
 import { UniversalBackButton } from '@/components/UniversalBackButton';
 
 export default function Messages() {
   const user = authStorage.getUser();
+  const { toast } = useToast();
   const [selectedConversation, setSelectedConversation] = useState<number | null>(null);
   const [newMessage, setNewMessage] = useState('');
   const [connectionSearch, setConnectionSearch] = useState('');
   const [instantMessages, setInstantMessages] = useState<any[]>([]);
   const [typingUsers, setTypingUsers] = useState<{ [userId: number]: boolean }>({});
+  const [replyingTo, setReplyingTo] = useState<any | null>(null);
+  const [selectedMessage, setSelectedMessage] = useState<number | null>(null);
+  const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
+  const [editText, setEditText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [, navigate] = useLocation();
   
@@ -265,7 +272,11 @@ export default function Messages() {
     sendMessageMutation.mutate({
       receiverId: selectedConversation,
       content: newMessage.trim(),
+      replyToId: replyingTo?.id || undefined,
     });
+    
+    // Clear reply state after sending
+    setReplyingTo(null);
   };
 
   // Mark messages as read when conversation is selected
@@ -284,6 +295,76 @@ export default function Messages() {
     if (selectedConversation && websocketService.isConnected()) {
       websocketService.sendTypingIndicator(selectedConversation, value.length > 0);
     }
+  };
+
+  // Handle message editing
+  const handleEditMessage = async (messageId: number) => {
+    if (!editText.trim()) return;
+    
+    try {
+      await apiRequest('PATCH', `/api/messages/${messageId}`, {
+        content: editText.trim(),
+        userId: user?.id
+      });
+      
+      toast({ title: "Message edited successfully" });
+      setEditingMessageId(null);
+      setEditText("");
+      queryClient.invalidateQueries({ queryKey: [`/api/messages/${user?.id}`] });
+    } catch (error: any) {
+      toast({ title: "Failed to edit message", variant: "destructive" });
+    }
+  };
+
+  // Handle message deletion
+  const handleDeleteMessage = async (messageId: number) => {
+    if (!confirm('Are you sure you want to delete this message?')) return;
+    
+    try {
+      const response = await fetch(`/api/messages/${messageId}`, {
+        method: 'DELETE',
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-user-id': user?.id?.toString() || '' 
+        }
+      });
+      
+      if (!response.ok) throw new Error('Failed to delete message');
+      
+      toast({ title: "Message deleted successfully" });
+      setSelectedMessage(null);
+      queryClient.invalidateQueries({ queryKey: [`/api/messages/${user?.id}`] });
+    } catch (error: any) {
+      toast({ title: "Failed to delete message", variant: "destructive" });
+    }
+  };
+
+  // Handle reaction/like
+  const handleReaction = async (messageId: number, emoji: string) => {
+    try {
+      await apiRequest('POST', `/api/messages/${messageId}/reaction`, {
+        userId: user?.id,
+        emoji
+      });
+      
+      setSelectedMessage(null);
+      queryClient.invalidateQueries({ queryKey: [`/api/messages/${user?.id}`] });
+    } catch (error: any) {
+      toast({ title: "Failed to react to message", variant: "destructive" });
+    }
+  };
+
+  // Start editing a message
+  const startEdit = (message: any) => {
+    setEditingMessageId(message.id);
+    setEditText(message.content);
+    setSelectedMessage(null);
+  };
+
+  // Cancel editing
+  const cancelEdit = () => {
+    setEditingMessageId(null);
+    setEditText("");
   };
 
   // Debug: Log conversations
@@ -498,25 +579,96 @@ export default function Messages() {
                         const isOwnMessage = msg.senderId === user?.id;
                         return (
                           <div key={msg.id} className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
-                            <div className={`max-w-[70%] px-4 py-2 rounded-2xl ${
-                              isOwnMessage 
-                                ? 'bg-green-600 dark:bg-green-600' 
-                                : 'bg-gray-200 dark:bg-gray-700'
-                            }`}>
-                              <p className={`text-sm whitespace-pre-wrap break-words ${
-                                isOwnMessage 
-                                  ? 'text-white' 
-                                  : 'text-gray-900 dark:text-gray-100'
-                              }`}>
-                                {msg.content}
-                              </p>
-                              <p className={`text-xs opacity-70 mt-1 ${
-                                isOwnMessage 
-                                  ? 'text-white' 
-                                  : 'text-gray-600 dark:text-gray-400'
-                              }`}>
-                                {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                              </p>
+                            <div className="relative max-w-[70%]" onClick={() => setSelectedMessage(selectedMessage === msg.id ? null : msg.id)}>
+                              {editingMessageId === msg.id ? (
+                                <div className={`px-4 py-2 rounded-2xl ${isOwnMessage ? 'bg-green-600' : 'bg-gray-700'}`}>
+                                  <Textarea
+                                    value={editText}
+                                    onChange={(e) => setEditText(e.target.value)}
+                                    className="w-full mb-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white resize-none"
+                                    rows={3}
+                                  />
+                                  <div className="flex gap-2">
+                                    <Button size="sm" onClick={() => handleEditMessage(msg.id)} className="bg-green-600 hover:bg-green-700 text-white">
+                                      <Check className="w-4 h-4 mr-1" />
+                                      Save
+                                    </Button>
+                                    <Button size="sm" variant="outline" onClick={cancelEdit} className="border-gray-300 dark:border-gray-600">
+                                      <X className="w-4 h-4 mr-1" />
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className={`px-4 py-2 rounded-2xl cursor-pointer ${
+                                  isOwnMessage 
+                                    ? 'bg-green-600 dark:bg-green-600' 
+                                    : 'bg-gray-200 dark:bg-gray-700'
+                                }`}>
+                                  <p className={`text-sm whitespace-pre-wrap break-words ${
+                                    isOwnMessage 
+                                      ? 'text-white' 
+                                      : 'text-gray-900 dark:text-gray-100'
+                                  }`}>
+                                    {msg.content}
+                                  </p>
+                                  <div className="flex items-center justify-end gap-1 mt-1">
+                                    <p className={`text-xs opacity-70 ${
+                                      isOwnMessage 
+                                        ? 'text-white' 
+                                        : 'text-gray-600 dark:text-gray-400'
+                                    }`}>
+                                      {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </p>
+                                    {msg.isEdited && <span className="text-xs opacity-60 italic text-gray-400">Edited</span>}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Interaction Menu */}
+                              {selectedMessage === msg.id && (
+                                <div className="absolute top-full mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 z-10 min-w-[150px] border border-gray-200 dark:border-gray-700">
+                                  <button 
+                                    onClick={() => { navigator.clipboard.writeText(msg.content); toast({ title: "Copied" }); setSelectedMessage(null); }} 
+                                    className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-900 dark:text-white"
+                                  >
+                                    <Copy className="w-4 h-4" />
+                                    <span>Copy text</span>
+                                  </button>
+                                  <button 
+                                    onClick={() => { setReplyingTo(msg); setSelectedMessage(null); }} 
+                                    className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-900 dark:text-white"
+                                  >
+                                    <Reply className="w-4 h-4" />
+                                    <span>Reply</span>
+                                  </button>
+                                  <button 
+                                    onClick={() => handleReaction(msg.id, '❤️')} 
+                                    className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-900 dark:text-white"
+                                  >
+                                    <Heart className="w-4 h-4" />
+                                    <span>React</span>
+                                  </button>
+                                  {isOwnMessage && (
+                                    <>
+                                      <button 
+                                        onClick={() => startEdit(msg)} 
+                                        className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-900 dark:text-white"
+                                      >
+                                        <Edit2 className="w-4 h-4" />
+                                        <span>Edit</span>
+                                      </button>
+                                      <button 
+                                        onClick={() => handleDeleteMessage(msg.id)} 
+                                        className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-red-600 dark:text-red-400"
+                                      >
+                                        <Trash2 className="w-4 h-4" />
+                                        <span>Delete</span>
+                                      </button>
+                                    </>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           </div>
                         );
