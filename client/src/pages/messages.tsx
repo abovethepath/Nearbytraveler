@@ -30,6 +30,7 @@ export default function Messages() {
   const [editText, setEditText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputContainerRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
   const [, navigate] = useLocation();
   
   // Get target user ID from URL path (e.g., /messages/123)
@@ -102,11 +103,11 @@ export default function Messages() {
     };
   }, [user?.id]);
 
-  // Scroll to input box when conversation is selected
+  // Scroll to header/avatar banner when conversation is selected
   useEffect(() => {
-    if (selectedConversation && inputContainerRef.current) {
+    if (selectedConversation && headerRef.current) {
       setTimeout(() => {
-        inputContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        headerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 300);
     }
   }, [selectedConversation]);
@@ -542,7 +543,7 @@ export default function Messages() {
         {selectedConversation && selectedUser ? (
           <>
             {/* Compact Header - Just show name on top */}
-            <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex-shrink-0">
+            <div ref={headerRef} className="px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex-shrink-0">
               <div className="flex items-center gap-3">
                 {/* Back button for mobile */}
                 <Button
@@ -689,6 +690,29 @@ export default function Messages() {
 
               {/* Message Input - Compact - Absolutely positioned at bottom */}
               <div ref={inputContainerRef} className="absolute bottom-0 left-0 right-0 px-4 py-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 z-10">
+                {/* Reply Bar */}
+                {replyingTo && (
+                  <div className="flex items-center gap-2 px-3 py-2 mb-2 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 rounded max-w-4xl mx-auto">
+                    <Reply className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+                        Replying to @{replyingTo.senderId === user?.id ? 'You' : selectedUser?.username}
+                      </p>
+                      <p className="text-sm text-gray-700 dark:text-gray-300 truncate">
+                        {replyingTo.content}
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 shrink-0"
+                      onClick={() => setReplyingTo(null)}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                )}
+                
                 <div className="flex items-center gap-2 max-w-4xl mx-auto">
                   <Input
                     value={newMessage}
