@@ -7159,11 +7159,22 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
 
-      // Transform the joined data to include embedded user objects
+      // Get reply messages for all messages that have replyToId
+      const messageIds = queryResult.map(row => row.messages?.id).filter(Boolean);
+      const replyMessages = messageIds.length > 0 ? await db
+        .select()
+        .from(messages)
+        .where(sql`${messages.id} IN (SELECT "replyToId" FROM messages WHERE "replyToId" IS NOT NULL)`)
+        : [];
+      
+      const replyMessagesMap = new Map(replyMessages.map(msg => [msg.id, msg]));
+
+      // Transform the joined data to include embedded user objects and reply data
       const allMessages = queryResult.map(row => {
         const messageData = row.messages;
         const senderData = row.sender_user;
         const receiverData = row.receiver_user;
+        const repliedMessage = messageData?.replyToId ? replyMessagesMap.get(messageData.replyToId) : null;
         
         return {
           id: messageData?.id,
@@ -7172,6 +7183,14 @@ Questions? Just reply to this message. Welcome aboard!
           content: messageData?.content,
           messageType: messageData?.messageType,
           isRead: messageData?.isRead,
+          isEdited: messageData?.isEdited,
+          reactions: messageData?.reactions,
+          replyToId: messageData?.replyToId,
+          repliedMessage: repliedMessage ? {
+            id: repliedMessage.id,
+            senderId: repliedMessage.senderId,
+            content: repliedMessage.content
+          } : null,
           createdAt: messageData?.createdAt,
           // Add a field to identify the other person in the conversation
           otherPersonId: messageData?.senderId === userId ? messageData?.receiverId : messageData?.senderId,
@@ -7441,7 +7460,8 @@ Questions? Just reply to this message. Welcome aboard!
   app.post("/api/messages/:messageId/reaction", async (req, res) => {
     try {
       const messageId = parseInt(req.params.messageId);
-      const { userId, emoji } = req.body;
+      const { emoji } = req.body;
+      const userId = req.headers['x-user-id'] as string;
 
       if (!userId || !emoji) {
         return res.status(400).json({ message: "userId and emoji are required" });
