@@ -5336,7 +5336,7 @@ Questions? Just reply to this message. Welcome aboard!
         delete updates.privateInterests;
       }
 
-      // CRITICAL FIX: Sync location field when hometown changes
+      // CRITICAL FIX: Sync location and city fields when hometown changes
       if (updates.hometown_city || updates.hometown_state || updates.hometown_country) {
         // Get current user data to fill in missing hometown fields
         const currentUser = await storage.getUserById(userId);
@@ -5355,6 +5355,14 @@ Questions? Just reply to this message. Welcome aboard!
           updates.location = `${cityToUse}, ${stateToUse}`;
           if (process.env.NODE_ENV === 'development') {
             console.log(`🔄 LOCATION SYNC: Updated location field to "${updates.location}" for user ${userId}`);
+          }
+        }
+        
+        // CRITICAL: Also update the city field when hometown city changes
+        if (cityToUse) {
+          updates.city = cityToUse;
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`🏙️ CITY SYNC: Updated city field to "${updates.city}" for user ${userId}`);
           }
         }
       }
