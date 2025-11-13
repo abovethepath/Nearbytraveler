@@ -495,11 +495,11 @@ export default function Messages() {
                       <div key={msg.id} className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
                         <div className={`max-w-[70%] px-4 py-2 rounded-2xl ${
                           isOwnMessage 
-                            ? 'bg-blue-600 text-white' 
-                            : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
+                            ? 'bg-blue-600 dark:bg-blue-500 text-white dark:text-white' 
+                            : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
                         }`}>
                           <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
-                          <p className="text-xs opacity-70 mt-1">
+                          <p className="text-xs opacity-70 mt-1 text-gray-700 dark:text-gray-300">
                             {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </p>
                         </div>
