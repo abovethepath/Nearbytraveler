@@ -50,6 +50,10 @@ export default function CityChatroomsPage() {
   };
   
   const currentUser = getCurrentUser();
+  
+  // Track which chatroom is currently being joined/left
+  const [joiningChatroomId, setJoiningChatroomId] = useState<number | null>(null);
+  const [leavingChatroomId, setLeavingChatroomId] = useState<number | null>(null);
 
   // Fetch chatrooms with proper member counts
   const { data: chatrooms = [], isLoading, refetch } = useQuery<CityChatroom[]>({
@@ -70,6 +74,8 @@ export default function CityChatroomsPage() {
   const joinMutation = useMutation({
     mutationFn: async (chatroomId: number) => {
       if (!currentUser) throw new Error("User not found");
+      
+      setJoiningChatroomId(chatroomId);
       
       const response = await apiRequest('POST', `/api/chatrooms/${chatroomId}/join`, {
         userId: currentUser.id
@@ -97,6 +103,7 @@ export default function CityChatroomsPage() {
       // Refresh chatrooms and user data to update member status and aura
       queryClient.invalidateQueries({ queryKey: ['/api/chatrooms/my-locations'] });
       queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      setJoiningChatroomId(null);
     },
     onError: (error: any) => {
       toast({
@@ -104,6 +111,7 @@ export default function CityChatroomsPage() {
         description: error.message || "Failed to join chatroom",
         variant: "destructive",
       });
+      setJoiningChatroomId(null);
     }
   });
 
@@ -111,6 +119,8 @@ export default function CityChatroomsPage() {
   const leaveMutation = useMutation({
     mutationFn: async (chatroomId: number) => {
       if (!currentUser) throw new Error("User not found");
+      
+      setLeavingChatroomId(chatroomId);
       
       const response = await apiRequest('POST', `/api/chatrooms/${chatroomId}/leave`, {
         userId: currentUser.id
@@ -129,6 +139,7 @@ export default function CityChatroomsPage() {
         description: "Left the chatroom",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/chatrooms/my-locations'] });
+      setLeavingChatroomId(null);
     },
     onError: (error: any) => {
       toast({
@@ -136,6 +147,7 @@ export default function CityChatroomsPage() {
         description: error.message || "Failed to leave chatroom",
         variant: "destructive",
       });
+      setLeavingChatroomId(null);
     }
   });
 
@@ -378,10 +390,14 @@ export default function CityChatroomsPage() {
                             e.stopPropagation();
                             leaveMutation.mutate(chatroom.id);
                           }}
-                          disabled={leaveMutation.isPending}
+                          disabled={leavingChatroomId === chatroom.id}
                           className="border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
                         >
-                          Leave
+                          {leavingChatroomId === chatroom.id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            "Leave"
+                          )}
                         </Button>
                       </div>
                     ) : (
@@ -391,9 +407,9 @@ export default function CityChatroomsPage() {
                           e.stopPropagation();
                           joinMutation.mutate(chatroom.id);
                         }}
-                        disabled={joinMutation.isPending}
+                        disabled={joiningChatroomId === chatroom.id}
                       >
-                        {joinMutation.isPending ? (
+                        {joiningChatroomId === chatroom.id ? (
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                         ) : (
                           <UserPlus className="w-4 h-4 mr-2" />
