@@ -687,8 +687,8 @@ export default function Messages() {
                 </div>
               </div>
 
-              {/* Message Input - Compact */}
-              <div ref={inputContainerRef} className="px-4 py-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+              {/* Message Input - Compact - Fixed at bottom */}
+              <div ref={inputContainerRef} className="px-4 py-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 shrink-0">
                 <div className="flex items-center gap-2 max-w-4xl mx-auto">
                   <Input
                     value={newMessage}
@@ -701,12 +701,14 @@ export default function Messages() {
                     }}
                     placeholder="Type a message..."
                     className="flex-1 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+                    data-testid="input-message"
                   />
                   <Button
                     onClick={handleSendMessage}
                     disabled={!newMessage.trim() || sendMessageMutation.isPending}
                     size="icon"
                     className="bg-blue-600 hover:bg-blue-700 text-white shrink-0"
+                    data-testid="button-send-message"
                   >
                     <Send className="w-4 h-4" />
                   </Button>
