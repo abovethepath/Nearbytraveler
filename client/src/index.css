@@ -415,7 +415,7 @@ p, span, div, button, input, textarea, select {
   /* WhatsApp-Style Messaging Theme - Light Mode */
   --msg-bg: 230 35% 95%;
   --msg-header-bg: 230 35% 98%;
-  --msg-bubble-self: 271 76% 53%;
+  --msg-bubble-self: 160 84% 39%;
   --msg-bubble-other: 220 13% 46%;
   --msg-text-self: 0 0% 100%;
   --msg-text-other: 0 0% 100%;
@@ -458,7 +458,7 @@ p, span, div, button, input, textarea, select {
   /* WhatsApp-Style Messaging Theme - Dark Mode */
   --msg-bg: 210 40% 16%;
   --msg-header-bg: 210 40% 18%;
-  --msg-bubble-self: 271 76% 53%;
+  --msg-bubble-self: 160 84% 39%;
   --msg-bubble-other: 217 19% 35%;
   --msg-text-self: 0 0% 100%;
   --msg-text-other: 0 0% 100%;

@@ -7160,11 +7160,11 @@ Questions? Just reply to this message. Welcome aboard!
       }
 
       // Get reply messages for all messages that have replyToId
-      const messageIds = queryResult.map(row => row.messages?.id).filter(Boolean);
-      const replyMessages = messageIds.length > 0 ? await db
+      const replyToIds = queryResult.map(row => row.messages?.replyToId).filter((id): id is number => id !== null && id !== undefined);
+      const replyMessages = replyToIds.length > 0 ? await db
         .select()
         .from(messages)
-        .where(sql`${messages.id} IN (SELECT "replyToId" FROM messages WHERE "replyToId" IS NOT NULL)`)
+        .where(inArray(messages.id, replyToIds))
         : [];
       
       const replyMessagesMap = new Map(replyMessages.map(msg => [msg.id, msg]));
