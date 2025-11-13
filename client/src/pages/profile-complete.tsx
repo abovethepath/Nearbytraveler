@@ -7607,6 +7607,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             
             {/* Save Button for Location Changes */}
             {pendingLocationData && (
+              pendingLocationData.hometownCity !== user?.hometownCity || 
+              pendingLocationData.hometownState !== user?.hometownState || 
+              pendingLocationData.hometownCountry !== user?.hometownCountry
+            ) && (
               <div className="mt-4 flex gap-3">
                 <Button
                   onClick={async () => {
