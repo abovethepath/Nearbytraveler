@@ -938,7 +938,7 @@ export class ChatWebSocketService {
         limit: 50,
       });
       
-      // Fetch sender details for each message and map to expected format
+      // Fetch sender details and reply context for each message
       messagesData = await Promise.all(meetupMessages.map(async (msg) => {
         const sender = await db.query.users.findFirst({
           where: eq(users.id, msg.userId),
@@ -950,13 +950,44 @@ export class ChatWebSocketService {
           }
         });
         
+        // Fetch reply-to message if exists
+        let replyTo = null;
+        if (msg.replyToId) {
+          const replyMessage = await db.query.meetupChatroomMessages.findFirst({
+            where: eq(meetupChatroomMessages.id, msg.replyToId),
+          });
+          
+          if (replyMessage) {
+            const replySender = await db.query.users.findFirst({
+              where: eq(users.id, replyMessage.userId),
+              columns: {
+                id: true,
+                username: true,
+                name: true,
+                profileImage: true,
+              }
+            });
+            
+            replyTo = {
+              id: replyMessage.id,
+              content: replyMessage.message,
+              createdAt: replyMessage.sentAt,
+              senderId: replyMessage.userId,
+              messageType: replyMessage.messageType ?? 'text',
+              sender: replySender,
+            };
+          }
+        }
+        
         return {
           id: msg.id,
           content: msg.message,
           createdAt: msg.sentAt,
           senderId: msg.userId,
           messageType: msg.messageType ?? 'text',
+          replyToId: msg.replyToId,
           sender,
+          replyTo,
         };
       }));
     } else if (chatType === 'event') {
@@ -970,7 +1001,7 @@ export class ChatWebSocketService {
         limit: 50,
       });
       
-      // Fetch sender details for each message and map to expected format
+      // Fetch sender details and reply context for each message
       messagesData = await Promise.all(eventMessages.map(async (msg) => {
         const sender = await db.query.users.findFirst({
           where: eq(users.id, msg.userId),
@@ -982,13 +1013,44 @@ export class ChatWebSocketService {
           }
         });
         
+        // Fetch reply-to message if exists
+        let replyTo = null;
+        if (msg.replyToId) {
+          const replyMessage = await db.query.meetupChatroomMessages.findFirst({
+            where: eq(meetupChatroomMessages.id, msg.replyToId),
+          });
+          
+          if (replyMessage) {
+            const replySender = await db.query.users.findFirst({
+              where: eq(users.id, replyMessage.userId),
+              columns: {
+                id: true,
+                username: true,
+                name: true,
+                profileImage: true,
+              }
+            });
+            
+            replyTo = {
+              id: replyMessage.id,
+              content: replyMessage.message,
+              createdAt: replyMessage.sentAt,
+              senderId: replyMessage.userId,
+              messageType: replyMessage.messageType ?? 'text',
+              sender: replySender,
+            };
+          }
+        }
+        
         return {
           id: msg.id,
           content: msg.message,
           createdAt: msg.sentAt,
           senderId: msg.userId,
           messageType: msg.messageType ?? 'text',
+          replyToId: msg.replyToId,
           sender,
+          replyTo,
         };
       }));
     } else {

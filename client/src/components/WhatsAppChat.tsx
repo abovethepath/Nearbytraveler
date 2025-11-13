@@ -288,8 +288,17 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   }, [currentUserId, chatId]);
 
   const scrollToBottom = () => {
-    setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
+    setTimeout(() => {
+      if (messagesEndRef.current) {
+        messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }
+    }, 200);
   };
+
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   // Scroll to bottom on mount and when messages change
   useEffect(() => {
@@ -426,7 +435,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   };
 
   return (
-    <div className="flex h-[calc(100vh-145px)] bg-gray-900 text-white overflow-hidden">
+    <div className="flex h-[calc(100vh-128px)] bg-gray-900 text-white overflow-hidden">
       {/* Desktop Members Sidebar - Always visible on lg+ screens, positioned on LEFT */}
       {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
         <div className="hidden lg:flex lg:flex-col lg:w-[320px] bg-gray-800 border-r border-gray-700">
