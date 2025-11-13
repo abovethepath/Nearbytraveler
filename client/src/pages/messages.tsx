@@ -104,16 +104,16 @@ export default function Messages() {
     };
   }, [user?.id]);
 
-  // Reset scroll to top when conversation is selected
+  // Scroll to BOTTOM to show newest messages and text box
   useEffect(() => {
     if (selectedConversation && messagesContainerRef.current) {
       setTimeout(() => {
         if (messagesContainerRef.current) {
-          messagesContainerRef.current.scrollTop = 0;
+          messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
         }
       }, 100);
     }
-  }, [selectedConversation]);
+  }, [selectedConversation, conversationMessages.length]);
 
   // Fetch all users for name lookup
   const { data: allUsers = [] } = useQuery({
