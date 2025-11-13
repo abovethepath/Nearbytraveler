@@ -7354,13 +7354,13 @@ Questions? Just reply to this message. Welcome aboard!
   // CRITICAL: Send message for IM system (handles offline message delivery)
   app.post("/api/messages", async (req, res) => {
     try {
-      const { senderId, receiverId, content, isInstantMessage } = req.body;
+      const { senderId, receiverId, content, isInstantMessage, replyToId } = req.body;
 
       if (!senderId || !receiverId || !content) {
         return res.status(400).json({ message: "senderId, receiverId, and content are required" });
       }
 
-      if (process.env.NODE_ENV === 'development') console.log(`💬 ${isInstantMessage ? 'IM' : 'REGULAR'} MESSAGE: Storing message from ${senderId} to ${receiverId} for offline delivery`);
+      if (process.env.NODE_ENV === 'development') console.log(`💬 ${isInstantMessage ? 'IM' : 'REGULAR'} MESSAGE: Storing message from ${senderId} to ${receiverId}${replyToId ? ` (replying to ${replyToId})` : ''} for offline delivery`);
 
       // Store message in database for offline delivery
       const newMessage = await db
@@ -7371,6 +7371,7 @@ Questions? Just reply to this message. Welcome aboard!
           content: content.trim(),
           messageType: isInstantMessage ? 'instant' : 'text',
           isRead: false,
+          replyToId: replyToId ? parseInt(replyToId) : null,
           createdAt: new Date()
         })
         .returning();
@@ -7388,6 +7389,104 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error sending message:", error);
       return res.status(500).json({ message: "Failed to send message" });
+    }
+  });
+
+  // Edit a message
+  app.patch("/api/messages/:messageId", async (req, res) => {
+    try {
+      const messageId = parseInt(req.params.messageId);
+      const { userId, content } = req.body;
+
+      if (!userId || !content) {
+        return res.status(400).json({ message: "userId and content are required" });
+      }
+
+      // Get the message first to verify ownership
+      const [message] = await db
+        .select()
+        .from(messages)
+        .where(eq(messages.id, messageId))
+        .limit(1);
+
+      if (!message) {
+        return res.status(404).json({ message: "Message not found" });
+      }
+
+      // Verify user owns the message
+      if (message.senderId !== parseInt(userId as string)) {
+        return res.status(403).json({ message: "You can only edit your own messages" });
+      }
+
+      // Update the message
+      const [updatedMessage] = await db
+        .update(messages)
+        .set({ 
+          content: content.trim(),
+          isEdited: true
+        })
+        .where(eq(messages.id, messageId))
+        .returning();
+
+      if (process.env.NODE_ENV === 'development') console.log(`✏️ MESSAGE EDITED: Message ${messageId} edited by user ${userId}`);
+      
+      return res.json({ success: true, message: updatedMessage });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error editing message:", error);
+      return res.status(500).json({ message: "Failed to edit message" });
+    }
+  });
+
+  // React to a message
+  app.post("/api/messages/:messageId/reaction", async (req, res) => {
+    try {
+      const messageId = parseInt(req.params.messageId);
+      const { userId, emoji } = req.body;
+
+      if (!userId || !emoji) {
+        return res.status(400).json({ message: "userId and emoji are required" });
+      }
+
+      // Check if message exists
+      const [message] = await db
+        .select()
+        .from(messages)
+        .where(eq(messages.id, messageId))
+        .limit(1);
+
+      if (!message) {
+        return res.status(404).json({ message: "Message not found" });
+      }
+
+      // Get current reactions or initialize empty array
+      const currentReactions = message.reactions || [];
+      
+      // Check if user already reacted
+      const existingReactionIndex = currentReactions.findIndex((r: any) => r.userId === parseInt(userId as string));
+      
+      let updatedReactions;
+      if (existingReactionIndex >= 0) {
+        // Update existing reaction
+        updatedReactions = [...currentReactions];
+        updatedReactions[existingReactionIndex] = { userId: parseInt(userId as string), emoji };
+      } else {
+        // Add new reaction
+        updatedReactions = [...currentReactions, { userId: parseInt(userId as string), emoji }];
+      }
+
+      // Update the message with new reactions
+      const [updatedMessage] = await db
+        .update(messages)
+        .set({ reactions: updatedReactions })
+        .where(eq(messages.id, messageId))
+        .returning();
+
+      if (process.env.NODE_ENV === 'development') console.log(`❤️ MESSAGE REACTION: User ${userId} reacted to message ${messageId} with ${emoji}`);
+      
+      return res.json({ success: true, message: updatedMessage });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error adding reaction:", error);
+      return res.status(500).json({ message: "Failed to add reaction" });
     }
   });
 
