@@ -1048,6 +1048,7 @@ export const meetupChatroomMessages = pgTable("meetup_chatroom_messages", {
   username: text("username").notNull(),
   message: text("message").notNull(),
   messageType: text("message_type").default("text"), // 'text', 'location', 'meetup_update'
+  replyToId: integer("reply_to_id").references(() => meetupChatroomMessages.id),
   isEdited: boolean("is_edited").default(false),
   editedAt: timestamp("edited_at"),
   sentAt: timestamp("sent_at").defaultNow(),

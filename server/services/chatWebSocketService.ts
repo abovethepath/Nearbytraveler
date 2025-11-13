@@ -273,6 +273,7 @@ export class ChatWebSocketService {
           username: sender?.username || 'Unknown',
           message: content,
           messageType: messageType || 'text',
+          replyToId: replyToId ?? null,
         }).returning();
         
         console.log('✅ Meetup/Event message inserted successfully:', newMessage.id);

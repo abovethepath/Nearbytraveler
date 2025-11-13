@@ -673,6 +673,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
 
       {/* Messages - Flex wrapper ensures proper spacing */}
       <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Scrollable messages area */}
         <div className="flex-1 overflow-y-auto px-3 py-2 bg-[#efeae2] dark:bg-[#0b141a]" style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23cccccc' stroke-width='2' opacity='0.08'%3E%3Ccircle cx='100' cy='100' r='50'/%3E%3Cpath d='M200 200 L250 250 M250 200 L200 250'/%3E%3Crect x='350' y='50' width='80' height='80' rx='10'/%3E%3Cpath d='M500 150 Q550 100 600 150 T700 150'/%3E%3Ccircle cx='150' cy='300' r='30'/%3E%3Cpath d='M300 350 L320 380 L340 340 L360 380 L380 340'/%3E%3Crect x='450' y='300' width='60' height='100' rx='30'/%3E%3Cpath d='M600 350 L650 300 L700 350 Z'/%3E%3Ccircle cx='100' cy='500' r='40'/%3E%3Cpath d='M250 500 C250 450 350 450 350 500 S250 550 250 500'/%3E%3Crect x='450' y='480' width='70' height='70' rx='15'/%3E%3Cpath d='M600 500 L650 520 L670 470 L620 450 Z'/%3E%3Ccircle cx='150' cy='700' r='35'/%3E%3Cpath d='M300 680 Q350 650 400 680'/%3E%3Crect x='500' y='650' width='90' height='60' rx='8'/%3E%3Cpath d='M150 150 L180 180 M180 150 L150 180'/%3E%3C/g%3E%3C/svg%3E")`
         }}>
@@ -786,8 +787,9 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           </div>
         </div>
 
+        {/* Fixed footer area - outside scrollable div */}
         {typingUsers.size > 0 && (
-          <div className="px-3 py-1 text-xs text-gray-400">
+          <div className="px-3 py-1 text-xs text-gray-400 bg-gray-800">
             {Array.from(typingUsers).join(', ')} {typingUsers.size === 1 ? 'is' : 'are'} typing...
           </div>
         )}
@@ -803,21 +805,22 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
             </div>
           </div>
         )}
-      </div>
 
-      <div className="px-3 py-2 bg-gray-800 border-t border-gray-700">
-        <div className="flex items-end gap-2">
-          <Textarea
-            value={messageText}
-            onChange={(e) => handleTyping(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
-            placeholder="Message"
-            className="flex-1 min-h-[36px] max-h-[100px] bg-gray-700 border-gray-600 text-white resize-none rounded-full px-3 py-2 text-sm"
-            rows={1}
-          />
-          <Button onClick={sendMessage} disabled={!messageText.trim()} size="icon" className="bg-green-600 hover:bg-green-700 rounded-full h-9 w-9 shrink-0">
-            <Send className="w-4 h-4" />
-          </Button>
+        {/* Input box - fixed at bottom */}
+        <div className="px-3 py-2 bg-gray-800 border-t border-gray-700">
+          <div className="flex items-end gap-2">
+            <Textarea
+              value={messageText}
+              onChange={(e) => handleTyping(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+              placeholder="Message"
+              className="flex-1 min-h-[36px] max-h-[100px] bg-gray-700 border-gray-600 text-white resize-none rounded-full px-3 py-2 text-sm"
+              rows={1}
+            />
+            <Button onClick={sendMessage} disabled={!messageText.trim()} size="icon" className="bg-green-600 hover:bg-green-700 rounded-full h-9 w-9 shrink-0">
+              <Send className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
       </div>
       </div>
