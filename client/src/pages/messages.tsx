@@ -617,6 +617,30 @@ export default function Messages() {
                                     ? 'bg-green-600 dark:bg-green-600' 
                                     : 'bg-gray-200 dark:bg-gray-700'
                                 }`}>
+                                  {/* Reply Context */}
+                                  {msg.replyToId && msg.repliedMessage && (
+                                    <div className={`mb-2 pl-2 border-l-2 ${
+                                      isOwnMessage 
+                                        ? 'border-white/50' 
+                                        : 'border-gray-400 dark:border-gray-500'
+                                    }`}>
+                                      <p className={`text-xs opacity-70 ${
+                                        isOwnMessage 
+                                          ? 'text-white' 
+                                          : 'text-gray-600 dark:text-gray-400'
+                                      }`}>
+                                        {msg.repliedMessage.senderId === user?.id ? 'You' : `@${selectedUser?.username}`}
+                                      </p>
+                                      <p className={`text-xs opacity-80 truncate ${
+                                        isOwnMessage 
+                                          ? 'text-white' 
+                                          : 'text-gray-700 dark:text-gray-300'
+                                      }`}>
+                                        {msg.repliedMessage.content}
+                                      </p>
+                                    </div>
+                                  )}
+                                  
                                   <p className={`text-sm whitespace-pre-wrap break-words ${
                                     isOwnMessage 
                                       ? 'text-white' 
