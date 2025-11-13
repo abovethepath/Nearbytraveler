@@ -7580,7 +7580,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               country={pendingLocationData?.hometownCountry || user?.hometownCountry || ''}
               onLocationChange={(location) => {
                 // Store the pending location change instead of auto-saving
+                console.log('🎯 Location changed - setting pendingLocationData:', location);
+                console.log('🎯 Current user location:', {
+                  city: user?.hometownCity,
+                  state: user?.hometownState,
+                  country: user?.hometownCountry
+                });
                 setPendingLocationData({
+                  hometownCountry: location.country,
+                  hometownState: location.state,
+                  hometownCity: location.city,
+                });
+                console.log('🎯 pendingLocationData after setting:', {
                   hometownCountry: location.country,
                   hometownState: location.state,
                   hometownCity: location.city,
