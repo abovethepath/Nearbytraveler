@@ -24,9 +24,10 @@ export default function Messages() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [, navigate] = useLocation();
   
-  // Get target user ID from URL params
-  const urlParams = new URLSearchParams(window.location.search);
-  const targetUserId = urlParams.get('userId') || urlParams.get('recipient');
+  // Get target user ID from URL path (e.g., /messages/123)
+  const [location] = useLocation();
+  const urlParts = location.split('/');
+  const targetUserId = urlParts[2]; // /messages/:userId
 
   // Fetch connections
   const { data: connections = [], isLoading: connectionsLoading } = useQuery({
@@ -175,12 +176,13 @@ export default function Messages() {
     );
   }, [connections, messages, allUsers, targetUserId, user?.id]);
 
-  // Auto-select target conversation and scroll it into view
+  // Auto-select target conversation from URL and scroll it into view
   useEffect(() => {
     if (targetUserId && conversations.length > 0) {
-      const targetConv = conversations.find((conv: any) => conv.userId === parseInt(targetUserId));
-      if (targetConv) {
-        setSelectedConversation(parseInt(targetUserId));
+      const targetUserIdNum = parseInt(targetUserId);
+      const targetConv = conversations.find((conv: any) => conv.userId === targetUserIdNum);
+      if (targetConv && selectedConversation !== targetUserIdNum) {
+        setSelectedConversation(targetUserIdNum);
         console.log(`🎯 Auto-selected conversation for user ${targetUserId}:`, targetConv.username);
         
         // Scroll target conversation into view after a brief delay
@@ -195,8 +197,11 @@ export default function Messages() {
           }
         }, 500);
       }
+    } else if (!targetUserId) {
+      // Clear selection when navigating back to /messages without a userId
+      setSelectedConversation(null);
     }
-  }, [targetUserId, conversations]);
+  }, [targetUserId, conversations]); // Removed selectedConversation from deps to prevent loops
 
   // Get messages for selected conversation (simplified to avoid duplication)
   const conversationMessages = selectedConversation 
@@ -331,9 +336,9 @@ export default function Messages() {
   }
 
   return (
-    <div className="h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-col md:flex-row">
-      {/* Left Sidebar - Conversations */}
-      <div className="w-full md:w-80 bg-gray-100 dark:bg-gray-800 flex flex-col border-r-0 md:border-r-2 border-b md:border-b-0 border-gray-300 dark:border-gray-500">
+    <div className="h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-row">
+      {/* Left Sidebar - Conversations (Always visible on desktop, hidden when chat open on mobile) */}
+      <div className={`${selectedConversation ? 'hidden lg:flex' : 'flex'} w-full lg:w-80 bg-gray-100 dark:bg-gray-800 flex-col border-r-0 lg:border-r-2 border-gray-300 dark:border-gray-500`}>
         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3 mb-3">
             <UniversalBackButton 
@@ -443,79 +448,104 @@ export default function Messages() {
         </div>
       </div>
 
-      {/* Main Chat Area - Now navigates to WhatsApp DM chat */}
-      <div className="flex-1 flex items-center justify-center bg-white dark:bg-gray-900">
-        <div className="text-center text-gray-600 dark:text-gray-500">
-          <MessageCircle className="w-20 h-20 mx-auto mb-6 opacity-30" />
-          <h3 className="text-2xl font-medium mb-2 text-gray-800 dark:text-gray-300">Welcome to Messages</h3>
-          <p className="text-gray-600 dark:text-gray-400">Select a conversation to start messaging</p>
-        </div>
-      </div>
-
-      {/* Right Sidebar - Connections */}
-      <div className="hidden lg:flex w-80 bg-gray-100 dark:bg-gray-800 flex-col border-l-2 border-gray-300 dark:border-gray-500">
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-semibold flex items-center gap-2 text-gray-900 dark:text-white">
-            <Users className="w-5 h-5 text-green-500" />
-            Connections
-          </h2>
-        </div>
-        
-        <div className="flex-1 overflow-y-auto p-4">
-          {(connections as any[]).length === 0 ? (
-            <div className="text-center text-gray-600 dark:text-gray-500">
-              <Users className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p>No connections yet</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {(connections as any[]).map((connection: any) => (
-                <div
-                  key={connection.id}
-                  className="p-3 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+      {/* Main Chat Area - WhatsApp Desktop Style */}
+      <div className="flex-1 flex flex-col bg-white dark:bg-gray-900">
+        {selectedConversation && selectedUser ? (
+          <>
+            {/* Compact Header - Just show name on top */}
+            <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+              <div className="flex items-center gap-3">
+                {/* Back button for mobile */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => navigate('/messages')}
+                  className="lg:hidden text-gray-600 dark:text-gray-400"
                 >
-                  <div className="flex items-center gap-3 mb-3">
-                    <div 
-                      className="cursor-pointer"
-                      onClick={() => navigate(`/profile/${connection.connectedUser.id}`)}
-                    >
-                      <Avatar className="w-10 h-10">
-                        <AvatarImage src={connection.connectedUser?.profileImage} />
-                        <AvatarFallback className="bg-green-600 text-white">
-                          {connection.connectedUser?.username?.charAt(0)?.toUpperCase() || '?'}
-                        </AvatarFallback>
-                      </Avatar>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-gray-900 dark:text-white truncate">
-                        {connection.connectedUser?.username || 'Unknown User'}
-                      </h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
-                        📍 {connection.connectedUser?.hometownCity || connection.connectedUser?.location || 'Unknown'} • 
-                        {connection.connectedUser?.userType === 'traveler' ? ' ✈️ Traveling' : 
-                         connection.connectedUser?.userType === 'business' ? ' 🏢 Business' : ' 🏠 Local'}
-                      </p>
-
-                    </div>
-                  </div>
-                  
-                  {/* Single Button - IM functionality removed */}
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      onClick={() => connection.connectedUser?.id && navigate(`/messages/${connection.connectedUser.id}`)}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium"
-                      disabled={!connection.connectedUser?.id}
-                      data-testid={`button-open-chat-${connection.connectedUser?.id}`}
-                    >
-                      Open Chat
-                    </Button>
-                  </div>
+                  <ArrowLeft className="w-5 h-5" />
+                </Button>
+                
+                <div className="cursor-pointer" onClick={() => navigate(`/profile/${selectedUser.userId}`)}>
+                  <Avatar className="w-10 h-10">
+                    <AvatarImage src={selectedUser.profileImage} />
+                    <AvatarFallback className="bg-blue-600 text-white">
+                      {selectedUser.username?.charAt(0)?.toUpperCase() || '?'}
+                    </AvatarFallback>
+                  </Avatar>
                 </div>
-              ))}
+                <div className="flex-1 min-w-0">
+                  <h2 className="font-semibold text-gray-900 dark:text-white truncate">@{selectedUser.username}</h2>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{selectedUser.location}</p>
+                </div>
+              </div>
             </div>
-          )}
-        </div>
+
+            {/* Messages Area */}
+            <div className="flex-1 overflow-y-auto px-4 py-3 bg-white dark:bg-gray-900">
+              <div className="max-w-4xl mx-auto space-y-3">
+                {conversationMessages.length === 0 ? (
+                  <div className="text-center text-gray-500 dark:text-gray-400 py-8">
+                    <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                    <p>No messages yet. Start the conversation!</p>
+                  </div>
+                ) : (
+                  conversationMessages.map((msg: any) => {
+                    const isOwnMessage = msg.senderId === user?.id;
+                    return (
+                      <div key={msg.id} className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`max-w-[70%] px-4 py-2 rounded-2xl ${
+                          isOwnMessage 
+                            ? 'bg-blue-600 text-white' 
+                            : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
+                        }`}>
+                          <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
+                          <p className="text-xs opacity-70 mt-1">
+                            {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+                <div ref={messagesEndRef} />
+              </div>
+            </div>
+
+            {/* Message Input - Compact */}
+            <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+              <div className="flex items-center gap-2 max-w-4xl mx-auto">
+                <Input
+                  value={newMessage}
+                  onChange={(e) => handleTyping(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSendMessage();
+                    }
+                  }}
+                  placeholder="Type a message..."
+                  className="flex-1 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
+                />
+                <Button
+                  onClick={handleSendMessage}
+                  disabled={!newMessage.trim() || sendMessageMutation.isPending}
+                  size="icon"
+                  className="bg-blue-600 hover:bg-blue-700 text-white shrink-0"
+                >
+                  <Send className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center text-gray-600 dark:text-gray-500">
+              <MessageCircle className="w-20 h-20 mx-auto mb-6 opacity-30" />
+              <h3 className="text-2xl font-medium mb-2 text-gray-800 dark:text-gray-300">Welcome to Messages</h3>
+              <p className="text-gray-600 dark:text-gray-400">Select a conversation to start messaging</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
