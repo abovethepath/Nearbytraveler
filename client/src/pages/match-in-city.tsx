@@ -1014,7 +1014,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
           {/* Cities Grid - RESTORED BEAUTIFUL DESIGN */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredCities.slice(0, 20).map((city, index) => (
+            {filteredCities.map((city, index) => (
               <div 
                 key={index}
                 className="relative overflow-hidden rounded-xl cursor-pointer transition-transform hover:scale-105 shadow-lg group"
