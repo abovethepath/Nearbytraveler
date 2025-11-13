@@ -354,10 +354,7 @@ export default function Messages() {
   // Handle reaction/like
   const handleReaction = async (messageId: number, emoji: string) => {
     try {
-      await apiRequest('POST', `/api/messages/${messageId}/reaction`, {
-        userId: user?.id,
-        emoji
-      });
+      await apiRequest('POST', `/api/messages/${messageId}/reaction`, { emoji });
       
       setSelectedMessage(null);
       queryClient.invalidateQueries({ queryKey: [`/api/messages/${user?.id}`] });
