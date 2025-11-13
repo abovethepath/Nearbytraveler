@@ -917,7 +917,7 @@ function Router() {
 
     if (location.startsWith('/messages/') && location.split('/')[2]) {
       const userId = location.split('/')[2];
-      return <DMChat />;
+      return <Messages />;
     }
 
     if (location.startsWith('/simple-chatroom/')) {
