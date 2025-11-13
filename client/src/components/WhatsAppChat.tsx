@@ -290,17 +290,12 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   const scrollToBottom = () => {
     setTimeout(() => {
       if (messagesEndRef.current) {
-        messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
-    }, 200);
+    }, 150);
   };
 
   // Scroll to bottom when messages change
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  // Scroll to bottom on mount and when messages change
   useEffect(() => {
     scrollToBottom();
   }, [messages.length]);
