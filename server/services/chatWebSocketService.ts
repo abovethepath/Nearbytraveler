@@ -748,7 +748,54 @@ export class ChatWebSocketService {
       return;
     }
 
-    // Handle chatroom reactions (original logic)
+    // Handle meetup/event chatroom reactions
+    if (chatType === 'meetup' || chatType === 'event') {
+      // Get message from meetupChatroomMessages table
+      const message = await db.query.meetupChatroomMessages.findFirst({
+        where: eq(meetupChatroomMessages.id, messageId)
+      });
+
+      if (!message) {
+        this.sendError(ws, 'Message not found');
+        return;
+      }
+
+      // Update reactions
+      const reactions = (message.reactions as any) || {};
+      if (!reactions[emoji]) {
+        reactions[emoji] = [];
+      }
+
+      // Toggle reaction
+      const userIndex = reactions[emoji].indexOf(ws.userId);
+      if (userIndex > -1) {
+        reactions[emoji].splice(userIndex, 1);
+        if (reactions[emoji].length === 0) delete reactions[emoji];
+      } else {
+        reactions[emoji].push(ws.userId);
+      }
+
+      // Update database
+      await db.update(meetupChatroomMessages)
+        .set({ reactions })
+        .where(eq(meetupChatroomMessages.id, messageId));
+
+      // Broadcast reaction update
+      const broadcastEvent: ChatEvent = {
+        type: 'message:reaction',
+        chatType,
+        chatroomId,
+        payload: { messageId, reactions },
+        correlationId: event.correlationId,
+        senderId: ws.userId,
+        timestamp: Date.now(),
+      };
+
+      await this.broadcastToChatroom(chatroomId, broadcastEvent);
+      return;
+    }
+
+    // Handle city chatroom reactions
     // Get current message from chatroomMessages table
     const message = await db.query.chatroomMessages.findFirst({
       where: eq(chatroomMessages.id, messageId)
