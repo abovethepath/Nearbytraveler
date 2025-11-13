@@ -7619,12 +7619,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     console.log('🏙️ SENDING LOCATION DATA TO BACKEND:', pendingLocationData);
                     
                     try {
-                      const response = await fetch(`/api/users/${user.id}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(pendingLocationData)
-                      });
-                      if (!response.ok) throw new Error('Failed to save');
+                      const response = await apiRequest('PUT', `/api/users/${user.id}`, pendingLocationData);
+                      
+                      if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'Failed to save');
+                      }
                       
                       // Update the cache and clear pending data - ALSO invalidate user listings
                       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
@@ -7636,11 +7636,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         title: "Location Updated",
                         description: "Your location has been successfully updated. This will update your local status across the site.",
                       });
-                    } catch (error) {
+                    } catch (error: any) {
                       console.error('Failed to update location:', error);
                       toast({
                         title: "Error",
-                        description: "Failed to update location. Please try again.",
+                        description: error.message || "Failed to update location. Please try again.",
                         variant: "destructive"
                       });
                     }
