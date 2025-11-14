@@ -1193,10 +1193,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const { data: userChatrooms = [] } = useQuery<any[]>({
     queryKey: ['/api/users', effectiveUserId, 'chatroom-participation'],
     queryFn: async () => {
-      if (!effectiveUserId) return [];
+      console.log('🏠 CHATROOMS QUERY: effectiveUserId =', effectiveUserId, 'propUserId =', propUserId, 'currentUser?.id =', currentUser?.id);
+      if (!effectiveUserId) {
+        console.log('🏠 CHATROOMS QUERY: No effectiveUserId, returning empty array');
+        return [];
+      }
+      console.log(`🏠 CHATROOMS QUERY: Fetching /api/users/${effectiveUserId}/chatroom-participation`);
       const response = await fetch(`/api/users/${effectiveUserId}/chatroom-participation`);
-      if (!response.ok) return [];
+      if (!response.ok) {
+        console.log('🏠 CHATROOMS QUERY: Response not OK, status:', response.status);
+        return [];
+      }
       const data = await response.json();
+      console.log('🏠 CHATROOMS QUERY: Received data:', data, 'length:', Array.isArray(data) ? data.length : 'not array');
       return Array.isArray(data) ? data : [];
     },
     enabled: !!effectiveUserId,
