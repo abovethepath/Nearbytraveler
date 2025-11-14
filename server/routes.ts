@@ -7807,7 +7807,6 @@ Questions? Just reply to this message. Welcome aboard!
   app.get("/api/users/:userId/chatroom-participation", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId || '0');
-      console.log(`🏠 CHATROOM PARTICIPATION: Getting chatroom participation for user ${userId}`);
 
       // Get chatrooms where user is a member using pool connection for reliability
       const result = await db.execute(sql`
@@ -7829,7 +7828,6 @@ Questions? Just reply to this message. Welcome aboard!
       `);
 
       const userChatrooms = result.rows || [];
-      console.log(`🏠 CHATROOM PARTICIPATION: SQL returned ${userChatrooms.length} chatrooms for user ${userId}`);
 
       // Add member counts to each chatroom
       const memberCountQuery = await db
@@ -7852,10 +7850,9 @@ Questions? Just reply to this message. Welcome aboard!
         memberCount: memberCountMap.get(chatroom.id) || 1
       }));
 
-      console.log(`🏠 CHATROOM PARTICIPATION: Returning ${chatroomsWithMemberCount.length} chatrooms for user ${userId}`);
       return res.json(chatroomsWithMemberCount);
     } catch (error: any) {
-      console.error(`🏠 CHATROOM PARTICIPATION ERROR for user ${userId}:`, error);
+      console.error("Error fetching user chatroom participation:", error);
       return res.status(500).json({ message: "Failed to fetch chatroom participation" });
     }
   });
