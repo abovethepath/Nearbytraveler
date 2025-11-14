@@ -112,7 +112,6 @@ import PlanTrip from "@/pages/plan-trip";
 import TravelIntentQuiz from "@/pages/TravelIntentQuiz";
 import CityChatrooms from "@/pages/city-chatrooms";
 import Chatroom from "@/pages/chatroom";
-import FixedChatroom from "@/pages/fixed-chatroom";
 import WhatsAppChatroom from "@/pages/whatsapp-chatroom";
 import DMChat from "@/pages/dm-chat";
 
@@ -798,7 +797,7 @@ function Router() {
 
       // Enhanced routing for potentially authenticated users accessing main routes
       // Check for common app routes that authenticated users might be trying to access
-      const commonAppRoutes = ['/discover', '/match-in-city', '/quick-meetups', '/messages', '/profile', '/profile-new', '/profile-complete', '/cities', '/plan-trip', '/home', '/events', '/deals', '/simple-chatroom', '/city-chatrooms', '/chatroom'];
+      const commonAppRoutes = ['/discover', '/match-in-city', '/quick-meetups', '/messages', '/profile', '/profile-new', '/profile-complete', '/cities', '/plan-trip', '/home', '/events', '/deals', '/city-chatrooms', '/chatroom'];
       const isCommonAppRoute = commonAppRoutes.some(route => location.startsWith(route));
 
       if (isCommonAppRoute && (localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token'))) {
@@ -918,11 +917,6 @@ function Router() {
     if (location.startsWith('/messages/') && location.split('/')[2]) {
       const userId = location.split('/')[2];
       return <Messages />;
-    }
-
-    if (location.startsWith('/simple-chatroom/')) {
-      console.log('🚀 ROUTING: Simple chatroom route matched');
-      return <FixedChatroom />;
     }
 
     if (location.startsWith('/city-chatrooms/')) {
@@ -1136,7 +1130,6 @@ function Router() {
           '/quick-meetups',
           '/quick-meetup',
           '/chatroom',
-          '/simple-chatroom',
           '/city-chatrooms',
           '/chatrooms',
           '/event-chat',
