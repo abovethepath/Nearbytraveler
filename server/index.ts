@@ -10,6 +10,7 @@ import path from "path";
 import dotenv from "dotenv";
 import { db } from "./db";
 import { users, events, businessOffers, quickMeetups, quickDeals } from "../shared/schema";
+import { TravelStatusService } from "./services/travel-status-service";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
 
 // Load environment variables
@@ -580,15 +581,28 @@ app.use((req, res, next) => {
       log(`serving on port ${port}`);
       console.log(`🚀 Server successfully started on http://0.0.0.0:${port}`);
       
-      // Initialize background services after server is listening (temporarily disabled to fix startup)
-      console.log("⚠️  Background services temporarily disabled during startup debugging");
+      // Initialize travel status service on startup
+      console.log("🔄 Running initial travel status check...");
+      try {
+        await TravelStatusService.updateAllUserTravelStatuses();
+        console.log("✅ Initial travel status check completed");
+      } catch (travelError) {
+        console.error("⚠️ Travel status check failed (non-fatal):", travelError);
+      }
       
-      // TODO: Re-enable these services after fixing database connection issues:
-      // - TravelStatusService.updateAllUserTravelStatuses()
-      // - userStatusService.startPeriodicChecker()
-      // - Event scheduler
+      // Set up hourly travel status check (every hour)
+      const TRAVEL_STATUS_CHECK_INTERVAL = 60 * 60 * 1000; // 1 hour in milliseconds
+      setInterval(async () => {
+        console.log("🔄 Running scheduled travel status check...");
+        try {
+          await TravelStatusService.updateAllUserTravelStatuses();
+          console.log("✅ Scheduled travel status check completed");
+        } catch (error) {
+          console.error("⚠️ Scheduled travel status check failed:", error);
+        }
+      }, TRAVEL_STATUS_CHECK_INTERVAL);
       
-      console.log("✅ Server started successfully (background services disabled)");
+      console.log("✅ Server started successfully with travel status monitoring enabled");
       
     } catch (error) {
       console.error("❌ Failed to initialize server services:", error);

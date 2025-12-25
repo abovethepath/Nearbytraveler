@@ -3042,6 +3042,21 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
+  // Update travel status for all users (clears traveling status for users whose trips have ended)
+  app.post("/api/admin/update-travel-status", async (req, res) => {
+    try {
+      console.log("Admin triggered travel status update...");
+      await TravelStatusService.updateAllUserTravelStatuses();
+      res.json({ 
+        success: true, 
+        message: "Travel status update completed - users who finished their trips are now marked as local"
+      });
+    } catch (error: any) {
+      console.error("Travel status update failed:", error);
+      res.status(500).json({ message: "Failed to update travel statuses", error: error.message });
+    }
+  });
+
   // Send 3-day digest emails (manual trigger or cron job)
   app.post("/api/admin/send-weekly-digest", async (req, res) => {
     try {

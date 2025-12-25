@@ -149,8 +149,8 @@ export class TravelStatusService {
         return {
           shouldBeTravel: true,
           destination: plan.destination,
-          startDate: plan.startDate,
-          endDate: plan.endDate,
+          startDate: plan.startDate?.toString() || undefined,
+          endDate: plan.endDate?.toString() || undefined,
         };
       }
 
