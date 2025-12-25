@@ -108,38 +108,14 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     fetchAllCities();
   }, []);
   
-  // CRITICAL FIX: Re-filter cities when userProfile loads
+  // Show all cities - removed overly restrictive filter that broke the page
+  // Users can search to find their specific city
   useEffect(() => {
-    if (!userProfile || allCities.length === 0) return;
-    
-    console.log('🏙️ MATCH: Filtering cities based on user profile');
-    const relevantCities: any[] = [];
-    
-    // Add hometown city
-    if (userProfile.hometownCity) {
-      const hometownCity = allCities.find((c: any) => 
-        c.city.toLowerCase() === userProfile.hometownCity?.toLowerCase()
-      );
-      if (hometownCity) {
-        relevantCities.push(hometownCity);
-      }
+    if (allCities.length > 0) {
+      console.log('🏙️ MATCH: Showing all', allCities.length, 'cities');
+      setFilteredCities(allCities);
     }
-    
-    // Add destination city
-    if (userProfile.destinationCity) {
-      const destCity = allCities.find((c: any) => 
-        c.city.toLowerCase() === userProfile.destinationCity?.toLowerCase()
-      );
-      if (destCity && !relevantCities.some((c: any) => c.city === destCity.city)) {
-        relevantCities.push(destCity);
-      }
-    }
-    
-    if (relevantCities.length > 0) {
-      console.log('🏙️ MATCH: Filtered to user cities:', relevantCities.map((c: any) => c.city));
-      setFilteredCities(relevantCities);
-    }
-  }, [userProfile, allCities]);
+  }, [allCities]);
 
   // Fetch city activities when a city is selected
   useEffect(() => {
@@ -973,8 +949,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           
           {isInitialHeroVisible && (
           <div className="text-center mb-8 relative">
-            {/* Hide Hero Button */}
-            <div className="absolute top-0 right-0">
+            {/* Hide Hero Button - positioned below title on mobile */}
+            <div className="flex justify-end mb-2 md:absolute md:top-0 md:right-0 md:mb-0">
               <Button
                 variant="outline"
                 size="sm"
@@ -983,11 +959,11 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 data-testid="button-hide-match-initial-hero"
               >
                 <X className="w-4 h-4 mr-2" />
-                Hide Hero Section
+                Hide
               </Button>
             </div>
             
-            <h1 className="text-4xl font-bold text-white mb-4">🎯 Match in City</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">🎯 Match in City</h1>
             <p className="text-xl text-white/80 mb-4">Select a city to start matching with people!</p>
             <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 max-w-2xl mx-auto">
               <p className="text-white/90 text-sm leading-relaxed">
