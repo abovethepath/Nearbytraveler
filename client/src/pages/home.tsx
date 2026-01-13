@@ -78,6 +78,12 @@ export default function Home() {
   const [showAllUsers, setShowAllUsers] = useState(false);
   const [sortBy, setSortBy] = useState<'recent' | 'active' | 'compatibility' | 'travel_experience' | 'closest_nearby' | 'aura' | 'references' | 'alphabetical'>('recent');
   
+  // Check for compact mode URL parameter (for pitch deck screenshots)
+  const isCompactMode = useMemo(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('compact') === 'true';
+  }, []);
+  
   // Lazy loading state - track which sections have been loaded - LOAD ALL IMMEDIATELY FOR DEMO
   const [loadedSections, setLoadedSections] = useState<Set<string>>(new Set(['hero', 'users', 'events', 'messages', 'weather', 'quickMeets'])); // Load all sections immediately
   const [activeSection, setActiveSection] = useState<string>('hero');
@@ -1967,6 +1973,7 @@ export default function Home() {
                             currentUserId={effectiveUser?.id}
                             isCurrentUser={otherUser.id === effectiveUser?.id}
                             compatibilityData={compatibilityData?.find((match: any) => match.userId === otherUser.id)}
+                            compact={isCompactMode}
                           />
                         </div>
                       ))

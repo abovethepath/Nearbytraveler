@@ -38,6 +38,7 @@ interface UserCardProps {
   isCurrentUser?: boolean;
   showCompatibilityScore?: boolean;
   compatibilityData?: any;
+  compact?: boolean;
 }
 
 function getCurrentOrNextTrip(travelPlans: any[]) {
@@ -72,7 +73,8 @@ export default function UserCard({
   currentUserId,
   isCurrentUser = false,
   showCompatibilityScore = false,
-  compatibilityData
+  compatibilityData,
+  compact = false
 }: UserCardProps) {
   
   const handleCardClick = (e: React.MouseEvent) => {
@@ -124,53 +126,56 @@ export default function UserCard({
     >
       {/* Individual User Gradient Banner - keeps user's personal color */}
       <div 
-        className="h-24 relative overflow-hidden flex-shrink-0" 
+        className={`${compact ? 'h-12' : 'h-24'} relative overflow-hidden flex-shrink-0`}
         style={{ background: getUserGradient() }}
       >
         {/* Subtle overlay for depth */}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10"></div>
       </div>
       
-      <CardContent className="p-4 pb-5 -mt-12 flex flex-col flex-grow min-h-0">
+      <CardContent className={`${compact ? 'p-2 pb-3 -mt-6' : 'p-4 pb-5 -mt-12'} flex flex-col flex-grow min-h-0`}>
         {/* User Info - Content that can vary */}
-        <div className="space-y-3 flex flex-col">
+        <div className={`${compact ? 'space-y-1' : 'space-y-3'} flex flex-col`}>
           {/* Large Circular Avatar with enhanced ring */}
           <div className="flex justify-center">
             <SimpleAvatar 
               user={user} 
               size="lg" 
-              className="ring-4 ring-white dark:ring-gray-800 shadow-2xl w-24 h-24 border-2 border-white/50 dark:border-gray-700/50"
+              className={`ring-4 ring-white dark:ring-gray-800 shadow-2xl ${compact ? 'w-12 h-12' : 'w-24 h-24'} border-2 border-white/50 dark:border-gray-700/50`}
             />
           </div>
           
           <div className="text-center">
             {user.userType === 'business' && user.businessName ? (
               <>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white truncate bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text">
+                <h3 className={`${compact ? 'text-sm' : 'text-xl'} font-bold text-gray-900 dark:text-white truncate bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text`}>
                   {user.businessName}
                 </h3>
-                <div className="flex items-center justify-center gap-1 mt-1">
-                  <span className="text-xs text-gray-600 dark:text-gray-400">
-                    Nearby Business
-                  </span>
-                  {(user as any).businessType && (
-                    <>
-                      <span className="text-xs text-gray-400">•</span>
-                      <span className="text-xs text-gray-600 dark:text-gray-400">
-                        {(user as any).businessType}
-                      </span>
-                    </>
-                  )}
-                </div>
+                {!compact && (
+                  <div className="flex items-center justify-center gap-1 mt-1">
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      Nearby Business
+                    </span>
+                    {(user as any).businessType && (
+                      <>
+                        <span className="text-xs text-gray-400">•</span>
+                        <span className="text-xs text-gray-600 dark:text-gray-400">
+                          {(user as any).businessType}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                )}
               </>
             ) : (
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white truncate bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text">
+              <h3 className={`${compact ? 'text-sm' : 'text-xl'} font-bold text-gray-900 dark:text-white truncate bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text`}>
                 @{user.username}
               </h3>
             )}
           </div>
           
-          {/* Location and Travel Info */}
+          {/* Location and Travel Info - hide in compact mode */}
+          {!compact && (
           <div className="space-y-2">
             {user.userType === 'business' ? (
               /* Business Contact Information */
@@ -252,8 +257,10 @@ export default function UserCard({
               </>
             )}
           </div>
+          )}
           
-          {/* Bio - Fixed height to ensure alignment */}
+          {/* Bio - Fixed height to ensure alignment - hide in compact mode */}
+          {!compact && (
           <div className="min-h-[3rem] flex items-start justify-center">
             {user.bio && (() => {
               // Remove "Born: [date]" information from bio display
@@ -269,9 +276,10 @@ export default function UserCard({
               ) : null;
             })()}
           </div>
+          )}
 
-          {/* Secret Activities - For hometown city pages (with metro area support) */}
-          {user.secretActivities && searchLocation && (() => {
+          {/* Secret Activities - For hometown city pages (with metro area support) - hide in compact mode */}
+          {!compact && user.secretActivities && searchLocation && (() => {
             // Check if hometown matches search location directly
             if (user.hometownCity?.toLowerCase().includes(searchLocation.toLowerCase())) {
               return true;
