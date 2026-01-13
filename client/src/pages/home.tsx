@@ -143,12 +143,16 @@ export default function Home() {
     }
 
     // Calculate current travel status with proper destination logic
-    // Prioritize API data over travel plans for travel status
+    // CRITICAL FIX: Only show travel destination if there's an ACTIVE travel plan
     const currentTravelDestination = getCurrentTravelDestination(Array.isArray(travelPlans) ? travelPlans : []);
-    const isCurrentlyTraveling = userData.isCurrentlyTraveling ?? !!currentTravelDestination;
     
-    // Use the active travel plan destination first, fallback to API data
-    const travelDestination = currentTravelDestination || userData.travelDestination || null;
+    // Only consider traveling if we have a currently active travel plan
+    // Don't trust userData.isCurrentlyTraveling if there's no active plan (stale data)
+    const isCurrentlyTraveling = !!currentTravelDestination;
+    
+    // CRITICAL: Only use userData.travelDestination if we have an active travel plan
+    // This prevents showing stale "traveling to X" when trip has ended
+    const travelDestination = currentTravelDestination || null;
 
     // Return enriched user data with travel context
     const enrichedUser = {
@@ -178,8 +182,9 @@ export default function Home() {
     return {
       ...effectiveUser,
       isCurrentlyTraveling: !!currentTravelDestination,
-      // CRITICAL: Only set travelDestination if we have a valid sanitized value
-      travelDestination: currentTravelDestination || effectiveUser.travelDestination || null,
+      // CRITICAL: Only set travelDestination if we have an ACTIVE travel plan
+      // Don't fallback to stale effectiveUser.travelDestination
+      travelDestination: currentTravelDestination || null,
       actualCurrentLocation // Add this new field
     };
   }, [effectiveUser, travelPlans]);
@@ -258,8 +263,9 @@ export default function Home() {
       
       return {
         ...user,
-        // CRITICAL: Only set travelDestination if we have a valid sanitized value
-        travelDestination: currentTravelDestination || user.travelDestination || null,
+        // CRITICAL: Only set travelDestination if we have an ACTIVE travel plan
+        // Don't fallback to stale user.travelDestination
+        travelDestination: currentTravelDestination || null,
         isCurrentlyTraveling,
         displayLocation: currentLocation, // This will show "Rome" instead of "Traveling"
         locationContext: isCurrentlyTraveling ? 'traveling' : 'hometown'
@@ -273,8 +279,9 @@ export default function Home() {
 
     return {
       ...user,
-      // CRITICAL: Only set travelDestination if we have a valid sanitized value
-      travelDestination: currentTravelDestination || user.travelDestination || null,
+      // CRITICAL: Only set travelDestination if we have an ACTIVE travel plan
+      // Don't fallback to stale user.travelDestination
+      travelDestination: currentTravelDestination || null,
       isCurrentlyTraveling,
       displayLocation,
       locationContext: isCurrentlyTraveling ? 'traveling' : 'hometown'

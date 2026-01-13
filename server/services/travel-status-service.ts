@@ -1,6 +1,6 @@
 import { db } from "../db";
 import { users, travelPlans } from "@shared/schema";
-import { eq, and, lte, gte } from "drizzle-orm";
+import { eq, and, lte, gte, or, isNotNull } from "drizzle-orm";
 
 export class TravelStatusService {
   /**
@@ -12,32 +12,41 @@ export class TravelStatusService {
       const today = new Date();
       today.setHours(0, 0, 0, 0); // Start of day
 
-      // Get all users with travel plans with simplified query
-      const usersWithPlans = await db
+      // Get all users who need travel status check:
+      // 1. Users with planned travel plans
+      // 2. Users who are marked as currently traveling
+      // 3. Users who have destination data (stale or current)
+      const usersToCheck = await db
         .select({
           userId: users.id,
           username: users.username,
           isCurrentlyTraveling: users.isCurrentlyTraveling,
+          destinationCity: users.destinationCity,
           travelDestination: users.travelDestination,
-          travelStartDate: users.travelStartDate,
-          travelEndDate: users.travelEndDate,
-          planId: travelPlans.id,
-          planDestination: travelPlans.destination,
-          planStartDate: travelPlans.startDate,
-          planEndDate: travelPlans.endDate,
         })
         .from(users)
-        .leftJoin(travelPlans, eq(users.id, travelPlans.userId))
-        .where(eq(travelPlans.status, "planned"))
-        .limit(50); // Limit to prevent overwhelming queries
+        .where(
+          or(
+            eq(users.isCurrentlyTraveling, true),
+            isNotNull(users.destinationCity),
+            isNotNull(users.travelDestination)
+          )
+        )
+        .limit(100);
 
-      console.log(`Checking travel status for ${usersWithPlans.length} user travel plans`);
+      console.log(`Checking travel status for ${usersToCheck.length} users with travel data`);
 
-      for (const userPlan of usersWithPlans) {
-        await this.updateUserTravelStatus(userPlan.userId, today);
+      // Track unique user IDs to avoid duplicate processing
+      const processedUserIds = new Set<number>();
+
+      for (const user of usersToCheck) {
+        if (!processedUserIds.has(user.userId)) {
+          processedUserIds.add(user.userId);
+          await this.updateUserTravelStatus(user.userId, today);
+        }
       }
 
-      console.log("Travel status update completed for all users");
+      console.log(`Travel status update completed for ${processedUserIds.size} unique users`);
     } catch (error) {
       console.error("Error updating travel statuses:", error);
     }
@@ -95,7 +104,10 @@ export class TravelStatusService {
         }
       } else {
         // No active plans - user should be local
-        if (user.isCurrentlyTraveling) {
+        // ALWAYS clear destination fields if ANY stale data exists (not just when isCurrentlyTraveling is true)
+        const hasStaleData = user.isCurrentlyTraveling || user.destinationCity || user.travelDestination;
+        
+        if (hasStaleData) {
           await db
             .update(users)
             .set({
@@ -112,7 +124,7 @@ export class TravelStatusService {
             })
             .where(eq(users.id, userId));
 
-          console.log(`User ${user.username} (${userId}) is now back home (userType: ${user.userType === 'business' ? 'business' : 'local'})`);
+          console.log(`User ${user.username} (${userId}) is now back home - cleared stale travel data (userType: ${user.userType === 'business' ? 'business' : 'local'})`);
         }
       }
     } catch (error) {
