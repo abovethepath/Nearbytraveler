@@ -1109,9 +1109,10 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                           <SelectValue placeholder="Choose repeat frequency" />
                         </SelectTrigger>
                         <SelectContent 
-                          className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 z-[9999]"
+                          className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
                           position="popper"
-                          sideOffset={5}
+                          sideOffset={8}
+                          style={{ zIndex: 999999 }}
                         >
                           <SelectItem value="daily" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700">Every Day</SelectItem>
                           <SelectItem value="weekly" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700">Every Week (same day)</SelectItem>
@@ -1312,23 +1313,23 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
               <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center">
                 {imagePreview ? (
                   <div className="space-y-4">
-                    <img
-                      src={imagePreview}
-                      alt="Event preview"
-                      className="max-w-full h-48 object-cover rounded-lg mx-auto"
-                    />
-                    <div className="flex gap-2 justify-center">
-                      <Button
+                    <div className="relative inline-block">
+                      <img
+                        src={imagePreview}
+                        alt="Event preview"
+                        className="max-w-full h-48 object-cover rounded-lg mx-auto"
+                      />
+                      <button
                         type="button"
-                        variant="outline"
-                        size="sm"
                         onClick={() => {
                           setImagePreview(null);
                           setValue("imageUrl", "");
                         }}
+                        className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-lg transition-colors"
+                        aria-label="Remove image"
                       >
-                        Remove Image
-                      </Button>
+                        <X className="w-4 h-4" />
+                      </button>
                     </div>
                   </div>
                 ) : (
