@@ -78,9 +78,11 @@ export default function Home() {
   const [showAllUsers, setShowAllUsers] = useState(false);
   const [sortBy, setSortBy] = useState<'recent' | 'active' | 'compatibility' | 'travel_experience' | 'closest_nearby' | 'aura' | 'references' | 'alphabetical'>('recent');
   
-  // Compact mode enabled by default for pitch deck screenshots
-  // Set to true for smaller cards, false for normal view
-  const isCompactMode = true;
+  // Compact mode via URL parameter (add ?compact=true for smaller cards)
+  const isCompactMode = useMemo(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('compact') === 'true';
+  }, []);
   
   // Lazy loading state - track which sections have been loaded - LOAD ALL IMMEDIATELY FOR DEMO
   const [loadedSections, setLoadedSections] = useState<Set<string>>(new Set(['hero', 'users', 'events', 'messages', 'weather', 'quickMeets'])); // Load all sections immediately
