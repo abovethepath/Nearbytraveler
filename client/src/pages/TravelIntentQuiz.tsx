@@ -13,10 +13,10 @@ export default function TravelIntentQuiz() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  // Get user from localStorage instead of context
+  // Get user from localStorage - check both possible keys
   const getUserFromStorage = () => {
     try {
-      const userData = localStorage.getItem('travelconnect_user');
+      const userData = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
       return userData ? JSON.parse(userData) : null;
     } catch {
       return null;
