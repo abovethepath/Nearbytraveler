@@ -3264,7 +3264,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           // Find the nearbytrav system account (ID 2)
           const nearbytravAccount = await storage.getUser(2);
           if (nearbytravAccount) {
-            await storage.sendSystemMessage(2, user.id, `Welcome to Nearby Traveler, ${user.name || user.username}! ✈️
+            // Extract first name only (take first word of full name)
+            const firstName = (user.name || user.username || 'Traveler').split(' ')[0];
+            await storage.sendSystemMessage(2, user.id, `Welcome to Nearby Traveler, ${firstName}! ✈️
 
 I'm Aaron - excited to have you join our community connecting travelers and locals through shared interests.
 
@@ -4445,8 +4447,10 @@ Questions? Just reply to this message!
         // Find the nearbytrav system account (ID 2)
         const nearbytravAccount = await storage.getUser(2);
         if (nearbytravAccount) {
+          // Extract first name only (take first word of full name)
+          const firstName = (user.name || user.username || 'Traveler').split(' ')[0];
           const welcomeMessage = user.userType === 'business'
-            ? `Welcome to Nearby Traveler Business, @${user.username}! 🏢
+            ? `Welcome to Nearby Traveler Business, ${firstName}! 🏢
 
 **Key Features:**
 • Create deals & flash sales for immediate foot traffic
@@ -4457,7 +4461,7 @@ Questions? Just reply to this message!
 Start by creating your first offer from your Business Dashboard!
 
 Aaron`
-            : `Welcome to Nearby Traveler, ${user.name || user.username}! ✈️
+            : `Welcome to Nearby Traveler, ${firstName}! ✈️
 
 I'm Aaron - excited to have you join our community connecting travelers and locals through shared interests.
 
