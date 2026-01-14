@@ -665,15 +665,10 @@ export class DatabaseStorage implements IStorage {
       hometownCountryType: typeof cleanUserData.hometownCountry
     });
 
-    // LA METRO CONSOLIDATION AT SIGNUP: Consolidate all LA Metro cities to "Los Angeles Metro"
+    // PRESERVE ACTUAL CITY: User's hometown city is kept as-is (e.g., "Culver City" not "Los Angeles Metro")
+    // Metro area consolidation is only used for SEARCH purposes, not stored in user profiles
     if (cleanUserData.hometownCity && laMetroCities.includes(cleanUserData.hometownCity)) {
-      if (process.env.NODE_ENV === 'development') console.log(`🏙️ LA METRO SIGNUP CONSOLIDATION: ${cleanUserData.hometownCity} → Los Angeles Metro`);
-      cleanUserData.hometownCity = 'Los Angeles Metro';
-      
-      // Also update location field if it exists
-      if (cleanUserData.location && cleanUserData.location.includes(insertUser.hometownCity!)) {
-        cleanUserData.location = cleanUserData.location.replace(insertUser.hometownCity!, 'Los Angeles Metro');
-      }
+      if (process.env.NODE_ENV === 'development') console.log(`🏙️ LA METRO: Preserving actual city "${cleanUserData.hometownCity}" (metro consolidation only used for searches)`);
     }
     
     // DEFAULT COUNTRIES: Automatically add hometown AND destination countries to countries visited
