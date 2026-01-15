@@ -133,6 +133,52 @@ body {
     white-space: pre-wrap;
     word-wrap: break-word;
   }
+  
+  /* CRITICAL: Fix buttons getting cut off on mobile */
+  button, 
+  [role="button"],
+  .btn,
+  a[class*="button"],
+  [class*="Button"] {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Ensure button text wraps properly on small screens */
+  button span,
+  [role="button"] span,
+  .btn span {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+  }
+  
+  /* Fix flex containers with buttons */
+  .flex button,
+  .flex [role="button"],
+  .inline-flex button {
+    flex-shrink: 1 !important;
+    min-width: 0 !important;
+  }
+  
+  /* Ensure CTA buttons don't overflow */
+  [class*="px-8"],
+  [class*="px-10"],
+  [class*="px-12"] {
+    max-width: calc(100vw - 2rem) !important;
+  }
+  
+  /* Fix button groups and action bars */
+  .flex.gap-4,
+  .flex.gap-3,
+  .flex.gap-2 {
+    flex-wrap: wrap !important;
+  }
+  
+  /* Ensure all interactive elements fit viewport */
+  input, select, textarea {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
 }
 
 /* Modern 2025 Animations */
