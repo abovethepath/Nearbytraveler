@@ -291,13 +291,20 @@ app.use((req, res, next) => {
 // Global rate limits - increased for real-time app with WebSocket, chat, and frequent polling
 app.use("/api/", rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 2000,              // increased from 800 - real-time chat apps need more requests
+  max: 3000,              // generous limit for real-time chat apps
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many requests, please try again later' },
+  // CRITICAL: Use real IP from X-Forwarded-For header behind Replit proxy
+  keyGenerator: (req) => {
+    // Get real IP from X-Forwarded-For header (Replit sets this)
+    const forwardedFor = req.headers['x-forwarded-for'];
+    const realIp = Array.isArray(forwardedFor) ? forwardedFor[0] : forwardedFor?.split(',')[0]?.trim();
+    return realIp || req.ip || 'unknown';
+  },
   skip: (req) => {
     // Skip rate limiting for profile update endpoints to prevent blocking important user actions
-    return req.method === 'PUT' && req.path.includes('/users/') && !req.path.includes('/photos');
+    return req.method === 'PUT' && req.path.includes('/users/');
   }
 }));
 
