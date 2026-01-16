@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState, useMemo } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Link } from "wouter";
 
 interface ThingsIWantToDoSectionProps {
   userId: number;
@@ -376,14 +377,16 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
           })}
         </div>
       ) : (
-        <div className="text-center py-12">
-          <p className={`text-orange-600 dark:text-orange-500 font-semibold mb-3 ${isMobile ? 'text-base' : 'text-xl'}`}>
-            No activities or events selected yet.
-          </p>
-          <p className={`text-orange-500 dark:text-orange-400 ${isMobile ? 'text-sm' : 'text-lg'}`}>
-            Go to city match pages to select activities and events!
-          </p>
-        </div>
+        <Link href="/discover">
+          <div className="text-center py-12 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors">
+            <p className={`text-orange-600 dark:text-orange-500 font-semibold mb-3 ${isMobile ? 'text-base' : 'text-xl'}`}>
+              No activities or events selected yet.
+            </p>
+            <p className={`text-orange-500 dark:text-orange-400 underline hover:text-orange-600 dark:hover:text-orange-300 ${isMobile ? 'text-sm' : 'text-lg'}`}>
+              Go to city match pages to select activities and events!
+            </p>
+          </div>
+        </Link>
       )}
     </div>
   );
