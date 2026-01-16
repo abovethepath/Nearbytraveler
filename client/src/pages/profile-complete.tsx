@@ -4901,7 +4901,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         Activities
                       </h4>
                       {(() => {
-                        const allActivities = [...(user?.activities || []), ...(user?.customActivities ? user.customActivities.split(',').map(s => s.trim()).filter(Boolean) : [])];
+                        // Filter out city-prefixed activities (like "Los Angeles Metro: WALKING GROUPS") 
+                        // since they're already shown in "Things I Want to Do" section below
+                        const rawActivities = [...(user?.activities || []), ...(user?.customActivities ? user.customActivities.split(',').map(s => s.trim()).filter(Boolean) : [])];
+                        const allActivities = rawActivities.filter(activity => !activity.includes(':'));
                         
                         return allActivities.length > 0 ? (
                           <div className="flex flex-wrap gap-2">
