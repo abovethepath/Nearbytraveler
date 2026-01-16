@@ -288,12 +288,17 @@ app.use((req, res, next) => {
   next();
 });
 
-// Global rate limits
+// Global rate limits - increased for real-time app with WebSocket, chat, and frequent polling
 app.use("/api/", rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 800,              // tune as needed
+  max: 2000,              // increased from 800 - real-time chat apps need more requests
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later' },
+  skip: (req) => {
+    // Skip rate limiting for profile update endpoints to prevent blocking important user actions
+    return req.method === 'PUT' && req.path.includes('/users/') && !req.path.includes('/photos');
+  }
 }));
 
 // Configure session middleware with Redis for production
