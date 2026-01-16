@@ -35,7 +35,7 @@ export default function Privacy() {
           
           <div className="prose prose-gray max-w-none space-y-6">
             <p className="text-sm text-gray-600 mb-6">
-              <strong>Last Updated:</strong> June 15, 2025
+              <strong>Last Updated:</strong> January 16, 2026
             </p>
 
             <section>
@@ -164,21 +164,37 @@ export default function Privacy() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">9. Children's Privacy</h2>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-4">9. Mobile Application</h2>
+              <p className="text-gray-700 mb-4">
+                When using our mobile application, we may collect additional information:
+              </p>
+              <ul className="list-disc pl-6 space-y-2 text-gray-700">
+                <li><strong>Device Information:</strong> Device type, operating system, and unique device identifiers</li>
+                <li><strong>Push Notifications:</strong> If enabled, we send notifications about messages, events, and connections</li>
+                <li><strong>Location Services:</strong> If permitted, we use your device location to show nearby travelers and local recommendations</li>
+                <li><strong>Camera and Photos:</strong> Only accessed when you choose to upload profile photos or content</li>
+              </ul>
+              <p className="text-gray-700 mt-4">
+                You can manage app permissions through your device settings at any time.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-4">10. Children's Privacy</h2>
               <p className="text-gray-700">
                 Our platform is not intended for users under 16 years of age. We do not knowingly collect personal information from children under 16.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">10. Changes to This Policy</h2>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-4">11. Changes to This Policy</h2>
               <p className="text-gray-700">
                 We may update this privacy policy periodically. We will notify you of significant changes via email or platform notification.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">11. Contact Us</h2>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-4">12. Contact Us</h2>
               <p className="text-gray-700">
                 If you have questions about this privacy policy or our data practices, please contact us at:
               </p>
