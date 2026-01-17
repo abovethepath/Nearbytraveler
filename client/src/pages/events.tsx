@@ -1054,12 +1054,11 @@ export default function Events() {
                 <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">All Community Events</h2>
                 <Button
                   variant="outline"
-                  size="sm"
                   onClick={() => setLocation('/event-history')}
-                  className="flex items-center gap-2 text-orange-600 border-orange-300 hover:bg-orange-50 dark:text-orange-400 dark:border-orange-700 dark:hover:bg-orange-900/20"
+                  className="flex items-center gap-2 px-4 py-2 text-base font-semibold text-orange-600 border-2 border-orange-400 hover:bg-orange-100 hover:border-orange-500 dark:text-orange-400 dark:border-orange-500 dark:hover:bg-orange-900/30 shadow-sm"
                 >
-                  <History className="h-4 w-4" />
-                  <span className="hidden sm:inline">Past Events</span>
+                  <History className="h-5 w-5" />
+                  <span>Past Events</span>
                 </Button>
               </div>
               {filteredUpcomingEvents.length === 0 ? (
