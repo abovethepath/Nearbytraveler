@@ -40,10 +40,15 @@ export class TravelMatchingService {
    * Find compatible travel connections for a user
    */
   async findMatches(userId: number, preferences?: MatchingPreferences): Promise<MatchScore[]> {
+    const startTime = Date.now();
+    console.log(`⏱️ MATCHING: Starting findMatches for user ${userId}`);
+    
     const user = await storage.getUser(userId);
     if (!user) throw new Error('User not found');
+    console.log(`⏱️ MATCHING: Got user in ${Date.now() - startTime}ms`);
 
     const userTravelPlans = await storage.getUserTravelPlans(userId);
+    console.log(`⏱️ MATCHING: Got user travel plans in ${Date.now() - startTime}ms`);
     
     // If we have a target destination preference, filter users by location first
     let potentialMatches: any[];
@@ -56,6 +61,7 @@ export class TravelMatchingService {
       // Use all users for general matching
       potentialMatches = await this.getAllPotentialMatches(userId);
     }
+    console.log(`⏱️ MATCHING: Got ${potentialMatches.length} potential matches in ${Date.now() - startTime}ms`);
     
     const matches: MatchScore[] = [];
 
@@ -73,6 +79,8 @@ export class TravelMatchingService {
         matches.push(score);
       }
     }
+    
+    console.log(`⏱️ MATCHING: Completed scoring ${potentialMatches.length} users in ${Date.now() - startTime}ms, found ${matches.length} matches`);
 
     // Sort by score descending
     return matches.sort((a, b) => b.score - a.score);
