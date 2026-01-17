@@ -254,7 +254,7 @@ export default function SignupAccount() {
               </div>
             )}
             
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} noValidate className="space-y-4">
               <div>
                 <Label htmlFor="name" className="text-base font-medium text-gray-900 dark:text-white">
                   {userType === 'business' ? 'Business Name *' : 'Full Name *'}

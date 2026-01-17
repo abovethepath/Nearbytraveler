@@ -389,7 +389,7 @@ export default function SignupBusinessSimple() {
             </div>
             
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6 md:space-y-8 overflow-hidden break-words">
+              <form onSubmit={form.handleSubmit(onSubmit)} noValidate className="space-y-4 sm:space-y-6 md:space-y-8 overflow-hidden break-words">
                 
                 {/* Account Owner Information Section - Mobile Responsive */}
                 <div className="space-y-3 sm:space-y-4 bg-blue-50 p-3 sm:p-4 md:p-6 rounded-lg overflow-hidden break-words">

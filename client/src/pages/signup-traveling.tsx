@@ -351,7 +351,7 @@ export default function SignupTraveling() {
           </CardHeader>
 
           <CardContent className="p-4 sm:p-8 space-y-6 sm:space-y-8">
-            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
+            <form onSubmit={handleSubmit} noValidate className="space-y-6 sm:space-y-8">
 
               {/* Personal Information */}
               <div className="space-y-4">

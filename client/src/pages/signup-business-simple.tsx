@@ -326,7 +326,7 @@ export default function SignupBusinessSimple() {
             </div>
             
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <form onSubmit={form.handleSubmit(onSubmit)} noValidate className="space-y-8">
                 
                 {/* Account Owner Information Section */}
                 <div className="space-y-4 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
