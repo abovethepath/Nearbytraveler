@@ -1839,9 +1839,9 @@ export default function BusinessDashboard() {
                       <FormControl>
                         <Input 
                           placeholder={
-                            form.watch("discountType") === "percentage" ? "20" : 
-                            form.watch("discountType") === "fixed_amount" ? "10" :
-                            "Buy 1 Get 1 Free"
+                            form.watch("discountType") === "percentage" ? "Enter percentage (e.g., 20)" : 
+                            form.watch("discountType") === "fixed_amount" ? "Enter amount (e.g., 10)" :
+                            "Describe your offer"
                           } 
                           {...field} 
                         />
@@ -1863,7 +1863,7 @@ export default function BusinessDashboard() {
                     <FormItem>
                       <FormLabel className="text-gray-900 dark:text-white">Discount Code</FormLabel>
                       <FormControl>
-                        <Input placeholder="SAVE20" {...field} />
+                        <Input placeholder="Enter code (optional)" {...field} />
                       </FormControl>
                       <FormDescription className="text-gray-600 dark:text-gray-400">
                         Optional promo code customers can use
