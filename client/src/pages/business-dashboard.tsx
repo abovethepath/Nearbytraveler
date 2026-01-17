@@ -345,8 +345,8 @@ export default function BusinessDashboard() {
     monthlyQuickDealsLimit: 10,
     monthlyQuickDealsRemaining: 10,
     monthlyBusinessDeals: 0,
-    monthlyBusinessDealsLimit: 10,
-    monthlyBusinessDealsRemaining: 10
+    monthlyBusinessDealsLimit: 5,
+    monthlyBusinessDealsRemaining: 5
   }, refetch: refetchAnalytics } = useQuery<{
     totalOffers: number;
     totalViews: number;
