@@ -864,6 +864,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [showFullGallery, setShowFullGallery] = useState(false);
   const [businessesDisplayCount, setBusinessesDisplayCount] = useState(3);
   const [expandedTravelPlan, setExpandedTravelPlan] = useState<number | null>(null);
+  const [showExpandedPhoto, setShowExpandedPhoto] = useState(false);
   
 
   
@@ -3643,7 +3644,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Avatar + camera (bigger, no scrollbars) */}
             <div className="relative flex-shrink-0">
-              <div className="rounded-full bg-white dark:bg-gray-800 ring-4 ring-white dark:ring-gray-700 shadow-lg overflow-hidden">
+              <div 
+                className={`rounded-full bg-white dark:bg-gray-800 ring-4 ring-white dark:ring-gray-700 shadow-lg overflow-hidden ${!isOwnProfile && user?.profileImage ? 'cursor-pointer hover:ring-orange-400 transition-all' : ''}`}
+                onClick={() => {
+                  if (!isOwnProfile && user?.profileImage) {
+                    setShowExpandedPhoto(true);
+                  }
+                }}
+                title={!isOwnProfile && user?.profileImage ? "Click to enlarge photo" : undefined}
+              >
                 <div className="w-36 h-36 sm:w-40 sm:h-40 md:w-56 md:h-56 rounded-full overflow-hidden no-scrollbar">
                   <SimpleAvatar
                     user={user}
@@ -9082,6 +9091,34 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             >
               Browse All City Chatrooms
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Expanded Profile Photo Modal - Only for viewing other users' profiles */}
+      <Dialog open={showExpandedPhoto} onOpenChange={setShowExpandedPhoto}>
+        <DialogContent className="max-w-[95vw] sm:max-w-2xl md:max-w-3xl lg:max-w-4xl p-2 sm:p-4 bg-black/95 border-gray-700">
+          <DialogHeader className="sr-only">
+            <DialogTitle>Profile Photo</DialogTitle>
+            <DialogDescription>Enlarged view of {user?.username}'s profile photo</DialogDescription>
+          </DialogHeader>
+          <div className="flex items-center justify-center w-full">
+            {user?.profileImage ? (
+              <img
+                src={user.profileImage}
+                alt={`${user?.username || 'User'}'s profile photo`}
+                className="max-w-full max-h-[80vh] object-contain rounded-lg"
+              />
+            ) : (
+              <div className="w-64 h-64 sm:w-80 sm:h-80 rounded-full bg-gradient-to-br from-blue-500 to-orange-500 flex items-center justify-center">
+                <span className="text-6xl sm:text-8xl text-white font-bold">
+                  {user?.username?.charAt(0)?.toUpperCase() || '?'}
+                </span>
+              </div>
+            )}
+          </div>
+          <div className="text-center mt-2">
+            <p className="text-white text-lg font-semibold">@{user?.username}</p>
           </div>
         </DialogContent>
       </Dialog>
