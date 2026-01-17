@@ -711,7 +711,10 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                     )}
 
                     {editingMessageId === message.id ? (
-                      <div className={`px-3 py-2 rounded-2xl ${isOwnMessage ? 'bg-green-600' : 'bg-gray-700'} ${message.replyToId ? 'rounded-tl-none' : ''}`}>
+                      <div 
+                        className={`px-3 py-2 rounded-2xl chat-message-bubble ${message.replyToId ? 'rounded-tl-none' : ''}`}
+                        style={{ backgroundColor: isOwnMessage ? '#10b981' : '#374151', border: 'none' }}
+                      >
                         <Textarea
                           value={editText}
                           onChange={(e) => setEditText(e.target.value)}
@@ -731,9 +734,16 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                         </div>
                       </div>
                     ) : (
-                      <div className={`px-3 py-1.5 rounded-2xl ${isOwnMessage ? 'bg-green-600 text-white' : 'bg-gray-700 text-white'} ${message.replyToId ? 'rounded-tl-none' : ''}`}>
+                      <div 
+                        className={`px-3 py-1.5 rounded-2xl chat-message-bubble ${message.replyToId ? 'rounded-tl-none' : ''}`}
+                        style={{ 
+                          backgroundColor: isOwnMessage ? '#10b981' : '#374151', 
+                          color: '#ffffff',
+                          border: 'none'
+                        }}
+                      >
                         {!isOwnMessage && showAvatar && (
-                          <p className="text-xs font-semibold mb-0.5 text-green-400">{getFirstName(message.sender?.name, message.sender?.username)}</p>
+                          <p className="text-xs font-semibold mb-0.5" style={{ color: '#4ade80' }}>{getFirstName(message.sender?.name, message.sender?.username)}</p>
                         )}
                         <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
                         

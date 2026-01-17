@@ -371,29 +371,29 @@ img,
 }
 
 /* LIGHT MODE ONLY PILL CONSISTENCY FIX - Force ALL pills to use standard white bg/black text styling */
-/* IMPORTANT: These selectors are now more specific to avoid catching input fields */
-.pill:not(input), 
-[class*="pill"]:not(input),
-[class*="pill-"]:not(input),
-.inline-flex.items-center.justify-center.rounded-full[class*="bg-green"]:not(input),
-.inline-flex[class*="bg-green"][class*="text-white"]:not(input),
-.inline-flex.items-center.justify-center.rounded-full[class*="bg-blue"]:not(input),
-.inline-flex[class*="bg-blue"][class*="text-white"]:not(input),
-.inline-flex.items-center.justify-center.rounded-full[class*="bg-purple"]:not(input),
-.inline-flex[class*="bg-purple"][class*="text-white"]:not(input),
-div[class*="bg-green-500 text-white"],
-div[class*="bg-green-600 text-white"],
-div[class*="bg-blue-500 text-white"],
-div[class*="bg-blue-600 text-white"],
-div[class*="bg-purple-500 text-white"],
-div[class*="bg-purple-600 text-white"],
-button[class*="bg-green"][class*="text-white"][class*="rounded-full"],
-button[class*="bg-blue"][class*="text-white"][class*="rounded-full"],
-button[class*="bg-purple"][class*="text-white"][class*="rounded-full"],
+/* IMPORTANT: These selectors are now more specific to avoid catching input fields and chat bubbles */
+.pill:not(input):not(.chat-message-bubble), 
+[class*="pill"]:not(input):not(.chat-message-bubble),
+[class*="pill-"]:not(input):not(.chat-message-bubble),
+.inline-flex.items-center.justify-center.rounded-full[class*="bg-green"]:not(input):not(.chat-message-bubble),
+.inline-flex[class*="bg-green"][class*="text-white"]:not(input):not(.chat-message-bubble),
+.inline-flex.items-center.justify-center.rounded-full[class*="bg-blue"]:not(input):not(.chat-message-bubble),
+.inline-flex[class*="bg-blue"][class*="text-white"]:not(input):not(.chat-message-bubble),
+.inline-flex.items-center.justify-center.rounded-full[class*="bg-purple"]:not(input):not(.chat-message-bubble),
+.inline-flex[class*="bg-purple"][class*="text-white"]:not(input):not(.chat-message-bubble),
+div[class*="bg-green-500 text-white"]:not(.chat-message-bubble),
+div[class*="bg-green-600 text-white"]:not(.chat-message-bubble),
+div[class*="bg-blue-500 text-white"]:not(.chat-message-bubble),
+div[class*="bg-blue-600 text-white"]:not(.chat-message-bubble),
+div[class*="bg-purple-500 text-white"]:not(.chat-message-bubble),
+div[class*="bg-purple-600 text-white"]:not(.chat-message-bubble),
+button[class*="bg-green"][class*="text-white"][class*="rounded-full"]:not(.chat-message-bubble),
+button[class*="bg-blue"][class*="text-white"][class*="rounded-full"]:not(.chat-message-bubble),
+button[class*="bg-purple"][class*="text-white"][class*="rounded-full"]:not(.chat-message-bubble),
 /* Activity pills from profile pages */
-div[class*="pill-activities"],
-div[class*="pill-interests"],
-div[class*="pill-events"] {
+div[class*="pill-activities"]:not(.chat-message-bubble),
+div[class*="pill-interests"]:not(.chat-message-bubble),
+div[class*="pill-events"]:not(.chat-message-bubble) {
   background-color: white !important;
   background: white !important;
   color: black !important;

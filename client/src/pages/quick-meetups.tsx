@@ -593,8 +593,17 @@ function QuickMeetupsPage() {
             <DialogTitle>Manage Quick Meet</DialogTitle>
           </DialogHeader>
           {selectedMeetupId && (() => {
+            // Show loading while meetups are being fetched
+            if (isLoading || allMeetups.length === 0) {
+              return (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+                  <span className="ml-3 text-gray-600 dark:text-gray-400">Loading meetup details...</span>
+                </div>
+              );
+            }
             const selectedMeetup = allMeetups.find(m => m.id === selectedMeetupId);
-            if (!selectedMeetup) return <div>Meetup not found</div>;
+            if (!selectedMeetup) return <div className="text-center py-4 text-red-600">Meetup not found or has expired</div>;
             
             const isOrganizer = selectedMeetup.organizerId === actualUser?.id;
             
