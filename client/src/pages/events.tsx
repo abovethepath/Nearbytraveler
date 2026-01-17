@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Calendar, Clock, MapPin, Users, Search, Filter, Plus, Info, X, Heart, UserCheck, CheckCircle, Star, Sparkles, ChevronDown, MessageCircle } from "lucide-react";
+import { Calendar, Clock, MapPin, Users, Search, Filter, Plus, Info, X, Heart, UserCheck, CheckCircle, Star, Sparkles, ChevronDown, MessageCircle, History } from "lucide-react";
 import { useIsMobile, useIsDesktop } from "@/hooks/useDeviceType";
 
 import { type Event, type EventParticipant, type User as UserType } from "@shared/schema";
@@ -1050,7 +1050,18 @@ export default function Events() {
 
             {/* All Community Events Section */}
             <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">All Community Events</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">All Community Events</h2>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setLocation('/event-history')}
+                  className="flex items-center gap-2 text-orange-600 border-orange-300 hover:bg-orange-50 dark:text-orange-400 dark:border-orange-700 dark:hover:bg-orange-900/20"
+                >
+                  <History className="h-4 w-4" />
+                  <span className="hidden sm:inline">Past Events</span>
+                </Button>
+              </div>
               {filteredUpcomingEvents.length === 0 ? (
                 <div className="text-center py-6 sm:py-8">
                   <Calendar className="w-10 sm:w-12 h-10 sm:h-12 text-gray-300 dark:text-white mx-auto mb-3" />

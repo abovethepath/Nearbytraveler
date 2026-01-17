@@ -129,6 +129,21 @@ export default function EventsLanding() {
                     See How It Works
                   </Button>
                 </div>
+                
+                {/* Event History Link */}
+                <div className="mt-6 text-center lg:text-left">
+                  <Button
+                    onClick={() => {
+                      trackEvent('event_history_click', 'events_landing', 'browse_past');
+                      setLocation('/event-history');
+                    }}
+                    variant="link"
+                    className="text-orange-600 hover:text-orange-700 font-medium"
+                    data-testid="button-event-history"
+                  >
+                    📜 Browse Past Events & Connect with Attendees
+                  </Button>
+                </div>
               </div>
 
               {/* Right image side */}

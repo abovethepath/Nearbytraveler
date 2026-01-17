@@ -9752,24 +9752,145 @@ Questions? Just reply to this message. Welcome aboard!
   app.post("/api/events/cleanup", async (req, res) => {
     try {
       const now = new Date();
-      const oneDayAgo = new Date(now.getTime() - (24 * 60 * 60 * 1000)); // 1 day grace period
+      // Keep events for 90 days for Event History feature, then delete
+      const ninetyDaysAgo = new Date(now.getTime() - (90 * 24 * 60 * 60 * 1000)); 
       
-      if (process.env.NODE_ENV === 'development') console.log(`🧹 CLEANUP: Removing events older than ${oneDayAgo.toISOString()}`);
+      if (process.env.NODE_ENV === 'development') console.log(`🧹 CLEANUP: Removing events older than ${ninetyDaysAgo.toISOString()} (90 days ago)`);
       
-      // Delete past events that are more than 1 day old
+      // Delete past events that are more than 90 days old (keep for history)
       const result = await db.delete(events)
-        .where(lt(events.date, oneDayAgo));
+        .where(lt(events.date, ninetyDaysAgo));
       
-      if (process.env.NODE_ENV === 'development') console.log(`🧹 CLEANUP: Removed past events from database`);
+      if (process.env.NODE_ENV === 'development') console.log(`🧹 CLEANUP: Removed events older than 90 days from database`);
       
       return res.json({ 
         success: true, 
-        message: "Past events cleaned up successfully",
-        cleanupDate: oneDayAgo.toISOString()
+        message: "Past events cleaned up successfully (kept 90-day history)",
+        cleanupDate: ninetyDaysAgo.toISOString()
       });
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error cleaning up events:", error);
       return res.status(500).json({ message: "Failed to cleanup events" });
+    }
+  });
+
+  // EVENT HISTORY: Get past events for a city with attendee information
+  app.get("/api/events/history", async (req, res) => {
+    try {
+      const { city, search, daysBack = '90', limit = '50' } = req.query;
+      const now = new Date();
+      const daysBackNum = parseInt(daysBack as string) || 90;
+      const limitNum = Math.min(parseInt(limit as string) || 50, 100); // Max 100 events
+      const pastDate = new Date(now.getTime() - (daysBackNum * 24 * 60 * 60 * 1000));
+      
+      if (process.env.NODE_ENV === 'development') console.log(`📜 EVENT HISTORY: Fetching past events for city="${city}", search="${search}", daysBack=${daysBackNum}`);
+      
+      let pastEvents = [];
+      
+      if (city && typeof city === 'string' && city.trim() !== '') {
+        const cityName = city.toString();
+        
+        // Apply metro consolidation for ALL metro areas
+        const { getMetroArea, METRO_AREAS } = await import('../shared/constants');
+        const metroAreaName = getMetroArea(cityName);
+        
+        let searchCities = [cityName];
+        
+        if (metroAreaName) {
+          const metroConfig = Object.values(METRO_AREAS).find(m => m.metroName === metroAreaName);
+          if (metroConfig) {
+            searchCities = metroConfig.cities;
+            if (process.env.NODE_ENV === 'development') console.log(`🌍 EVENT HISTORY METRO: Searching ${searchCities.length} cities for "${metroAreaName}"`);
+          }
+        }
+        
+        // Fetch past events (date < now and date > pastDate)
+        if (searchCities.length === 1) {
+          pastEvents = await db.select().from(events)
+            .where(and(
+              eq(events.city, searchCities[0]),
+              lt(events.date, now),
+              gte(events.date, pastDate),
+              gt(events.organizerId, 0) // Only user-created events in history
+            ))
+            .orderBy(desc(events.date))
+            .limit(limitNum);
+        } else {
+          const { inArray } = await import('drizzle-orm');
+          pastEvents = await db.select().from(events)
+            .where(and(
+              inArray(events.city, searchCities),
+              lt(events.date, now),
+              gte(events.date, pastDate),
+              gt(events.organizerId, 0)
+            ))
+            .orderBy(desc(events.date))
+            .limit(limitNum);
+        }
+      } else {
+        // No city specified - get all past events
+        pastEvents = await db.select().from(events)
+          .where(and(
+            lt(events.date, now),
+            gte(events.date, pastDate),
+            gt(events.organizerId, 0)
+          ))
+          .orderBy(desc(events.date))
+          .limit(limitNum);
+      }
+      
+      // Apply search filter if provided
+      if (search && typeof search === 'string' && search.trim() !== '') {
+        const searchLower = search.toLowerCase();
+        pastEvents = pastEvents.filter(event => 
+          event.title.toLowerCase().includes(searchLower) ||
+          (event.description && event.description.toLowerCase().includes(searchLower)) ||
+          event.city.toLowerCase().includes(searchLower) ||
+          (event.venueName && event.venueName.toLowerCase().includes(searchLower))
+        );
+      }
+      
+      // Fetch organizer info and participant counts for each event
+      const eventsWithDetails = await Promise.all(pastEvents.map(async (event) => {
+        // Get organizer info
+        const organizer = await db.select({
+          id: users.id,
+          username: users.username,
+          name: users.name,
+          profileImage: users.profileImage
+        }).from(users).where(eq(users.id, event.organizerId)).limit(1);
+        
+        // Get participant count and list
+        const participants = await db.select({
+          userId: eventParticipants.userId,
+          status: eventParticipants.status,
+          username: users.username,
+          name: users.name,
+          profileImage: users.profileImage
+        })
+          .from(eventParticipants)
+          .innerJoin(users, eq(eventParticipants.userId, users.id))
+          .where(eq(eventParticipants.eventId, event.id));
+        
+        return {
+          ...event,
+          organizer: organizer[0] || null,
+          participantCount: participants.length,
+          participants: participants
+        };
+      }));
+      
+      if (process.env.NODE_ENV === 'development') console.log(`📜 EVENT HISTORY: Found ${eventsWithDetails.length} past events`);
+      
+      return res.json({
+        events: eventsWithDetails,
+        total: eventsWithDetails.length,
+        city: city || 'All Cities',
+        daysBack: daysBackNum
+      });
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error fetching event history:", error);
+      return res.status(500).json({ message: "Failed to fetch event history" });
     }
   });
 

@@ -15,6 +15,7 @@ import Discover from "@/pages/discover";
 import ProfileComplete from "@/pages/profile-complete";
 import Messages from "@/pages/messages";
 import Events from "@/pages/events";
+import EventHistory from "@/pages/event-history";
 import CreateEvent from "@/pages/create-event";
 import Create from "@/pages/create";
 import EventDetails from "@/pages/event-details";
@@ -983,6 +984,8 @@ function Router() {
     switch (location) {
       case '/events':
         return <Events />;
+      case '/event-history':
+        return <EventHistory />;
       case '/events-landing':
         return <EventsLanding />;
       case '/business-landing':
