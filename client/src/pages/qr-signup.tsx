@@ -525,7 +525,7 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
               >
                 <span className="flex items-center justify-center space-x-2">
                   <span>🏠</span>
-                  <span>Local Guide</span>
+                  <span>Nearby Local</span>
                   <ArrowRight className="w-4 h-4" />
                 </span>
               </Button>
@@ -537,7 +537,7 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
               >
                 <span className="flex items-center justify-center space-x-2">
                   <span>✈️</span>
-                  <span>Traveler</span>
+                  <span>Nearby Traveler</span>
                   <ArrowRight className="w-4 h-4" />
                 </span>
               </Button>
@@ -549,7 +549,7 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
               >
                 <span className="flex items-center justify-center space-x-2">
                   <span>🏢</span>
-                  <span>Business</span>
+                  <span>Nearby Business</span>
                   <ArrowRight className="w-4 h-4" />
                 </span>
               </Button>
