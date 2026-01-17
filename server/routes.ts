@@ -4252,8 +4252,8 @@ Questions? Just reply to this message!
         try {
           console.log('🔗 Processing referral signup with code:', referralCode);
           
-          // Find the referrer by their referral code
-          const [referrer] = await db
+          // Find the referrer by their referral code first
+          let [referrer] = await db
             .select({
               id: users.id,
               username: users.username,
@@ -4262,6 +4262,20 @@ Questions? Just reply to this message!
             .from(users)
             .where(eq(users.referralCode, referralCode))
             .limit(1);
+
+          // If not found by referral code, try username as fallback
+          if (!referrer) {
+            console.log('🔗 Referral code not found, trying username fallback...');
+            [referrer] = await db
+              .select({
+                id: users.id,
+                username: users.username,
+                referralCount: users.referralCount
+              })
+              .from(users)
+              .where(eq(users.username, referralCode))
+              .limit(1);
+          }
 
           if (referrer) {
             // Update the new user's referredBy field
@@ -4296,6 +4310,52 @@ Questions? Just reply to this message!
         }
       } else {
         console.log('🔗 REFERRAL DEBUG - No referralCode in request, skipping referral processing');
+      }
+
+      // AUTO-CONNECT TO NEARBYTRAV (Admin/Platform Account - User ID 2)
+      // All new users from QR signups should be connected to nearbytrav and receive a welcome message
+      const NEARBYTRAV_USER_ID = 2;
+      if (user.id !== NEARBYTRAV_USER_ID) {
+        try {
+          // Check if connection already exists
+          const existingConnection = await db
+            .select()
+            .from(connections)
+            .where(
+              or(
+                and(eq(connections.requesterId, NEARBYTRAV_USER_ID), eq(connections.receiverId, user.id)),
+                and(eq(connections.requesterId, user.id), eq(connections.receiverId, NEARBYTRAV_USER_ID))
+              )
+            )
+            .limit(1);
+
+          if (existingConnection.length === 0) {
+            // Create connection from nearbytrav to new user
+            await db.insert(connections).values({
+              requesterId: NEARBYTRAV_USER_ID,
+              receiverId: user.id,
+              status: 'accepted',
+              connectionNote: 'Welcome to Nearby Traveler!'
+            });
+            console.log(`✅ Auto-connected new user ${user.username} to nearbytrav`);
+
+            // Send welcome message from nearbytrav
+            const welcomeMessage = `Welcome to Nearby Traveler! 🎉\n\nI'm Aaron, the founder. Thanks for joining our community! Whether you're exploring new places or meeting travelers in your hometown, I'm excited to have you here.\n\nFeel free to reach out if you have any questions. Happy connecting! 🌍`;
+            
+            await db.insert(messages).values({
+              senderId: NEARBYTRAV_USER_ID,
+              receiverId: user.id,
+              content: welcomeMessage,
+              messageType: 'text',
+              isRead: false,
+              createdAt: new Date()
+            });
+            console.log(`✅ Sent welcome message from nearbytrav to ${user.username}`);
+          }
+        } catch (welcomeError) {
+          console.error('❌ Error creating nearbytrav connection/message:', welcomeError);
+          // Don't fail registration if welcome connection fails
+        }
       }
 
       // IMPORTANT: Award aura points to new users for signing up
