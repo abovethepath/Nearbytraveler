@@ -5839,9 +5839,16 @@ Questions? Just reply to this message. Welcome aboard!
         
         // Check if this is a metro city that should be consolidated to Los Angeles
         const { METRO_AREAS } = await import('../shared/constants');
-        const isLAMetroCity = METRO_AREAS['Los Angeles'].cities.includes(searchCity);
+        // Case-insensitive check for LA Metro cities
+        const isLAMetroCity = METRO_AREAS['Los Angeles'].cities.some(city => 
+          city.toLowerCase() === searchCity.toLowerCase()
+        );
         
-        if (isLAMetroCity || searchCity === 'Los Angeles Metro') {
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`🔍 LA METRO CHECK: searchCity="${searchCity}", isLAMetroCity=${isLAMetroCity}`);
+        }
+        
+        if (isLAMetroCity || searchCity.toLowerCase() === 'los angeles metro' || searchCity.toLowerCase() === 'los angeles') {
           // Search for ALL LA metro cities
           const allLACities = METRO_AREAS['Los Angeles'].cities;
           if (process.env.NODE_ENV === 'development') console.log(`🌍 LA METRO SEARCH: Searching for users in ALL LA metro cities:`, allLACities.length, 'cities');
