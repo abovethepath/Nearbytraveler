@@ -11028,6 +11028,7 @@ Questions? Just reply to this message. Welcome aboard!
           // Business information (COMPLETE INFO FOR CUSTOMERS)
           businessName: users.businessName,
           fallbackName: users.name,
+          fallbackUsername: users.username,
           businessDescription: users.businessDescription,
           businessType: users.businessType,
           businessLocation: users.location,
@@ -11039,10 +11040,9 @@ Questions? Just reply to this message. Welcome aboard!
         })
         .from(businessOffers)
         .innerJoin(users, eq(businessOffers.businessId, users.id))
-        .where(and(
-          eq(businessOffers.isActive, true),
-          isNotNull(users.businessName)
-        ))
+        .where(
+          eq(businessOffers.isActive, true)
+        )
         .orderBy(businessOffers.createdAt);
       
       if (process.env.NODE_ENV === 'development') console.log(`🎯 FOUND ${offersWithBusiness.length} ACTIVE BUSINESS OFFERS`);
@@ -11050,7 +11050,7 @@ Questions? Just reply to this message. Welcome aboard!
       
       // Apply fallback logic for business names and log for debugging
       const processedOffers = offersWithBusiness.map(offer => {
-        const finalBusinessName = offer.businessName || offer.fallbackName || 'Business Name Missing';
+        const finalBusinessName = offer.businessName || offer.fallbackName || offer.fallbackUsername || 'Business';
         
         // Log processing for first few offers
         if (offersWithBusiness.indexOf(offer) < 3) {
@@ -11124,6 +11124,7 @@ Questions? Just reply to this message. Welcome aboard!
           // Business information
           businessName: users.businessName,
           fallbackName: users.name,
+          fallbackUsername: users.username,
           businessLocation: users.location,
           businessImage: users.profileImage,
           businessPhone: users.phoneNumber,
@@ -11138,8 +11139,9 @@ Questions? Just reply to this message. Welcome aboard!
       // Apply same fallback logic as main endpoint
       const processedOffers = offersWithBusiness.map(offer => ({
         ...offer,
-        businessName: offer.businessName || offer.fallbackName || 'Business Name Missing',
-        fallbackName: undefined
+        businessName: offer.businessName || offer.fallbackName || offer.fallbackUsername || 'Business',
+        fallbackName: undefined,
+        fallbackUsername: undefined
       }));
       
       if (process.env.NODE_ENV === 'development') console.log(`🏢 BUSINESS OFFERS FOR BUSINESS ${businessId}: Found ${processedOffers.length} offers`);
@@ -11272,6 +11274,7 @@ Questions? Just reply to this message. Welcome aboard!
           // Business information
           businessName: users.businessName,
           fallbackName: users.name,
+          fallbackUsername: users.username,
           businessDescription: users.businessDescription,
           businessType: users.businessType,
           businessLocation: users.location,
@@ -11288,8 +11291,9 @@ Questions? Just reply to this message. Welcome aboard!
       // Apply fallback logic for business name
       const finalOffer = {
         ...completeOffer,
-        businessName: completeOffer.businessName || completeOffer.fallbackName || 'Business Name Missing',
-        fallbackName: undefined
+        businessName: completeOffer.businessName || completeOffer.fallbackName || completeOffer.fallbackUsername || 'Business',
+        fallbackName: undefined,
+        fallbackUsername: undefined
       };
       
       if (process.env.NODE_ENV === 'development') console.log('✅ RETURNING COMPLETE DEAL WITH BUSINESS INFO:', finalOffer);
@@ -13053,6 +13057,7 @@ Questions? Just reply to this message. Welcome aboard!
           qd.*,
           u.business_name,
           u.name as fallback_name,
+          u.username,
           u.bio as business_description,
           u.business_type,
           u.location as business_location,
@@ -13099,7 +13104,7 @@ Questions? Just reply to this message. Welcome aboard!
         country: row.country,
         zipcode: row.zipcode,
         createdAt: row.created_at,
-        businessName: row.business_name || row.fallback_name || 'Business Name Missing',
+        businessName: row.business_name || row.fallback_name || row.username || 'Business',
         businessDescription: row.business_description || '',
         businessType: row.business_type || 'Business',
         businessLocation: row.business_location || row.city || 'Location Unknown',
