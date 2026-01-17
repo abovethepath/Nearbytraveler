@@ -85,8 +85,8 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     enabled: (chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && Boolean(chatId)
   });
   
-  // Check if current user is admin
-  const currentMember = members.find(m => m.id === currentUserId);
+  // Check if current user is admin (use == for type coercion since currentUserId may be string)
+  const currentMember = members.find(m => m.id == currentUserId);
   const isCurrentUserAdmin = currentMember?.isAdmin || false;
   
   // Mute user mutation
@@ -685,7 +685,8 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
             <div className="flex-grow" />
             <div className="space-y-0.5">
             {messages.map((message, index) => {
-              const isOwnMessage = message.senderId === currentUserId;
+              // Use == for type-coerced comparison since currentUserId from localStorage may be string
+              const isOwnMessage = message.senderId == currentUserId;
               const showAvatar = index === 0 || messages[index - 1].senderId !== message.senderId;
               
               return (
