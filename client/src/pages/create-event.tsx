@@ -232,13 +232,13 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
     if (checked && currentUser.userType === 'business') {
       // Auto-fill with business address data AND venue name
       const businessName = currentUser.businessName || currentUser.name || "";
-      setValue("venueName", businessName); // Auto-fill venue name with business name
-      setValue("street", currentUser.streetAddress || "");
-      setValue("city", currentUser.hometownCity || "");
-      setValue("state", currentUser.hometownState || "");
-      setValue("country", currentUser.hometownCountry || "");
-      setValue("zipcode", currentUser.zipCode || "");
-      setValue("location", `${currentUser.hometownCity}${currentUser.hometownState ? `, ${currentUser.hometownState}` : ""}, ${currentUser.hometownCountry}`);
+      setValue("venueName", businessName, { shouldDirty: true, shouldTouch: true, shouldValidate: true }); // Auto-fill venue name with business name
+      setValue("street", currentUser.streetAddress || "", { shouldDirty: true });
+      setValue("city", currentUser.hometownCity || "", { shouldDirty: true });
+      setValue("state", currentUser.hometownState || "", { shouldDirty: true });
+      setValue("country", currentUser.hometownCountry || "", { shouldDirty: true });
+      setValue("zipcode", currentUser.zipCode || "", { shouldDirty: true });
+      setValue("location", `${currentUser.hometownCity}${currentUser.hometownState ? `, ${currentUser.hometownState}` : ""}, ${currentUser.hometownCountry}`, { shouldDirty: true });
       
       // Update component state
       setSelectedCountry(currentUser.hometownCountry || "");

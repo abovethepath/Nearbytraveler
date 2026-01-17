@@ -148,8 +148,8 @@ export const queryClient = new QueryClient({
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
       refetchOnWindowFocus: false,
-      staleTime: 10 * 60 * 1000, // 10 minutes for production performance
-      gcTime: 30 * 60 * 1000, // 30 minutes cache time
+      staleTime: 30 * 1000, // 30 seconds - fast refresh for profile updates
+      gcTime: 5 * 60 * 1000, // 5 minutes cache time
       retry: (failureCount, error: any) => {
         // Don't retry on 4xx errors except 429 (rate limit)
         if (error?.message?.includes('4') && !error?.message?.includes('429')) {

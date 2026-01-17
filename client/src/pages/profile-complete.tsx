@@ -3167,7 +3167,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         title: "Owner contact updated",
         description: "Internal contact information has been successfully updated.",
       });
-      setEditingOwnerInfo(false);
+      setActiveEditSection(null);
     },
     onError: (error) => {
       toast({
@@ -6918,7 +6918,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     {!editingOwnerInfo && (
                       <Button
                         size="sm"
-                        onClick={() => setEditingOwnerInfo(true)}
+                        onClick={() => setActiveEditSection('owner')}
                         className="bg-purple-600 hover:bg-purple-700 text-white border-0"
                       >
                         <Edit className="w-3 h-3 mr-1" />
@@ -6986,7 +6986,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           size="sm"
                           variant="outline"
                           onClick={() => {
-                            setEditingOwnerInfo(false);
+                            setActiveEditSection(null);
                             setOwnerContactForm({
                               ownerName: user?.ownerName || "",
                               contactName: user?.contactName || "",
