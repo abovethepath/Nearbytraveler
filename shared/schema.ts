@@ -60,7 +60,7 @@ export const users = pgTable("users", {
   defaultTravelActivities: text("default_travel_activities").array(), // User's preferred activities for all trips
   defaultTravelEvents: text("default_travel_events").array(), // User's preferred events for all trips
   countriesVisited: text("countries_visited").array(), // Countries they have visited
-  languagesSpoken: text("languages_spoken").array(), // Languages they speak
+  languagesSpoken: text("languages_spoken").array().default(["English"]), // Languages they speak - defaults to English
   travelStyle: text("travel_style").array(), // Travel styles: solo, budget, luxury, adventure, etc.
   travelingWithChildren: boolean("traveling_with_children").default(false), // Whether user is traveling with children
   childrenAges: text("children_ages"), // Ages of children when traveling (e.g., "5, 8, 12")
