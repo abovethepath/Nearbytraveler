@@ -107,6 +107,8 @@ export default function SignupTraveling() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('🚀 FORM SUBMIT TRIGGERED - handleSubmit called');
+    console.log('🚀 Current formData:', JSON.stringify(formData, null, 2));
     
     try {
       setIsLoading(true);
