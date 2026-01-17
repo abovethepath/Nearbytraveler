@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Users } from "lucide-react";
+import { Calendar, MapPin, Users, Instagram } from "lucide-react";
 import { useLocation } from "wouter";
 import type { Event } from "@shared/schema";
 import ConnectionCelebration from "./connection-celebration";
@@ -200,7 +200,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
 
 
           {/* Actions */}
-          <div className="flex gap-2 pt-2">
+          <div className="flex flex-wrap gap-2 pt-2">
             <Button 
               size="sm" 
               variant="outline"
@@ -215,7 +215,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
             </Button>
             <Button 
               size="sm" 
-              className="flex-1 text-white border-0"
+              className="flex-1 min-w-[60px] text-white border-0"
               onClick={(e) => {
                 e.stopPropagation();
                 handleJoinEvent('going');
@@ -233,7 +233,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
             <Button 
               size="sm" 
               variant="outline"
-              className="flex-1"
+              className="flex-1 min-w-[80px]"
               onClick={(e) => {
                 e.stopPropagation();
                 handleJoinEvent('interested');
@@ -244,7 +244,20 @@ export default function EventCard({ event, compact = false, featured = false }: 
               {joinEventMutation.isPending ? "..." : "Interested"}
             </Button>
             <div onClick={(e) => e.stopPropagation()} className="flex-shrink-0">
-              <InstagramShare event={event} />
+              <InstagramShare 
+                event={event} 
+                trigger={
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1 px-2"
+                    data-testid="button-share-instagram"
+                  >
+                    <Instagram className="h-4 w-4" />
+                    <span className="hidden sm:inline">Share</span>
+                  </Button>
+                }
+              />
             </div>
           </div>
         </div>
