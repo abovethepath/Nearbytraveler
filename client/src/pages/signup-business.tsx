@@ -40,6 +40,7 @@ const businessSignupSchema = z.object({
     const phoneRegex = /^[\+]?[1-9][\d]{0,15}$|^[\+]?[\d\s\-\(\)]{7,20}$/;
     return phoneRegex.test(val.replace(/[\s\-\(\)]/g, ''));
   }, "Please enter a valid phone number (supports international formats)"),
+  businessEmail: z.string().email("Please enter a valid business email").optional().or(z.literal('')),
   
   // Basic Location (City is required for metro area matching)
   streetAddress: z.string().min(1, "Street address is required for location services"),
@@ -144,6 +145,7 @@ export default function SignupBusinessSimple() {
       businessType: "",
       customBusinessType: "",
       businessPhone: "",
+      businessEmail: "",
       businessWebsite: "",
       streetAddress: "",
       city: accountData?.city || "",
@@ -182,6 +184,11 @@ export default function SignupBusinessSimple() {
       (processedData as any).name = data.businessName;
       // Use businessName as ownerName for database storage
       (processedData as any).ownerName = data.businessName;
+      
+      // Handle business email - default to owner's email if not provided
+      if (!processedData.businessEmail || !processedData.businessEmail.trim()) {
+        (processedData as any).businessEmail = data.email; // Use owner's email as default
+      }
       
       // Handle website URL - add https:// if missing protocol and set to websiteUrl
       let finalWebsiteUrl = "";
@@ -546,6 +553,29 @@ export default function SignupBusinessSimple() {
                       )}
                     />
                   </div>
+                  
+                  {/* Business Email - Optional, different from owner's email */}
+                  <FormField
+                    control={form.control}
+                    name="businessEmail"
+                    render={({ field }) => (
+                      <FormItem className="overflow-hidden break-words">
+                        <FormLabel className="text-sm sm:text-base break-words overflow-hidden">Business Email (if different from owner)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder="contact@yourbusiness.com" 
+                            {...field} 
+                            className="h-9 sm:h-10 md:h-11 text-sm sm:text-base break-words overflow-hidden"
+                            type="email"
+                          />
+                        </FormControl>
+                        <FormDescription className="text-xs sm:text-sm break-words overflow-hidden">
+                          Leave blank to use owner's email for business inquiries
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   
                   {/* Custom Business Type Field - Mobile Responsive */}
                   {form.watch("businessType") === "Custom (specify below)" && (
