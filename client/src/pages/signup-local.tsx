@@ -503,7 +503,12 @@ export default function SignupLocal() {
                     `Complete Signup (${getTotalInterestsCount()}/7 interests selected)`
                   )}
                 </Button>
-                {!formData.pledgeAccepted && (
+                {getTotalInterestsCount() < 7 && (
+                  <p className="text-red-600 text-sm mt-2 text-center font-medium">
+                    Please select at least 7 interests ({getTotalInterestsCount()}/7 selected)
+                  </p>
+                )}
+                {!formData.pledgeAccepted && getTotalInterestsCount() >= 7 && (
                   <p className="text-red-600 text-sm mt-2 text-center">
                     Please accept the NearbyTraveler Pledge to continue
                   </p>
