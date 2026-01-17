@@ -51,7 +51,7 @@ export default function QRCodeCard() {
             if (cacheAge < ONE_DAY && code) {
               console.log('📦 QR: Using cached referral code');
               const baseUrl = window.location.origin;
-              const url = `${baseUrl}/qr-signup?code=${code}`;
+              const url = `${baseUrl}/signup/qr/${code}`;
               setShareUrl(url);
               setLoading(false);
               return;
@@ -107,9 +107,9 @@ export default function QRCodeCard() {
           timestamp: Date.now()
         }));
 
-        // Build the signup URL
+        // Build the signup URL (route: /signup/qr/:code)
         const baseUrl = window.location.origin;
-        const url = `${baseUrl}/qr-signup?code=${data.referralCode}`;
+        const url = `${baseUrl}/signup/qr/${data.referralCode}`;
         console.log('🔗 QR: Share URL:', url);
         setShareUrl(url);
 
