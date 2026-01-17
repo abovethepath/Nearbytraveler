@@ -8997,7 +8997,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   className="flex items-start gap-4 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors"
                   onClick={() => {
                     setShowChatroomList(false);
-                    setLocation(`/simple-chatroom/${chatroom.id}`);
+                    setLocation(`/chatroom/${chatroom.id}`);
                   }}
                 >
                   <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
