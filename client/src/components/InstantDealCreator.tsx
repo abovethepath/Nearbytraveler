@@ -102,8 +102,9 @@ export default function InstantDealCreator({ businessId, businessName, businessL
       // Invalidate relevant queries for quick deals and analytics
       queryClient.invalidateQueries({ queryKey: ['/api/quick-deals'] });
       queryClient.invalidateQueries({ queryKey: [`/api/quick-deals/business/${businessId}`] });
-      queryClient.invalidateQueries({ queryKey: ['/api/business-analytics'] });
-      queryClient.invalidateQueries({ queryKey: [`/api/business-analytics/${businessId}`] });
+      // CRITICAL: Use correct analytics endpoint that dashboard fetches from
+      queryClient.invalidateQueries({ queryKey: ['/api/business-deals/analytics'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/business-deals/business/${businessId}`] });
     },
     onError: (error) => {
       toast({

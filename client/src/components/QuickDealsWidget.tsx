@@ -132,6 +132,8 @@ export function QuickDealsWidget({ city, profileUserId, showCreateForm: external
         availability: 'today'
       });
       queryClient.invalidateQueries({ queryKey: ['/api/quick-deals'] });
+      // Also refresh dashboard analytics to update quick deals count
+      queryClient.invalidateQueries({ queryKey: ['/api/business-deals/analytics'] });
     },
     onError: (error: any) => {
       console.error('Deal creation error:', error);
