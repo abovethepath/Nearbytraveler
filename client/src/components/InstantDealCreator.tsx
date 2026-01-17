@@ -212,48 +212,97 @@ export default function InstantDealCreator({ businessId, businessName, businessL
               )}
             />
 
-            <div className="grid grid-cols-2 gap-3">
-              <FormField
-                control={form.control}
-                name="discountType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Discount Type</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="percentage">% Off</SelectItem>
-                        <SelectItem value="fixed_amount">$ Off</SelectItem>
-                        <SelectItem value="buy_one_get_one">BOGO</SelectItem>
-                        <SelectItem value="free_service">Free Service</SelectItem>
-                        <SelectItem value="free_item_with_purchase">Free Item w/ Purchase</SelectItem>
-                        <SelectItem value="combo_deal">Combo Deal</SelectItem>
-                        <SelectItem value="other">Other/Custom</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="discountValue"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Discount Amount</FormLabel>
+            <FormField
+              control={form.control}
+              name="discountType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Discount Type</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                      <Input placeholder="e.g. 10, 25, 50" {...field} />
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                     </FormControl>
+                    <SelectContent>
+                      <SelectItem value="percentage">% Off</SelectItem>
+                      <SelectItem value="fixed_amount">$ Off</SelectItem>
+                      <SelectItem value="buy_one_get_one">BOGO</SelectItem>
+                      <SelectItem value="free_service">Free Service</SelectItem>
+                      <SelectItem value="free_item_with_purchase">Free Item w/ Purchase</SelectItem>
+                      <SelectItem value="combo_deal">Combo Deal</SelectItem>
+                      <SelectItem value="other">Other/Custom</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="discountValue"
+              render={({ field }) => {
+                const discountType = form.watch("discountType");
+                const getLabel = () => {
+                  switch (discountType) {
+                    case "percentage": return "Discount (%)";
+                    case "fixed_amount": return "Discount ($)";
+                    case "buy_one_get_one": return "BOGO Details";
+                    case "free_service": return "Free Service Details";
+                    case "free_item_with_purchase": return "Free Item Details";
+                    case "combo_deal": return "Combo Details";
+                    case "other": return "Deal Details";
+                    default: return "Discount";
+                  }
+                };
+                const getPlaceholder = () => {
+                  switch (discountType) {
+                    case "percentage": return "e.g. 10, 25, 50";
+                    case "fixed_amount": return "e.g. 5, 10, 20";
+                    case "buy_one_get_one": return "e.g. Buy 1 Get 1 Free";
+                    case "free_service": return "e.g. Free consultation";
+                    case "free_item_with_purchase": return "e.g. Free drink with meal";
+                    case "combo_deal": return "e.g. 2 items for $15";
+                    case "other": return "Describe your deal (e.g. Free appetizer)";
+                    default: return "Enter deal details";
+                  }
+                };
+                const showTextInput = ["buy_one_get_one", "free_service", "free_item_with_purchase", "combo_deal", "other"].includes(discountType);
+                
+                return (
+                  <FormItem>
+                    <FormLabel>{getLabel()}</FormLabel>
+                    <FormControl>
+                      {showTextInput ? (
+                        <Input 
+                          placeholder={getPlaceholder()} 
+                          {...field} 
+                        />
+                      ) : (
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                            {discountType === "percentage" ? "%" : "$"}
+                          </span>
+                          <Input 
+                            placeholder={getPlaceholder()} 
+                            className="pl-8"
+                            type="number"
+                            {...field} 
+                          />
+                        </div>
+                      )}
+                    </FormControl>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {discountType === "percentage" ? "Enter percentage (e.g. 20 for 20% off)" : 
+                       discountType === "fixed_amount" ? "Enter dollar amount off (e.g. 5 for $5 off)" :
+                       "Describe your deal offer"}
+                    </p>
                     <FormMessage />
                   </FormItem>
-                )}
-              />
-            </div>
+                );
+              }}
+            />
 
             <FormField
               control={form.control}
