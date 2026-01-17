@@ -15,11 +15,18 @@ const CACHE_DURATION = 30000; // 30 seconds
 function getCachedUser() {
   const now = Date.now();
   if (!cachedUser || now - cacheTimestamp > CACHE_DURATION) {
-    const storedUser = localStorage.getItem('user');
+    // Check both localStorage keys for consistency - some components use 'user', others use 'travelconnect_user'
+    const storedUser = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
     cachedUser = storedUser ? JSON.parse(storedUser) : null;
     cacheTimestamp = now;
   }
   return cachedUser;
+}
+
+// Function to invalidate user cache (call this after login/logout)
+export function invalidateUserCache() {
+  cachedUser = null;
+  cacheTimestamp = 0;
 }
 
 export async function apiRequest(

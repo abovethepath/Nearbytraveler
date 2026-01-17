@@ -62,13 +62,17 @@ export default function CityChatroomsPage() {
     gcTime: 60000, // Keep in cache for 1 minute
     refetchInterval: 60000, // Refresh every minute instead of 10 seconds
     refetchOnWindowFocus: true,
-    onSuccess: (data) => {
-      console.log('🔍 DEBUG: Chatrooms received from API:', data);
-      console.log('🔍 DEBUG: Number of chatrooms:', data.length);
-      const welcomeRooms = data.filter(room => room.name.includes('Welcome'));
+  });
+  
+  // Debug logging with useEffect (TanStack Query v5 doesn't support onSuccess in useQuery)
+  useEffect(() => {
+    if (chatrooms && chatrooms.length > 0) {
+      console.log('🔍 DEBUG: Chatrooms received from API:', chatrooms);
+      console.log('🔍 DEBUG: Number of chatrooms:', chatrooms.length);
+      const welcomeRooms = chatrooms.filter(room => room.name.includes('Welcome'));
       console.log('🔍 DEBUG: Welcome rooms found:', welcomeRooms);
     }
-  });
+  }, [chatrooms]);
 
   // Join chatroom mutation
   const joinMutation = useMutation({
