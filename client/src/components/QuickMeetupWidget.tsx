@@ -327,16 +327,15 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
     );
   }
 
-  // Check if user has their own active meetups
-  const userOwnMeetups = quickMeetups?.filter((meetup: any) => 
-    meetup.organizerId === actualUser?.id && 
+  // Get ALL active meetups to show prominently at the top
+  const allActiveMeetups = quickMeetups?.filter((meetup: any) => 
     new Date(meetup.expiresAt).getTime() > Date.now()
   ) || [];
 
   return (
     <div className="w-full relative overflow-hidden rounded-3xl group" data-testid="quick-meetup-widget">
-      {/* YOUR ACTIVE MEETUP - Highlighted at top when user has one */}
-      {userOwnMeetups.length > 0 && (
+      {/* ACTIVE MEETUPS - Show ALL active hangouts prominently at top for everyone to see */}
+      {allActiveMeetups.length > 0 && (
         <div className="mb-4 relative">
           <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl blur-md opacity-40 animate-pulse"></div>
           <Card className="relative bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/40 dark:to-emerald-900/40 border-2 border-green-400 dark:border-green-500 shadow-xl">
@@ -344,54 +343,77 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                 <h3 className="font-bold text-green-700 dark:text-green-300 text-lg">
-                  🎯 YOUR ACTIVE MEETUP IS LIVE!
+                  🎯 {allActiveMeetups.length} ACTIVE HANGOUT{allActiveMeetups.length > 1 ? 'S' : ''} HAPPENING NOW!
                 </h3>
               </div>
-              {userOwnMeetups.map((meetup: any) => {
-                const expiresAt = new Date(meetup.expiresAt);
-                const timeLeft = Math.max(0, expiresAt.getTime() - Date.now());
-                const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
-                const minutesLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                
-                return (
-                  <div 
-                    key={meetup.id}
-                    className="bg-white dark:bg-gray-800 rounded-xl p-3 cursor-pointer hover:shadow-lg transition-all border border-green-200 dark:border-green-700"
-                    onClick={() => window.location.href = `/quick-meetup-chat/${meetup.id}`}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-gray-900 dark:text-white">{meetup.title}</h4>
-                      <Badge className="bg-orange-500 text-white animate-pulse">
-                        <Clock className="w-3 h-3 mr-1" />
-                        {hoursLeft > 0 ? `${hoursLeft}h ${minutesLeft}m` : `${minutesLeft}m`} left
-                      </Badge>
+              <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                {allActiveMeetups.slice(0, 5).map((meetup: any) => {
+                  const isOwn = meetup.organizerId === actualUser?.id;
+                  const expiresAt = new Date(meetup.expiresAt);
+                  const timeLeft = Math.max(0, expiresAt.getTime() - Date.now());
+                  const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
+                  const minutesLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                  
+                  return (
+                    <div 
+                      key={meetup.id}
+                      className={`bg-white dark:bg-gray-800 rounded-xl p-3 cursor-pointer hover:shadow-lg transition-all ${isOwn ? 'border-2 border-orange-400 dark:border-orange-500 ring-2 ring-orange-200 dark:ring-orange-800' : 'border border-green-200 dark:border-green-700'}`}
+                      onClick={() => window.location.href = `/quick-meetup-chat/${meetup.id}`}
+                    >
+                      <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Avatar className="w-6 h-6 flex-shrink-0">
+                            <AvatarImage src={meetup.organizerProfileImage || ''} />
+                            <AvatarFallback className="text-xs bg-gradient-to-br from-blue-500 to-orange-500 text-white">
+                              {(meetup.organizerPublicName || meetup.organizerUsername || 'U').charAt(0).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="min-w-0">
+                            <h4 className="font-semibold text-gray-900 dark:text-white text-sm truncate">{meetup.title}</h4>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              by @{meetup.organizerUsername} {isOwn && <span className="text-orange-500 font-bold">(you)</span>}
+                            </p>
+                          </div>
+                        </div>
+                        <Badge className="bg-orange-500 text-white animate-pulse shrink-0">
+                          <Clock className="w-3 h-3 mr-1" />
+                          {hoursLeft > 0 ? `${hoursLeft}h ${minutesLeft}m` : `${minutesLeft}m`}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-4 text-xs text-gray-600 dark:text-gray-400">
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3" />
+                          {meetup.city}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Users className="w-3 h-3" />
+                          {meetup.participantCount || 0} joined
+                        </span>
+                      </div>
+                      <div className="mt-2">
+                        <Button
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.location.href = `/quick-meetup-chat/${meetup.id}`;
+                          }}
+                          className={`w-full text-xs h-8 ${isOwn 
+                            ? 'bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600' 
+                            : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600'} text-white`}
+                        >
+                          <MessageSquare className="w-3 h-3 mr-1" />
+                          {isOwn ? 'Manage Your Meetup' : 'Join This Hangout!'}
+                        </Button>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-                      <span className="flex items-center gap-1">
-                        <MapPin className="w-4 h-4" />
-                        {meetup.city}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Users className="w-4 h-4" />
-                        {meetup.participantCount || 0} joined
-                      </span>
-                    </div>
-                    <div className="mt-3 flex gap-2">
-                      <Button
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          window.location.href = `/quick-meetup-chat/${meetup.id}`;
-                        }}
-                        className="flex-1 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white"
-                      >
-                        <MessageSquare className="w-4 h-4 mr-1" />
-                        View Chat & Manage
-                      </Button>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
+              {allActiveMeetups.length > 5 && (
+                <p className="text-xs text-center text-green-600 dark:text-green-400 mt-2 font-medium">
+                  + {allActiveMeetups.length - 5} more active meetups below
+                </p>
+              )}
             </CardContent>
           </Card>
         </div>
