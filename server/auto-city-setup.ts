@@ -124,12 +124,17 @@ export async function ensureCityHasActivities(cityName: string, state?: string, 
   }
 }
 
-export async function enhanceExistingCityWithMoreActivities(cityName: string, state?: string, country?: string, userId: number = 1): Promise<number> {
+export async function enhanceExistingCityWithMoreActivities(cityName: string, state?: string, country?: string, userId: number = 1): Promise<{ success: boolean; activitiesAdded: number; error?: string }> {
   try {
     console.log(`🚀 ENHANCE: Adding more AI activities to ${cityName}...`);
     
-    // Generate new activities
+    // Generate new activities using AI
     const generatedActivities = await generateCityActivities(cityName);
+    
+    if (!generatedActivities || generatedActivities.length === 0) {
+      console.log(`⚠️ ENHANCE: No activities generated for ${cityName}`);
+      return { success: false, activitiesAdded: 0, error: 'No activities generated' };
+    }
     
     // Insert only new activities (skip duplicates)
     let addedCount = 0;
@@ -164,10 +169,10 @@ export async function enhanceExistingCityWithMoreActivities(cityName: string, st
     }
     
     console.log(`✅ ENHANCE: Added ${addedCount} new activities to ${cityName}`);
-    return addedCount;
+    return { success: true, activitiesAdded: addedCount };
     
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Error enhancing ${cityName} with more activities:`, error);
-    return 0;
+    return { success: false, activitiesAdded: 0, error: error?.message || 'Unknown error' };
   }
 }
