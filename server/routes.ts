@@ -16736,6 +16736,7 @@ Questions? Just reply to this message. Welcome aboard!
 
       res.json({
         referrer: {
+          id: referrer.id,
           name: referrer.name,
           username: referrer.username,
           profileImage: referrer.profileImage,

@@ -20,7 +20,7 @@ export default function QRCodeCard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Load user and fetch QR code
+  // Load user and fetch QR code with retry logic and caching
   useEffect(() => {
     const loadQRCode = async () => {
       try {
@@ -39,14 +39,56 @@ export default function QRCodeCard() {
         console.log('✅ QR: User loaded:', user.username);
         setCurrentUser(user);
 
-        // Fetch QR code from API
-        console.log('📞 QR: Fetching from API...');
-        const response = await fetch('/api/user/qr-code', {
-          headers: {
-            'Content-Type': 'application/json',
-            'x-user-id': user.id.toString()
+        // Check for cached referral code (valid for 24 hours)
+        const cacheKey = `qr_referral_${user.id}`;
+        const cached = localStorage.getItem(cacheKey);
+        if (cached) {
+          try {
+            const { code, timestamp } = JSON.parse(cached);
+            const cacheAge = Date.now() - timestamp;
+            const ONE_DAY = 24 * 60 * 60 * 1000;
+            
+            if (cacheAge < ONE_DAY && code) {
+              console.log('📦 QR: Using cached referral code');
+              const baseUrl = window.location.origin;
+              const url = `${baseUrl}/qr-signup?code=${code}`;
+              setShareUrl(url);
+              setLoading(false);
+              return;
+            }
+          } catch (e) {
+            // Invalid cache, continue to fetch
           }
-        });
+        }
+
+        // Fetch QR code from API with retry logic for 429 errors
+        const fetchWithRetry = async (retries = 3, delay = 1000): Promise<Response> => {
+          try {
+            const response = await fetch('/api/user/qr-code', {
+              headers: {
+                'Content-Type': 'application/json',
+                'x-user-id': user.id.toString()
+              }
+            });
+
+            if (response.status === 429 && retries > 0) {
+              console.log(`⏳ QR: Rate limited, retrying in ${delay}ms...`);
+              await new Promise(r => setTimeout(r, delay));
+              return fetchWithRetry(retries - 1, delay * 2);
+            }
+            
+            return response;
+          } catch (err) {
+            if (retries > 0) {
+              await new Promise(r => setTimeout(r, delay));
+              return fetchWithRetry(retries - 1, delay * 2);
+            }
+            throw err;
+          }
+        };
+
+        console.log('📞 QR: Fetching from API...');
+        const response = await fetchWithRetry();
 
         if (!response.ok) {
           throw new Error(`API error: ${response.status}`);
@@ -58,6 +100,12 @@ export default function QRCodeCard() {
         if (!data.referralCode) {
           throw new Error('No referral code in response');
         }
+
+        // Cache the referral code
+        localStorage.setItem(cacheKey, JSON.stringify({
+          code: data.referralCode,
+          timestamp: Date.now()
+        }));
 
         // Build the signup URL
         const baseUrl = window.location.origin;
