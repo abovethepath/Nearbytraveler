@@ -329,6 +329,17 @@ export default function Deals() {
                 {deal.title}
               </CardTitle>
               <div className="flex flex-wrap items-center gap-1 sm:gap-2">
+                {/* Discount Value Badge */}
+                {deal.discountValue && (
+                  <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-bold whitespace-nowrap leading-none bg-green-500 text-white border-0">
+                    {getDiscountIcon(deal.discountType)}
+                    <span className="ml-1">
+                      {deal.discountType === 'percentage' ? `${deal.discountValue}% OFF` : 
+                       deal.discountType === 'fixed_amount' ? `$${deal.discountValue} OFF` : 
+                       deal.discountValue}
+                    </span>
+                  </div>
+                )}
                 {deal.discountCode && (
                   <div className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-gray-500 text-white border-0">
                     Code: {deal.discountCode}
