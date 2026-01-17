@@ -42,6 +42,17 @@ export default function InstantDealCreator({ businessId, businessName, businessL
   const [isOpen, setIsOpen] = useState(true); // Open immediately when component renders
   const { toast } = useToast();
 
+  // Get local datetime string for datetime-local input (YYYY-MM-DDTHH:MM format)
+  const getLocalDateTimeString = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
   const form = useForm<InstantDealFormData>({
     resolver: zodResolver(instantDealSchema),
     defaultValues: {
@@ -49,7 +60,7 @@ export default function InstantDealCreator({ businessId, businessName, businessL
       description: "",
       discountType: "percentage",
       discountValue: "",
-      startDate: new Date().toISOString().slice(0, 16),
+      startDate: getLocalDateTimeString(),
       validFor: "2",
       maxRedemptions: "",
       targetAudience: "both"
@@ -61,28 +72,26 @@ export default function InstantDealCreator({ businessId, businessName, businessL
       const startTime = data.startDate ? new Date(data.startDate) : new Date();
       const validUntil = new Date(startTime.getTime() + (parseInt(data.validFor) * 60 * 60 * 1000)); // Hours to milliseconds
       
+      // Quick deals use a different endpoint and table for proper counting
       const dealData = {
-        title: businessName ? `${businessName} - ${data.title}` : data.title,
+        title: data.title,
         description: data.description,
-        category: "instant_deal", // Special category for instant deals
         discountType: data.discountType,
         discountValue: data.discountValue,
-        targetAudience: [data.targetAudience],
+        targetAudience: data.targetAudience,
         city: businessLocation.city,
         state: businessLocation.state || "",
         country: businessLocation.country,
         validFrom: startTime.toISOString(),
         validUntil: validUntil.toISOString(),
-        maxRedemptions: data.maxRedemptions ? parseInt(data.maxRedemptions) : undefined,
-        maxRedemptionsPerUser: 1, // Instant deals are typically once per customer
-        tags: "instant,flash,limited_time"
+        maxRedemptions: data.maxRedemptions ? parseInt(data.maxRedemptions) : 50
       };
 
-      return apiRequest('POST', '/api/business-deals', dealData);
+      return apiRequest('POST', '/api/quick-deals', dealData);
     },
     onSuccess: () => {
       toast({
-        title: "Instant Deal Created! ⚡",
+        title: "Quick Deal Created! ⚡",
         description: "Your flash deal is now live and will expire automatically.",
         variant: "default",
       });
@@ -90,9 +99,11 @@ export default function InstantDealCreator({ businessId, businessName, businessL
       setIsOpen(false);
       onDealCreated();
       
-      // Invalidate relevant queries
-      queryClient.invalidateQueries({ queryKey: ['/api/business-deals'] });
-      queryClient.invalidateQueries({ queryKey: [`/api/business-deals/business/${businessId}`] });
+      // Invalidate relevant queries for quick deals and analytics
+      queryClient.invalidateQueries({ queryKey: ['/api/quick-deals'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/quick-deals/business/${businessId}`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/business-analytics'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/business-analytics/${businessId}`] });
     },
     onError: (error) => {
       toast({
@@ -233,9 +244,9 @@ export default function InstantDealCreator({ businessId, businessName, businessL
                 name="discountValue"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Value</FormLabel>
+                    <FormLabel>Discount Amount</FormLabel>
                     <FormControl>
-                      <Input placeholder="30" {...field} />
+                      <Input placeholder="e.g. 10, 25, 50" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
