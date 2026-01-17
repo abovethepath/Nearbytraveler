@@ -116,6 +116,15 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
     return null;
   };
 
+  // Default date to 2026 for easier event creation (will revert to current year in November)
+  // This helps users create events without manually adjusting the year
+  const getDefaultDate = () => {
+    const now = new Date();
+    // Default to 2026 - users are creating events for 2026, not 2025
+    // TODO: Revert to standard behavior in November 2026
+    return `2026-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  };
+
   const {
     register,
     handleSubmit,
@@ -127,6 +136,7 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
     defaultValues: {
       isPublic: true,
       isRecurring: false,
+      date: getDefaultDate(), // Default to 2026 for easier event creation
     },
     mode: "onChange"
   });
@@ -220,7 +230,9 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
   const handleUseBusinessAddress = (checked: boolean) => {
     setUseBusinessAddress(checked);
     if (checked && currentUser.userType === 'business') {
-      // Auto-fill with business address data
+      // Auto-fill with business address data AND venue name
+      const businessName = currentUser.businessName || currentUser.name || "";
+      setValue("venueName", businessName); // Auto-fill venue name with business name
       setValue("street", currentUser.streetAddress || "");
       setValue("city", currentUser.hometownCity || "");
       setValue("state", currentUser.hometownState || "");
@@ -232,7 +244,7 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
       setSelectedCountry(currentUser.hometownCountry || "");
       setSelectedState(currentUser.hometownState || "");
     } else if (!checked) {
-      // Clear fields when unchecked
+      // Clear fields when unchecked (but keep venue name - user may want to keep it)
       setValue("street", "");
       setValue("city", "");
       setValue("state", "");
