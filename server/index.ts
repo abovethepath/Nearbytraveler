@@ -303,8 +303,11 @@ app.use("/api/", rateLimit({
     return realIp || req.ip || 'unknown';
   },
   skip: (req) => {
-    // Skip rate limiting for profile update endpoints to prevent blocking important user actions
-    return req.method === 'PUT' && req.path.includes('/users/');
+    // Skip rate limiting for important user actions
+    if (req.method === 'PUT' && req.path.includes('/users/')) return true;
+    // Skip rate limiting for connection requests - social actions shouldn't be blocked
+    if (req.method === 'POST' && req.path === '/api/connections') return true;
+    return false;
   }
 }));
 

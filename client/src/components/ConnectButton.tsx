@@ -52,7 +52,26 @@ export default function ConnectButton({
       
       const response = await apiRequest('POST', '/api/connections', requestData);
       
-      if (!response.ok) throw new Error('Failed to send connection request');
+      if (!response.ok) {
+        // Parse error response for a better error message
+        let errorMessage = 'Failed to send connection request';
+        try {
+          const errorData = await response.json();
+          if (errorData.error) {
+            errorMessage = errorData.error;
+          } else if (errorData.message) {
+            errorMessage = errorData.message;
+          }
+        } catch {
+          // Use status-based messages if JSON parsing fails
+          if (response.status === 429) {
+            errorMessage = 'Please wait a moment before sending another request';
+          } else if (response.status === 409) {
+            errorMessage = 'Connection request already exists';
+          }
+        }
+        throw new Error(errorMessage);
+      }
       return response.json();
     },
     onSuccess: () => {
@@ -66,9 +85,10 @@ export default function ConnectButton({
     onError: (error: any) => {
       const errorMessage = error.message || "Failed to send connection request. Please try again.";
       const isPrivacyError = errorMessage.includes("privacy settings");
+      const isRateLimitError = errorMessage.includes("wait") || errorMessage.includes("Too many");
       
       toast({
-        title: isPrivacyError ? "Privacy Restriction" : "Connection Failed",
+        title: isPrivacyError ? "Privacy Restriction" : isRateLimitError ? "Please Wait" : "Connection Failed",
         description: isPrivacyError 
           ? "This user's privacy settings prevent connection requests from new users."
           : errorMessage,
