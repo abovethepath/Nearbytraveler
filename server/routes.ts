@@ -4566,14 +4566,34 @@ Questions? Just reply to this message!
       });
 
     } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error("❌ REGISTRATION ERROR:", error);
-        console.error("❌ REGISTRATION ERROR STACK:", error.stack);
+      // ALWAYS log registration errors for debugging (both dev and production)
+      console.error("❌ REGISTRATION ERROR:", error?.message || error);
+      console.error("❌ REGISTRATION ERROR STACK:", error?.stack);
+      
+      // Provide more helpful error messages for common issues
+      let errorMessage = "Registration failed";
+      
+      // Handle Zod validation errors specifically
+      if (error?.name === 'ZodError' && error?.issues) {
+        const issues = error.issues.map((i: any) => `${i.path.join('.')}: ${i.message}`).join(', ');
+        errorMessage = `Validation failed: ${issues}`;
+        console.error("❌ ZOD VALIDATION ISSUES:", error.issues);
+      }
+      // Handle database constraint errors
+      else if (error?.code === '23505') {
+        errorMessage = "An account with this email or username already exists";
+      }
+      // Handle database connection errors
+      else if (error?.message?.includes('Connection terminated') || error?.message?.includes('connect')) {
+        errorMessage = "Database connection issue. Please try again.";
+      }
+      // Provide the actual error message in both dev and production for debugging
+      else if (error?.message) {
+        errorMessage = `Registration failed: ${error.message}`;
       }
       
       return res.status(500).json({ 
-        message: "Registration failed", 
-        error: process.env.NODE_ENV === 'development' ? error.message : "Internal server error"
+        message: errorMessage
       });
     }
   };
