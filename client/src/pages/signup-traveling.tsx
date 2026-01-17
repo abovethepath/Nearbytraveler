@@ -569,6 +569,7 @@ export default function SignupTraveling() {
                   disabled={isLoading || getTotalInterestsCount() < 7 || !formData.pledgeAccepted}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 text-lg font-semibold rounded-lg shadow-lg disabled:bg-gray-400"
                   data-testid="button-complete-signup"
+                  onClick={() => console.log('🔘 BUTTON CLICKED - disabled:', isLoading || getTotalInterestsCount() < 7 || !formData.pledgeAccepted, 'isLoading:', isLoading, 'interests:', getTotalInterestsCount(), 'pledge:', formData.pledgeAccepted)}
                 >
                   {isLoading ? (
                     <div className="flex items-center justify-center">
