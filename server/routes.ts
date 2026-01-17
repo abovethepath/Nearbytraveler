@@ -16714,7 +16714,8 @@ Questions? Just reply to this message. Welcome aboard!
     try {
       const { code } = req.params;
       
-      const [referrer] = await db
+      // First try to find by referral code
+      let [referrer] = await db
         .select({
           id: users.id,
           username: users.username,
@@ -16729,6 +16730,25 @@ Questions? Just reply to this message. Welcome aboard!
         .from(users)
         .where(eq(users.referralCode, code))
         .limit(1);
+
+      // If not found by referral code, try username as fallback
+      if (!referrer) {
+        [referrer] = await db
+          .select({
+            id: users.id,
+            username: users.username,
+            name: users.name,
+            profileImage: users.profileImage,
+            userType: users.userType,
+            city: users.city,
+            state: users.state,
+            country: users.country,
+            bio: users.bio
+          })
+          .from(users)
+          .where(eq(users.username, code))
+          .limit(1);
+      }
 
       if (!referrer) {
         return res.status(404).json({ error: 'Invalid referral code' });
