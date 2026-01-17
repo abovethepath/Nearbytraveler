@@ -1050,14 +1050,14 @@ export default function Events() {
 
             {/* All Community Events Section */}
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">All Community Events</h2>
+              <div className="flex items-center justify-between mb-4 gap-2">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white">All Community Events</h2>
                 <Button
                   variant="outline"
                   onClick={() => setLocation('/event-history')}
-                  className="flex items-center gap-2 px-4 py-2 text-base font-semibold text-orange-600 border-2 border-orange-400 hover:bg-orange-100 hover:border-orange-500 dark:text-orange-400 dark:border-orange-500 dark:hover:bg-orange-900/30 shadow-sm"
+                  className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 text-sm sm:text-base font-semibold text-orange-600 border-2 border-orange-400 hover:bg-orange-100 hover:border-orange-500 dark:text-orange-400 dark:border-orange-500 dark:hover:bg-orange-900/30 shadow-sm whitespace-nowrap"
                 >
-                  <History className="h-5 w-5" />
+                  <History className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
                   <span>Past Events</span>
                 </Button>
               </div>
