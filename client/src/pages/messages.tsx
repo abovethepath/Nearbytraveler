@@ -275,8 +275,13 @@ export default function Messages() {
         queryClient.invalidateQueries({ queryKey: [`/api/connections/${user?.id}`] });
       }, 100);
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Failed to send message:', error);
+      toast({
+        title: "Message failed to send",
+        description: error?.message || "Please try again",
+        variant: "destructive"
+      });
     }
   });
 
@@ -778,6 +783,67 @@ export default function Messages() {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Right Sidebar - Contacts List (Hidden on mobile and tablet) */}
+      <div className="hidden xl:flex w-72 h-full bg-gray-50 dark:bg-gray-900 flex-col border-l-2 border-gray-300 dark:border-gray-500">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <Users className="w-5 h-5" />
+            Contacts
+          </h2>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            {(connections as any[]).length} connection{(connections as any[]).length !== 1 ? 's' : ''}
+          </p>
+        </div>
+        
+        <div className="flex-1 overflow-y-auto">
+          {(connections as any[]).length === 0 ? (
+            <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+              <Users className="w-10 h-10 mx-auto mb-2 opacity-40" />
+              <p className="text-sm">No connections yet</p>
+              <p className="text-xs mt-1">Connect with others to chat</p>
+            </div>
+          ) : (
+            (connections as any[]).map((connection: any) => {
+              const contact = connection.connectedUser;
+              if (!contact) return null;
+              
+              const isActive = selectedConversation === contact.id;
+              
+              return (
+                <div
+                  key={contact.id}
+                  className={`p-3 border-b border-gray-200 dark:border-gray-700 cursor-pointer transition-all ${
+                    isActive 
+                      ? 'bg-blue-100 dark:bg-blue-900/30 border-l-4 border-l-blue-500' 
+                      : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                  }`}
+                  onClick={() => navigate(`/messages/${contact.id}`)}
+                >
+                  <div className="flex items-center gap-3">
+                    <Avatar className="w-10 h-10">
+                      <AvatarImage src={contact.profileImage} />
+                      <AvatarFallback className="bg-green-600 text-white text-sm">
+                        {contact.username?.charAt(0)?.toUpperCase() || '?'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-sm font-medium truncate ${
+                        isActive ? 'text-blue-700 dark:text-blue-300' : 'text-gray-900 dark:text-white'
+                      }`}>
+                        @{contact.username}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                        {contact.hometownCity || contact.location || 'Location unknown'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
       </div>
     </div>
   );
