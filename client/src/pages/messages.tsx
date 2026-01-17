@@ -138,7 +138,7 @@ export default function Messages() {
       if (connectedUser) {
         conversationMap.set(connectedUser.id, {
           userId: connectedUser.id,
-          username: connectedUser?.name || connectedUser?.username || `User ${connectedUser.id}`,
+          username: connectedUser?.username || connectedUser?.name || `User ${connectedUser.id}`,
           profileImage: connectedUser?.profileImage,
           location: connectedUser?.hometownCity || connectedUser?.location || 'Unknown',
           lastMessage: '', // Don't show message preview in connections list
@@ -154,7 +154,7 @@ export default function Messages() {
       if (targetUser) {
         conversationMap.set(parseInt(targetUserId), {
           userId: parseInt(targetUserId),
-          username: targetUser?.name || targetUser?.username || `User ${targetUserId}`,
+          username: targetUser?.username || targetUser?.name || `User ${targetUserId}`,
           profileImage: targetUser?.profileImage,
           location: targetUser?.hometownCity || targetUser?.location || 'Unknown',
           lastMessage: 'Start a conversation...',
@@ -186,7 +186,7 @@ export default function Messages() {
           const otherUser = (allUsers as any[]).find((u: any) => u.id === otherUserId);
           conversationMap.set(otherUserId, {
             userId: otherUserId,
-            username: otherUser?.name || otherUser?.username || `User ${otherUserId}`,
+            username: otherUser?.username || otherUser?.name || `User ${otherUserId}`,
             profileImage: otherUser?.profileImage,
             location: otherUser?.hometownCity || otherUser?.location || 'Unknown',
             lastMessage: message.content,
