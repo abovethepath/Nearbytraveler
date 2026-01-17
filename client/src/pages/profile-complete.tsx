@@ -4722,45 +4722,72 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </Button>
                       </div>
 
-                      {/* Display Custom Activities with Delete Option */}
+                      {/* Display Custom Activities with Delete Option - Filter out city-prefixed activities */}
                       {(() => {
-                        const customActivities = editFormData.activities.filter(activity => !ALL_ACTIVITIES.includes(activity));
-                        return customActivities.length > 0 && (
-                          <div className="mt-2">
-                            <div className="flex items-center justify-between mb-1">
-                              <p className="text-xs font-medium text-gray-600 dark:text-gray-400">Your Custom Activities (click X to remove):</p>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => {
-                                  setEditFormData(prev => ({ 
-                                    ...prev, 
-                                    activities: prev.activities.filter(a => ALL_ACTIVITIES.includes(a)) 
-                                  }));
-                                }}
-                                className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50 h-6"
-                              >
-                                Clear All Custom
-                              </Button>
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                              {customActivities.map((activity, index) => (
-                                <button
-                                  key={`custom-activity-${index}`}
-                                  type="button"
-                                  onClick={() => {
-                                    setEditFormData(prev => ({ ...prev, activities: prev.activities.filter(a => a !== activity) }));
-                                  }}
-                                  className="inline-flex items-center justify-center h-8 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-md gap-1.5 hover:opacity-80 transition-opacity"
-                                  title="Click to remove"
+                        // Filter out predefined activities AND city-prefixed activities (e.g., "New York City: Brunch")
+                        const customActivities = editFormData.activities.filter(activity => 
+                          !ALL_ACTIVITIES.includes(activity) && !activity.includes(':')
+                        );
+                        const cityActivities = editFormData.activities.filter(activity => 
+                          !ALL_ACTIVITIES.includes(activity) && activity.includes(':')
+                        );
+                        
+                        return (
+                          <>
+                            {/* City-specific activities note */}
+                            {cityActivities.length > 0 && (
+                              <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
+                                <p className="text-xs text-blue-700 dark:text-blue-300 mb-2">
+                                  <strong>{cityActivities.length} city-specific activities</strong> are managed on city match pages:
+                                </p>
+                                <a 
+                                  href="/match-in-city" 
+                                  className="text-xs text-blue-600 dark:text-blue-400 underline hover:text-blue-800 dark:hover:text-blue-200"
                                 >
-                                  {activity}
-                                  <span className="ml-1 font-bold">×</span>
-                                </button>
-                              ))}
-                            </div>
-                          </div>
+                                  Go to City Match Page to manage city activities →
+                                </a>
+                              </div>
+                            )}
+                            
+                            {/* Generic custom activities */}
+                            {customActivities.length > 0 && (
+                              <div className="mt-2">
+                                <div className="flex items-center justify-between mb-1">
+                                  <p className="text-xs font-medium text-gray-600 dark:text-gray-400">Your Custom Activities (click X to remove):</p>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                      setEditFormData(prev => ({ 
+                                        ...prev, 
+                                        activities: prev.activities.filter(a => ALL_ACTIVITIES.includes(a) || a.includes(':')) 
+                                      }));
+                                    }}
+                                    className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50 h-6"
+                                  >
+                                    Clear All Custom
+                                  </Button>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                  {customActivities.map((activity, index) => (
+                                    <button
+                                      key={`custom-activity-${index}`}
+                                      type="button"
+                                      onClick={() => {
+                                        setEditFormData(prev => ({ ...prev, activities: prev.activities.filter(a => a !== activity) }));
+                                      }}
+                                      className="inline-flex items-center justify-center h-8 rounded-full px-3 text-xs font-medium leading-none whitespace-nowrap bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-md gap-1.5 hover:opacity-80 transition-opacity"
+                                      title="Click to remove"
+                                    >
+                                      {activity}
+                                      <span className="ml-1 font-bold">×</span>
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </>
                         );
                       })()}
                     </div>

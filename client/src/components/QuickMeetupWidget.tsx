@@ -327,8 +327,76 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
     );
   }
 
+  // Check if user has their own active meetups
+  const userOwnMeetups = quickMeetups?.filter((meetup: any) => 
+    meetup.organizerId === actualUser?.id && 
+    new Date(meetup.expiresAt).getTime() > Date.now()
+  ) || [];
+
   return (
     <div className="w-full relative overflow-hidden rounded-3xl group" data-testid="quick-meetup-widget">
+      {/* YOUR ACTIVE MEETUP - Highlighted at top when user has one */}
+      {userOwnMeetups.length > 0 && (
+        <div className="mb-4 relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl blur-md opacity-40 animate-pulse"></div>
+          <Card className="relative bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/40 dark:to-emerald-900/40 border-2 border-green-400 dark:border-green-500 shadow-xl">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                <h3 className="font-bold text-green-700 dark:text-green-300 text-lg">
+                  🎯 YOUR ACTIVE MEETUP IS LIVE!
+                </h3>
+              </div>
+              {userOwnMeetups.map((meetup: any) => {
+                const expiresAt = new Date(meetup.expiresAt);
+                const timeLeft = Math.max(0, expiresAt.getTime() - Date.now());
+                const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
+                const minutesLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                
+                return (
+                  <div 
+                    key={meetup.id}
+                    className="bg-white dark:bg-gray-800 rounded-xl p-3 cursor-pointer hover:shadow-lg transition-all border border-green-200 dark:border-green-700"
+                    onClick={() => window.location.href = `/quick-meetup-chat/${meetup.id}`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-semibold text-gray-900 dark:text-white">{meetup.title}</h4>
+                      <Badge className="bg-orange-500 text-white animate-pulse">
+                        <Clock className="w-3 h-3 mr-1" />
+                        {hoursLeft > 0 ? `${hoursLeft}h ${minutesLeft}m` : `${minutesLeft}m`} left
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                      <span className="flex items-center gap-1">
+                        <MapPin className="w-4 h-4" />
+                        {meetup.city}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Users className="w-4 h-4" />
+                        {meetup.participantCount || 0} joined
+                      </span>
+                    </div>
+                    <div className="mt-3 flex gap-2">
+                      <Button
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.location.href = `/quick-meetup-chat/${meetup.id}`;
+                        }}
+                        className="flex-1 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white"
+                      >
+                        <MessageSquare className="w-4 h-4 mr-1" />
+                        View Chat & Manage
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {/* Animated Gradient Orbs Background - Blue-Orange Brand Theme */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-24 -right-24 w-56 h-56 bg-gradient-to-br from-orange-300 via-amber-400 to-orange-400 rounded-full opacity-30 blur-3xl animate-float"></div>
