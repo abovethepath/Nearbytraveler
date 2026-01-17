@@ -59,6 +59,8 @@ export default function SignupTraveling() {
   });
 
   const [isLoading, setIsLoading] = useState(false);
+  const [debugError, setDebugError] = useState<string | null>(null);
+  const [debugStatus, setDebugStatus] = useState<string>("Ready");
 
   // Helper functions to count all interests including custom ones
   const getCustomInterestsCount = () => {
@@ -110,8 +112,12 @@ export default function SignupTraveling() {
     console.log('🚀 FORM SUBMIT TRIGGERED - handleSubmit called');
     console.log('🚀 Current formData:', JSON.stringify(formData, null, 2));
     
+    setDebugError(null);
+    setDebugStatus("Starting submission...");
+    
     try {
       setIsLoading(true);
+      setDebugStatus("Preparing data...");
 
       // Get account data from sessionStorage
       const storedAccountData = sessionStorage.getItem('accountData');
@@ -208,6 +214,8 @@ export default function SignupTraveling() {
       console.log('🔗 REFERRAL DEBUG - registrationData.referralCode value:', registrationData.referralCode);
       console.log('🔗 REFERRAL DEBUG - Full registrationData:', registrationData);
 
+      setDebugStatus("Validating fields...");
+      
       // Simple validation for required fields (after data is built)
       const errors: string[] = [];
 
@@ -239,6 +247,8 @@ export default function SignupTraveling() {
       }
 
       if (errors.length) {
+        setDebugError("VALIDATION FAILED: " + errors.join(" | "));
+        setDebugStatus("Validation failed - see errors above");
         toast({
           title: "Check the form",
           description: errors.join(" "),
@@ -249,6 +259,7 @@ export default function SignupTraveling() {
       }
 
       console.log('✅ VALIDATION PASSED - Proceeding with traveler registration');
+      setDebugStatus("Validation passed - sending to server...");
 
       // Show loading message
       toast({
@@ -259,6 +270,7 @@ export default function SignupTraveling() {
 
       try {
         console.log('🚀 Starting traveler registration with data:', registrationData);
+        setDebugStatus("Making API call to /api/register...");
         
         const response = await fetch('/api/register', {
           method: 'POST',
@@ -267,10 +279,12 @@ export default function SignupTraveling() {
           body: JSON.stringify(registrationData)
         });
         
+        setDebugStatus(`API responded with status: ${response.status}`);
         const data = await response.json();
         
         if (response.ok) {
           console.log('✅ Traveler registration successful:', data.user?.username);
+          setDebugStatus("SUCCESS! Account created!");
           
           // Set user in auth context and storage immediately
           authStorage.setUser(data.user);
@@ -288,22 +302,28 @@ export default function SignupTraveling() {
           
         } else {
           console.error('❌ Registration failed:', data.message);
+          setDebugError("API ERROR: " + (data.message || "Unknown server error"));
+          setDebugStatus("Registration failed - see error above");
           toast({
             title: "Registration failed",
             description: data.message || "Something went wrong",
             variant: "destructive",
           });
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('❌ Registration error:', error);
+        setDebugError("NETWORK/API ERROR: " + (error?.message || String(error)));
+        setDebugStatus("Network error occurred");
         toast({
           title: "Registration failed",
           description: "Something went wrong. Please try again.",
           variant: "destructive",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Validation error:', error);
+      setDebugError("VALIDATION ERROR: " + (error?.message || String(error)));
+      setDebugStatus("Validation error occurred");
       toast({
         title: "Validation failed",
         description: "Please check your information and try again.",
@@ -565,6 +585,19 @@ export default function SignupTraveling() {
               {/* Debug Panel - Shows form status */}
               <div className="p-4 bg-yellow-50 border-2 border-yellow-300 rounded-lg text-sm">
                 <h4 className="font-bold text-yellow-800 mb-2">Form Status (Debug - will be removed)</h4>
+                
+                {/* Error Display - Most Important */}
+                {debugError && (
+                  <div className="mb-3 p-3 bg-red-100 border-2 border-red-500 rounded text-red-800 font-bold">
+                    ERROR: {debugError}
+                  </div>
+                )}
+                
+                {/* Status Display */}
+                <div className="mb-3 p-2 bg-blue-100 border border-blue-300 rounded">
+                  <span className="font-bold">Status:</span> {debugStatus}
+                </div>
+                
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className={formData.hometownCity ? "text-green-600" : "text-red-600"}>
                     Hometown City: {formData.hometownCity || "MISSING"}
