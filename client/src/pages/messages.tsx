@@ -34,10 +34,17 @@ export default function Messages() {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const [, navigate] = useLocation();
   
-  // Get target user ID from URL path (e.g., /messages/123)
+  // Get target user ID from URL - supports both path (/messages/123) and query (?userId=123)
   const [location] = useLocation();
   const urlParts = location.split('/');
-  const targetUserId = urlParts[2]; // /messages/:userId
+  const pathUserId = urlParts[2]; // /messages/:userId
+  
+  // Also check for query parameters (?userId=123 or ?user=123)
+  const urlParams = new URLSearchParams(window.location.search);
+  const queryUserId = urlParams.get('userId') || urlParams.get('user');
+  
+  // Use path format first, fall back to query parameter
+  const targetUserId = pathUserId || queryUserId;
 
   // Fetch connections
   const { data: connections = [], isLoading: connectionsLoading } = useQuery({
