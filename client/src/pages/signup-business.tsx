@@ -148,6 +148,7 @@ export default function SignupBusinessSimple() {
       businessEmail: "",
       businessWebsite: "",
       streetAddress: "",
+      zipCode: "",
       city: accountData?.city || "",
       state: "",
       country: "",
