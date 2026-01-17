@@ -40,7 +40,7 @@ export default function SignupLocal() {
     interests: [] as string[],
     activities: [] as string[],
     events: [] as string[],
-    languages: [] as string[],
+    languages: ["English"] as string[],
     
     // Custom entries
     customInterests: "",

@@ -118,7 +118,7 @@ export default function SignupSteps() {
     interests: [],
     activities: [],
     events: [],
-    languagesSpoken: [],
+    languagesSpoken: ["English"],
     travelerTypes: [],
     secretActivities: "",
     isCurrentlyTraveling: false
