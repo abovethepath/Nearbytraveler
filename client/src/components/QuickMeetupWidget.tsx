@@ -395,13 +395,17 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                           size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
-                            window.location.href = `/quick-meetup-chat/${meetup.id}`;
+                            if (isOwn) {
+                              setLocation(`/quick-meetups?id=${meetup.id}`);
+                            } else {
+                              window.location.href = `/quick-meetup-chat/${meetup.id}`;
+                            }
                           }}
                           className={`w-full text-xs h-8 ${isOwn 
                             ? 'bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600' 
                             : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600'} text-white`}
                         >
-                          <MessageSquare className="w-3 h-3 mr-1" />
+                          {isOwn ? <Edit3 className="w-3 h-3 mr-1" /> : <MessageSquare className="w-3 h-3 mr-1" />}
                           {isOwn ? 'Manage Your Meetup' : 'Join This Hangout!'}
                         </Button>
                       </div>
