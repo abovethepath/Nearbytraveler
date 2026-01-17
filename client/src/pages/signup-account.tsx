@@ -31,12 +31,17 @@ export default function SignupAccount() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
+    // Check for QR code flow first (intendedUserType), then regular flow (selectedUserType)
+    const intendedUserType = sessionStorage.getItem('intendedUserType');
     const selectedUserType = sessionStorage.getItem('selectedUserType');
-    if (!selectedUserType) {
+    
+    const effectiveUserType = intendedUserType || selectedUserType;
+    
+    if (!effectiveUserType) {
       setLocation('/join');
       return;
     }
-    setUserType(selectedUserType);
+    setUserType(effectiveUserType);
   }, [setLocation]);
 
   const checkUsernameAvailability = async (username: string) => {
@@ -175,6 +180,9 @@ export default function SignupAccount() {
     };
 
     sessionStorage.setItem('accountData', JSON.stringify(accountData));
+
+    // Clear intendedUserType after use (QR code flow cleanup)
+    sessionStorage.removeItem('intendedUserType');
 
     // Redirect to profile completion based on user type
     if (userType === 'local') {

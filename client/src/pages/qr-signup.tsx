@@ -187,14 +187,12 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
       sessionStorage.setItem('connectionNote', connectionNote.trim());
     }
     
-    // Navigate to appropriate signup form
-    if (userType === 'business') {
-      setLocation('/signup/business');
-    } else if (userType === 'traveler') {
-      setLocation('/signup/traveling');
-    } else {
-      setLocation('/signup/local');
-    }
+    // Store the intended user type so account page can redirect correctly
+    sessionStorage.setItem('intendedUserType', userType);
+    
+    // ALWAYS go to account signup first to collect email/password/username
+    // Then account page will redirect to the appropriate type-specific form
+    setLocation('/signup/account');
     
     toast({
       title: "Starting signup process",
