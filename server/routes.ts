@@ -4154,346 +4154,8 @@ Questions? Just reply to this message!
       const user = await storage.createUser(userData);
       const { password, ...userWithoutPassword } = user;
 
-      // REMOVED: Travel plan creation moved to fast registration section to prevent duplicates
-
-      // INSTANT OPERATIONS: Chatroom assignments and city setup (as before)
-      // CRITICAL: Create city infrastructure BEFORE assigning users to chatrooms
-      // This ensures chatrooms exist before trying to join them
-      
-      // 1. Create city infrastructure for HOMETOWN (city page, chatrooms, activities)
-      try {
-        if (user.hometownCity && user.hometownCountry) {
-          await storage.ensureCityExists(
-            user.hometownCity,
-            user.hometownState || '',
-            user.hometownCountry
-          );
-          console.log(`✅ CITY INFRASTRUCTURE: Created city infrastructure for hometown ${user.hometownCity}`);
-        }
-      } catch (error) {
-        console.error('❌ Failed to create hometown city infrastructure:', error);
-      }
-
-      // 2. Create city infrastructure for DESTINATION (if traveling)
-      try {
-        if (user.isCurrentlyTraveling && user.destinationCity && user.destinationCountry) {
-          await storage.ensureCityExists(
-            user.destinationCity,
-            user.destinationState || '',
-            user.destinationCountry
-          );
-          console.log(`✅ CITY INFRASTRUCTURE: Created city infrastructure for destination ${user.destinationCity}`);
-        }
-      } catch (error) {
-        console.error('❌ Failed to create destination city infrastructure:', error);
-      }
-      
-      // 3. Auto-assign user to chatrooms (handles BOTH hometown AND destination in single call)
-      try {
-        await storage.assignUserToChatrooms(user);
-        console.log('✅ CHATROOM ASSIGNMENT: User automatically assigned to hometown and destination chatrooms');
-      } catch (error) {
-        console.error('❌ Failed to assign user to chatrooms:', error);
-      }
-
-      // CRITICAL: Create travel plan for currently traveling users
-      // This enables travel plan tracking and auto-joins user to destination chatrooms
-      try {
-        if (user.isCurrentlyTraveling && user.destinationCity && user.destinationCountry) {
-          const destination = `${user.destinationCity}, ${user.destinationState || ''}, ${user.destinationCountry}`.replace(', ,', ',');
-          
-          const travelPlanData = {
-            userId: user.id,
-            destination: destination,
-            startDate: user.travelStartDate || new Date().toISOString().split('T')[0],
-            endDate: user.travelEndDate || new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0],
-            status: 'active' as const,
-            notes: 'Currently traveling',
-            interests: user.interests || [],
-            activities: user.activities || [],
-            events: user.events || []
-          };
-          
-          await storage.createTravelPlan(travelPlanData);
-          console.log(`✅ TRAVEL PLAN: Created active travel plan for ${user.username} to ${destination}`);
-        }
-      } catch (error) {
-        console.error('❌ Failed to create travel plan:', error);
-      }
-
-      if (process.env.NODE_ENV === 'development') console.log("💾 USER CREATED IN DATABASE - Location data stored:", {
-        id: user.id,
-        username: user.username,
-        hometownCity: user.hometownCity,
-        hometownState: user.hometownState,
-        hometownCountry: user.hometownCountry,
-        location: user.location,
-        hometown: user.hometown
-      });
-      if (process.env.NODE_ENV === 'development') console.log("💾 USER CREATED IN DATABASE - Travel data stored:", {
-        id: user.id,
-        username: user.username,
-        isCurrentlyTraveling: user.isCurrentlyTraveling,
-        travelDestination: user.travelDestination,
-        travelStartDate: user.travelStartDate,
-        travelEndDate: user.travelEndDate
-      });
-
-      // HANDLE REFERRAL CONNECTIONS
-      const referralCode = (userData as any).referralCode || req.body.referralCode;
-      const connectionNote = (userData as any).connectionNote || req.body.connectionNote;
-      console.log('🔗 REFERRAL DEBUG - Checking for referralCode...');
-      console.log('🔗 REFERRAL DEBUG - userData.referralCode:', (userData as any).referralCode);
-      console.log('🔗 REFERRAL DEBUG - req.body.referralCode:', req.body.referralCode);
-      console.log('🔗 REFERRAL DEBUG - Final referralCode:', referralCode);
-      console.log('🔗 REFERRAL DEBUG - connectionNote:', connectionNote);
-      
-      if (referralCode) {
-        try {
-          console.log('🔗 Processing referral signup with code:', referralCode);
-          
-          // Find the referrer by their referral code first
-          let [referrer] = await db
-            .select({
-              id: users.id,
-              username: users.username,
-              referralCount: users.referralCount
-            })
-            .from(users)
-            .where(eq(users.referralCode, referralCode))
-            .limit(1);
-
-          // If not found by referral code, try username as fallback
-          if (!referrer) {
-            console.log('🔗 Referral code not found, trying username fallback...');
-            [referrer] = await db
-              .select({
-                id: users.id,
-                username: users.username,
-                referralCount: users.referralCount
-              })
-              .from(users)
-              .where(eq(users.username, referralCode))
-              .limit(1);
-          }
-
-          if (referrer) {
-            // Update the new user's referredBy field
-            await db.update(users)
-              .set({ referredBy: referrer.id })
-              .where(eq(users.id, user.id));
-
-            // Get connection note from above if provided
-            const finalConnectionNote = connectionNote || 'Connected through QR code share';
-
-            // Create automatic connection between referrer and new user
-            await db.insert(connections).values({
-              requesterId: referrer.id,
-              receiverId: user.id,
-              status: 'accepted', // Auto-accept referral connections
-              connectionNote: finalConnectionNote
-            });
-
-            // Update referrer's referral count
-            await db.update(users)
-              .set({ referralCount: (referrer.referralCount || 0) + 1 })
-              .where(eq(users.id, referrer.id));
-
-            console.log(`✅ Referral connection created: ${referrer.username} → ${user.username} (${finalConnectionNote})`);
-          } else {
-            console.log('❌ Invalid referral code:', referralCode);
-            console.log('❌ No referrer found with this code in database');
-          }
-        } catch (error) {
-          console.error('❌ Error processing referral:', error);
-          // Don't fail registration if referral processing fails
-        }
-      } else {
-        console.log('🔗 REFERRAL DEBUG - No referralCode in request, skipping referral processing');
-      }
-
-      // AUTO-CONNECT TO NEARBYTRAV (Admin/Platform Account - User ID 2)
-      // All new users from QR signups should be connected to nearbytrav and receive a welcome message
-      const NEARBYTRAV_USER_ID = 2;
-      if (user.id !== NEARBYTRAV_USER_ID) {
-        try {
-          // Check if connection already exists
-          const existingConnection = await db
-            .select()
-            .from(connections)
-            .where(
-              or(
-                and(eq(connections.requesterId, NEARBYTRAV_USER_ID), eq(connections.receiverId, user.id)),
-                and(eq(connections.requesterId, user.id), eq(connections.receiverId, NEARBYTRAV_USER_ID))
-              )
-            )
-            .limit(1);
-
-          if (existingConnection.length === 0) {
-            // Create connection from nearbytrav to new user
-            await db.insert(connections).values({
-              requesterId: NEARBYTRAV_USER_ID,
-              receiverId: user.id,
-              status: 'accepted',
-              connectionNote: 'Welcome to Nearby Traveler!'
-            });
-            console.log(`✅ Auto-connected new user ${user.username} to nearbytrav`);
-
-            // Send welcome message from nearbytrav
-            const welcomeMessage = `Welcome to Nearby Traveler! 🎉\n\nI'm Aaron, the founder. Thanks for joining our community! Whether you're exploring new places or meeting travelers in your hometown, I'm excited to have you here.\n\nFeel free to reach out if you have any questions. Happy connecting! 🌍`;
-            
-            await db.insert(messages).values({
-              senderId: NEARBYTRAV_USER_ID,
-              receiverId: user.id,
-              content: welcomeMessage,
-              messageType: 'text',
-              isRead: false,
-              createdAt: new Date()
-            });
-            console.log(`✅ Sent welcome message from nearbytrav to ${user.username}`);
-          }
-        } catch (welcomeError) {
-          console.error('❌ Error creating nearbytrav connection/message:', welcomeError);
-          // Don't fail registration if welcome connection fails
-        }
-      }
-
-      // IMPORTANT: Award aura points to new users for signing up
-      // Travelers get 2 points (1 base + 1 bonus), others get 1 point
-      try {
-        const signupAuraPoints = (userData.userType === 'traveler' || userData.userType === 'currently_traveling' || userData.isCurrentlyTraveling) ? 2 : 1;
-        await storage.updateUser(user.id, { aura: signupAuraPoints });
-        if (process.env.NODE_ENV === 'development') {
-          console.log(`✓ Awarded ${signupAuraPoints} signup aura point(s) to new user ${user.id} (${user.username}) - Type: ${userData.userType}`);
-        }
-      } catch (auraError) {
-        if (process.env.NODE_ENV === 'development') console.error('Error awarding signup aura point:', auraError);
-        // Don't fail registration if aura update fails
-      }
-
-      // ESSENTIAL: Create travel plans for travelers to get proper status
-      // Check ALL possible field variations from different signup forms
-      
-      // CRITICAL DEBUG: Log all travel-related fields received
-      if (process.env.NODE_ENV === 'development') {
-        console.log('🔍 TRAVEL PLAN DEBUG - ALL RECEIVED FIELDS:');
-        console.log('  userData.currentTravelCity:', userData.currentTravelCity);
-        console.log('  userData.currentCity:', userData.currentCity);
-        console.log('  userData.currentTravelCountry:', userData.currentTravelCountry);
-        console.log('  userData.currentCountry:', userData.currentCountry);
-        console.log('  userData.travelDestination:', userData.travelDestination);
-        console.log('  userData.travelDestinationCity:', userData.travelDestinationCity);
-        console.log('  userData.travelDestinationCountry:', userData.travelDestinationCountry);
-        console.log('  userData.currentTripDestinationCity:', userData.currentTripDestinationCity);
-        console.log('  userData.currentTripDestinationState:', userData.currentTripDestinationState);
-        console.log('  userData.currentTripDestinationCountry:', userData.currentTripDestinationCountry);
-        console.log('  userData.travelStartDate:', userData.travelStartDate);
-        console.log('  userData.travelEndDate:', userData.travelEndDate);
-        console.log('  userData.travelReturnDate:', userData.travelReturnDate);
-        console.log('  userData.currentTripReturnDate:', userData.currentTripReturnDate);
-        console.log('  userData.userType:', userData.userType);
-        console.log('  userData.isCurrentlyTraveling:', userData.isCurrentlyTraveling);
-      }
-      
-      const hasCurrentTravel = (userData.currentTravelCity || userData.currentCity) && (userData.currentTravelCountry || userData.currentCountry);
-      const hasTravelDestination = userData.travelDestination || (userData.travelDestinationCity && userData.travelDestinationCountry) || (userData.currentTripDestinationCity && userData.currentTripDestinationCountry);
-      const hasTravelDates = userData.travelStartDate && userData.travelEndDate;
-      const hasReturnDateOnly = userData.travelReturnDate || userData.currentTripReturnDate; // For simplified signup
-      const isTraveingUser = userData.userType === 'traveler' || userData.userType === 'currently_traveling' || userData.isCurrentlyTraveling;
-      
-      // DEBUG CONDITIONS
-      if (process.env.NODE_ENV === 'development') {
-        console.log('🔍 TRAVEL PLAN CONDITIONS:');
-        console.log('  hasCurrentTravel:', hasCurrentTravel);
-        console.log('  hasTravelDestination:', hasTravelDestination);
-        console.log('  hasTravelDates:', hasTravelDates);
-        console.log('  hasReturnDateOnly:', hasReturnDateOnly);
-        console.log('  isTraveingUser:', isTraveingUser);
-      }
-
-      // CRITICAL FIX: Check if user already has travel plans to prevent duplicates
-      const existingTravelPlans = await storage.getUserTravelPlans(user.id);
-      const hasExistingTravelPlan = existingTravelPlans.length > 0;
-      
-      // FORCE DEBUG: Always log this section during development
-      if (process.env.NODE_ENV === 'development') {
-        console.log('🔍 REACHED TRAVEL PLAN SECTION - About to check conditions');
-        console.log('  existingTravelPlans.length:', existingTravelPlans.length);
-        console.log('  hasExistingTravelPlan:', hasExistingTravelPlan);
-      }
-      
-      if (process.env.NODE_ENV === 'development') console.log(`🔍 DUPLICATE CHECK: User ${user.id} has ${existingTravelPlans.length} existing travel plans`);
-
-      // Support both full travel dates and simplified return-date-only signup
-      // BUT ONLY if user doesn't already have travel plans
-      const shouldCreateTravelPlan = (hasCurrentTravel || hasTravelDestination) && (hasTravelDates || hasReturnDateOnly) && isTraveingUser && !hasExistingTravelPlan;
-      
-      if (process.env.NODE_ENV === 'development') {
-        console.log('🎯 SHOULD CREATE TRAVEL PLAN:', shouldCreateTravelPlan);
-        console.log('  Condition breakdown:');
-        console.log('    (hasCurrentTravel || hasTravelDestination):', (hasCurrentTravel || hasTravelDestination));
-        console.log('    (hasTravelDates || hasReturnDateOnly):', (hasTravelDates || hasReturnDateOnly));
-        console.log('    isTraveingUser:', isTraveingUser);
-        console.log('    !hasExistingTravelPlan:', !hasExistingTravelPlan);
-      }
-      
-      if (shouldCreateTravelPlan) {
-        try {
-          // CRITICAL FIX: Use userData instead of originalData to match condition checks
-          // Build destination from all possible field variations
-          const tripLocation = userData.travelDestination || [
-            userData.currentTravelCity || userData.travelDestinationCity || userData.currentCity || userData.currentTripDestinationCity,
-            userData.currentTravelState || userData.travelDestinationState || userData.currentState || userData.currentTripDestinationState,
-            userData.currentTravelCountry || userData.travelDestinationCountry || userData.currentCountry || userData.currentTripDestinationCountry
-          ].filter(Boolean).join(", ");
-
-          if (process.env.NODE_ENV === 'development') console.log("CREATING TRAVEL PLAN:", { tripLocation, userId: user.id });
-
-          // Handle both full travel dates and simplified return-date-only signup
-          let startDate, endDate;
-          if (userData.travelStartDate && userData.travelEndDate) {
-            startDate = new Date(userData.travelStartDate);
-            endDate = new Date(userData.travelEndDate);
-          } else if (userData.travelReturnDate || userData.currentTripReturnDate) {
-            startDate = new Date(); // Today
-            endDate = new Date(userData.travelReturnDate || userData.currentTripReturnDate);
-          }
-
-          const travelPlan = await storage.createTravelPlan({
-            userId: user.id,
-            destination: tripLocation, // FIXED: Use correct field name for travel plan
-            destinationCity: userData.currentCity || userData.currentTravelCity || userData.travelDestinationCity,
-            destinationState: userData.currentState || userData.currentTravelState || userData.travelDestinationState,  
-            destinationCountry: userData.currentCountry || userData.currentTravelCountry || userData.travelDestinationCountry,
-            startDate,
-            endDate,
-            activities: [],
-            accommodation: null,
-            budget: null,
-            notes: null
-          });
-
-          if (process.env.NODE_ENV === 'development') console.log("TRAVEL PLAN CREATED SUCCESSFULLY:", travelPlan.id);
-
-          // CRITICAL: Update user to show as BOTH traveler AND local (dual status)
-          // They remain a local in their hometown AND become a traveler in destination
-          // NOTE: Aura points already awarded at signup time (line 4253)
-          await storage.updateUser(user.id, { 
-            userType: 'traveler',  // FIXED: Use correct database column name
-            isCurrentlyTraveling: true
-          });
-          if (process.env.NODE_ENV === 'development') console.log(`User ${user.username} (${user.id}) is now a traveler (aura points already awarded at signup)`);
-
-        } catch (error: any) {
-          if (process.env.NODE_ENV === 'development') console.error('Error creating travel plan during signup:', error);
-          // Don't fail registration if travel plan creation fails
-        }
-      } else if (hasExistingTravelPlan) {
-        if (process.env.NODE_ENV === 'development') console.log(`🚫 SKIPPING TRAVEL PLAN CREATION: User ${user.id} already has ${existingTravelPlans.length} travel plans - preventing duplicates`);
-      }
-
-      // CRITICAL: Create user session after successful registration
-      if (process.env.NODE_ENV === 'development') console.log("🔐 Creating session for newly registered user:", user.username);
+      // CRITICAL: Create user session immediately after user creation
+      console.log("🔐 Creating session for newly registered user:", user.username);
       (req as any).session = (req as any).session || {};
       (req as any).session.user = {
         id: user.id,
@@ -4502,15 +4164,174 @@ Questions? Just reply to this message!
         userType: user.userType
       };
 
-      // Send welcome message from nearbytrav account (USER ID 2)
-      try {
-        // Find the nearbytrav system account (ID 2)
-        const nearbytravAccount = await storage.getUser(2);
-        if (nearbytravAccount) {
-          // Extract first name only (take first word of full name)
-          const firstName = (user.name || user.username || 'Traveler').split(' ')[0];
-          const welcomeMessage = user.userType === 'business'
-            ? `Welcome to Nearby Traveler Business, ${firstName}! 🏢
+      // ========== FAST RESPONSE: Return success immediately ==========
+      // User account is created - send success response NOW
+      // All other tasks will run in the background
+      console.log(`✅ REGISTRATION SUCCESS: User ${user.username} created (ID: ${user.id}) - returning response immediately`);
+      
+      // Send success response FIRST - user sees instant success
+      res.status(201).json({
+        message: "Registration successful",
+        user: userWithoutPassword,
+        redirectTo: "/account-success"
+      });
+
+      // ========== BACKGROUND TASKS: Run after response is sent ==========
+      // These tasks run asynchronously - failures don't affect user experience
+      const referralCode = (userData as any).referralCode || req.body.referralCode;
+      const connectionNote = (userData as any).connectionNote || req.body.connectionNote;
+      
+      setImmediate(async () => {
+        console.log(`🔄 BACKGROUND TASKS: Starting post-registration tasks for ${user.username}...`);
+        
+        // 1. Create city infrastructure for HOMETOWN
+        try {
+          if (user.hometownCity && user.hometownCountry) {
+            await storage.ensureCityExists(
+              user.hometownCity,
+              user.hometownState || '',
+              user.hometownCountry
+            );
+            console.log(`✅ BACKGROUND: Created city infrastructure for hometown ${user.hometownCity}`);
+          }
+        } catch (error) {
+          console.error('❌ BACKGROUND: Failed to create hometown city infrastructure:', error);
+        }
+
+        // 2. Create city infrastructure for DESTINATION (if traveling)
+        try {
+          if (user.isCurrentlyTraveling && user.destinationCity && user.destinationCountry) {
+            await storage.ensureCityExists(
+              user.destinationCity,
+              user.destinationState || '',
+              user.destinationCountry
+            );
+            console.log(`✅ BACKGROUND: Created city infrastructure for destination ${user.destinationCity}`);
+          }
+        } catch (error) {
+          console.error('❌ BACKGROUND: Failed to create destination city infrastructure:', error);
+        }
+        
+        // 3. Auto-assign user to chatrooms
+        try {
+          await storage.assignUserToChatrooms(user);
+          console.log('✅ BACKGROUND: User assigned to chatrooms');
+        } catch (error) {
+          console.error('❌ BACKGROUND: Failed to assign user to chatrooms:', error);
+        }
+
+        // 4. Create travel plan for currently traveling users
+        try {
+          if (user.isCurrentlyTraveling && user.destinationCity && user.destinationCountry) {
+            const destination = `${user.destinationCity}, ${user.destinationState || ''}, ${user.destinationCountry}`.replace(', ,', ',');
+            
+            const travelPlanData = {
+              userId: user.id,
+              destination: destination,
+              startDate: user.travelStartDate || new Date().toISOString().split('T')[0],
+              endDate: user.travelEndDate || new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0],
+              status: 'active' as const,
+              notes: 'Currently traveling',
+              interests: user.interests || [],
+              activities: user.activities || [],
+              events: user.events || []
+            };
+            
+            await storage.createTravelPlan(travelPlanData);
+            console.log(`✅ BACKGROUND: Created travel plan for ${user.username} to ${destination}`);
+          }
+        } catch (error) {
+          console.error('❌ BACKGROUND: Failed to create travel plan:', error);
+        }
+
+        // 5. Handle referral connections
+        if (referralCode) {
+          try {
+            console.log('🔗 BACKGROUND: Processing referral with code:', referralCode);
+            
+            let [referrer] = await db
+              .select({
+                id: users.id,
+                username: users.username,
+                referralCount: users.referralCount
+              })
+              .from(users)
+              .where(eq(users.referralCode, referralCode))
+              .limit(1);
+
+            if (!referrer) {
+              [referrer] = await db
+                .select({
+                  id: users.id,
+                  username: users.username,
+                  referralCount: users.referralCount
+                })
+                .from(users)
+                .where(eq(users.username, referralCode))
+                .limit(1);
+            }
+
+            if (referrer) {
+              await db.update(users)
+                .set({ referredBy: referrer.id })
+                .where(eq(users.id, user.id));
+
+              const finalConnectionNote = connectionNote || 'Connected through QR code share';
+
+              await db.insert(connections).values({
+                requesterId: referrer.id,
+                receiverId: user.id,
+                status: 'accepted',
+                connectionNote: finalConnectionNote
+              });
+
+              await db.update(users)
+                .set({ referralCount: (referrer.referralCount || 0) + 1 })
+                .where(eq(users.id, referrer.id));
+
+              console.log(`✅ BACKGROUND: Referral connection created: ${referrer.username} → ${user.username}`);
+            }
+          } catch (error) {
+            console.error('❌ BACKGROUND: Error processing referral:', error);
+          }
+        }
+
+        // 6. Auto-connect to nearbytrav (User ID 2) and send welcome message
+        const NEARBYTRAV_USER_ID = 2;
+        if (user.id !== NEARBYTRAV_USER_ID) {
+          try {
+            const existingConnection = await db
+              .select()
+              .from(connections)
+              .where(
+                or(
+                  and(eq(connections.requesterId, NEARBYTRAV_USER_ID), eq(connections.receiverId, user.id)),
+                  and(eq(connections.requesterId, user.id), eq(connections.receiverId, NEARBYTRAV_USER_ID))
+                )
+              )
+              .limit(1);
+
+            if (existingConnection.length === 0) {
+              await db.insert(connections).values({
+                requesterId: NEARBYTRAV_USER_ID,
+                receiverId: user.id,
+                status: 'accepted',
+                connectionNote: 'Welcome to Nearby Traveler!'
+              });
+              console.log(`✅ BACKGROUND: Connected ${user.username} to nearbytrav`);
+            }
+          } catch (error) {
+            console.error('❌ BACKGROUND: Error connecting to nearbytrav:', error);
+          }
+        }
+
+        // 7. Send welcome message from nearbytrav
+        try {
+          const nearbytravAccount = await storage.getUser(NEARBYTRAV_USER_ID);
+          if (nearbytravAccount) {
+            const firstName = (user.name || user.username || 'Traveler').split(' ')[0];
+            const welcomeMessage = user.userType === 'business'
+              ? `Welcome to Nearby Traveler Business, ${firstName}! 🏢
 
 **Key Features:**
 • Create deals & flash sales for immediate foot traffic
@@ -4521,49 +4342,41 @@ Questions? Just reply to this message!
 Start by creating your first offer from your Business Dashboard!
 
 Aaron`
-            : `Welcome to Nearby Traveler, ${firstName}! ✈️
+              : `Welcome to Nearby Traveler, ${firstName}! ✈️
 
 I'm Aaron - excited to have you join our community connecting travelers and locals through shared interests.
 
 **Get Started:**
 • Complete your profile to match better with others
 • Visit your city match page to connect on local activities
-• Browse people and events in ${user.hometownCity}${hasExistingTravelPlan ? ` and your travel destination` : ''}
+• Browse people and events in ${user.hometownCity || 'your city'}
 • Join city chat rooms to start conversations
-
-${hasExistingTravelPlan ? `As a traveler, you'll be matched with locals and other travelers who share your interests!` : `As a local, you'll be notified when travelers visit ${user.hometownCity} who share your interests!`}
 
 Questions? Just reply to this message!
 
 - Aaron`;
 
-          await storage.sendSystemMessage(2, user.id, welcomeMessage);
-          console.log(`✓ REGISTRATION: Sent ${user.userType === 'business' ? 'business' : 'user'} welcome message from nearbytrav to ${user.username}`);
-        } else {
-          console.error('REGISTRATION ERROR: nearbytrav account (ID 2) not found');
+            await storage.sendSystemMessage(NEARBYTRAV_USER_ID, user.id, welcomeMessage);
+            console.log(`✅ BACKGROUND: Sent welcome message to ${user.username}`);
+          }
+        } catch (error) {
+          console.error('❌ BACKGROUND: Error sending welcome message:', error);
         }
-      } catch (error: any) {
-        console.error('REGISTRATION ERROR: Sending welcome message:', error);
-      }
 
-      // Create connection to nearbytrav account (USER ID 2)
-      try {
-        await storage.createConnection({
-          requesterId: 2,
-          receiverId: user.id,
-          status: 'accepted'
-        });
-        console.log(`✓ REGISTRATION: Connected user ${user.username} to nearbytrav system account`);
-      } catch (error: any) {
-        console.error('REGISTRATION ERROR: Creating connection to nearbytrav:', error);
-      }
+        // 8. Award aura points
+        try {
+          const signupAuraPoints = (userData.userType === 'traveler' || userData.userType === 'currently_traveling' || userData.isCurrentlyTraveling) ? 2 : 1;
+          await storage.updateUser(user.id, { aura: signupAuraPoints });
+          console.log(`✅ BACKGROUND: Awarded ${signupAuraPoints} aura point(s) to ${user.username}`);
+        } catch (error) {
+          console.error('❌ BACKGROUND: Error awarding aura points:', error);
+        }
 
-      // Success response
-      return res.status(201).json({
-        message: "Registration successful",
-        user: userWithoutPassword,
-        redirectTo: "/account-success"
+        console.log(`✅ BACKGROUND TASKS COMPLETE for ${user.username}`);
       });
+
+      // Response already sent above - just return
+      return;
 
     } catch (error: any) {
       // ALWAYS log registration errors for debugging (both dev and production)
