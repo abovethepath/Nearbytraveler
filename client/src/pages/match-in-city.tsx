@@ -1104,21 +1104,22 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
         {/* Instructions */}
         {isHeroVisible && (
-          <div className="max-w-4xl mx-auto mb-6 relative">
+          <div className="max-w-4xl mx-auto mb-6">
             <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
-              <div className="absolute top-2 right-2">
+              {/* Mobile: Stack vertically, Desktop: Side by side */}
+              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2 mb-2">
+                <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-200">🎯 How City Matching Works</h3>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={toggleHeroVisibility}
-                  className="text-sm"
+                  className="text-sm w-fit"
                   data-testid="button-hide-match-hero"
                 >
                   <X className="w-4 h-4 mr-2" />
                   Hide Instructions
                 </Button>
               </div>
-              <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-200 mb-2">🎯 How City Matching Works</h3>
               <div className="text-sm text-blue-800 dark:text-blue-300 space-y-1">
                 <p>• <strong>Choose activities you want to do</strong> → Get matched with others who share your interests</p>
                 <p>• <strong>Add your own activities</strong> → Help others discover new experiences</p>
