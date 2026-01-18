@@ -272,15 +272,30 @@ export default function SignupTraveling() {
         console.log('🚀 Starting traveler registration with data:', registrationData);
         setDebugStatus("Making API call to /api/register...");
         
-        const response = await fetch('/api/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify(registrationData)
-        });
+        let response;
+        try {
+          response = await fetch('/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(registrationData)
+          });
+        } catch (fetchError: any) {
+          console.error('❌ FETCH ERROR:', fetchError);
+          alert('Network error: ' + (fetchError?.message || 'Could not connect to server'));
+          throw fetchError;
+        }
         
         setDebugStatus(`API responded with status: ${response.status}`);
-        const data = await response.json();
+        
+        let data;
+        try {
+          data = await response.json();
+        } catch (jsonError: any) {
+          console.error('❌ JSON PARSE ERROR:', jsonError);
+          alert('Response parse error: ' + (jsonError?.message || 'Invalid server response'));
+          throw jsonError;
+        }
         
         if (response.ok) {
           console.log('✅ Traveler registration successful:', data.user?.username);
@@ -309,18 +324,22 @@ export default function SignupTraveling() {
           
         } else {
           console.error('❌ Registration failed:', data.message);
-          setDebugError("API ERROR: " + (data.message || "Unknown server error"));
+          const errorMsg = data.message || "Unknown server error";
+          setDebugError("API ERROR: " + errorMsg);
           setDebugStatus("Registration failed - see error above");
+          alert('Registration failed: ' + errorMsg);
           toast({
             title: "Registration failed",
-            description: data.message || "Something went wrong",
+            description: errorMsg,
             variant: "destructive",
           });
         }
       } catch (error: any) {
         console.error('❌ Registration error:', error);
-        setDebugError("NETWORK/API ERROR: " + (error?.message || String(error)));
+        const errorMsg = error?.message || String(error);
+        setDebugError("NETWORK/API ERROR: " + errorMsg);
         setDebugStatus("Network error occurred");
+        alert('Registration error: ' + errorMsg);
         toast({
           title: "Registration failed",
           description: "Something went wrong. Please try again.",
@@ -329,8 +348,10 @@ export default function SignupTraveling() {
       }
     } catch (error: any) {
       console.error('Validation error:', error);
-      setDebugError("VALIDATION ERROR: " + (error?.message || String(error)));
+      const errorMsg = error?.message || String(error);
+      setDebugError("VALIDATION ERROR: " + errorMsg);
       setDebugStatus("Validation error occurred");
+      alert('Validation error: ' + errorMsg);
       toast({
         title: "Validation failed",
         description: "Please check your information and try again.",
