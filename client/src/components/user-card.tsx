@@ -330,10 +330,10 @@ export default function UserCard({
                     </span>
                     <span>
                       {connectionDegree.degree === 1 
-                        ? 'Connected' 
+                        ? '1st° Connected' 
                         : connectionDegree.degree === 2 
-                          ? `${connectionDegree.mutualCount} Mutual Connection${connectionDegree.mutualCount !== 1 ? 's' : ''}`
-                          : '3rd Degree Connection'
+                          ? `2nd° • ${connectionDegree.mutualCount} Mutual${connectionDegree.mutualCount !== 1 ? 's' : ''}`
+                          : '3rd° Connection'
                       }
                     </span>
                   </div>
