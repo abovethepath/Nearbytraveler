@@ -272,6 +272,9 @@ export default function SignupTraveling() {
         console.log('🚀 Starting traveler registration with data:', registrationData);
         setDebugStatus("Making API call to /api/register...");
         
+        // DEBUG: Show exactly what we're sending
+        alert('SENDING TO SERVER:\nEmail: ' + registrationData.email + '\nUsername: ' + registrationData.username + '\nName: ' + registrationData.name);
+        
         let response;
         try {
           response = await fetch('/api/register', {
