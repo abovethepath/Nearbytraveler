@@ -3671,25 +3671,26 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </div>
                   )}
                   
-                  <Button
-                    size="icon"
+                  <label
+                    htmlFor="avatar-upload-input"
                     aria-label="Change avatar"
                     className={`absolute -bottom-2 -right-2 translate-x-1/4 translate-y-1/4
-                               h-10 w-10 sm:h-11 sm:w-11 rounded-full p-0
+                               h-10 w-10 sm:h-11 sm:w-11 rounded-full p-0 flex items-center justify-center cursor-pointer
                                ${!user?.profileImage ? 'bg-orange-500 hover:bg-orange-600 animate-bounce' : 'bg-blue-600 hover:bg-blue-700'} 
-                               dark:bg-gray-800 dark:hover:bg-gray-700 text-white shadow-lg ring-4 ring-white dark:ring-gray-700 z-10`}
-                    onClick={() => document.getElementById('avatar-upload-input')?.click()}
-                    disabled={uploadingPhoto}
+                               dark:bg-gray-800 dark:hover:bg-gray-700 text-white shadow-lg ring-4 ring-white dark:ring-gray-700 z-10
+                               ${uploadingPhoto ? 'pointer-events-none opacity-50' : ''}`}
                     data-testid="button-upload-avatar"
                   >
                     <Camera className="h-4 w-4 sm:h-5 sm:w-5" />
-                  </Button>
+                  </label>
                   <input
                     id="avatar-upload-input"
                     type="file"
                     accept="image/*"
+                    capture="environment"
                     onChange={handleAvatarUpload}
-                    className="hidden"
+                    className="sr-only"
+                    disabled={uploadingPhoto}
                   />
                 </>
               )}
