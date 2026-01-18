@@ -1993,7 +1993,7 @@ export default function Home() {
                             isCurrentUser={otherUser.id === effectiveUser?.id}
                             compatibilityData={compatibilityData?.find((match: any) => match.userId === otherUser.id)}
                             compact={isCompactMode}
-                            connectionDegree={otherUser.id === 79 ? { degree: 2, mutualCount: 12 } : connectionDegreesData?.degrees?.[otherUser.id]}
+                            connectionDegree={connectionDegreesData?.degrees?.[otherUser.id]}
                           />
                         </div>
                       ))

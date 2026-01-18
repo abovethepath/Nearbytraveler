@@ -1359,6 +1359,24 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     staleTime: 0, // Always refetch when filters change
   });
 
+  // Sort connections to show mutual connections first (when viewing someone else's profile)
+  const sortedUserConnections = useMemo(() => {
+    if (!connectionDegreeData?.mutuals || isOwnProfile) {
+      return userConnections;
+    }
+    
+    const mutualIds = new Set(connectionDegreeData.mutuals.map((m: any) => m.id));
+    
+    return [...userConnections].sort((a: any, b: any) => {
+      const aIsMutual = mutualIds.has(a.connectedUser?.id);
+      const bIsMutual = mutualIds.has(b.connectedUser?.id);
+      
+      if (aIsMutual && !bIsMutual) return -1;
+      if (!aIsMutual && bIsMutual) return 1;
+      return 0;
+    });
+  }, [userConnections, connectionDegreeData?.mutuals, isOwnProfile]);
+
   // Fetch quick deals to determine if Flash Deals widget should be shown
   const { data: quickDeals = [] } = useQuery({
     queryKey: ['/api/quick-deals', user?.hometownCity, user?.id],
@@ -6102,10 +6120,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 )}
               </CardHeader>
               <CardContent>
-                {userConnections.length > 0 ? (
+                {sortedUserConnections.length > 0 ? (
                   <div className="space-y-3">
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                    {userConnections.slice(0, connectionsDisplayCount).map((connection: any) => (
+                    {sortedUserConnections.slice(0, connectionsDisplayCount).map((connection: any) => (
                       <div
                         key={connection.id}
                         className="rounded-xl border p-3 hover:shadow-sm bg-white dark:bg-gray-800 flex flex-col items-center text-center gap-2"
@@ -6223,16 +6241,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
                     
                     {/* Load More / Load Less buttons */}
-                    {userConnections.length > 3 && (
+                    {sortedUserConnections.length > 3 && (
                       <div className="text-center pt-2">
-                        {connectionsDisplayCount < userConnections.length ? (
+                        {connectionsDisplayCount < sortedUserConnections.length ? (
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => setConnectionsDisplayCount(userConnections.length)}
+                            onClick={() => setConnectionsDisplayCount(sortedUserConnections.length)}
                             className="text-xs text-blue-600 hover:text-blue-800 hover:bg-blue-50 dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-950 h-8"
                           >
-                            Load More ({userConnections.length - connectionsDisplayCount} more)
+                            Load More ({sortedUserConnections.length - connectionsDisplayCount} more)
                           </Button>
                         ) : (
                           <Button
