@@ -341,27 +341,6 @@ export default function Home() {
     enabled: !!(user?.id || currentUserProfile?.id || effectiveUser?.id),
   });
 
-  // Get connection degrees for displayed users (LinkedIn-style 1st/2nd/3rd degree)
-  const displayedUserIds = React.useMemo(() => {
-    return filteredUsers.slice(0, showAllUsers ? filteredUsers.length : 8).map(u => u.id);
-  }, [filteredUsers, showAllUsers]);
-  
-  const { data: connectionDegreesData } = useQuery<{ degrees: { [key: number]: { degree: number; mutualCount: number } } }>({
-    queryKey: ['/api/connections/degrees/batch', effectiveUser?.id, displayedUserIds],
-    queryFn: async () => {
-      if (!effectiveUser?.id || displayedUserIds.length === 0) return { degrees: {} };
-      const response = await fetch('/api/connections/degrees/batch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: effectiveUser.id, targetUserIds: displayedUserIds })
-      });
-      if (!response.ok) return { degrees: {} };
-      return response.json();
-    },
-    enabled: !!(effectiveUser?.id && displayedUserIds.length > 0),
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-  });
-
   // ONLY USER-CREATED EVENTS: Get events from both hometown AND travel destination
   const { data: userPriorityEvents = [] } = useQuery({
     queryKey: ['/api/events', effectiveUser?.hometownCity, effectiveUser?.travelDestination, travelPlans?.map(p => p.id).join(',')],
@@ -1367,7 +1346,26 @@ export default function Home() {
     return true;
   });
 
-
+  // Get connection degrees for displayed users (LinkedIn-style 1st/2nd/3rd degree)
+  const displayedUserIds = React.useMemo(() => {
+    return filteredUsers.slice(0, showAllUsers ? filteredUsers.length : 8).map(u => u.id);
+  }, [filteredUsers, showAllUsers]);
+  
+  const { data: connectionDegreesData } = useQuery<{ degrees: { [key: number]: { degree: number; mutualCount: number } } }>({
+    queryKey: ['/api/connections/degrees/batch', effectiveUser?.id, displayedUserIds],
+    queryFn: async () => {
+      if (!effectiveUser?.id || displayedUserIds.length === 0) return { degrees: {} };
+      const response = await fetch('/api/connections/degrees/batch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: effectiveUser.id, targetUserIds: displayedUserIds })
+      });
+      if (!response.ok) return { degrees: {} };
+      return response.json();
+    },
+    enabled: !!(effectiveUser?.id && displayedUserIds.length > 0),
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
 
   const handleDestinationComplete = async (destination: string, startDate?: string, endDate?: string, interests?: string[], activities?: string[]) => {
     try {
