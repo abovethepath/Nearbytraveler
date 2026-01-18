@@ -4022,14 +4022,31 @@ Questions? Just reply to this message!
         userData.secretActivities = preservedSecretActivities;
       }
       
-      // CRITICAL: Restore referral data after schema parsing (QR code referrals)
-      // Also check raw req.body as backup to ensure we never lose the referralCode
-      const finalReferralCode = preservedReferralCode || req.body.referralCode;
+      // CRITICAL FIX: The incoming referralCode is the REFERRER's code (for tracking who referred this user)
+      // It should NOT be assigned as this new user's referralCode (which must be unique per user)
+      // Instead, we'll look up the referrer and store their ID in referredBy
+      const incomingReferralCode = preservedReferralCode || req.body.referralCode;
       const finalConnectionNote = preservedConnectionNote || req.body.connectionNote;
       
-      if (finalReferralCode) {
-        (userData as any).referralCode = finalReferralCode;
-        if (process.env.NODE_ENV === 'development') console.log('🔗 REFERRAL: Restored referralCode after schema parsing:', finalReferralCode);
+      if (incomingReferralCode) {
+        // Look up the referrer by their referral code and store their ID
+        try {
+          const [referrer] = await db
+            .select({ id: users.id })
+            .from(users)
+            .where(eq(users.referralCode, incomingReferralCode))
+            .limit(1);
+          
+          if (referrer) {
+            (userData as any).referredBy = referrer.id;
+            if (process.env.NODE_ENV === 'development') console.log('🔗 REFERRAL: Found referrer ID:', referrer.id, 'from code:', incomingReferralCode);
+          } else if (process.env.NODE_ENV === 'development') {
+            console.log('🔗 REFERRAL: No referrer found for code:', incomingReferralCode);
+          }
+        } catch (error) {
+          console.error('🔗 REFERRAL: Error looking up referrer:', error);
+        }
+        // DO NOT set userData.referralCode - that field is for the user's OWN unique code (generated later)
       }
       if (finalConnectionNote) {
         (userData as any).connectionNote = finalConnectionNote;
