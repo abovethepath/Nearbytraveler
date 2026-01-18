@@ -7097,6 +7097,95 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Batch get connection degrees for multiple users (for home page cards)
+  app.post("/api/connections/degrees/batch", async (req, res) => {
+    try {
+      const { userId, targetUserIds } = req.body;
+      
+      if (!userId || !targetUserIds || !Array.isArray(targetUserIds)) {
+        return res.json({ degrees: {} });
+      }
+
+      // System/admin users to exclude from degree calculations
+      const EXCLUDED_SYSTEM_USERS = [1, 2]; // nearbytravlr (1) and nearbytrav (2)
+
+      // Helper function to get accepted connections for a user (excluding system users)
+      const getAcceptedConnections = async (uid: number): Promise<number[]> => {
+        const result = await db.execute(sql`
+          SELECT 
+            CASE 
+              WHEN requester_id = ${uid} THEN receiver_id
+              ELSE requester_id
+            END as connected_user_id
+          FROM connections 
+          WHERE status = 'accepted' 
+          AND (requester_id = ${uid} OR receiver_id = ${uid})
+        `);
+        return result.rows
+          .map((r: any) => parseInt(r.connected_user_id))
+          .filter((id: number) => !EXCLUDED_SYSTEM_USERS.includes(id));
+      };
+
+      // Get 1st degree connections for the current user
+      const user1stDegree = await getAcceptedConnections(userId);
+      
+      // Build 2nd degree network (limit to 50 friends for performance)
+      const user2ndDegree = new Set<number>();
+      const friendConnections: { [friendId: number]: number[] } = {};
+      
+      for (const friendId of user1stDegree.slice(0, 50)) {
+        const connections = await getAcceptedConnections(friendId);
+        friendConnections[friendId] = connections;
+        connections.forEach(id => {
+          if (id !== userId && !user1stDegree.includes(id)) {
+            user2ndDegree.add(id);
+          }
+        });
+      }
+
+      // Calculate degrees for each target user
+      const degrees: { [targetId: number]: { degree: number; mutualCount: number } } = {};
+      
+      for (const targetId of targetUserIds.slice(0, 50)) { // Limit to 50 users
+        if (targetId === userId) continue;
+        
+        // Check 1st degree (directly connected)
+        if (user1stDegree.includes(targetId)) {
+          // Get target's connections to find mutuals
+          const target1stDegree = await getAcceptedConnections(targetId);
+          const mutualCount = user1stDegree.filter(id => target1stDegree.includes(id)).length;
+          degrees[targetId] = { degree: 1, mutualCount };
+          continue;
+        }
+        
+        // Check 2nd degree (friend of friend)
+        const mutualFriends = user1stDegree.filter(friendId => {
+          const friendConns = friendConnections[friendId];
+          return friendConns && friendConns.includes(targetId);
+        });
+        
+        if (mutualFriends.length > 0) {
+          degrees[targetId] = { degree: 2, mutualCount: mutualFriends.length };
+          continue;
+        }
+        
+        // Check 3rd degree (simplified - check if target is in 2nd degree network)
+        if (user2ndDegree.has(targetId)) {
+          degrees[targetId] = { degree: 3, mutualCount: 0 };
+          continue;
+        }
+        
+        // No connection within 3 degrees
+        degrees[targetId] = { degree: 0, mutualCount: 0 };
+      }
+
+      res.json({ degrees });
+    } catch (error) {
+      console.error('Error calculating batch connection degrees:', error);
+      res.status(500).json({ error: 'Failed to calculate connection degrees' });
+    }
+  });
+
   // Get network connections by degree (for discovery/matching)
   app.get("/api/connections/network/:userId", async (req, res) => {
     try {

@@ -39,6 +39,10 @@ interface UserCardProps {
   showCompatibilityScore?: boolean;
   compatibilityData?: any;
   compact?: boolean;
+  connectionDegree?: {
+    degree: number;
+    mutualCount: number;
+  };
 }
 
 function getCurrentOrNextTrip(travelPlans: any[]) {
@@ -74,7 +78,8 @@ export default function UserCard({
   isCurrentUser = false,
   showCompatibilityScore = false,
   compatibilityData,
-  compact = false
+  compact = false,
+  connectionDegree
 }: UserCardProps) {
   
   const handleCardClick = (e: React.MouseEvent) => {
@@ -311,6 +316,29 @@ export default function UserCard({
         {!isCurrentUser && currentUserId && (
           <div className="pt-4">
               <div className="flex flex-col gap-2">
+                {/* Connection Degree Badge - LinkedIn style */}
+                {connectionDegree && connectionDegree.degree > 0 && (
+                  <div className={`flex items-center justify-center gap-2 text-sm font-bold px-3 py-2 rounded-lg shadow-md ${
+                    connectionDegree.degree === 1 
+                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white' 
+                      : connectionDegree.degree === 2 
+                        ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white'
+                        : 'bg-gradient-to-r from-purple-500 to-violet-600 text-white'
+                  }`}>
+                    <span className="text-lg">
+                      {connectionDegree.degree === 1 ? '🤝' : connectionDegree.degree === 2 ? '👥' : '🔗'}
+                    </span>
+                    <span>
+                      {connectionDegree.degree === 1 
+                        ? 'Connected' 
+                        : connectionDegree.degree === 2 
+                          ? `${connectionDegree.mutualCount} Mutual Connection${connectionDegree.mutualCount !== 1 ? 's' : ''}`
+                          : '3rd Degree Connection'
+                      }
+                    </span>
+                  </div>
+                )}
+                
                 {/* Things in Common Badge */}
                 {compatibilityData && (() => {
                   const data = compatibilityData as any;
