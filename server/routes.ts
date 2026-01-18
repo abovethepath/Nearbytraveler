@@ -6972,6 +6972,194 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Get connection degree between two users (1st, 2nd, 3rd degree like LinkedIn)
+  app.get("/api/connections/degree/:userId/:targetUserId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId || '0');
+      const targetUserId = parseInt(req.params.targetUserId || '0');
+
+      if (!userId || !targetUserId || userId === targetUserId) {
+        return res.json({ degree: 0, mutualCount: 0, mutuals: [] });
+      }
+
+      // Helper function to get accepted connections for a user
+      const getAcceptedConnections = async (uid: number): Promise<number[]> => {
+        const result = await db.execute(sql`
+          SELECT 
+            CASE 
+              WHEN requester_id = ${uid} THEN receiver_id
+              ELSE requester_id
+            END as connected_user_id
+          FROM connections 
+          WHERE status = 'accepted' 
+          AND (requester_id = ${uid} OR receiver_id = ${uid})
+        `);
+        return result.rows.map((r: any) => parseInt(r.connected_user_id));
+      };
+
+      // Get 1st degree connections for both users
+      const user1stDegree = await getAcceptedConnections(userId);
+      const target1stDegree = await getAcceptedConnections(targetUserId);
+
+      // Check if directly connected (1st degree)
+      if (user1stDegree.includes(targetUserId)) {
+        // Get mutual connections for context
+        const mutualIds = user1stDegree.filter(id => target1stDegree.includes(id));
+        const mutuals = mutualIds.length > 0 
+          ? await db.select({
+              id: users.id,
+              username: users.username,
+              name: users.name,
+              profileImage: users.profileImage
+            }).from(users).where(inArray(users.id, mutualIds.slice(0, 5)))
+          : [];
+        
+        return res.json({ 
+          degree: 1, 
+          mutualCount: mutualIds.length,
+          mutuals
+        });
+      }
+
+      // Check for 2nd degree (friend of a friend)
+      const mutualIds = user1stDegree.filter(id => target1stDegree.includes(id));
+      if (mutualIds.length > 0) {
+        const mutuals = await db.select({
+          id: users.id,
+          username: users.username,
+          name: users.name,
+          profileImage: users.profileImage
+        }).from(users).where(inArray(users.id, mutualIds.slice(0, 5)));
+        
+        return res.json({ 
+          degree: 2, 
+          mutualCount: mutualIds.length,
+          mutuals
+        });
+      }
+
+      // Check for 3rd degree (friend of friend of friend)
+      // Get 2nd degree connections for user (friends of friends)
+      let user2ndDegree: number[] = [];
+      for (const friendId of user1stDegree.slice(0, 50)) { // Limit to prevent performance issues
+        const friendConnections = await getAcceptedConnections(friendId);
+        user2ndDegree = [...user2ndDegree, ...friendConnections.filter(id => 
+          id !== userId && !user1stDegree.includes(id) && !user2ndDegree.includes(id)
+        )];
+      }
+
+      // Check if target is in user's 2nd degree network
+      if (user2ndDegree.includes(targetUserId)) {
+        // Find the connecting friend (the mutual 2nd degree connection)
+        const connectingFriendIds: number[] = [];
+        for (const friendId of user1stDegree) {
+          if (target1stDegree.includes(friendId)) {
+            // This shouldn't happen since we checked mutuals above, but check anyway
+            continue;
+          }
+          const friendConnections = await getAcceptedConnections(friendId);
+          if (friendConnections.includes(targetUserId)) {
+            connectingFriendIds.push(friendId);
+          }
+        }
+        
+        const connectingFriends = connectingFriendIds.length > 0
+          ? await db.select({
+              id: users.id,
+              username: users.username,
+              name: users.name,
+              profileImage: users.profileImage
+            }).from(users).where(inArray(users.id, connectingFriendIds.slice(0, 3)))
+          : [];
+        
+        return res.json({ 
+          degree: 3, 
+          mutualCount: 0,
+          mutuals: [],
+          connectingFriends,
+          connectingFriendCount: connectingFriendIds.length
+        });
+      }
+
+      // No connection found within 3 degrees
+      return res.json({ degree: 0, mutualCount: 0, mutuals: [] });
+
+    } catch (error) {
+      console.error('Error calculating connection degree:', error);
+      res.status(500).json({ error: 'Failed to calculate connection degree' });
+    }
+  });
+
+  // Get network connections by degree (for discovery/matching)
+  app.get("/api/connections/network/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId || '0');
+      const maxDegree = parseInt(req.query.degree as string) || 2;
+
+      if (!userId) {
+        return res.status(400).json({ error: 'User ID is required' });
+      }
+
+      // Helper function to get accepted connections for a user
+      const getAcceptedConnections = async (uid: number): Promise<number[]> => {
+        const result = await db.execute(sql`
+          SELECT 
+            CASE 
+              WHEN requester_id = ${uid} THEN receiver_id
+              ELSE requester_id
+            END as connected_user_id
+          FROM connections 
+          WHERE status = 'accepted' 
+          AND (requester_id = ${uid} OR receiver_id = ${uid})
+        `);
+        return result.rows.map((r: any) => parseInt(r.connected_user_id));
+      };
+
+      // Get 1st degree connections
+      const firstDegree = await getAcceptedConnections(userId);
+      
+      const network: { degree1: number[], degree2: number[], degree3: number[] } = {
+        degree1: firstDegree,
+        degree2: [],
+        degree3: []
+      };
+
+      if (maxDegree >= 2) {
+        // Get 2nd degree connections
+        const secondDegreeSet = new Set<number>();
+        for (const friendId of firstDegree.slice(0, 100)) {
+          const friendConnections = await getAcceptedConnections(friendId);
+          friendConnections.forEach(id => {
+            if (id !== userId && !firstDegree.includes(id)) {
+              secondDegreeSet.add(id);
+            }
+          });
+        }
+        network.degree2 = Array.from(secondDegreeSet);
+      }
+
+      if (maxDegree >= 3) {
+        // Get 3rd degree connections (limited for performance)
+        const thirdDegreeSet = new Set<number>();
+        for (const friend2Id of network.degree2.slice(0, 50)) {
+          const friend2Connections = await getAcceptedConnections(friend2Id);
+          friend2Connections.forEach(id => {
+            if (id !== userId && !firstDegree.includes(id) && !network.degree2.includes(id)) {
+              thirdDegreeSet.add(id);
+            }
+          });
+        }
+        network.degree3 = Array.from(thirdDegreeSet).slice(0, 200); // Limit 3rd degree results
+      }
+
+      return res.json(network);
+
+    } catch (error) {
+      console.error('Error fetching network connections:', error);
+      res.status(500).json({ error: 'Failed to fetch network connections' });
+    }
+  });
+
   app.get("/api/connections/:userId/requests", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId || '0');
