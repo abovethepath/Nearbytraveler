@@ -246,8 +246,14 @@ export default function SignupLocal() {
           console.log('✅ Local registration successful:', data.user?.username);
           
           // Set user in auth context and storage immediately
-          authStorage.setUser(data.user);
-          setUser(data.user);
+          try {
+            if (data.user) {
+              authStorage.setUser(data.user);
+              setUser(data.user);
+            }
+          } catch (authErr) {
+            console.error('Auth storage error (continuing anyway):', authErr);
+          }
           
           // Show success message
           toast({
@@ -256,8 +262,9 @@ export default function SignupLocal() {
             variant: "default",
           });
           
-          // Redirect to welcome page after successful registration
-          setLocation('/account-success');
+          // ALWAYS redirect - this is the critical action
+          console.log('🚀 Redirecting to /account-success...');
+          window.location.href = '/account-success';
           
         } else {
           console.error('❌ Registration failed:', data.message);

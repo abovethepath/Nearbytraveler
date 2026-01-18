@@ -310,8 +310,9 @@ export default function SignupBusinessSimple() {
       variant: "default",
     });
 
-    // Redirect immediately
-    setLocation('/account-success');
+    // ALWAYS redirect - using window.location for reliability
+    console.log('🚀 Redirecting to /account-success...');
+    window.location.href = '/account-success';
     
     // Start background registration with profile completion
     setTimeout(async () => {
