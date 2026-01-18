@@ -316,29 +316,6 @@ export default function UserCard({
         {!isCurrentUser && currentUserId && (
           <div className="pt-4">
               <div className="flex flex-col gap-2">
-                {/* Connection Degree Badge - LinkedIn style */}
-                {connectionDegree && connectionDegree.degree > 0 && (
-                  <div className={`flex items-center justify-center gap-2 text-sm font-bold px-3 py-2 rounded-lg shadow-md ${
-                    connectionDegree.degree === 1 
-                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white' 
-                      : connectionDegree.degree === 2 
-                        ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white'
-                        : 'bg-gradient-to-r from-purple-500 to-violet-600 text-white'
-                  }`}>
-                    <span className="text-lg">
-                      {connectionDegree.degree === 1 ? '🤝' : connectionDegree.degree === 2 ? '👥' : '🔗'}
-                    </span>
-                    <span>
-                      {connectionDegree.degree === 1 
-                        ? '1st° Connected' 
-                        : connectionDegree.degree === 2 
-                          ? `2nd° • ${connectionDegree.mutualCount} Mutual${connectionDegree.mutualCount !== 1 ? 's' : ''}`
-                          : '3rd° Connection'
-                      }
-                    </span>
-                  </div>
-                )}
-                
                 {/* Things in Common Badge */}
                 {compatibilityData && (() => {
                   const data = compatibilityData as any;
@@ -356,8 +333,8 @@ export default function UserCard({
                   ) : null;
                 })()}
                 
-                {/* Connect Button */}
-                <div onClick={(e) => e.stopPropagation()}>
+                {/* Connect Button with Connection Degree subtitle */}
+                <div onClick={(e) => e.stopPropagation()} className="flex flex-col items-center">
                   <ConnectButton
                     currentUserId={currentUserId}
                     targetUserId={user.id}
@@ -366,6 +343,19 @@ export default function UserCard({
                     className="w-full bg-white dark:bg-gray-800 border-2 border-gray-900 dark:border-white text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold shadow-md hover:shadow-lg transition-all duration-300"
                     size="default"
                   />
+                  {/* Connection Degree subtitle under Connect button */}
+                  {connectionDegree && connectionDegree.degree > 0 && connectionDegree.degree !== 1 && (
+                    <span className={`text-xs mt-1 font-medium ${
+                      connectionDegree.degree === 2 
+                        ? 'text-blue-600 dark:text-blue-400' 
+                        : 'text-purple-600 dark:text-purple-400'
+                    }`}>
+                      {connectionDegree.degree === 2 
+                        ? `${connectionDegree.mutualCount} 2nd degree connection${connectionDegree.mutualCount !== 1 ? 's' : ''}`
+                        : '3rd degree connection'
+                      }
+                    </span>
+                  )}
                 </div>
             </div>
           </div>
