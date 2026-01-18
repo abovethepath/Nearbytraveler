@@ -2,7 +2,7 @@ import React, { useState, useMemo, useContext, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 // Removed goBackProperly import
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { apiRequest, queryClient, invalidateUserCache } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -1130,10 +1130,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return response.json();
     },
     enabled: !!effectiveUserId,
-    staleTime: 30000, // Cache for 30 seconds to prevent constant refetching
+    staleTime: 0, // Always consider data stale to ensure fresh data after updates
     gcTime: 60000, // Keep in cache for 1 minute
-    refetchOnMount: false, // Don't refetch on every mount
-    refetchOnWindowFocus: false, // Don't refetch when window gains focus
+    refetchOnMount: 'always', // Always refetch when component mounts for fresh data
+    refetchOnWindowFocus: true, // Refetch when app regains focus (important for mobile)
     retry: 1, // Retry once in case of network issues
 
   });
@@ -2051,6 +2051,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return response.json();
     },
     onSuccess: () => {
+      // CRITICAL: Clear localStorage cache to prevent stale data
+      invalidateUserCache();
+      
       // Invalidate all travel plan and user-related queries to ensure consistency across the entire application
       queryClient.invalidateQueries({ queryKey: [`/api/travel-plans/${effectiveUserId}`] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/travel-plans`] });
@@ -2060,6 +2063,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       // Invalidate matches page data since travel plans affect matching
       queryClient.invalidateQueries({ queryKey: ["/api/matches"] });
       queryClient.invalidateQueries({ queryKey: ["/api/users/search-by-location"] });
+      
+      // Force immediate refetch
+      refetchUser();
       
       toast({
         title: "Travel plan deleted",
@@ -2157,6 +2163,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       });
     },
     onSuccess: async (response: any) => {
+      // CRITICAL: Clear localStorage cache to prevent stale data
+      invalidateUserCache();
+      
       // API returns { user, profileImage, message } - extract the user data
       const updatedUser = response?.user || response;
       console.log('Profile upload success, user has image:', !!updatedUser?.profileImage);
@@ -2794,6 +2803,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return response.json();
     },
     onSuccess: () => {
+      // CRITICAL: Clear localStorage cache to prevent stale data
+      invalidateUserCache();
+      
       // Invalidate all travel plan and user-related queries to ensure consistency across the entire application
       queryClient.invalidateQueries({ queryKey: [`/api/travel-plans/${effectiveUserId}`] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/travel-plans`] });
@@ -2805,6 +2817,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       queryClient.invalidateQueries({ queryKey: ["/api/users/search-by-location"] });
       // CRITICAL: Invalidate all event queries since changing travel destination changes which events are shown
       queryClient.invalidateQueries({ queryKey: ["/api/events"] });
+      
+      // Force immediate refetch
+      refetchUser();
       
       toast({
         title: "Travel plan updated",
@@ -2837,7 +2852,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return response.json();
     },
     onSuccess: () => {
+      invalidateUserCache();
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+      refetchUser();
       toast({
         title: "Interests updated",
         description: "Your interests have been successfully updated.",
@@ -2865,6 +2882,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return response.json();
     },
     onSuccess: () => {
+      invalidateUserCache();
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
       refetchUser();
       toast({
@@ -2891,7 +2909,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return response;
     },
     onSuccess: () => {
+      invalidateUserCache();
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+      refetchUser();
       toast({
         title: "Languages updated",
         description: "Your languages have been successfully updated.",
@@ -2915,7 +2935,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return response;
     },
     onSuccess: () => {
+      invalidateUserCache();
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+      refetchUser();
       toast({
         title: "Countries updated",
         description: "Your countries visited have been successfully updated.",
@@ -3005,8 +3027,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         throw new Error('Failed to save preferences');
       }
 
-      // Update the query cache
+      // CRITICAL: Clear all caches to ensure fresh data
+      invalidateUserCache();
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+      refetchUser();
       
       toast({
         title: "All preferences saved!",
@@ -3249,6 +3273,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     },
     onSuccess: (updatedUser) => {
       console.log('✅ BUSINESS SAVE SUCCESS:', updatedUser);
+      
+      // CRITICAL: Clear localStorage cache to prevent stale data
+      invalidateUserCache();
       
       // Update all caches
       queryClient.setQueryData([`/api/users/${effectiveUserId}`], updatedUser);
