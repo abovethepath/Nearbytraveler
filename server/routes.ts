@@ -4167,6 +4167,13 @@ Questions? Just reply to this message!
         if (process.env.NODE_ENV === 'development') console.log(`✓ DOB stored in dateOfBirth field: ${dobString}`);
       }
 
+      // CRITICAL SAFETY: Ensure referralCode is NEVER set from incoming data
+      // The user's own referralCode should only be generated when they request their QR code
+      if ((userData as any).referralCode) {
+        console.log('⚠️ SAFETY: Removing referralCode from userData before insert:', (userData as any).referralCode);
+        delete (userData as any).referralCode;
+      }
+      
       if (process.env.NODE_ENV === 'development') console.log("Creating new user:", userData.email);
       const user = await storage.createUser(userData);
       const { password, ...userWithoutPassword } = user;
