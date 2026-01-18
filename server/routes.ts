@@ -6982,7 +6982,11 @@ Questions? Just reply to this message. Welcome aboard!
         return res.json({ degree: 0, mutualCount: 0, mutuals: [] });
       }
 
-      // Helper function to get accepted connections for a user
+      // System/admin users to exclude from degree calculations
+      // These are hub accounts that everyone connects with, which would make degrees meaningless
+      const EXCLUDED_SYSTEM_USERS = [1, 2]; // nearbytravlr (1) and nearbytrav (2)
+
+      // Helper function to get accepted connections for a user (excluding system users)
       const getAcceptedConnections = async (uid: number): Promise<number[]> => {
         const result = await db.execute(sql`
           SELECT 
@@ -6994,7 +6998,10 @@ Questions? Just reply to this message. Welcome aboard!
           WHERE status = 'accepted' 
           AND (requester_id = ${uid} OR receiver_id = ${uid})
         `);
-        return result.rows.map((r: any) => parseInt(r.connected_user_id));
+        // Filter out system users from connections
+        return result.rows
+          .map((r: any) => parseInt(r.connected_user_id))
+          .filter((id: number) => !EXCLUDED_SYSTEM_USERS.includes(id));
       };
 
       // Get 1st degree connections for both users
@@ -7100,7 +7107,10 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(400).json({ error: 'User ID is required' });
       }
 
-      // Helper function to get accepted connections for a user
+      // System/admin users to exclude from degree calculations
+      const EXCLUDED_SYSTEM_USERS = [1, 2]; // nearbytravlr (1) and nearbytrav (2)
+
+      // Helper function to get accepted connections for a user (excluding system users)
       const getAcceptedConnections = async (uid: number): Promise<number[]> => {
         const result = await db.execute(sql`
           SELECT 
@@ -7112,7 +7122,9 @@ Questions? Just reply to this message. Welcome aboard!
           WHERE status = 'accepted' 
           AND (requester_id = ${uid} OR receiver_id = ${uid})
         `);
-        return result.rows.map((r: any) => parseInt(r.connected_user_id));
+        return result.rows
+          .map((r: any) => parseInt(r.connected_user_id))
+          .filter((id: number) => !EXCLUDED_SYSTEM_USERS.includes(id));
       };
 
       // Get 1st degree connections

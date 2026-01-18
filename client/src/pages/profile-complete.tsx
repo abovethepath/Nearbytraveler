@@ -1216,6 +1216,25 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     enabled: !!(currentUser?.id && effectiveUserId && !isOwnProfile),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
+
+  // Fetch connection degree when viewing other users' profiles (LinkedIn-style 1st/2nd/3rd degree)
+  const { data: connectionDegreeData } = useQuery<{
+    degree: number;
+    mutualCount: number;
+    mutuals: Array<{ id: number; username: string; name: string; profileImage?: string }>;
+    connectingFriends?: Array<{ id: number; username: string; name: string; profileImage?: string }>;
+    connectingFriendCount?: number;
+  }>({
+    queryKey: [`/api/connections/degree/${currentUser?.id}/${effectiveUserId}`],
+    queryFn: async () => {
+      if (!currentUser?.id || !effectiveUserId || isOwnProfile) return null;
+      const response = await fetch(`/api/connections/degree/${currentUser.id}/${effectiveUserId}`);
+      if (!response.ok) return null;
+      return response.json();
+    },
+    enabled: !!(currentUser?.id && effectiveUserId && !isOwnProfile),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
   
   // Add debug logging
   console.log('Profile component state:', {
@@ -3805,7 +3824,25 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     
                     return (
                       <>
-                        <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold text-black break-all">@{user.username}</h1>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold text-black break-all">@{user.username}</h1>
+                          
+                          {/* Connection Degree Badge - LinkedIn style */}
+                          {!isOwnProfile && connectionDegreeData?.degree && connectionDegreeData.degree > 0 && (
+                            <Badge 
+                              className={`text-xs px-2 py-0.5 font-semibold ${
+                                connectionDegreeData.degree === 1 
+                                  ? 'bg-green-100 text-green-800 border-green-300' 
+                                  : connectionDegreeData.degree === 2 
+                                    ? 'bg-blue-100 text-blue-800 border-blue-300'
+                                    : 'bg-purple-100 text-purple-800 border-purple-300'
+                              }`}
+                              data-testid="badge-connection-degree"
+                            >
+                              {connectionDegreeData.degree === 1 ? '1st' : connectionDegreeData.degree === 2 ? '2nd' : '3rd'}
+                            </Badge>
+                          )}
+                        </div>
                         
                         {/* ALWAYS show hometown - NEVER remove */}
                         <div className="flex items-center gap-2 text-lg font-medium text-black">
@@ -3884,6 +3921,28 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       </>
                     )}
                   </div>
+                  
+                  {/* Mutual Connections Display - LinkedIn style */}
+                  {!isOwnProfile && connectionDegreeData?.mutualCount && connectionDegreeData.mutualCount > 0 && (
+                    <div className="flex items-center gap-2 mt-3 p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700" data-testid="mutual-connections">
+                      <div className="flex -space-x-2">
+                        {connectionDegreeData.mutuals?.slice(0, 3).map((mutual, index) => (
+                          <Avatar 
+                            key={mutual.id} 
+                            className="w-6 h-6 border-2 border-white dark:border-gray-800 cursor-pointer hover:ring-2 hover:ring-blue-400"
+                            onClick={() => setLocation(`/profile/${mutual.id}`)}
+                          >
+                            <AvatarImage src={mutual.profileImage || undefined} />
+                            <AvatarFallback className="text-xs bg-blue-200 text-blue-800">{mutual.name?.[0] || mutual.username?.[0] || '?'}</AvatarFallback>
+                          </Avatar>
+                        ))}
+                      </div>
+                      <span className="text-sm text-blue-800 dark:text-blue-200">
+                        <Users className="w-3 h-3 inline mr-1" />
+                        {connectionDegreeData.mutualCount} mutual {connectionDegreeData.mutualCount === 1 ? 'connection' : 'connections'}
+                      </span>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
