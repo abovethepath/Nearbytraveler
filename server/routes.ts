@@ -4394,7 +4394,18 @@ Questions? Just reply to this message!
       }
       // Handle database constraint errors
       else if (error?.code === '23505') {
-        errorMessage = "An account with this email or username already exists";
+        // Extract which constraint failed from the error detail
+        const constraintDetail = error?.detail || error?.constraint || '';
+        console.error("❌ DATABASE CONSTRAINT ERROR detail:", constraintDetail);
+        console.error("❌ DATABASE CONSTRAINT ERROR full:", JSON.stringify(error, null, 2));
+        
+        if (constraintDetail.includes('email')) {
+          errorMessage = "An account with this email already exists. Please use a different email.";
+        } else if (constraintDetail.includes('username')) {
+          errorMessage = "This username is already taken. Please choose a different username.";
+        } else {
+          errorMessage = "An account with this email or username already exists. Constraint: " + constraintDetail;
+        }
       }
       // Handle database connection errors
       else if (error?.message?.includes('Connection terminated') || error?.message?.includes('connect')) {
