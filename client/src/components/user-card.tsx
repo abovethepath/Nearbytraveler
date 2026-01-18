@@ -345,14 +345,14 @@ export default function UserCard({
                   />
                   {/* Connection Degree subtitle under Connect button */}
                   {connectionDegree && connectionDegree.degree > 0 && connectionDegree.degree !== 1 && (
-                    <span className={`text-xs mt-1 font-medium ${
+                    <span className={`text-[10px] leading-tight mt-0.5 font-medium ${
                       connectionDegree.degree === 2 
                         ? 'text-blue-600 dark:text-blue-400' 
                         : 'text-purple-600 dark:text-purple-400'
                     }`}>
                       {connectionDegree.degree === 2 
-                        ? `${connectionDegree.mutualCount} 2nd degree connection${connectionDegree.mutualCount !== 1 ? 's' : ''}`
-                        : '3rd degree connection'
+                        ? `${connectionDegree.mutualCount} mutual`
+                        : '3rd°'
                       }
                     </span>
                   )}
