@@ -305,6 +305,40 @@ class WebSocketService {
   isConnected(): boolean {
     return this.ws?.readyState === WebSocket.OPEN && this.isAuthenticated;
   }
+
+  // Force reconnect - resets attempt counter and reconnects (for mobile resume)
+  forceReconnect(): Promise<void> {
+    console.log('🔄 Force reconnecting WebSocket...');
+    this.reconnectAttempts = 0; // Reset attempts
+    
+    // Close existing connection if any
+    if (this.ws) {
+      try {
+        this.ws.close();
+      } catch (e) {
+        // Ignore close errors
+      }
+      this.ws = null;
+    }
+    this.isAuthenticated = false;
+    
+    // Reconnect with stored credentials
+    if (this.userId && this.username) {
+      return this.connect(this.userId, this.username);
+    }
+    return Promise.resolve();
+  }
+
+  // Check if connection needs refresh (for mobile resume)
+  ensureConnected(): Promise<void> {
+    if (this.isConnected()) {
+      console.log('✅ WebSocket already connected');
+      return Promise.resolve();
+    }
+    
+    // Not connected - force reconnect
+    return this.forceReconnect();
+  }
 }
 
 // Export singleton instance

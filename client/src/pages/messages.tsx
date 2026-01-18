@@ -56,11 +56,44 @@ export default function Messages() {
   const { data: messages = [], isLoading: messagesLoading, refetch: refetchMessages } = useQuery({
     queryKey: [`/api/messages/${user?.id}`],
     enabled: !!user?.id,
-    staleTime: 5000, // Cache for 5 seconds to reduce excessive requests
+    staleTime: 0, // Always consider stale for fresh data
     gcTime: 10000, // Keep in cache for 10 seconds
-    refetchOnWindowFocus: true, // Still refetch when user returns to tab
-    refetchInterval: 10000, // Poll every 10 seconds instead of 2 (much more reasonable)
+    refetchOnMount: 'always', // Always refetch when component mounts
+    refetchOnWindowFocus: true, // Refetch when user returns to tab
+    refetchInterval: 10000, // Poll every 10 seconds
   });
+
+  // CRITICAL: Handle mobile app resume - reconnect WebSocket and refetch messages
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        console.log('📱 App resumed - reconnecting WebSocket and refreshing messages');
+        websocketService.ensureConnected().catch(console.error);
+        refetchMessages();
+      }
+    };
+
+    const handleFocus = () => {
+      console.log('📱 Window focus - ensuring WebSocket connected');
+      websocketService.ensureConnected().catch(console.error);
+      refetchMessages();
+    };
+
+    // Listen for visibility changes (mobile background/foreground)
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    // Listen for window focus (desktop tab switch, mobile app switch)
+    window.addEventListener('focus', handleFocus);
+
+    // Initial connection check when component mounts
+    websocketService.ensureConnected().catch(console.error);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [user?.id, refetchMessages]);
 
   // Debug: Log messages data
   React.useEffect(() => {
