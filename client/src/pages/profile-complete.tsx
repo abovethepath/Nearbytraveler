@@ -3622,9 +3622,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </div>
       )}
     
-      {/* PROFILE HEADER - Mobile Responsive */}
+      {/* PROFILE HEADER - Mobile Responsive - Full Bleed */}
       <section
-        className={`relative -mt-px isolate w-full bg-gradient-to-r ${gradientOptions[selectedGradient]} px-3 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12`}
+        className={`relative -mt-px isolate w-screen -mx-[calc((100vw-100%)/2)] bg-gradient-to-r ${gradientOptions[selectedGradient]} px-3 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12`}
       >
         {/* floating color button */}
         {isOwnProfile && (
