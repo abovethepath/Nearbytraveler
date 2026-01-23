@@ -1,0 +1,262 @@
+Nearby Traveler — Native iOS Mobile App (Expo / React Native) — Replit Prompt
+
+PROJECT OVERVIEW
+Build a native iOS app (Expo + React Native) for Nearby Traveler — a social networking platform connecting Travelers, Locals, and Businesses.
+This mobile app is a NEW front-end that MUST connect to the EXISTING backend at:
+Base API: https://nearbytraveler.org/api
+WebSocket: wss://nearbytraveler.org/ws   (NOTE: /ws is REQUIRED)
+
+All data must stay synced across web + mobile via the existing backend.
+
+ABSOLUTE RULE: DO NOT INVENT ENDPOINTS OR FIELDS
+Only use the endpoints and response shapes listed here. If an endpoint returns 404, gracefully hide that feature.
+
+CRITICAL IMPLEMENTATION CHECKS (MUST WORK)
+1) SESSION AUTH (COOKIE-BASED)
+Backend uses cookie sessions (connect.sid).
+Mobile MUST persist cookies after login and send them on ALL subsequent requests.
+
+- Always use fetch(..., { credentials: 'include' })
+- Use @react-native-cookies/cookies to persist and read cookies.
+- If GET /api/auth/user returns 401 after login, cookie persistence is broken.
+
+2) WEBSOCKET AUTH
+WebSocket URL: wss://nearbytraveler.org/ws
+Do NOT assume cookies are reliably attached in the WS handshake on native.
+On ws open, ALWAYS send an auth message:
+{
+  "type": "auth",
+  "userId": <currentUser.id>,
+  "sessionId": "<connect.sid cookie value if available>"
+}
+If cookies fail for some endpoints, backend may accept x-user-id fallback (ONLY where backend supports it).
+
+3) NULL SAFETY EVERYWHERE (NO CRASHES)
+Handle nulls gracefully:
+- profileImage: null → show initials avatar
+- destinationCity: null → hide traveler line
+- reactions: null → hide reactions UI
+- repliedMessage: null → hide reply preview
+
+4) TIMEZONE DISPLAY
+Backend timestamps end in Z (UTC).
+ALWAYS display in DEVICE LOCAL TIMEZONE (never raw UTC strings).
+
+5) iOS PERMISSIONS (ADD EARLY IN app.json)
+{
+  "expo": {
+    "ios": {
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Upload profile photos",
+        "NSCameraUsageDescription": "Take profile photos",
+        "NSLocationWhenInUseUsageDescription": "Find nearby users and events"
+      }
+    }
+  }
+}
+
+PHASE 1 SMOKE TEST (RUN AFTER BUILD)
+- Login → GET /api/auth/user → verify name + userType render
+- Home tab → GET /api/search-users?location=<hometownCity> → list renders + compatibility badges
+- Messages tab → GET /api/conversations/:userId → list renders
+- Open DM → GET /api/messages/:userId → bubbles + reply preview + reactions render
+- Create Trip → Chatrooms tab refetches → destination appears via GET /api/chatrooms/my-locations
+
+USER TYPES
+1) Nearby Local
+Profile shows: "Nearby Local • [Hometown]"
+
+2) Nearby Traveler
+Profile shows ALWAYS: "Nearby Local • [Hometown]"
+And during active trip dates ALSO show:
+"Nearby Traveler • [Destination]"
+
+3) Business Account
+Has Business Dashboard + Deals features (no “discovery” primary flow)
+
+FINAL TAB STRUCTURE (SINGLE SOURCE OF TRUTH — USE THIS EXACTLY)
+Regular users:
+[ Home ] [ Events ] [ Chatrooms ] [ Messages ] [ Profile ]
+- Search is NOT a bottom tab. Search is a screen/modal launched from Home (filter/search icon).
+- FAB: Create Event / Plan Trip / Quick Meetup
+
+Business users:
+[ Dashboard ] [ Deals ] [ Messages ] [ Search ] [ Profile ]
+- FAB: Create Deal / Flash Deal
+
+ONBOARDING WIZARD (POST-SIGNUP)
+After signup, users MUST complete a step-by-step onboarding wizard:
+
+Step 1: Select Interests (family-friendly categories) — minimum 3 required
+Step 2: Set Hometown (City, State/Province, Country)
+Step 3: Travel Plans (Travelers only) — destination + start/end dates (Locals can skip)
+Step 4: Demographics & Preferences — gender (optional/private), age/birthday, languages, who they want to meet
+Step 5: Profile Photo & Bio — upload photo + short bio
+
+PROFILE COMPLETION GATING (IMPORTANT)
+DO NOT use GET /api/bootstrap/status for completion (welcome ops only).
+Compute completion ONLY from GET /api/auth/user:
+Complete if:
+- interests.length >= 3
+- hometownCity exists
+- profileImage exists
+- bio exists
+If incomplete:
+- show red reminder bar prompting completion
+- hide user from discovery until complete
+
+AUTO SIGNUP OPERATIONS (SERVER-SIDE — APP DOES NOT TRIGGER)
+Backend may automatically:
+- send welcome DM from nearbytrav (User ID 2)
+- create hometown chatroom + city page
+- generate city activities
+- assign user to hometown + destination chatrooms (my-locations includes all upcoming trips endDate >= today)
+- auto-connect to nearbytrav
+App should simply rely on server results.
+
+CORE FEATURES TO BUILD (PHASED)
+1) Authentication
+POST /api/auth/login
+POST /api/register
+GET /api/auth/user
+POST /api/auth/logout
+
+2) Home / Discovery (Regular users)
+Use GET /api/search-users for Home discovery (recommended):
+- includes compatibilityScore, sharedInterests, connectionStatus
+Fallback: GET /api/users (no compatibility fields)
+Also use POST /api/connections/degrees/batch for degree badges on discovery cards.
+
+Discovery filters:
+- location (server handles metro expansion; app passes raw city)
+- userType (local | traveler | business)
+- gender, minAge, maxAge
+- interests (comma-separated)
+- languages
+- search (name/username/bio)
+
+Business cards:
+- show name + bio + address/website button (if present)
+- hide traveler-specific fields
+
+Non-business cards:
+- always show “Nearby Local • hometownCity”
+- only show traveler line if isCurrentlyTraveling === true
+
+3) Connections (LinkedIn-style)
+POST /api/connections
+GET /api/connections/:userId
+PUT /api/connections/:id
+
+Connection degrees:
+- discovery grid: POST /api/connections/degrees/batch
+- profile: GET /api/connections/degree/:userId/:targetUserId
+- mutuals list: GET /api/mutual-connections/:userId1/:userId2
+
+4) Messaging (WhatsApp-style)
+GET /api/conversations/:userId
+GET /api/messages/:userId
+POST /api/messages
+POST /api/messages/:userId/mark-read
+(If GET /api/messages/:userId/unread-count exists, use for badges; otherwise compute locally.)
+
+WebSocket: wss://nearbytraveler.org/ws
+- send auth message on open (see above)
+- reconnection exponential backoff (1s,2s,4s… max 30s)
+- offline queue; resync on reconnect
+
+UI:
+- chat bubbles WhatsApp green (#10b981)
+- doodle background pattern
+- show “(edited)” if isEdited true
+- show reply preview if replyToId and repliedMessage exist
+- show reactions bar only if reactions non-null and non-empty
+
+5) City Chatrooms
+GET /api/chatrooms/my-locations
+GET /api/chatrooms/:chatroomId
+Rules:
+- my-locations includes hometown + ALL upcoming trip destinations (endDate >= today)
+- after creating/editing/deleting a trip, immediately refetch my-locations
+
+6) Travel Plans
+POST /api/travel-plans
+GET /api/travel-plans/:userId
+DELETE /api/travel-plans/:id
+Rules:
+- status is computed from dates (planned/active/completed)
+- display times in local timezone
+
+7) Events
+GET /api/events
+GET /api/events/:id
+POST /api/events
+POST /api/events/:id/join   body: { userId, status: "going"|"interested" }
+POST /api/events/:id/leave
+GET /api/events/:id/participants
+
+Event types:
+- community: RSVP in-app
+- imported: show “via {source}” and open externalUrl in Safari; no fake in-app purchase
+
+8) Business Deals
+Regular users browse deals via:
+GET /api/quick-deals?city=<city>
+Business users create/manage via:
+POST /api/quick-deals   (and any existing business dashboard endpoints already on backend)
+
+TRUST & SAFETY (APP STORE REQUIRED)
+Block User:
+POST /api/users/block
+GET /api/users/blocked
+DELETE /api/users/block/:blockedUserId
+Blocked users must be hidden everywhere: discovery, search, chatrooms, messages.
+
+Report:
+POST /api/support/report
+
+SETTINGS / LEGAL
+Terms: open WebView to /terms
+Privacy: open WebView to /privacy
+Cookies: open WebView to /cookies
+Account deletion:
+- If DELETE /api/users/:id exists, use it.
+- If not, provide “Request deletion” via WebView to /settings or support contact.
+
+MEDIA UPLOAD (PROFILE PHOTO) — USE MULTIPART (CANONICAL)
+Use expo-image-picker, then upload multipart/form-data with field name "photo".
+
+PUT /api/users/:id/profile-photo   (multipart/form-data, field "photo")
+POST /api/users/:id/cover-photo    (multipart/form-data, field "photo")
+If backend supports base64 JSON, treat it as optional alternate — do NOT replace multipart.
+
+CONNECTION STATUS ENUM (FOR CTA LOGIC)
+connectionStatus from GET /api/search-users drives CTAs:
+- none → show “Connect”
+- outgoing_pending → show “Requested”
+- incoming_pending → show “Accept”
+- connected → show “Message”
+- blocked → hide user everywhere
+
+METRO CONSOLIDATION (SERVER-SIDE — NO APP LOGIC)
+Do NOT normalize or expand cities in the app.
+Pass raw city strings; server handles metro expansion:
+GET /api/search-users?location=Venice
+GET /api/events?city=Santa Monica
+etc.
+
+APPENDIX — USE THESE RESPONSE SHAPES EXACTLY
+(Use the exact JSON shapes provided in this prompt for:
+- GET /api/auth/user
+- GET /api/conversations/:userId
+- GET /api/messages/:userId
+- GET /api/chatrooms/:chatroomId
+- GET /api/search-users
+- GET /api/events and GET /api/events/:id
+- GET /api/travel-plans/:userId
+- GET /api/cities/:city/overview
+- GET /api/city-stats/:city
+- GET /api/businesses/map
+- GET /api/users/nearby
+- connection degree endpoints
+Do not invent fields.)
