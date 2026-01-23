@@ -58,7 +58,7 @@ All API endpoints are already built and working. The mobile app is a new front-e
 
 ### Phase 1 Smoke Test (Run After Build)
 1. Login → call `GET /api/auth/user` → verify name + userType render
-2. Home tab → `GET /api/users` → verify list renders (including business cards)
+2. Home tab → `GET /api/search-users?location=<hometownCity>` → verify list renders with compatibility badges
 3. Messages tab → `GET /api/conversations/:userId` → verify list renders
 4. Open a DM → `GET /api/messages/:userId` → verify bubbles + reply preview + reactions
 5. Create Trip → verify Chatrooms tab refreshes and destination appears via `GET /api/chatrooms/my-locations`
@@ -127,7 +127,7 @@ When a user signs up, the backend automatically:
 2. **Creates hometown chatroom** - "Let's Meet Up in [City]" if doesn't exist
 3. **Creates city page** - City infrastructure via `/api/cities/ensure`
 4. **Generates city activities** - AI-powered "Things to Do" list for new cities
-5. **Assigns user to chatrooms** - Auto-joins hometown + destination chatrooms
+5. **Chatrooms list auto-populated** - `/api/chatrooms/my-locations` includes hometown + ALL upcoming destination cities immediately (`endDate >= today`). Response includes `userIsMember: true/false` for highlighting.
 6. **Auto-connects to nearbytrav** - Creates connection with welcome account
 
 The mobile app does NOT need to trigger these - they happen server-side during signup/profile completion.
@@ -177,11 +177,13 @@ API: `GET /api/search-users?gender=female&minAge=25&maxAge=40&location=Paris`
 - Grid of user cards showing nearby users
 - Filter by: location, interests, user type, demographics
 - Each card shows: avatar, name, location, bio snippet
-- "Things in Common" compatibility badge
+- "Things in Common" compatibility badge (from `sharedInterests` + `compatibilityScore`)
 - **Connection degree** subtitle under Connect button:
   - "12 mutual connections" (blue) for 2nd degree
   - "3rd degree connection" (purple) for 3rd degree
-- API: `GET /api/users`, `POST /api/connections/degrees/batch`
+- API: `GET /api/search-users` (RECOMMENDED - includes compatibilityScore, sharedInterests, connectionStatus)
+- Fallback: `GET /api/users` (simpler listing without compatibility data)
+- Batch degrees: `POST /api/connections/degrees/batch`
 
 ### 4. Connections System (LinkedIn-style)
 - Send connection requests
@@ -198,13 +200,17 @@ API: `GET /api/search-users?gender=female&minAge=25&maxAge=40&location=Paris`
 - Read receipts, typing indicators
 - WebSocket for real-time updates
 - API: `GET /api/messages/:userId`, `POST /api/messages`
-- WebSocket: `wss://nearbytraveler.org`
+- WebSocket: `wss://nearbytraveler.org/ws`
 
 ### 6. City Chatrooms
 - Public chatrooms for each city
 - Users auto-joined to hometown + destination chatrooms
 - Real-time group chat
 - API: `GET /api/chatrooms/my-locations`, `GET /api/chatrooms/:chatroomId`
+- **Send message:** `POST /api/chatrooms/:chatroomId/messages` (body: `{content}`) OR via WebSocket:
+  ```json
+  { "type": "chatroom_message", "chatroomId": 1, "content": "Hello everyone!" }
+  ```
 
 ### 7. Travel Plans
 - Create trips with destination, dates
@@ -229,7 +235,10 @@ API: `GET /api/search-users?gender=female&minAge=25&maxAge=40&location=Paris`
 - Written references from connections (like LinkedIn recommendations)
 - Vouch system for trust building
 - Display on profiles
+- **Experience types:** `positive`, `negative`, `neutral`
 - API: `GET /api/users/:userId/references`, `POST /api/user-references`
+- Edit/Delete: `PATCH /api/user-references/:referenceId`, `DELETE /api/user-references/:referenceId`
+- Check existing: `GET /api/user-references/check/:reviewerId/:revieweeId`
 
 ### 11. Business Features (for Business accounts only)
 - Business dashboard
@@ -571,7 +580,7 @@ fetch('https://nearbytraveler.org/api/auth/user', {
 
 ```javascript
 // WebSocket connection with auth
-const ws = new WebSocket('wss://nearbytraveler.org');
+const ws = new WebSocket('wss://nearbytraveler.org/ws');
 
 // On connect, send auth message
 ws.onopen = () => {
@@ -695,7 +704,7 @@ x-user-id: <user_id>
 - `POST /api/register` - Create new account
 - `GET /api/auth/user` - Get current user
 - `POST /api/auth/logout` - Logout
-- `GET /api/bootstrap/status` - Check profile completion
+- `GET /api/bootstrap/status` - Bootstrap/welcome operations ONLY (NOT profile completion)
 
 ### Users
 - `GET /api/users` - List users (with filters)
@@ -732,10 +741,11 @@ x-user-id: <user_id>
 ### Chatrooms
 - `GET /api/chatrooms/my-locations` - Get user's chatrooms
 - `GET /api/chatrooms/:chatroomId` - Get chatroom messages
+- `POST /api/chatrooms/:chatroomId/messages` - Send chatroom message (body: `{content}`)
 
 ### Cities
 - `GET /api/cities/:city/overview` - City home data with stats and coordinates (CANONICAL endpoint for city pages)
-- `GET /api/city/:city/users` - Users in city
+- `GET /api/city/:city/users` - Users in city (NOTE: This endpoint intentionally uses `/api/city` singular - do not rename)
 - `GET /api/city-stats` - All cities with stats
 - `GET /api/city-stats/:city` - Stats for specific city
 - `GET /api/events?city=Los%20Angeles` - City events (metro expansion is server-side)
@@ -751,9 +761,33 @@ x-user-id: <user_id>
 - `POST /api/connections/degrees/batch` - Batch degrees for discovery grid
 
 ### Trust & Safety
-- `POST /api/users/block` - Block user
-- `GET /api/users/blocked` - Get blocked users
+- `POST /api/users/block` - Block user (body: `{blockedUserId}`)
+- `GET /api/users/blocked` - Get blocked users list
 - `DELETE /api/users/block/:blockedUserId` - Unblock user
+- `POST /api/support/report` - Report user/content (body: `{userId, targetId, reason, details}`)
+- `POST /api/support/private-reference` - Submit private concern to support
+
+### References (Reviews/Recommendations)
+- `GET /api/users/:userId/references` - Get user's references
+- `POST /api/user-references` - Write a reference (body: `{reviewerId, revieweeId, content, experience}`)
+- `PATCH /api/user-references/:referenceId` - Edit reference
+- `DELETE /api/user-references/:referenceId` - Delete reference
+- `GET /api/user-references/check/:reviewerId/:revieweeId` - Check if reference exists
+
+### Photo Management
+- `PUT /api/users/:id/profile-photo` - Upload/update profile photo (body: `{imageData}`)
+- `POST /api/users/:id/cover-photo` - Upload cover photo (body: `{imageData}`)
+- `DELETE /api/users/profile-photo` - Clear profile photo
+
+### Account Management
+- `DELETE /api/users/:id` - Delete account (or open WebView to settings page)
+- `PUT /api/users/:id` - Update profile/privacy settings
+
+### Deals (Browse as Regular User)
+- `GET /api/quick-deals?city=<city>` - Browse deals in a city
+
+### Nearby Users
+- `GET /api/users/nearby?lat=<lat>&lng=<lng>&radiusKm=10` - Find nearby users (location sharing enabled only)
 
 ---
 
@@ -761,8 +795,9 @@ x-user-id: <user_id>
 
 For real-time messaging, connect to:
 ```
-wss://nearbytraveler.org
+wss://nearbytraveler.org/ws
 ```
+**NOTE:** The `/ws` path is required - do not use root path.
 
 **Auth on Connect:**
 ```json
@@ -1181,6 +1216,15 @@ The list can contain locals, travelers, and businesses in one feed.
 Use these fields exactly for Discovery/Search cards:
 `compatibilityScore`, `sharedInterests`, and `connectionStatus` drive UI badges/CTAs
 
+**connectionStatus values and UI mapping:**
+| Value | Button Text | Action |
+|-------|-------------|--------|
+| `"none"` | "Connect" | Send connection request |
+| `"outgoing_pending"` | "Requested" | Show pending state |
+| `"incoming_pending"` | "Accept" | Accept connection |
+| `"connected"` | "Message" | Open DM |
+| `"blocked"` | (hide card) | Card hidden from results |
+
 ```json
 [
   {
@@ -1388,7 +1432,11 @@ Use this for City Home screens to show community activity stats (locals, travele
 - `businessCount`: Business accounts with `hometownCity` == city
 - `eventCount`: Events with `city` == city (within next 6 weeks)
 
+**IMPORTANT:** All counts are **unique users** (deduped by userId), not number of trips.
+
 **All cities list:** `GET /api/city-stats` returns array of all cities with their stats.
+
+**Naming equivalence:** City overview `stats.locals/travelers` are equivalent to city-stats `localCount/travelerCount` fields.
 
 ---
 
@@ -1422,6 +1470,8 @@ Use this for City Home screens to show community activity stats (locals, travele
   }
 ]
 ```
+
+**IMPORTANT:** `expiresIn` is a **display-only string** (server-computed for UI convenience). For countdown timers, compute from `validUntil` timestamp.
 
 ---
 
@@ -1498,6 +1548,8 @@ Users can share their real-time location for "nearby" features.
 - `lastLocationUpdate` - When location was last updated
 - `locationSharingEnabled` - Whether user opted in to share location
 
+**SECURITY NOTE:** Client always uses `currentUser.id` from `/api/auth/user`. Server enforces self-only updates - users cannot update other users' locations.
+
 **CRITICAL: Geolocation Safety Rules (Apple Review Compliance)**
 1. **Opt-in by default**: Location sharing is OFF by default, user must explicitly enable
 2. **Foreground only**: Only update location while app is in foreground (no background tracking in MVP)
@@ -1526,6 +1578,10 @@ Find users near a location (requires location sharing enabled).
   }
 ]
 ```
+
+**IMPORTANT:** 
+- `approximateDistance` is a **display-only string** - do not parse to compute actual distance
+- This endpoint only returns users where `locationSharingEnabled: true` and location is non-stale (< 15 minutes old)
 
 ---
 
