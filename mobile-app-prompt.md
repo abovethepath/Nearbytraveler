@@ -120,6 +120,18 @@ After signup, users MUST complete a step-by-step onboarding wizard:
 - Profile completion is computed from `GET /api/auth/user`: `interests.length >= 3` AND `hometownCity` AND `profileImage` AND `bio`
 - NOTE: `GET /api/bootstrap/status` is for welcome operations only, NOT profile completion
 
+### Automatic Signup Flow (Backend Handles)
+
+When a user signs up, the backend automatically:
+1. **Sends welcome message** from `nearbytrav` (User ID 2) - personalized DM with getting started tips
+2. **Creates hometown chatroom** - "Let's Meet Up in [City]" if doesn't exist
+3. **Creates city page** - City infrastructure via `/api/cities/ensure`
+4. **Generates city activities** - AI-powered "Things to Do" list for new cities
+5. **Assigns user to chatrooms** - Auto-joins hometown + destination chatrooms
+6. **Auto-connects to nearbytrav** - Creates connection with welcome account
+
+The mobile app does NOT need to trigger these - they happen server-side during signup/profile completion.
+
 ---
 
 ## DEMOGRAPHICS & MATCHING PREFERENCES
