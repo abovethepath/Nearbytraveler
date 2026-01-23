@@ -780,6 +780,40 @@ x-user-id: <user_id>
 ### Deals (Browse as Regular User)
 - `GET /api/quick-deals?city=<city>` - Browse deals in a city
 
+### Payments & Subscriptions (Stripe)
+Backend uses Stripe for business subscriptions. The mobile app should use WebView for checkout (Apple-friendly, avoids 30% IAP cut).
+
+**Endpoints:**
+- `GET /api/business/subscription-status` - Check subscription status
+  ```json
+  {
+    "hasSubscription": true,
+    "status": "active",
+    "isActive": true,
+    "trialActive": false,
+    "trialEnd": "2024-02-15T00:00:00Z",
+    "nextBillingDate": "2024-03-15T00:00:00Z",
+    "needsPayment": false,
+    "needsSubscription": false,
+    "trialExpired": false,
+    "freeMode": false
+  }
+  ```
+- `POST /api/business/create-subscription` - Initiate subscription (returns Stripe checkout URL)
+  ```json
+  { "clientSecret": "cs_xxx", "url": "https://checkout.stripe.com/..." }
+  ```
+- `POST /api/business/cancel-subscription` - Cancel subscription
+
+**Mobile Implementation:**
+1. Check `GET /api/business/subscription-status` on business dashboard load
+2. For "Subscribe" button: call `POST /api/business/create-subscription`, then open returned URL in WebView or Safari
+3. After payment completes, user returns to app → refetch subscription status
+4. Show subscription badge/status on business dashboard
+
+**Donations Page:**
+- Open WebView to `https://nearbytraveler.org/donate` for one-time donations
+
 ### Nearby Users
 - `GET /api/users/nearby?lat=<lat>&lng=<lng>&radiusKm=10` - Find nearby users (location sharing enabled only)
 
