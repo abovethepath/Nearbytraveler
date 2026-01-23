@@ -17,6 +17,54 @@ All API endpoints are already built and working. The mobile app is a new front-e
 
 ---
 
+## CRITICAL IMPLEMENTATION CHECKS (Verify These Work)
+
+### 1. Session Auth on Native
+- Backend uses cookie-based sessions (`connect.sid`)
+- Mobile app MUST persist cookies after login and send them on all subsequent requests
+- If `/api/auth/user` returns 401 after successful login, cookies aren't being persisted
+- Use `credentials: 'include'` on all fetch calls
+
+### 2. WebSocket Auth
+- WebSocket connections must include session cookies in handshake
+- If cookies don't work with WS on native, backend also accepts `x-user-id` header as fallback for some endpoints
+
+### 3. Null Safety Everywhere
+- Always handle null values gracefully:
+  - `profileImage: null` → show initials avatar
+  - `destinationCity: null` → hide traveler line
+  - `reactions: null` → hide reactions UI
+  - `repliedMessage: null` → hide reply preview
+
+### 4. Timezone Display
+- Backend timestamps end in `Z` (UTC)
+- ALWAYS display in device local timezone
+- Never show raw UTC to users
+
+### 5. iOS Permissions (Add to app.json Early)
+```json
+{
+  "expo": {
+    "ios": {
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Upload profile photos",
+        "NSCameraUsageDescription": "Take profile photos",
+        "NSLocationWhenInUseUsageDescription": "Find nearby users and events"
+      }
+    }
+  }
+}
+```
+
+### Phase 1 Smoke Test (Run After Build)
+1. Login → call `GET /api/auth/user` → verify name + userType render
+2. Home tab → `GET /api/users` → verify list renders (including business cards)
+3. Messages tab → `GET /api/conversations/:userId` → verify list renders
+4. Open a DM → `GET /api/messages/:userId` → verify bubbles + reply preview + reactions
+5. Create Trip → verify Chatrooms tab refreshes and destination appears via `GET /api/chatrooms/my-locations`
+
+---
+
 ## THREE USER TYPES
 
 ### 1. Nearby Local
