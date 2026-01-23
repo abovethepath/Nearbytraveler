@@ -554,12 +554,16 @@ All errors follow this shape:
 }
 ```
 
-Status codes:
-- `401` - Unauthenticated (redirect to login)
-- `403` - Forbidden (blocked user, insufficient permissions)
-- `404` - Not found (hide feature gracefully)
-- `422` - Validation errors (show field-level errors)
-- `500` - Server error (show generic error toast)
+**Standard error handling (implement in apiFetch wrapper):**
+| Status | Meaning | Required UI Action |
+|--------|---------|-------------------|
+| `401` | Unauthenticated | Clear cookies + redirect to Login screen |
+| `403` | Forbidden | Show "Access denied" or "User blocked" message |
+| `404` | Not found | Show empty state, hide feature gracefully |
+| `422` | Validation | Show field-level errors from `details` object |
+| `500` | Server error | Show generic error toast, allow retry |
+
+**Handle in every catch block - no silent failures allowed.**
 
 ### 10. Upload Format (Multipart Only)
 ALL file uploads use `multipart/form-data` with field name `"photo"`:
@@ -1085,9 +1089,10 @@ API: `GET /api/events?source=meetup`, `GET /api/scrape-meetup`, `GET /api/scrape
 - **Dark Mode**: Full dark mode support required
 
 ### Design Standards
+- **Use NativeWind for styling** (Tailwind CSS for React Native)
 - **Solid backgrounds only** - NO translucent/transparent modals or dialogs
-- Dialog overlays: bg-black/95 (95% opacity)
-- Content backgrounds: solid white (light) or gray-900 (dark)
+- Dialog overlays: `rgba(0,0,0,0.95)` or NativeWind `bg-black/95`
+- Content backgrounds: `#FFFFFF` (light) or `#111827` (dark) - no transparency
 - Mobile-first design
 - Bottom tab navigation
 
