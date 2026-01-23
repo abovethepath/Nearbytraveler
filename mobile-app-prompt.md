@@ -26,18 +26,138 @@ All API endpoints are already built and working. The mobile app is a new front-e
 
 ---
 
-## PHASE 1 SMOKE TEST (Run After Initial Build)
+## ✅ PHASE 1 ACCEPTANCE GATE (MUST PASS BEFORE ANY OTHER FEATURES)
 
-Before adding more features, verify these work:
-1. **Login** → `POST /api/auth/login` → verify cookie set
-2. **Auth check** → `GET /api/auth/user` → verify name + userType render
-3. **Kill app → Relaunch** → `GET /api/auth/user` → MUST return 200 (not 401) - cookies persisted
-4. **Home discovery** → `GET /api/search-users?location=<hometownCity>` → list renders with compatibility badges
-5. **Messages** → `GET /api/conversations/:userId` → conversation list renders
-6. **Open DM** → `GET /api/messages/:userId` → bubbles + reactions render
-7. **Create trip** → `POST /api/travel-plans` → then Chatrooms tab refetches → destination appears
+### Non-Negotiable Run Conditions
+- Must be tested on a **real iOS device** using an Expo Dev Build (or TestFlight) — NOT Expo Go (cookie persistence differs)
+- **Fresh install required** for first run (delete app first)
+- All API calls must use base URL: `https://nearbytraveler.org/api`
+- All fetch calls must include `credentials: 'include'`
+- Cookie persistence must be implemented (`connect.sid` must survive app restart)
 
-If any of these fail, fix before proceeding.
+### Required Evidence (Builder Must Provide)
+- iOS screen recording showing Steps 1–7 end-to-end
+- Console logs showing:
+  - `connect.sid` present after login
+  - `/api/auth/user` status code 200
+  - WebSocket connected + authenticated
+  - Reconnect after background
+
+---
+
+### Step 0 — App Config Sanity (PASS/FAIL)
+**PASS if:**
+- `app.json` includes iOS permissions (Photos/Camera/Location) before first build
+- `expo.scheme: "nearbytraveler"` is set for deep links
+
+---
+
+### Step 1 — Login + Cookie Persistence (PASS/FAIL)
+1. Login via `POST /api/auth/login`
+2. Immediately call `GET /api/auth/user`
+
+**PASS if:**
+- Login succeeds
+- `/api/auth/user` returns 200 and renders name + userType
+- `connect.sid` exists in cookie storage after login
+
+**FAIL if:**
+- `/api/auth/user` returns 401 after login (cookies not persisted)
+
+---
+
+### Step 2 — Kill App → Relaunch → Session Still Valid (PASS/FAIL)
+1. Force close app (swipe away)
+2. Relaunch app
+3. Auto-call `GET /api/auth/user` on startup
+
+**PASS if:** `/api/auth/user` still returns 200 without re-login
+**FAIL if:** User is logged out or `/api/auth/user` returns 401
+
+---
+
+### Step 3 — Home / Discovery List Renders Correctly (PASS/FAIL)
+Call: `GET /api/search-users?location=<hometownCity>`
+
+**PASS if:**
+- List renders without crashes
+- Cards gracefully handle nulls:
+  - `profileImage: null` → initials avatar
+  - `destinationCity: null` → no traveler line
+- Compatibility UI renders when present:
+  - `sharedInterests` badge
+  - `compatibilityScore` display
+- If showing degrees: uses `POST /api/connections/degrees/batch`
+
+---
+
+### Step 4 — Messages List Loads + Unread UI Works (PASS/FAIL)
+Call: `GET /api/conversations/:userId`
+
+**PASS if:**
+- Threads render with:
+  - `otherUser.name`
+  - `lastMessage.content`
+  - `unreadCount` badge
+- Timestamps display in **local device time** (not raw UTC Z strings)
+
+---
+
+### Step 5 — DM Thread Renders (Replies/Reactions/Edited/Timezones) (PASS/FAIL)
+Call: `GET /api/messages/:userId`
+
+**PASS if:**
+- Message bubbles render left/right by `senderId === currentUser.id`
+- Null safety:
+  - `reactions: null` → no reactions UI
+  - `repliedMessage: null` → no reply preview
+- Shows "(edited)" when `isEdited === true`
+- Timestamps display in local time
+- On open, app calls `POST /api/messages/:userId/mark-read` and unread badge decreases
+
+---
+
+### Step 6 — WebSocket Connect + Auth + Background/Reconnect (PASS/FAIL)
+Connect to: `wss://nearbytraveler.org/ws`
+
+On open, send:
+```json
+{ "type": "auth", "userId": <currentUser.id>, "sessionId": "<connect.sid value>" }
+```
+
+**PASS if:**
+- WS connects and authenticates
+- Receiving a message updates UI without refresh
+- Background test: put app in background 20–30 seconds → return
+  - Reconnects automatically
+  - Sending a message works immediately
+  - No duplicated messages after reconnect
+- Offline queue works (queue while disconnected, flush on reconnect)
+
+**FAIL if:**
+- WS never authenticates
+- Returning from background breaks real-time until full restart
+
+---
+
+### Step 7 — Create Trip → Chatrooms Refresh + Destination Appears (PASS/FAIL)
+1. Create trip via `POST /api/travel-plans`
+2. Immediately refetch `GET /api/chatrooms/my-locations`
+
+**PASS if:**
+- Destination chatroom appears immediately after trip creation
+- Chatrooms highlight membership using `userIsMember`
+- App refetches chatrooms after trip changes (create/edit/delete)
+
+---
+
+### 🛑 STOP CONDITION (MANDATORY)
+
+**Do not implement Phase 2+ until Phase 1 passes TWICE:**
+1. Fresh install run
+2. App restart run (Step 2 must pass)
+
+If any step fails, fix it before proceeding. Do not work around failures.
 
 ---
 
