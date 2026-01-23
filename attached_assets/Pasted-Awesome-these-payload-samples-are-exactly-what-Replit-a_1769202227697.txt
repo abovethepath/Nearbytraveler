@@ -1,0 +1,243 @@
+Awesome — these payload samples are exactly what Replit (and any RN scaffolding) needs to build screens without guessing.
+
+Below is a clean “API Contracts + Behavior” appendix you can paste straight into your Replit prompt so the generated mobile app matches your real backend shapes and rules (and doesn’t invent endpoints).
+
+APPENDIX: REAL API RESPONSE SHAPES (Use These Exactly)
+Auth: GET /api/auth/user (current user)
+
+Use this response shape as the single source of truth for:
+
+user identity, userType, online status, profile fields
+
+whether to show “Nearby Traveler • Destination” line (isCurrentlyTraveling + destination fields)
+
+{
+  "id": 2,
+  "username": "nearbytrav",
+  "email": "user@example.com",
+  "name": "John Smith",
+  "userType": "local",
+  "bio": "Love exploring local coffee shops and hiking trails",
+  "hometownCity": "Los Angeles",
+  "hometownState": "California",
+  "hometownCountry": "United States",
+  "destinationCity": null,
+  "destinationState": null,
+  "destinationCountry": null,
+  "profileImage": "https://storage.googleapis.com/...",
+  "interests": ["Food & Dining", "Outdoor Adventures", "Photography"],
+  "languagesSpoken": ["English", "Spanish"],
+  "gender": "male",
+  "age": 32,
+  "ageVisible": true,
+  "isCurrentlyTraveling": false,
+  "travelDestination": null,
+  "isActive": true,
+  "isAdmin": false,
+  "onlineStatus": "online"
+}
+
+
+Rules:
+
+Always show: Nearby Local • {hometownCity}
+
+Only show traveler line during active travel: Nearby Traveler • {destinationCity} when isCurrentlyTraveling === true
+
+Profile completion gating (IMPORTANT: do NOT misuse /api/bootstrap/status)
+
+GET /api/bootstrap/status does NOT represent profile completion. It only indicates bootstrap/welcome operations.
+
+{ "status": "completed", "progress": 100, "message": "Bootstrap operations completed successfully" }
+
+
+Actual mobile gating logic must be computed from user object:
+
+interests.length >= 3
+
+hometownCity exists
+
+profileImage exists
+
+bio exists
+
+If missing, show onboarding completion prompts and hide user from discovery until complete.
+
+Inbox list: GET /api/conversations/:userId
+
+Use this exact shape for Messages tab list (unread badges, preview text, online status).
+
+[
+  {
+    "id": 123,
+    "otherUserId": 45,
+    "otherUser": {
+      "id": 45,
+      "username": "traveler_jane",
+      "name": "Jane Doe",
+      "profileImage": "https://...",
+      "onlineStatus": "online"
+    },
+    "lastMessage": {
+      "id": 789,
+      "content": "Hey! Are you free for coffee tomorrow?",
+      "senderId": 45,
+      "createdAt": "2024-01-15T14:30:00Z",
+      "isRead": false
+    },
+    "unreadCount": 3
+  }
+]
+
+Chatroom messages: GET /api/chatrooms/:chatroomId
+
+Use this exact shape for chatroom screen (header + message list + membership state).
+
+{
+  "chatroom": {
+    "id": 1,
+    "name": "Los Angeles Chat",
+    "city": "Los Angeles",
+    "state": "California",
+    "country": "United States",
+    "memberCount": 47,
+    "isActive": true
+  },
+  "messages": [
+    {
+      "id": 101,
+      "content": "Anyone know good brunch spots in Venice?",
+      "userId": 23,
+      "user": { "id": 23, "username": "beach_lover", "name": "Sarah", "profileImage": "https://..." },
+      "createdAt": "2024-01-15T09:30:00Z"
+    }
+  ],
+  "userIsMember": true
+}
+
+Events list: GET /api/events
+
+Use this exact shape for Events tab + Event detail screen.
+
+Key logic:
+
+eventType === "community" → show RSVP buttons in-app
+
+eventType === "imported" → show “via {source}” and open externalUrl in Safari; no fake in-app purchase
+
+[
+  {
+    "id": 1,
+    "title": "Beach Bonfire Meetup",
+    "description": "Join us for a casual bonfire at Venice Beach",
+    "date": "2024-01-20T18:00:00Z",
+    "endDate": "2024-01-20T22:00:00Z",
+    "city": "Venice",
+    "state": "California",
+    "country": "United States",
+    "location": "Venice Beach Fire Pits",
+    "organizerId": 12,
+    "organizer": { "id": 12, "username": "event_host", "name": "Lisa Martinez", "profileImage": "https://..." },
+    "eventType": "community",
+    "source": null,
+    "externalUrl": null,
+    "imageUrl": "https://...",
+    "maxAttendees": 30,
+    "currentAttendees": 18,
+    "isPublic": true,
+    "userRsvpStatus": "going",
+    "rsvpCount": 18
+  },
+  {
+    "id": 2,
+    "title": "Taylor Swift Concert",
+    "description": "The Eras Tour at SoFi Stadium",
+    "date": "2024-02-15T19:30:00Z",
+    "city": "Los Angeles",
+    "state": "California",
+    "country": "United States",
+    "location": "SoFi Stadium",
+    "eventType": "imported",
+    "source": "ticketmaster",
+    "externalUrl": "https://ticketmaster.com/...",
+    "imageUrl": "https://...",
+    "maxAttendees": null,
+    "currentAttendees": null,
+    "isPublic": true,
+    "userRsvpStatus": null,
+    "rsvpCount": 0
+  }
+]
+
+Search users: GET /api/search-users
+
+Use these fields exactly for Discovery/Search cards:
+
+compatibilityScore, sharedInterests, and connectionStatus drive UI badges/CTAs
+
+[
+  {
+    "id": 45,
+    "username": "traveler_jane",
+    "name": "Jane Doe",
+    "userType": "traveler",
+    "bio": "Digital nomad exploring the world",
+    "hometownCity": "Austin",
+    "hometownState": "Texas",
+    "hometownCountry": "United States",
+    "profileImage": "https://...",
+    "interests": ["Photography", "Food & Dining", "Arts & Music"],
+    "isCurrentlyTraveling": true,
+    "travelDestination": "Los Angeles",
+    "gender": "female",
+    "age": 28,
+    "languagesSpoken": ["English", "French"],
+    "compatibilityScore": 0.75,
+    "sharedInterests": ["Food & Dining", "Photography"],
+    "connectionStatus": "none"
+  }
+]
+
+CHATROOMS: CONFIRMED BACKEND BEHAVIOR (Immediate future-trip access)
+
+GET /api/chatrooms/my-locations already:
+
+includes ALL upcoming trips (endDate >= today)
+
+includes destination cities immediately after trip creation
+
+includes userIsMember and sorts “mine first”
+
+handles LA metro consolidation server-side
+
+Mobile behavior:
+
+after creating/editing/deleting a trip: immediately refetch /api/chatrooms/my-locations
+
+highlight chatrooms where userIsMember: true
+
+TIMEZONE RULE (important because backend sends Z)
+
+Backend timestamps are ISO strings often ending with Z (UTC). The app must:
+
+parse ISO timestamps reliably
+
+display in device local timezone
+
+never show raw UTC formatting to users
+
+FINAL TAB STRUCTURE (use this exactly)
+
+Regular users:
+[ Home ] [ Events ] [ Chatrooms ] [ Messages ] [ Profile ]
+
+FAB: Create Event / Plan Trip / Quick Meetup
+
+Business users:
+[ Dashboard ] [ Deals ] [ Messages ] [ Search ] [ Profile ]
+
+FAB: Create Deal / Flash Deal
+
+If you paste this appendix into your Replit prompt, the builder will stop “inventing” shapes and your screens will line up with your backend.
+
+If you want one more thing that makes the build much more reliable: paste a sample response for GET /api/users (discovery list) and GET /api/messages/:userId (DM thread), because those are the two endpoints scaffolds most often guess wrong.
