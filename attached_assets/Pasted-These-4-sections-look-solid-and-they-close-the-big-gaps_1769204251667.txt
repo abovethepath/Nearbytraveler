@@ -1,0 +1,80 @@
+These 4 sections look solid and they close the big gaps. A few small tweaks will make them “Replit-proof” and prevent edge-case bugs.
+
+1) Deals endpoint + response ✅ (one tweak)
+
+Good: GET /api/quick-deals?city=... is clear and the payload has everything needed.
+
+Two tweaks to add to your prompt:
+
+Timezone rule: validFrom/validUntil are Z → display local time.
+
+Type clarity: expiresIn as a string (“4 hours”) is fine for UI, but builders often try to compute timers. Add:
+
+“Use validUntil as the source of truth for countdown; expiresIn is display-only.”
+
+Also consider null safety (business might not have name/logo):
+
+add: businessName may be null → fallback to businessId lookup or “Business”
+
+2) Nearby users endpoint ✅ (but add 2 crucial rules)
+
+Payload is good and minimal.
+
+Add to prompt:
+
+Distance type: approximateDistance is a string (“2.3 km”). Tell the app not to parse it; display as-is. (Or change API to return meters as a number. But given your sample, just document it.)
+
+Staleness logic: define what “nearby” means:
+
+“Hide users whose lastLocationUpdate is older than X minutes” (your earlier safety rules suggested a TTL—make it explicit here, e.g., 15 minutes).
+
+Also: this endpoint should respect opt-in:
+
+“Only return users with locationSharingEnabled === true (server-side).”
+
+3) City stats definitions ✅ (tighten one detail)
+
+These definitions are clear and match what you said you want (cumulative, where people come from).
+
+One important clarification to prevent confusion:
+
+What does travelerCount represent if someone has multiple trips to the same city?
+Usually it should be unique users, not trips. Add:
+
+“Counts are unique users (deduped by userId), not number of trips.”
+
+Also define the “next 6 weeks” precisely:
+
+“eventCount = events where date is between today and today+42 days.”
+
+4) Home grid uses /api/search-users ✅ (add default query behavior)
+
+This is the most important one and you did it right.
+
+To make it buildable without guesswork, add:
+
+What default parameters Home uses:
+
+location = user’s hometownCity by default
+
+if user has upcoming trips, optionally allow toggling to destinationCity
+
+include userType filters (locals/travelers/business) default “all”
+
+Pagination / limit behavior if supported (if not, say “assume server default 50”).
+
+Example line to paste:
+
+“Home Tab calls GET /api/search-users with default location=<hometownCity> and user-selected filters; show a toggle to switch location to the next upcoming destination city when available.”
+
+One last consistency check against your earlier prompt
+
+Make sure these endpoints are listed in the “KEY API ENDPOINTS” section too (not only in the appendix):
+
+GET /api/quick-deals?city=... (regular users browsing)
+
+GET /api/users/nearby?lat&lng&radiusKm
+
+…and that geolocation permissions are only requested when the user opens “Nearby” or enables location sharing (so you don’t prompt on first launch).
+
+If you apply the tweaks above, these 4 sections are fully consistent with the rest of your contract and you’re in great shape to start the iOS build.
