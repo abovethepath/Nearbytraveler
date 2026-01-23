@@ -163,15 +163,31 @@ If any step fails, fix it before proceeding. Do not work around failures.
 
 ## CRITICAL IMPLEMENTATION CHECKS (Verify These Work)
 
-### 1. Session Auth on Native
+### 1. Session Auth on Native (THE #1 FAILURE POINT)
 - Backend uses cookie-based sessions (`connect.sid`)
 - Mobile app MUST persist cookies after login and send them on all subsequent requests
 - If `/api/auth/user` returns 401 after successful login, cookies aren't being persisted
 - Use `credentials: 'include'` on all fetch calls
 
+**⚠️ CRITICAL REQUIREMENTS:**
+- **Expo Go is NOT acceptable for auth testing** - Must use Expo Dev Build or TestFlight
+- Cookies must be `Secure` and `SameSite=None` for cross-site session usage on iOS
+- **You MUST use `@react-native-cookies/cookies`** (or equivalent) to persist cookies across app restarts
+- `credentials: 'include'` alone is NOT enough on React Native - you need a cookie manager
+
+**Required Proof (log these to console):**
+1. After login: log `connect.sid` cookie value exists
+2. After cold restart: log `connect.sid` still exists before calling `/api/auth/user`
+3. If Step 2 (cold restart session) fails: **STOP ALL UI WORK** - fix cookie persistence first
+
 ### 2. WebSocket Auth
-- WebSocket connections must include session cookies in handshake
-- If cookies don't work with WS on native, backend also accepts `x-user-id` header as fallback for some endpoints
+- WebSocket connections should include session cookies in handshake, but this often fails on native
+- **Always send auth message on connect** (do not rely on cookies for WS):
+  ```json
+  { "type": "auth", "userId": <currentUser.id>, "sessionId": "<connect.sid value>" }
+  ```
+- If cookie-based WS handshake fails, the auth message is your primary authentication method
+- Backend also accepts `x-user-id` header as fallback for some HTTP endpoints (NOT recommended for primary auth)
 
 ### 3. Null Safety Everywhere
 - Always handle null values gracefully:
@@ -205,6 +221,51 @@ Backend MUST have these headers for mobile to work:
 - `Set-Cookie: connect.sid=...; Secure; HttpOnly; SameSite=None` (SameSite=None is critical for mobile)
 - `Access-Control-Allow-Credentials: true`
 - `Access-Control-Allow-Origin: <specific-origin>` (not `*`)
+
+**React Native Cookie Setup (REQUIRED):**
+```javascript
+// Install: npm install @react-native-cookies/cookies
+import CookieManager from '@react-native-cookies/cookies';
+
+// Create a single API wrapper for ALL requests
+const apiRequest = async (endpoint, options = {}) => {
+  const response = await fetch(`https://nearbytraveler.org/api${endpoint}`, {
+    ...options,
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+  return response;
+};
+
+// After login, verify cookie exists:
+const cookies = await CookieManager.get('https://nearbytraveler.org');
+console.log('connect.sid:', cookies['connect.sid']); // MUST exist
+
+// On app startup, check session before showing logged-in UI:
+const checkSession = async () => {
+  const cookies = await CookieManager.get('https://nearbytraveler.org');
+  if (!cookies['connect.sid']) {
+    // No session - show login screen
+    return null;
+  }
+  // Verify session is still valid
+  const res = await apiRequest('/auth/user');
+  if (res.status === 401) {
+    await CookieManager.clearAll(); // Clear stale cookies
+    return null;
+  }
+  return await res.json();
+};
+```
+
+**If cookies still don't persist after cold restart:**
+1. Verify you're using Expo Dev Build, NOT Expo Go
+2. Check `SameSite=None` is set on backend cookies
+3. Try `CookieManager.setFromResponse()` manually after login
+4. As last resort: store session token in SecureStore (but this changes auth flow)
 
 **RN Cookie Persistence:**
 - Use `@react-native-cookies/cookies` to persist cookies across app restarts
