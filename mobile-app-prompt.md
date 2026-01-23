@@ -390,19 +390,13 @@ API: `GET /api/events?source=meetup`, `GET /api/scrape-meetup`, `GET /api/scrape
 - Bottom tab navigation
 
 ### Navigation Tabs (Bottom)
-For Locals/Travelers:
-1. Home (discovery)
-2. Messages
-3. Chatrooms
-4. Search
-5. Profile
+**See "FINAL TAB STRUCTURE" at end of document for authoritative tab layout.**
 
-For Business:
-1. Dashboard
-2. Messages
-3. Create Deal
-4. Search
-5. Profile
+Summary:
+- Regular users: Home | Events | Chatrooms | Messages | Profile
+- Business users: Dashboard | Deals | Messages | Search | Profile
+- Search is a modal/overlay launched from Home (not a bottom tab for regular users)
+- Create actions use FAB (Floating Action Button), not tabs
 
 ---
 
@@ -765,22 +759,22 @@ x-user-id: <user_id>
 - `GET /api/users/blocked` - Get blocked users list
 - `DELETE /api/users/block/:blockedUserId` - Unblock user
 - `POST /api/support/report` - Report user/content (body: `{userId, targetId, reason, details}`)
-- `POST /api/support/private-reference` - Submit private concern to support
+- `POST /api/support/private-reference` - Submit private concern to support *(OPTIONAL: if not implemented, email support@nearbytraveler.org)*
 
 ### References (Reviews/Recommendations)
 - `GET /api/users/:userId/references` - Get user's references
 - `POST /api/user-references` - Write a reference (body: `{reviewerId, revieweeId, content, experience}`)
-- `PATCH /api/user-references/:referenceId` - Edit reference
-- `DELETE /api/user-references/:referenceId` - Delete reference
-- `GET /api/user-references/check/:reviewerId/:revieweeId` - Check if reference exists
+- `PATCH /api/user-references/:referenceId` - Edit reference *(OPTIONAL: v2 feature)*
+- `DELETE /api/user-references/:referenceId` - Delete reference *(OPTIONAL: v2 feature)*
+- `GET /api/user-references/check/:reviewerId/:revieweeId` - Check if reference exists *(OPTIONAL: can filter client-side from references list)*
 
 ### Photo Management
-- `PUT /api/users/:id/profile-photo` - Upload/update profile photo (body: `{imageData}`)
-- `POST /api/users/:id/cover-photo` - Upload cover photo (body: `{imageData}`)
-- `DELETE /api/users/profile-photo` - Clear profile photo
+- `PUT /api/users/:id/profile-photo` - Upload profile photo (multipart/form-data, field: "photo")
+- `POST /api/users/:id/cover-photo` - Upload cover photo (multipart/form-data, field: "photo")
+- `DELETE /api/users/profile-photo` - Clear profile photo *(OPTIONAL: if not implemented, set profileImage to null via PUT /api/users/:id)*
 
 ### Account Management
-- `DELETE /api/users/:id` - Delete account (or open WebView to settings page)
+- `DELETE /api/users/:id` - Delete account *(OPTIONAL: if not implemented, open WebView to /settings or email support@nearbytraveler.org)*
 - `PUT /api/users/:id` - Update profile/privacy settings
 
 ### Deals (Browse as Regular User)
@@ -1660,16 +1654,28 @@ Efficient batch lookup for discovery screens (get degrees for multiple users at 
 
 ---
 
-### FINAL TAB STRUCTURE (use this exactly)
+### FINAL TAB STRUCTURE (use this exactly - this is the ONLY authoritative tab spec)
 
 **Regular users:**
 ```
 [ Home ] [ Events ] [ Chatrooms ] [ Messages ] [ Profile ]
 ```
-FAB: Create Event / Plan Trip / Quick Meetup
+- FAB: Create Event / Plan Trip / Quick Meetup
+- Search is a modal/overlay launched from Home header (filter icon), NOT a bottom tab
 
 **Business users:**
 ```
 [ Dashboard ] [ Deals ] [ Messages ] [ Search ] [ Profile ]
 ```
-FAB: Create Deal / Flash Deal
+- FAB: Create Deal / Flash Deal
+- "Create Deal" and "Flash Deal" are FAB actions, NOT tabs
+
+---
+
+### React Native Auth Notes
+
+**Cookie auth:**
+RN fetch does not reliably persist cookies by default. Use `@react-native-cookies/cookies` and a single API wrapper that always includes `credentials: 'include'`.
+
+**WebSocket auth:**
+Do not assume cookies are automatically sent in the WS handshake. Always send the `{type:'auth', userId, sessionId}` message immediately after connect.
