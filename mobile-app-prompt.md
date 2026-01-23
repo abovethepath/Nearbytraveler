@@ -721,8 +721,20 @@ x-user-id: <user_id>
 - `GET /api/chatrooms/:chatroomId` - Get chatroom messages
 
 ### Cities
-- `GET /api/cities/:city/overview` - City home data
+- `GET /api/cities/:city/overview` - City home data with stats and coordinates
 - `GET /api/city/:city/users` - Users in city
+- `GET /api/city-stats` - All cities with stats (localCount, travelerCount, businessCount, eventCount)
+- `GET /api/city-stats/:city` - Stats for specific city
+
+### Geolocation & Maps
+- `GET /api/businesses/map` - Businesses with lat/lng for map pins
+- `PATCH /api/users/:id/location` - Update user's current location
+- `GET /api/users/nearby` - Find users near coordinates (if locationSharingEnabled)
+
+### Connections (LinkedIn-style)
+- `GET /api/mutual-connections/:userId1/:userId2` - Shared connections between two users
+- `GET /api/connections/degree/:userId/:targetUserId` - Connection degree (1st, 2nd, 3rd)
+- `POST /api/connections/degrees/batch` - Batch degrees for discovery grid
 
 ### Trust & Safety
 - `POST /api/users/block` - Block user
@@ -1339,6 +1351,171 @@ Backend timestamps are ISO strings often ending with Z (UTC). The app must:
 - Null `destinationCity` → hidden destination line
 - Null `reactions` → no reactions UI
 - Null `repliedMessage` → no reply preview
+
+---
+
+### City Stats: GET /api/city-stats/:city
+
+Use this for City Home screens to show community activity stats (locals, travelers, businesses, events).
+
+```json
+{
+  "city": "Los Angeles",
+  "state": "California",
+  "country": "United States",
+  "localCount": 147,
+  "travelerCount": 23,
+  "businessCount": 45,
+  "eventCount": 12
+}
+```
+
+**All cities list:** `GET /api/city-stats` returns array of all cities with their stats.
+
+---
+
+### City Page Details: GET /api/cities/:city
+
+Use this for City Home screen with full city info.
+
+```json
+{
+  "cityPage": {
+    "id": 1,
+    "cityName": "Los Angeles",
+    "state": "California",
+    "country": "United States",
+    "description": "Discover Los Angeles and connect with locals and travelers"
+  },
+  "coordinates": { "lat": 34.0522, "lng": -118.2437 },
+  "stats": {
+    "totalUsers": 215,
+    "totalEvents": 12,
+    "totalBusinesses": 45,
+    "locals": 147,
+    "travelers": 23
+  },
+  "city": "Los Angeles",
+  "state": "California",
+  "country": "United States"
+}
+```
+
+---
+
+### Geolocation & Maps: GET /api/businesses/map
+
+Use this for map view of businesses with pins.
+
+```json
+[
+  {
+    "id": 89,
+    "username": "cafe_downtown",
+    "name": "Downtown Cafe",
+    "profileImage": "https://...",
+    "latitude": 34.0407,
+    "longitude": -118.2468,
+    "streetAddress": "123 Main St",
+    "hometownCity": "Los Angeles",
+    "businessType": "restaurant"
+  }
+]
+```
+
+**Query parameters:**
+- `city`, `state`, `country` - Filter by location
+- `radiusKm`, `centerLat`, `centerLng` - Radius-based search
+
+---
+
+### Location Sharing: PATCH /api/users/:id/location
+
+Users can share their real-time location for "nearby" features.
+
+**Request body:**
+```json
+{
+  "latitude": 34.0522,
+  "longitude": -118.2437,
+  "locationSharingEnabled": true
+}
+```
+
+**User fields for location:**
+- `currentLatitude` / `currentLongitude` - Current position
+- `lastLocationUpdate` - When location was last updated
+- `locationSharingEnabled` - Whether user opted in to share location
+
+---
+
+### Connection Degrees: GET /api/connections/degree/:userId/:targetUserId
+
+LinkedIn-style connection degrees for network visualization.
+
+```json
+{
+  "degree": 2,
+  "mutualCount": 5,
+  "mutuals": [
+    {
+      "id": 45,
+      "username": "traveler_jane",
+      "name": "Jane Doe",
+      "profileImage": "https://..."
+    }
+  ]
+}
+```
+
+**Degree values:**
+- `1` = Direct connection (1st degree)
+- `2` = Friend of friend (2nd degree) - show "X mutual connections"
+- `3` = 3rd degree connection
+- `0` = No connection path found
+
+---
+
+### Mutual Connections: GET /api/mutual-connections/:userId1/:userId2
+
+Get list of shared connections between two users.
+
+```json
+[
+  {
+    "id": 45,
+    "username": "traveler_jane",
+    "name": "Jane Doe",
+    "profileImage": "https://...",
+    "hometownCity": "Austin",
+    "hometownCountry": "United States"
+  }
+]
+```
+
+---
+
+### Batch Connection Degrees: POST /api/connections/degrees/batch
+
+Efficient batch lookup for discovery screens (get degrees for multiple users at once).
+
+**Request body:**
+```json
+{
+  "userId": 2,
+  "targetUserIds": [45, 67, 89, 123]
+}
+```
+
+**Response:**
+```json
+{
+  "45": { "degree": 2, "mutualCount": 3 },
+  "67": { "degree": 1, "mutualCount": 0 },
+  "89": { "degree": 3, "mutualCount": 0 },
+  "123": { "degree": 0, "mutualCount": 0 }
+}
+```
 
 ---
 
