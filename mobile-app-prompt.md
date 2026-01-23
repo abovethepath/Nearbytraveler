@@ -159,10 +159,10 @@ API: `GET /api/search-users?gender=female&minAge=25&maxAge=40&location=Paris`
 
 ### 9. Events
 - Community events and meetups
-- RSVP functionality
+- RSVP functionality (Going/Interested)
 - Event chat rooms
 - Event organizer features
-- API: `GET /api/events`, `POST /api/events`, `POST /api/events/:id/rsvp`
+- API: `GET /api/events`, `POST /api/events`, `POST /api/events/:id/join`, `POST /api/events/:id/leave`
 
 ### 10. References & Vouches
 - Written references from connections (like LinkedIn recommendations)
@@ -664,7 +664,9 @@ x-user-id: <user_id>
 ### Events
 - `GET /api/events` - List events
 - `POST /api/events` - Create event
-- `POST /api/events/:id/rsvp` - RSVP to event
+- `POST /api/events/:id/join` - RSVP to event (body: `{userId, status: "going"|"interested"}`)
+- `POST /api/events/:id/leave` - Cancel RSVP
+- `GET /api/events/:id/participants` - Get event attendees
 
 ### Chatrooms
 - `GET /api/chatrooms/my-locations` - Get user's chatrooms
@@ -759,7 +761,7 @@ Los Angeles metro area includes 76 cities that should all appear in "Los Angeles
 11. Travel plan creation
 12. City Home screen
 13. Quick meetups
-14. Events listing and RSVP
+14. Events listing and RSVP (join/leave)
 15. Super Calendar view
 
 ### Phase 4 - Polish (Week 7-8)
@@ -841,3 +843,467 @@ Use these test accounts:
 - No adult/private content - App Store compliant
 - Solid widget backgrounds only (no transparency)
 - Discovery locked until profile is complete
+
+---
+
+## APPENDIX: REAL API RESPONSE SHAPES (Use These Exactly)
+
+**CRITICAL: All screens must be implemented strictly based on the API response shapes in this Appendix. Do not invent fields or endpoints.**
+
+### METRO CONSOLIDATION (SERVER-SIDE — NO APP LOGIC)
+
+All metro area logic is handled by the backend. The mobile app does NOT need to:
+- maintain city lists
+- check if a city is in a metro area
+- transform or normalize city names
+
+Mobile should simply pass raw city names entered/selected by the user:
+```
+GET /api/users?location=Venice
+GET /api/events?city=Santa Monica
+GET /api/chatrooms?city=Culver City
+```
+
+Backend automatically expands Los Angeles metro (76 cities), is case-insensitive, and supports future metro areas without app updates.
+
+---
+
+### Auth: GET /api/auth/user (current user)
+
+Use this response shape as the single source of truth for:
+- user identity, userType, online status, profile fields
+- whether to show "Nearby Traveler • Destination" line (isCurrentlyTraveling + destination fields)
+
+```json
+{
+  "id": 2,
+  "username": "nearbytrav",
+  "email": "user@example.com",
+  "name": "John Smith",
+  "userType": "local",
+  "bio": "Love exploring local coffee shops and hiking trails",
+  "hometownCity": "Los Angeles",
+  "hometownState": "California",
+  "hometownCountry": "United States",
+  "destinationCity": null,
+  "destinationState": null,
+  "destinationCountry": null,
+  "profileImage": "https://storage.googleapis.com/...",
+  "interests": ["Food & Dining", "Outdoor Adventures", "Photography"],
+  "languagesSpoken": ["English", "Spanish"],
+  "gender": "male",
+  "age": 32,
+  "ageVisible": true,
+  "isCurrentlyTraveling": false,
+  "travelDestination": null,
+  "isActive": true,
+  "isAdmin": false,
+  "onlineStatus": "online"
+}
+```
+
+**Rules:**
+- Always show: `Nearby Local • {hometownCity}`
+- Only show traveler line during active travel: `Nearby Traveler • {destinationCity}` when `isCurrentlyTraveling === true`
+
+---
+
+### Profile Completion Gating (IMPORTANT)
+
+`GET /api/bootstrap/status` does NOT represent profile completion. It only indicates bootstrap/welcome operations.
+
+**Actual mobile gating logic must be computed from user object:**
+- `interests.length >= 3`
+- `hometownCity` exists
+- `profileImage` exists
+- `bio` exists
+
+If missing, show onboarding completion prompts and hide user from discovery until complete.
+
+---
+
+### Inbox list: GET /api/conversations/:userId
+
+Use this exact shape for Messages tab list (unread badges, preview text, online status).
+
+```json
+[
+  {
+    "id": 123,
+    "otherUserId": 45,
+    "otherUser": {
+      "id": 45,
+      "username": "traveler_jane",
+      "name": "Jane Doe",
+      "profileImage": "https://...",
+      "onlineStatus": "online"
+    },
+    "lastMessage": {
+      "id": 789,
+      "content": "Hey! Are you free for coffee tomorrow?",
+      "senderId": 45,
+      "createdAt": "2024-01-15T14:30:00Z",
+      "isRead": false
+    },
+    "unreadCount": 3
+  }
+]
+```
+
+---
+
+### DM thread: GET /api/messages/:userId
+
+Use this exact shape for message rendering (bubbles, replies, reactions, edited label, read receipts).
+
+```json
+[
+  {
+    "id": 789,
+    "senderId": 45,
+    "receiverId": 2,
+    "content": "Hey! Are you free for coffee tomorrow?",
+    "messageType": "text",
+    "isRead": true,
+    "isEdited": false,
+    "reactions": null,
+    "replyToId": null,
+    "repliedMessage": null,
+    "createdAt": "2024-01-15T14:30:00Z",
+    "updatedAt": "2024-01-15T14:30:00Z",
+    "sender": {
+      "id": 45,
+      "username": "traveler_jane",
+      "name": "Jane Doe",
+      "profileImage": "https://...",
+      "onlineStatus": "online"
+    },
+    "receiver": {
+      "id": 2,
+      "username": "nearbytrav",
+      "name": "John Smith",
+      "profileImage": "https://...",
+      "onlineStatus": "online"
+    }
+  }
+]
+```
+
+**Chat UI rules:**
+- Bubble side is determined by `senderId === currentUser.id`
+- Show "(edited)" if `isEdited === true`
+- Show reaction bar if `reactions` is non-null and non-empty
+- If `replyToId` exists, show `repliedMessage.content` preview above bubble
+- Show read receipts based on `isRead` for messages sent by current user
+- Parse timestamps from UTC (Z) but display in device local time
+
+**Related endpoints:**
+- `POST /api/messages/:userId/mark-read` (call when opening thread + when app becomes active in thread)
+- `GET /api/messages/:userId/unread-count` (tab badge)
+
+---
+
+### Chatroom messages: GET /api/chatrooms/:chatroomId
+
+Use this exact shape for chatroom screen (header + message list + membership state).
+
+```json
+{
+  "chatroom": {
+    "id": 1,
+    "name": "Los Angeles Chat",
+    "city": "Los Angeles",
+    "state": "California",
+    "country": "United States",
+    "memberCount": 47,
+    "isActive": true
+  },
+  "messages": [
+    {
+      "id": 101,
+      "content": "Anyone know good brunch spots in Venice?",
+      "userId": 23,
+      "user": { "id": 23, "username": "beach_lover", "name": "Sarah", "profileImage": "https://..." },
+      "createdAt": "2024-01-15T09:30:00Z"
+    }
+  ],
+  "userIsMember": true
+}
+```
+
+**Chatroom behavior (confirmed):**
+- `GET /api/chatrooms/my-locations` includes ALL upcoming trips (`endDate >= today`)
+- Destination chatrooms appear immediately after trip creation
+- Highlight chatrooms where `userIsMember: true`
+- After creating/editing/deleting a trip: immediately refetch `/api/chatrooms/my-locations`
+
+---
+
+### Discovery grid: GET /api/users
+
+Use this response shape for the Home discovery grid. The list can contain locals, travelers, and businesses in one feed.
+
+```json
+[
+  {
+    "id": 45,
+    "username": "traveler_jane",
+    "name": "Jane Doe",
+    "userType": "traveler",
+    "bio": "Digital nomad exploring the world one city at a time",
+    "hometownCity": "Austin",
+    "hometownState": "Texas",
+    "hometownCountry": "United States",
+    "destinationCity": "Los Angeles",
+    "destinationState": "California",
+    "destinationCountry": "United States",
+    "profileImage": "https://storage.googleapis.com/...",
+    "interests": ["Photography", "Food & Dining", "Arts & Music"],
+    "isCurrentlyTraveling": true,
+    "travelDestination": "Los Angeles",
+    "gender": "female",
+    "age": 28,
+    "ageVisible": true,
+    "languagesSpoken": ["English", "French"],
+    "onlineStatus": "online",
+    "isActive": true
+  },
+  {
+    "id": 89,
+    "username": "cafe_downtown",
+    "name": "Downtown Cafe",
+    "userType": "business",
+    "bio": "Best coffee and pastries in DTLA since 2015",
+    "hometownCity": "Los Angeles",
+    "hometownState": "California",
+    "hometownCountry": "United States",
+    "profileImage": "https://...",
+    "interests": ["Food & Dining"],
+    "streetAddress": "123 Main St",
+    "phoneNumber": "+1-555-123-4567",
+    "websiteUrl": "www.downtowncafe.com",
+    "isActive": true
+  }
+]
+```
+
+**Discovery query parameters:**
+- `location` (supports metro consolidation server-side)
+- `userType` = `local` | `traveler` | `business`
+- `gender` = `male` | `female` | `non-binary`
+- `minAge`, `maxAge`
+- `interests` (comma-separated)
+- `search` (name/username/bio)
+
+**UI rules:**
+- For business cards, show: name + bio + address/website button (if present). Hide traveler-specific fields.
+- For non-business, show:
+  - "Nearby Local • hometownCity" always
+  - traveler line only if `isCurrentlyTraveling === true`
+- If `ageVisible === false`, hide age everywhere.
+
+---
+
+### Search users: GET /api/search-users
+
+Use these fields exactly for Discovery/Search cards:
+`compatibilityScore`, `sharedInterests`, and `connectionStatus` drive UI badges/CTAs
+
+```json
+[
+  {
+    "id": 45,
+    "username": "traveler_jane",
+    "name": "Jane Doe",
+    "userType": "traveler",
+    "bio": "Digital nomad exploring the world",
+    "hometownCity": "Austin",
+    "hometownState": "Texas",
+    "hometownCountry": "United States",
+    "profileImage": "https://...",
+    "interests": ["Photography", "Food & Dining", "Arts & Music"],
+    "isCurrentlyTraveling": true,
+    "travelDestination": "Los Angeles",
+    "gender": "female",
+    "age": 28,
+    "languagesSpoken": ["English", "French"],
+    "compatibilityScore": 0.75,
+    "sharedInterests": ["Food & Dining", "Photography"],
+    "connectionStatus": "none"
+  }
+]
+```
+
+---
+
+### Events list: GET /api/events
+
+Use this exact shape for Events tab + Event detail screen.
+
+**Key logic:**
+- `eventType === "community"` → show RSVP buttons in-app
+- `eventType === "imported"` → show "via {source}" and open `externalUrl` in Safari; no fake in-app purchase
+
+```json
+[
+  {
+    "id": 1,
+    "title": "Beach Bonfire Meetup",
+    "description": "Join us for a casual bonfire at Venice Beach",
+    "date": "2024-01-20T18:00:00Z",
+    "endDate": "2024-01-20T22:00:00Z",
+    "city": "Venice",
+    "state": "California",
+    "country": "United States",
+    "location": "Venice Beach Fire Pits",
+    "organizerId": 12,
+    "organizer": { "id": 12, "username": "event_host", "name": "Lisa Martinez", "profileImage": "https://..." },
+    "eventType": "community",
+    "source": null,
+    "externalUrl": null,
+    "imageUrl": "https://...",
+    "maxAttendees": 30,
+    "currentAttendees": 18,
+    "isPublic": true,
+    "userRsvpStatus": "going",
+    "rsvpCount": 18
+  },
+  {
+    "id": 2,
+    "title": "Taylor Swift Concert",
+    "description": "The Eras Tour at SoFi Stadium",
+    "date": "2024-02-15T19:30:00Z",
+    "city": "Los Angeles",
+    "state": "California",
+    "country": "United States",
+    "location": "SoFi Stadium",
+    "eventType": "imported",
+    "source": "ticketmaster",
+    "externalUrl": "https://ticketmaster.com/...",
+    "imageUrl": "https://...",
+    "maxAttendees": null,
+    "currentAttendees": null,
+    "isPublic": true,
+    "userRsvpStatus": null,
+    "rsvpCount": 0
+  }
+]
+```
+
+---
+
+### Event detail: GET /api/events/:id
+
+Use this shape for Event Details screen (deep link from events list, city home, calendar).
+
+```json
+{
+  "id": 1,
+  "title": "Beach Bonfire Meetup",
+  "description": "Join us for a casual bonfire at Venice Beach. Bring snacks to share! We'll have music and great conversations.",
+  "date": "2024-01-20T18:00:00Z",
+  "endDate": "2024-01-20T22:00:00Z",
+  "city": "Venice",
+  "state": "California",
+  "country": "United States",
+  "location": "Venice Beach Fire Pits",
+  "organizerId": 12,
+  "organizer": "event_host",
+  "eventType": "community",
+  "source": null,
+  "externalUrl": null,
+  "imageUrl": "https://storage.googleapis.com/...",
+  "maxAttendees": 30,
+  "currentAttendees": 18,
+  "isPublic": true,
+  "participantCount": 18,
+  "createdAt": "2024-01-10T14:00:00Z"
+}
+```
+
+**Organizer field note:**
+- For community events: `organizer` is the username
+- For imported events: `organizer` may be `"Outside of the Website"` (external source)
+
+**Event RSVP endpoints:**
+- `GET /api/events/:id/participants` (attendees list)
+- `POST /api/events/:id/join` body: `{ "userId": 2, "status": "going" | "interested" }`
+- `POST /api/events/:id/leave` (cancel RSVP)
+
+**UI rules:**
+- If `eventType === "community"`: show Going/Interested actions using join/leave endpoints.
+- If `eventType === "imported"`: show source label + open externalUrl in Safari. Do not show fake RSVP/join.
+
+---
+
+### Travel plans list: GET /api/travel-plans/:userId
+
+Use this response shape for Profile → Trips and for trip management screens.
+
+```json
+[
+  {
+    "id": 123,
+    "userId": 2,
+    "destination": "Paris, France",
+    "destinationCity": "Paris",
+    "destinationState": null,
+    "destinationCountry": "France",
+    "startDate": "2024-03-15T00:00:00Z",
+    "endDate": "2024-03-22T00:00:00Z",
+    "interests": ["Food & Dining", "Arts & Music", "Photography"],
+    "activities": ["Museum Tours", "Wine Tasting", "Walking Tours"],
+    "events": null,
+    "travelStyle": ["Couple", "Luxury"],
+    "accommodation": "Hotel",
+    "transportation": "Flight",
+    "notes": "Anniversary trip! Want to see the Eiffel Tower at sunset",
+    "autoTags": ["romantic", "europe", "culture"],
+    "status": "planned",
+    "createdAt": "2024-01-10T15:30:00Z"
+  }
+]
+```
+
+**Rules:**
+- `status` is computed from dates (not manually set)
+- `planned` (future), `active` (ongoing), `completed` (past)
+- Parse UTC timestamps but display in device local time.
+
+**Critical product rule (confirmed):**
+Creating a trip (any future date) results in immediate destination chatroom availability via `GET /api/chatrooms/my-locations` (backend includes all upcoming trips where `endDate >= today`).
+
+---
+
+### TIMEZONE RULE (important because backend sends Z)
+
+Backend timestamps are ISO strings often ending with Z (UTC). The app must:
+- parse ISO timestamps reliably
+- display in device local timezone
+- never show raw UTC formatting to users
+
+---
+
+### NULL-HANDLING (required for all screens)
+
+`profileImage`, `destinationCity`, `reactions`, and `repliedMessage` may be null. UI must gracefully render fallbacks:
+- Null `profileImage` → initials avatar
+- Null `destinationCity` → hidden destination line
+- Null `reactions` → no reactions UI
+- Null `repliedMessage` → no reply preview
+
+---
+
+### FINAL TAB STRUCTURE (use this exactly)
+
+**Regular users:**
+```
+[ Home ] [ Events ] [ Chatrooms ] [ Messages ] [ Profile ]
+```
+FAB: Create Event / Plan Trip / Quick Meetup
+
+**Business users:**
+```
+[ Dashboard ] [ Deals ] [ Messages ] [ Search ] [ Profile ]
+```
+FAB: Create Deal / Flash Deal
