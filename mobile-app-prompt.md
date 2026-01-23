@@ -164,6 +164,10 @@ API: `GET /api/search-users?gender=female&minAge=25&maxAge=40&location=Paris`
 - API: `POST /api/auth/login`, `POST /api/register`
 - Session-based auth with cookies
 - Three signup flows: Local, Traveler, Business
+- **Password Reset Flow:**
+  - `POST /api/auth/forgot-password` - Send reset link
+  - `GET /api/auth/verify-reset-token?token=<token>` - Verify token
+  - `POST /api/auth/reset-password` - Set new password
 
 ### 2. User Profiles
 - Profile photo, bio, interests, languages spoken
@@ -221,15 +225,49 @@ API: `GET /api/search-users?gender=female&minAge=25&maxAge=40&location=Paris`
 ### 8. Quick Meetups
 - Spontaneous meetup requests ("Coffee now?")
 - Time-limited (expire after set hours)
-- Location-based
-- API: `POST /api/quick-meetups`, `GET /api/quick-meetups`
+- Location-based with dedicated chatrooms
+- **API Endpoints:**
+  - `POST /api/quick-meetups` - Create meetup
+  - `GET /api/quick-meetups` - List meetups (filter by city, status)
+  - `GET /api/quick-meetups/:id` - Get single meetup
+  - `PUT /api/quick-meetups/:id` - Update meetup
+  - `DELETE /api/quick-meetups/:id` - Delete meetup
+  - `POST /api/quick-meetups/:id/join` - Join meetup
+  - `GET /api/quick-meetups/:id/participants` - Get participants
+  - `POST /api/quick-meetups/:id/restart` - Restart expired meetup
+- **Meetup Chatrooms:**
+  - `GET /api/quick-meetup-chatrooms/:meetupId` - Get chatroom
+  - `GET /api/quick-meetup-chatrooms/:chatroomId/messages` - Get messages
+  - `POST /api/quick-meetup-chatrooms/:chatroomId/messages` - Send message
+  - `POST /api/quick-meetup-chatrooms/:chatroomId/join` - Join chatroom
 
 ### 9. Events
 - Community events and meetups
 - RSVP functionality (Going/Interested)
-- Event chat rooms
+- Event chat rooms for attendees
 - Event organizer features
-- API: `GET /api/events`, `POST /api/events`, `POST /api/events/:id/join`, `POST /api/events/:id/leave`
+- **Event Endpoints:**
+  - `GET /api/events` - List events (filter by city, date)
+  - `GET /api/events/:id` - Get event details
+  - `POST /api/events` - Create event
+  - `POST /api/events/:id/join` - RSVP (body: `{userId, status: "going"|"interested"}`)
+  - `POST /api/events/:id/leave` - Cancel RSVP
+  - `GET /api/events/:id/participants` - Get attendees
+  - `GET /api/events/organizer/:organizerId` - Events by organizer
+  - `GET /api/events/nearby?lat=<lat>&lng=<lng>` - Nearby events
+- **Event Chatrooms:**
+  - `GET /api/event-chatrooms/:eventId` - Get event chatroom
+  - `GET /api/event-chatrooms/:chatroomId/members` - Chatroom members
+  - `GET /api/event-chatrooms/:chatroomId/messages` - Get messages
+  - `POST /api/event-chatrooms/:chatroomId/messages` - Send message
+  - `POST /api/event-chatrooms/:chatroomId/join` - Join chatroom
+
+### 9b. Secret Experiences (Hidden Gems)
+- Local insider tips and hidden spots in each city
+- Like/save functionality for users
+- **API:**
+  - `GET /api/secret-experiences/:city` - Get city's hidden gems
+  - `POST /api/secret-experiences/:experienceId/like` - Like/save experience
 
 ### 10. References & Vouches
 - Written references from connections (like LinkedIn recommendations)
@@ -245,7 +283,26 @@ API: `GET /api/search-users?gender=female&minAge=25&maxAge=40&location=Paris`
 - Create deals and offers
 - Flash deals (time-limited)
 - Business profile with location/hours
-- API: `GET /api/quick-deals`, `POST /api/quick-deals`
+- **Quick Deals (Flash Deals):**
+  - `GET /api/quick-deals` - Browse deals (filter by city)
+  - `POST /api/quick-deals` - Create deal
+  - `PUT /api/quick-deals/:id` - Update deal
+  - `DELETE /api/quick-deals/:id` - Delete deal
+  - `GET /api/quick-deals/history/:businessId` - Deal history
+  - `POST /api/quick-deals/:id/claim` - Claim deal
+- **Business Deals (Long-term):**
+  - `GET /api/business-deals` - Browse business deals
+  - `GET /api/business-deals/business/:businessId` - Deals by business
+  - `POST /api/business-deals` - Create deal
+  - `PUT /api/business-deals/:id` - Update deal
+  - `DELETE /api/business-deals/:id` - Delete deal
+  - `POST /api/business-deals/claim` - Claim deal
+  - `GET /api/business-deals/analytics` - Deal analytics
+- **Business Directory:**
+  - `GET /api/businesses` - List businesses
+  - `GET /api/businesses/map` - Businesses with map coordinates
+  - `GET /api/businesses/:businessId/customer-photos` - Customer photos
+  - `POST /api/businesses/:businessId/customer-photos` - Upload customer photo
 
 ### 12. Advanced Search
 - Search by location, demographics, interests
@@ -274,6 +331,77 @@ Each city has a dedicated home screen showing:
 - Map/List toggle for events and users
 
 API: `GET /api/cities/:city/overview`, `GET /api/city/:city/users`
+
+### City Activities ("Things to Do")
+User-created and AI-enhanced activity suggestions for each city.
+- `GET /api/city-activities/:cityName` - Get activities for city
+- `POST /api/city-activities` - Add new activity
+- `DELETE /api/city-activities/:activityId` - Remove activity
+- `POST /api/city-activities/:cityName/enhance` - AI-enhance activities
+- `GET /api/users/search-by-activity-name?activity=<name>` - Find users interested in activity
+
+---
+
+## ITINERARIES (Trip Planning)
+
+Detailed day-by-day planning for travel plans:
+- `GET /api/itineraries/travel-plan/:travelPlanId` - Get itinerary for trip
+- `GET /api/itineraries/:id` - Get single itinerary
+- `POST /api/itineraries` - Create itinerary
+- `POST /api/itineraries/:id/items` - Add item to itinerary
+- `PUT /api/itinerary-items/:id` - Update itinerary item
+- `DELETE /api/itinerary-items/:id` - Delete itinerary item
+- `GET /api/travel-plans-with-itineraries/:userId` - Get trips with full itineraries
+
+---
+
+## EXTERNAL EVENTS (Third-Party Integrations)
+
+Import events from external platforms:
+- `GET /api/external-events/ticketmaster?city=<city>` - Ticketmaster events
+- `GET /api/external-events/stubhub?city=<city>` - StubHub events
+- `GET /api/external-events/meetup?city=<city>` - Meetup events
+- `GET /api/external-events/eventbrite?city=<city>` - Eventbrite events
+- `GET /api/external-events/allevents?city=<city>` - AllEvents aggregator
+- `GET /api/external-events/curated/:city` - Curated local events
+- `POST /api/events/import-url` - Import event from URL (body: `{url}`)
+  - Supported: meetup.com, couchsurfing.com (scrapes event details)
+
+---
+
+## REFERRAL SYSTEM
+
+Users can share referral codes/QR to invite friends:
+- `GET /api/referral/:code` - Validate referral code and get referrer info
+- Referral code passed during signup: `POST /api/register` with `{...userData, referralCode: "ABC123"}`
+- New users get auto-connected to their referrer
+- QR codes generated client-side using referral code
+
+---
+
+## NOTIFICATION SETTINGS
+
+User preferences for notifications:
+- `PUT /api/users/notification-settings` - Update notification preferences
+  ```json
+  {
+    "emailNotifications": true,
+    "pushNotifications": true,
+    "connectionRequests": true,
+    "newMessages": true,
+    "eventReminders": true,
+    "weeklyDigest": true
+  }
+  ```
+
+---
+
+## MESSAGE REACTIONS
+
+WhatsApp-style emoji reactions on messages:
+- `POST /api/messages/:messageId/reaction` - Add/update reaction (body: `{emoji: "👍"}`)
+- Reactions stored as array on message: `reactions: [{userId, emoji, createdAt}]`
+- Display reaction bar below message bubble if reactions exist
 
 ---
 
@@ -699,6 +827,11 @@ x-user-id: <user_id>
 - `GET /api/auth/user` - Get current user
 - `POST /api/auth/logout` - Logout
 - `GET /api/bootstrap/status` - Bootstrap/welcome operations ONLY (NOT profile completion)
+- **Password Reset:**
+  - `POST /api/auth/check-email` - Check if email exists
+  - `POST /api/auth/forgot-password` - Send reset email (body: `{email}`)
+  - `GET /api/auth/verify-reset-token?token=<token>` - Verify reset token
+  - `POST /api/auth/reset-password` - Reset password (body: `{token, newPassword}`)
 
 ### Users
 - `GET /api/users` - List users (with filters)
