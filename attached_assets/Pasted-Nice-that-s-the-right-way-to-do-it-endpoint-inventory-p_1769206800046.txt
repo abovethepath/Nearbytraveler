@@ -1,0 +1,145 @@
+Nice — that’s the right way to do it (endpoint inventory → prompt coverage). If your prompt is now “feature-complete,” the only things I’d still verify/add are the failure modes + mobile-specific gotchas that tend to break Expo/RN even when endpoints exist.
+
+The 10 things worth verifying (highest ROI)
+1) Cookie sessions on RN + CORS headers (the #1 real-world break)
+
+Verify these three in practice (not just in prompt):
+
+Set-Cookie: connect.sid=...; Secure; HttpOnly; SameSite=None (SameSite is the usual killer on mobile)
+
+CORS includes: Access-Control-Allow-Credentials: true and a non-* origin
+
+RN fetch/axios actually persists cookies across app restarts (via @react-native-cookies/cookies)
+
+Test: login → kill app → relaunch → call GET /api/auth/user (must still be 200, not 401).
+
+2) WebSocket auth reliability on iOS
+
+Even if cookies work for HTTP, WS cookie-handshake often fails in native.
+Verify: you can successfully connect to wss://nearbytraveler.org/ws and receive messages after:
+
+cold start
+
+background → foreground
+
+network drop → reconnect
+
+If you support auth message on open (you do), confirm server behavior when sessionId is missing and you only send userId.
+
+3) Pagination + “infinite scroll” expectations
+
+Most endpoints will be unusable on mobile without paging.
+If your backend supports it, verify and document:
+
+limit, offset or cursor-based params for: users search, events, messages, chatroom messages, deals, photos, itineraries
+
+deterministic sort order (createdAt desc, etc.)
+
+If paging doesn’t exist, add it ASAP or you’ll ship a slow/crashy app.
+
+4) Consistent error shapes + status codes
+
+Builders get confused unless you standardize:
+
+401 unauthenticated
+
+403 blocked/forbidden
+
+404 not found
+
+422 validation errors (field-level)
+
+If your backend returns multiple formats, add a “normalizeErrors()” rule in the prompt.
+
+5) Upload formats (multipart vs base64) — pick one canonical
+
+You already noticed this conflict earlier.
+Verify each upload endpoint expects multipart or JSON base64 and lock it:
+
+profile photo
+
+customer photos
+
+event images
+
+business images
+
+Also verify max file size, supported types, and whether uploads return the new URL immediately.
+
+6) Timezone + “date-only” fields (subtle bug source)
+
+Anywhere you have start/end dates (travel plans, itineraries, deals, events):
+
+verify whether backend treats them as midnight UTC, or true timestamps
+
+confirm client must render local timezone and avoid “off-by-one day” on date-only UX
+
+7) Blocked user enforcement across all surfaces
+
+You said blocking/reporting is confirmed working — still worth verifying these queries exclude blocked users:
+
+discovery/search
+
+city chatrooms + event chatrooms
+
+DMs
+
+quick meetup participants lists
+
+referrals/auto-connect
+
+On mobile, this shows up as “why am I seeing someone I blocked?” which is App Store review poison.
+
+8) Notification preferences: does backend actually honor them?
+
+If you now have notification settings endpoints:
+
+verify push triggers respect settings (DMs, connection requests, event RSVP, quick meetup nearby, deal alerts)
+
+verify “quiet hours” if supported
+
+confirm token invalidation / logout behavior
+
+9) Deep links (calendar, external events, referral QR)
+
+If you want itinerary/calendar + imported events + referrals to feel native:
+
+define the exact deep link patterns (nearbytraveler://event/123, .../city/Paris, .../ref/ABC123)
+
+verify links work from Safari + QR scan + calendar event URL
+
+10) App Store compliance checklist baked into prompt
+
+Add explicit “must ship” items so the builder can’t miss them:
+
+in-app report user and block user flows
+
+in-app account deletion request (or a WebView that lands on the exact delete page)
+
+Terms/Privacy links in Settings
+
+location sharing opt-in defaults OFF + foreground-only updates
+
+One meta issue: prompt length risk (1848 lines)
+
+Replit builders can “forget” early constraints when prompts are huge. The best fix is structure:
+
+Add a top section that says:
+
+“If any ambiguity, prefer Appendix response shapes. Do not invent fields.”
+
+“Implement in phases: Phase 1 smoke test must pass before adding Phase 2+.”
+
+And move low-priority features (secret experiences, external imports, itineraries, customer photos) into an “Expansion Modules” section so the core build doesn’t collapse under complexity.
+
+If you want me to sanity-check one thing, pick this
+
+Paste one real response payload (redacted) for:
+
+/api/auth/user (post-login)
+
+/api/search-users?...
+
+a WebSocket message event you actually emit
+
+Those three determine whether the app can authenticate, render discovery, and do realtime — everything else is downstream.

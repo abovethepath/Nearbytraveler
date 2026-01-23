@@ -4,6 +4,15 @@
 
 ---
 
+## 🚨 ABSOLUTE RULES (READ FIRST)
+
+1. **DO NOT INVENT ENDPOINTS OR FIELDS** - Only use endpoints and response shapes documented here. If an endpoint returns 404, gracefully hide that feature.
+2. **If any ambiguity, prefer Appendix response shapes** - The JSON examples at the end are authoritative.
+3. **Implement in phases** - Phase 1 smoke test MUST pass before adding Phase 2+ features.
+4. **Core build first, expansion later** - See "Expansion Modules" section for lower-priority features.
+
+---
+
 ## Project Overview
 
 Create a native iOS mobile app using Expo/React Native for **Nearby Traveler** - a social networking platform connecting travelers, locals, and businesses. The app must connect to an **existing backend API** at `https://nearbytraveler.org` so all users are synced whether they sign up on web or mobile.
@@ -14,6 +23,21 @@ https://nearbytraveler.org/api
 ```
 
 All API endpoints are already built and working. The mobile app is a new front-end connecting to this existing backend.
+
+---
+
+## PHASE 1 SMOKE TEST (Run After Initial Build)
+
+Before adding more features, verify these work:
+1. **Login** → `POST /api/auth/login` → verify cookie set
+2. **Auth check** → `GET /api/auth/user` → verify name + userType render
+3. **Kill app → Relaunch** → `GET /api/auth/user` → MUST return 200 (not 401) - cookies persisted
+4. **Home discovery** → `GET /api/search-users?location=<hometownCity>` → list renders with compatibility badges
+5. **Messages** → `GET /api/conversations/:userId` → conversation list renders
+6. **Open DM** → `GET /api/messages/:userId` → bubbles + reactions render
+7. **Create trip** → `POST /api/travel-plans` → then Chatrooms tab refetches → destination appears
+
+If any of these fail, fix before proceeding.
 
 ---
 
@@ -56,12 +80,116 @@ All API endpoints are already built and working. The mobile app is a new front-e
 }
 ```
 
-### Phase 1 Smoke Test (Run After Build)
-1. Login → call `GET /api/auth/user` → verify name + userType render
-2. Home tab → `GET /api/search-users?location=<hometownCity>` → verify list renders with compatibility badges
-3. Messages tab → `GET /api/conversations/:userId` → verify list renders
-4. Open a DM → `GET /api/messages/:userId` → verify bubbles + reply preview + reactions
-5. Create Trip → verify Chatrooms tab refreshes and destination appears via `GET /api/chatrooms/my-locations`
+### 6. Cookie/CORS Requirements (Critical for Auth)
+Backend MUST have these headers for mobile to work:
+- `Set-Cookie: connect.sid=...; Secure; HttpOnly; SameSite=None` (SameSite=None is critical for mobile)
+- `Access-Control-Allow-Credentials: true`
+- `Access-Control-Allow-Origin: <specific-origin>` (not `*`)
+
+**RN Cookie Persistence:**
+- Use `@react-native-cookies/cookies` to persist cookies across app restarts
+- Create single API wrapper that always includes `credentials: 'include'`
+
+### 7. WebSocket Reliability on iOS
+Even if HTTP cookies work, WS handshake often fails on native. Handle these scenarios:
+- Cold start
+- Background → foreground transition
+- Network drop → reconnect
+
+**Always send auth message immediately after connect:**
+```json
+{ "type": "auth", "userId": 123, "sessionId": "<connect.sid value if available>" }
+```
+Use exponential backoff for reconnection: 1s, 2s, 4s... max 30s.
+
+### 8. Pagination (Required for Mobile Performance)
+Most list endpoints support pagination. Always use:
+- `limit` - Number of items (default: 20)
+- `offset` - Skip count for pagination
+- Sort order is `createdAt DESC` by default
+
+Paginated endpoints:
+- `/api/search-users?limit=20&offset=0`
+- `/api/messages/:userId?limit=50&offset=0`
+- `/api/events?limit=20&offset=0`
+- `/api/quick-deals?limit=20&offset=0`
+- `/api/chatrooms/:id` (messages paginated)
+
+Implement infinite scroll on all list screens.
+
+### 9. Error Response Standard
+All errors follow this shape:
+```json
+{
+  "message": "Human-readable error message",
+  "error": "ERROR_CODE",
+  "details": { "field": "validation error" }  // Optional, for 422
+}
+```
+
+Status codes:
+- `401` - Unauthenticated (redirect to login)
+- `403` - Forbidden (blocked user, insufficient permissions)
+- `404` - Not found (hide feature gracefully)
+- `422` - Validation errors (show field-level errors)
+- `500` - Server error (show generic error toast)
+
+### 10. Upload Format (Multipart Only)
+ALL file uploads use `multipart/form-data` with field name `"photo"`:
+- Profile photo: `PUT /api/users/:id/profile-photo`
+- Cover photo: `POST /api/users/:id/cover-photo`
+- Customer photos: `POST /api/businesses/:businessId/customer-photos`
+- Event images: include in event creation form
+
+**Max file size:** 5MB
+**Supported types:** JPEG, PNG, WebP
+**Response:** Returns updated object with new image URL
+
+### 11. Blocked User Enforcement
+Blocked users MUST be hidden from ALL surfaces:
+- Discovery/search results
+- City chatrooms and event chatrooms
+- DM conversations
+- Quick meetup participant lists
+- Connection suggestions
+- Referral auto-connects
+
+The backend filters blocked users from responses, but verify this works.
+
+### 12. Deep Links
+Support these deep link patterns for sharing:
+```
+nearbytraveler://user/:userId
+nearbytraveler://event/:eventId
+nearbytraveler://city/:cityName
+nearbytraveler://ref/:referralCode
+nearbytraveler://meetup/:meetupId
+```
+
+Configure in app.json:
+```json
+{
+  "expo": {
+    "scheme": "nearbytraveler"
+  }
+}
+```
+
+---
+
+## APP STORE COMPLIANCE CHECKLIST (Must Ship)
+
+Before submitting to App Store, verify these are implemented:
+
+- [ ] **Block user flow** - In-app blocking from profile menu
+- [ ] **Report user flow** - In-app reporting with reason selection
+- [ ] **Account deletion** - Either DELETE endpoint or WebView to /settings
+- [ ] **Terms of Service link** - Open WebView to /terms
+- [ ] **Privacy Policy link** - Open WebView to /privacy
+- [ ] **Location sharing opt-in** - Default OFF, foreground-only updates
+- [ ] **Age verification** - Collect birthday during signup
+- [ ] **Content moderation** - Hide flagged content
+- [ ] **Push notification permission** - Ask at appropriate moment, not on launch
 
 ---
 
@@ -1846,3 +1974,58 @@ RN fetch does not reliably persist cookies by default. Use `@react-native-cookie
 
 **WebSocket auth:**
 Do not assume cookies are automatically sent in the WS handshake. Always send the `{type:'auth', userId, sessionId}` message immediately after connect.
+
+---
+
+## EXPANSION MODULES (Build After Core Is Stable)
+
+These features are lower priority. Build them ONLY after Phase 1 smoke test passes and core features work:
+
+### Expansion 1: Itineraries (Trip Planning)
+Day-by-day planning for travel plans.
+- `GET /api/itineraries/travel-plan/:travelPlanId`
+- `POST /api/itineraries`
+- `POST /api/itineraries/:id/items`
+- `PUT /api/itinerary-items/:id`
+- `DELETE /api/itinerary-items/:id`
+
+### Expansion 2: Secret Experiences (Hidden Gems)
+Local insider tips for each city.
+- `GET /api/secret-experiences/:city`
+- `POST /api/secret-experiences/:experienceId/like`
+
+### Expansion 3: External Event Imports
+Third-party event integrations.
+- `GET /api/external-events/ticketmaster?city=<city>`
+- `GET /api/external-events/stubhub?city=<city>`
+- `GET /api/external-events/meetup?city=<city>`
+- `POST /api/events/import-url` (body: `{url}`)
+
+### Expansion 4: Customer Photos
+User-submitted photos for businesses.
+- `GET /api/businesses/:businessId/customer-photos`
+- `POST /api/businesses/:businessId/customer-photos`
+- `DELETE /api/businesses/:businessId/customer-photos/:photoId`
+
+### Expansion 5: City Activities Enhancement
+AI-powered "Things to Do" suggestions.
+- `GET /api/city-activities/:cityName`
+- `POST /api/city-activities/:cityName/enhance`
+- `GET /api/users/search-by-activity-name?activity=<name>`
+
+### Expansion 6: Advanced Calendar Integration
+Export events to Apple Calendar.
+- Use Expo Calendar API
+- Export .ics files
+- Deep link back to app from calendar events
+
+### Expansion 7: QR Code Sharing
+Share profile/referral via QR.
+- Generate QR codes client-side using referral code
+- Scan QR to open deep link
+
+---
+
+## END OF PROMPT
+
+This prompt is comprehensive and ready for building. If you encounter any endpoint not documented here, do NOT invent it - gracefully hide that feature and flag it for review.
