@@ -336,6 +336,154 @@ For Business:
 
 ---
 
+## WEB APP TO MOBILE NAVIGATION MAPPING
+
+### Current Web App Structure
+
+**Bottom Navigation (Mobile Web):**
+| Tab | Regular Users | Business Users |
+|-----|--------------|----------------|
+| 1 | Home (Discovery) | Dashboard |
+| 2 | Search (opens modal) | Search (opens modal) |
+| 3 | Messages | Messages |
+| 4 | Profile | Business Profile |
+| + | Action Menu | Action Menu |
+
+**Action Menu (Plus Button):**
+- Regular Users: Create Event, Create Trip, Create Quick Meetup
+- Business Users: Create Deal, Create Quick Deal
+
+### Complete Web Page List → Mobile Screen Mapping
+
+#### Core Pages (Must Have)
+| Web Route | Web Page | Mobile Screen | Priority |
+|-----------|----------|---------------|----------|
+| `/` | Home / Discovery | Home Tab | P0 |
+| `/signin` | Sign In | Login Screen | P0 |
+| `/join` | Join / Signup | Signup Flow | P0 |
+| `/signup-local` | Local Signup | Signup - Local | P0 |
+| `/signup-traveling` | Traveler Signup | Signup - Traveler | P0 |
+| `/signup-business` | Business Signup | Signup - Business | P0 |
+| `/profile/:id` | User Profile | Profile Screen | P0 |
+| `/messages` | Messages List | Messages Tab | P0 |
+| `/dm/:userId` | DM Conversation | Chat Screen | P0 |
+| `/settings` | Settings | Settings Screen | P0 |
+
+#### Social Features
+| Web Route | Web Page | Mobile Screen | Priority |
+|-----------|----------|---------------|----------|
+| `/connect` | Connections | Connections List | P1 |
+| `/requests` | Connection Requests | Requests Screen | P1 |
+| `/chatrooms` | City Chatrooms List | Chatrooms Tab | P1 |
+| `/chatroom/:id` | Chatroom View | Chatroom Screen | P1 |
+
+#### Travel Features
+| Web Route | Web Page | Mobile Screen | Priority |
+|-----------|----------|---------------|----------|
+| `/plan-trip` | Create Travel Plan | Create Trip Screen | P1 |
+| `/travel-plans` | My Travel Plans | Travel Plans List | P1 |
+| `/passport` | Travel Passport | Passport Screen | P2 |
+| `/itinerary/:id` | Trip Itinerary | Itinerary Screen | P2 |
+
+#### Events & Meetups
+| Web Route | Web Page | Mobile Screen | Priority |
+|-----------|----------|---------------|----------|
+| `/events` | Events List | Events Tab | P1 |
+| `/event/:id` | Event Details | Event Detail Screen | P1 |
+| `/create-event` | Create Event | Create Event Screen | P1 |
+| `/quick-meetups` | Quick Meetups | Meetups Screen | P1 |
+| `/meetups` | Meetup Events | Meetups List | P2 |
+| `/event-chat/:id` | Event Chat | Event Chat Screen | P2 |
+
+#### City Pages
+| Web Route | Web Page | Mobile Screen | Priority |
+|-----------|----------|---------------|----------|
+| `/city/:city` | City Page | City Home Screen | P1 |
+| `/city/:city/users` | City Users | City Users List | P2 |
+
+#### Business Features
+| Web Route | Web Page | Mobile Screen | Priority |
+|-----------|----------|---------------|----------|
+| `/business-dashboard` | Business Dashboard | Dashboard Tab | P0 (business) |
+| `/business-offers` | Create Offers | Create Deal Screen | P1 (business) |
+| `/deals` | Deals List | Deals Screen | P1 |
+
+#### Search & Discovery
+| Web Route | Web Page | Mobile Screen | Priority |
+|-----------|----------|---------------|----------|
+| `/discover` | Discover Page | Part of Home Tab | P1 |
+| `/users` | Users Directory | Search Results | P2 |
+| (modal) | Advanced Search | Search Modal | P1 |
+
+#### Profile Features
+| Web Route | Web Page | Mobile Screen | Priority |
+|-----------|----------|---------------|----------|
+| `/profile/:id` | Full Profile | Profile Screen | P0 |
+| `/upload-photos` | Photo Upload | Photo Gallery | P2 |
+| `/qr-code` | QR Code | QR Display Screen | P2 |
+
+#### Legal & Info
+| Web Route | Web Page | Mobile Screen | Priority |
+|-----------|----------|---------------|----------|
+| `/terms` | Terms of Service | Terms (WebView) | P0 |
+| `/privacy` | Privacy Policy | Privacy (WebView) | P0 |
+| `/cookies` | Cookie Policy | Cookies (WebView) | P3 |
+| `/about` | About | About Screen | P3 |
+| `/community-guidelines` | Community Guidelines | Guidelines (WebView) | P2 |
+
+#### Auth & Account
+| Web Route | Web Page | Mobile Screen | Priority |
+|-----------|----------|---------------|----------|
+| `/forgot-password` | Forgot Password | Forgot Password | P1 |
+| `/reset-password` | Reset Password | Reset Password | P1 |
+| `/welcome` | Welcome Screen | Onboarding Complete | P1 |
+
+### Mobile-Only Features (Not on Web)
+| Feature | Description | Priority |
+|---------|-------------|----------|
+| Push Notifications | Native push alerts | P1 |
+| Camera Integration | Photo capture | P1 |
+| QR Scanner | Scan connection QR codes | P2 |
+| Apple Calendar | Add events to calendar | P2 |
+| Share Sheet | Native sharing | P2 |
+| Biometric Login | Face ID / Touch ID | P3 |
+
+### Pages to SKIP for Mobile
+| Web Page | Reason |
+|----------|--------|
+| `/admin-dashboard` | Admin-only, web sufficient |
+| `/admin-settings` | Admin-only |
+| `/admin-referrals` | Admin-only |
+| `/sms-test` | Dev testing only |
+| `/pitch-preview` | Internal presentation |
+| Landing pages (`/events-landing`, `/locals-landing`, etc.) | Marketing, not app features |
+
+### Recommended Mobile Tab Structure
+
+**For Regular Users (5 tabs):**
+```
+[ Home ] [ Events ] [ Chatrooms ] [ Messages ] [ Profile ]
+            |
+      (+ FAB for: Create Event, Plan Trip, Quick Meetup)
+```
+
+**For Business Users (5 tabs):**
+```
+[ Dashboard ] [ Deals ] [ Messages ] [ Search ] [ Profile ]
+                 |
+      (+ FAB for: Create Deal, Flash Deal)
+```
+
+### Navigation Patterns
+
+1. **Bottom Tabs** - Primary navigation (5 main sections)
+2. **Floating Action Button (FAB)** - Create actions
+3. **Stack Navigation** - Push screens within each tab
+4. **Modal Sheets** - Quick actions, search, filters
+5. **Drawer** - Settings, account, help (optional)
+
+---
+
 ## MOBILE TECHNICAL REQUIREMENTS
 
 ### Cookie-Based Session Auth in React Native
