@@ -1,0 +1,195 @@
+Yes, there are a few issues and opportunities to tighten this prompt so Replit (or any AI) generates more reliable code.
+
+1. It’s very long and mixes “what” with “how”
+Right now the prompt combines:
+
+Product spec
+
+Backend behavior
+
+Implementation tips
+
+Smoke-test checklist
+
+For an AI code generator this can cause:
+
+Important requirements (cookies, WebSockets) to get buried.
+
+The model to partially implement things but miss critical checks.
+
+Fix: Split into clear sections with explicit priorities, e.g.:
+
+“Core requirements (must implement before anything else)”
+
+“Secondary features (implement after auth + navigation work)”
+
+“Reference / background (do not re‑implement, just respect).”
+
+2. Cookie sessions on native are underspecified
+You say:
+
+“Backend uses cookie-based sessions (connect.sid).”
+
+“Use credentials: 'include' on all fetch calls.”
+
+On React Native:
+
+fetch + cookies is not reliable without a helper (e.g. react-native-cookies, expo-cookie, or axios with a cookie jar).
+
+WebSockets with cookies also need an explicit approach.
+
+Fix: Be explicit about the tooling, for example:
+
+“Use a cookie-management library compatible with Expo (e.g. expo-cookie or react-native-cookies) so that:
+
+Login response cookies are stored
+
+Subsequent requests automatically send the session cookie
+
+WebSocket handshake includes the cookie or x-user-id header.”
+
+Otherwise the generated code may just set credentials: 'include' (which is correct on web, but often a no‑op on native).
+
+3. WebSocket auth fallback is vague
+You say:
+“If cookies don't work with WS on native, backend also accepts x-user-id header as fallback for some endpoints.”
+
+Issues:
+
+“Some endpoints” is ambiguous.
+
+It doesn’t specify where to get x-user-id or how to store it.
+
+Fix: Spell it out, e.g.:
+
+“After login, store user.id from /api/auth/user in memory.
+For all WebSocket connections, send:
+
+Cookie if available
+
+AND x-user-id header with the logged-in user id.
+Assume backend will accept either.”
+
+4. Onboarding + profile completion could be mis-implemented
+You clearly describe onboarding steps and say:
+
+“Profile completion is computed from GET /api/auth/user …
+NOTE: GET /api/bootstrap/status is for welcome operations only, NOT profile completion”
+
+Risk:
+
+The assistant might still try to POST something like /api/profile/complete or misuse /api/bootstrap/status.
+
+Fix: Add one explicit line:
+
+“The mobile app MUST NOT create new endpoints or write profile-completion logic on the backend; it only reads /api/auth/user and uses the fields above to decide which UI to show.”
+
+5. Demographics and filters: need explicit mapping to API
+You give a UI-level description (gender, age, etc.) and one example:
+
+GET /api/search-users?gender=female&minAge=25&maxAge=40&location=Paris
+
+Potential issues:
+
+The assistant might invent different param names or paths.
+
+It might not understand how “Location” and “Near Me” map to your API.
+
+Fix:
+
+Either list the exact supported query params and types,
+
+Or say: “Use only the following query params: gender, minAge, maxAge, location, userType, interests, languages.”
+
+If you have a different endpoint for “Near Me” vs city, call that out too.
+
+6. Timezone display needs concrete guidance
+You say:
+
+“ALWAYS display in device local timezone. Never show raw UTC.”
+
+The model might:
+
+Forget to use a date library and just call new Date().toLocaleString() in scattered places.
+
+Fix: Standardize:
+
+“Use a single helper function formatLocalTime(isoString) that:
+
+Assumes ISO UTC (Z)
+
+Returns a human-friendly local time string.
+Use this everywhere timestamps are displayed.”
+
+7. Smoke test checklist is good but not an acceptance criterion
+You list “Phase 1 Smoke Test” steps, but you don’t tell the assistant that these define “done.”
+
+Fix: Add:
+
+“Do not consider Phase 1 complete until every smoke-test step below works without errors in the simulator.”
+
+This nudges the AI (or any dev) to wire up all screens involved.
+
+8. Missing high-level app structure
+The prompt doesn’t explicitly specify:
+
+Navigation structure (tab layout?)
+
+State management approach
+
+Basic screen list
+
+The smoke test implies Home, Messages, DM, Create Trip, Chatrooms, but Replit may improvise.
+
+Fix: Add a short “Initial Screens & Navigation” section, e.g.:
+
+Bottom tab navigator with: Home, Messages, Chatrooms, Profile.
+
+Stack navigation for Login / Signup / Onboarding.
+
+Use React Query (or simple custom hooks) for data fetching.
+
+Even if you let the AI choose libraries, at least define the tab/stack layout.
+
+9. Some wording is more “documentation” than “prompt”
+Lines like:
+
+“IMPORTANT: Use this prompt when creating a new Replit mobile app project.”
+
+“The mobile app does NOT need to trigger these…”
+
+are fine for humans, but for an AI instruction you care more about:
+
+What to implement now
+
+What NOT to implement now
+
+Fix: At the top, add a short directive:
+
+“Your role: Generate production-quality Expo/React Native code.
+Prioritize: auth + navigation + core screens → then onboarding → then profile and filters.
+Do not modify backend logic, only call existing endpoints.”
+
+10. Security and privacy hints
+Because you mention demographic filters (gender, age, etc.), it’s worth adding:
+
+“All gender and age fields are optional.
+UI must clearly show when filters are active and allow clearing them.
+Don’t log sensitive data to the console in production code.”
+
+This avoids the AI adding noisy console.log(user) everywhere in auth flows.
+
+Suggested short revised header (you can paste on top)
+You don’t have to rewrite everything—just add this at the very beginning:
+
+“You are building an Expo/React Native iOS app for Nearby Traveler using the existing backend at https://nearbytraveler.org/api.
+
+Implement: login, session cookie handling, tab navigation (Home, Messages, Chatrooms, Profile), and the onboarding wizard.
+
+Use only the documented API endpoints; do not invent new ones.
+
+Treat ‘CRITICAL IMPLEMENTATION CHECKS’ as hard requirements.
+
+Treat ‘Phase 1 Smoke Test’ as the definition of done: the app is not complete until every step there works in the iOS simulator.”
+
+If you paste that above your current spec, your prompt becomes much more actionable and less likely to be misinterpreted.

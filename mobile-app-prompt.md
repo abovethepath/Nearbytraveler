@@ -1,6 +1,24 @@
 # Nearby Traveler - Native iOS Mobile App Prompt
 
-## IMPORTANT: Use this prompt when creating a new Replit mobile app project
+---
+
+## 🎯 BUILDER DIRECTIVE (READ FIRST)
+
+**Your role:** Generate production-quality Expo/React Native code for an iOS app.
+
+**Priority order:**
+1. Auth + cookie persistence (MUST work before anything else)
+2. Tab navigation (Home, Messages, Chatrooms, Profile)
+3. Core screens (discovery, messaging, trips)
+4. Onboarding wizard
+5. Profile editing and filters
+6. Expansion features (see end of document)
+
+**Hard constraints:**
+- Use ONLY documented API endpoints - do not invent new ones
+- Do not modify backend logic - this is a frontend connecting to existing APIs
+- Treat "Phase 1 Acceptance Gate" as definition of done - app is not complete until every step passes
+- Treat "Critical Implementation Checks" as hard requirements
 
 ---
 
@@ -23,6 +41,33 @@ https://nearbytraveler.org/api
 ```
 
 All API endpoints are already built and working. The mobile app is a new front-end connecting to this existing backend.
+
+---
+
+## 📱 APP STRUCTURE & NAVIGATION
+
+### Bottom Tab Navigator (Main App)
+- **Home** - Discovery feed (search users in hometown/destination)
+- **Messages** - Conversation list with unread badges
+- **Chatrooms** - City/destination chatrooms
+- **Profile** - User profile, settings, logout
+
+### Stack Navigation (Auth Flow)
+- Login Screen
+- Signup Screen (3 variants: traveler, local, business)
+- Onboarding Wizard (interests, bio, photo - shown once after signup)
+
+### Modal Screens
+- Create Trip
+- Create Quick Meetup
+- User Profile Detail
+- Edit Profile
+- Search/Filter
+
+### State Management
+- Use React Query (TanStack Query) for API data fetching and caching
+- Store `currentUser` from `/api/auth/user` in React Context
+- Store WebSocket instance in Context for real-time updates
 
 ---
 
@@ -200,6 +245,37 @@ If any step fails, fix it before proceeding. Do not work around failures.
 - Backend timestamps end in `Z` (UTC)
 - ALWAYS display in device local timezone
 - Never show raw UTC to users
+
+**Use a single helper function everywhere:**
+```javascript
+// utils/formatTime.js
+export const formatLocalTime = (isoString) => {
+  if (!isoString) return '';
+  const date = new Date(isoString);
+  return date.toLocaleString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+};
+
+// For relative time (e.g., "2 hours ago")
+export const formatRelativeTime = (isoString) => {
+  if (!isoString) return '';
+  const date = new Date(isoString);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffMins = Math.floor(diffMs / 60000);
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+  const diffDays = Math.floor(diffHours / 24);
+  return `${diffDays}d ago`;
+};
+```
+Use `formatLocalTime` for event times, trip dates. Use `formatRelativeTime` for messages, notifications.
 
 ### 5. iOS Permissions (Add to app.json Early)
 ```json
@@ -462,7 +538,26 @@ The mobile app does NOT need to trigger these - they happen server-side during s
 - Interests
 - Languages spoken
 
-API: `GET /api/search-users?gender=female&minAge=25&maxAge=40&location=Paris`
+**Exact supported query parameters (use ONLY these):**
+```
+GET /api/search-users?location=Paris&userType=local&gender=female&minAge=25&maxAge=40&interests=Hiking,Food&languages=English,Spanish
+```
+
+| Param | Type | Values | Required |
+|-------|------|--------|----------|
+| `location` | string | City name | Yes |
+| `userType` | string | `local`, `traveler`, `business` | No |
+| `gender` | string | `male`, `female`, `non-binary`, `other` | No |
+| `minAge` | number | 18-99 | No |
+| `maxAge` | number | 18-99 | No |
+| `interests` | string | Comma-separated list | No |
+| `languages` | string | Comma-separated list | No |
+
+**UI requirements:**
+- All filter fields are optional - users can search without any filters
+- Show clear indication when filters are active (badge count, highlight)
+- Provide "Clear all filters" button
+- Remember: demographic filters (gender, age) are sensitive - handle gracefully
 
 ---
 
@@ -2204,6 +2299,34 @@ Export events to Apple Calendar.
 Share profile/referral via QR.
 - Generate QR codes client-side using referral code
 - Scan QR to open deep link
+
+---
+
+## 🔒 SECURITY & PRIVACY GUIDELINES
+
+### Logging Rules
+- **NEVER log sensitive data in production:**
+  - No `console.log(user)` with full user objects
+  - No logging passwords, tokens, or session IDs
+  - Allowed: `console.log('Auth success')`, `console.log('User ID:', user.id)`
+- Remove or disable debug logs before release builds
+
+### Privacy Requirements
+- All demographic fields (gender, age, etc.) are optional
+- Users can hide age via `hideAge: true` preference
+- Business contact info is only visible to admins
+- Block/report actions must be available on all user-facing profiles
+- Blocked users must be hidden from all lists, chatrooms, and search results
+
+### Secure Storage
+- Use `expo-secure-store` for any sensitive tokens (if storing locally)
+- Never store passwords locally
+- Cookie-based sessions are preferred over local token storage
+
+### Network Security
+- All API calls must use HTTPS
+- Verify SSL certificates (don't disable validation)
+- Handle 401/403 responses by clearing session and redirecting to login
 
 ---
 
