@@ -1,0 +1,192 @@
+I can’t “verify” the full 2,335-line doc without seeing it end-to-end, but I can tell you the last places builder-prompts still fail even when everything sounds complete. Here’s a final sanity pass you can run on your prompt (and 2 tiny “guardrail snippets” you can paste in if they’re not already there).
+
+Final prompt sanity checklist (the stuff that still breaks apps)
+1) One API client only (no inline fetch)
+
+Make sure your Builder Directive says:
+
+All network calls MUST go through one wrapper (api client)
+
+No screen/component may call fetch() directly
+
+This prevents “some calls include cookies, some don’t” (the #1 silent break).
+
+2) Explicit “Expo Go is NOT allowed” for Phase 1
+
+Even if you wrote it once, put it in Acceptance Gate Step 0:
+
+Must use Dev Build / TestFlight on a real device
+
+3) App state “rehydration” is defined
+
+You want a hard rule like:
+
+On app cold start, call /api/auth/user before rendering tabs
+
+If 401 → route to Auth stack
+
+If 200 → route to Main tabs
+
+No “optimistic logged-in UI” that later snaps back
+
+4) WebSocket fallback path is deterministic
+
+Define the exact order:
+
+Try WS with cookie auth
+
+If not authenticated within X seconds → send {type:'auth', userId, sessionId} message
+
+If still failing → reconnect backoff
+
+Only if backend supports: add x-user-id for REST fallback on relevant endpoints
+
+5) “Blocked user enforcement” is in one place
+
+The prompt should mandate:
+
+A single isBlocked(userId) helper used by Discovery / Search / Messages / Chatrooms / Events lists
+
+Never trust the UI list alone — always filter at render time too (defensive)
+
+6) Query param table matches reality
+
+Common mismatch:
+
+interests format (comma-separated vs repeated params)
+
+userType enum casing
+
+minAge/maxAge types (number vs string)
+
+Make sure your table includes example full URLs for 3–4 common filter combos.
+
+7) Upload: boundary + filename + MIME required
+
+A lot of builders forget name and type on RN FormData objects. Your prompt should explicitly require:
+
+{ uri, name, type } for every file
+
+5MB max + accepted mimetypes
+
+Optional but very worth it: add these “no-excuses” guardrails
+
+If you don’t already have them, paste these into your prompt under App Structure & Navigation.
+
+A) “No inline fetch” rule + required API wrapper
+// RULE: Screens/components must NOT call fetch directly.
+// All API calls MUST go through this wrapper so cookies are consistent.
+
+const API_BASE = "https://nearbytraveler.org/api";
+
+export async function apiFetch(path: string, options: RequestInit = {}) {
+  const url = path.startsWith("http") ? path : `${API_BASE}${path}`;
+
+  const res = await fetch(url, {
+    ...options,
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+    },
+  });
+
+  // Standardized error handling
+  if (!res.ok) {
+    let body: any = null;
+    try { body = await res.json(); } catch {}
+    const err = new Error(body?.message || `HTTP ${res.status}`);
+    (err as any).status = res.status;
+    (err as any).body = body;
+    throw err;
+  }
+
+  // Some endpoints may return empty bodies
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
+B) WebSocket connect + auth handshake + reconnect backoff (single place)
+const WS_URL = "wss://nearbytraveler.org/ws";
+
+export function createNearbyWS(opts: {
+  userId: number;
+  sessionId?: string | null; // optional if you can read connect.sid
+  onMessage: (data: any) => void;
+  onStatus?: (s: "connecting"|"open"|"closed"|"error") => void;
+}) {
+  let ws: WebSocket | null = null;
+  let attempt = 0;
+  let closedByUser = false;
+
+  const connect = () => {
+    if (closedByUser) return;
+    attempt += 1;
+    opts.onStatus?.("connecting");
+
+    ws = new WebSocket(WS_URL);
+
+    const authTimeout = setTimeout(() => {
+      // If cookie handshake didn't auth server-side, try explicit auth message
+      try {
+        ws?.send(JSON.stringify({
+          type: "auth",
+          userId: opts.userId,
+          sessionId: opts.sessionId || undefined,
+        }));
+      } catch {}
+    }, 800);
+
+    ws.onopen = () => {
+      opts.onStatus?.("open");
+      attempt = 0;
+      // Send auth immediately too (safe even if cookies already work)
+      try {
+        ws?.send(JSON.stringify({
+          type: "auth",
+          userId: opts.userId,
+          sessionId: opts.sessionId || undefined,
+        }));
+      } catch {}
+    };
+
+    ws.onmessage = (event) => {
+      try { opts.onMessage(JSON.parse(event.data as any)); } catch {}
+    };
+
+    ws.onerror = () => opts.onStatus?.("error");
+
+    ws.onclose = () => {
+      clearTimeout(authTimeout);
+      opts.onStatus?.("closed");
+      if (closedByUser) return;
+
+      const delay = Math.min(1000 * Math.pow(2, attempt), 30000);
+      setTimeout(connect, delay);
+    };
+  };
+
+  connect();
+
+  return {
+    send: (payload: any) => ws?.readyState === 1 && ws?.send(JSON.stringify(payload)),
+    close: () => { closedByUser = true; ws?.close(); },
+  };
+}
+
+
+These two snippets alone eliminate a ton of “it works on one screen but not another” behavior.
+
+One last practical move
+
+When you paste the prompt into Replit, tell the builder to output a Phase 1 evidence bundle in /docs/phase1/:
+
+phase1-screenrecording.mov (or link)
+
+phase1-console-log.txt
+
+phase1-passfail.md (Steps 0–7, PASS/FAIL)
+
+That forces the builder to prove it’s working before you burn time on UI polish.
+
+If you want, paste just your Builder Directive + Phase 1 Acceptance Gate sections here — I’ll do a quick consistency scan for contradictions or missing “STOP until fixed” wording.

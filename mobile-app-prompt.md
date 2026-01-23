@@ -69,6 +69,167 @@ All API endpoints are already built and working. The mobile app is a new front-e
 - Store `currentUser` from `/api/auth/user` in React Context
 - Store WebSocket instance in Context for real-time updates
 
+### 🚨 MANDATORY: Single API Client (No Inline Fetch)
+**All network calls MUST go through one wrapper. No screen/component may call `fetch()` directly.**
+This prevents "some calls include cookies, some don't" (the #1 silent auth break).
+
+```typescript
+// lib/api.ts - REQUIRED: Use this for ALL API calls
+const API_BASE = "https://nearbytraveler.org/api";
+
+export async function apiFetch(path: string, options: RequestInit = {}) {
+  const url = path.startsWith("http") ? path : `${API_BASE}${path}`;
+
+  const res = await fetch(url, {
+    ...options,
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+    },
+  });
+
+  // Standardized error handling
+  if (!res.ok) {
+    let body: any = null;
+    try { body = await res.json(); } catch {}
+    const err = new Error(body?.message || `HTTP ${res.status}`);
+    (err as any).status = res.status;
+    (err as any).body = body;
+    throw err;
+  }
+
+  // Some endpoints return empty bodies
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
+// Usage: await apiFetch('/auth/user')
+// Usage: await apiFetch('/messages/123', { method: 'POST', body: JSON.stringify({ content: 'Hi' }) })
+```
+
+### App State Rehydration (Cold Start)
+**On app cold start, ALWAYS call `/api/auth/user` before rendering tabs:**
+- If 401 → route to Auth stack (Login screen)
+- If 200 → route to Main tabs
+- **No "optimistic logged-in UI"** that later snaps back to login
+
+```typescript
+// App startup flow
+const [isReady, setIsReady] = useState(false);
+const [user, setUser] = useState(null);
+
+useEffect(() => {
+  const checkAuth = async () => {
+    try {
+      const userData = await apiFetch('/auth/user');
+      setUser(userData);
+    } catch (err) {
+      if (err.status === 401) setUser(null);
+    }
+    setIsReady(true);
+  };
+  checkAuth();
+}, []);
+
+if (!isReady) return <SplashScreen />;
+return user ? <MainTabs /> : <AuthStack />;
+```
+
+### WebSocket: Single Instance + Auth + Reconnect
+**Use this exact pattern for WebSocket - handles cookie auth, fallback auth message, and reconnection:**
+
+```typescript
+// lib/websocket.ts
+const WS_URL = "wss://nearbytraveler.org/ws";
+
+export function createNearbyWS(opts: {
+  userId: number;
+  sessionId?: string | null;
+  onMessage: (data: any) => void;
+  onStatus?: (s: "connecting"|"open"|"closed"|"error") => void;
+}) {
+  let ws: WebSocket | null = null;
+  let attempt = 0;
+  let closedByUser = false;
+
+  const connect = () => {
+    if (closedByUser) return;
+    attempt += 1;
+    opts.onStatus?.("connecting");
+
+    ws = new WebSocket(WS_URL);
+
+    ws.onopen = () => {
+      opts.onStatus?.("open");
+      attempt = 0;
+      // Send auth message immediately (works even if cookies already work)
+      try {
+        ws?.send(JSON.stringify({
+          type: "auth",
+          userId: opts.userId,
+          sessionId: opts.sessionId || undefined,
+        }));
+      } catch {}
+    };
+
+    ws.onmessage = (event) => {
+      try { opts.onMessage(JSON.parse(event.data as string)); } catch {}
+    };
+
+    ws.onerror = () => opts.onStatus?.("error");
+
+    ws.onclose = () => {
+      opts.onStatus?.("closed");
+      if (closedByUser) return;
+      // Exponential backoff: 1s, 2s, 4s, 8s... max 30s
+      const delay = Math.min(1000 * Math.pow(2, attempt), 30000);
+      setTimeout(connect, delay);
+    };
+  };
+
+  connect();
+
+  return {
+    send: (payload: any) => ws?.readyState === 1 && ws?.send(JSON.stringify(payload)),
+    close: () => { closedByUser = true; ws?.close(); },
+  };
+}
+```
+
+### Blocked User Enforcement (Single Helper)
+**Create ONE `isBlocked(userId)` helper used by Discovery, Search, Messages, Chatrooms, Events:**
+
+```typescript
+// lib/blocking.ts
+let blockedUserIds: Set<number> = new Set();
+
+export const setBlockedUsers = (ids: number[]) => {
+  blockedUserIds = new Set(ids);
+};
+
+export const isBlocked = (userId: number): boolean => {
+  return blockedUserIds.has(userId);
+};
+
+// Fetch on app load + after blocking/unblocking
+export const refreshBlockedUsers = async () => {
+  const data = await apiFetch('/blocked-users');
+  setBlockedUsers(data.map((u: any) => u.id));
+};
+
+// Filter any list of users/messages/etc:
+export const filterBlocked = <T extends { id?: number; userId?: number; senderId?: number }>(
+  items: T[]
+): T[] => {
+  return items.filter(item => {
+    const id = item.id || item.userId || item.senderId;
+    return !id || !isBlocked(id);
+  });
+};
+```
+**Never trust the UI list alone — always filter at render time too (defensive).**
+
 ---
 
 ## ✅ PHASE 1 ACCEPTANCE GATE (MUST PASS BEFORE ANY OTHER FEATURES)
@@ -81,12 +242,21 @@ All API endpoints are already built and working. The mobile app is a new front-e
 - Cookie persistence must be implemented (`connect.sid` must survive app restart)
 
 ### Required Evidence (Builder Must Provide)
-- iOS screen recording showing Steps 1–7 end-to-end
-- Console logs showing:
-  - `connect.sid` present after login
-  - `/api/auth/user` status code 200
-  - WebSocket connected + authenticated
-  - Reconnect after background
+**Create a `/docs/phase1/` folder with these files before proceeding to Phase 2:**
+
+| File | Contents |
+|------|----------|
+| `phase1-screenrecording.mov` | iOS screen recording showing Steps 1–7 end-to-end |
+| `phase1-console-log.txt` | Console logs showing cookie, auth, and WS status |
+| `phase1-passfail.md` | Steps 0–7 with PASS or FAIL for each |
+
+**Console logs must show:**
+- `connect.sid` present after login
+- `/api/auth/user` status code 200
+- WebSocket connected + authenticated
+- Reconnect after background (return from 20+ seconds background)
+
+**This evidence bundle proves the fundamentals work before UI polish begins.**
 
 ---
 
