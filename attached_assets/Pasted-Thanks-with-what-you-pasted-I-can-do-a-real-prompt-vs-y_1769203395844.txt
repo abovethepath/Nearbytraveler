@@ -1,0 +1,149 @@
+Thanks — with what you pasted, I can do a real “prompt vs your actual site/API” review. Overall it’s strong, but there are a few hard contradictions and a few missing/underspecified features (especially around “things in common,” city discovery/stats semantics, deals, and geolocation).
+
+Must-fix contradictions (these will cause wrong scaffolding)
+1) Profile completion gating is contradictory
+
+In the onboarding section you still say:
+
+“API: GET /api/bootstrap/status – Check profile completion status”
+
+…but your Appendix correctly says /api/bootstrap/status does NOT represent profile completion.
+
+Fix (copy/paste replacement):
+
+Remove that line from onboarding.
+
+Replace with:
+“Profile completion is computed from GET /api/auth/user: interests.length>=3 AND hometownCity AND profileImage AND bio.”
+
+2) Tabs are inconsistent in 3 different places
+
+UI/UX section still lists Home / Messages / Chatrooms / Search / Profile
+
+Mapping shows older “mobile web” nav
+
+Later you declare FINAL: Home / Events / Chatrooms / Messages / Profile
+
+Fix: make every section match the FINAL structure. Otherwise Replit will build two nav systems.
+
+3) City endpoint naming is inconsistent
+
+You reference:
+
+GET /api/cities/:city/overview (earlier)
+
+“City Page Details: GET /api/cities/:city” (appendix)
+
+Pick ONE canonical endpoint and label the other as alias (or remove it). Right now it’s ambiguous.
+
+4) Metro handling is duplicated and conflicts with “server-side”
+
+You still have a “METRO AREA HANDLING” section listing 76 cities and “When user selects Los Angeles…” which contradicts your newer “server-side, no app logic.”
+
+Fix: delete the 76-city list section and keep only the server-side statement.
+
+5) “All endpoints already built” conflicts with “create endpoint if needed”
+
+You’ve got:
+
+/api/support/report (create endpoint if needed)
+
+/api/push/register (create if needed)
+
+If you keep “all endpoints built,” remove “create if needed.”
+If those aren’t built yet, change the earlier claim to:
+“Core endpoints are built; a few noted endpoints may need to be added or stubbed.”
+
+Missing / underspecified features (based on what you said you care about)
+A) “Things in Common” + matching on the Discovery grid
+
+Your Discovery grid uses GET /api/users, but that payload does not include:
+
+compatibilityScore
+
+sharedInterests
+
+Those exist on GET /api/search-users.
+
+So right now the prompt asks for a compatibility badge on cards but doesn’t specify how to get the data.
+
+Two clean options (pick one and state it):
+
+Use /api/search-users to power Home discovery (with default params like location=hometown/destination).
+
+Keep /api/users for the grid, but add a “compatibility batch” endpoint (or extend /api/users response).
+
+B) City discovery is covered, but City Events endpoint isn’t explicit
+
+You have screens for “City Events,” but no endpoint listed for it.
+You likely can use: GET /api/events?city=<city> (you already do this pattern elsewhere).
+
+Add explicitly:
+
+GET /api/events?city=Los%20Angeles (and note metro expansion is server-side)
+
+C) City stats (cumulative) needs semantics
+
+You added /api/city-stats + /api/city-stats/:city, which matches your “cumulative city stats” idea — but you should define what counts mean or mobile will present misleading numbers:
+
+Add definitions like:
+
+localCount: users whose hometownCity == city
+
+travelerCount: users with an upcoming/active trip destinationCity == city (endDate >= today)
+
+businessCount: business accounts with hometownCity == city
+
+eventCount: events with city == city (optionally within next X days)
+
+D) Deals are still incomplete as a product loop
+
+You have business creation endpoints (/api/quick-deals) but you don’t define how locals/travelers browse deals, or whether Deals tab exists for them (it doesn’t; only business has Deals tab).
+
+At minimum add:
+
+Where deals appear for regular users: City Home + Events tab section
+
+A read endpoint: GET /api/quick-deals?city=... (if that’s the listing)
+
+Deal detail fields (even a sample response), or the app will invent fields
+
+E) Geolocation pinging: needs safety + practical rules
+
+You added location endpoints, but you must specify opt-in + foreground-only behavior or you’ll trigger privacy/Apple review risk and also balloon scope.
+
+Add these rules:
+
+Location sharing is OFF by default and user-controlled (locationSharingEnabled)
+
+Only update location while the app is in foreground (no background tracking in MVP)
+
+Update frequency: e.g. on screen focus + every 60–120 seconds while viewing “Nearby”
+
+Show approximate distance (not exact coords) and never display exact lat/lng publicly
+
+TTL: treat location stale after e.g. 15 minutes and hide “nearby” indicator
+
+Also: your /api/users/nearby endpoint has no query shape or sample response. Add at least:
+
+GET /api/users/nearby?lat=…&lng=…&radiusKm=…
+
+F) Friends-of-friends: you have 3 ways—tighten it
+
+You currently have:
+
+degrees batch (/connections/degrees/batch)
+
+degree detail (/connections/degree/...) returning mutuals list
+
+mutual connections list (/mutual-connections/...)
+
+That’s fine, but specify who uses what:
+
+Discovery grid → batch (fast)
+
+Profile → degree detail for badge + mutualCount
+
+“See mutuals” screen → mutual-connections endpoint (list)
+
+Otherwise Replit may redundantly call all three.

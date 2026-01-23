@@ -117,7 +117,8 @@ After signup, users MUST complete a step-by-step onboarding wizard:
 - Users with incomplete profiles are hidden from discovery
 - Red reminder bar prompts profile completion
 - Minimum requirements: 3 interests, hometown, profile photo
-- API: `GET /api/bootstrap/status` - Check profile completion status
+- Profile completion is computed from `GET /api/auth/user`: `interests.length >= 3` AND `hometownCity` AND `profileImage` AND `bio`
+- NOTE: `GET /api/bootstrap/status` is for welcome operations only, NOT profile completion
 
 ---
 
@@ -313,7 +314,7 @@ API: `GET /api/events?source=meetup`, `GET /api/scrape-meetup`, `GET /api/scrape
 ### Report User
 - Report reasons: spam, harassment, fake profile, inappropriate content
 - Submit from profile or message
-- API: `POST /api/support/report` (create endpoint if needed)
+- API: `POST /api/support/report` (endpoint exists)
 
 ### Report Content
 - Report event, chatroom message, or reference
@@ -657,7 +658,7 @@ fetch('https://nearbytraveler.org/api/push/register', {
 | Quick meetup nearby | "Coffee meetup starting in 30 min near you" |
 | Flash deal | "50% off at Local Cafe - expires in 2 hours" |
 
-API: `POST /api/push/register` (create if needed), `POST /api/push/send`
+API: `POST /api/push/register`, `POST /api/push/send` (endpoints exist)
 
 ---
 
@@ -721,10 +722,11 @@ x-user-id: <user_id>
 - `GET /api/chatrooms/:chatroomId` - Get chatroom messages
 
 ### Cities
-- `GET /api/cities/:city/overview` - City home data with stats and coordinates
+- `GET /api/cities/:city/overview` - City home data with stats and coordinates (CANONICAL endpoint for city pages)
 - `GET /api/city/:city/users` - Users in city
-- `GET /api/city-stats` - All cities with stats (localCount, travelerCount, businessCount, eventCount)
+- `GET /api/city-stats` - All cities with stats
 - `GET /api/city-stats/:city` - Stats for specific city
+- `GET /api/events?city=Los%20Angeles` - City events (metro expansion is server-side)
 
 ### Geolocation & Maps
 - `GET /api/businesses/map` - Businesses with lat/lng for map pins
@@ -792,12 +794,6 @@ Use these interest categories:
 - Learning & Education
 
 ---
-
-## METRO AREA HANDLING
-
-Los Angeles metro area includes 76 cities that should all appear in "Los Angeles" searches:
-- Playa del Rey, Santa Monica, Venice, Culver City, Beverly Hills, etc.
-- When user selects "Los Angeles", show users from all LA metro cities
 
 ---
 
@@ -1099,9 +1095,13 @@ Use this exact shape for chatroom screen (header + message list + membership sta
 
 ---
 
-### Discovery grid: GET /api/users
+### Discovery grid: GET /api/search-users (RECOMMENDED) or GET /api/users
 
-Use this response shape for the Home discovery grid. The list can contain locals, travelers, and businesses in one feed.
+**IMPORTANT: Use `GET /api/search-users` for Home discovery** - it includes `compatibilityScore` and `sharedInterests` for "things in common" badges.
+
+Use `GET /api/users` only for simpler listings without compatibility data.
+
+The list can contain locals, travelers, and businesses in one feed.
 
 ```json
 [
@@ -1370,11 +1370,50 @@ Use this for City Home screens to show community activity stats (locals, travele
 }
 ```
 
+**Stat definitions (for accurate display):**
+- `localCount`: Users whose `hometownCity` == city
+- `travelerCount`: Users with upcoming/active trip where `destinationCity` == city AND `endDate >= today`
+- `businessCount`: Business accounts with `hometownCity` == city
+- `eventCount`: Events with `city` == city (within next 6 weeks)
+
 **All cities list:** `GET /api/city-stats` returns array of all cities with their stats.
 
 ---
 
-### City Page Details: GET /api/cities/:city
+### Deals for Regular Users (Locals/Travelers)
+
+**Where deals appear (regular users don't have a Deals tab):**
+- **City Home screen** - Shows local business deals in that city
+- **Events tab** - Flash deals may appear as time-limited cards
+- **Business profile pages** - Active deals from that business
+
+**Browsing deals:** `GET /api/quick-deals?city=Los%20Angeles`
+
+```json
+[
+  {
+    "id": 1,
+    "businessId": 89,
+    "businessName": "Downtown Cafe",
+    "title": "50% Off Lattes",
+    "description": "Half price lattes all day Friday",
+    "originalPrice": 6.00,
+    "salePrice": 3.00,
+    "dealCode": "FRIDAY50",
+    "validFrom": "2024-01-19T00:00:00Z",
+    "validUntil": "2024-01-19T23:59:59Z",
+    "maxRedemptions": 50,
+    "currentRedemptions": 12,
+    "city": "Los Angeles",
+    "isFlashDeal": true,
+    "expiresIn": "4 hours"
+  }
+]
+```
+
+---
+
+### City Page Details: GET /api/cities/:city/overview
 
 Use this for City Home screen with full city info.
 
@@ -1447,6 +1486,35 @@ Users can share their real-time location for "nearby" features.
 - `lastLocationUpdate` - When location was last updated
 - `locationSharingEnabled` - Whether user opted in to share location
 
+**CRITICAL: Geolocation Safety Rules (Apple Review Compliance)**
+1. **Opt-in by default**: Location sharing is OFF by default, user must explicitly enable
+2. **Foreground only**: Only update location while app is in foreground (no background tracking in MVP)
+3. **Update frequency**: On screen focus + every 60-120 seconds while viewing "Nearby" screens
+4. **Privacy display**: Show approximate distance (e.g., "2 miles away"), never display exact coordinates publicly
+5. **Stale data TTL**: Treat location as stale after 15 minutes, hide "nearby" indicator for stale users
+
+### Nearby Users: GET /api/users/nearby
+
+Find users near a location (requires location sharing enabled).
+
+**Query parameters:**
+- `lat` - Latitude center point
+- `lng` - Longitude center point  
+- `radiusKm` - Search radius in kilometers (default: 10)
+
+```json
+[
+  {
+    "id": 45,
+    "username": "traveler_jane",
+    "name": "Jane Doe",
+    "profileImage": "https://...",
+    "approximateDistance": "2.3 km",
+    "lastLocationUpdate": "2024-01-15T14:30:00Z"
+  }
+]
+```
+
 ---
 
 ### Connection Degrees: GET /api/connections/degree/:userId/:targetUserId
@@ -1474,11 +1542,16 @@ LinkedIn-style connection degrees for network visualization.
 - `3` = 3rd degree connection
 - `0` = No connection path found
 
+**Which endpoint to use where (avoid redundant calls):**
+- **Discovery grid** → Use `POST /api/connections/degrees/batch` (fast batch lookup for multiple users)
+- **Profile screen** → Use `GET /api/connections/degree/:userId/:targetUserId` for badge + mutualCount
+- **"See all mutuals" screen** → Use `GET /api/mutual-connections/:userId1/:userId2` for full list
+
 ---
 
 ### Mutual Connections: GET /api/mutual-connections/:userId1/:userId2
 
-Get list of shared connections between two users.
+Get list of shared connections between two users (for "See all mutuals" screen).
 
 ```json
 [
