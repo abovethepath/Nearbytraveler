@@ -94,13 +94,9 @@ export function MobileTopNav() {
               aria-expanded={showDropdown}
               aria-controls="mobile-menu"
               className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 touch-manipulation relative z-[1001]"
-              onClick={(e) => {
+              onPointerDown={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                setShowDropdown((s) => !s);
-              }}
-              onTouchEnd={(e) => {
-                e.preventDefault();
                 setShowDropdown((s) => !s);
               }}
             >
