@@ -2,7 +2,7 @@ import React, { useState, useMemo, useContext, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 // Removed goBackProperly import
-import { apiRequest, queryClient, invalidateUserCache } from "@/lib/queryClient";
+import { apiRequest, queryClient, invalidateUserCache, getApiBaseUrl } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -2426,7 +2426,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             const base64 = reader.result as string;
             console.log('Compressed file converted to base64, uploading...');
             
-            const response = await fetch(`/api/users/${effectiveUserId}`, {
+            const apiBase = getApiBaseUrl();
+            const response = await fetch(`${apiBase}/api/users/${effectiveUserId}`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ profileImage: base64 })
@@ -2489,7 +2490,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             const base64 = reader.result as string;
             console.log('Original file converted to base64, uploading...');
             
-            const response = await fetch(`/api/users/${effectiveUserId}`, {
+            const apiBase = getApiBaseUrl();
+            const response = await fetch(`${apiBase}/api/users/${effectiveUserId}`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ profileImage: base64 })
@@ -3052,7 +3054,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       console.log('🔧 SAVE PAYLOAD: Sending update with separated data', updateData);
       
       // Send the update request
-      const response = await fetch(`/api/users/${effectiveUserId}`, {
+      const apiBase = getApiBaseUrl();
+      const response = await fetch(`${apiBase}/api/users/${effectiveUserId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -3141,7 +3144,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     setSavingBusinessDescription(true);
     
     try {
-      const response = await fetch(`/api/users/${effectiveUserId}`, {
+      const apiBase = getApiBaseUrl();
+      const response = await fetch(`${apiBase}/api/users/${effectiveUserId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -3201,7 +3205,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Owner contact mutation and handlers
   const updateOwnerContact = useMutation({
     mutationFn: async (data: { ownerName: string; ownerEmail: string; ownerPhone: string }) => {
-      const response = await fetch(`/api/users/${effectiveUserId}`, {
+      const apiBase = getApiBaseUrl();
+      const response = await fetch(`${apiBase}/api/users/${effectiveUserId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -3291,7 +3296,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       
       console.log('🔥 MUTATION: Profile payload with explicit booleans:', payload);
       
-      const response = await fetch(`/api/users/${effectiveUserId}`, {
+      const apiBase = getApiBaseUrl();
+      const response = await fetch(`${apiBase}/api/users/${effectiveUserId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -4927,7 +4933,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               customActivities: customActivities.join(', ')
                             };
                             
-                            const response = await fetch(`/api/users/${user.id}`, {
+                            const apiBase = getApiBaseUrl();
+                            const response = await fetch(`${apiBase}/api/users/${user.id}`, {
                               method: 'PUT',
                               headers: { 'Content-Type': 'application/json' },
                               body: JSON.stringify(saveData)
@@ -5246,7 +5253,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               
                               console.log('🔧 BUSINESS SAVE - Separated data:', saveData);
                               
-                              const response = await fetch(`/api/users/${effectiveUserId}`, {
+                              const apiBase = getApiBaseUrl();
+                              const response = await fetch(`${apiBase}/api/users/${effectiveUserId}`, {
                                 method: 'PUT',
                                 headers: {
                                   'Content-Type': 'application/json',
@@ -5541,7 +5549,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             
                             console.log('🔧 BUSINESS SAVE - Final payload:', JSON.stringify(saveData, null, 2));
                             
-                            const response = await fetch(`/api/users/${effectiveUserId}`, {
+                            const apiBase = getApiBaseUrl();
+                            const response = await fetch(`${apiBase}/api/users/${effectiveUserId}`, {
                               method: 'PUT',
                               headers: {
                                 'Content-Type': 'application/json',

@@ -1,5 +1,18 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
+// Helper function to get API base URL for wrapped app compatibility
+// When running in iOS WebView, we need absolute URLs to reach the backend
+export const getApiBaseUrl = () => {
+  if (typeof window === 'undefined') return '';
+  const hostname = window.location.hostname;
+  // Use absolute URL when running in wrapped app (not localhost, not replit, not 127.0.0.1)
+  if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.includes('replit')) {
+    return '';
+  }
+  // Wrapped app WebView - use production domain
+  return 'https://nearbytraveler.org';
+};
+
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
     const text = (await res.text()) || res.statusText;
@@ -70,7 +83,10 @@ export async function apiRequest(
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
     
-    const res = await fetch(url, {
+    // Apply API base URL for wrapped app compatibility
+    const fullUrl = url.startsWith('/') ? `${getApiBaseUrl()}${url}` : url;
+    
+    const res = await fetch(fullUrl, {
       method,
       headers,
       body: data ? JSON.stringify(data) : null,
@@ -118,6 +134,9 @@ export const getQueryFn: <T>(options: {
         url += `?${params.toString()}`;
       }
     }
+    
+    // Apply API base URL for wrapped app compatibility
+    const fullUrl = url.startsWith('/') ? `${getApiBaseUrl()}${url}` : url;
 
     // Use cached user data for better performance
     const user = getCachedUser();
@@ -136,7 +155,7 @@ export const getQueryFn: <T>(options: {
       headers["x-user-data"] = JSON.stringify(userData);
     }
 
-    const res = await fetch(url, {
+    const res = await fetch(fullUrl, {
       credentials: "include",
       headers,
     });

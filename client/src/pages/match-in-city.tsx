@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/App";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
 import { getTravelActivities } from "@shared/base-options";
 import { 
@@ -95,7 +95,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   // Fetch user's travel plans to get destination cities (user-scoped endpoint)
   const { data: travelPlans } = useQuery<any[]>({
     queryKey: ['/api/travel-plans', user?.id],
-    queryFn: () => fetch(`/api/travel-plans/${user?.id}`).then(res => res.json()),
+    queryFn: () => fetch(`${getApiBaseUrl()}/api/travel-plans/${user?.id}`).then(res => res.json()),
     enabled: !!user?.id
   });
 
@@ -313,7 +313,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     setIsCitiesLoading(true);
     try {
       console.log('🏙️ MATCH: Fetching cities from city stats API...');
-      const response = await fetch('/api/city-stats');
+      const apiBase = getApiBaseUrl();
+      const response = await fetch(`${apiBase}/api/city-stats`);
       if (response.ok) {
         const citiesData = await response.json();
         console.log('🏙️ MATCH: Loaded', citiesData.length, 'cities from API');
@@ -356,7 +357,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const fetchCityActivities = async () => {
     console.log('🎯 FETCHING ACTIVITIES FOR CITY:', selectedCity);
     try {
-      const response = await fetch(`/api/city-activities/${encodeURIComponent(selectedCity)}`);
+      const apiBase = getApiBaseUrl();
+      const response = await fetch(`${apiBase}/api/city-activities/${encodeURIComponent(selectedCity)}`);
       console.log('🎯 ACTIVITIES API RESPONSE:', response.status, response.ok);
       if (response.ok) {
         const activities = await response.json();
@@ -404,7 +406,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     console.log('🔧 FETCH USER ACTIVITIES: using userId =', userId, 'user object:', actualUser);
     
     try {
-      const response = await fetch(`/api/user-city-interests/${userId}/${encodeURIComponent(selectedCity)}`);
+      const apiBase = getApiBaseUrl();
+      const response = await fetch(`${apiBase}/api/user-city-interests/${userId}/${encodeURIComponent(selectedCity)}`);
       if (response.ok) {
         const activities = await response.json();
         console.log('🎯 USER ACTIVITIES FETCHED:', activities.length, activities);
@@ -417,7 +420,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
   const fetchMatchingUsers = async () => {
     try {
-      const response = await fetch(`/api/matching-users/${encodeURIComponent(selectedCity)}`);
+      const apiBase = getApiBaseUrl();
+      const response = await fetch(`${apiBase}/api/matching-users/${encodeURIComponent(selectedCity)}`);
       if (response.ok) {
         const users = await response.json();
         console.log('👥 MATCHING USERS FETCHED:', users.length);
@@ -432,7 +436,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     if (!newActivityName.trim() || !newActivityDescription.trim()) return;
 
     try {
-      const response = await fetch('/api/city-activities', {
+      const apiBase = getApiBaseUrl();
+      const response = await fetch(`${apiBase}/api/city-activities`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -528,7 +533,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         console.log('🗑️ REMOVING: userActivityRecord.id =', userActivityRecord.id, 'activityId =', activity.id, 'userId =', userId);
         
         // Remove activity using the correct user_city_interests ID
-        const response = await fetch(`/api/user-city-interests/${userActivityRecord.id}`, {
+        const apiBase = getApiBaseUrl();
+        const response = await fetch(`${apiBase}/api/user-city-interests/${userActivityRecord.id}`, {
           method: 'DELETE',
           headers: {
             'x-user-id': userId.toString()
@@ -561,7 +567,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         }
       } else {
         // Add activity
-        const response = await fetch('/api/user-city-interests', {
+        const apiBase = getApiBaseUrl();
+        const response = await fetch(`${apiBase}/api/user-city-interests`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -615,7 +622,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     console.log('✏️ UPDATING ACTIVITY:', editingActivity.id, 'from:', editingActivity.activityName, 'to:', editActivityName);
 
     try {
-      const response = await fetch(`/api/city-activities/${editingActivity.id}`, {
+      const apiBase = getApiBaseUrl();
+      const response = await fetch(`${apiBase}/api/city-activities/${editingActivity.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -683,7 +691,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     console.log('🗑️ DELETING ACTIVITY:', activityId);
 
     try {
-      const response = await fetch(`/api/city-activities/${activityId}`, {
+      const apiBase = getApiBaseUrl();
+      const response = await fetch(`${apiBase}/api/city-activities/${activityId}`, {
         method: 'DELETE',
         headers: {
           'x-user-id': userId.toString()
@@ -729,7 +738,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     console.log('➕ ADDING ACTIVITY:', newActivity, 'userId:', userId);
 
     try {
-      const response = await fetch('/api/city-activities', {
+      const apiBase = getApiBaseUrl();
+      const response = await fetch(`${apiBase}/api/city-activities`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -749,7 +759,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         
         // Automatically add the new activity to user's interests (make it green)
         console.log('🎯 Auto-selecting new activity:', newActivityData.activityName);
-        const interestResponse = await fetch('/api/user-city-interests', {
+        const interestResponse = await fetch(`${apiBase}/api/user-city-interests`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -812,7 +822,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         }
       } else {
         // Add to user activities
-        const response = await fetch('/api/user-city-interests', {
+        const apiBase = getApiBaseUrl();
+        const response = await fetch(`${apiBase}/api/user-city-interests`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -882,7 +893,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     console.log('🗑️ DELETE ACTIVITY: userActivityId:', userActivityId, 'userId:', userId, 'actualUser:', actualUser);
     
     try {
-      const response = await fetch(`/api/user-city-interests/${userActivityId}`, {
+      const apiBase = getApiBaseUrl();
+      const response = await fetch(`${apiBase}/api/user-city-interests/${userActivityId}`, {
         method: 'DELETE',
         headers: {
           'x-user-id': userId.toString()
@@ -937,7 +949,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     const userId = user?.id || 1;
     
     try {
-      const response = await fetch(`/api/user-city-interests/${editingActivity.id}`, {
+      const apiBase = getApiBaseUrl();
+      const response = await fetch(`${apiBase}/api/user-city-interests/${editingActivity.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -950,7 +963,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
       if (response.ok) {
         // Update the city activity name in the city activities list
-        const cityActivityResponse = await fetch(`/api/city-activities/${editingActivity.activityId}`, {
+        const cityActivityResponse = await fetch(`${apiBase}/api/city-activities/${editingActivity.activityId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -1118,7 +1131,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   // Delete city activity function (for activities user hasn't selected)
   const handleDeleteCityActivity = async (activityId: number) => {
     try {
-      const response = await fetch(`/api/city-activities/${activityId}`, {
+      const apiBase = getApiBaseUrl();
+      const response = await fetch(`${apiBase}/api/city-activities/${activityId}`, {
         method: 'DELETE'
       });
 
@@ -1266,7 +1280,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                             description: `Creating unique activities for ${selectedCity}...`,
                           });
                           
-                          const response = await fetch(`/api/city-activities/${selectedCity}/enhance`, {
+                          const apiBase = getApiBaseUrl();
+                          const response = await fetch(`${apiBase}/api/city-activities/${selectedCity}/enhance`, {
                             method: 'POST',
                             headers: {
                               'Content-Type': 'application/json',
@@ -1462,9 +1477,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                             
                             // Create this as a city activity if it doesn't exist, then toggle
                             try {
+                              const apiBase = getApiBaseUrl();
                               if (!isSelected) {
                                 // First create the activity for this city if it doesn't exist
-                                const createResponse = await fetch('/api/city-activities', {
+                                const createResponse = await fetch(`${apiBase}/api/city-activities`, {
                                   method: 'POST',
                                   headers: {
                                     'Content-Type': 'application/json',
@@ -1483,7 +1499,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                   const newActivity = await createResponse.json();
                                   
                                   // Add to user interests
-                                  const interestResponse = await fetch('/api/user-city-interests', {
+                                  const interestResponse = await fetch(`${apiBase}/api/user-city-interests`, {
                                     method: 'POST',
                                     headers: {
                                       'Content-Type': 'application/json',
