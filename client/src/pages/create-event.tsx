@@ -1019,7 +1019,7 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                   }}
                 />
                 <Label htmlFor="isSameDay" className="text-sm font-medium text-gray-700 dark:text-white cursor-pointer">
-                  ✅ Same day event (most events start and end on the same day)
+                  Same day event (most events start and end on the same day)
                 </Label>
               </div>
 
