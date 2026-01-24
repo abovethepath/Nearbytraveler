@@ -953,7 +953,7 @@ function QuickMeetupsPage() {
         </DialogContent>
       </Dialog>
 
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-orange-50 to-red-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-orange-50 to-red-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 w-full max-w-full overflow-x-hidden">
       <div className="container mx-auto p-6 max-w-4xl">
         <div className="mb-6">
           <UniversalBackButton />

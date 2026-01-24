@@ -1467,7 +1467,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 w-full max-w-full overflow-x-hidden">
 
 {/* Hero Toggle Button & Theme Toggle (when hero is hidden) */}
 {!isHeroVisible && (
