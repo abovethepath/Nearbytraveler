@@ -1,0 +1,57 @@
+{
+  "expo": {
+    "name": "Nearby Traveler",
+    "slug": "nearby-traveler",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F97316"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.nearbytraveler.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Nearby Traveler needs your location to show nearby travelers and events.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Nearby Traveler needs your location to notify you when friends are nearby."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#F97316"
+      },
+      "package": "com.nearbytraveler.app",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#F97316"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Nearby Traveler needs your location to notify you when friends are nearby."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "your-project-id"
+      }
+    }
+  }
+}
