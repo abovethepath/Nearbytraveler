@@ -3639,7 +3639,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       <MobileTopNav />
       <MobileBottomNav />
       
-      <div className="min-h-screen profile-page">
+      <div className="min-h-screen profile-page w-full max-w-full overflow-x-hidden">
 
       {/* Back to Chat Button - Show when navigated from a chatroom */}
       {shouldShowBackToChat && (
@@ -3688,7 +3688,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     
       {/* PROFILE HEADER - Mobile Responsive - Full Bleed */}
       <section
-        className={`relative -mt-px isolate w-screen -mx-[calc((100vw-100%)/2)] bg-gradient-to-r ${gradientOptions[selectedGradient]} px-3 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12`}
+        className={`relative -mt-px isolate w-full max-w-full bg-gradient-to-r ${gradientOptions[selectedGradient]} px-3 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12 overflow-hidden`}
       >
         {/* floating color button */}
         {isOwnProfile && (
@@ -3738,7 +3738,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <label
                     htmlFor="avatar-upload-input"
                     aria-label="Change avatar"
-                    className={`absolute -bottom-2 -right-2 translate-x-1/4 translate-y-1/4
+                    className={`absolute bottom-1 right-1
                                h-10 w-10 sm:h-11 sm:w-11 rounded-full p-0 flex items-center justify-center cursor-pointer
                                ${!user?.profileImage ? 'bg-orange-500 hover:bg-orange-600 animate-bounce' : 'bg-blue-600 hover:bg-blue-700'} 
                                dark:bg-gray-800 dark:hover:bg-gray-700 text-white shadow-lg ring-4 ring-white dark:ring-gray-700 z-10
@@ -4193,7 +4193,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       </div>
       
       {/* Main content section - Mobile Responsive Layout */}
-      <div className="w-full max-w-full mx-auto pb-20 sm:pb-4 px-1 sm:px-4 lg:px-6 mt-2 overflow-x-hidden">
+      <div className="w-full max-w-full mx-auto pb-20 sm:pb-4 px-2 sm:px-4 lg:px-6 mt-2 overflow-x-hidden box-border">
         <div className="flex flex-col lg:grid lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
           {/* Main Content Column */}
           <div className="w-full lg:col-span-2 space-y-3 sm:space-y-4 lg:space-y-6">

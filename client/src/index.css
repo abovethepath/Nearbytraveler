@@ -93,6 +93,19 @@ body {
   box-sizing: border-box;
 }
 
+/* Profile page - prevent any overflow issues on mobile */
+.profile-page {
+  width: 100% !important;
+  max-width: 100vw !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+}
+
+.profile-page * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
 /* Fix common mobile overflow culprits */
 @media (max-width: 768px) {
   .container, main, section, article, div, nav, header, footer {

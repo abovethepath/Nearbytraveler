@@ -1521,22 +1521,22 @@ export default function Home() {
         <span className="text-base font-black bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Connect • Discover • Experience</span>
       </div>
 
-      <h1 className="text-4xl sm:text-5xl font-black leading-tight mb-8 px-2 drop-shadow-2xl">
+      <h1 className="text-3xl sm:text-5xl font-black leading-tight mb-8 px-2 drop-shadow-2xl">
         {effectiveUser?.userType === "business" ? (
           <>
             <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent animate-gradient drop-shadow-xl">Nearby Traveler</span>
             <br />
-            <span className="text-3xl sm:text-4xl text-gray-900 dark:text-white drop-shadow-lg">Connect Your Business</span>
+            <span className="text-2xl sm:text-4xl text-gray-900 dark:text-white drop-shadow-lg whitespace-nowrap">Connect Your Business</span>
             <br />
-            <span className="text-3xl sm:text-4xl text-gray-900 dark:text-white drop-shadow-lg">with Travelers & Locals</span>
+            <span className="text-2xl sm:text-4xl text-gray-900 dark:text-white drop-shadow-lg whitespace-nowrap">with Travelers & Locals</span>
           </>
         ) : (
           <>
             <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent animate-gradient drop-shadow-xl">Nearby Traveler</span>
             <br />
-            <span className="text-3xl sm:text-4xl text-gray-900 dark:text-white drop-shadow-lg">Connect with Travelers</span>
+            <span className="text-2xl sm:text-4xl text-gray-900 dark:text-white drop-shadow-lg whitespace-nowrap">Connect with Travelers</span>
             <br />
-            <span className="text-3xl sm:text-4xl text-gray-900 dark:text-white drop-shadow-lg">& Locals Worldwide</span>
+            <span className="text-2xl sm:text-4xl text-gray-900 dark:text-white drop-shadow-lg whitespace-nowrap">& Locals Worldwide</span>
           </>
         )}
       </h1>
