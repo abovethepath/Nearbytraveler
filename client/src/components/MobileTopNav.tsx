@@ -93,10 +93,10 @@ export function MobileTopNav() {
               type="button"
               aria-expanded={showDropdown}
               aria-controls="mobile-menu"
-              className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 touch-manipulation relative z-[1001]"
-              onPointerDown={(e) => {
-                e.preventDefault();
+              className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 relative z-[1001]"
+              onClick={(e) => {
                 e.stopPropagation();
+                console.log('Hamburger clicked, toggling dropdown');
                 setShowDropdown((s) => !s);
               }}
             >
@@ -110,10 +110,11 @@ export function MobileTopNav() {
           </div>
 
           {/* Right: Avatar - wrapped in button for reliable click handling */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 relative z-[1001]">
             <button
               type="button"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 console.log('Avatar clicked, navigating to profile:', currentUser?.id);
                 setShowDropdown(false);
                 currentUser?.id ? go(`/profile/${currentUser.id}`) : go("/profile");
@@ -121,7 +122,7 @@ export function MobileTopNav() {
               className="rounded-full focus:outline-none focus:ring-2 focus:ring-orange-400"
               aria-label="Go to profile"
             >
-              <Avatar className="w-9 h-9 cursor-pointer border-2 border-gray-200 dark:border-gray-700 hover:border-orange-400 transition-colors">
+              <Avatar className="w-9 h-9 cursor-pointer border-2 border-gray-200 dark:border-gray-700 hover:border-orange-400 transition-colors pointer-events-none">
                 <AvatarImage
                   src={currentUser?.profileImage || undefined}
                   alt={currentUser?.name || currentUser?.username || "User"}
