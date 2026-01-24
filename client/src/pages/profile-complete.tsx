@@ -9123,10 +9123,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <MessageCircle className="w-5 h-5 text-blue-600" />
-              Your City Chatrooms ({userChatrooms.length})
+              {isOwnProfile ? "Your City Chatrooms" : `${user?.username || "User"}'s City Chatrooms`} ({userChatrooms.length})
             </DialogTitle>
             <DialogDescription>
-              Chatrooms you've joined for your hometown and travel destinations
+              {isOwnProfile 
+                ? "Chatrooms you've joined for your hometown and travel destinations"
+                : `Chatrooms ${user?.username || "this user"} has joined`}
             </DialogDescription>
           </DialogHeader>
           

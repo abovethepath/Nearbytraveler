@@ -317,9 +317,16 @@ export default function CityChatroomsPage() {
         </div>
 
         {/* Chatrooms Grid - Mobile Responsive */}
+        {/* Sort chatrooms: user's joined chatrooms first, then others */}
         {chatrooms.length > 0 ? (
           <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {chatrooms.map((chatroom) => (
+            {[...chatrooms].sort((a, b) => {
+              // User's joined chatrooms come first
+              if (a.userIsMember && !b.userIsMember) return -1;
+              if (!a.userIsMember && b.userIsMember) return 1;
+              // Then sort by member count (most popular first)
+              return (b.memberCount || 0) - (a.memberCount || 0);
+            }).map((chatroom) => (
               <Card 
                 key={chatroom.id} 
                 className="group cursor-pointer transform hover:scale-105 transition-all duration-300 overflow-hidden relative bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl border-gray-200 dark:border-gray-700"

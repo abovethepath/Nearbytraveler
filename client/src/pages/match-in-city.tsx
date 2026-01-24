@@ -59,6 +59,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [filteredCities, setFilteredCities] = useState<any[]>([]);
   const [citySearchTerm, setCitySearchTerm] = useState('');
   const [newActivity, setNewActivity] = useState('');
+  const [isCitiesLoading, setIsCitiesLoading] = useState(true);
   const [editingActivityName, setEditingActivityName] = useState('');
 
   // Hero section visibility state (for after city selection)
@@ -252,6 +253,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   };
 
   const fetchAllCities = async () => {
+    setIsCitiesLoading(true);
     try {
       console.log('🏙️ MATCH: Fetching cities from city stats API...');
       const response = await fetch('/api/city-stats');
@@ -277,14 +279,19 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         
         // Store ALL cities - filtering happens in separate useEffect when userProfile loads
         setAllCities(citiesWithPhotos);
+        setFilteredCities(citiesWithPhotos); // Also set filtered cities immediately
         console.log('🏙️ MATCH: Cities loaded successfully:', citiesWithPhotos.length);
       } else {
         console.error('🏙️ MATCH: Failed to fetch cities from API');
         setAllCities([]);
+        setFilteredCities([]);
       }
     } catch (error) {
       console.error('🏙️ MATCH: Error loading cities:', error);
       setAllCities([]);
+      setFilteredCities([]);
+    } finally {
+      setIsCitiesLoading(false);
     }
   };
 
@@ -989,6 +996,16 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           </div>
 
           {/* Cities Grid - RESTORED BEAUTIFUL DESIGN */}
+          {isCitiesLoading ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mb-4"></div>
+              <p className="text-white text-lg">Loading cities...</p>
+            </div>
+          ) : filteredCities.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <p className="text-white text-lg">No cities found. Try a different search.</p>
+            </div>
+          ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredCities.map((city, index) => (
               <div 
@@ -1022,6 +1039,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
               </div>
             ))}
           </div>
+          )}
         </div>
       </div>
     );
