@@ -92,6 +92,42 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     enabled: !!user?.id
   });
 
+  // Fetch user's travel plans to get destination cities (user-scoped endpoint)
+  const { data: travelPlans } = useQuery<any[]>({
+    queryKey: ['/api/travel-plans', user?.id],
+    queryFn: () => fetch(`/api/travel-plans/${user?.id}`).then(res => res.json()),
+    enabled: !!user?.id
+  });
+
+  // Get user's relevant cities (hometown + travel destinations)
+  // Uses userProfile for complete data since auth user may have minimal fields
+  const getUserRelevantCities = () => {
+    const relevantCityNames: string[] = [];
+    
+    // Add hometown from profile (more complete data than auth user)
+    const profile: any = userProfile || user;
+    if (profile?.hometownCity) {
+      relevantCityNames.push(profile.hometownCity.toLowerCase());
+    }
+    
+    // Add current destination from profile
+    if (profile?.destinationCity) {
+      relevantCityNames.push(profile.destinationCity.toLowerCase());
+    }
+    
+    // Add all travel plan destinations (filtered by userId for safety)
+    if (travelPlans && Array.isArray(travelPlans)) {
+      travelPlans.forEach((plan: any) => {
+        // Only include plans that belong to current user
+        if (plan.destinationCity && plan.userId === user?.id) {
+          relevantCityNames.push(plan.destinationCity.toLowerCase());
+        }
+      });
+    }
+    
+    return [...new Set(relevantCityNames)]; // Remove duplicates
+  };
+
   // Fetch all cities on component mount
   useEffect(() => {
     // FORCE RESET - ensure we start with no city selected
@@ -109,14 +145,25 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     fetchAllCities();
   }, []);
   
-  // Show all cities - removed overly restrictive filter that broke the page
-  // Users can search to find their specific city
+  // Default to showing only user's hometown and travel destinations
   useEffect(() => {
-    if (allCities.length > 0) {
-      console.log('🏙️ MATCH: Showing all', allCities.length, 'cities');
-      setFilteredCities(allCities);
+    if (allCities.length > 0 && (user || userProfile)) {
+      const relevantCityNames = getUserRelevantCities();
+      console.log('🏙️ MATCH: User relevant cities:', relevantCityNames);
+      
+      if (relevantCityNames.length > 0) {
+        const userCities = allCities.filter(city => 
+          relevantCityNames.includes(city.city.toLowerCase())
+        );
+        console.log('🏙️ MATCH: Showing', userCities.length, 'user-relevant cities');
+        setFilteredCities(userCities);
+      } else {
+        // No hometown/destinations set - show empty with search prompt
+        console.log('🏙️ MATCH: No user cities found, showing empty');
+        setFilteredCities([]);
+      }
     }
-  }, [allCities]);
+  }, [allCities, user, userProfile, travelPlans]);
 
   // Fetch city activities when a city is selected
   useEffect(() => {
@@ -127,7 +174,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     }
   }, [selectedCity]);
 
-  // Filter cities based on search
+  // Filter cities based on search - search ALL cities when typing
   useEffect(() => {
     if (citySearchTerm) {
       const filtered = allCities.filter(city => 
@@ -137,9 +184,18 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       );
       setFilteredCities(filtered);
     } else {
-      setFilteredCities(allCities);
+      // When search is cleared, go back to showing only user's relevant cities
+      const relevantCityNames = getUserRelevantCities();
+      if (relevantCityNames.length > 0) {
+        const userCities = allCities.filter(city => 
+          relevantCityNames.includes(city.city.toLowerCase())
+        );
+        setFilteredCities(userCities);
+      } else {
+        setFilteredCities([]);
+      }
     }
-  }, [citySearchTerm, allCities]);
+  }, [citySearchTerm, allCities, user, userProfile, travelPlans]);
 
   // Hydrate initial selections from user profile
   useEffect(() => {
@@ -277,9 +333,9 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           gradient: gradientOptions[index % gradientOptions.length]
         }));
         
-        // Store ALL cities - filtering happens in separate useEffect when userProfile loads
+        // Store ALL cities - filtering happens in separate useEffect based on user data
         setAllCities(citiesWithPhotos);
-        setFilteredCities(citiesWithPhotos); // Also set filtered cities immediately
+        // Don't set filteredCities here - let the user-filter useEffect handle it
         console.log('🏙️ MATCH: Cities loaded successfully:', citiesWithPhotos.length);
       } else {
         console.error('🏙️ MATCH: Failed to fetch cities from API');
@@ -1003,7 +1059,16 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
             </div>
           ) : filteredCities.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20">
-              <p className="text-white text-lg">No cities found. Try a different search.</p>
+              <MapPin className="w-12 h-12 text-white/50 mb-4" />
+              <p className="text-white text-lg font-medium mb-2">
+                {citySearchTerm ? "No cities found matching your search" : "Your Cities"}
+              </p>
+              <p className="text-white/70 text-center max-w-md">
+                {citySearchTerm 
+                  ? "Try a different search term to find more cities"
+                  : "Use the search bar above to find any city and start matching with people there!"
+                }
+              </p>
             </div>
           ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
