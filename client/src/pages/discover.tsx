@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,40 @@ export default function DiscoverPage() {
   const { user } = useContext(AuthContext);
   const isMobile = useIsMobile();
   const isDesktop = useIsDesktop();
+  
+  // Fetch user profile for complete hometown/destination data
+  const { data: userProfile } = useQuery<any>({
+    queryKey: ['/api/users', user?.id],
+    enabled: !!user?.id
+  });
+
+  // Fetch user's travel plans for destination cities
+  const { data: travelPlans } = useQuery<any[]>({
+    queryKey: ['/api/travel-plans', user?.id],
+    queryFn: () => fetch(`/api/travel-plans/${user?.id}`).then(res => res.json()),
+    enabled: !!user?.id
+  });
+
+  // Get user's relevant cities (hometown + travel destinations)
+  const getUserRelevantCities = useMemo(() => {
+    const relevantCityNames: string[] = [];
+    const profile: any = userProfile || user;
+    
+    if (profile?.hometownCity) {
+      relevantCityNames.push(profile.hometownCity.toLowerCase());
+    }
+    if (profile?.destinationCity) {
+      relevantCityNames.push(profile.destinationCity.toLowerCase());
+    }
+    if (travelPlans && Array.isArray(travelPlans)) {
+      travelPlans.forEach((plan: any) => {
+        if (plan.destinationCity && plan.userId === user?.id) {
+          relevantCityNames.push(plan.destinationCity.toLowerCase());
+        }
+      });
+    }
+    return [...new Set(relevantCityNames)];
+  }, [user, userProfile, travelPlans]);
   
   // Hero section visibility state
   const [isHeroVisible, setIsHeroVisible] = useState<boolean>(() => {
@@ -81,16 +115,33 @@ export default function DiscoverPage() {
     return gradients[index % gradients.length];
   };
 
-  // Filter cities based on search
+  // Filter cities based on search or default to user's relevant cities
   console.log("Discover page - allCities:", allCities);
   console.log("Discover page - searchQuery:", searchQuery);
+  console.log("Discover page - userRelevantCities:", getUserRelevantCities);
 
-  const filtered = allCities.filter((city: CityStats) =>
-    city.city.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filtered = useMemo(() => {
+    if (searchQuery) {
+      // Search across ALL cities when user types
+      return allCities.filter((city: CityStats) =>
+        city.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (city.state && city.state.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (city.country && city.country.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+    } else {
+      // Default to user's hometown and travel destinations for faster loading
+      if (getUserRelevantCities.length > 0) {
+        return allCities.filter((city: CityStats) =>
+          getUserRelevantCities.includes(city.city.toLowerCase())
+        );
+      }
+      // No user cities - show empty with search prompt
+      return [];
+    }
+  }, [allCities, searchQuery, getUserRelevantCities]);
 
   // Sort cities to put Los Angeles Metro prominently at the top
-  const sortedCities = filtered.sort((a, b) => {
+  const sortedCities = [...filtered].sort((a, b) => {
     // Los Angeles Metro always goes first
     if (a.city === 'Los Angeles Metro') return -1;
     if (b.city === 'Los Angeles Metro') return 1;
@@ -321,6 +372,22 @@ export default function DiscoverPage() {
           </div>
 
 
+
+        {/* Empty state when no cities to show */}
+        {sortedCities.length === 0 && !statsLoading && (
+          <div className="flex flex-col items-center justify-center py-16 px-4">
+            <MapPin className="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4" />
+            <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              {searchQuery ? "No destinations found" : "Your Destinations"}
+            </h3>
+            <p className="text-gray-500 dark:text-gray-400 text-center max-w-md mb-6">
+              {searchQuery 
+                ? "Try a different search term to find more cities"
+                : "Use the search bar above to discover any city and explore what it has to offer!"
+              }
+            </p>
+          </div>
+        )}
 
         {/* FEATURED LOS ANGELES METRO - Airbnb-style featured card */}
         {sortedCities.some(city => city.city === 'Los Angeles Metro') && (
