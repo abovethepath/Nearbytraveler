@@ -5,7 +5,8 @@ import { Download } from 'lucide-react';
 
 export default function QRCodeGenerator() {
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
-  const signupUrl = `${window.location.origin}/join`;
+  // Always use production domain for QR codes
+  const signupUrl = 'https://nearbytraveler.org/join';
 
   useEffect(() => {
     // Generate high-quality QR code for printing

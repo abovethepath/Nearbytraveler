@@ -6,7 +6,8 @@ import { Download, Share, Globe } from 'lucide-react';
 
 export default function BusinessCard() {
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
-  const signupUrl = `${window.location.origin}/join`;
+  // Always use production domain for QR codes
+  const signupUrl = 'https://nearbytraveler.org/join';
 
   useEffect(() => {
     // Generate QR code for the signup URL

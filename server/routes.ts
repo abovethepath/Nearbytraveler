@@ -16901,10 +16901,9 @@ Questions? Just reply to this message. Welcome aboard!
         user = await storage.getUser(userId); // Refresh user data
       }
 
-      // Use proper external domain for QR codes (not localhost in development)
-      const host = process.env.REPLIT_DOMAINS ? process.env.REPLIT_DOMAINS.split(',')[0] : req.get('host');
-      const protocol = process.env.REPLIT_DOMAINS ? 'https' : req.protocol;
-      const signupUrl = `${protocol}://${host}/qr-signup?code=${user.referralCode}`;
+      // Always use production domain for QR codes to ensure consistent experience
+      // This prevents issues when accessed via dev server or Expo wrapped app
+      const signupUrl = `https://nearbytraveler.org/qr-signup?code=${user.referralCode}`;
       
       // Generate QR code as data URL
       const qrCodeDataUrl = await QRCode.toDataURL(signupUrl, {

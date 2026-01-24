@@ -50,7 +50,8 @@ export default function QRCodeCard() {
             
             if (cacheAge < ONE_DAY && code) {
               console.log('📦 QR: Using cached referral code');
-              const baseUrl = window.location.origin;
+              // Always use production domain for QR codes
+              const baseUrl = 'https://nearbytraveler.org';
               const url = `${baseUrl}/signup/qr/${code}`;
               setShareUrl(url);
               setLoading(false);
@@ -108,7 +109,8 @@ export default function QRCodeCard() {
         }));
 
         // Build the signup URL (route: /signup/qr/:code)
-        const baseUrl = window.location.origin;
+        // Always use production domain for QR codes to ensure they work consistently
+        const baseUrl = 'https://nearbytraveler.org';
         const url = `${baseUrl}/signup/qr/${data.referralCode}`;
         console.log('🔗 QR: Share URL:', url);
         setShareUrl(url);
