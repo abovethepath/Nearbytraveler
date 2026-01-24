@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Globe, Phone, Clock } from "lucide-react";
+import { MapPin, Globe, Phone, Clock, Tag } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentTravelDestination } from "@/lib/dateUtils";
@@ -226,18 +226,11 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
                   </Button>
                   <Button
                     variant="outline"
-                    className="flex-1 sm:flex-none border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    onClick={() =>
-                      setLocation(
-                        `/map?lat=${encodeURIComponent(
-                          b.currentLatitude ?? b.latitude ?? ""
-                        )}&lng=${encodeURIComponent(
-                          b.currentLongitude ?? b.longitude ?? ""
-                        )}`
-                      )
-                    }
+                    className="flex-1 sm:flex-none border-orange-300 dark:border-orange-600 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                    onClick={() => setLocation(`/business/${b.id}/offers`)}
                   >
-                    Directions
+                    <Tag className="h-4 w-4 mr-1" />
+                    Deals
                   </Button>
                 </div>
               </CardContent>
