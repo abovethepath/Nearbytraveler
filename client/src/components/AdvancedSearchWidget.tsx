@@ -280,7 +280,13 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
           {/* Search CTA Buttons */}
           <div className="flex gap-3 justify-center">
             <Button 
-              onClick={handleAdvancedSearch}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🔍 SEARCH BUTTON CLICKED - calling handleAdvancedSearch');
+                handleAdvancedSearch();
+              }}
               disabled={isAdvancedSearching}
               className="flex-1 sm:flex-none sm:min-w-[200px] bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white py-3 px-8 rounded-xl font-semibold text-lg shadow-lg transition-all duration-200 transform hover:scale-105"
               data-testid="button-search-top"
@@ -298,6 +304,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
               )}
             </Button>
             <Button 
+              type="button"
               onClick={clearAdvancedFilters}
               variant="outline"
               className="px-6 py-3 rounded-xl font-semibold text-lg border-2 hover:bg-gray-100 dark:hover:bg-gray-800"
@@ -607,13 +614,20 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
           {/* Action Buttons */}
           <div className="flex gap-2">
             <Button 
-              onClick={handleAdvancedSearch}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🔍 BOTTOM SEARCH BUTTON CLICKED - calling handleAdvancedSearch');
+                handleAdvancedSearch();
+              }}
               disabled={isAdvancedSearching}
               className="flex-1 bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600"
             >
               {isAdvancedSearching ? "Searching..." : "Search"}
             </Button>
             <Button 
+              type="button"
               onClick={clearAdvancedFilters}
               variant="outline"
             >
