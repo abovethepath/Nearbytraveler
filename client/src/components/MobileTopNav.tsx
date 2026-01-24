@@ -74,6 +74,7 @@ export function MobileTopNav() {
         document.body.style.overflow = prev;
       };
     }
+    return undefined;
   }, [showDropdown]);
 
   const go = (path: string) => {
@@ -112,25 +113,30 @@ export function MobileTopNav() {
             <Logo variant="navbar" />
           </div>
 
-          {/* Right: Avatar */}
+          {/* Right: Avatar - wrapped in button for reliable click handling */}
           <div className="flex items-center gap-3">
-            <Avatar
-              className="w-9 h-9 cursor-pointer border-2 border-gray-200 dark:border-gray-700"
+            <button
+              type="button"
               onClick={() => {
+                console.log('Avatar clicked, navigating to profile:', currentUser?.id);
                 setShowDropdown(false);
                 currentUser?.id ? go(`/profile/${currentUser.id}`) : go("/profile");
               }}
+              className="rounded-full focus:outline-none focus:ring-2 focus:ring-orange-400"
+              aria-label="Go to profile"
             >
-              <AvatarImage
-                src={currentUser?.profileImage || undefined}
-                alt={currentUser?.name || currentUser?.username || "User"}
-              />
-              <AvatarFallback className="text-xs bg-blue-500 text-white">
-                {currentUser?.name?.charAt(0)?.toUpperCase() ||
-                  currentUser?.username?.charAt(0)?.toUpperCase() ||
-                  "U"}
-              </AvatarFallback>
-            </Avatar>
+              <Avatar className="w-9 h-9 cursor-pointer border-2 border-gray-200 dark:border-gray-700 hover:border-orange-400 transition-colors">
+                <AvatarImage
+                  src={currentUser?.profileImage || undefined}
+                  alt={currentUser?.name || currentUser?.username || "User"}
+                />
+                <AvatarFallback className="text-xs bg-blue-500 text-white">
+                  {currentUser?.name?.charAt(0)?.toUpperCase() ||
+                    currentUser?.username?.charAt(0)?.toUpperCase() ||
+                    "U"}
+                </AvatarFallback>
+              </Avatar>
+            </button>
           </div>
         </div>
       </div>

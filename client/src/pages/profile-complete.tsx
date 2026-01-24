@@ -3709,7 +3709,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {/* Avatar + camera (bigger, no scrollbars) */}
             <div className="relative flex-shrink-0">
               <div 
-                className={`rounded-full bg-white dark:bg-gray-800 ring-4 ring-white dark:ring-gray-700 shadow-lg overflow-hidden ${!isOwnProfile && user?.profileImage ? 'cursor-pointer hover:ring-orange-400 transition-all' : ''}`}
+                className={`rounded-full border-4 border-white dark:border-gray-600 shadow-xl overflow-hidden ${!isOwnProfile && user?.profileImage ? 'cursor-pointer hover:border-orange-400 transition-all' : ''}`}
                 onClick={() => {
                   if (!isOwnProfile && user?.profileImage) {
                     setShowExpandedPhoto(true);
@@ -3738,10 +3738,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <label
                     htmlFor="avatar-upload-input"
                     aria-label="Change avatar"
-                    className={`absolute bottom-1 right-1
+                    className={`absolute bottom-2 right-2
                                h-10 w-10 sm:h-11 sm:w-11 rounded-full p-0 flex items-center justify-center cursor-pointer
-                               ${!user?.profileImage ? 'bg-orange-500 hover:bg-orange-600 animate-bounce' : 'bg-blue-600 hover:bg-blue-700'} 
-                               dark:bg-gray-800 dark:hover:bg-gray-700 text-white shadow-lg ring-4 ring-white dark:ring-gray-700 z-10
+                               ${!user?.profileImage ? 'bg-orange-500 hover:bg-orange-600 animate-bounce' : 'bg-gray-600 hover:bg-gray-500'} 
+                               text-white shadow-lg border-2 border-white z-10
                                ${uploadingPhoto ? 'pointer-events-none opacity-50' : ''}`}
                     data-testid="button-upload-avatar"
                   >
