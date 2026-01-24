@@ -6,6 +6,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { MessageCircle } from "lucide-react";
 import type { Message, User } from "@shared/schema";
 
+// Extended message type that includes embedded user data from API
+interface MessageWithUsers extends Message {
+  senderUser?: { id: number; username: string; name: string; profileImage: string | null };
+  receiverUser?: { id: number; username: string; name: string; profileImage: string | null };
+}
+
 interface MessagesWidgetProps {
   userId?: number;
 }
@@ -13,15 +19,11 @@ interface MessagesWidgetProps {
 function MessagesWidget({ userId }: MessagesWidgetProps) {
   const [, setLocation] = useLocation();
 
-  const { data: messages = [], isLoading: messagesLoading } = useQuery<Message[]>({
+  const { data: messages = [], isLoading: messagesLoading } = useQuery<MessageWithUsers[]>({
     queryKey: [`/api/messages/${userId}`],
     enabled: !!userId,
     staleTime: 0, // Always fetch fresh data
     refetchOnWindowFocus: true,
-  });
-
-  const { data: users = [] } = useQuery<User[]>({
-    queryKey: ["/api/users"],
   });
 
   return (
@@ -87,7 +89,8 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
 
             return displayMessages.map((message, index) => {
               const otherUserId = message.senderId === userId ? message.receiverId : message.senderId;
-              const otherUser = users.find(u => u.id === otherUserId);
+              // Use embedded user data from API response (senderUser/receiverUser)
+              const otherUser = message.senderId === userId ? message.receiverUser : message.senderUser;
               const isFromMe = message.senderId === userId;
               const isYourTurn = !isFromMe;
             
@@ -96,8 +99,8 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
                   key={message.id || index} 
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (otherUser) {
-                      setLocation(`/messages?user=${otherUser.id}`);
+                    if (otherUserId) {
+                      setLocation(`/messages?user=${otherUserId}`);
                     }
                   }}
                   className={`cursor-pointer rounded-2xl p-4 transition-all duration-300 ${
