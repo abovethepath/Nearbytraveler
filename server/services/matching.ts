@@ -208,17 +208,19 @@ export class TravelMatchingService {
   }
 
   /**
-   * Calculate interest-based compatibility (includes private interests)
+   * Calculate interest-based compatibility (includes private interests and custom interests)
    */
   private calculateInterestCompatibility(user1: User, user2: User) {
-    // Combine regular and private interests for comprehensive matching
+    // Combine regular, private, and custom interests for comprehensive matching
     const user1Interests = [
       ...this.parseInterests(user1.interests),
-      ...this.parseInterests(user1.privateInterests)
+      ...this.parseInterests(user1.privateInterests),
+      ...this.parseCustomInterests(user1.customInterests)
     ];
     const user2Interests = [
       ...this.parseInterests(user2.interests),
-      ...this.parseInterests(user2.privateInterests)
+      ...this.parseInterests(user2.privateInterests),
+      ...this.parseCustomInterests(user2.customInterests)
     ];
     
     // Top Choices for Most Travelers - these get bonus points for matching
@@ -716,6 +718,11 @@ export class TravelMatchingService {
     return interests.map(i => i.trim().toLowerCase());
   }
 
+  private parseCustomInterests(customInterests: string | null | undefined): string[] {
+    if (!customInterests || typeof customInterests !== 'string') return [];
+    return customInterests.split(',').map(i => i.trim().toLowerCase()).filter(Boolean);
+  }
+
   private areInterestsSimilar(interest1: string, interest2: string): boolean {
     const int1 = interest1.toLowerCase();
     const int2 = interest2.toLowerCase();
@@ -831,14 +838,16 @@ export class TravelMatchingService {
   }
 
   private getSharedInterests(user1: User, user2: User): string[] {
-    // Combine regular and private interests for comprehensive matching (same as calculateInterestCompatibility)
+    // Combine regular, private, and custom interests for comprehensive matching (same as calculateInterestCompatibility)
     const user1Interests = [
       ...this.parseInterests(user1.interests),
-      ...this.parseInterests(user1.privateInterests)
+      ...this.parseInterests(user1.privateInterests),
+      ...this.parseCustomInterests(user1.customInterests)
     ];
     const user2Interests = [
       ...this.parseInterests(user2.interests),
-      ...this.parseInterests(user2.privateInterests)
+      ...this.parseInterests(user2.privateInterests),
+      ...this.parseCustomInterests(user2.customInterests)
     ];
     
     return user1Interests.filter(interest => 
