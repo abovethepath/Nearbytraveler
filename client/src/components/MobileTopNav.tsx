@@ -88,16 +88,23 @@ export function MobileTopNav() {
         <div className="flex items-center justify-between h-16 px-4">
           {/* Left: Hamburger */}
           <div className="flex items-center">
-            <Button
+            <button
+              type="button"
               aria-expanded={showDropdown}
               aria-controls="mobile-menu"
-              variant="ghost"
-              size="sm"
-              className="w-9 h-9 p-0"
-              onClick={() => setShowDropdown((s) => !s)}
+              className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 touch-manipulation relative z-[1001]"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setShowDropdown((s) => !s);
+              }}
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                setShowDropdown((s) => !s);
+              }}
             >
-              {showDropdown ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </Button>
+              {showDropdown ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
           </div>
 
           {/* Center: Logo */}
