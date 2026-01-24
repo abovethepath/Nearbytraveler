@@ -4742,62 +4742,65 @@ Questions? Just reply to this message. Welcome aboard!
           // COMPREHENSIVE SEARCH: Search ALL profile fields, related tables, and "Things I Want To Do In..." sections
           const pattern = `%${searchTerm.toLowerCase()}%`;
           
-          // Single raw SQL condition that searches EVERY user-visible field across users table and related tables
+          // Comprehensive search using Drizzle's ilike for text fields
+          // Using only Drizzle column references that actually exist in the schema
+          // PLUS array field searching using SQL for interests, activities, etc.
           whereConditions.push(
-            sql`(
-              LOWER(${users.name}) LIKE ${pattern} OR
-              LOWER(${users.username}) LIKE ${pattern} OR
-              LOWER(${users.bio}) LIKE ${pattern} OR
-              LOWER(${users.customInterests}) LIKE ${pattern} OR
-              LOWER(${users.customActivities}) LIKE ${pattern} OR
-              LOWER(${users.customEvents}) LIKE ${pattern} OR
-              LOWER(${users.hometownCity}) LIKE ${pattern} OR
-              LOWER(${users.destinationCity}) LIKE ${pattern} OR
-              LOWER(${users.businessName}) LIKE ${pattern} OR
-              LOWER(${users.businessDescription}) LIKE ${pattern} OR
-              LOWER(${users.gender}) LIKE ${pattern} OR
-              LOWER(${users.militaryStatus}) LIKE ${pattern} OR
-              LOWER(${users.secretActivities}) LIKE ${pattern} OR
-              LOWER(${users.travelWhy}) LIKE ${pattern} OR
-              LOWER(${users.travelHow}) LIKE ${pattern} OR
-              LOWER(${users.travelBudget}) LIKE ${pattern} OR
-              LOWER(${users.travelGroup}) LIKE ${pattern} OR
-              LOWER(${users.services}) LIKE ${pattern} OR
-              LOWER(${users.specialOffers}) LIKE ${pattern} OR
-              LOWER(${users.targetCustomers}) LIKE ${pattern} OR
-              LOWER(${users.certifications}) LIKE ${pattern} OR
-              LOWER(${users.businessType}) LIKE ${pattern} OR
-              LOWER(${users.customStatus}) LIKE ${pattern} OR
-              LOWER(${users.locationBasedStatus}) LIKE ${pattern} OR
-              LOWER(COALESCE(array_to_string(${users.interests}, ','), '')) LIKE ${pattern} OR
-              LOWER(COALESCE(array_to_string(${users.activities}, ','), '')) LIKE ${pattern} OR
-              LOWER(COALESCE(array_to_string(${users.events}, ','), '')) LIKE ${pattern} OR
-              LOWER(COALESCE(array_to_string(${users.travelerTypes}, ','), '')) LIKE ${pattern} OR
-              LOWER(COALESCE(array_to_string(${users.languages}, ','), '')) LIKE ${pattern} OR
-              LOWER(COALESCE(array_to_string(${users.languagesSpoken}, ','), '')) LIKE ${pattern} OR
-              LOWER(COALESCE(array_to_string(${users.countriesVisited}, ','), '')) LIKE ${pattern} OR
-              LOWER(COALESCE(array_to_string(${users.sexualPreference}, ','), '')) LIKE ${pattern} OR
-              LOWER(COALESCE(array_to_string(${users.travelWhat}, ','), '')) LIKE ${pattern} OR
-              LOWER(COALESCE(array_to_string(${users.travelStyle}, ','), '')) LIKE ${pattern} OR
-              LOWER(COALESCE(array_to_string(${users.localExpertise}, ','), '')) LIKE ${pattern} OR
-              LOWER(COALESCE(array_to_string(${users.localActivities}, ','), '')) LIKE ${pattern} OR
-              LOWER(COALESCE(array_to_string(${users.localEvents}, ','), '')) LIKE ${pattern} OR
-              LOWER(COALESCE(array_to_string(${users.plannedEvents}, ','), '')) LIKE ${pattern} OR
-              LOWER(COALESCE(array_to_string(${users.defaultTravelInterests}, ','), '')) LIKE ${pattern} OR
-              LOWER(COALESCE(array_to_string(${users.defaultTravelActivities}, ','), '')) LIKE ${pattern} OR
-              LOWER(COALESCE(array_to_string(${users.defaultTravelEvents}, ','), '')) LIKE ${pattern} OR
-              LOWER(COALESCE(array_to_string(${users.tags}, ','), '')) LIKE ${pattern} OR
-              EXISTS (
+            or(
+              // Text fields using ilike - only fields that exist in the schema
+              ilike(users.name, pattern),
+              ilike(users.username, pattern),
+              ilike(users.bio, pattern),
+              ilike(users.customInterests, pattern),
+              ilike(users.customActivities, pattern),
+              ilike(users.customEvents, pattern),
+              ilike(users.hometownCity, pattern),
+              ilike(users.destinationCity, pattern),
+              ilike(users.businessName, pattern),
+              ilike(users.businessDescription, pattern),
+              ilike(users.gender, pattern),
+              ilike(users.secretActivities, pattern),
+              ilike(users.travelWhy, pattern),
+              ilike(users.travelHow, pattern),
+              ilike(users.travelBudget, pattern),
+              ilike(users.travelGroup, pattern),
+              ilike(users.services, pattern),
+              ilike(users.specialOffers, pattern),
+              ilike(users.targetCustomers, pattern),
+              ilike(users.certifications, pattern),
+              ilike(users.businessType, pattern),
+              ilike(users.customStatus, pattern),
+              ilike(users.locationBasedStatus, pattern),
+              // Array fields - using array_to_string for comprehensive search
+              sql`LOWER(COALESCE(array_to_string(${users.interests}, ' '), '')) LIKE ${pattern}`,
+              sql`LOWER(COALESCE(array_to_string(${users.activities}, ' '), '')) LIKE ${pattern}`,
+              sql`LOWER(COALESCE(array_to_string(${users.events}, ' '), '')) LIKE ${pattern}`,
+              sql`LOWER(COALESCE(array_to_string(${users.travelerTypes}, ' '), '')) LIKE ${pattern}`,
+              sql`LOWER(COALESCE(array_to_string(${users.languages}, ' '), '')) LIKE ${pattern}`,
+              sql`LOWER(COALESCE(array_to_string(${users.languagesSpoken}, ' '), '')) LIKE ${pattern}`,
+              sql`LOWER(COALESCE(array_to_string(${users.countriesVisited}, ' '), '')) LIKE ${pattern}`,
+              sql`LOWER(COALESCE(array_to_string(${users.travelWhat}, ' '), '')) LIKE ${pattern}`,
+              sql`LOWER(COALESCE(array_to_string(${users.travelStyle}, ' '), '')) LIKE ${pattern}`,
+              sql`LOWER(COALESCE(array_to_string(${users.localExpertise}, ' '), '')) LIKE ${pattern}`,
+              sql`LOWER(COALESCE(array_to_string(${users.localActivities}, ' '), '')) LIKE ${pattern}`,
+              sql`LOWER(COALESCE(array_to_string(${users.localEvents}, ' '), '')) LIKE ${pattern}`,
+              sql`LOWER(COALESCE(array_to_string(${users.plannedEvents}, ' '), '')) LIKE ${pattern}`,
+              sql`LOWER(COALESCE(array_to_string(${users.defaultTravelInterests}, ' '), '')) LIKE ${pattern}`,
+              sql`LOWER(COALESCE(array_to_string(${users.defaultTravelActivities}, ' '), '')) LIKE ${pattern}`,
+              sql`LOWER(COALESCE(array_to_string(${users.defaultTravelEvents}, ' '), '')) LIKE ${pattern}`,
+              sql`LOWER(COALESCE(array_to_string(${users.tags}, ' '), '')) LIKE ${pattern}`,
+              // Also search user_city_interests and user_event_interests tables
+              sql`EXISTS (
                 SELECT 1 FROM user_city_interests 
-                WHERE user_city_interests.user_id = users.id 
+                WHERE user_city_interests.user_id = ${users.id}
                 AND (LOWER(user_city_interests.activity_name) LIKE ${pattern} OR LOWER(user_city_interests.city_name) LIKE ${pattern})
-              ) OR
-              EXISTS (
+              )`,
+              sql`EXISTS (
                 SELECT 1 FROM user_event_interests 
-                WHERE user_event_interests.user_id = users.id 
+                WHERE user_event_interests.user_id = ${users.id}
                 AND (LOWER(user_event_interests.event_title) LIKE ${pattern} OR LOWER(user_event_interests.city_name) LIKE ${pattern})
-              )
-            )`
+              )`
+            )
           );
         }
         
