@@ -981,6 +981,13 @@ function Router() {
       return <BusinessOffers businessId={businessId} />;
     }
 
+    // Handle business profile routes for authenticated users
+    if (location.startsWith('/business/') && !location.includes('/offers')) {
+      const businessId = location.split('/')[2];
+      console.log('🏢 BUSINESS PROFILE ROUTE (authenticated): businessId:', businessId);
+      return <ProfileComplete userId={parseInt(businessId)} />;
+    }
+
     switch (location) {
       case '/events':
         return <Events />;
