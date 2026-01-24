@@ -133,6 +133,27 @@ body {
   .rounded-full {
     flex-shrink: 0;
   }
+  
+  /* User card avatar protection on mobile */
+  .user-card {
+    overflow: visible !important;
+  }
+  
+  .user-card > div:first-child {
+    overflow: visible !important;
+  }
+  
+  /* Ensure avatar containers don't clip circles */
+  .user-card [class*="justify-center"] {
+    overflow: visible !important;
+  }
+  
+  /* Make avatars slightly smaller on very small screens */
+  .user-card .w-24.h-24,
+  .user-card .w-20.h-20 {
+    width: 4.5rem !important;
+    height: 4.5rem !important;
+  }
 }
 
 /* Fix common mobile overflow culprits */

@@ -131,22 +131,22 @@ export default function UserCard({
     >
       {/* Individual User Gradient Banner - keeps user's personal color */}
       <div 
-        className={`${compact ? 'h-12' : 'h-24'} relative overflow-hidden flex-shrink-0`}
+        className={`${compact ? 'h-12' : 'h-24'} relative overflow-visible flex-shrink-0`}
         style={{ background: getUserGradient() }}
       >
         {/* Subtle overlay for depth */}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10"></div>
       </div>
       
-      <CardContent className={`${compact ? 'p-2 pb-3 -mt-6' : 'p-4 pb-5 -mt-12'} flex flex-col flex-grow min-h-0`}>
+      <CardContent className={`${compact ? 'p-2 pb-3 -mt-6' : 'p-4 pb-5 -mt-12'} flex flex-col flex-grow min-h-0 overflow-visible`}>
         {/* User Info - Content that can vary */}
-        <div className={`${compact ? 'space-y-1' : 'space-y-3'} flex flex-col`}>
+        <div className={`${compact ? 'space-y-1' : 'space-y-3'} flex flex-col overflow-visible`}>
           {/* Large Circular Avatar with enhanced ring */}
-          <div className="flex justify-center">
+          <div className="flex justify-center overflow-visible">
             <SimpleAvatar 
               user={user} 
               size="lg" 
-              className={`ring-4 ring-white dark:ring-gray-800 shadow-2xl ${compact ? 'w-12 h-12' : 'w-24 h-24'} border-2 border-white/50 dark:border-gray-700/50`}
+              className={`ring-4 ring-white dark:ring-gray-800 shadow-2xl ${compact ? 'w-12 h-12' : 'w-20 h-20 sm:w-24 sm:h-24'} border-2 border-white/50 dark:border-gray-700/50 flex-shrink-0`}
             />
           </div>
           
