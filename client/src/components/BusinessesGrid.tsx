@@ -6,6 +6,7 @@ import { MapPin, Globe, Phone, Clock, Tag } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentTravelDestination } from "@/lib/dateUtils";
+import { getApiBaseUrl } from "@/lib/queryClient";
 
 interface BusinessesGridProps {
   currentLocation?: {
@@ -70,7 +71,7 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
           country: location.country || ''
         });
         
-        const response = await fetch(`/api/businesses?${params}`);
+        const response = await fetch(`${getApiBaseUrl()}/api/businesses?${params}`);
         if (!response.ok) throw new Error(`Failed to fetch businesses for ${cityName}`);
         const data = await response.json();
         console.log(`BusinessesGrid - ${location.type} businesses API response:`, data.length, 'businesses for', cityName);

@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import Logo from "@/components/logo";
 
 export default function JoinNowWidget() {
@@ -47,7 +47,7 @@ export default function JoinNowWidget() {
 
     setUsernameChecking(true);
     try {
-      const response = await fetch(`/api/check-username/${encodeURIComponent(username)}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/check-username/${encodeURIComponent(username)}`);
       
       if (response.ok) {
         const result = await response.json();

@@ -9,7 +9,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { ChevronDown, Search, X, Users, Filter, MapPin } from "lucide-react";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
 import type { User } from "@shared/schema";
 import EventCard from "@/components/event-card";
 import { Calendar, UserPlus } from "lucide-react";
@@ -125,7 +125,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
       console.log('🔍 Search params:', params.toString());
 
       // Search users
-      const usersResponse = await fetch(`/api/search-users?${params}`);
+      const usersResponse = await fetch(`${getApiBaseUrl()}/api/search-users?${params}`);
       const usersData = await usersResponse.json();
       console.log('🔍 Search results:', usersData);
       setAdvancedSearchResults(usersData.users || []);
@@ -135,7 +135,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
       if (advancedFilters.search) eventParams.append('search', advancedFilters.search);
       if (locationFilter.city) eventParams.append('city', locationFilter.city);
 
-      const eventsResponse = await fetch(`/api/search-events?${eventParams}`);
+      const eventsResponse = await fetch(`${getApiBaseUrl()}/api/search-events?${eventParams}`);
       const eventsData = await eventsResponse.json();
       console.log('🔍 Event search results:', eventsData);
       setEventSearchResults(eventsData || []);

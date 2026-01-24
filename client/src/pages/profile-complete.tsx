@@ -1195,7 +1195,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     queryKey: ['/api/users', effectiveUserId, 'chatroom-participation'],
     queryFn: async () => {
       if (!effectiveUserId) return [];
-      const response = await fetch(`/api/users/${effectiveUserId}/chatroom-participation`);
+      const response = await fetch(`${getApiBaseUrl()}/api/users/${effectiveUserId}/chatroom-participation`);
       if (!response.ok) return [];
       const data = await response.json();
       return Array.isArray(data) ? data : [];
@@ -1209,7 +1209,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     queryKey: [`/api/compatibility/${currentUser?.id}/${effectiveUserId}`],
     queryFn: async () => {
       if (!currentUser?.id || !effectiveUserId || isOwnProfile) return null;
-      const response = await fetch(`/api/compatibility/${currentUser.id}/${effectiveUserId}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/compatibility/${currentUser.id}/${effectiveUserId}`);
       if (!response.ok) return null;
       return response.json();
     },
@@ -1228,7 +1228,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     queryKey: [`/api/connections/degree/${currentUser?.id}/${effectiveUserId}`],
     queryFn: async () => {
       if (!currentUser?.id || !effectiveUserId || isOwnProfile) return null;
-      const response = await fetch(`/api/connections/degree/${currentUser.id}/${effectiveUserId}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/connections/degree/${currentUser.id}/${effectiveUserId}`);
       if (!response.ok) return null;
       return response.json();
     },
@@ -1513,7 +1513,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         return [];
       }
       console.log('Profile - Fetching joined events for user:', effectiveUserId);
-      const response = await fetch(`/api/users/${effectiveUserId}/all-events`);
+      const response = await fetch(`${getApiBaseUrl()}/api/users/${effectiveUserId}/all-events`);
       if (!response.ok) throw new Error('Failed to fetch user events');
       const data = await response.json();
       console.log('Profile User Events API response:', data.length, 'joined events for user', effectiveUserId);
@@ -1790,7 +1790,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Update reference mutation
   const updateReference = useMutation({
     mutationFn: async ({ referenceId, content, experience }: { referenceId: number; content: string; experience: string }) => {
-      const response = await fetch(`/api/references/${referenceId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/references/${referenceId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content, experience }),
@@ -1845,7 +1845,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       
       console.log('📤 POSTING REFERENCE:', payload);
       
-      const response = await fetch('/api/user-references', {
+      const response = await fetch(`${getApiBaseUrl()}/api/user-references`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1965,7 +1965,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           reader.onload = async () => {
             try {
               const base64Data = reader.result as string;
-              const response = await fetch(`/api/users/${effectiveUserId}/photos`, {
+              const response = await fetch(`${getApiBaseUrl()}/api/users/${effectiveUserId}/photos`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
@@ -2000,7 +2000,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           reader.onload = async () => {
             try {
               const base64Data = reader.result as string;
-              const response = await fetch(`/api/users/${effectiveUserId}/photos`, {
+              const response = await fetch(`${getApiBaseUrl()}/api/users/${effectiveUserId}/photos`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
@@ -2051,7 +2051,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Photo deletion mutation
   const deletePhoto = useMutation({
     mutationFn: async (photoId: number) => {
-      const response = await fetch(`/api/photos/${photoId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/photos/${photoId}`, {
         method: 'DELETE',
       });
       if (!response.ok) throw new Error('Failed to delete photo');
@@ -2081,7 +2081,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Travel plan deletion mutation
   const deleteTravelPlan = useMutation({
     mutationFn: async (planId: number) => {
-      const response = await fetch(`/api/travel-plans/${planId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/travel-plans/${planId}`, {
         method: 'DELETE',
       });
       if (!response.ok) throw new Error('Failed to delete travel plan');
@@ -2688,7 +2688,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     try {
       console.log('Starting cover photo upload...', base64Data.length);
       
-      const response = await fetch(`/api/users/${effectiveUserId}/cover-photo`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/users/${effectiveUserId}/cover-photo`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -2815,7 +2815,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     mutationFn: async (data: z.infer<typeof travelPlanSchema>) => {
       if (!editingTravelPlan) throw new Error("No travel plan selected");
       
-      const response = await fetch(`/api/travel-plans/${editingTravelPlan.id}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/travel-plans/${editingTravelPlan.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -7821,7 +7821,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   onBlur={async (e) => {
                     const value = e.target.value;
                     try {
-                      const response = await fetch(`/api/users/${user.id}`, {
+                      const response = await fetch(`${getApiBaseUrl()}/api/users/${user.id}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ streetAddress: value })
@@ -7840,7 +7840,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   onBlur={async (e) => {
                     const value = e.target.value;
                     try {
-                      const response = await fetch(`/api/users/${user.id}`, {
+                      const response = await fetch(`${getApiBaseUrl()}/api/users/${user.id}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ zipCode: value })
@@ -8787,7 +8787,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         try {
                           setUploadingPhoto(true);
                           
-                          const response = await fetch(`/api/users/${effectiveUserId}/cover-photo`, {
+                          const response = await fetch(`${getApiBaseUrl()}/api/users/${effectiveUserId}/cover-photo`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ imageData: photo.imageUrl }),

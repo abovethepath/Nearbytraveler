@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/App";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 
 export default function QuickLogin() {
   const [userId, setUserId] = useState("108");
@@ -19,7 +19,7 @@ export default function QuickLogin() {
   const handleLogin = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/quick-login/${userId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/quick-login/${userId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

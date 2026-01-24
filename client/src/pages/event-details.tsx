@@ -10,7 +10,7 @@ import { MapPin, Calendar, Clock, Users, User, Info, Share2, Copy, Check, ArrowL
 import { UniversalBackButton } from "@/components/UniversalBackButton";
 import { type Event, type EventParticipant, type User as UserType } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { ParticipantAvatars } from "@/components/ParticipantAvatars";
 import { InstagramShare } from "@/components/InstagramShare";
 
@@ -42,7 +42,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
     retry: 1, // Reduce retries for faster loading
     queryFn: async () => {
       console.log(`🎪 Fetching event details for ID: ${eventId}`);
-      const response = await fetch(`/api/events/${eventId}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/events/${eventId}`);
       if (!response.ok) {
         console.error(`🎪 Event ${eventId} not found in database - might be external event`);
         throw new Error(`Event not found: ${response.status}`);

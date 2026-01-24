@@ -20,6 +20,7 @@ import { CityStatsWidget } from "@/components/CityStatsWidget";
 import { CityMap } from "@/components/CityMap";
 import { SecretExperiencesWidget } from "@/components/SecretExperiencesWidget";
 import { useAuth } from "@/App";
+import { getApiBaseUrl } from "@/lib/queryClient";
 import type { User, Event } from "@shared/schema";
 
 // Removed all city images and photo gallery functions per user request
@@ -100,7 +101,7 @@ export default function CityPage({ cityName }: CityPageProps) {
       if (countryName) params.set('country', countryName);
       
       const queryString = params.toString() ? `?${params.toString()}` : '';
-      const response = await fetch(`/api/city/${encodeURIComponent(cityName)}/users${queryString}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/city/${encodeURIComponent(cityName)}/users${queryString}`);
       if (!response.ok) throw new Error('Failed to fetch users');
       const allUsers = await response.json();
       
@@ -130,7 +131,7 @@ export default function CityPage({ cityName }: CityPageProps) {
         params.set('userId', currentUser.id.toString());
       }
       
-      const response = await fetch(`/api/events?${params.toString()}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/events?${params.toString()}`);
       if (!response.ok) throw new Error('Failed to fetch events');
       return response.json();
     },

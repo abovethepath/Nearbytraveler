@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { MapPin, Users, Globe, Plane, Home, Star } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { User } from "@shared/schema";
+import { getApiBaseUrl } from "@/lib/queryClient";
 
 interface EnhancedDiscoveryProps {
   className?: string;
@@ -104,7 +105,7 @@ export default function EnhancedDiscovery({ className = "" }: EnhancedDiscoveryP
           if (user.id === userId) return { ...user, mutualConnectionsCount: 0 };
           
           try {
-            const response = await fetch(`/api/mutual-connections/${userId}/${user.id}`);
+            const response = await fetch(`${getApiBaseUrl()}/api/mutual-connections/${userId}/${user.id}`);
             const mutualConnections = await response.json();
             return {
               ...user,

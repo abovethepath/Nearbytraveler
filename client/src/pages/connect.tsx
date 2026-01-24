@@ -20,7 +20,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { Users, Heart, MapPin, Calendar as CalendarIcon, TrendingUp, ArrowLeft, Edit, ChevronDown, ChevronRight, X, MessageCircle } from "lucide-react";
 import { format } from "date-fns";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { getAllInterests, getAllActivities, getAllLanguages, validateSelections, getMostPopularInterests } from "../../../shared/base-options";
 import { BASE_TRAVELER_TYPES } from "../../../shared/base-options";
 import { getInterestStyle, getActivityStyle, getEventStyle } from "@/lib/topChoicesUtils";
@@ -163,7 +163,7 @@ export default function ConnectPage() {
       });
       
       console.log('ConnectModal searching for:', searchLocation.trim());
-      const response = await fetch(`/api/users?${params}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/users?${params}`, {
         headers: {
           'X-User-ID': '34'
         }

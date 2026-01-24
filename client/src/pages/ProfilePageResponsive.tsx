@@ -1,6 +1,7 @@
 import ResponsiveNavbar from "@/components/ResponsiveNavbar";
 import { useAuth } from "@/App";
 import { useEffect, useState } from "react";
+import { getApiBaseUrl } from "@/lib/queryClient";
 
 export default function ProfilePageResponsive() {
   const authContext = useAuth();
@@ -23,7 +24,7 @@ export default function ProfilePageResponsive() {
         }
         
         // Fetch fresh data from API
-        const response = await fetch('/api/auth/user', {
+        const response = await fetch(`${getApiBaseUrl()}/api/auth/user`, {
           credentials: 'include'
         });
         

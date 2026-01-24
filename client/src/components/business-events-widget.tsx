@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Calendar, Clock, MapPin, Users, Edit, Plus, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { formatDateForDisplay } from "@/lib/dateUtils";
 import type { Event } from "@shared/schema";
 
@@ -24,7 +24,7 @@ export default function BusinessEventsWidget({ userId }: BusinessEventsWidgetPro
   const { data: businessEvents = [], isLoading } = useQuery({
     queryKey: [`/api/events/organizer/${userId}`],
     queryFn: async () => {
-      const response = await fetch(`/api/events/organizer/${userId}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/events/organizer/${userId}`);
       if (!response.ok) throw new Error('Failed to fetch business events');
       return response.json();
     }

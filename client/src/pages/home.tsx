@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { AuthContext } from "@/App";
 import { useIsMobile, useIsDesktop } from "@/hooks/useDeviceType";
+import { getApiBaseUrl } from "@/lib/queryClient";
 import UserCard from "@/components/user-card";
 import EventCard from "@/components/event-card";
 import MessagePreview from "@/components/message-preview";
@@ -390,7 +391,7 @@ export default function Home() {
         try {
           const userId = effectiveUser?.id;
           const userParam = userId ? `&userId=${userId}` : '';
-          const response = await fetch(`/api/events?city=${encodeURIComponent(city)}${userParam}`);
+          const response = await fetch(`${getApiBaseUrl()}/api/events?city=${encodeURIComponent(city)}${userParam}`);
           const cityEvents = await response.json();
           allEvents.push(...cityEvents);
         } catch (error) {
@@ -704,7 +705,7 @@ export default function Home() {
         matched: 'true',
         userId: matchedUsersUserId.toString()
       });
-      const response = await fetch(`/api/users?${params}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/users?${params}`);
       if (!response.ok) throw new Error('Failed to fetch matched users');
       const data = await response.json();
       return data;
@@ -722,7 +723,7 @@ export default function Home() {
           // Clear any cached data first
           localStorage.removeItem('travelconnect_user');
 
-          const response = await fetch(`/api/users/${user.id}?t=${Date.now()}`);
+          const response = await fetch(`${getApiBaseUrl()}/api/users/${user.id}?t=${Date.now()}`);
           if (response.ok) {
             const freshUser = await response.json();
             console.log('Fresh user data from database:', freshUser);
@@ -805,7 +806,7 @@ export default function Home() {
         console.log(`Fetching events for ${location.type}:`, cityName);
 
         try {
-          const response = await fetch(`/api/events?city=${encodeURIComponent(cityName)}`);
+          const response = await fetch(`${getApiBaseUrl()}/api/events?city=${encodeURIComponent(cityName)}`);
           if (!response.ok) throw new Error(`Failed to fetch events for ${cityName}`);
           const data = await response.json();
           console.log(`${location.type} Events API response:`, data.length, 'events for', cityName);
@@ -936,7 +937,7 @@ export default function Home() {
         console.log(`Fetching quick meetups for ${location.type}:`, cityName);
 
         try {
-          const response = await fetch(`/api/quick-meets?city=${encodeURIComponent(cityName)}`);
+          const response = await fetch(`${getApiBaseUrl()}/api/quick-meets?city=${encodeURIComponent(cityName)}`);
           if (!response.ok) throw new Error(`Failed to fetch quick meets for ${cityName}`);
           const data = await response.json();
           console.log(`${location.type} Quick Meets API response:`, data.length, 'meets for', cityName);
@@ -974,7 +975,7 @@ export default function Home() {
         // If there's a specific location filter, use that
         if (searchLocation && searchLocation.trim() !== '') {
           console.log('Fetching users for specific location filter:', searchLocation);
-          const response = await fetch(`/api/users/search-by-location?location=${encodeURIComponent(searchLocation)}`, {
+          const response = await fetch(`${getApiBaseUrl()}/api/users/search-by-location?location=${encodeURIComponent(searchLocation)}`, {
             headers: {
               ...(currentUserId && { 'x-user-id': currentUserId.toString() })
             }
@@ -989,7 +990,7 @@ export default function Home() {
         } else {
           // Show ALL users for general discovery (not limited to specific cities)
           console.log('Fetching ALL users for discovery');
-          const response = await fetch('/api/users');
+          const response = await fetch(`${getApiBaseUrl()}/api/users`);
           if (!response.ok) {
             console.error('Users API failed:', response.status, response.statusText);
             throw new Error('Failed to fetch all users');
@@ -1355,7 +1356,7 @@ export default function Home() {
     queryKey: ['/api/connections/degrees/batch', effectiveUser?.id, displayedUserIds],
     queryFn: async () => {
       if (!effectiveUser?.id || displayedUserIds.length === 0) return { degrees: {} };
-      const response = await fetch('/api/connections/degrees/batch', {
+      const response = await fetch(`${getApiBaseUrl()}/api/connections/degrees/batch`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: effectiveUser.id, targetUserIds: displayedUserIds })
@@ -1403,7 +1404,7 @@ export default function Home() {
         travelPlanData.activities = activities;
       }
 
-      const response = await fetch('/api/travel-plans', {
+      const response = await fetch(`${getApiBaseUrl()}/api/travel-plans`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(travelPlanData),
@@ -1420,7 +1421,7 @@ export default function Home() {
             travelDestination: destination
           };
 
-          const cityUpdateResponse = await fetch(`/api/users/${userId}`, {
+          const cityUpdateResponse = await fetch(`${getApiBaseUrl()}/api/users/${userId}`, {
             method: 'PUT', 
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(locationUpdate),

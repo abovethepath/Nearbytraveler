@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { MapPin, Calendar, Heart, Activity, CalendarDays } from "lucide-react";
 import { getTodayForInput } from "@/lib/dateUtils";
+import { getApiBaseUrl } from "@/lib/queryClient";
 
 interface DestinationModalProps {
   isOpen: boolean;
@@ -103,7 +104,7 @@ export default function DestinationModal({ isOpen, onComplete, onClose, user }: 
         JSON.stringify(plannedEvents) !== JSON.stringify(user.defaultTravelEvents)
       )) {
         try {
-          await fetch(`/api/users/${user.id}/travel-preferences`, {
+          await fetch(`${getApiBaseUrl()}/api/users/${user.id}/travel-preferences`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

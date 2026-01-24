@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -47,7 +47,7 @@ export function CustomerUploadedPhotos({ businessId, isOwnProfile }: CustomerUpl
   const { data: customerPhotos = [], isLoading } = useQuery({
     queryKey: [`/api/businesses/${businessId}/customer-photos`],
     queryFn: async () => {
-      const response = await fetch(`/api/businesses/${businessId}/customer-photos`);
+      const response = await fetch(`${getApiBaseUrl()}/api/businesses/${businessId}/customer-photos`);
       if (!response.ok) throw new Error('Failed to fetch customer photos');
       const data = await response.json();
       console.log('CustomerUploadedPhotos - Fetched photos:', data);

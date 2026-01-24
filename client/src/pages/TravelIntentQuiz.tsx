@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Heart, Camera, Coffee, Utensils, Palette, Music, TreePine } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { getApiBaseUrl } from '@/lib/queryClient';
 // Removed useAuth import - will get user from localStorage instead
 
 // Inspired by TangoTrips.com's "Intention-Driven" onboarding approach
@@ -113,7 +114,7 @@ export default function TravelIntentQuiz() {
     
     try {
       // Save travel preferences to user profile
-      const response = await fetch(`/api/users/${user.id}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/users/${user.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

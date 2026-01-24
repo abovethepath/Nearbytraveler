@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { useLocation } from "wouter";
 import { Building, MapPin, User, Zap } from "lucide-react";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
@@ -212,7 +212,7 @@ export default function SignupBusinessSimple() {
       delete processedData.customBusinessType;
       delete processedData.businessWebsite; // Remove since we moved it to websiteUrl
 
-      const response = await fetch('/api/register', {
+      const response = await fetch(`${getApiBaseUrl()}/api/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -317,7 +317,7 @@ export default function SignupBusinessSimple() {
     // Start background registration with profile completion
     setTimeout(async () => {
       try {
-        const response = await fetch('/api/register', {
+        const response = await fetch(`${getApiBaseUrl()}/api/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -337,7 +337,7 @@ export default function SignupBusinessSimple() {
           
           // Start profile completion in background
           try {
-            const profileResponse = await fetch('/api/auth/complete-profile', {
+            const profileResponse = await fetch(`${getApiBaseUrl()}/api/auth/complete-profile`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ userId: result.user.id })

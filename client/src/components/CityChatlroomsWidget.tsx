@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { MessageCircle, Users, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
+import { getApiBaseUrl } from "@/lib/queryClient";
 interface CityChatlroomsWidgetProps {
   city: string;
   state?: string;
@@ -26,7 +27,7 @@ export function CityChatlroomsWidget({ city, state, country }: CityChatlroomsWid
       if (state) params.append('state', state);
       if (country) params.append('country', country);
       
-      const response = await fetch(`/api/chatrooms?${params}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/chatrooms?${params}`);
       if (!response.ok) throw new Error('Failed to fetch chatrooms');
       const data = await response.json();
       return data;

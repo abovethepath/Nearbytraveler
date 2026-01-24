@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { ChatInput } from '@/components/ui/chat-input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { MessageCircle, Send, Users, ArrowLeft, Heart, Reply, Copy, Edit2, Trash2, Check, X } from 'lucide-react';
-import { apiRequest } from '@/lib/queryClient';
+import { apiRequest, getApiBaseUrl } from '@/lib/queryClient';
 import { queryClient } from '@/lib/queryClient';
 import { SimpleAvatar } from '@/components/simple-avatar';
 import websocketService from '@/services/websocketService';
@@ -378,7 +378,7 @@ export default function Messages() {
     if (!confirm('Are you sure you want to delete this message?')) return;
     
     try {
-      const response = await fetch(`/api/messages/${messageId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/messages/${messageId}`, {
         method: 'DELETE',
         headers: { 
           'Content-Type': 'application/json',

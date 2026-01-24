@@ -15,6 +15,7 @@ import {
   CalendarDays
 } from "lucide-react";
 import { formatDateForDisplay } from "@/lib/dateUtils";
+import { getApiBaseUrl } from "@/lib/queryClient";
 
 interface TravelItineraryProps {
   userId: number;
@@ -52,7 +53,7 @@ export default function TravelItinerary({ userId, destination, startDate, endDat
   const { data: itineraryEvents = [], isLoading } = useQuery({
     queryKey: ['/api/users', userId, 'all-events'],
     queryFn: async () => {
-      const response = await fetch(`/api/users/${userId}/all-events`);
+      const response = await fetch(`${getApiBaseUrl()}/api/users/${userId}/all-events`);
       if (!response.ok) throw new Error('Failed to fetch user events');
       return response.json();
     },

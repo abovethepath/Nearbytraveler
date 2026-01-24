@@ -7,7 +7,7 @@ import { Star, ThumbsUp, Shield, User, MessageCircle, AlertTriangle } from 'luci
 import { useAuth } from '@/App';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
-import { apiRequest } from '@/lib/queryClient';
+import { apiRequest, getApiBaseUrl } from '@/lib/queryClient';
 
 interface Reference {
   id: number;
@@ -61,7 +61,7 @@ export function ReferenceSystem({ isOwnProfile = false, userId }: { isOwnProfile
     queryKey: [`/api/user-references/check`, user?.id, userId],
     queryFn: async () => {
       if (!user?.id || !userId || isOwnProfile) return { exists: false, reference: null };
-      const response = await fetch(`/api/user-references/check/${user.id}/${userId}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/user-references/check/${user.id}/${userId}`);
       if (!response.ok) throw new Error('Failed to check existing reference');
       const data = await response.json();
       console.log('🔍 REFERENCE CHECK RESULT:', { 

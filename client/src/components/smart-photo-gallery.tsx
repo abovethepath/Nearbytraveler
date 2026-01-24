@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { 
   Camera, 
   Search, 
@@ -86,7 +86,7 @@ export default function SmartPhotoGallery({ userId }: SmartPhotoGalleryProps) {
       const limit = photosPerPage;
       const offset = currentPage * photosPerPage;
       
-      const response = await fetch(`/api/users/${userId}/photos?limit=${limit}&offset=${offset}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/users/${userId}/photos?limit=${limit}&offset=${offset}`);
       if (!response.ok) {
         throw new Error('Failed to fetch photos');
       }
@@ -101,11 +101,11 @@ export default function SmartPhotoGallery({ userId }: SmartPhotoGalleryProps) {
   const { data: totalPhotos = 0 } = useQuery({
     queryKey: [`/api/users/${userId}/photos/count`],
     queryFn: async () => {
-      const response = await fetch(`/api/users/${userId}/photos?limit=1&offset=0`);
+      const response = await fetch(`${getApiBaseUrl()}/api/users/${userId}/photos?limit=1&offset=0`);
       if (!response.ok) return 0;
       
       // For now, estimate from available photos or fetch a larger batch to count
-      const largeResponse = await fetch(`/api/users/${userId}/photos?limit=1000&offset=0`);
+      const largeResponse = await fetch(`${getApiBaseUrl()}/api/users/${userId}/photos?limit=1000&offset=0`);
       if (!largeResponse.ok) return 0;
       const allPhotos = await largeResponse.json();
       return allPhotos.length;
@@ -127,7 +127,7 @@ export default function SmartPhotoGallery({ userId }: SmartPhotoGalleryProps) {
     queryKey: ['/api/users/search', searchUsers],
     queryFn: async () => {
       if (!searchUsers.trim()) return [];
-      const response = await fetch(`/api/users/search?q=${encodeURIComponent(searchUsers)}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/users/search?q=${encodeURIComponent(searchUsers)}`);
       if (!response.ok) return [];
       return response.json();
     },
@@ -137,7 +137,7 @@ export default function SmartPhotoGallery({ userId }: SmartPhotoGalleryProps) {
   // Re-analyze photo mutation
   const analyzePhotoMutation = useMutation({
     mutationFn: async (photoId: number) => {
-      const response = await fetch(`/api/photos/${photoId}/analyze`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/photos/${photoId}/analyze`, {
         method: 'POST',
       });
       if (!response.ok) throw new Error('Analysis failed');
@@ -163,7 +163,7 @@ export default function SmartPhotoGallery({ userId }: SmartPhotoGalleryProps) {
   // Like photo mutation
   const likePhotoMutation = useMutation({
     mutationFn: async (photoId: number) => {
-      const response = await fetch(`/api/photos/${photoId}/like`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/photos/${photoId}/like`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -193,7 +193,7 @@ export default function SmartPhotoGallery({ userId }: SmartPhotoGalleryProps) {
   const deletePhotoMutation = useMutation({
     mutationFn: async (photoId: number) => {
       console.log('📸 SmartPhotoGallery: Deleting photo', photoId);
-      const response = await fetch(`/api/photos/${photoId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/photos/${photoId}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
@@ -261,7 +261,7 @@ export default function SmartPhotoGallery({ userId }: SmartPhotoGalleryProps) {
   // Remove tag mutation
   const removeTagMutation = useMutation({
     mutationFn: async ({ photoId, taggedUserId }: { photoId: number; taggedUserId: number }) => {
-      const response = await fetch(`/api/photos/${photoId}/tags/${taggedUserId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/photos/${photoId}/tags/${taggedUserId}`, {
         method: 'DELETE',
       });
       if (!response.ok) throw new Error('Failed to remove tag');

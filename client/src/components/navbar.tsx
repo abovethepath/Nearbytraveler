@@ -19,6 +19,7 @@ import { useTheme } from "@/components/theme-provider";
 import { AdaptiveThemeToggle } from "@/components/adaptive-theme-toggle";
 import { authStorage } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
+import { getApiBaseUrl } from "@/lib/queryClient";
 
 
 // Theme Toggle as Dropdown Menu Item
@@ -116,7 +117,7 @@ function Navbar() {
       // Force fetch fresh user data and update context
       const refreshUserData = async () => {
         try {
-          const response = await fetch(`/api/users/${directUser.id}?t=${Date.now()}`);
+          const response = await fetch(`${getApiBaseUrl()}/api/users/${directUser.id}?t=${Date.now()}`);
           if (response.ok) {
             const freshUserData = await response.json();
             console.log('🔄 Navbar: Fresh user data fetched:', freshUserData.username, 'has image:', !!freshUserData.profileImage);
@@ -197,7 +198,7 @@ function Navbar() {
         authStorage.setUser(cleanUser);
 
         // Clear from server
-        fetch('/api/users/profile-photo', {
+        fetch(`${getApiBaseUrl()}/api/users/profile-photo`, {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
         }).catch(() => {});
@@ -232,7 +233,7 @@ function Navbar() {
       // Fetch fresh user data if this is the current user
       if (directUser?.id) {
         try {
-          const response = await fetch(`/api/users/${directUser.id}?t=${Date.now()}`);
+          const response = await fetch(`${getApiBaseUrl()}/api/users/${directUser.id}?t=${Date.now()}`);
           if (response.ok) {
             const freshUserData = await response.json();
             console.log('🔄 Navbar: Fresh data fetched:', freshUserData.username, 'has image:', !!freshUserData.profileImage);
@@ -277,7 +278,7 @@ function Navbar() {
       // Step 1: Call server logout to destroy session
       console.log('Step 1: Calling server logout');
       try {
-        await fetch('/api/auth/logout', {
+        await fetch(`${getApiBaseUrl()}/api/auth/logout`, {
           method: 'POST',
           credentials: 'include',
           headers: {

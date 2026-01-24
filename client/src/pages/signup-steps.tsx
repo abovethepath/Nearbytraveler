@@ -10,7 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { AuthContext } from "../App";
 import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import SmartLocationInput from "@/components/SmartLocationInput";
 import { User, Plane, Building, ArrowRight, ArrowLeft, Check } from "lucide-react";
 import Logo from "@/components/logo";
@@ -126,7 +126,7 @@ export default function SignupSteps() {
 
   const registerMutation = useMutation({
     mutationFn: async (userData: any) => {
-      const response = await fetch('/api/register', {
+      const response = await fetch(`${getApiBaseUrl()}/api/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

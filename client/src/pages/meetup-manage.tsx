@@ -7,6 +7,7 @@ import { MapPin, Clock, Users, MessageCircle, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/App';
 import { authStorage } from '@/lib/auth';
 import { UniversalBackButton } from '@/components/UniversalBackButton';
+import { getApiBaseUrl } from '@/lib/queryClient';
 
 interface QuickMeetup {
   id: number;
@@ -55,7 +56,7 @@ function MeetupManagePage() {
     queryKey: ['/api/quick-meets', meetupId],
     queryFn: async () => {
       if (!meetupId) throw new Error('No meetup ID');
-      const response = await fetch(`/api/quick-meets/${meetupId}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/quick-meets/${meetupId}`);
       if (!response.ok) throw new Error('Failed to fetch meetup');
       return response.json();
     },
@@ -66,7 +67,7 @@ function MeetupManagePage() {
     queryKey: ['/api/quick-meets', meetupId, 'participants'],
     queryFn: async () => {
       if (!meetupId) return [];
-      const response = await fetch(`/api/quick-meets/${meetupId}/participants`);
+      const response = await fetch(`${getApiBaseUrl()}/api/quick-meets/${meetupId}/participants`);
       if (!response.ok) throw new Error('Failed to fetch participants');
       return response.json();
     },

@@ -24,6 +24,7 @@ import {
   ChevronDown
 } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
+import { getApiBaseUrl } from "@/lib/queryClient";
 
 interface EventParticipant {
   userId: number;
@@ -105,7 +106,7 @@ export default function EventHistory() {
       params.append('daysBack', daysBack);
       params.append('limit', '50');
       
-      const response = await fetch(`/api/events/history?${params.toString()}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/events/history?${params.toString()}`);
       if (!response.ok) throw new Error('Failed to fetch event history');
       return response.json();
     },

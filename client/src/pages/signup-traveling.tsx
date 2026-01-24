@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { getAllInterests, getAllActivities, getAllLanguages, validateSelections, getHometownInterests } from "../../../shared/base-options";
 import { validateCustomInput, filterCustomEntries } from "@/lib/contentFilter";
 import { AuthContext } from "@/App";
@@ -274,7 +274,7 @@ export default function SignupTraveling() {
         
         let response;
         try {
-          response = await fetch('/api/register', {
+          response = await fetch(`${getApiBaseUrl()}/api/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',

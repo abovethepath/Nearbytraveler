@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { InteractiveMap } from './InteractiveMap';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MapPin, Users, Calendar, Building2 } from 'lucide-react';
+import { getApiBaseUrl } from '@/lib/queryClient';
 
 interface CityMapProps {
   city: string;
@@ -116,7 +117,7 @@ export function CityMap({ city, state, country }: CityMapProps) {
       if (state) params.append('state', state);
       params.append('country', country);
       
-      const response = await fetch(`/api/city-map-data?${params}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/city-map-data?${params}`);
       if (!response.ok) throw new Error('Failed to fetch map data');
       return response.json();
     },
@@ -145,7 +146,7 @@ export function CityMap({ city, state, country }: CityMapProps) {
       if (state) params.append('state', state);
       params.append('country', country);
       
-      const response = await fetch(`/api/businesses/map?${params}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/businesses/map?${params}`);
       if (!response.ok) throw new Error('Failed to fetch business map data');
       return response.json();
     },

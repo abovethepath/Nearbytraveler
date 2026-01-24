@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import { getApiBaseUrl } from "@/lib/queryClient";
 
 import { MapPin, Calendar, ExternalLink, Percent, DollarSign, Gift, Clock, Phone, Globe, User, Plus, TrendingUp, BarChart3, Eye, Edit, Trash2, Building } from "lucide-react";
 
@@ -131,7 +132,7 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
     queryFn: () => {
       // If viewing a specific deal, fetch it directly
       if (dealId) {
-        return fetch(`/api/business-deals/${dealId}`).then(res => res.json()).then(offer => [offer]);
+        return fetch(`${getApiBaseUrl()}/api/business-deals/${dealId}`).then(res => res.json()).then(offer => [offer]);
       }
       
       const params = new URLSearchParams();
@@ -156,7 +157,7 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
       if (filters.category && filters.category !== 'all') params.append('category', filters.category);
       if (filters.targetAudience && filters.targetAudience !== 'all') params.append('targetAudience', filters.targetAudience);
       
-      return fetch(`/api/business-deals?${params}`).then(res => res.json());
+      return fetch(`${getApiBaseUrl()}/api/business-deals?${params}`).then(res => res.json());
     },
     enabled: true // Always enabled - will show global offers until location loads
   });
@@ -167,7 +168,7 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
     queryFn: () => {
       const user = JSON.parse(localStorage.getItem('travelconnect_user') || '{}');
       if (!user.id) return Promise.resolve([]);
-      return fetch(`/api/users/${user.id}/offer-redemptions`).then(res => res.json());
+      return fetch(`${getApiBaseUrl()}/api/users/${user.id}/offer-redemptions`).then(res => res.json());
     },
     enabled: !!JSON.parse(localStorage.getItem('travelconnect_user') || '{}').id
   });
@@ -213,7 +214,7 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
         return;
       }
 
-      const response = await fetch(`/api/business-deals/${offerId}/redeem`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/business-deals/${offerId}/redeem`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -10,6 +10,7 @@ import { ArrowLeft } from "lucide-react";
 import { AuthContext } from "@/App";
 import { MobilePreview } from "@/components/MobilePreview";
 import { useIsMobile, useIsDesktop } from "@/hooks/useDeviceType";
+import { getApiBaseUrl } from "@/lib/queryClient";
 // MobileNav removed - using global mobile navigation
 
 
@@ -42,7 +43,7 @@ export default function DiscoverPage() {
   // Fetch user's travel plans for destination cities
   const { data: travelPlans } = useQuery<any[]>({
     queryKey: ['/api/travel-plans', user?.id],
-    queryFn: () => fetch(`/api/travel-plans/${user?.id}`).then(res => res.json()),
+    queryFn: () => fetch(`${getApiBaseUrl()}/api/travel-plans/${user?.id}`).then(res => res.json()),
     enabled: !!user?.id
   });
 

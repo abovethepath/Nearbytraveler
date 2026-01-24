@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Cloud, Sun, CloudRain, Thermometer } from "lucide-react";
+import { getApiBaseUrl } from "@/lib/queryClient";
 
 interface WeatherWidgetProps {
   city: string;
@@ -40,7 +41,7 @@ export default function WeatherWidget({ city, state, country }: WeatherWidgetPro
       if (state) params.append('state', state);
       params.append('country', country);
       
-      const response = await fetch(`/api/weather?${params.toString()}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/weather?${params.toString()}`);
       if (!response.ok) {
         throw new Error('Failed to fetch weather data');
       }

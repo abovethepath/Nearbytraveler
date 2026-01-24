@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import Logo from "@/components/logo";
 import { authStorage } from "@/lib/auth";
@@ -51,7 +51,7 @@ export default function Auth() {
     setIsLoading(true);
     console.log('Starting login request...');
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch(`${getApiBaseUrl()}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: formData.email.toLowerCase().trim(), password: formData.password }),

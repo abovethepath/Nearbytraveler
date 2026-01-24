@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { formatIncompletePhoneNumber } from "libphonenumber-js";
+import { getApiBaseUrl } from "@/lib/queryClient";
 
 export default function SignupAccount() {
   const [, setLocation] = useLocation();
@@ -52,7 +53,7 @@ export default function SignupAccount() {
 
     setUsernameChecking(true);
     try {
-      const response = await fetch(`/api/check-username/${encodeURIComponent(username)}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/check-username/${encodeURIComponent(username)}`);
       
       if (response.ok) {
         const result = await response.json();

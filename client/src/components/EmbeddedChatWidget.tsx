@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Send, MessageCircle, Users } from 'lucide-react';
+import { getApiBaseUrl } from '@/lib/queryClient';
 import { AuthContext } from '@/App';
 import { SimpleAvatar } from '@/components/simple-avatar';
 
@@ -47,7 +48,7 @@ export function EmbeddedChatWidget({ type, itemId, title, className = '', userSt
   const { data: chatroom, isLoading: chatroomLoading } = useQuery({
     queryKey: [`/${type}-chatrooms`, itemId],
     queryFn: async () => {
-      const response = await fetch(`/api/${type}-chatrooms/${itemId}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/${type}-chatrooms/${itemId}`);
       if (!response.ok) throw new Error('Failed to get chatroom');
       return response.json();
     },
@@ -59,7 +60,7 @@ export function EmbeddedChatWidget({ type, itemId, title, className = '', userSt
     queryKey: [`/${type}-chatrooms`, chatroom?.id, 'messages'],
     queryFn: async () => {
       const userId = currentUser?.id || parseInt(localStorage.getItem('userId') || '1');
-      const response = await fetch(`/api/${type}-chatrooms/${chatroom.id}/messages`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/${type}-chatrooms/${chatroom.id}/messages`, {
         headers: {
           'X-User-ID': userId.toString()
         }
@@ -77,7 +78,7 @@ export function EmbeddedChatWidget({ type, itemId, title, className = '', userSt
       const userId = currentUser?.id || parseInt(localStorage.getItem('userId') || '1');
       console.log('🚀 Sending message with user ID:', userId);
       
-      const response = await fetch(`/api/${type}-chatrooms/${chatroom.id}/messages`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/${type}-chatrooms/${chatroom.id}/messages`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -108,7 +109,7 @@ export function EmbeddedChatWidget({ type, itemId, title, className = '', userSt
   const joinChatroomMutation = useMutation({
     mutationFn: async () => {
       const userId = currentUser?.id || parseInt(localStorage.getItem('userId') || '1');
-      const response = await fetch(`/api/${type}-chatrooms/${chatroom.id}/join`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/${type}-chatrooms/${chatroom.id}/join`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

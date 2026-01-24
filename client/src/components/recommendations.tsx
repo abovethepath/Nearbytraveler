@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { MapPin, Clock, DollarSign, Star, Heart, Calendar, ExternalLink } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import { getApiBaseUrl } from "@/lib/queryClient";
 
 interface LocationRecommendation {
   type: 'activity' | 'event' | 'restaurant' | 'attraction';
@@ -75,7 +76,7 @@ export default function Recommendations({ destination, startDate, endDate }: Rec
         ...(endDate && { endDate })
       });
       
-      const response = await fetch(`/api/recommendations?${params}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/recommendations?${params}`);
       if (!response.ok) {
         throw new Error('Failed to fetch recommendations');
       }

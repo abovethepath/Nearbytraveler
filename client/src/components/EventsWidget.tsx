@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, Users, MapPin } from "lucide-react";
 import { formatDateForDisplay } from "@/lib/dateUtils";
+import { getApiBaseUrl } from "@/lib/queryClient";
 
 interface EventsWidgetProps {
   userId: number | undefined;
@@ -103,7 +104,7 @@ function EventsWidget({ userId }: EventsWidgetProps) {
         const cityName = location.city.split(',')[0].trim();
         
         try {
-          const response = await fetch(`/api/events?city=${encodeURIComponent(cityName)}`);
+          const response = await fetch(`${getApiBaseUrl()}/api/events?city=${encodeURIComponent(cityName)}`);
           if (!response.ok) throw new Error(`Failed to fetch events for ${cityName}`);
           const data = await response.json();
           return data.map((event: any) => ({ ...event, sourceLocation: location }));

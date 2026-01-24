@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Calendar, MapPin, Users, Clock, Sparkles, TrendingUp, Star, Filter } from 'lucide-react';
-import { apiRequest, queryClient } from '@/lib/queryClient';
+import { apiRequest, queryClient, getApiBaseUrl } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import EventCard from '@/components/event-card';
 import type { Event } from '@shared/schema';
@@ -37,7 +37,7 @@ export default function AICityEvents({ cityName, currentUser }: AICityEventsProp
   const { data: aiEvents = [], isLoading: aiEventsLoading } = useQuery({
     queryKey: [`/api/ai/city-events/${encodeURIComponent(cityName)}`],
     queryFn: async () => {
-      const response = await fetch(`/api/ai/city-events/${encodeURIComponent(cityName)}?userId=${currentUser?.id || ''}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/ai/city-events/${encodeURIComponent(cityName)}?userId=${currentUser?.id || ''}`);
       if (!response.ok) throw new Error('Failed to fetch AI events');
       return response.json();
     },
@@ -48,7 +48,7 @@ export default function AICityEvents({ cityName, currentUser }: AICityEventsProp
     queryKey: ['/api/events', cityName],
     queryFn: async () => {
       const userParam = currentUser?.id ? `&userId=${currentUser.id}` : '';
-      const response = await fetch(`/api/events?city=${encodeURIComponent(cityName)}${userParam}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/events?city=${encodeURIComponent(cityName)}${userParam}`);
       if (!response.ok) throw new Error('Failed to fetch events');
       return response.json();
     },

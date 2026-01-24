@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search, MapPin, Users, Calendar, TrendingUp } from "lucide-react";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
+import { getApiBaseUrl } from "@/lib/queryClient";
 
 interface CityStats {
   city: string;
@@ -31,7 +32,7 @@ export default function CityStats() {
     queryFn: async () => {
       const params = new URLSearchParams();
       if (searchTerm) params.append('search', searchTerm);
-      const response = await fetch(`/api/city-stats?${params}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/city-stats?${params}`);
       if (!response.ok) throw new Error('Failed to fetch city stats');
       return response.json();
     }

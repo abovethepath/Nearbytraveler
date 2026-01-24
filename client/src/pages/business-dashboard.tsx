@@ -14,7 +14,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Plus, Edit, Trash2, Eye, BarChart3, Calendar, DollarSign, Users, TrendingUp, CalendarDays, Camera, Image, MapPin, Clock, Percent, Tag, Gift, Zap, Menu } from "lucide-react";
-import { queryClient, apiRequest } from "@/lib/queryClient";
+import { queryClient, apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { SubscriptionStatus } from "@/components/SubscriptionStatus";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
@@ -290,7 +290,7 @@ export default function BusinessDashboard() {
     queryKey: ['/api/users', storageUser?.id],
     queryFn: async () => {
       if (!storageUser?.id) return null;
-      const response = await fetch(`/api/users/${storageUser.id}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/users/${storageUser.id}`, {
         headers: {
           'x-user-id': storageUser.id.toString(),
           'x-user-type': storageUser.userType || 'business'
@@ -384,7 +384,7 @@ export default function BusinessDashboard() {
     queryKey: ['/api/events/organizer', storageUser?.id],
     queryFn: async () => {
       if (!storageUser?.id) return [];
-      const response = await fetch(`/api/events/organizer/${storageUser.id}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/events/organizer/${storageUser.id}`);
       if (!response.ok) throw new Error('Failed to fetch events');
       return response.json();
     },
@@ -399,7 +399,7 @@ export default function BusinessDashboard() {
     queryKey: [`/api/quick-deals/history/${storageUser?.id}`],
     queryFn: async () => {
       if (!storageUser?.id) return [];
-      const response = await fetch(`/api/quick-deals/history/${storageUser.id}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/quick-deals/history/${storageUser.id}`, {
         headers: {
           'x-user-id': storageUser.id.toString(),
           'x-user-type': storageUser.userType || 'business'
@@ -550,7 +550,7 @@ export default function BusinessDashboard() {
     enabled: !!currentUser?.id && currentUser?.userType === 'business',
     queryFn: async () => {
       if (!currentUser?.id) return [];
-      const response = await fetch(`/api/businesses/${currentUser.id}/customer-photos`);
+      const response = await fetch(`${getApiBaseUrl()}/api/businesses/${currentUser.id}/customer-photos`);
       if (!response.ok) throw new Error('Failed to fetch customer photos');
       return response.json();
     }
@@ -570,7 +570,7 @@ export default function BusinessDashboard() {
       let hasMore = true;
 
       while (hasMore) {
-        const response = await fetch(`/api/users/${currentUser.id}/photos?limit=${limit}&offset=${offset}`);
+        const response = await fetch(`${getApiBaseUrl()}/api/users/${currentUser.id}/photos?limit=${limit}&offset=${offset}`);
         if (!response.ok) {
           throw new Error('Failed to fetch photos');
         }

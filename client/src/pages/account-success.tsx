@@ -5,6 +5,7 @@ import { useLocation } from 'wouter';
 import { CheckCircle, Loader2, Users, MessageCircle, MapPin } from 'lucide-react';
 import { useAuth } from '@/App';
 import Navbar from '@/components/navbar';
+import { getApiBaseUrl } from '@/lib/queryClient';
 
 interface BootstrapStatus {
   status: 'pending' | 'completed' | 'error';
@@ -46,7 +47,7 @@ export default function AccountSuccess() {
 
     const statusChecker = setInterval(async () => {
       try {
-        const response = await fetch('/api/bootstrap/status', {
+        const response = await fetch(`${getApiBaseUrl()}/api/bootstrap/status`, {
           method: 'GET',
           credentials: 'include'
         });
@@ -73,7 +74,7 @@ export default function AccountSuccess() {
       console.log('🔄 BOOTSTRAP: Starting background operations...');
       setBootstrapStatus({ status: 'pending', progress: 25, message: 'Setting up your personalized experience...' });
       
-      const response = await fetch('/api/bootstrap/after-register', {
+      const response = await fetch(`${getApiBaseUrl()}/api/bootstrap/after-register`, {
         method: 'POST',
         body: JSON.stringify({}),
         headers: { 'Content-Type': 'application/json' },

@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { UserPlus, QrCode, ArrowRight, CheckCircle, Loader2, Link } from "lucide-react";
 import Navbar from "@/components/navbar";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 
 interface Referrer {
   id: number;
@@ -53,7 +53,7 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
         }
 
         // Fetch referrer info
-        const response = await fetch(`/api/referral/${referralCode}`);
+        const response = await fetch(`${getApiBaseUrl()}/api/referral/${referralCode}`);
         
         if (!response.ok) {
           if (response.status === 404) {
@@ -77,7 +77,7 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
           } else {
             // Check connection status
             try {
-              const statusResponse = await fetch(`/api/connections/status/${user.id}/${data.referrer.id}`);
+              const statusResponse = await fetch(`${getApiBaseUrl()}/api/connections/status/${user.id}/${data.referrer.id}`);
               if (statusResponse.ok) {
                 const statusData = await statusResponse.json();
                 if (statusData.status === 'connected') {
@@ -125,7 +125,7 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
     
     setIsConnecting(true);
     try {
-      const response = await fetch('/api/connections/request', {
+      const response = await fetch(`${getApiBaseUrl()}/api/connections/request`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

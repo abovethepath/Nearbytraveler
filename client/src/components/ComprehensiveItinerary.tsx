@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { getApiBaseUrl } from '@/lib/queryClient';
 import {
   Calendar,
   Clock,
@@ -93,7 +94,7 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
   const { data: itineraries = [], isLoading } = useQuery({
     queryKey: [`/api/travel-plans/${travelPlan.id}/itineraries`],
     queryFn: async () => {
-      const response = await fetch(`/api/travel-plans/${travelPlan.id}/itineraries`);
+      const response = await fetch(`${getApiBaseUrl()}/api/travel-plans/${travelPlan.id}/itineraries`);
       if (!response.ok) return [];
       return response.json();
     },
@@ -108,7 +109,7 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
   const { data: weather } = useQuery({
     queryKey: [`/api/weather`],
     queryFn: async () => {
-      const response = await fetch(`/api/weather?city=${travelPlan.destinationCity}&country=${travelPlan.destinationCountry}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/weather?city=${travelPlan.destinationCity}&country=${travelPlan.destinationCountry}`);
       if (!response.ok) return null;
       return response.json();
     },
@@ -137,7 +138,7 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
       let itineraryId = itineraries[0]?.id;
       if (!itineraryId) {
         // Create a default itinerary if none exists
-        const itineraryResponse = await fetch('/api/itineraries', {
+        const itineraryResponse = await fetch(`${getApiBaseUrl()}/api/itineraries`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -151,7 +152,7 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
         itineraryId = newItinerary.id;
       }
 
-      const response = await fetch(`/api/itineraries/${itineraryId}/items`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/itineraries/${itineraryId}/items`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(item),
@@ -170,7 +171,7 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
   // Update itinerary item mutation
   const updateItem = useMutation({
     mutationFn: async (item: ItineraryItem) => {
-      const response = await fetch(`/api/itinerary-items/${item.id}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/itinerary-items/${item.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(item),
@@ -188,7 +189,7 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
   // Delete itinerary item mutation
   const deleteItem = useMutation({
     mutationFn: async (itemId: number) => {
-      const response = await fetch(`/api/itinerary-items/${itemId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/itinerary-items/${itemId}`, {
         method: 'DELETE',
       });
       if (!response.ok) throw new Error('Failed to delete item');
@@ -202,7 +203,7 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
   // Share itinerary mutation
   const shareItinerary = useMutation({
     mutationFn: async (contactIds: number[]) => {
-      const response = await fetch(`/api/itinerary/${travelPlan.id}/share`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/itinerary/${travelPlan.id}/share`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ contactIds }),

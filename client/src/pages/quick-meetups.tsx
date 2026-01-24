@@ -9,6 +9,7 @@ import { Clock, MapPin, Users, Search, Plus, MessageCircle, UserCheck, RotateCcw
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/App';
 import { authStorage } from '@/lib/auth';
+import { getApiBaseUrl } from '@/lib/queryClient';
 import { QuickMeetupWidget } from '@/components/QuickMeetupWidget';
 import { UniversalBackButton } from '@/components/UniversalBackButton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -95,7 +96,7 @@ function QuickMeetupsPage() {
   const { data: allMeetups = [], isLoading } = useQuery<QuickMeetup[]>({
     queryKey: ['/api/quick-meets'],
     queryFn: async () => {
-      const response = await fetch('/api/quick-meets');
+      const response = await fetch(`${getApiBaseUrl()}/api/quick-meets`);
       if (!response.ok) throw new Error('Failed to fetch meetups');
       const data = await response.json();
       
@@ -118,7 +119,7 @@ function QuickMeetupsPage() {
     queryKey: ['/api/quick-meets', selectedMeetupId, 'participants'],
     queryFn: async () => {
       if (!selectedMeetupId) return [];
-      const response = await fetch(`/api/quick-meets/${selectedMeetupId}/participants`);
+      const response = await fetch(`${getApiBaseUrl()}/api/quick-meets/${selectedMeetupId}/participants`);
       if (!response.ok) throw new Error('Failed to fetch participants');
       return response.json();
     },
@@ -139,7 +140,7 @@ function QuickMeetupsPage() {
   // Restart meetup mutation
   const restartMeetupMutation = useMutation({
     mutationFn: async ({ meetupId, duration }: { meetupId: number; duration: string }) => {
-      const response = await fetch(`/api/quick-meets/${meetupId}/restart`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/quick-meets/${meetupId}/restart`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -179,7 +180,7 @@ function QuickMeetupsPage() {
       console.log('🚀 MUTATION FN CALLED with:', { meetupId, updates });
       console.log('👤 User ID for header:', actualUser?.id);
       
-      const response = await fetch(`/api/quick-meets/${meetupId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/quick-meets/${meetupId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -225,7 +226,7 @@ function QuickMeetupsPage() {
   // Delete meetup mutation
   const deleteMeetupMutation = useMutation({
     mutationFn: async (meetupId: number) => {
-      const response = await fetch(`/api/quick-meets/${meetupId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/quick-meets/${meetupId}`, {
         method: 'DELETE',
         headers: {
           'x-user-id': actualUser?.id?.toString() || '',
@@ -258,7 +259,7 @@ function QuickMeetupsPage() {
   // Remove participant mutation
   const removeParticipantMutation = useMutation({
     mutationFn: async ({ meetupId, participantId }: { meetupId: number; participantId: number }) => {
-      const response = await fetch(`/api/quick-meets/${meetupId}/participants/${participantId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/quick-meets/${meetupId}/participants/${participantId}`, {
         method: 'DELETE',
         headers: {
           'x-user-id': actualUser?.id?.toString() || '',
@@ -543,7 +544,7 @@ function QuickMeetupsPage() {
                     setShowCreateForm(true);
                   } else {
                     try {
-                      const response = await fetch(`/api/quick-meets/${meetup.id}/join`, {
+                      const response = await fetch(`${getApiBaseUrl()}/api/quick-meets/${meetup.id}/join`, {
                         method: 'POST',
                         headers: {
                           'Content-Type': 'application/json',

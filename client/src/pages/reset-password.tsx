@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { useMutation } from "@tanstack/react-query";
 
 const resetPasswordSchema = z.object({
@@ -77,7 +77,7 @@ export default function ResetPassword() {
     // Verify token if it exists
     if (tokenParam) {
       console.log('🔐 RESET: Verifying token:', tokenParam);
-      fetch(`/api/auth/verify-reset-token?token=${tokenParam}`)
+      fetch(`${getApiBaseUrl()}/api/auth/verify-reset-token?token=${tokenParam}`)
         .then(async (response) => {
           console.log('🔐 RESET: Verification response status:', response.status);
           const data = await response.json();

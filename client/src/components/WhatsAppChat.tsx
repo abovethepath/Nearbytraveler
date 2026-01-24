@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, VolumeX, Edit2, Trash2, Check, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
 
 interface Message {
   id: number;
@@ -92,7 +92,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   // Mute user mutation
   const muteMutation = useMutation({
     mutationFn: async ({ targetUserId, reason }: { targetUserId: number, reason?: string }) => {
-      const response = await fetch(`/api/chatrooms/${chatId}/mute`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatId}/mute`, {
         method: 'POST',
         body: JSON.stringify({ targetUserId, reason }),
         headers: { 'Content-Type': 'application/json', 'x-user-id': currentUserId?.toString() || '' }
@@ -114,7 +114,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   // Unmute user mutation
   const unmuteMutation = useMutation({
     mutationFn: async (targetUserId: number) => {
-      const response = await fetch(`/api/chatrooms/${chatId}/unmute`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatId}/unmute`, {
         method: 'POST',
         body: JSON.stringify({ targetUserId }),
         headers: { 'Content-Type': 'application/json', 'x-user-id': currentUserId?.toString() || '' }
@@ -396,7 +396,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     if (!confirm('Are you sure you want to delete this message?')) return;
     
     try {
-      const response = await fetch(`/api/messages/${messageId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/messages/${messageId}`, {
         method: 'DELETE',
         headers: { 
           'Content-Type': 'application/json',

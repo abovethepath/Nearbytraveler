@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/hooks/use-toast';
-import { apiRequest } from '@/lib/queryClient';
+import { apiRequest, getApiBaseUrl } from '@/lib/queryClient';
 import { CustomModal } from '@/components/ui/custom-modal';
 
 interface TravelMemory {
@@ -195,7 +195,7 @@ export function TravelMemoryTimeline({ userId, isOwnProfile = false }: TravelMem
           formData.append('photo', photo);
           formData.append('userId', userId.toString());
 
-          const response = await fetch('/api/upload-photo', {
+          const response = await fetch(`${getApiBaseUrl()}/api/upload-photo`, {
             method: 'POST',
             body: formData,
             headers: {

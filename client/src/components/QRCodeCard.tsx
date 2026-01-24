@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { getApiBaseUrl } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -65,7 +66,7 @@ export default function QRCodeCard() {
         // Fetch QR code from API with retry logic for 429 errors
         const fetchWithRetry = async (retries = 3, delay = 1000): Promise<Response> => {
           try {
-            const response = await fetch('/api/user/qr-code', {
+            const response = await fetch(`${getApiBaseUrl()}/api/user/qr-code`, {
               headers: {
                 'Content-Type': 'application/json',
                 'x-user-id': user.id.toString()

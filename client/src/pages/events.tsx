@@ -15,7 +15,7 @@ import { useIsMobile, useIsDesktop } from "@/hooks/useDeviceType";
 
 import { type Event, type EventParticipant, type User as UserType } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import BackButton from "@/components/back-button";
 import CreateEvent from "@/pages/create-event";
 
@@ -105,7 +105,7 @@ export default function Events() {
     queryKey: ["/api/travel-plans", user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
-      const response = await fetch(`/api/travel-plans/${user.id}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/travel-plans/${user.id}`);
       if (!response.ok) return [];
       return response.json();
     },
@@ -157,7 +157,7 @@ export default function Events() {
   const { data: events = [], isLoading, error } = useQuery<Event[]>({
     queryKey: ["/api/events", cityToQuery],
     queryFn: async () => {
-      const response = await fetch(`/api/events?city=${encodeURIComponent(cityToQuery)}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/events?city=${encodeURIComponent(cityToQuery)}`);
       if (!response.ok) {
         throw new Error('Failed to fetch events');
       }
@@ -174,7 +174,7 @@ export default function Events() {
     queryKey: ["/api/events", "all"],
     queryFn: async () => {
       console.log('🔍 Fetching ALL events for user events detection...');
-      const response = await fetch(`/api/events`);
+      const response = await fetch(`${getApiBaseUrl()}/api/events`);
       if (!response.ok) {
         throw new Error('Failed to fetch events');
       }
@@ -199,7 +199,7 @@ export default function Events() {
       // Use Promise.all for parallel requests instead of sequential loop
       const participantPromises = visibleEvents.map(async (event) => {
         try {
-          const response = await fetch(`/api/events/${event.id}/participants`);
+          const response = await fetch(`${getApiBaseUrl()}/api/events/${event.id}/participants`);
           if (response.ok) {
             return await response.json();
           }
@@ -233,7 +233,7 @@ export default function Events() {
   const { data: meetupEvents = [], isLoading: meetupLoading } = useQuery({
     queryKey: ["/api/external-events/meetup", cityToQuery],
     queryFn: async () => {
-      const response = await fetch(`/api/external-events/meetup?city=${encodeURIComponent(cityToQuery)}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/external-events/meetup?city=${encodeURIComponent(cityToQuery)}`);
       if (!response.ok) return { events: [] };
       return response.json();
     },

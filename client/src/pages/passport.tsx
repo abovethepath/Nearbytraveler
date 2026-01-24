@@ -12,7 +12,7 @@ import { UniversalBackButton } from "@/components/UniversalBackButton";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 import { useToast } from "@/hooks/use-toast";
-import { queryClient } from "@/lib/queryClient";
+import { queryClient, getApiBaseUrl } from "@/lib/queryClient";
 import Navbar from "@/components/navbar";
 import type { PassportStamp, UserStats, Achievement } from "@shared/schema";
 
@@ -43,7 +43,7 @@ export default function PassportPage({ userId }: PassportPageProps) {
   // Delete stamp mutation
   const deleteStamp = useMutation({
     mutationFn: async (stampId: number) => {
-      const response = await fetch(`/api/passport-stamps/${stampId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/passport-stamps/${stampId}`, {
         method: 'DELETE',
       });
       if (!response.ok) throw new Error('Failed to delete stamp');

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Heart, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/queryClient';
+import { apiRequest, getApiBaseUrl } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 
 interface InterestButtonProps {
@@ -58,7 +58,7 @@ export function InterestButton({
           ...(event.source && { eventData: event })
         };
         
-        const response = await fetch('/api/event-interests', {
+        const response = await fetch(`${getApiBaseUrl()}/api/event-interests`, {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ export function InterestButton({
         return response.json();
       } else {
         const params = new URLSearchParams(eventIdentifier as any);
-        const response = await fetch(`/api/event-interests?${params}`, {
+        const response = await fetch(`${getApiBaseUrl()}/api/event-interests?${params}`, {
           method: 'DELETE',
           headers: {
             'x-user-id': userId?.toString() || ''

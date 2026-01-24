@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { User, MapPin, MessageSquare, UserPlus } from "lucide-react";
 import { useLocation } from "wouter";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 
 interface UserListModalProps {
   isOpen: boolean;
@@ -67,7 +67,7 @@ export function UserListModal({ isOpen, onClose, city, state, country, userType,
       const url = `/api/users-by-location/${encodeURIComponent(city)}/${encodeURIComponent(userType)}?${params.toString()}`;
       console.log('UserListModal - Fetching from:', url);
       
-      const response = await fetch(url, {
+      const response = await fetch(`${getApiBaseUrl()}${url}`, {
         method: 'GET',
         headers: {
           'Cache-Control': 'no-cache',
@@ -93,7 +93,7 @@ export function UserListModal({ isOpen, onClose, city, state, country, userType,
   // Connection mutation
   const connectMutation = useMutation({
     mutationFn: async (targetUserId: number) => {
-      const response = await fetch('/api/connections', {
+      const response = await fetch(`${getApiBaseUrl()}/api/connections`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -137,7 +137,7 @@ export function UserListModal({ isOpen, onClose, city, state, country, userType,
   const handleSendMessage = async (userId: number) => {
     try {
       // Create or navigate to conversation
-      const response = await fetch('/api/messages', {
+      const response = await fetch(`${getApiBaseUrl()}/api/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
