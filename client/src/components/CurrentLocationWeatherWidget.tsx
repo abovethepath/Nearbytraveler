@@ -128,7 +128,12 @@ export default function CurrentLocationWeatherWidget() {
       
       console.log('Weather API call with params:', { city: currentCity, country: currentCountry });
       
-      const response = await fetch(`/api/weather?${params.toString()}`);
+      // Use absolute URL for wrapped app compatibility (WebView may have different origin)
+      const baseUrl = window.location.hostname === 'localhost' || window.location.hostname.includes('replit') 
+        ? '' 
+        : 'https://nearbytraveler.org';
+      
+      const response = await fetch(`${baseUrl}/api/weather?${params.toString()}`);
       if (!response.ok) {
         throw new Error('Failed to fetch weather data');
       }
