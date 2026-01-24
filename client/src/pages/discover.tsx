@@ -130,13 +130,9 @@ export default function DiscoverPage() {
       );
     } else {
       // Default to user's hometown and travel destinations for faster loading
-      if (getUserRelevantCities.length > 0) {
-        return allCities.filter((city: CityStats) =>
-          getUserRelevantCities.includes(city.city.toLowerCase())
-        );
-      }
-      // No user cities - show empty with search prompt
-      return [];
+      return allCities.filter((city: CityStats) =>
+        getUserRelevantCities.includes(city.city.toLowerCase())
+      );
     }
   }, [allCities, searchQuery, getUserRelevantCities]);
 
@@ -373,18 +369,15 @@ export default function DiscoverPage() {
 
 
 
-        {/* Empty state when no cities to show */}
-        {sortedCities.length === 0 && !statsLoading && (
+        {/* Empty state when search returns no results */}
+        {sortedCities.length === 0 && !statsLoading && searchQuery && (
           <div className="flex flex-col items-center justify-center py-16 px-4">
             <MapPin className="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4" />
             <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
-              {searchQuery ? "No destinations found" : "Your Destinations"}
+              No destinations found
             </h3>
             <p className="text-gray-500 dark:text-gray-400 text-center max-w-md mb-6">
-              {searchQuery 
-                ? "Try a different search term to find more cities"
-                : "Use the search bar above to discover any city and explore what it has to offer!"
-              }
+              Try a different search term to find more cities
             </p>
           </div>
         )}

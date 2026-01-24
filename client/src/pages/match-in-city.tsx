@@ -151,17 +151,11 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       const relevantCityNames = getUserRelevantCities();
       console.log('🏙️ MATCH: User relevant cities:', relevantCityNames);
       
-      if (relevantCityNames.length > 0) {
-        const userCities = allCities.filter(city => 
-          relevantCityNames.includes(city.city.toLowerCase())
-        );
-        console.log('🏙️ MATCH: Showing', userCities.length, 'user-relevant cities');
-        setFilteredCities(userCities);
-      } else {
-        // No hometown/destinations set - show empty with search prompt
-        console.log('🏙️ MATCH: No user cities found, showing empty');
-        setFilteredCities([]);
-      }
+      const userCities = allCities.filter(city => 
+        relevantCityNames.includes(city.city.toLowerCase())
+      );
+      console.log('🏙️ MATCH: Showing', userCities.length, 'user-relevant cities');
+      setFilteredCities(userCities);
     }
   }, [allCities, user, userProfile, travelPlans]);
 
@@ -186,14 +180,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     } else {
       // When search is cleared, go back to showing only user's relevant cities
       const relevantCityNames = getUserRelevantCities();
-      if (relevantCityNames.length > 0) {
-        const userCities = allCities.filter(city => 
-          relevantCityNames.includes(city.city.toLowerCase())
-        );
-        setFilteredCities(userCities);
-      } else {
-        setFilteredCities([]);
-      }
+      const userCities = allCities.filter(city => 
+        relevantCityNames.includes(city.city.toLowerCase())
+      );
+      setFilteredCities(userCities);
     }
   }, [citySearchTerm, allCities, user, userProfile, travelPlans]);
 
@@ -1057,17 +1047,14 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mb-4"></div>
               <p className="text-white text-lg">Loading cities...</p>
             </div>
-          ) : filteredCities.length === 0 ? (
+          ) : filteredCities.length === 0 && citySearchTerm ? (
             <div className="flex flex-col items-center justify-center py-20">
               <MapPin className="w-12 h-12 text-white/50 mb-4" />
               <p className="text-white text-lg font-medium mb-2">
-                {citySearchTerm ? "No cities found matching your search" : "Your Cities"}
+                No cities found matching your search
               </p>
               <p className="text-white/70 text-center max-w-md">
-                {citySearchTerm 
-                  ? "Try a different search term to find more cities"
-                  : "Use the search bar above to find any city and start matching with people there!"
-                }
+                Try a different search term to find more cities
               </p>
             </div>
           ) : (
