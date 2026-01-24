@@ -455,7 +455,16 @@ function Navbar() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56 z-[9999] bg-white dark:bg-gray-800 border shadow-lg" align="end" forceMount>
-                  {/* Welcome item at the top */}
+                  {/* My Profile - Most important, at the top */}
+                  <DropdownMenuItem onClick={() => {
+                    setLocation(`/profile/${directUser?.id}`);
+                    setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+                  }} className="font-medium">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>My Profile</span>
+                  </DropdownMenuItem>
+                  
+                  {/* Welcome item */}
                   {directUser?.userType !== 'business' && (
                     <DropdownMenuItem onClick={() => {
                       setLocation('/welcome');

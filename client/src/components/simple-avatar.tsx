@@ -117,13 +117,13 @@ export function SimpleAvatar({ user, size = 'md', className = '', clickable = tr
 
   // Always render both image and letter fallback, but show only one
   return (
-    <div className="relative">
+    <div className={`relative ${sizeClasses[size]} ${className} rounded-full overflow-hidden`}>
       {/* Profile image or placeholder - show if available */}
       {displayImageUrl && (
         <img
           src={displayImageUrl}
           alt={`${user?.username} avatar`}
-          className={`${baseClasses} object-cover`}
+          className={`w-full h-full object-cover rounded-full ${cursorClass}`}
           onClick={handleClick}
           onError={(e) => {
             // Hide image on error to show letter fallback
@@ -137,7 +137,7 @@ export function SimpleAvatar({ user, size = 'md', className = '', clickable = tr
       
       {/* Letter fallback with gradient and icon - show if no image/placeholder or if image failed to load */}
       <div 
-        className={`${baseClasses} ${avatarData.gradient} text-white ${displayImageUrl ? 'absolute inset-0' : ''} flex-col`}
+        className={`w-full h-full rounded-full ${avatarData.gradient} text-white ${displayImageUrl ? 'absolute inset-0' : ''} flex-col flex items-center justify-center ${cursorClass}`}
         onClick={handleClick}
         style={{ display: displayImageUrl ? 'none' : 'flex' }}
       >
