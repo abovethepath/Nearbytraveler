@@ -608,6 +608,159 @@ Configure in app.json:
 
 ---
 
+## 📋 FIELD VALIDATION & FORM SPECIFICATIONS (EXACT RULES)
+
+### Authentication Validation
+| Field | Rule | Error Message |
+|-------|------|---------------|
+| `username` | Min 3 characters, alphanumeric + underscore | "Username must be at least 3 characters" |
+| `password` | Min 8 characters | "Password must be 8 characters or more" |
+| `email` | Valid email format | "Please enter a valid email address" |
+
+### Signup Forms (3 Different Flows)
+
+**1. LOCAL User Signup:**
+```json
+{
+  "username": "required, min 3 chars",
+  "email": "required, valid email",
+  "password": "required, min 8 chars",
+  "name": "required",
+  "userType": "local",
+  "hometownCity": "required",
+  "hometownState": "optional",
+  "hometownCountry": "required",
+  "interests": "required, min 3 selections",
+  "bio": "NOT required during signup - added later"
+}
+```
+
+**2. TRAVELER User Signup:**
+```json
+{
+  "username": "required, min 3 chars",
+  "email": "required, valid email",
+  "password": "required, min 8 chars",
+  "name": "required",
+  "userType": "traveler",
+  "hometownCity": "required",
+  "hometownState": "optional",
+  "hometownCountry": "required",
+  "destinationCity": "required",
+  "destinationState": "optional",
+  "destinationCountry": "required",
+  "travelStartDate": "required (ISO date)",
+  "travelEndDate": "required (ISO date)",
+  "interests": "required, min 3 selections",
+  "bio": "NOT required during signup - added later"
+}
+```
+
+**3. BUSINESS User Signup:**
+```json
+{
+  "username": "required, min 3 chars",
+  "email": "required, valid email",
+  "password": "required, min 8 chars",
+  "userType": "business",
+  "businessName": "required - the business name",
+  "contactName": "required - person's name for contact database",
+  "ownerPhone": "required - contact phone number",
+  "businessCity": "required",
+  "businessState": "optional",
+  "businessCountry": "required",
+  "businessAddress": "optional - street address for map",
+  "websiteUrl": "optional - format: www.example.com",
+  "interests": "select from BUSINESS_INTERESTS list",
+  "bio": "NOT required during signup - added later"
+}
+```
+
+### Interests Selection (Min 3 Required for Profile Completion)
+**Use these EXACT lists from the backend:**
+
+**TOP_CHOICES (30 items - Primary interests for all users):**
+```
+"Restaurants & Food Scene", "Brunch Spots", "Street Food", "Coffee Shops & Cafes",
+"Late Night Eats", "Vegan/Vegetarian", "Happy Hour", "Craft Beer & Breweries",
+"Wine Bars & Vineyards", "Nightlife & Dancing", "Live Music", "Karaoke",
+"Comedy Shows", "Local Hidden Gems", "Historical Sites & Tours", "Museums",
+"Cultural Experiences", "Photography & Scenic Spots", "Local Markets & Bazaars",
+"Beach Activities", "Water Sports", "Hiking", "Fitness Classes", "Working Out",
+"Golf", "Pickleball", "Meeting New People", "Open to Dating", "LGBTQIA+", "Family-Oriented"
+```
+
+**INTERESTS (73 additional items - Extended interests):**
+```
+"Sober/Alcohol-Free Lifestyle", "420-Friendly", "Nudism", "Religious & Spiritual Sites",
+"Wellness & Mindfulness", "Volunteering", "Activism", "Animal Rescue & Shelters",
+"Pet Lovers", "Luxury Experiences", "Budget Travel", "Smoke-Free Environments",
+"Health-Conscious/Vaccinated", "Hookah Lounges", "Food Tours", "Bakeries & Desserts",
+"Ethnic Cuisine", "Farm-to-Table Dining", "Food Trucks", "Food & Wine Festivals",
+"Beer Festivals", "Pop-up Restaurants", "Rooftop Bars", "Cocktail Bars & Speakeasies",
+"Jazz Clubs", "Theater", "Performing Arts", "Film Festivals", "Electronic/DJ Scene",
+"Ghost Tours", "Architecture", "Street Art", "Trivia Nights", "Sports Events",
+"Street Festivals", "Community Events", "Tennis", "Running & Jogging", "Team Sports",
+"Yoga & Meditation", "Extreme Sports", "Camping & RV Travel", "Nature Walks",
+"Rock Climbing", "Surfing", "Skiing & Snowboarding", "Scuba Diving", "Cycling & Biking",
+"Sailing & Boating", "Kayaking & Canoeing", "Fishing", "Kid-Friendly Activities",
+"Parenting Meetups", "Family Travel", "Arts", "Crafts", "Fashion & Style",
+"Classical Music", "Indie Music Scene", "Vintage & Thrift Shopping",
+"Antiques & Collectibles", "Book Clubs", "Reading", "Tech Meetups", "Innovation",
+"Digital Nomads", "Hot Air Balloons", "Beach Volleyball", "Frisbee & Disc Golf",
+"Stargazing", "Fine Dining", "Cheap Eats", "Outdoor BBQ", "Sunset Watching",
+"Park Picnics", "Cultural Learning", "Blogging"
+```
+
+**BUSINESS_INTERESTS (40 items - For business users only):**
+```
+"Happy Hour", "Rooftop Bar", "Live Music", "DJ Nights", "Karaoke Nights",
+"Trivia Nights", "Comedy Shows", "Sports Viewing", "Outdoor Seating", "Pet-Friendly",
+"Family-Friendly", "LGBTQIA+ Friendly", "Late Night Hours", "Breakfast/Brunch",
+"Lunch Specials", "Dinner Service", "Craft Cocktails", "Wine Selection", "Craft Beer",
+"Local Beer", "Imported Beer", "Full Bar", "Non-Alcoholic Options", "Vegan Options",
+"Vegetarian Options", "Gluten-Free Options", "Farm-to-Table", "Organic Ingredients",
+"Live Sports", "Pool Table", "Darts", "Board Games", "Arcade Games", "Private Events",
+"Catering", "Delivery Available", "Takeout Available", "WiFi Available",
+"Coworking Space", "Meeting Rooms", "420-Friendly"
+```
+
+### Languages (27 options)
+```
+"English", "Spanish", "French", "German", "Italian", "Portuguese", "Dutch",
+"Russian", "Polish", "Czech", "Hungarian", "Swedish", "Norwegian", "Danish",
+"Chinese (Mandarin)", "Japanese", "Korean", "Thai", "Vietnamese", "Indonesian",
+"Arabic", "Hebrew", "Turkish", "Greek", "Hindi", "Urdu", "Bengali"
+```
+
+### Profile Completion Requirements
+Profile is "complete" when user has ALL of:
+- `bio` is not null/empty
+- `profileImage` is not null
+- At least 3 interests selected
+
+Show red reminder bar in navbar if profile incomplete.
+
+### Business Types (For business signup)
+```
+"Restaurant/Food Service", "Hotel/Accommodation", "Bar/Nightlife",
+"Tour Company/Guide Service", "Transportation Service", "Retail Store",
+"Adventure/Outdoor Activity", "Cultural Experience/Museum", "Entertainment Venue",
+"Coffee Shop/Cafe", "Wellness/Spa Service", "Photography/Creative Service",
+"Event Planning/Catering", "Local Tours & Experiences", "Rental Service",
+"Custom (specify below)"
+```
+
+### Traveler Types (For user profiles)
+```
+"Solo Traveler", "Couple Traveler", "Group Traveler", "Family Traveler",
+"Budget Traveler", "Luxury Traveler", "Backpacker", "Business Traveler",
+"Digital Nomad", "Student Traveler", "First Time Traveler Here",
+"City Explorer", "Solo Parent Travel", "Parent Seeking Parent Friends"
+```
+
+---
+
 ## APP STORE COMPLIANCE CHECKLIST (Must Ship)
 
 Before submitting to App Store, verify these are implemented:
