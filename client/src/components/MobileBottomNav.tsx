@@ -115,10 +115,10 @@ export function MobileBottomNav() {
 
       {/* Bottom Navigation */}
       <div 
-        className="mobile-bottom-nav fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 shadow-lg"
-        style={{ position: 'fixed', zIndex: 9999, width: '100vw', height: '72px', bottom: '0px', display: 'block' }}
+        className="mobile-bottom-nav fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 shadow-lg overflow-visible"
+        style={{ position: 'fixed', zIndex: 9999, width: '100vw', height: '72px', bottom: '0px', display: 'block', overflow: 'visible' }}
       >
-        <div className="relative h-full flex items-center justify-between px-4 md:px-8 max-w-6xl mx-auto">
+        <div className="relative h-full flex items-center justify-between px-4 md:px-8 max-w-6xl mx-auto overflow-visible">
           {/* Left two items */}
           {navItems.slice(0, 2).map((item, index) => {
             const isActive = item.path ? (location === item.path || (item.path === '/' && location === '/')) : false;
