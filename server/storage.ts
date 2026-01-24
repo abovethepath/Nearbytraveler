@@ -11321,6 +11321,16 @@ export class DatabaseStorage implements IStorage {
         }
       }
 
+      // FOUNDER EXCEPTION: User ID 2 (founder) can always vouch to bootstrap the network
+      if (userId === 2) {
+        return {
+          canVouch: true,
+          availableCredits: 999,
+          alreadyVouched: false,
+          reason: 'Founder can vouch unlimited times'
+        };
+      }
+
       // Check if user has received at least 1 vouch
       const [vouchReceived] = await db
         .select({ count: count() })
