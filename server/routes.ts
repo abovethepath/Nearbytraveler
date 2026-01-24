@@ -6362,8 +6362,8 @@ Questions? Just reply to this message. Welcome aboard!
       
       // Award 1 aura point for creating a travel plan
       try {
-        await awardAuraPoints(userId, 1, 'creating a travel plan');
-        if (process.env.NODE_ENV === 'development') console.log(`✨ AURA: Awarded 1 point to user ${userId} for creating travel plan`);
+        await awardAuraPoints(travelPlanData.userId, 1, 'creating a travel plan');
+        if (process.env.NODE_ENV === 'development') console.log(`✨ AURA: Awarded 1 point to user ${travelPlanData.userId} for creating travel plan`);
       } catch (auraError) {
         if (process.env.NODE_ENV === 'development') console.error('Error awarding aura for travel plan:', auraError);
       }

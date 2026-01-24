@@ -906,7 +906,7 @@ export default function PlanTrip() {
                       📍 Plan Specific Activities for Your Trip!
                     </p>
                     <p className="text-sm sm:text-base text-white/95 font-medium break-words leading-relaxed">
-                      After creating your trip, go to the <strong>Discover</strong> page and search for your destination city. There you can add specific things you want to do, check off activities, and find locals and travelers doing the same things!
+                      After creating your trip, go to the <strong>city match page</strong> and search for your destination city. There you can add specific things you want to do, check off activities, and find locals and travelers doing the same things!
                     </p>
                   </div>
                 </div>
