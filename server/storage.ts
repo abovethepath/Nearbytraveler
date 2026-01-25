@@ -2247,14 +2247,13 @@ export class DatabaseStorage implements IStorage {
           }
         }
         
-        if (destinationCity && destinationCountry && !isDomesticTravel && !isFutureTrip) {
-          // Only auto-join for INTERNATIONAL and ACTIVE/CURRENT travel
+        if (destinationCity && destinationCountry) {
+          // Auto-join for ALL travel plans (domestic, international, future, current)
+          // Users should always be connected to their destination community
           await this.ensureMeetLocalsChatrooms(destinationCity, destinationState, destinationCountry);
           await this.autoJoinWelcomeChatroom(newPlan.userId, destinationCity, destinationCountry);
           
-          console.log(`✅ SMART AUTO-JOIN: User ${newPlan.userId} joined ${destinationCity} chatrooms (international + active travel)`);
-        } else {
-          console.log(`⏭️ SKIPPED AUTO-JOIN: ${isDomesticTravel ? 'Domestic travel' : ''} ${isFutureTrip ? 'Future trip' : ''} - user can manually join later`);
+          console.log(`✅ AUTO-JOIN: User ${newPlan.userId} joined ${destinationCity} chatrooms`);
         }
       } catch (error) {
         console.error('Error in smart chatroom auto-join logic:', error);

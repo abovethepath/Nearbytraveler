@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -63,6 +63,33 @@ export default function CityChatroomsPage() {
     refetchInterval: 60000, // Refresh every minute instead of 10 seconds
     refetchOnWindowFocus: true,
   });
+  
+  // Ensure user is assigned to their hometown and travel destination chatrooms on page load
+  useEffect(() => {
+    const ensureChatroomMemberships = async () => {
+      if (!currentUser?.id) return;
+      
+      try {
+        // Trigger chatroom assignment backfill for this user
+        const response = await fetch(`${getApiBaseUrl()}/api/admin/backfill-chatrooms`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ userId: currentUser.id })
+        });
+        
+        if (response.ok) {
+          console.log('✅ Chatroom memberships ensured for user');
+          // Refresh chatrooms list after backfill
+          queryClient.invalidateQueries({ queryKey: ['/api/chatrooms/my-locations'] });
+        }
+      } catch (error) {
+        console.log('Chatroom backfill check completed');
+      }
+    };
+    
+    ensureChatroomMemberships();
+  }, [currentUser?.id, queryClient]);
   
   // Debug logging with useEffect (TanStack Query v5 doesn't support onSuccess in useQuery)
   useEffect(() => {
