@@ -88,14 +88,15 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
   // Fetch user profile to sync with existing activities
   const { data: userProfile } = useQuery<UserProfile>({
-    queryKey: ['/api/users', user?.id],
+    queryKey: [`/api/users/${user?.id}`],
+    queryFn: () => fetch(`${getApiBaseUrl()}/api/users/${user?.id}`, { credentials: 'include' }).then(res => res.json()),
     enabled: !!user?.id
   });
 
   // Fetch user's travel plans to get destination cities (user-scoped endpoint)
   const { data: travelPlans } = useQuery<any[]>({
-    queryKey: ['/api/travel-plans', user?.id],
-    queryFn: () => fetch(`${getApiBaseUrl()}/api/travel-plans/${user?.id}`).then(res => res.json()),
+    queryKey: [`/api/travel-plans/${user?.id}`],
+    queryFn: () => fetch(`${getApiBaseUrl()}/api/travel-plans/${user?.id}`, { credentials: 'include' }).then(res => res.json()),
     enabled: !!user?.id
   });
 
