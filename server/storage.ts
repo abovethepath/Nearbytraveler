@@ -3206,7 +3206,8 @@ export class DatabaseStorage implements IStorage {
 
       console.log(`✈️ SEARCH: Found ${travelerUsers.length} current travelers in ${searchCities.join(', ')}`);
 
-      // ALSO CHECK ACTIVE TRAVEL PLANS for users with overlapping dates
+      // ALSO CHECK ACTIVE AND UPCOMING TRAVEL PLANS (but NOT completed/past trips)
+      // Users are only shown on city pages during and before their trip, not after it ends
       console.log(`📅 CHECKING ACTIVE AND UPCOMING TRAVEL PLANS IN ${searchCities.join(', ')}...`);
       const now = new Date();
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -3223,7 +3224,7 @@ export class DatabaseStorage implements IStorage {
         .where(and(
           eq(users.isActive, true),
           or(eq(users.isAIGenerated, false), isNull(users.isAIGenerated)),
-          gte(travelPlans.endDate, today) // Include current AND future trips
+          gte(travelPlans.endDate, today) // Only current AND future trips - past trips excluded
         ));
 
       console.log(`📅 Found ${relevantTravelPlans.length} active and upcoming travel plans`);
