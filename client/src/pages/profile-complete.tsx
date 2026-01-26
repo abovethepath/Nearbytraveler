@@ -7713,14 +7713,21 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       }
                       
                       // Update the cache and clear pending data - ALSO invalidate user listings
-                      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
-                      queryClient.invalidateQueries({ queryKey: [`/api/users`] });
-                      queryClient.invalidateQueries({ queryKey: ['/api/users/search'] });
+                      await queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+                      await queryClient.invalidateQueries({ queryKey: [`/api/users`] });
+                      await queryClient.invalidateQueries({ queryKey: ['/api/users/search'] });
+                      
+                      // Refetch user data to update the widget with new values
+                      await queryClient.refetchQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+                      
                       setPendingLocationData(null);
+                      
+                      // Close the location widget to show fresh data on next open
+                      setShowLocationWidget(false);
                       
                       toast({
                         title: "Location Updated",
-                        description: "Your location has been successfully updated. This will update your local status across the site.",
+                        description: "Your hometown has been successfully updated! You'll now appear as a local in your new city.",
                       });
                     } catch (error: any) {
                       console.error('Failed to update location:', error);
