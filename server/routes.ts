@@ -19,6 +19,7 @@ import express from "express";
 import path from "path";
 import { storage } from "./storage";
 import { db, withRetry } from "./db";
+import { cache, cachedQuery, CACHE_TTL } from "./cache";
 import { eventReminderService } from "./services/eventReminderService";
 import { TravelMatchingService } from "./services/matching";
 import { businessProximityEngine } from "./businessProximityNotificationEngine";
@@ -1557,9 +1558,15 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
-  // OPTIMIZED: City stats endpoint - FAST single-query version
+  // OPTIMIZED: City stats endpoint - FAST single-query version with caching
   app.get("/api/city-stats", async (req, res) => {
     try {
+      const cacheKey = "city-stats:all";
+      const cached = await cache.get<any[]>(cacheKey);
+      if (cached) {
+        return res.json(cached);
+      }
+
       const startTime = Date.now();
       if (process.env.NODE_ENV === 'development') console.log("⚡ OPTIMIZED CITY STATS: Starting fast query...");
 
@@ -1720,6 +1727,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
       const elapsed = Date.now() - startTime;
       if (process.env.NODE_ENV === 'development') console.log(`⚡ OPTIMIZED: Returned ${citiesWithStats.length} cities in ${elapsed}ms (was taking 30+ seconds!)`);
+      
+      await cache.set(cacheKey, citiesWithStats, CACHE_TTL.MEDIUM);
       res.json(citiesWithStats);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching city stats:", error);
@@ -1727,11 +1736,17 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
-  // City-specific stats endpoint for individual city pages  
+  // City-specific stats endpoint for individual city pages with caching
   app.get("/api/city-stats/:city", async (req, res) => {
     try {
       const { city } = req.params;
       const { state, country } = req.query;
+      
+      const cacheKey = `city-stats:${city}:${state || ''}:${country || ''}`;
+      const cached = await cache.get<any>(cacheKey);
+      if (cached) {
+        return res.json(cached);
+      }
 
       if (process.env.NODE_ENV === 'development') console.log(`🏙️ CITY STATS SPECIFIC: Getting stats for ${city}, ${state}, ${country}`);
 
@@ -1780,6 +1795,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         };
 
         if (process.env.NODE_ENV === 'development') console.log(`🌍 GLOBAL STATS: Site-wide totals:`, globalStats);
+        await cache.set(cacheKey, globalStats, CACHE_TTL.MEDIUM);
         res.json(globalStats);
         return;
       }
@@ -1901,6 +1917,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       };
 
       if (process.env.NODE_ENV === 'development') console.log(`🏙️ CITY STATS SPECIFIC: Found stats for ${city}:`, cityStats);
+      await cache.set(cacheKey, cityStats, CACHE_TTL.MEDIUM);
       res.json(cityStats);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching city stats:", error);
@@ -1965,9 +1982,15 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
-  // Statistics endpoint - returns real data from database
+  // Statistics endpoint - returns real data from database with caching
   app.get("/api/stats/platform", async (req, res) => {
     try {
+      const cacheKey = "platform-stats";
+      const cached = await cache.get<any>(cacheKey);
+      if (cached) {
+        return res.json(cached);
+      }
+      
       // Count successful connections (accepted status)
       const [successfulMatches] = await db
         .select({ count: count() })
@@ -1990,12 +2013,14 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         .select({ count: count() })
         .from(eventParticipants);
 
-      res.json({
+      const stats = {
         successfulMatches: successfulMatches.count,
         activeTravelers: activeTravelers.count,
         destinationsCovered: destinationsResult.length,
         eventsShared: eventsShared.count
-      });
+      };
+      await cache.set(cacheKey, stats, CACHE_TTL.MEDIUM);
+      res.json(stats);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching platform stats:", error);
       res.status(500).json({ message: "Failed to fetch platform statistics" });

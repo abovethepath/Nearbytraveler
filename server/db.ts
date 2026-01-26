@@ -24,14 +24,61 @@ export const pool = new Pool({
   allowExitOnIdle: false, // Keep pool alive
 });
 
+// Database health status
+let isHealthy = true;
+let lastHealthCheck = Date.now();
+let connectionErrors = 0;
+
 // Add connection event handlers
 pool.on('error', (err: any) => {
-  console.error('Database pool error:', err);
+  console.error('❌ Database pool error:', err.message);
+  connectionErrors++;
+  isHealthy = false;
 });
 
 pool.on('connect', () => {
-  console.log('Database connected successfully');
+  if (connectionErrors > 0) {
+    console.log('✅ Database reconnected after errors');
+  }
+  isHealthy = true;
+  connectionErrors = 0;
 });
+
+// Health check function
+export async function checkDatabaseHealth(): Promise<{ healthy: boolean; latency: number; poolSize: number }> {
+  const start = Date.now();
+  try {
+    await pool.query('SELECT 1');
+    const latency = Date.now() - start;
+    lastHealthCheck = Date.now();
+    isHealthy = true;
+    return { 
+      healthy: true, 
+      latency,
+      poolSize: pool.totalCount
+    };
+  } catch (error: any) {
+    isHealthy = false;
+    return { 
+      healthy: false, 
+      latency: Date.now() - start,
+      poolSize: pool.totalCount
+    };
+  }
+}
+
+export function getDatabaseStatus() {
+  return {
+    isHealthy,
+    lastHealthCheck,
+    connectionErrors,
+    poolStats: {
+      total: pool.totalCount,
+      idle: pool.idleCount,
+      waiting: pool.waitingCount
+    }
+  };
+}
 
 export const db = drizzle({ client: pool, schema });
 

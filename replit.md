@@ -50,7 +50,11 @@ CUSTOM INTERESTS IN MATCHING: Custom interests (user-added interests like "Poker
 ### Performance Optimizations
 - **Profile Bundle Endpoint**: Single `/api/users/:userId/profile-bundle` endpoint consolidates 18 separate API calls into 1 batched request for 5-10x faster profile page loading.
 - **Event Cache**: 5-minute cache for external event API calls (reduced from 30 seconds) for significant API cost savings.
-- **Database Indexes**: Optimized indexes on frequently queried columns including user location fields, connection status, event dates, and travel plan dates.
+- **Database Indexes**: 14 optimized indexes on frequently queried columns including user location fields, connection status, event dates, and travel plan dates.
+- **Redis API Caching**: Centralized caching system (`server/cache.ts`) using Redis with in-memory fallback. Caches city stats, platform stats, and other frequently accessed data for 5 minutes.
+- **Database Connection Pooling**: Neon serverless PostgreSQL with 100 connection pool, automatic health monitoring, and retry logic for transient failures.
+- **Health Monitoring**: `/api/health` endpoint provides real-time database health, connection pool status, and latency metrics for monitoring.
+- **Slow Request Logging**: Automatic logging of API requests taking >2 seconds for performance debugging.
 
 ### AI Integration
 - **AI Model**: Anthropic Claude Sonnet.

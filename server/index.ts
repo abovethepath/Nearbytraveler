@@ -8,7 +8,7 @@ import { Redis } from "ioredis";
 import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
 import dotenv from "dotenv";
-import { db } from "./db";
+import { db, checkDatabaseHealth, getDatabaseStatus } from "./db";
 import { users, events, businessOffers, quickMeetups, quickDeals } from "../shared/schema";
 import { TravelStatusService } from "./services/travel-status-service";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
@@ -49,6 +49,45 @@ const app = express();
 
 // Trust reverse proxy (Replit/Render/Railway) so secure cookies & IPs work
 app.set("trust proxy", 1);
+
+// Performance monitoring middleware - log slow requests
+const SLOW_REQUEST_THRESHOLD_MS = 2000;
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    if (duration > SLOW_REQUEST_THRESHOLD_MS && req.path.startsWith('/api')) {
+      console.warn(`⚠️ SLOW REQUEST: ${req.method} ${req.path} took ${duration}ms`);
+    }
+  });
+  next();
+});
+
+// Health check endpoint for monitoring
+app.get('/api/health', async (req, res) => {
+  try {
+    const dbHealth = await checkDatabaseHealth();
+    const dbStatus = getDatabaseStatus();
+    
+    const health = {
+      status: dbHealth.healthy ? 'healthy' : 'degraded',
+      timestamp: new Date().toISOString(),
+      database: {
+        ...dbHealth,
+        ...dbStatus.poolStats
+      },
+      uptime: process.uptime()
+    };
+    
+    res.status(dbHealth.healthy ? 200 : 503).json(health);
+  } catch (error: any) {
+    res.status(503).json({ 
+      status: 'unhealthy', 
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
 
 // Force HTTPS redirect for production domain
 app.use((req, res, next) => {
