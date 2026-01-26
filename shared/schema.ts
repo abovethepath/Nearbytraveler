@@ -203,7 +203,13 @@ export const users = pgTable("users", {
   resetPasswordExpiry: timestamp("reset_password_expiry"),
   
   createdAt: timestamp("created_at").defaultNow(),
-});
+}, (table) => [
+  index("idx_users_hometown").on(table.hometownCity, table.hometownCountry),
+  index("idx_users_user_type").on(table.userType),
+  index("idx_users_is_traveling").on(table.isCurrentlyTraveling),
+  index("idx_users_email").on(table.email),
+  index("idx_users_city_country").on(table.city, table.country),
+]);
 
 export const businessLocations = pgTable("business_locations", {
   id: serial("id").primaryKey(),
@@ -231,7 +237,10 @@ export const connections = pgTable("connections", {
   status: text("status").notNull().default("pending"), // 'pending', 'accepted', 'rejected'
   connectionNote: text("connection_note"), // Optional note about how they met (e.g., "met at xyz event", "met in Spain")
   createdAt: timestamp("created_at").defaultNow(),
-});
+}, (table) => [
+  index("idx_connections_requester").on(table.requesterId, table.status),
+  index("idx_connections_receiver").on(table.receiverId, table.status),
+]);
 
 export const messages = pgTable("messages", {
   id: serial("id").primaryKey(),
@@ -480,7 +489,11 @@ export const events = pgTable("events", {
   attendeeCount: integer("attendee_count"), // Number of attendees from source platform (for imported events)
   
   createdAt: timestamp("created_at").defaultNow(),
-});
+}, (table) => [
+  index("idx_events_city_date").on(table.city, table.date),
+  index("idx_events_organizer").on(table.organizerId),
+  index("idx_events_country").on(table.country),
+]);
 
 // New table for event participants/attendees
 export const eventParticipants = pgTable("event_participants", {
@@ -512,7 +525,11 @@ export const travelPlans = pgTable("travel_plans", {
   autoTags: text("auto_tags").array(), // Auto-generated tags from notes
   status: text("status").default("planned"), // Status determined by dates
   createdAt: timestamp("created_at").defaultNow(),
-});
+}, (table) => [
+  index("idx_travel_plans_user").on(table.userId),
+  index("idx_travel_plans_dates").on(table.startDate, table.endDate),
+  index("idx_travel_plans_destination").on(table.destinationCity, table.destinationCountry),
+]);
 
 // Trip Itineraries - Detailed daily schedules for travel plans
 export const tripItineraries = pgTable("trip_itineraries", {
@@ -577,7 +594,9 @@ export const userPhotos = pgTable("user_photos", {
   isPrivate: boolean("is_private").default(false),
   isProfilePhoto: boolean("is_profile_photo").default(false),
   uploadedAt: timestamp("uploaded_at").defaultNow(),
-});
+}, (table) => [
+  index("idx_photos_user").on(table.userId),
+]);
 
 // Photo tags - for tagging other users in photos
 export const photoTags = pgTable("photo_tags", {
