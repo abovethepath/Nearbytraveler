@@ -468,18 +468,8 @@ export default function Events() {
           </div>
 
           <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-            <div className="flex items-start justify-between mb-6">
+            <div className="mb-4">
               <BackButton fallbackRoute="/events-landing" />
-              {isDesktop && (
-                <Button 
-                  onClick={() => setShowCreateEvent(true)}
-                  className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white px-6 py-3 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg text-base font-semibold"
-                  data-testid="create-event-hero-button"
-                >
-                  <Plus className="w-5 h-5 mr-2" />
-                  Create Event
-                </Button>
-              )}
             </div>
           
           {isMobile ? (
@@ -642,61 +632,45 @@ export default function Events() {
       </section>
       )}
       
-      {/* PROMINENT CREATE EVENT CTA - FIRST THING AFTER HERO */}
-      <div className="bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-950/30 dark:to-orange-950/30 py-8 sm:py-12">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            Ready to Create Something Amazing?
-          </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
-            Turn your ideas into unforgettable experiences. Start planning your event today.
-          </p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        {/* Clean Navigation Row - Tabs + Create Button */}
+        <div className="flex items-center justify-between mb-6">
+          {/* Left: Tab buttons */}
+          <div className="flex gap-2">
+            <Button 
+              onClick={() => setSelectedTab('explore')}
+              variant={selectedTab === 'explore' ? 'default' : 'outline'}
+              className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                selectedTab === 'explore' 
+                  ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                  : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300'
+              }`}
+            >
+              Community Events
+            </Button>
+            <Button 
+              onClick={() => setSelectedTab('meetup')}
+              variant={selectedTab === 'meetup' ? 'default' : 'outline'}
+              className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                selectedTab === 'meetup' 
+                  ? 'bg-green-600 hover:bg-green-700 text-white' 
+                  : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300'
+              }`}
+            >
+              Meetups
+            </Button>
+          </div>
+
+          {/* Right: Create Event Button - visible on all screen sizes */}
           <Button 
             onClick={() => setShowCreateEvent(true)}
-            className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white px-10 py-4 rounded-2xl transition-all duration-300 hover:scale-105 shadow-xl text-xl font-bold transform hover:rotate-1"
+            className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-4 py-2 rounded-lg shadow-md text-sm font-medium"
             data-testid="create-event-main-cta"
           >
-            <Plus className="w-6 h-6 mr-3" />
-            Create Your Event
+            <Plus className="w-4 h-4 mr-1" />
+            Create Event
           </Button>
-        </div>
-      </div>
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-        {/* Navigation Tabs - Simplified to 2 tabs only */}
-        <div className="flex flex-wrap justify-center gap-2 mb-6 px-2">
-          <Button 
-            onClick={() => setSelectedTab('explore')}
-            className={`px-3 py-2 rounded-xl transition-all duration-300 text-xs sm:text-sm flex-shrink-0 ${
-              selectedTab === 'explore' 
-                ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg' 
-                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-            }`}
-          >
-            Community Events
-          </Button>
-          <Button 
-            onClick={() => setSelectedTab('meetup')}
-            className={`px-3 py-2 rounded-xl transition-all duration-300 text-xs sm:text-sm flex-shrink-0 ${
-              selectedTab === 'meetup' 
-                ? 'bg-green-600 hover:bg-green-700 text-white shadow-lg' 
-                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-            }`}
-          >
-            Meetups
-          </Button>
-
-          {/* Mobile-only Create Event Button */}
-          {isMobile && (
-            <Button 
-              onClick={() => setShowCreateEvent(true)}
-              className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg text-sm sm:text-base"
-            >
-              <Plus className="w-4 sm:w-5 h-4 sm:h-5 mr-1 sm:mr-2" />
-              Create Event
-            </Button>
-          )}
         </div>
 
         {/* Unified Location Selector - Works for ALL tabs */}
