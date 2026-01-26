@@ -2235,16 +2235,20 @@ export class DatabaseStorage implements IStorage {
           autoJoin: !isDomesticTravel && !isFutureTrip
         });
         
-        // Add destination country to countriesVisited if it's a new country
-        if (destinationCountry && user) {
+        // Only add destination country to countriesVisited if the trip has already started
+        // This ensures "Countries Visited" is accurate - only showing places actually visited
+        const tripHasStarted = startDate && startDate <= now;
+        if (destinationCountry && user && tripHasStarted) {
           const currentCountries = user.countriesVisited || [];
           if (!currentCountries.includes(destinationCountry)) {
             const updatedCountries = [...currentCountries, destinationCountry];
             await db.update(users)
               .set({ countriesVisited: updatedCountries })
               .where(eq(users.id, newPlan.userId));
-            console.log(`🌍 COUNTRY ADDED: ${destinationCountry} added to countries visited for user ${newPlan.userId}`);
+            console.log(`🌍 COUNTRY ADDED: ${destinationCountry} added to countries visited for user ${newPlan.userId} (trip started)`);
           }
+        } else if (destinationCountry && !tripHasStarted) {
+          console.log(`📅 COUNTRY PENDING: ${destinationCountry} will be added when trip starts on ${startDate?.toISOString()}`);
         }
         
         if (destinationCity && destinationCountry) {
@@ -2267,6 +2271,40 @@ export class DatabaseStorage implements IStorage {
   async updateTravelPlanStatuses(): Promise<number> {
     try {
       const now = new Date();
+      
+      // First, find trips that are about to become active (so we can add countries)
+      const tripsBecomingActive = await db
+        .select({
+          id: travelPlans.id,
+          userId: travelPlans.userId,
+          destinationCountry: travelPlans.destinationCountry
+        })
+        .from(travelPlans)
+        .where(
+          and(
+            lte(travelPlans.startDate, now),
+            gte(travelPlans.endDate, now),
+            ne(travelPlans.status, 'active'),
+            ne(travelPlans.status, 'completed')
+          )
+        );
+      
+      // Add destination countries to users' "countries visited" when trips start
+      for (const trip of tripsBecomingActive) {
+        if (trip.destinationCountry && trip.userId) {
+          const [user] = await db.select().from(users).where(eq(users.id, trip.userId));
+          if (user) {
+            const currentCountries = user.countriesVisited || [];
+            if (!currentCountries.includes(trip.destinationCountry)) {
+              const updatedCountries = [...currentCountries, trip.destinationCountry];
+              await db.update(users)
+                .set({ countriesVisited: updatedCountries })
+                .where(eq(users.id, trip.userId));
+              console.log(`🌍 COUNTRY ADDED (trip started): ${trip.destinationCountry} added to user ${trip.userId}'s countries visited`);
+            }
+          }
+        }
+      }
       
       // Update completed trips
       const completedCount = await db
