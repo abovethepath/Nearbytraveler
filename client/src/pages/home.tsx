@@ -1555,14 +1555,7 @@ export default function Home() {
               alt="Travelers connecting at coffee shop"
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
-            
-            {/* Glassmorphism text overlay */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-white/10 dark:bg-black/20 backdrop-blur-md border-t border-white/20">
-              <p className="text-white font-semibold text-sm text-center drop-shadow-lg">
-                "Where Local Experiences Meet Worldwide Connections"
-              </p>
-            </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
           </div>
         </div>
       </div>
