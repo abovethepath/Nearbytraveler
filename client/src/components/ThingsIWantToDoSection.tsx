@@ -353,23 +353,35 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                     </div>
                   ))}
 
-                  {/* Event Pills */}
-                  {cityData.events.map((event) => (
-                    <div key={`evt-${event.id}`} className="relative group">
-                      <div className="inline-flex items-center justify-center rounded-full px-4 py-1.5 text-xs font-medium bg-gradient-to-r from-blue-600 to-cyan-500 text-white border-0 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm">
-                        📅 {event.eventTitle || (event as any).title}
+                  {/* Event Pills - Clickable to go to event page */}
+                  {cityData.events.map((event) => {
+                    // Determine the event URL based on available IDs
+                    const eventId = (event as any).eventId || event.id;
+                    const eventUrl = `/events/${eventId}`;
+                    
+                    return (
+                      <div key={`evt-${event.id}`} className="relative group">
+                        <Link href={eventUrl}>
+                          <div className="inline-flex items-center justify-center rounded-full px-4 py-1.5 text-xs font-medium bg-gradient-to-r from-blue-600 to-cyan-500 text-white border-0 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm cursor-pointer hover:from-blue-700 hover:to-cyan-600 transition-all hover:scale-105">
+                            📅 {event.eventTitle || (event as any).title}
+                          </div>
+                        </Link>
+                        {isOwnProfile && (
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              deleteEvent.mutate(event);
+                            }}
+                            className="absolute bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center transition-opacity -top-1 -right-1 w-5 h-5 opacity-0 group-hover:opacity-100"
+                            title="Remove event"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        )}
                       </div>
-                      {isOwnProfile && (
-                        <button
-                          onClick={() => deleteEvent.mutate(event)}
-                          className="absolute bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center transition-opacity -top-1 -right-1 w-5 h-5 opacity-0 group-hover:opacity-100"
-                          title="Remove event"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      )}
-                    </div>
-                  ))}
+                    );
+                  })}
 
                 </div>
               </div>
