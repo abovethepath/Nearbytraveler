@@ -1516,6 +1516,15 @@ export default function Home() {
   {isMobile ? (
     // Mobile: Modern vertical layout with glass morphism
     <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
+      {/* Hide Hero Button - above the pill */}
+      <button
+        onClick={toggleHeroVisibility}
+        className="inline-flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 mb-4"
+      >
+        <X className="w-4 h-4" />
+        Hide
+      </button>
+      
       {/* DRAMATIC Glass morphism badge */}
       <div className="inline-flex items-center gap-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-2 border-blue-500/30 dark:border-orange-500/30 rounded-full px-8 py-3 mb-8 shadow-2xl">
         <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full animate-pulse shadow-lg shadow-blue-500/50"></div>
