@@ -10,6 +10,7 @@ import { useAuth } from "@/App";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
 import { getTravelActivities } from "@shared/base-options";
+import { METRO_AREAS } from "@shared/constants";
 import { 
   MapPin, 
   Plus, 
@@ -100,6 +101,18 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     enabled: !!user?.id
   });
 
+  // Helper: Check if a city belongs to a metro area and return the metro name
+  const getMetroName = (cityName: string): string | null => {
+    const lowerCity = cityName.toLowerCase();
+    for (const [metroKey, metroConfig] of Object.entries(METRO_AREAS)) {
+      const cities = (metroConfig as any).cities || [];
+      if (cities.some((c: string) => c.toLowerCase() === lowerCity)) {
+        return (metroConfig as any).metroName || metroKey;
+      }
+    }
+    return null;
+  };
+
   // Get user's relevant cities (hometown + travel destinations)
   // Uses userProfile for complete data since auth user may have minimal fields
   const getUserRelevantCities = () => {
@@ -108,12 +121,24 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     // Add hometown from profile (more complete data than auth user)
     const profile: any = userProfile || user;
     if (profile?.hometownCity) {
-      relevantCityNames.push(profile.hometownCity.toLowerCase());
+      const hometownLower = profile.hometownCity.toLowerCase();
+      relevantCityNames.push(hometownLower);
+      // Also add metro area name if applicable
+      const metroName = getMetroName(profile.hometownCity);
+      if (metroName) {
+        relevantCityNames.push(metroName.toLowerCase());
+      }
     }
     
     // Add current destination from profile
     if (profile?.destinationCity) {
-      relevantCityNames.push(profile.destinationCity.toLowerCase());
+      const destLower = profile.destinationCity.toLowerCase();
+      relevantCityNames.push(destLower);
+      // Also add metro area name if applicable
+      const metroName = getMetroName(profile.destinationCity);
+      if (metroName) {
+        relevantCityNames.push(metroName.toLowerCase());
+      }
     }
     
     // Add all travel plan destinations (filtered by userId for safety)
@@ -121,11 +146,18 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       travelPlans.forEach((plan: any) => {
         // Only include plans that belong to current user
         if (plan.destinationCity && plan.userId === user?.id) {
-          relevantCityNames.push(plan.destinationCity.toLowerCase());
+          const planCityLower = plan.destinationCity.toLowerCase();
+          relevantCityNames.push(planCityLower);
+          // Also add metro area name if applicable
+          const metroName = getMetroName(plan.destinationCity);
+          if (metroName) {
+            relevantCityNames.push(metroName.toLowerCase());
+          }
         }
       });
     }
     
+    console.log('🏙️ getUserRelevantCities:', relevantCityNames);
     return [...new Set(relevantCityNames)]; // Remove duplicates
   };
 
@@ -151,13 +183,22 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     if (allCities.length > 0) {
       const relevantCityNames = getUserRelevantCities();
       console.log('🏙️ MATCH: User relevant cities:', relevantCityNames);
+      console.log('🏙️ MATCH: All cities available:', allCities.map(c => c.city));
       
       if (relevantCityNames.length > 0) {
         const userCities = allCities.filter(city => 
           relevantCityNames.includes(city.city.toLowerCase())
         );
-        console.log('🏙️ MATCH: Showing', userCities.length, 'user-relevant cities');
-        setFilteredCities(userCities);
+        console.log('🏙️ MATCH: Matched cities:', userCities.map(c => c.city));
+        
+        // If user has relevant cities but none matched, show all cities as fallback
+        if (userCities.length === 0) {
+          console.log('🏙️ MATCH: No cities matched user locations, showing ALL cities as fallback');
+          setFilteredCities(allCities);
+        } else {
+          console.log('🏙️ MATCH: Showing', userCities.length, 'user-relevant cities');
+          setFilteredCities(userCities);
+        }
       } else {
         // FALLBACK: Show all cities if user has no hometown or travel plans
         console.log('🏙️ MATCH: No relevant cities found, showing all', allCities.length, 'cities');
