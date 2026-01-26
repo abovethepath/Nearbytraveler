@@ -62,6 +62,7 @@ function Navbar() {
   const { toggleTheme } = useTheme();
   const headerRef = React.useRef<HTMLDivElement>(null);
   const [menuTop, setMenuTop] = useState(0);
+  const lastToggleTime = React.useRef(0);
 
   // Keyboard shortcut for theme toggle
   useEffect(() => {
@@ -439,12 +440,18 @@ function Navbar() {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
+                    const now = Date.now();
+                    if (now - lastToggleTime.current < 300) return;
+                    lastToggleTime.current = now;
                     console.log('🍔 Hamburger clicked via onClick');
                     setIsMobileMenuOpen(o => !o);
                   }}
                   onTouchEnd={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
+                    const now = Date.now();
+                    if (now - lastToggleTime.current < 300) return;
+                    lastToggleTime.current = now;
                     console.log('🍔 Hamburger touched via onTouchEnd');
                     setIsMobileMenuOpen(o => !o);
                   }}

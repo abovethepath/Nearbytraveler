@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Menu, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ export function MobileTopNav() {
   const [, setLocation] = useLocation();
   const [showDropdown, setShowDropdown] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const lastToggleTime = useRef(0);
 
   // hydrate currentUser from best source available - fixed for auth consistency
   useEffect(() => {
@@ -94,9 +95,23 @@ export function MobileTopNav() {
               aria-expanded={showDropdown}
               aria-controls="mobile-menu"
               className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 relative z-[1001]"
+              style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation', userSelect: 'none' }}
               onClick={(e) => {
+                e.preventDefault();
                 e.stopPropagation();
-                console.log('Hamburger clicked, toggling dropdown');
+                const now = Date.now();
+                if (now - lastToggleTime.current < 300) return;
+                lastToggleTime.current = now;
+                console.log('🍔 MobileTopNav Hamburger clicked via onClick');
+                setShowDropdown((s) => !s);
+              }}
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const now = Date.now();
+                if (now - lastToggleTime.current < 300) return;
+                lastToggleTime.current = now;
+                console.log('🍔 MobileTopNav Hamburger touched via onTouchEnd');
                 setShowDropdown((s) => !s);
               }}
             >
