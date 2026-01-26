@@ -1,3 +1,7 @@
+// Initialize Sentry error monitoring FIRST (before any other imports)
+import "./instrument";
+import * as Sentry from "@sentry/node";
+
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
 import helmet from "helmet";
