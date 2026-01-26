@@ -38,6 +38,7 @@ export interface IStorage {
   leaveEvent(eventId: number, userId: number): Promise<boolean>;
   getEventParticipants(eventId: number): Promise<EventParticipantWithUser[]>;
   getUserEventParticipations(userId: number): Promise<EventParticipant[]>;
+  getUserParticipatedEventsWithDetails(userId: number, status?: 'interested' | 'going'): Promise<any[]>;
   getAllEventsWithParticipants(): Promise<any[]>;
   isUserInterestedInEvent(userId: number, eventId?: number, externalEventId?: string, eventSource?: string): Promise<boolean>;
   
@@ -1741,6 +1742,34 @@ export class DatabaseStorage implements IStorage {
 
   async getUserEventParticipations(userId: number): Promise<EventParticipant[]> {
     return await db.select().from(eventParticipants).where(eq(eventParticipants.userId, userId));
+  }
+
+  // Get events a user is participating in with full event details, filtered by status
+  async getUserParticipatedEventsWithDetails(userId: number, status?: 'interested' | 'going'): Promise<any[]> {
+    const conditions = [eq(eventParticipants.userId, userId)];
+    
+    if (status) {
+      conditions.push(eq(eventParticipants.status, status));
+    }
+    
+    const participatedEvents = await db
+      .select({
+        event: events,
+        participantStatus: eventParticipants.status,
+        participantJoinedAt: eventParticipants.joinedAt,
+        participantRole: eventParticipants.role,
+      })
+      .from(eventParticipants)
+      .innerJoin(events, eq(eventParticipants.eventId, events.id))
+      .where(and(...conditions))
+      .orderBy(desc(events.date));
+    
+    return participatedEvents.map(row => ({
+      ...row.event,
+      userStatus: row.participantStatus,
+      userJoinedAt: row.participantJoinedAt,
+      userRole: row.participantRole,
+    }));
   }
 
   async getAllEventsWithParticipants(): Promise<any[]> {

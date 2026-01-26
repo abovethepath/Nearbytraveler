@@ -1125,6 +1125,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     passportStamps: any[];
     platformStats: { totalUsers: number; totalConnections: number };
     profileEvents: any[];
+    eventsGoing: any[];
+    eventsInterested: any[];
     connectionStatus: { status: string; connectionId: number | null };
     compatibility: any;
     connectionDegree: any;
@@ -1469,6 +1471,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // BUNDLE-DERIVED: Profile events from profile bundle
   const profileEvents = profileBundle?.profileEvents || [];
   const profileEventsLoading = bundleLoading;
+  
+  // BUNDLE-DERIVED: Events user is going to (committed attendance)
+  const eventsGoing = profileBundle?.eventsGoing || [];
+  
+  // BUNDLE-DERIVED: Events user is interested in (bookmarked/watching)
+  const eventsInterested = profileBundle?.eventsInterested || [];
 
 
 
@@ -5871,6 +5879,102 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </div>
             )}
 
+            {/* Events I'm Going To - Only show on own profile for non-business users */}
+            {isOwnProfile && user?.userType !== 'business' && eventsGoing.length > 0 && (
+              <Card className="hover:shadow-lg transition-all duration-200 hover:border-green-300 mt-6">
+                <CardHeader className="pb-2">
+                  <CardTitle className="dark:text-white flex items-center gap-2 text-base">
+                    <Calendar className="w-5 h-5 text-green-500" />
+                    Events I'm Going To
+                    <Badge variant="secondary" className="ml-auto bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                      {eventsGoing.length}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {eventsGoing.slice(0, 3).map((event: any) => (
+                    <div 
+                      key={event.id} 
+                      className="p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
+                      onClick={() => setLocation(`/events/${event.id}`)}
+                    >
+                      <h4 className="font-medium text-sm dark:text-white line-clamp-1">{event.title}</h4>
+                      <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        <Calendar className="w-3 h-3" />
+                        {new Date(event.date).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                        <MapPin className="w-3 h-3" />
+                        {event.city}{event.state && `, ${event.state}`}
+                      </div>
+                    </div>
+                  ))}
+                  {eventsGoing.length > 3 && (
+                    <Button 
+                      variant="ghost" 
+                      className="w-full text-sm text-gray-500"
+                      onClick={() => setLocation('/events')}
+                    >
+                      View all {eventsGoing.length} events
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Events I'm Interested In - Only show on own profile for non-business users */}
+            {isOwnProfile && user?.userType !== 'business' && eventsInterested.length > 0 && (
+              <Card className="hover:shadow-lg transition-all duration-200 hover:border-orange-300 mt-4">
+                <CardHeader className="pb-2">
+                  <CardTitle className="dark:text-white flex items-center gap-2 text-base">
+                    <Star className="w-5 h-5 text-orange-500" />
+                    Events I'm Interested In
+                    <Badge variant="secondary" className="ml-auto bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
+                      {eventsInterested.length}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {eventsInterested.slice(0, 3).map((event: any) => (
+                    <div 
+                      key={event.id} 
+                      className="p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
+                      onClick={() => setLocation(`/events/${event.id}`)}
+                    >
+                      <h4 className="font-medium text-sm dark:text-white line-clamp-1">{event.title}</h4>
+                      <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        <Calendar className="w-3 h-3" />
+                        {new Date(event.date).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                        <MapPin className="w-3 h-3" />
+                        {event.city}{event.state && `, ${event.state}`}
+                      </div>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        className="mt-2 w-full text-xs"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setLocation(`/events/${event.id}`);
+                        }}
+                      >
+                        Change to Going
+                      </Button>
+                    </div>
+                  ))}
+                  {eventsInterested.length > 3 && (
+                    <Button 
+                      variant="ghost" 
+                      className="w-full text-sm text-gray-500"
+                      onClick={() => setLocation('/events')}
+                    >
+                      View all {eventsInterested.length} interested events
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
             {/* Travel Stats - Hidden for business profiles - MOVED UP */}
             {user?.userType !== 'business' && (

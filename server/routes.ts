@@ -5228,6 +5228,8 @@ Questions? Just reply to this message. Welcome aboard!
         passportStampsData,
         platformStatsData,
         profileEventsData,
+        eventsGoingData,
+        eventsInterestedData,
       ] = await Promise.all([
         // 1. User data
         storage.getUser(userId),
@@ -5264,6 +5266,10 @@ Questions? Just reply to this message. Welcome aboard!
         })(),
         // 11. Profile events (organized by user)
         db.select().from(events).where(eq(events.organizerId, userId)),
+        // 12. Events user is going to (committed attendance)
+        storage.getUserParticipatedEventsWithDetails(userId, 'going'),
+        // 13. Events user is interested in (bookmarked)
+        storage.getUserParticipatedEventsWithDetails(userId, 'interested'),
       ]);
       
       if (!userData) {
@@ -5328,6 +5334,8 @@ Questions? Just reply to this message. Welcome aboard!
         passportStamps: passportStampsData,
         platformStats: platformStatsData,
         profileEvents: profileEventsData,
+        eventsGoing: eventsGoingData,
+        eventsInterested: eventsInterestedData,
         connectionStatus,
         compatibility,
         connectionDegree,
@@ -9090,6 +9098,29 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error joining event:", error);
       return res.status(500).json({ message: "Failed to join event" });
+    }
+  });
+
+  // Get events a user is participating in (going or interested)
+  app.get("/api/users/:userId/participated-events", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId || '0');
+      const status = req.query.status as 'interested' | 'going' | undefined;
+      
+      if (!userId || isNaN(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`📋 GET PARTICIPATED EVENTS: User ${userId}, status filter: ${status || 'all'}`);
+      }
+      
+      const participatedEvents = await storage.getUserParticipatedEventsWithDetails(userId, status);
+      
+      return res.json(participatedEvents);
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error getting participated events:", error);
+      return res.status(500).json({ message: "Failed to get participated events" });
     }
   });
 

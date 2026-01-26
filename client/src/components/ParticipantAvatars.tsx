@@ -7,9 +7,10 @@ interface ParticipantAvatarsProps {
   itemId: number;
   maxVisible?: number;
   className?: string;
+  statusFilter?: 'going' | 'interested' | 'all';
 }
 
-export function ParticipantAvatars({ type, itemId, maxVisible = 5, className = '' }: ParticipantAvatarsProps) {
+export function ParticipantAvatars({ type, itemId, maxVisible = 5, className = '', statusFilter = 'all' }: ParticipantAvatarsProps) {
   const { data: participants = [], isLoading } = useQuery<EventParticipantWithUser[]>({
     queryKey: [`/${type === 'meetup' ? 'quick-meets' : 'events'}/${itemId}/participants`],
     queryFn: async () => {
@@ -31,8 +32,11 @@ export function ParticipantAvatars({ type, itemId, maxVisible = 5, className = '
     );
   }
 
-  const visibleParticipants = participants.slice(0, maxVisible);
-  const remainingCount = Math.max(0, participants.length - maxVisible);
+  const filteredParticipants = statusFilter === 'all' 
+    ? participants 
+    : participants.filter(p => p.status === statusFilter);
+  const visibleParticipants = filteredParticipants.slice(0, maxVisible);
+  const remainingCount = Math.max(0, filteredParticipants.length - maxVisible);
 
   return (
     <div className={`flex items-center ${className}`}>
@@ -63,13 +67,13 @@ export function ParticipantAvatars({ type, itemId, maxVisible = 5, className = '
 
       {/* Count and Text */}
       <div className="ml-3 text-sm text-gray-600 dark:text-gray-400">
-        {participants.length === 0 ? (
-          "No participants yet"
-        ) : participants.length === 1 ? (
-          "1 person joined"
+        {filteredParticipants.length === 0 ? (
+          statusFilter === 'going' ? "No one going yet" : "No participants yet"
+        ) : filteredParticipants.length === 1 ? (
+          statusFilter === 'going' ? "1 person going" : "1 person joined"
         ) : (
           <>
-            {participants.length} people joined
+            {filteredParticipants.length} people {statusFilter === 'going' ? 'going' : 'joined'}
             {remainingCount > 0 && (
               <span className="ml-1 text-xs">
                 (+{remainingCount} more)

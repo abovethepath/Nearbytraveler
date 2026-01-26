@@ -161,6 +161,12 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
   const participantStatus = currentParticipant?.status;
   const isOrganizer = viewAsGuest ? false : event.organizerId === currentUser?.id;
   const organizer = users.find(u => u.id === event.organizerId);
+  
+  // Separate participants by status
+  const goingParticipants = participants.filter(p => p.status === 'going');
+  const interestedParticipants = participants.filter(p => p.status === 'interested');
+  const goingCount = goingParticipants.length;
+  const interestedCount = interestedParticipants.length;
 
   // Share functionality
   const shareEvent = async () => {
@@ -351,7 +357,12 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                 <div className="flex items-center gap-3">
                   <Users className="w-5 h-5 text-travel-blue" />
                   <div>
-                    <p className="font-medium">{participants.length} attending</p>
+                    <p className="font-medium">{goingCount} going</p>
+                    {interestedCount > 0 && (
+                      <p className="text-sm text-orange-600">
+                        {interestedCount} interested
+                      </p>
+                    )}
                     {event.maxParticipants && (
                       <p className="text-sm text-gray-500">
                         Max {event.maxParticipants} participants
@@ -589,25 +600,23 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                       </Badge>
                     </div>
                   </div>
-                  {/* Participant Avatars */}
+                  {/* Participant Avatars - only show going participants for privacy */}
                   <ParticipantAvatars
                     type="event"
                     itemId={parseInt(eventId)}
                     maxVisible={10}
                     className="mt-3"
+                    statusFilter="going"
                   />
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {participants
+                    {/* Only show "going" participants' names - interested users show count only per privacy */}
+                    {goingParticipants
                       .sort((a, b) => {
-                        // Event creator first, then 'going' before 'interested', then alphabetical
+                        // Event creator first, then alphabetical
                         if (a.userId === event.organizerId) return -1;
                         if (b.userId === event.organizerId) return 1;
-                        
-                        // 'going' status comes before 'interested'
-                        if (a.status === 'going' && b.status !== 'going') return -1;
-                        if (a.status !== 'going' && b.status === 'going') return 1;
                         
                         const userA = users.find(u => u.id === a.userId);
                         const userB = users.find(u => u.id === b.userId);
@@ -636,16 +645,9 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                                   Organizer
                                 </Badge>
                               )}
-                              {participant.status === 'going' && (
-                                <Badge className="text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" data-testid={`participant-status-${participant.userId}`}>
-                                  ✓ Going
-                                </Badge>
-                              )}
-                              {participant.status === 'interested' && (
-                                <Badge className="text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200" data-testid={`participant-status-${participant.userId}`}>
-                                  ⭐ Interested
-                                </Badge>
-                              )}
+                              <Badge className="text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" data-testid={`participant-status-${participant.userId}`}>
+                                ✓ Going
+                              </Badge>
                             </div>
                             <button
                               onClick={() => setLocation(`/messages?user=${user?.id}`)}
