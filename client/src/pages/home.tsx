@@ -1543,17 +1543,17 @@ export default function Home() {
       </h1>
       
       {/* Glass morphism image container */}
-      <div className="mb-8 flex justify-center px-4">
-        <div className="relative w-full max-w-sm group">
+      <div className="mb-8 flex justify-center px-4 overflow-hidden">
+        <div className="relative w-full max-w-sm group overflow-hidden">
           {/* Glow effect behind */}
           <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-orange-500 rounded-2xl opacity-75 blur-lg group-hover:opacity-100 transition duration-500"></div>
           
           {/* Main image with glass morphism overlay */}
-          <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/20">
+          <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/20 aspect-[4/3]">
             <img 
               src={staticHeroMedia}
               alt="Travelers connecting at coffee shop"
-              className="w-full h-auto object-cover"
+              className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
             
