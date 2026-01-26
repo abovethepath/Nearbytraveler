@@ -3868,7 +3868,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </Badge>
                         <Badge variant="outline" className="text-xs px-3 py-1 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
                           <Star className="w-3 h-3 mr-1 inline" />
-                          {userReferences?.references?.length || userReferences?.counts?.total || 0} {(userReferences?.references?.length || userReferences?.counts?.total || 0) === 1 ? 'Reference' : 'References'}
+                          {userReferences?.length || 0} {(userReferences?.length || 0) === 1 ? 'Reference' : 'References'}
                         </Badge>
                         <Badge variant="outline" className="text-xs px-3 py-1 bg-purple-100 dark:bg-purple-900 border-purple-300 dark:border-purple-600">
                           <ThumbsUp className="w-3 h-3 mr-1 inline" />
@@ -4051,9 +4051,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 data-testid="tab-references"
               >
                 References
-                {!!(userReferences?.references?.length || userReferences?.counts?.total) && (
+                {!!(userReferences?.length) && (
                   <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
-                    {userReferences?.references?.length || userReferences?.counts?.total || 0}
+                    {userReferences?.length || 0}
                   </span>
                 )}
               </button>
