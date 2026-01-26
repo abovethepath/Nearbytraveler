@@ -10743,9 +10743,9 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // Simple cache for external events (30 second cache for testing improvements)
+  // Simple cache for external events (5 minute cache for performance)
   const eventCache = new Map();
-  const CACHE_DURATION = 30 * 1000; // 30 seconds for faster testing
+  const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes - reduces external API calls by 10x
 
   // Helper function to calculate distance between two points
   function calculateDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
