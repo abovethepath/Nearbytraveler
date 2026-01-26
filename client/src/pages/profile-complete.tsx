@@ -41,7 +41,7 @@ import { authStorage } from "@/lib/auth";
 import ConnectButton from "@/components/ConnectButton";
 import { VouchButton } from "@/components/VouchButton";
 
-import { formatDateForDisplay, getCurrentTravelDestination } from "@/lib/dateUtils";
+import { formatDateForDisplay, getCurrentTravelDestination, formatLocationCompact } from "@/lib/dateUtils";
 import { METRO_AREAS } from "@shared/constants";
 import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/locationData";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
@@ -3707,9 +3707,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </div>
 
             {/* Profile text */}
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 overflow-hidden">
               {user?.userType === 'business' ? (
-                <div className="space-y-2 text-black w-full mt-2">
+                <div className="space-y-2 text-black w-full mt-2 overflow-hidden">
                   <h1 className="text-2xl sm:text-4xl font-bold text-black">
                     {user.businessName || user.name || `@${user.username}`}
                   </h1>
@@ -3779,12 +3779,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
                 </div>
               ) : (
-                <div className="space-y-2 text-black w-full mt-2">
+                <div className="space-y-2 text-black w-full mt-2 overflow-hidden">
                   {(() => {
-                    // Show city + state + country, or just country if city is missing, or "Unknown" if nothing
-                    const hometown = user.hometownCity ? 
-                      `${user.hometownCity}${user.hometownState ? `, ${user.hometownState}` : ''}${user.hometownCountry ? `, ${user.hometownCountry}` : ''}` :
-                      user.hometownCountry || 'Unknown';
+                    // Use compact formatting: "City, ST" for US, "City, Country" for international
+                    const hometown = formatLocationCompact(user.hometownCity, user.hometownState, user.hometownCountry);
                     
                     return (
                       <>
@@ -3808,12 +3806,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           )}
                         </div>
                         
-                        {/* ALWAYS show hometown - NEVER remove */}
-                        <div className="flex items-center gap-2 text-lg font-medium text-black">
-                          <MapPin className="w-5 h-5 text-blue-600" />
-                          <span>Nearby Local • {hometown}</span>
+                        {/* ALWAYS show hometown - NEVER remove - compact text for mobile */}
+                        <div className="flex items-center gap-1.5 text-sm sm:text-base font-medium text-black">
+                          <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0" />
+                          <span className="truncate">Nearby Local • {hometown}</span>
                           {user.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100 border border-green-300 dark:border-green-600">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100 border border-green-300 dark:border-green-600 flex-shrink-0">
                               New to Town
                             </span>
                           )}
@@ -3824,9 +3822,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
                           if (currentTravelPlan) {
                             return (
-                              <div className="flex items-center gap-2 text-lg font-medium text-black">
-                                <Plane className="w-5 h-5 text-orange-600" />
-                                <span>Nearby Traveler • {currentTravelPlan}</span>
+                              <div className="flex items-center gap-1.5 text-sm sm:text-base font-medium text-black">
+                                <Plane className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600 flex-shrink-0" />
+                                <span className="truncate">Nearby Traveler • {currentTravelPlan}</span>
                               </div>
                             );
                           }

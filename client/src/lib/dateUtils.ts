@@ -324,3 +324,75 @@ export function getCurrentTravelDestination(travelPlans: any[]): string | null {
   // No active trips = User is NEARBY LOCAL only (future trips don't count)
   return null;
 }
+
+/**
+ * Abbreviate US state names to 2-letter codes for compact display
+ */
+const US_STATE_ABBREVIATIONS: Record<string, string> = {
+  'Alabama': 'AL', 'Alaska': 'AK', 'Arizona': 'AZ', 'Arkansas': 'AR', 'California': 'CA',
+  'Colorado': 'CO', 'Connecticut': 'CT', 'Delaware': 'DE', 'Florida': 'FL', 'Georgia': 'GA',
+  'Hawaii': 'HI', 'Idaho': 'ID', 'Illinois': 'IL', 'Indiana': 'IN', 'Iowa': 'IA',
+  'Kansas': 'KS', 'Kentucky': 'KY', 'Louisiana': 'LA', 'Maine': 'ME', 'Maryland': 'MD',
+  'Massachusetts': 'MA', 'Michigan': 'MI', 'Minnesota': 'MN', 'Mississippi': 'MS', 'Missouri': 'MO',
+  'Montana': 'MT', 'Nebraska': 'NE', 'Nevada': 'NV', 'New Hampshire': 'NH', 'New Jersey': 'NJ',
+  'New Mexico': 'NM', 'New York': 'NY', 'North Carolina': 'NC', 'North Dakota': 'ND', 'Ohio': 'OH',
+  'Oklahoma': 'OK', 'Oregon': 'OR', 'Pennsylvania': 'PA', 'Rhode Island': 'RI', 'South Carolina': 'SC',
+  'South Dakota': 'SD', 'Tennessee': 'TN', 'Texas': 'TX', 'Utah': 'UT', 'Vermont': 'VT',
+  'Virginia': 'VA', 'Washington': 'WA', 'West Virginia': 'WV', 'Wisconsin': 'WI', 'Wyoming': 'WY',
+  'District of Columbia': 'DC'
+};
+
+/**
+ * Abbreviate country names for compact display
+ */
+const COUNTRY_ABBREVIATIONS: Record<string, string> = {
+  'United States': 'USA', 'United States of America': 'USA',
+  'United Kingdom': 'UK', 'United Arab Emirates': 'UAE',
+  'Netherlands': 'NL', 'The Netherlands': 'NL'
+};
+
+/**
+ * Get abbreviated state code if available
+ */
+export function abbreviateState(state: string | null | undefined): string {
+  if (!state) return '';
+  return US_STATE_ABBREVIATIONS[state] || state;
+}
+
+/**
+ * Get abbreviated country code if available
+ */
+export function abbreviateCountry(country: string | null | undefined): string {
+  if (!country) return '';
+  return COUNTRY_ABBREVIATIONS[country] || country;
+}
+
+/**
+ * Format location compactly: "City, ST, USA" instead of "City, California, United States"
+ */
+export function formatLocationCompact(
+  city?: string | null, 
+  state?: string | null, 
+  country?: string | null
+): string {
+  if (!city && !country) return 'Unknown';
+  
+  const parts: string[] = [];
+  
+  if (city) parts.push(city);
+  
+  if (state) {
+    const abbrevState = abbreviateState(state);
+    parts.push(abbrevState);
+  }
+  
+  if (country) {
+    const abbrevCountry = abbreviateCountry(country);
+    // Only add country if it's different from state context (avoid "LA, CA, USA" redundancy for US)
+    if (abbrevCountry !== 'USA' || !state) {
+      parts.push(abbrevCountry);
+    }
+  }
+  
+  return parts.join(', ') || 'Unknown';
+}
