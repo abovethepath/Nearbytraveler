@@ -295,13 +295,8 @@ app.use("/api/", rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many requests, please try again later' },
-  // CRITICAL: Use real IP from X-Forwarded-For header behind Replit proxy
-  keyGenerator: (req) => {
-    // Get real IP from X-Forwarded-For header (Replit sets this)
-    const forwardedFor = req.headers['x-forwarded-for'];
-    const realIp = Array.isArray(forwardedFor) ? forwardedFor[0] : forwardedFor?.split(',')[0]?.trim();
-    return realIp || req.ip || 'unknown';
-  },
+  // Trust proxy for proper IP detection
+  validate: { xForwardedForHeader: false },
   skip: (req) => {
     // Skip rate limiting for important user actions
     if (req.method === 'PUT' && req.path.includes('/users/')) return true;
