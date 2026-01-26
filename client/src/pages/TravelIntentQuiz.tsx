@@ -219,17 +219,25 @@ export default function TravelIntentQuiz() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {whyOptions.map((option) => {
                     const Icon = option.icon;
+                    const isSelected = answers.travelWhy === option.id;
                     return (
                       <button
                         key={option.id}
                         onClick={() => handleAnswer('travelWhy', option.id)}
-                        className={`p-6 rounded-lg border-2 text-left transition-all hover:shadow-md ${
-                          answers.travelWhy === option.id
-                            ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
+                        className={`p-6 rounded-lg border-2 text-left transition-all hover:shadow-md relative ${
+                          isSelected
+                            ? 'border-blue-500 bg-blue-100 dark:bg-blue-600/40 dark:border-blue-400 ring-2 ring-blue-500/50'
                             : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
                         }`}
                       >
-                        <Icon className="w-8 h-8 text-blue-600 mb-3" />
+                        {isSelected && (
+                          <div className="absolute top-3 right-3 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
+                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                        )}
+                        <Icon className={`w-8 h-8 mb-3 ${isSelected ? 'text-blue-600 dark:text-blue-300' : 'text-blue-600'}`} />
                         <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{option.title}</h3>
                         <p className="text-sm text-gray-600 dark:text-gray-300">{option.desc}</p>
                       </button>
@@ -252,18 +260,22 @@ export default function TravelIntentQuiz() {
                         <button
                           key={option.id}
                           onClick={() => toggleInterest(option.id)}
-                          className={`p-4 rounded-lg border-2 text-center transition-all hover:shadow-md ${
+                          className={`p-4 rounded-lg border-2 text-center transition-all hover:shadow-md relative ${
                             isSelected
-                              ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
+                              ? 'border-blue-500 bg-blue-100 dark:bg-blue-600/40 dark:border-blue-400 ring-2 ring-blue-500/50'
                               : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
                           }`}
                         >
-                          <Icon className="w-6 h-6 text-blue-600 mx-auto mb-2" />
+                          {isSelected && (
+                            <div className="absolute top-2 right-2 w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
+                              <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            </div>
+                          )}
+                          <Icon className={`w-6 h-6 mx-auto mb-2 ${isSelected ? 'text-blue-600 dark:text-blue-300' : 'text-blue-600'}`} />
                           <h3 className="font-medium text-gray-900 dark:text-white text-sm mb-1">{option.title}</h3>
                           <p className="text-xs text-gray-600 dark:text-gray-300">{option.desc}</p>
-                          {isSelected && (
-                            <Badge className="mt-2 bg-blue-600">Selected</Badge>
-                          )}
                         </button>
                       );
                     })}
@@ -274,20 +286,30 @@ export default function TravelIntentQuiz() {
               {/* Step 3: How */}
               {currentStep === 3 && (
                 <div className="space-y-3">
-                  {howOptions.map((option) => (
-                    <button
-                      key={option.id}
-                      onClick={() => handleAnswer('travelHow', option.id)}
-                      className={`w-full p-4 rounded-lg border-2 text-left transition-all hover:shadow-md ${
-                        answers.travelHow === option.id
-                          ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                          : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
-                      }`}
-                    >
-                      <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{option.title}</h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">{option.desc}</p>
-                    </button>
-                  ))}
+                  {howOptions.map((option) => {
+                    const isSelected = answers.travelHow === option.id;
+                    return (
+                      <button
+                        key={option.id}
+                        onClick={() => handleAnswer('travelHow', option.id)}
+                        className={`w-full p-4 rounded-lg border-2 text-left transition-all hover:shadow-md relative ${
+                          isSelected
+                            ? 'border-blue-500 bg-blue-100 dark:bg-blue-600/40 dark:border-blue-400 ring-2 ring-blue-500/50'
+                            : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
+                        }`}
+                      >
+                        {isSelected && (
+                          <div className="absolute top-3 right-3 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
+                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                        )}
+                        <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{option.title}</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">{option.desc}</p>
+                      </button>
+                    );
+                  })}
                 </div>
               )}
 
@@ -297,40 +319,60 @@ export default function TravelIntentQuiz() {
                   <div>
                     <h3 className="font-medium text-gray-900 dark:text-white mb-3">Travel Budget</h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                      {budgetOptions.map((option) => (
-                        <button
-                          key={option.id}
-                          onClick={() => handleAnswer('budget', option.id)}
-                          className={`p-4 rounded-lg border-2 text-center transition-all hover:shadow-md ${
-                            answers.budget === option.id
-                              ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                              : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
-                          }`}
-                        >
-                          <h4 className="font-medium text-gray-900 dark:text-white">{option.title}</h4>
-                          <p className="text-sm text-gray-600 dark:text-gray-300">{option.desc}</p>
-                        </button>
-                      ))}
+                      {budgetOptions.map((option) => {
+                        const isSelected = answers.budget === option.id;
+                        return (
+                          <button
+                            key={option.id}
+                            onClick={() => handleAnswer('budget', option.id)}
+                            className={`p-4 rounded-lg border-2 text-center transition-all hover:shadow-md relative ${
+                              isSelected
+                                ? 'border-blue-500 bg-blue-100 dark:bg-blue-600/40 dark:border-blue-400 ring-2 ring-blue-500/50'
+                                : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
+                            }`}
+                          >
+                            {isSelected && (
+                              <div className="absolute top-2 right-2 w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
+                                <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                </svg>
+                              </div>
+                            )}
+                            <h4 className="font-medium text-gray-900 dark:text-white">{option.title}</h4>
+                            <p className="text-sm text-gray-600 dark:text-gray-300">{option.desc}</p>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
                   <div>
                     <h3 className="font-medium text-gray-900 dark:text-white mb-3">Group Type</h3>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                      {groupOptions.map((option) => (
-                        <button
-                          key={option.id}
-                          onClick={() => handleAnswer('groupType', option.id)}
-                          className={`p-3 rounded-lg border-2 text-center transition-all hover:shadow-md ${
-                            answers.groupType === option.id
-                              ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                              : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
-                          }`}
-                        >
-                          <h4 className="font-medium text-gray-900 dark:text-white text-sm">{option.title}</h4>
-                          <p className="text-xs text-gray-600 dark:text-gray-300">{option.desc}</p>
-                        </button>
-                      ))}
+                      {groupOptions.map((option) => {
+                        const isSelected = answers.groupType === option.id;
+                        return (
+                          <button
+                            key={option.id}
+                            onClick={() => handleAnswer('groupType', option.id)}
+                            className={`p-3 rounded-lg border-2 text-center transition-all hover:shadow-md relative ${
+                              isSelected
+                                ? 'border-blue-500 bg-blue-100 dark:bg-blue-600/40 dark:border-blue-400 ring-2 ring-blue-500/50'
+                                : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
+                            }`}
+                          >
+                            {isSelected && (
+                              <div className="absolute top-1 right-1 w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
+                                <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                </svg>
+                              </div>
+                            )}
+                            <h4 className="font-medium text-gray-900 dark:text-white text-sm">{option.title}</h4>
+                            <p className="text-xs text-gray-600 dark:text-gray-300">{option.desc}</p>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
