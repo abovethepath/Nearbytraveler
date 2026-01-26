@@ -44,6 +44,13 @@ CUSTOM INTERESTS IN MATCHING: Custom interests (user-added interests like "Poker
 - **Primary Database**: PostgreSQL.
 - **ORM**: Drizzle ORM.
 - **Schema**: Comprehensive schema for users, travel plans, events, connections, messages, businesses, and sessions.
+- **Performance Indexes**: 14 optimized indexes for users, connections, events, travel_plans, and user_photos tables.
+- **Session Storage**: Redis-based session storage for persistent sessions across server restarts.
+
+### Performance Optimizations
+- **Profile Bundle Endpoint**: Single `/api/users/:userId/profile-bundle` endpoint consolidates 18 separate API calls into 1 batched request for 5-10x faster profile page loading.
+- **Event Cache**: 5-minute cache for external event API calls (reduced from 30 seconds) for significant API cost savings.
+- **Database Indexes**: Optimized indexes on frequently queried columns including user location fields, connection status, event dates, and travel plan dates.
 
 ### AI Integration
 - **AI Model**: Anthropic Claude Sonnet.

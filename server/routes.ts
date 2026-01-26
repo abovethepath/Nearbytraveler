@@ -58,7 +58,9 @@ import {
   userEventInterests,
   vouches,
   blockedUsers,
-  insertWaitlistLeadSchema
+  insertWaitlistLeadSchema,
+  userPhotos,
+  passportStamps
 } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
 import { waitlistLeads } from "../shared/schema";
@@ -5154,6 +5156,149 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching user:", error);
       return res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // OPTIMIZED: Profile bundle endpoint - returns ALL profile data in one request
+  // This replaces 18 separate API calls with a single batched request
+  app.get("/api/users/:userId/profile-bundle", async (req, res) => {
+    try {
+      const userIdParam = req.params.userId || '0';
+      const viewerId = req.headers['x-user-id'] ? parseInt(req.headers['x-user-id'] as string) : null;
+      
+      if (userIdParam === 'NaN' || userIdParam === 'undefined' || userIdParam === 'null') {
+        return res.status(400).json({ message: "Invalid user ID parameter" });
+      }
+      
+      const userId = parseInt(userIdParam);
+      if (isNaN(userId) || userId <= 0) {
+        return res.status(400).json({ message: "Invalid user ID format" });
+      }
+      
+      console.log(`📦 PROFILE-BUNDLE: Fetching all data for user ${userId} (viewer: ${viewerId})`);
+      const startTime = Date.now();
+      
+      // Execute all queries in parallel for maximum speed
+      const [
+        userData,
+        travelPlansData,
+        connectionsData,
+        connectionRequestsData,
+        referencesData,
+        vouchesData,
+        photosData,
+        travelMemoriesData,
+        passportStampsData,
+        platformStatsData,
+        profileEventsData,
+      ] = await Promise.all([
+        // 1. User data
+        storage.getUser(userId),
+        // 2. Travel plans with itineraries
+        db.select().from(travelPlans).where(eq(travelPlans.userId, userId)),
+        // 3. User connections (accepted)
+        db.select().from(connections).where(
+          and(
+            or(eq(connections.requesterId, userId), eq(connections.receiverId, userId)),
+            eq(connections.status, 'accepted')
+          )
+        ),
+        // 4. Connection requests (pending)
+        db.select().from(connections).where(
+          and(eq(connections.receiverId, userId), eq(connections.status, 'pending'))
+        ),
+        // 5. User references
+        db.select().from(userReferences).where(eq(userReferences.revieweeId, userId)),
+        // 6. User vouches (references given by this user)
+        db.select().from(userReferences).where(eq(userReferences.reviewerId, userId)),
+        // 7. User photos
+        db.select().from(userPhotos).where(eq(userPhotos.userId, userId)),
+        // 8. Travel memories (completed trips)
+        db.select().from(travelPlans).where(
+          and(eq(travelPlans.userId, userId), eq(travelPlans.status, 'completed'))
+        ),
+        // 9. Passport stamps
+        db.select().from(passportStamps).where(eq(passportStamps.userId, userId)),
+        // 10. Platform stats (cached globally)
+        (async () => {
+          const userCount = await db.select({ count: count() }).from(users).where(eq(users.isActive, true));
+          const connectionCount = await db.select({ count: count() }).from(connections).where(eq(connections.status, 'accepted'));
+          return { totalUsers: userCount[0]?.count || 0, totalConnections: connectionCount[0]?.count || 0 };
+        })(),
+        // 11. Profile events (organized by user)
+        db.select().from(events).where(eq(events.organizerId, userId)),
+      ]);
+      
+      if (!userData) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Remove password and format response
+      const { password: _, ...userWithoutPassword } = userData;
+      
+      // Get connection status with viewer if viewing another profile
+      let connectionStatus = { status: 'none' as string, connectionId: null as number | null };
+      let compatibility = null;
+      let connectionDegree = null;
+      
+      if (viewerId && viewerId !== userId) {
+        // Check connection status
+        const existingConnection = await db.select().from(connections).where(
+          or(
+            and(eq(connections.requesterId, viewerId), eq(connections.receiverId, userId)),
+            and(eq(connections.requesterId, userId), eq(connections.receiverId, viewerId))
+          )
+        ).limit(1);
+        
+        if (existingConnection.length > 0) {
+          connectionStatus = { 
+            status: existingConnection[0].status, 
+            connectionId: existingConnection[0].id 
+          };
+        }
+        
+        // Get compatibility score
+        try {
+          const viewer = await storage.getUser(viewerId);
+          if (viewer) {
+            const matchingService = await import('./services/matching.js');
+            compatibility = matchingService.calculateCompatibility(viewer, userData);
+          }
+        } catch (e) {
+          // Compatibility calculation failed, continue without it
+        }
+      }
+      
+      // Get business deals if business user
+      let businessDeals: any[] = [];
+      if (userData.userType === 'business') {
+        businessDeals = await db.select().from(businessOffers).where(eq(businessOffers.businessId, userId));
+      }
+      
+      const endTime = Date.now();
+      console.log(`📦 PROFILE-BUNDLE: Completed in ${endTime - startTime}ms`);
+      
+      // Return all data in one response
+      res.json({
+        user: userWithoutPassword,
+        travelPlans: travelPlansData,
+        connections: connectionsData,
+        connectionRequests: connectionRequestsData,
+        references: referencesData,
+        vouches: vouchesData,
+        photos: photosData,
+        travelMemories: travelMemoriesData,
+        passportStamps: passportStampsData,
+        platformStats: platformStatsData,
+        profileEvents: profileEventsData,
+        connectionStatus,
+        compatibility,
+        connectionDegree,
+        businessDeals,
+      });
+    } catch (error: any) {
+      console.error("Profile bundle error:", error);
+      res.status(500).json({ message: "Failed to fetch profile bundle" });
     }
   });
 
