@@ -1548,14 +1548,19 @@ export default function Home() {
           {/* Glow effect behind */}
           <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-orange-500 rounded-2xl opacity-75 blur-lg group-hover:opacity-100 transition duration-500"></div>
           
-          {/* Main image with glass morphism overlay */}
-          <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/20 aspect-[4/3]">
+          {/* Main image with soft blended edges */}
+          <div className="relative rounded-3xl overflow-hidden shadow-2xl aspect-[4/3]" style={{ boxShadow: '0 0 40px 10px rgba(0,0,0,0.1)' }}>
             <img 
               src={staticHeroMedia}
               alt="Travelers connecting at coffee shop"
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+            {/* Soft edge blend overlay */}
+            <div className="absolute inset-0 pointer-events-none" style={{ 
+              boxShadow: 'inset 0 0 20px 10px rgba(255,255,255,0.3)',
+              borderRadius: '1.5rem'
+            }}></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent rounded-3xl"></div>
           </div>
         </div>
       </div>
