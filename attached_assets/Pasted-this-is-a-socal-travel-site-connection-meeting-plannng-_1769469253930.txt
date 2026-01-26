@@ -1,0 +1,66 @@
+this is a socal travel site, connection, meeting, plannng and goong to events are most imporatn,  then references, and search...
+
+3:09 PM
+Exactly! So let's make sure those core features are prioritized and optimized. Here's what matters most for your users:
+
+Priority 1: Events (Meeting & Going)
+✅ Already optimized:
+
+Event listings fast (40ms)
+Event cache working (5min)
+RSVP system now has "Going" vs "Interested" ✅
+Make sure:
+
+Event discovery is prominent on homepage
+Users can easily filter by city/date
+RSVP status is clear and visible
+Attendee lists show who's going
+Priority 2: Connections (Meeting People)
+✅ Already optimized:
+
+Matching algorithm cached (54x faster - 83ms)
+Connection requests working
+Profile bundle fast (149ms)
+Check:
+
+Can users easily browse travelers in their city?
+Is the "connection request" flow smooth?
+Do users see mutual connections/friends?
+Can they message after connecting?
+Priority 3: Planning (Travel Plans & Itineraries)
+✅ Already built:
+
+Travel plans system exists
+Itineraries supported
+Make sure:
+
+Users can see who's traveling to their city
+Travelers can see locals in their destination
+Travel dates are prominently displayed
+Easy to find overlap ("You'll both be in Paris July 10-15")
+Priority 4: References (Trust & Safety)
+✅ Already built:
+
+References system exists
+Vouches working
+Make sure:
+
+References are visible on profiles
+Easy to leave a reference after meeting
+Badge/count shows number of references
+New users understand why references matter
+Priority 5: Search (Finding People)
+✅ Partially optimized:
+
+Database indexes help
+Check if users can search by:
+
+City/location
+Travel dates
+User type (traveler/local/business)
+Interests/hobbies
+Tell Replit to Prioritize These Features:
+If anything feels clunky in these core flows, tell Replit:
+
+"The core user journey is: discover events → meet people → make connections → plan meetups → leave references. Walk through this flow and identify any friction points in the UX. Make sure event discovery, connection requests, and messaging are prominent and easy to use."
+
