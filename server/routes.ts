@@ -1652,7 +1652,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             
             // Single query to get all counts at once using conditional aggregation  
             // Using IN clause with properly escaped literal values
-            // FIX: Use travel_destination and is_currently_traveling instead of destination_city
+            // UPDATED: Count ALL users with travel plans to this city (including future trips)
             
             // Build ILIKE patterns for traveler destination matching
             const ilikePatternsArray = cityNames.map(city => `'%${city.replace(/'/g, "''")}%'`).join(', ');
@@ -1665,10 +1665,19 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
                 COUNT(DISTINCT CASE WHEN u.hometown_city IN (${cityList}) AND (u.user_type = 'local' OR NOT u.is_currently_traveling) THEN u.id END) as local_count,
                 COUNT(DISTINCT CASE WHEN u.user_type = 'business' AND u.hometown_city IN (${cityList}) THEN u.id END) as business_count,
                 COUNT(DISTINCT CASE 
-                  WHEN u.is_currently_traveling = true 
-                  AND EXISTS (
-                    SELECT 1 FROM city_patterns cp
-                    WHERE u.travel_destination ILIKE ANY(cp.patterns)
+                  WHEN (
+                    -- Currently traveling to this city
+                    (u.is_currently_traveling = true 
+                      AND EXISTS (
+                        SELECT 1 FROM city_patterns cp
+                        WHERE u.travel_destination ILIKE ANY(cp.patterns)
+                      ))
+                    -- OR has any travel plan (past, current, or future) to this city
+                    OR EXISTS (
+                      SELECT 1 FROM travel_plans tp
+                      WHERE tp.user_id = u.id
+                        AND tp.destination_city IN (${cityList})
+                    )
                   )
                   THEN u.id 
                 END) as traveler_count,
@@ -1681,6 +1690,11 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
                       SELECT 1 FROM city_patterns cp  
                       WHERE u.travel_destination ILIKE ANY(cp.patterns)
                     ))
+                OR EXISTS (
+                  SELECT 1 FROM travel_plans tp
+                  WHERE tp.user_id = u.id
+                    AND tp.destination_city IN (${cityList})
+                )
             `));
 
             const stats = statsQuery.rows[0] as any;

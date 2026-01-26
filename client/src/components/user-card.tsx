@@ -18,6 +18,9 @@ export interface User {
   interests?: string[];
   isCurrentlyTraveling?: boolean;
   travelDestination?: string;
+  travelStartDate?: string | Date;
+  travelEndDate?: string | Date;
+  isTravelerToCity?: boolean;
   avatarGradient?: string;
   avatarColor?: string;
   userType?: string;
@@ -235,6 +238,27 @@ export default function UserCard({
                         );
                       }
                     }
+                  }
+                  
+                  // Check if this user is a traveler to the current city (from search) with travel dates
+                  if (user.isTravelerToCity && user.travelStartDate && user.travelEndDate) {
+                    const startDate = new Date(user.travelStartDate);
+                    const endDate = new Date(user.travelEndDate);
+                    const now = new Date();
+                    const isCurrent = now >= startDate && now <= endDate;
+                    const formatDate = (date: Date) => date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    
+                    return (
+                      <div className="flex flex-col items-center gap-1">
+                        <div className="flex items-center justify-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-lg">
+                          {isCurrent ? '🧳' : '✈️'} 
+                          <span className="text-center">{isCurrent ? 'Currently visiting' : 'Visiting'}</span>
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          {formatDate(startDate)} - {formatDate(endDate)}
+                        </div>
+                      </div>
+                    );
                   }
                   
                   // Fallback to existing logic for backward compatibility

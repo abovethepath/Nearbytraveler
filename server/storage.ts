@@ -3228,16 +3228,28 @@ export class DatabaseStorage implements IStorage {
 
       console.log(`📅 Found ${relevantTravelPlans.length} active and upcoming travel plans`);
 
-      // Filter travel plans by destination and get user data
-      const relevantTravelPlanUserIds = relevantTravelPlans
+      // Filter travel plans by destination and get user data with travel dates
+      const relevantTravelPlansFiltered = relevantTravelPlans
         .filter(plan => {
           if (!plan.destination) return false;
           const destination = plan.destination.toLowerCase();
           return searchCities.some(city => destination.includes(city.toLowerCase()));
-        })
-        .map(plan => plan.userId);
+        });
+      
+      const relevantTravelPlanUserIds = relevantTravelPlansFiltered.map(plan => plan.userId);
 
       console.log(`📅 Found ${relevantTravelPlanUserIds.length} users with active/upcoming travel plans to ${searchCities.join(', ')}`);
+
+      // Create a map of userId to travel dates for this city
+      const userTravelDatesMap = new Map<number, {startDate: Date | null, endDate: Date | null}>();
+      for (const plan of relevantTravelPlansFiltered) {
+        if (plan.userId) {
+          userTravelDatesMap.set(plan.userId, {
+            startDate: plan.startDate,
+            endDate: plan.endDate
+          });
+        }
+      }
 
       // Get users with active/upcoming travel plans to this city
       const travelPlanUsers = relevantTravelPlanUserIds.length > 0 ? await db
@@ -3250,10 +3262,24 @@ export class DatabaseStorage implements IStorage {
           userType ? eq(users.userType, userType) : sql`1=1`
         )) : [];
 
-      console.log(`📅 Retrieved ${travelPlanUsers.length} users with active/upcoming travel plans`);
+      // Add travel dates from the travel plan to the user objects
+      const travelPlanUsersWithDates = travelPlanUsers.map(user => {
+        const travelDates = userTravelDatesMap.get(user.id);
+        if (travelDates) {
+          return {
+            ...user,
+            travelStartDate: travelDates.startDate,
+            travelEndDate: travelDates.endDate,
+            isTravelerToCity: true
+          };
+        }
+        return { ...user, isTravelerToCity: true };
+      });
 
-      // Combine both types of travelers
-      const allTravelers = [...travelerUsers, ...travelPlanUsers];
+      console.log(`📅 Retrieved ${travelPlanUsersWithDates.length} users with active/upcoming travel plans (with dates)`);
+
+      // Combine both types of travelers (using users with dates)
+      const allTravelers = [...travelerUsers, ...travelPlanUsersWithDates];
 
       // Combine and deduplicate by user ID
       const allLocationUsers = [...hometownUsers, ...allTravelers];
