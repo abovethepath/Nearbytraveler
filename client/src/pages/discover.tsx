@@ -130,18 +130,25 @@ export default function DiscoverPage() {
         (city.country && city.country.toLowerCase().includes(searchQuery.toLowerCase()))
       );
     } else {
-      // Default to user's hometown and travel destinations for faster loading
-      return allCities.filter((city: CityStats) =>
-        getUserRelevantCities.includes(city.city.toLowerCase())
-      );
+      // Show ALL cities (not just user's cities)
+      return allCities;
     }
-  }, [allCities, searchQuery, getUserRelevantCities]);
+  }, [allCities, searchQuery]);
 
-  // Sort cities to put Los Angeles Metro prominently at the top
+  // Sort cities: user's cities first, then alphabetically
   const sortedCities = [...filtered].sort((a, b) => {
-    // Los Angeles Metro always goes first
-    if (a.city === 'Los Angeles Metro') return -1;
-    if (b.city === 'Los Angeles Metro') return 1;
+    const aIsUserCity = getUserRelevantCities.includes(a.city.toLowerCase());
+    const bIsUserCity = getUserRelevantCities.includes(b.city.toLowerCase());
+    
+    // User's cities always go first
+    if (aIsUserCity && !bIsUserCity) return -1;
+    if (!aIsUserCity && bIsUserCity) return 1;
+    
+    // Within user's cities, Los Angeles Metro goes first
+    if (aIsUserCity && bIsUserCity) {
+      if (a.city === 'Los Angeles Metro') return -1;
+      if (b.city === 'Los Angeles Metro') return 1;
+    }
     
     // Then sort alphabetically
     return a.city.localeCompare(b.city);
