@@ -55,6 +55,16 @@ CUSTOM INTERESTS IN MATCHING: Custom interests (user-added interests like "Poker
 - **Database Connection Pooling**: Neon serverless PostgreSQL with 100 connection pool, automatic health monitoring, and retry logic for transient failures.
 - **Health Monitoring**: `/api/health` endpoint provides real-time database health, connection pool status, and latency metrics for monitoring.
 - **Slow Request Logging**: Automatic logging of API requests taking >2 seconds for performance debugging.
+- **WebSocket Multi-Instance Scaling**: Redis pub/sub (`server/services/redisPubSub.ts`) enables real-time chat messaging across multiple server instances for autoscale deployments.
+
+### Scaling to 10,000+ Users
+For production scaling on Replit:
+1. **Use Autoscale Deployment**: Automatically scales up to handle traffic spikes, scales down to save costs when idle.
+2. **Configure Max Instances**: Set maximum number of instances (4-8 recommended for 10K users).
+3. **Instance Size**: Use at least 2 vCPU / 8GB RAM per instance for reliable performance.
+4. **Redis Required**: REDIS_URL secret must be configured for session persistence and cross-instance WebSocket messaging.
+5. **Monitor /api/health**: Check database latency and connection pool status regularly.
+6. **Rate Limiting**: 3000 requests per 15 minutes per IP to prevent abuse while allowing real-time chat activity.
 
 ### AI Integration
 - **AI Model**: Anthropic Claude Sonnet.

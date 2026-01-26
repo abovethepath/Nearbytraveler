@@ -2,6 +2,7 @@ import { WebSocket } from 'ws';
 import { db } from '../db';
 import { chatroomMessages, chatroomMembers, users, messages, meetupChatroomMessages, meetupChatrooms, eventParticipants } from '../../shared/schema';
 import { eq, and, desc, gt, or } from 'drizzle-orm';
+import { redisPubSub } from './redisPubSub';
 
 // WebSocket event types for WhatsApp-style chat
 export type ChatEventType =
@@ -47,6 +48,33 @@ export class ChatWebSocketService {
   constructor() {
     // Clean up expired typing indicators every 2 seconds
     setInterval(() => this.cleanupExpiredTyping(), 2000);
+
+    // Set up Redis pub/sub for multi-instance scaling
+    this.setupRedisPubSub();
+  }
+
+  private async setupRedisPubSub() {
+    if (!redisPubSub.isAvailable()) {
+      console.log("⚠️ WebSocket: Running in single-instance mode (no Redis)");
+      return;
+    }
+
+    // Subscribe to global chat channel for cross-instance messaging
+    await redisPubSub.subscribe("chat:broadcast", (channel, data) => {
+      this.handleRemoteChatEvent(data);
+    });
+
+    console.log(`✅ WebSocket: Multi-instance scaling enabled via Redis (instance ${redisPubSub.getInstanceId()})`);
+  }
+
+  // Get connected user count for monitoring
+  getConnectedUserCount(): number {
+    return this.connectedUsers.size;
+  }
+
+  // Get all connected user IDs
+  getConnectedUserIds(): number[] {
+    return Array.from(this.connectedUsers.keys());
   }
 
   // Authenticate WebSocket connection
@@ -1163,7 +1191,7 @@ export class ChatWebSocketService {
     ws.send(JSON.stringify(responseEvent));
   }
 
-  // Broadcast event to all members of a chatroom
+  // Broadcast event to all members of a chatroom (with Redis pub/sub for multi-instance scaling)
   private async broadcastToChatroom(chatroomId: number, event: ChatEvent, excludeUserId?: number) {
     // Get all members of the chatroom
     const members = await db.query.chatroomMembers.findMany({
@@ -1175,10 +1203,35 @@ export class ChatWebSocketService {
 
     const eventStr = JSON.stringify(event);
 
+    // Send to locally connected users
     members.forEach(member => {
       if (member.userId === excludeUserId) return;
       
       const userWs = this.connectedUsers.get(member.userId);
+      if (userWs && userWs.readyState === WebSocket.OPEN) {
+        userWs.send(eventStr);
+      }
+    });
+
+    // Publish to Redis for users connected to other instances (multi-instance scaling)
+    if (redisPubSub.isAvailable()) {
+      await redisPubSub.publish("chat:broadcast", {
+        event,
+        excludeUserId,
+        memberIds: members.map(m => m.userId)
+      });
+    }
+  }
+
+  // Handle events from other instances via Redis pub/sub
+  handleRemoteChatEvent(data: { event: ChatEvent; excludeUserId?: number; memberIds: number[] }) {
+    const { event, excludeUserId, memberIds } = data;
+    const eventStr = JSON.stringify(event);
+
+    memberIds.forEach(userId => {
+      if (userId === excludeUserId) return;
+      
+      const userWs = this.connectedUsers.get(userId);
       if (userWs && userWs.readyState === WebSocket.OPEN) {
         userWs.send(eventStr);
       }
