@@ -17,6 +17,7 @@ interface Referrer {
   username: string;
   profileImage?: string;
   userType: string;
+  isCurrentlyTraveling?: boolean;
   location?: string;
   bio?: string;
 }
@@ -201,20 +202,33 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
     });
   };
 
-  const getUserTypeColor = (userType: string) => {
-    switch (userType.toLowerCase()) {
-      case 'business': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-      case 'traveler': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-      case 'local': return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200';
+  // Show "Local" for non-traveling users, "Traveler" only when actively traveling
+  const getDisplayBadge = () => {
+    if (!referrer) return { color: 'bg-gray-100 text-gray-800', label: 'User' };
+    
+    if (referrer.userType === 'business') {
+      return { 
+        color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200', 
+        label: 'Business' 
+      };
     }
-  };
-
-  const getUserTypeLabel = (userType: string) => {
-    switch (userType.toLowerCase()) {
-      default: return userType.charAt(0).toUpperCase() + userType.slice(1);
+    
+    // For travelers/locals: show "Traveler" only if currently traveling
+    if (referrer.isCurrentlyTraveling) {
+      return { 
+        color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200', 
+        label: 'Traveler' 
+      };
     }
+    
+    // Default to "Local" for users who are not currently traveling
+    return { 
+      color: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200', 
+      label: 'Local' 
+    };
   };
+  
+  const displayBadge = getDisplayBadge();
 
   if (isLoading) {
     return (
@@ -310,8 +324,8 @@ export default function QRSignup({ referralCode }: QRSignupProps) {
                     <h3 className="font-semibold text-gray-900 dark:text-white text-lg">{referrer?.name}</h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400">@{referrer?.username}</p>
                   </div>
-                  <Badge className={getUserTypeColor(referrer?.userType || '')}>
-                    {getUserTypeLabel(referrer?.userType || '')}
+                  <Badge className={displayBadge.color}>
+                    {displayBadge.label}
                   </Badge>
                 </div>
                 

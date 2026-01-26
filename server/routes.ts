@@ -17198,6 +17198,20 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(404).json({ error: 'Invalid referral code' });
       }
 
+      // Check if user is currently traveling (has active travel plan)
+      const now = new Date();
+      const activeTravelPlans = await db
+        .select()
+        .from(travelPlans)
+        .where(and(
+          eq(travelPlans.userId, referrer.id),
+          lte(travelPlans.startDate, now),
+          gte(travelPlans.endDate, now)
+        ))
+        .limit(1);
+      
+      const isCurrentlyTraveling = activeTravelPlans.length > 0;
+
       res.json({
         referrer: {
           id: referrer.id,
@@ -17205,6 +17219,7 @@ Questions? Just reply to this message. Welcome aboard!
           username: referrer.username,
           profileImage: referrer.profileImage,
           userType: referrer.userType,
+          isCurrentlyTraveling,
           location: [referrer.city, referrer.state, referrer.country].filter(Boolean).join(', '),
           bio: referrer.bio
         }
