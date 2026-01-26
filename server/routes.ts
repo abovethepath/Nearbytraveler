@@ -6499,6 +6499,30 @@ Questions? Just reply to this message. Welcome aboard!
       if (!travelPlanData.userId) {
         return res.status(400).json({ message: "User ID is required" });
       }
+      
+      // AUTO-PARSE: If destination string exists but city/country fields are missing, parse them
+      if (travelPlanData.destination && (!travelPlanData.destinationCity || !travelPlanData.destinationCountry)) {
+        console.log('🔄 AUTO-PARSE: Parsing destination string:', travelPlanData.destination);
+        const parts = travelPlanData.destination.split(', ').map((p: string) => p.trim()).filter(Boolean);
+        
+        if (parts.length >= 1 && !travelPlanData.destinationCity) {
+          travelPlanData.destinationCity = parts[0];
+          console.log('🔄 AUTO-PARSE: Set destinationCity =', parts[0]);
+        }
+        if (parts.length >= 2) {
+          // If 3 parts: City, State, Country. If 2 parts: City, Country
+          if (parts.length >= 3 && !travelPlanData.destinationState) {
+            travelPlanData.destinationState = parts[1];
+            console.log('🔄 AUTO-PARSE: Set destinationState =', parts[1]);
+          }
+          if (!travelPlanData.destinationCountry) {
+            travelPlanData.destinationCountry = parts[parts.length - 1];
+            console.log('🔄 AUTO-PARSE: Set destinationCountry =', parts[parts.length - 1]);
+          }
+        }
+      }
+      
+      // Validate required fields after auto-parse
       if (!travelPlanData.destinationCity) {
         return res.status(400).json({ message: "Destination city is required" });
       }
