@@ -216,9 +216,9 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
       />
       
       {/* Modal Content */}
-      <div className="relative w-full max-w-4xl max-h-[85vh] md:max-h-[90vh] mx-4 bg-white dark:bg-gray-900 rounded-lg shadow-2xl overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
+      <div className="relative w-full max-w-4xl max-h-[85vh] md:max-h-[90vh] mx-4 bg-white dark:bg-gray-900 rounded-lg shadow-2xl flex flex-col">
+        {/* Header - Sticky */}
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
           <div className="flex-1 min-w-0">
             <h2 className="text-lg font-semibold text-black dark:text-white flex items-center gap-2">
               <Search className="h-5 w-5" />
@@ -240,8 +240,8 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
           </Button>
         </div>
 
-        {/* Content */}
-        <div className="p-6 space-y-6">
+        {/* Content - Scrollable */}
+        <div className="p-6 space-y-6 overflow-y-auto flex-1">
           {/* Keyword Search */}
           <div>
             <Label htmlFor="keyword-search" className="text-black dark:text-white font-semibold">Keyword Search</Label>
@@ -741,6 +741,19 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
               </div>
             </div>
           )}
+        </div>
+        
+        {/* Footer - Sticky Close Button */}
+        <div className="flex-shrink-0 p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+          <Button 
+            onClick={() => onOpenChange(false)}
+            variant="outline"
+            className="w-full py-3 text-base font-medium"
+            data-testid="button-close-search-bottom"
+          >
+            <X className="h-5 w-5 mr-2" />
+            Close Search
+          </Button>
         </div>
       </div>
     </div>
