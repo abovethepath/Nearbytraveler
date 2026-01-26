@@ -418,7 +418,7 @@ export default function SignupTraveling() {
                     max={maxDate}
                     required
                     data-testid="input-dateOfBirth"
-                    className="w-full max-w-full"
+                    className="w-full max-w-full bg-white text-gray-900 border-gray-300"
                   />
                 </div>
               </div>
@@ -510,7 +510,7 @@ export default function SignupTraveling() {
                   )}
                 </div>
 
-                <div>
+                <div className="w-full max-w-full overflow-hidden">
                   <Label className="text-gray-900">When does your trip end? *</Label>
                   <div className="text-sm text-gray-600 mb-2">
                     This helps locals know when you'll be in their area
@@ -522,6 +522,7 @@ export default function SignupTraveling() {
                     min={today}
                     required
                     data-testid="input-travelReturnDate"
+                    className="w-full max-w-full bg-white text-gray-900 border-gray-300"
                   />
                 </div>
               </div>

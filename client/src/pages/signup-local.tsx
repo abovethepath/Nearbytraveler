@@ -349,7 +349,7 @@ export default function SignupLocal() {
                     max={maxDate}
                     required
                     data-testid="input-dateOfBirth"
-                    className="w-full max-w-full"
+                    className="w-full max-w-full bg-white text-gray-900 border-gray-300"
                   />
                 </div>
               </div>
