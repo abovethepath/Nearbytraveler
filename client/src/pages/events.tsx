@@ -348,18 +348,17 @@ export default function Events() {
     return matchesSearch && matchesCategory;
   });
 
-  // Enhanced categories with emojis for visual appeal
+  // Import unified categories to eliminate duplicates
+  // Enhanced categories with emojis and colors
   const categoryData = [
-    { name: "Food & Dining", emoji: "🍕", color: "bg-orange-100 hover:bg-orange-200 text-orange-700 border-orange-300 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-700" },
-    { name: "Music & Entertainment", emoji: "🎵", color: "bg-purple-100 hover:bg-purple-200 text-purple-700 border-purple-300 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-700" },
-    { name: "Sports & Fitness", emoji: "⚽", color: "bg-green-100 hover:bg-green-200 text-green-700 border-green-300 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700" },
-    { name: "Nightlife & Parties", emoji: "🌃", color: "bg-indigo-100 hover:bg-indigo-200 text-indigo-700 border-indigo-300 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-700" },
-    { name: "Social & Networking", emoji: "👥", color: "bg-blue-100 hover:bg-blue-200 text-blue-700 border-blue-300 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700" },
-    { name: "Arts & Culture", emoji: "🎨", color: "bg-pink-100 hover:bg-pink-200 text-pink-700 border-pink-300 dark:bg-pink-900/30 dark:text-pink-300 dark:border-pink-700" },
-    { name: "Family Activities", emoji: "👨‍👩‍👧", color: "bg-teal-100 hover:bg-teal-200 text-teal-700 border-teal-300 dark:bg-teal-900/30 dark:text-teal-300 dark:border-teal-700" },
-    { name: "Health & Wellness", emoji: "🧘", color: "bg-emerald-100 hover:bg-emerald-200 text-emerald-700 border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-700" },
-    { name: "Education & Learning", emoji: "📚", color: "bg-amber-100 hover:bg-amber-200 text-amber-700 border-amber-300 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700" },
-    { name: "Business & Professional", emoji: "💼", color: "bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300 dark:bg-slate-900/30 dark:text-slate-300 dark:border-slate-700" },
+    { name: "Food & Dining", emoji: "🍕", color: "bg-orange-100 text-orange-700 border-orange-300 dark:bg-orange-900/30 dark:text-orange-300" },
+    { name: "Music & Entertainment", emoji: "🎵", color: "bg-purple-100 text-purple-700 border-purple-300 dark:bg-purple-900/30 dark:text-purple-300" },
+    { name: "Sports & Fitness", emoji: "⚽", color: "bg-green-100 text-green-700 border-green-300 dark:bg-green-900/30 dark:text-green-300" },
+    { name: "Nightlife & Parties", emoji: "🌃", color: "bg-indigo-100 text-indigo-700 border-indigo-300 dark:bg-indigo-900/30 dark:text-indigo-300" },
+    { name: "Social & Networking", emoji: "👥", color: "bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-900/30 dark:text-blue-300" },
+    { name: "Arts & Culture", emoji: "🎨", color: "bg-pink-100 text-pink-700 border-pink-300 dark:bg-pink-900/30 dark:text-pink-300" },
+    { name: "Family Activities", emoji: "👨‍👩‍👧", color: "bg-teal-100 text-teal-700 border-teal-300 dark:bg-teal-900/30 dark:text-teal-300" },
+    { name: "Health & Wellness", emoji: "🧘", color: "bg-emerald-100 text-emerald-700 border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-300" },
   ];
   const categories = categoryData.map(c => c.name);
 
@@ -722,44 +721,48 @@ export default function Events() {
             )}
           </div>
 
-          {/* Enhanced Search Input */}
-          <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
-            <Input
-              placeholder="Search concerts, meetups, parties, dinners..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-11 py-3 w-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-xl shadow-sm"
-            />
-          </div>
-        </div>
+          {/* Search and Filters */}
+          <div className="flex flex-col gap-4">
+            {/* Search Input */}
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-white w-4 h-4" />
+              <Input
+                placeholder="Search concerts, meetups, parties, dinners..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 w-full bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+              />
+            </div>
 
-        {/* Colorful Category Chips */}
-        <div className="mb-6 overflow-x-auto pb-2">
-          <div className="flex gap-2 min-w-max">
-            <button
-              onClick={() => setCategoryFilter("all")}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all border ${
-                categoryFilter === "all" 
-                  ? "bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-gray-900 dark:border-white" 
-                  : "bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-700"
-              }`}
-            >
-              ✨ All Events
-            </button>
-            {categoryData.map((cat) => (
+          </div>
+
+          {/* Colorful Category Chips */}
+          <div className="overflow-x-auto pb-2 -mx-4 px-4">
+            <div className="flex gap-2 min-w-max">
               <button
-                key={cat.name}
-                onClick={() => setCategoryFilter(cat.name.toLowerCase())}
+                onClick={() => setCategoryFilter("all")}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all border whitespace-nowrap ${
-                  categoryFilter === cat.name.toLowerCase() 
-                    ? "ring-2 ring-offset-1 ring-gray-400 dark:ring-gray-500 " + cat.color
-                    : cat.color
+                  categoryFilter === "all" 
+                    ? "bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-gray-900" 
+                    : "bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700"
                 }`}
               >
-                {cat.emoji} {cat.name.split(" & ")[0]}
+                ✨ All Events
               </button>
-            ))}
+              {categoryData.map((cat) => (
+                <button
+                  key={cat.name}
+                  onClick={() => setCategoryFilter(cat.name.toLowerCase())}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all border whitespace-nowrap ${
+                    categoryFilter === cat.name.toLowerCase() 
+                      ? "ring-2 ring-offset-1 ring-gray-400 " + cat.color
+                      : cat.color
+                  }`}
+                >
+                  {cat.emoji} {cat.name.split(" & ")[0]}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -1032,7 +1035,7 @@ export default function Events() {
                 </Button>
               </div>
               {filteredUpcomingEvents.length === 0 ? (
-                <div className="text-center py-10 sm:py-16 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl border border-dashed border-gray-300 dark:border-gray-700">
+                <div className="text-center py-10 sm:py-14 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl border border-dashed border-orange-200 dark:border-gray-700">
                   <div className="text-5xl mb-4">🎉</div>
                   <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3">
                     {upcomingEvents.length === 0 
@@ -1042,8 +1045,8 @@ export default function Events() {
                   </h3>
                   <p className="text-base text-gray-600 dark:text-gray-300 px-6 mb-6 max-w-md mx-auto">
                     {upcomingEvents.length === 0 
-                      ? "Your community is waiting! Create a dinner, meetup, or adventure and start connecting with locals and travelers."
-                      : "Try different filters or search terms to find what you're looking for."
+                      ? "Your community is waiting! Create a dinner, meetup, or adventure and start connecting."
+                      : "Try different filters or search terms."
                     }
                   </p>
                   {upcomingEvents.length === 0 && (
@@ -1057,20 +1060,15 @@ export default function Events() {
                   )}
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                  {filteredUpcomingEvents.map((event) => {
-                    const eventDate = new Date(event.date);
-                    const attendeeCount = (event as any).participantCount ?? participants.filter(p => p.eventId === event.id).length;
-                    const eventParticipants = participants.filter(p => p.eventId === event.id).slice(0, 3);
-                    
-                    return (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                  {filteredUpcomingEvents.map((event) => (
                     <Card 
                       key={event.id} 
-                      className="cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 w-full overflow-hidden bg-white dark:bg-gray-800 border-0 shadow-md rounded-xl group"
+                      className="cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 w-full min-w-0 overflow-hidden bg-white dark:bg-gray-800 border-0 shadow-md rounded-xl group"
                       onClick={() => setLocation(`/events/${event.id}`)}
                     >
                       {/* Image with Date Badge */}
-                      <div className="relative h-40 sm:h-48 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 overflow-hidden">
+                      <div className="relative h-36 sm:h-44 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 overflow-hidden">
                         {event.imageUrl ? (
                           <img
                             src={event.imageUrl}
@@ -1080,23 +1078,23 @@ export default function Events() {
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-orange-400 to-pink-500">
-                            <Sparkles className="w-12 h-12 text-white/80" />
+                            <Sparkles className="w-10 h-10 text-white/80" />
                           </div>
                         )}
                         
                         {/* Date Badge - Top Left */}
-                        <div className="absolute top-3 left-3 bg-white dark:bg-gray-900 rounded-lg px-3 py-2 shadow-lg text-center min-w-[50px]">
+                        <div className="absolute top-3 left-3 bg-white dark:bg-gray-900 rounded-lg px-2.5 py-1.5 shadow-lg text-center min-w-[48px]">
                           <div className="text-xs font-bold text-orange-600 dark:text-orange-400 uppercase">
-                            {eventDate.toLocaleDateString([], { month: 'short' })}
+                            {new Date(event.date).toLocaleDateString([], { month: 'short' })}
                           </div>
-                          <div className="text-xl font-bold text-gray-900 dark:text-white leading-none">
-                            {eventDate.getDate()}
+                          <div className="text-lg font-bold text-gray-900 dark:text-white leading-tight">
+                            {new Date(event.date).getDate()}
                           </div>
                         </div>
 
-                        {/* Category/Recurring Badge - Top Right */}
+                        {/* Recurring Badge - Top Right */}
                         {event.isRecurring && (
-                          <Badge className="absolute top-3 right-3 bg-green-500 text-white border-0 text-xs">
+                          <Badge className="absolute top-3 right-3 bg-green-500 text-white border-0 text-xs shadow-md">
                             🔄 {event.recurrenceType === 'weekly' ? 'Weekly' : 'Recurring'}
                           </Badge>
                         )}
@@ -1104,46 +1102,42 @@ export default function Events() {
 
                       <CardContent className="p-4">
                         {/* Title */}
-                        <h3 className="font-bold text-gray-900 dark:text-white text-lg line-clamp-2 mb-2 group-hover:text-orange-600 transition-colors">
+                        <h3 className="font-bold text-gray-900 dark:text-white text-base sm:text-lg line-clamp-2 mb-2 group-hover:text-orange-600 transition-colors">
                           {event.title}
                         </h3>
 
                         {/* Location */}
-                        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-3">
+                        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-2">
                           <MapPin className="w-4 h-4 flex-shrink-0" />
                           <span className="line-clamp-1">{formatEventLocation(event)}</span>
                         </div>
 
                         {/* Time */}
-                        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-4">
+                        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-3">
                           <Clock className="w-4 h-4 flex-shrink-0" />
                           <span>
-                            {eventDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+                            {new Date(event.date).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
                           </span>
                         </div>
 
                         {/* Attendees Row */}
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
                           <div className="flex items-center gap-2">
                             {/* Attendee Avatars */}
                             <div className="flex -space-x-2">
-                              {eventParticipants.map((p, idx) => (
-                                <div key={idx} className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 border-2 border-white dark:border-gray-800 flex items-center justify-center">
+                              {participants.filter(p => p.eventId === event.id).slice(0, 3).map((p, idx) => (
+                                <div key={idx} className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 border-2 border-white dark:border-gray-800 flex items-center justify-center">
                                   <span className="text-white text-xs font-medium">
                                     {String.fromCharCode(65 + (p.userId % 26))}
                                   </span>
                                 </div>
                               ))}
-                              {attendeeCount > 3 && (
-                                <div className="w-7 h-7 rounded-full bg-gray-200 dark:bg-gray-700 border-2 border-white dark:border-gray-800 flex items-center justify-center">
-                                  <span className="text-gray-600 dark:text-gray-300 text-xs font-medium">
-                                    +{attendeeCount - 3}
-                                  </span>
-                                </div>
-                              )}
                             </div>
                             <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-                              {attendeeCount === 0 ? "Be first!" : `${attendeeCount} going`}
+                              {(() => {
+                                const count = (event as any).participantCount ?? participants.filter(p => p.eventId === event.id).length;
+                                return count === 0 ? "Be first!" : `${count} going`;
+                              })()}
                             </span>
                           </div>
 
@@ -1155,25 +1149,32 @@ export default function Events() {
                               e.stopPropagation();
                               handleJoinEvent(event);
                             }}
-                            className="text-orange-500 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                            className={isUserJoined(event.id) 
+                              ? "text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20" 
+                              : "text-orange-500 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                            }
                           >
-                            <Heart className="w-5 h-5" />
+                            <Heart className={`w-5 h-5 ${isUserJoined(event.id) ? 'fill-current' : ''}`} />
                           </Button>
                         </div>
                       </CardContent>
                     </Card>
-                    );
-                  })}
+                  ))}
                 </div>
               )}
             </div>
-          </div>
-          </>
-          )}
-        </div>
-        )}
 
-        {selectedTab === 'meetup' && (
+            {/* Past Events Section */}
+            {filteredPastEvents.length > 0 && (
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Past Events</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                  {filteredPastEvents.map((event) => (
+                    <Card 
+                      key={event.id} 
+                      className="cursor-pointer hover:shadow-lg transition-shadow duration-200 opacity-75 w-full overflow-hidden"
+                      onClick={() => setLocation(`/events/${event.id}`)}
+                    >
                       <CardHeader className="pb-3">
                         {event.imageUrl && (
                           <img
