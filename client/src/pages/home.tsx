@@ -1820,14 +1820,13 @@ export default function Home() {
     </div>
   )}
   
-  {/* Theme Toggle & Hide Hero Buttons */}
-  <div className="absolute top-4 right-4 z-10 flex gap-2">
-    <ThemeToggle />
+  {/* Hide Hero Button - positioned to avoid navbar overlap */}
+  <div className="absolute top-20 md:top-4 right-4 z-10 flex gap-2">
     <Button
       variant="ghost"
       size="sm"
       onClick={toggleHeroVisibility}
-      className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+      className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm"
       data-testid="button-hide-hero"
     >
       <X className="w-4 h-4 mr-1" />
