@@ -432,33 +432,32 @@ function Navbar() {
                   <AdaptiveThemeToggle />
                 </div>
 
-                {/* Mobile Menu Button - Enhanced for iOS WebView */}
+                {/* Mobile Menu Button - Fixed for iOS WebView */}
                 <button
                   type="button"
-                  className="md:hidden h-12 w-12 p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 cursor-pointer"
-                  onClick={(e) => {
+                  className="md:hidden h-12 w-12 p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 cursor-pointer select-none"
+                  onPointerDown={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    setIsMobileMenuOpen(o => !o);
-                  }}
-                  onTouchEnd={(e) => {
-                    e.preventDefault();
                     setIsMobileMenuOpen(o => !o);
                   }}
                   aria-controls="mobile-menu"
                   aria-expanded={isMobileMenuOpen}
                   aria-label={isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
-                  style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
+                  style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation', userSelect: 'none' }}
                 >
-                  {isMobileMenuOpen ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
+                  {isMobileMenuOpen ? <X className="h-7 w-7 pointer-events-none" /> : <Menu className="h-7 w-7 pointer-events-none" />}
                 </button>
               </div>
-              <DropdownMenu>
+              <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
                   <button 
                     type="button"
-                    className="relative h-12 w-12 rounded-full p-0 flex items-center justify-center cursor-pointer"
-                    style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}
+                    className="relative h-12 w-12 rounded-full p-0 flex items-center justify-center cursor-pointer select-none"
+                    style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation', userSelect: 'none' }}
+                    onPointerDown={(e) => {
+                      e.stopPropagation();
+                    }}
                   >
                     <SimpleAvatar 
                       key={`navbar-avatar-${directUser?.id}-${avatarKey}-${navbarRefreshTrigger}`}
