@@ -310,6 +310,15 @@ app.use("/api/", rateLimit({
 // CRITICAL: Sessions persist indefinitely with rolling renewal - users stay logged in forever unless they logout
 const redis = process.env.REDIS_URL ? new Redis(process.env.REDIS_URL) : null;
 
+// Log Redis connection status
+if (redis) {
+  console.log('🔴 Redis: Connecting to Redis for session storage...');
+  redis.on('connect', () => console.log('✅ Redis: Connected successfully - sessions will persist across restarts'));
+  redis.on('error', (err) => console.error('❌ Redis connection error:', err.message));
+} else {
+  console.log('⚠️ Redis: No REDIS_URL configured - using in-memory session store');
+}
+
 // Detect if we're in production
 const isProduction = process.env.NODE_ENV === 'production';
 
