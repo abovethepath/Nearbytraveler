@@ -4802,8 +4802,6 @@ Questions? Just reply to this message. Welcome aboard!
               sql`LOWER(COALESCE(array_to_string(${users.interests}, ' '), '')) LIKE ${pattern}`,
               sql`LOWER(COALESCE(array_to_string(${users.activities}, ' '), '')) LIKE ${pattern}`,
               sql`LOWER(COALESCE(array_to_string(${users.events}, ' '), '')) LIKE ${pattern}`,
-              sql`LOWER(COALESCE(array_to_string(${users.travelerTypes}, ' '), '')) LIKE ${pattern}`,
-              sql`LOWER(COALESCE(array_to_string(${users.languages}, ' '), '')) LIKE ${pattern}`,
               sql`LOWER(COALESCE(array_to_string(${users.languagesSpoken}, ' '), '')) LIKE ${pattern}`,
               sql`LOWER(COALESCE(array_to_string(${users.countriesVisited}, ' '), '')) LIKE ${pattern}`,
               sql`LOWER(COALESCE(array_to_string(${users.travelWhat}, ' '), '')) LIKE ${pattern}`,
