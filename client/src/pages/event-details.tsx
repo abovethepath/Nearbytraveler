@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { MapPin, Calendar, Clock, Users, User, Info, Share2, Copy, Check, ArrowLeft } from "lucide-react";
+import { MapPin, Calendar, Clock, Users, User, Info, Share2, Copy, Check, ArrowLeft, Mail, Link2, MessageCircle } from "lucide-react";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
 import { type Event, type EventParticipant, type User as UserType } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
@@ -168,12 +168,70 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
   const goingCount = goingParticipants.length;
   const interestedCount = interestedParticipants.length;
 
-  // Share functionality
+  // Get event URL for sharing
+  const getEventUrl = () => `${window.location.origin}/events/${eventId}`;
+  
+  // Get formatted event details for sharing
+  const getShareMessage = () => {
+    const dateObj = new Date(event.date);
+    const eventDateStr = dateObj.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+    const eventTimeStr = dateObj.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    const location = event.city ? ` in ${event.city}` : '';
+    return `Hey! Check out this event: "${event.title}"${location} on ${eventDateStr} at ${eventTimeStr}. Join me! ${getEventUrl()}`;
+  };
+
+  // WhatsApp share - opens WhatsApp with pre-filled message
+  const shareViaWhatsApp = () => {
+    const message = encodeURIComponent(getShareMessage());
+    window.open(`https://wa.me/?text=${message}`, '_blank');
+  };
+
+  // Email share - opens email client with pre-filled subject and body
+  const shareViaEmail = () => {
+    const subject = encodeURIComponent(`You're invited: ${event.title}`);
+    const dateObj = new Date(event.date);
+    const eventDate = dateObj.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    const eventTime = `Time: ${dateObj.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}\n`;
+    const location = event.city ? `Location: ${event.city}${event.state ? `, ${event.state}` : ''}\n` : '';
+    
+    const body = encodeURIComponent(
+      `Hi!\n\nI wanted to invite you to this event:\n\n` +
+      `${event.title}\n\n` +
+      `Date: ${eventDate}\n` +
+      eventTime +
+      location +
+      `\n${event.description || ''}\n\n` +
+      `RSVP here: ${getEventUrl()}\n\n` +
+      `Hope to see you there!`
+    );
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+  };
+
+  // Copy invite link
+  const copyInviteLink = async () => {
+    try {
+      await navigator.clipboard.writeText(getEventUrl());
+      setCopied(true);
+      toast({
+        title: "Invite link copied!",
+        description: "Share this link with friends to invite them",
+      });
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      toast({
+        title: "Failed to copy",
+        description: "Please copy the link from the address bar",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Native share (for mobile devices)
   const shareEvent = async () => {
-    const eventUrl = `${window.location.origin}/events/${eventId}`;
+    const eventUrl = getEventUrl();
     const shareData = {
       title: event.title,
-      text: `Check out this event: ${event.title}`,
+      text: getShareMessage(),
       url: eventUrl,
     };
 
@@ -182,28 +240,10 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
         await navigator.share(shareData);
       } catch (error) {
         // Fallback to copy link
-        copyToClipboard(eventUrl);
+        copyInviteLink();
       }
     } else {
-      copyToClipboard(eventUrl);
-    }
-  };
-
-  const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      toast({
-        title: "Link copied!",
-        description: "Event link has been copied to clipboard",
-      });
-      setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      toast({
-        title: "Failed to copy",
-        description: "Please copy the link manually from the address bar",
-        variant: "destructive",
-      });
+      copyInviteLink();
     }
   };
 
@@ -278,15 +318,53 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
           
           {/* Instagram Share */}
           <InstagramShare event={event} />
+        </div>
+        
+        {/* Sharing Options Row */}
+        <div className="flex flex-wrap gap-2 mt-3">
+          {/* WhatsApp Share */}
+          <Button
+            variant="outline"
+            onClick={shareViaWhatsApp}
+            className="flex items-center gap-2 bg-green-50 hover:bg-green-100 border-green-300 text-green-700 dark:bg-green-900/20 dark:hover:bg-green-900/30 dark:border-green-700 dark:text-green-400"
+            data-testid="button-share-whatsapp"
+          >
+            <MessageCircle className="w-4 h-4" />
+            <span className="hidden sm:inline">WhatsApp</span>
+          </Button>
           
-          {/* Share Button */}
+          {/* Email Invite */}
+          <Button
+            variant="outline"
+            onClick={shareViaEmail}
+            className="flex items-center gap-2"
+            data-testid="button-share-email"
+          >
+            <Mail className="w-4 h-4" />
+            <span className="hidden sm:inline">Email</span>
+          </Button>
+          
+          {/* Copy Invite Link */}
+          <Button
+            variant="outline"
+            onClick={copyInviteLink}
+            className="flex items-center gap-2"
+            data-testid="button-copy-link"
+          >
+            {copied ? <Check className="w-4 h-4 text-green-600" /> : <Link2 className="w-4 h-4" />}
+            {copied ? "Copied!" : <span className="hidden sm:inline">Copy Link</span>}
+            {!copied && <span className="sm:hidden">Link</span>}
+          </Button>
+          
+          {/* Native Share (More options on mobile) */}
           <Button
             variant="outline"
             onClick={shareEvent}
             className="flex items-center gap-2"
+            data-testid="button-share-more"
           >
-            {copied ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
-            {copied ? "Copied!" : "Share Event"}
+            <Share2 className="w-4 h-4" />
+            <span className="hidden sm:inline">More</span>
           </Button>
         </div>
       </div>
