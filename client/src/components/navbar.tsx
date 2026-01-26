@@ -435,10 +435,17 @@ function Navbar() {
                 {/* Mobile Menu Button - Fixed for iOS WebView */}
                 <button
                   type="button"
-                  className="md:hidden h-12 w-12 p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 cursor-pointer select-none"
-                  onPointerDown={(e) => {
+                  className="md:hidden h-12 w-12 p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 cursor-pointer select-none relative z-[300]"
+                  onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
+                    console.log('🍔 Hamburger clicked via onClick');
+                    setIsMobileMenuOpen(o => !o);
+                  }}
+                  onTouchEnd={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('🍔 Hamburger touched via onTouchEnd');
                     setIsMobileMenuOpen(o => !o);
                   }}
                   aria-controls="mobile-menu"
@@ -453,10 +460,10 @@ function Navbar() {
                 <DropdownMenuTrigger asChild>
                   <button 
                     type="button"
-                    className="relative h-12 w-12 rounded-full p-0 flex items-center justify-center cursor-pointer select-none"
+                    className="relative h-12 w-12 rounded-full p-0 flex items-center justify-center cursor-pointer select-none z-[300]"
                     style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation', userSelect: 'none' }}
-                    onPointerDown={(e) => {
-                      e.stopPropagation();
+                    onClick={(e) => {
+                      console.log('👤 Avatar clicked via onClick');
                     }}
                   >
                     <SimpleAvatar 
