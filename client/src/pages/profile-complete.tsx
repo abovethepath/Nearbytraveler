@@ -3690,7 +3690,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     id="avatar-upload-input"
                     type="file"
                     accept="image/*"
-                    capture="environment"
                     onChange={handleAvatarUpload}
                     className="sr-only"
                     disabled={uploadingPhoto}
