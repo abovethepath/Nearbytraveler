@@ -336,7 +336,7 @@ export default function SignupLocal() {
               <div className="space-y-4">
                 <h3 className="text-2xl font-bold text-gray-900">Personal Information</h3>
 
-                <div>
+                <div className="w-full max-w-full overflow-hidden">
                   <Label className="text-gray-900">Date of Birth *</Label>
                   <div className="text-sm text-blue-600 mb-2">
                     Can be hidden from public view later while still being used for matching
@@ -349,6 +349,7 @@ export default function SignupLocal() {
                     max={maxDate}
                     required
                     data-testid="input-dateOfBirth"
+                    className="w-full max-w-full"
                   />
                 </div>
               </div>
