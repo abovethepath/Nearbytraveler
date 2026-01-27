@@ -15,7 +15,7 @@ import EventCard from "@/components/event-card";
 import { Calendar, UserPlus } from "lucide-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { authStorage } from "@/lib/auth";
-import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, getAllActivities } from "@shared/base-options";
+import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, getAllActivities, ALL_INTERESTS, ALL_ACTIVITIES, TOP_CHOICES } from "@shared/base-options";
 import { GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS, MILITARY_STATUS_OPTIONS } from "@/lib/formConstants";
 import { InterestPills } from "@/components/InterestPills";
 
@@ -196,10 +196,10 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
   const travelerTypeOptions = ["Solo", "Couple", "Group", "Family", "Business"];
   const militaryStatusOptions = MILITARY_STATUS_OPTIONS;
 
-  // Use proper lists from base-options
-  const topChoicesOptions = MOST_POPULAR_INTERESTS;
-  const interestOptions = ADDITIONAL_INTERESTS;
-  const activityOptions = getAllActivities();
+  // Use ALL_INTERESTS to match what users select in signup and profile editing
+  // TOP_CHOICES (30 items) + ADDITIONAL_INTERESTS (73 items) = ALL_INTERESTS (103 items)
+  const interestOptions = ALL_INTERESTS;
+  const activityOptions = ALL_ACTIVITIES;
 
 
   if (!open) return null;
@@ -446,26 +446,31 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                 </Button>
               </CollapsibleTrigger>
               <CollapsibleContent className="space-y-2 pt-2">
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-60 overflow-y-auto">
-                  {interestOptions.map((option) => (
-                    <div key={option} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`interest-${option}`}
-                        checked={advancedFilters.interests.includes(option)}
-                        onCheckedChange={(checked) => {
+                <div className="flex flex-wrap gap-2 max-h-60 overflow-y-auto p-1">
+                  {interestOptions.map((option) => {
+                    const isSelected = advancedFilters.interests.includes(option);
+                    return (
+                      <button
+                        key={option}
+                        type="button"
+                        onClick={() => {
                           setAdvancedFilters(prev => ({
                             ...prev,
-                            interests: checked 
-                              ? [...prev.interests, option]
-                              : prev.interests.filter(i => i !== option)
+                            interests: isSelected 
+                              ? prev.interests.filter(i => i !== option)
+                              : [...prev.interests, option]
                           }));
                         }}
-                      />
-                      <Label htmlFor={`interest-${option}`} className="text-sm cursor-pointer">
+                        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                          isSelected
+                            ? 'bg-orange-500 text-white'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        }`}
+                      >
                         {option}
-                      </Label>
-                    </div>
-                  ))}
+                      </button>
+                    );
+                  })}
                 </div>
               </CollapsibleContent>
             </Collapsible>
@@ -479,26 +484,31 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                 </Button>
               </CollapsibleTrigger>
               <CollapsibleContent className="space-y-2 pt-2">
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-60 overflow-y-auto">
-                  {activityOptions.map((option) => (
-                    <div key={option} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`activity-${option}`}
-                        checked={advancedFilters.activities.includes(option)}
-                        onCheckedChange={(checked) => {
+                <div className="flex flex-wrap gap-2 max-h-60 overflow-y-auto p-1">
+                  {activityOptions.map((option) => {
+                    const isSelected = advancedFilters.activities.includes(option);
+                    return (
+                      <button
+                        key={option}
+                        type="button"
+                        onClick={() => {
                           setAdvancedFilters(prev => ({
                             ...prev,
-                            activities: checked 
-                              ? [...prev.activities, option]
-                              : prev.activities.filter(a => a !== option)
+                            activities: isSelected 
+                              ? prev.activities.filter(a => a !== option)
+                              : [...prev.activities, option]
                           }));
                         }}
-                      />
-                      <Label htmlFor={`activity-${option}`} className="text-sm cursor-pointer">
+                        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                          isSelected
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        }`}
+                      >
                         {option}
-                      </Label>
-                    </div>
-                  ))}
+                      </button>
+                    );
+                  })}
                 </div>
               </CollapsibleContent>
             </Collapsible>
