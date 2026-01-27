@@ -72,12 +72,76 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   const [editText, setEditText] = useState("");
   const [isWsConnected, setIsWsConnected] = useState(false);
   const [messagesLoaded, setMessagesLoaded] = useState(false);
+  const [swipingMessageId, setSwipingMessageId] = useState<number | null>(null);
+  const [swipeOffset, setSwipeOffset] = useState(0);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+  
+  // WhatsApp-style long press detection (500ms)
+  const handleTouchStart = (e: React.TouchEvent, message: Message) => {
+    const touch = e.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY, time: Date.now() };
+    setSwipingMessageId(message.id);
+    setSwipeOffset(0);
+    
+    // Start long press timer
+    longPressTimerRef.current = setTimeout(() => {
+      // Vibrate if supported (haptic feedback)
+      if (navigator.vibrate) navigator.vibrate(50);
+      setSelectedMessage(message.id);
+      touchStartRef.current = null;
+    }, 500);
+  };
+  
+  const handleTouchMove = (e: React.TouchEvent, message: Message, isOwn: boolean) => {
+    if (!touchStartRef.current) return;
+    
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - touchStartRef.current.x;
+    const deltaY = Math.abs(touch.clientY - touchStartRef.current.y);
+    
+    // Cancel long press if moved too much
+    if (Math.abs(deltaX) > 10 || deltaY > 10) {
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current);
+        longPressTimerRef.current = null;
+      }
+    }
+    
+    // Swipe right to reply (only for other's messages, or left for own messages)
+    const swipeDirection = isOwn ? -1 : 1;
+    const swipeAmount = deltaX * swipeDirection;
+    
+    if (swipeAmount > 0 && deltaY < 30) {
+      // Limit swipe to 80px max
+      setSwipeOffset(Math.min(swipeAmount, 80));
+    }
+  };
+  
+  const handleTouchEnd = (e: React.TouchEvent, message: Message) => {
+    // Clear long press timer
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+    
+    // Check if swipe was enough to trigger reply (> 60px)
+    if (swipeOffset > 60) {
+      setReplyingTo(message);
+      if (navigator.vibrate) navigator.vibrate(30);
+    }
+    
+    // Reset swipe state
+    setSwipeOffset(0);
+    setSwipingMessageId(null);
+    touchStartRef.current = null;
+  };
   
   // HTTP fallback for fetching messages when WebSocket sync fails
   const fetchMessagesViaHttp = async () => {
@@ -807,11 +871,31 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                   )}
 
                   <div 
-                    className={`chat-message-container relative max-w-[75%] ${isOwnMessage ? 'mr-2' : 'ml-2'} cursor-pointer`}
-                    style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'auto', WebkitUserSelect: 'none', userSelect: 'none' }}
-                    onClick={() => setSelectedMessage(selectedMessage === message.id ? null : message.id)}
+                    className={`chat-message-container relative max-w-[75%] ${isOwnMessage ? 'mr-2' : 'ml-2'}`}
+                    style={{ 
+                      WebkitTapHighlightColor: 'transparent', 
+                      touchAction: 'pan-y', 
+                      WebkitUserSelect: 'none', 
+                      userSelect: 'none',
+                      transform: swipingMessageId === message.id ? `translateX(${isOwnMessage ? -swipeOffset : swipeOffset}px)` : 'none',
+                      transition: swipingMessageId === message.id ? 'none' : 'transform 0.2s ease-out'
+                    }}
+                    onTouchStart={(e) => handleTouchStart(e, message)}
+                    onTouchMove={(e) => handleTouchMove(e, message, isOwnMessage)}
+                    onTouchEnd={(e) => handleTouchEnd(e, message)}
                     data-testid={`message-${message.id}`}
                   >
+                    {/* Swipe reply indicator */}
+                    {swipingMessageId === message.id && swipeOffset > 20 && (
+                      <div 
+                        className={`absolute top-1/2 -translate-y-1/2 ${isOwnMessage ? 'right-full mr-2' : 'left-full ml-2'}`}
+                        style={{ opacity: Math.min(swipeOffset / 60, 1) }}
+                      >
+                        <div className={`w-8 h-8 rounded-full bg-green-600 flex items-center justify-center ${swipeOffset > 60 ? 'scale-110' : ''}`}>
+                          <Reply className="w-4 h-4 text-white" />
+                        </div>
+                      </div>
+                    )}
                     {message.replyToId && message.replyTo && (
                       <div className={`mb-1 px-3 py-2 rounded-t-lg border-l-4 ${isOwnMessage ? 'bg-green-900/80 border-green-300' : 'bg-gray-600/80 border-green-500'}`}>
                         <p className={`text-xs font-bold mb-0.5 ${isOwnMessage ? 'text-green-200' : 'text-green-400'}`}>
@@ -889,7 +973,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                       </div>
                     )}
 
-                    {/* Message Action Menu - Bottom Sheet Style for Mobile */}
+                    {/* Message Action Menu - WhatsApp Style Bottom Sheet */}
                     {selectedMessage === message.id && (
                       <>
                       {/* Backdrop */}
@@ -901,26 +985,36 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                       />
                       {/* Bottom Sheet Menu */}
                       <div 
-                        className="fixed left-0 right-0 bottom-0 bg-gray-900 rounded-t-2xl shadow-2xl z-[99999] pb-8"
+                        className="fixed left-0 right-0 bottom-0 bg-gray-900 rounded-t-3xl shadow-2xl z-[99999]"
                         style={{ 
                           touchAction: 'auto',
-                          paddingBottom: 'max(2rem, env(safe-area-inset-bottom))'
+                          paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))'
                         }}
                         onClick={(e) => e.stopPropagation()}
                       >
                         {/* Handle bar */}
                         <div className="flex justify-center py-3">
-                          <div className="w-10 h-1 bg-gray-600 rounded-full"></div>
+                          <div className="w-12 h-1.5 bg-gray-600 rounded-full"></div>
                         </div>
                         
-                        {/* Message preview */}
-                        <div className="px-4 pb-3 mb-2 border-b border-gray-700">
-                          <p className="text-xs text-gray-400 mb-1">{isOwnMessage ? 'Your message' : `From ${message.sender?.name || 'Unknown'}`}</p>
-                          <p className="text-sm text-white truncate">{message.content}</p>
+                        {/* Quick Emoji Reactions - WhatsApp Style */}
+                        <div className="flex justify-center gap-4 px-4 pb-4 border-b border-gray-700">
+                          {['👍', '❤️', '😂', '😮', '😢', '🙏'].map((emoji) => (
+                            <button
+                              key={emoji}
+                              type="button"
+                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleReaction(message.id, emoji); setSelectedMessage(null); }}
+                              onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); handleReaction(message.id, emoji); setSelectedMessage(null); }}
+                              className="w-12 h-12 flex items-center justify-center text-2xl bg-gray-800 hover:bg-gray-700 active:bg-gray-600 active:scale-110 rounded-full transition-transform"
+                              style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                            >
+                              {emoji}
+                            </button>
+                          ))}
                         </div>
                         
-                        {/* Action buttons - Different for own vs other messages */}
-                        <div className="px-2">
+                        {/* Action buttons */}
+                        <div className="px-3 pt-2">
                           {isOwnMessage ? (
                             /* OWN MESSAGE: Edit and Delete */
                             <>
@@ -928,49 +1022,57 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                                 type="button" 
                                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(message); }}
                                 onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(message); }}
-                                className="flex items-center gap-4 w-full px-4 py-4 hover:bg-gray-800 active:bg-gray-700 rounded-xl text-white"
-                                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', minHeight: '56px' }}
+                                className="flex items-center gap-4 w-full px-4 py-3.5 hover:bg-gray-800 active:bg-gray-700 rounded-xl text-white"
+                                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', minHeight: '52px' }}
                                 data-testid="button-edit-message"
                               >
-                                <Edit2 className="w-6 h-6 text-blue-400" />
-                                <span className="text-base font-medium">Edit message</span>
+                                <div className="w-10 h-10 rounded-full bg-blue-600/20 flex items-center justify-center">
+                                  <Edit2 className="w-5 h-5 text-blue-400" />
+                                </div>
+                                <span className="text-base">Edit</span>
                               </button>
                               <button 
                                 type="button" 
                                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDeleteMessage(message.id); }}
                                 onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); handleDeleteMessage(message.id); }}
-                                className="flex items-center gap-4 w-full px-4 py-4 hover:bg-gray-800 active:bg-gray-700 rounded-xl text-red-400"
-                                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', minHeight: '56px' }}
+                                className="flex items-center gap-4 w-full px-4 py-3.5 hover:bg-gray-800 active:bg-gray-700 rounded-xl text-white"
+                                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', minHeight: '52px' }}
                                 data-testid="button-delete-message"
                               >
-                                <Trash2 className="w-6 h-6" />
-                                <span className="text-base font-medium">Delete message</span>
+                                <div className="w-10 h-10 rounded-full bg-red-600/20 flex items-center justify-center">
+                                  <Trash2 className="w-5 h-5 text-red-400" />
+                                </div>
+                                <span className="text-base">Delete</span>
+                              </button>
+                              <button 
+                                type="button" 
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setReplyingTo(message); setSelectedMessage(null); }}
+                                onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setReplyingTo(message); setSelectedMessage(null); }}
+                                className="flex items-center gap-4 w-full px-4 py-3.5 hover:bg-gray-800 active:bg-gray-700 rounded-xl text-white"
+                                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', minHeight: '52px' }}
+                                data-testid="button-reply-message"
+                              >
+                                <div className="w-10 h-10 rounded-full bg-green-600/20 flex items-center justify-center">
+                                  <Reply className="w-5 h-5 text-green-400" />
+                                </div>
+                                <span className="text-base">Reply</span>
                               </button>
                             </>
                           ) : (
-                            /* OTHER'S MESSAGE: Reply and React */
+                            /* OTHER'S MESSAGE: Reply */
                             <>
                               <button 
                                 type="button" 
                                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); setReplyingTo(message); setSelectedMessage(null); }}
                                 onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setReplyingTo(message); setSelectedMessage(null); }}
-                                className="flex items-center gap-4 w-full px-4 py-4 hover:bg-gray-800 active:bg-gray-700 rounded-xl text-white"
-                                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', minHeight: '56px' }}
+                                className="flex items-center gap-4 w-full px-4 py-3.5 hover:bg-gray-800 active:bg-gray-700 rounded-xl text-white"
+                                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', minHeight: '52px' }}
                                 data-testid="button-reply-message"
                               >
-                                <Reply className="w-6 h-6 text-green-400" />
-                                <span className="text-base font-medium">Reply</span>
-                              </button>
-                              <button 
-                                type="button" 
-                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleReaction(message.id, '❤️'); setSelectedMessage(null); }}
-                                onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); handleReaction(message.id, '❤️'); setSelectedMessage(null); }}
-                                className="flex items-center gap-4 w-full px-4 py-4 hover:bg-gray-800 active:bg-gray-700 rounded-xl text-white"
-                                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', minHeight: '56px' }}
-                                data-testid="button-react-message"
-                              >
-                                <Heart className="w-6 h-6 text-red-400" />
-                                <span className="text-base font-medium">React ❤️</span>
+                                <div className="w-10 h-10 rounded-full bg-green-600/20 flex items-center justify-center">
+                                  <Reply className="w-5 h-5 text-green-400" />
+                                </div>
+                                <span className="text-base">Reply</span>
                               </button>
                             </>
                           )}
@@ -978,25 +1080,16 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                           {/* Copy - available for all messages */}
                           <button 
                             type="button" 
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigator.clipboard.writeText(message.content); toast({ title: "Copied to clipboard" }); setSelectedMessage(null); }}
-                            onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); navigator.clipboard.writeText(message.content); toast({ title: "Copied to clipboard" }); setSelectedMessage(null); }}
-                            className="flex items-center gap-4 w-full px-4 py-4 hover:bg-gray-800 active:bg-gray-700 rounded-xl text-white"
-                            style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', minHeight: '56px' }}
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigator.clipboard.writeText(message.content); toast({ title: "Copied" }); setSelectedMessage(null); }}
+                            onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); navigator.clipboard.writeText(message.content); toast({ title: "Copied" }); setSelectedMessage(null); }}
+                            className="flex items-center gap-4 w-full px-4 py-3.5 hover:bg-gray-800 active:bg-gray-700 rounded-xl text-white"
+                            style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', minHeight: '52px' }}
                             data-testid="button-copy-message"
                           >
-                            <Copy className="w-6 h-6 text-gray-400" />
-                            <span className="text-base font-medium">Copy text</span>
-                          </button>
-                          
-                          {/* Cancel button */}
-                          <button 
-                            type="button" 
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedMessage(null); }}
-                            onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedMessage(null); }}
-                            className="flex items-center justify-center w-full px-4 py-4 mt-2 bg-gray-800 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-gray-300"
-                            style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', minHeight: '56px' }}
-                          >
-                            <span className="text-base font-medium">Cancel</span>
+                            <div className="w-10 h-10 rounded-full bg-gray-600/20 flex items-center justify-center">
+                              <Copy className="w-5 h-5 text-gray-400" />
+                            </div>
+                            <span className="text-base">Copy text</span>
                           </button>
                         </div>
                       </div>
