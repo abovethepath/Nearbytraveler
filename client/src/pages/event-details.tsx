@@ -360,9 +360,9 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                   </div>
                   <button
                     onClick={() => setShowFullNames(!showFullNames)}
-                    className="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 mt-1"
+                    className="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 mt-1 underline"
                   >
-                    {showFullNames ? "Show usernames" : "Show real names"}
+                    {showFullNames ? "Username" : "Real name"}
                   </button>
                 </CardHeader>
                 <CardContent className="pt-4">
