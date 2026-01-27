@@ -163,15 +163,21 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
   });
 
   // Check if user has already redeemed an offer - MOVED TO TOP
-  const { data: userRedemptions = [] } = useQuery({
+  const { data: userRedemptionsData = [] } = useQuery({
     queryKey: ['/api/user-redemptions'],
-    queryFn: () => {
+    queryFn: async () => {
       const user = JSON.parse(localStorage.getItem('travelconnect_user') || '{}');
-      if (!user.id) return Promise.resolve([]);
-      return fetch(`${getApiBaseUrl()}/api/users/${user.id}/offer-redemptions`).then(res => res.json());
+      if (!user.id) return [];
+      const res = await fetch(`${getApiBaseUrl()}/api/users/${user.id}/offer-redemptions`);
+      const data = await res.json();
+      // Ensure we always return an array
+      return Array.isArray(data) ? data : [];
     },
     enabled: !!JSON.parse(localStorage.getItem('travelconnect_user') || '{}').id
   });
+  
+  // Ensure userRedemptions is always an array
+  const userRedemptions = Array.isArray(userRedemptionsData) ? userRedemptionsData : [];
 
   const getDiscountIcon = (type: string) => {
     switch (type) {
