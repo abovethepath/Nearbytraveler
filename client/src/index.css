@@ -1229,3 +1229,104 @@ img[alt*="profile" i],
 :not(.dark) section[class*="bg-gradient"] a[data-testid="link-business-website"] * {
   color: rgb(0, 0, 0) !important;
 }
+
+/* ==========================================================================
+   CRITICAL: WebView/iOS App Touch Handling Fixes
+   These overrides ensure touch events work properly in React Native WebView
+   and Capacitor iOS apps by removing touch-action: manipulation that
+   breaks normal click/tap handling.
+   ========================================================================== */
+
+/* Mobile Bottom Navigation - Must respond to taps */
+nav[class*="fixed"][class*="bottom-0"] button,
+nav[class*="fixed"][class*="bottom-0"] a,
+[data-testid*="nav-"] {
+  touch-action: auto !important;
+  -webkit-touch-callout: default !important;
+  cursor: pointer !important;
+}
+
+/* Chat Message Bubbles - Must be tappable for action menu */
+.chat-message-bubble,
+.chat-message-container,
+[class*="chat-message"],
+[class*="message-bubble"],
+[data-testid^="message-"],
+div[class*="max-w-"][class*="cursor-pointer"] {
+  touch-action: auto !important;
+  -webkit-touch-callout: default !important;
+  cursor: pointer !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+
+/* Chat Message Action Menu Buttons */
+[data-testid="button-copy-message"],
+[data-testid="button-reply-message"],
+[data-testid="button-react-message"],
+[data-testid="button-edit-message"],
+[data-testid="button-delete-message"],
+[data-testid="button-save-edit"],
+[data-testid="button-cancel-edit"] {
+  touch-action: auto !important;
+  -webkit-touch-callout: default !important;
+  cursor: pointer !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+
+/* Chat Action Menu Container - ensure it receives touches */
+div[class*="fixed"][class*="bg-gray-800"][class*="z-[99999]"] {
+  touch-action: auto !important;
+}
+div[class*="fixed"][class*="bg-gray-800"][class*="z-[99999]"] button {
+  touch-action: auto !important;
+  -webkit-touch-callout: default !important;
+  cursor: pointer !important;
+  min-height: 44px !important;
+}
+
+/* Modal/Dialog Overlay - ensure it can be dismissed */
+div[class*="fixed"][class*="inset-0"][class*="bg-black"] {
+  touch-action: auto !important;
+}
+
+/* Top Navigation Hamburger Menu */
+[data-testid="button-mobile-menu"],
+button[aria-label*="menu" i],
+button[class*="hamburger"] {
+  touch-action: auto !important;
+  -webkit-touch-callout: default !important;
+  cursor: pointer !important;
+}
+
+/* Sheet/Drawer Close Button */
+[data-testid*="close"],
+button[aria-label*="close" i] {
+  touch-action: auto !important;
+  cursor: pointer !important;
+}
+
+/* All dialog/modal buttons should be tappable */
+[role="dialog"] button,
+[role="alertdialog"] button,
+.dialog button,
+.modal button {
+  touch-action: auto !important;
+  cursor: pointer !important;
+  min-height: 44px !important;
+}
+
+/* Ensure send button in chat works */
+button[type="submit"],
+[data-testid*="send"] {
+  touch-action: auto !important;
+  cursor: pointer !important;
+}
+
+/* Avatar clicks for profile navigation */
+[class*="avatar"],
+[role="img"] {
+  touch-action: auto !important;
+  cursor: pointer !important;
+}

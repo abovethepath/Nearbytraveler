@@ -807,9 +807,10 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                   )}
 
                   <div 
-                    className={`relative max-w-[75%] ${isOwnMessage ? 'mr-2' : 'ml-2'} cursor-pointer`}
-                    style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'auto' }}
+                    className={`chat-message-container relative max-w-[75%] ${isOwnMessage ? 'mr-2' : 'ml-2'} cursor-pointer`}
+                    style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'auto', WebkitUserSelect: 'none', userSelect: 'none' }}
                     onClick={() => setSelectedMessage(selectedMessage === message.id ? null : message.id)}
+                    data-testid={`message-${message.id}`}
                   >
                     {message.replyToId && message.replyTo && (
                       <div className={`mb-1 px-3 py-2 rounded-t-lg border-l-4 ${isOwnMessage ? 'bg-green-900/80 border-green-300' : 'bg-gray-600/80 border-green-500'}`}>
