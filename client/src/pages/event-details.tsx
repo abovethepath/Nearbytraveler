@@ -641,9 +641,22 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                   
                   {/* Show current status if organizer is a participant */}
                   {isParticipant && (
-                    <Badge className="w-full justify-center py-2 mb-3 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                      ✓ {participantStatus === 'going' ? 'Going' : 'Interested'}
-                    </Badge>
+                    <>
+                      <Badge className="w-full justify-center py-2 mb-2 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                        ✓ {participantStatus === 'going' ? 'Going' : 'Interested'}
+                      </Badge>
+                      {/* Allow organizer to change their status */}
+                      <button
+                        onClick={() => {
+                          const newStatus = participantStatus === 'going' ? 'interested' : 'going';
+                          joinEventMutation.mutate(newStatus);
+                        }}
+                        className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline mb-3 w-full text-center"
+                        disabled={joinEventMutation.isPending}
+                      >
+                        {joinEventMutation.isPending ? "Updating..." : (participantStatus === 'going' ? 'Change to Interested' : 'Change to Going')}
+                      </button>
+                    </>
                   )}
                   
                   <Button 
