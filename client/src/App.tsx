@@ -1248,8 +1248,10 @@ function Router() {
               </div>
             </>
 
-            <main className="flex-1 w-full max-w-full pt-16 pb-24 md:pt-0 md:pb-20 main-with-bottom-nav">
+            <main className="flex-1 w-full max-w-full pt-16 pb-24 md:pt-0 md:pb-20 overflow-x-hidden main-with-bottom-nav">
+              <div className="w-full max-w-full overflow-x-hidden">
                 {renderPage()}
+              </div>
             </main>
 
             {/* Bottom Navigation - show on all screen sizes for authenticated users */}

@@ -87,9 +87,9 @@ export function MobileTopNav() {
     <>
       {/* NAV BAR (no inline 100vw — prevents ghost scrollbar) */}
       <div className="mobile-top-nav fixed inset-x-0 top-0 z-[50000] h-16 w-full bg-white dark:bg-gray-900 shadow-sm md:hidden overflow-visible">
-        <div className="flex items-center justify-between h-16 px-2">
+        <div className="flex items-center justify-between h-16 px-4">
           {/* Left: Hamburger - CRITICAL FIX for mobile touch on iOS Safari and WebViews */}
-          <div className="flex items-center -ml-1" style={{ isolation: 'isolate', zIndex: 50002 }}>
+          <div className="flex items-center" style={{ isolation: 'isolate', zIndex: 50002 }}>
             <button
               type="button"
               aria-expanded={showDropdown}
@@ -138,7 +138,7 @@ export function MobileTopNav() {
           </div>
 
           {/* Right: Avatar - Simplified for Capacitor WebView */}
-          <div className="flex items-center gap-1 -mr-1 relative z-[50001]">
+          <div className="flex items-center gap-3 relative z-[50001]">
             <button
               type="button"
               onClick={() => {

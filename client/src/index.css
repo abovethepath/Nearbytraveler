@@ -10,11 +10,11 @@
 }
 
 /* Apply safe area padding for iOS notch/home indicator */
-/* Note: Left/right safe area padding removed - it was causing layout issues */
-/* Content areas handle their own horizontal padding */
 body {
   padding-top: var(--sat);
   padding-bottom: var(--sab);
+  padding-left: var(--sal);
+  padding-right: var(--sar);
 }
 
 /* Ensure fixed elements respect safe areas */
@@ -167,8 +167,8 @@ body {
     overflow-x: hidden !important;
   }
   
-  /* Fix gradient sections that might overflow - but allow full-bleed profile headers */
-  [class*="bg-gradient"]:not(.w-screen) {
+  /* Fix gradient sections that might overflow */
+  [class*="bg-gradient"] {
     max-width: 100% !important;
     overflow: hidden;
   }
