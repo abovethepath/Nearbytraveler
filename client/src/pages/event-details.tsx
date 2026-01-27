@@ -159,7 +159,10 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
   const currentParticipant = participants.find(p => p.userId === currentUser?.id);
   const isParticipant = !!currentParticipant;
   const participantStatus = currentParticipant?.status;
-  const isOrganizer = viewAsGuest ? false : event.organizerId === currentUser?.id;
+  const participantRole = currentParticipant?.role;
+  const isPrimaryOrganizer = viewAsGuest ? false : event.organizerId === currentUser?.id;
+  const isCoOrganizer = viewAsGuest ? false : participantRole === 'co-organizer';
+  const isOrganizer = isPrimaryOrganizer || isCoOrganizer;
   const organizer = users.find(u => u.id === event.organizerId);
   
   // Separate participants by status
@@ -622,13 +625,17 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
             <CardContent className="p-6">
               {isOrganizer ? (
                 <div className="text-center space-y-3">
-                  <Badge variant="outline" className="mb-4">Event Organizer</Badge>
-                  <p className="text-sm text-gray-600 mb-4">You're organizing this event</p>
+                  <Badge variant="outline" className="mb-4">
+                    {isPrimaryOrganizer ? "Event Organizer" : "Co-Organizer"}
+                  </Badge>
+                  <p className="text-sm text-gray-600 mb-4">
+                    {isPrimaryOrganizer ? "You're organizing this event" : "You're co-organizing this event"}
+                  </p>
                   
-                  {/* Organizer is always "Going" - show status or auto-add button */}
+                  {/* Organizer status - show current status or add button */}
                   {isParticipant ? (
                     <Badge className="w-full justify-center py-2 mb-3 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                      ✓ Going (Organizer)
+                      ✓ {participantStatus === 'going' ? 'Going' : 'Interested'} ({isPrimaryOrganizer ? 'Organizer' : 'Co-Organizer'})
                     </Badge>
                   ) : (
                     /* If organizer somehow isn't in participant list, show button to add them */
@@ -663,10 +670,16 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                     Open Chat
                   </Button>
                   
-                  {/* Organizers cannot leave their own event - they must delete it instead */}
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
-                    As the organizer, you're always going to this event
-                  </p>
+                  {/* Leave event option for organizers */}
+                  {isParticipant && (
+                    <button
+                      onClick={() => leaveEventMutation.mutate()}
+                      className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 underline mt-2"
+                      disabled={leaveEventMutation.isPending}
+                    >
+                      {leaveEventMutation.isPending ? "Leaving..." : "Leave event"}
+                    </button>
+                  )}
                   
                   {/* Preview how others see the join button */}
                   <div className="pt-4 border-t border-gray-200 dark:border-gray-700">

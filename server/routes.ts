@@ -9394,6 +9394,46 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Update participant role (make co-organizer)
+  app.patch("/api/events/:id/participants/:userId/role", async (req, res) => {
+    try {
+      const eventId = parseInt(req.params.id || '0');
+      const userId = parseInt(req.params.userId || '0');
+      const { role, requesterId } = req.body;
+      
+      if (!role || !requesterId) {
+        return res.status(400).json({ message: "Role and requester ID required" });
+      }
+      
+      // Check if requester is the organizer or co-organizer
+      const event = await storage.getEvent(eventId);
+      if (!event) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+      
+      const participants = await storage.getEventParticipants(eventId);
+      const requesterParticipant = participants.find(p => p.userId === requesterId);
+      const isOrganizer = event.organizerId === requesterId;
+      const isCoOrganizer = requesterParticipant?.role === 'co-organizer';
+      
+      if (!isOrganizer && !isCoOrganizer) {
+        return res.status(403).json({ message: "Only organizers can update participant roles" });
+      }
+      
+      // Update the participant's role
+      const updated = await storage.updateEventParticipantRole(eventId, userId, role);
+      if (updated) {
+        if (process.env.NODE_ENV === 'development') console.log(`🎪 Updated participant ${userId} role to ${role} for event ${eventId}`);
+        return res.json({ success: true, message: `Role updated to ${role}` });
+      } else {
+        return res.status(404).json({ message: "Participant not found" });
+      }
+    } catch (error: any) {
+      if (process.env.NODE_ENV === 'development') console.error("Error updating participant role:", error);
+      return res.status(500).json({ message: "Failed to update participant role" });
+    }
+  });
+
   // Import event from external URL (Couchsurfing, Meetup, etc.)
   app.post("/api/events/import-url", async (req, res) => {
     try {

@@ -192,14 +192,54 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
 
   const currentUser = user || fallbackUser;
 
+  // Fetch event participants
+  const { data: participants = [] } = useQuery<any[]>({
+    queryKey: [`/api/events/${eventId}/participants`],
+    enabled: !!eventId,
+  });
+
   // Check if user is the organizer
   const isOrganizer = event?.organizerId === currentUser?.id;
+  
+  // Get co-organizers
+  const coOrganizers = participants.filter(p => p.role === 'co-organizer');
+  const regularParticipants = participants.filter(p => p.role !== 'co-organizer' && p.userId !== event?.organizerId);
   
   // Debug logging
   console.log('Authorization check in frontend:');
   console.log('Event:', event ? { id: event.id, title: event.title, organizerId: event.organizerId } : 'No event loaded');
   console.log('User:', currentUser ? { id: currentUser.id, username: currentUser.username } : 'No user loaded');
   console.log('Is organizer:', isOrganizer);
+
+  // Update participant role mutation
+  const updateRoleMutation = useMutation({
+    mutationFn: async ({ userId, role }: { userId: number; role: string }) => {
+      const response = await apiRequest("PATCH", `/api/events/${eventId}/participants/${userId}/role`, {
+        role,
+        requesterId: currentUser?.id
+      });
+      if (!response.ok) {
+        throw new Error("Failed to update participant role");
+      }
+      return response.json();
+    },
+    onSuccess: (_, { role }) => {
+      toast({
+        title: role === 'co-organizer' ? "Co-Organizer Added" : "Role Updated",
+        description: role === 'co-organizer' 
+          ? "Participant has been promoted to co-organizer" 
+          : "Participant role has been updated",
+      });
+      queryClient.invalidateQueries({ queryKey: [`/api/events/${eventId}/participants`] });
+    },
+    onError: () => {
+      toast({
+        title: "Update Failed",
+        description: "Failed to update participant role. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
 
   // Delete event mutation
   const deleteEventMutation = useMutation({
@@ -701,6 +741,89 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                   {uploadingImage ? "Uploading..." : (imagePreview || event?.imageUrl) ? "Change Photo" : "Upload Photo"}
                 </Button>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Co-Organizers Management */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="w-5 h-5" />
+                Co-Organizers
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Add co-organizers who can help manage this event
+              </p>
+              
+              {/* Current Co-Organizers */}
+              {coOrganizers.length > 0 && (
+                <div className="space-y-2">
+                  <Label>Current Co-Organizers</Label>
+                  {coOrganizers.map((coOrg: any) => (
+                    <div key={coOrg.userId} className="flex items-center justify-between p-2 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        {coOrg.user?.profileImage ? (
+                          <img src={coOrg.user.profileImage} alt="" className="w-8 h-8 rounded-full object-cover" />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                            <Users className="w-4 h-4" />
+                          </div>
+                        )}
+                        <span className="font-medium">{coOrg.user?.username || coOrg.user?.name}</span>
+                        <Badge variant="secondary" className="text-xs">Co-Organizer</Badge>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => updateRoleMutation.mutate({ userId: coOrg.userId, role: 'participant' })}
+                        disabled={updateRoleMutation.isPending}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {/* Promote Participants to Co-Organizer */}
+              {regularParticipants.length > 0 ? (
+                <div className="space-y-2">
+                  <Label>Add from Participants</Label>
+                  <div className="max-h-48 overflow-y-auto space-y-1">
+                    {regularParticipants.map((participant: any) => (
+                      <div key={participant.userId} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          {participant.user?.profileImage ? (
+                            <img src={participant.user.profileImage} alt="" className="w-8 h-8 rounded-full object-cover" />
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                              <Users className="w-4 h-4" />
+                            </div>
+                          )}
+                          <span>{participant.user?.username || participant.user?.name}</span>
+                          <Badge variant="outline" className="text-xs">
+                            {participant.status === 'going' ? 'Going' : 'Interested'}
+                          </Badge>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => updateRoleMutation.mutate({ userId: participant.userId, role: 'co-organizer' })}
+                          disabled={updateRoleMutation.isPending}
+                        >
+                          Make Co-Organizer
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500 italic">
+                  No participants yet. Once people join your event, you can promote them to co-organizers here.
+                </p>
+              )}
             </CardContent>
           </Card>
 

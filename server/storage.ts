@@ -36,6 +36,7 @@ export interface IStorage {
   // Event participation methods
   joinEvent(eventId: number, userId: number, notes?: string, status?: string, role?: string): Promise<EventParticipant>;
   leaveEvent(eventId: number, userId: number): Promise<boolean>;
+  updateEventParticipantRole(eventId: number, userId: number, role: string): Promise<boolean>;
   getEventParticipants(eventId: number): Promise<EventParticipantWithUser[]>;
   getUserEventParticipations(userId: number): Promise<EventParticipant[]>;
   getUserParticipatedEventsWithDetails(userId: number, status?: 'interested' | 'going'): Promise<any[]>;
@@ -1711,6 +1712,21 @@ export class DatabaseStorage implements IStorage {
     }
 
     return true;
+  }
+
+  async updateEventParticipantRole(eventId: number, userId: number, role: string): Promise<boolean> {
+    const [updated] = await db
+      .update(eventParticipants)
+      .set({ role })
+      .where(
+        and(
+          eq(eventParticipants.eventId, eventId),
+          eq(eventParticipants.userId, userId)
+        )
+      )
+      .returning();
+    
+    return !!updated;
   }
 
   async getEventParticipants(eventId: number): Promise<EventParticipantWithUser[]> {
