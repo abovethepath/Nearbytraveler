@@ -14,7 +14,6 @@ import { SimpleAvatar } from "@/components/simple-avatar";
 
 import WeatherWidget from "@/components/WeatherWidget";
 
-import { CityTravelTipsWidget } from "@/components/CityTravelTipsWidget";
 import { CityChatlroomsWidget } from "@/components/CityChatlroomsWidget";
 import { CityStatsWidget } from "@/components/CityStatsWidget";
 import { CityMap } from "@/components/CityMap";
@@ -605,10 +604,6 @@ export default function CityPage({ cityName }: CityPageProps) {
                 {/* Secret Experiences Widget - Always Loaded */}
                 <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
                   <SecretExperiencesWidget city={parsedCityName} state={parsedStateName} country={parsedCountryName} />
-                </div>
-                {/* Travel Tips Widget - Always Loaded */}
-                <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
-                  <CityTravelTipsWidget city={parsedCityName} country={parsedCountryName} />
                 </div>
                 <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
                   <CityChatlroomsWidget city={parsedCityName} country={parsedCountryName} />
