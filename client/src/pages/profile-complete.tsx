@@ -4107,6 +4107,27 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   )}
                 </button>
               )}
+
+              {/* Vouches Tab - Only shows if user has at least 1 vouch */}
+              {user?.userType !== 'business' && (userVouches?.length || 0) > 0 && (
+                <button
+                  role="tab"
+                  aria-selected={activeTab === 'vouches'}
+                  aria-controls="panel-vouches"
+                  onClick={() => openTab('vouches')}
+                  className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
+                    activeTab === 'vouches'
+                      ? 'bg-purple-600 text-white border border-purple-600'
+                      : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
+                  }`}
+                  data-testid="tab-vouches"
+                >
+                  Vouches
+                  <span className="ml-2 px-2 py-1 text-xs bg-purple-500 text-white rounded-full">
+                    {userVouches?.length || 0}
+                  </span>
+                </button>
+              )}
             </div>
             
             {/* Let's Meet Now CTA - Only for travelers and locals, not businesses */}
@@ -5840,6 +5861,71 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     )}
                   </CardContent>
                 </Card>
+              </div>
+            )}
+
+            {/* Vouches Tab Panel - Only shows when user has vouches */}
+            {activeTab === 'vouches' && loadedTabs.has('vouches') && (userVouches?.length || 0) > 0 && (
+              <div 
+                role="tabpanel"
+                id="panel-vouches"
+                aria-labelledby="tab-vouches"
+                className="space-y-4 mt-6" 
+                style={{zIndex: 10, position: 'relative'}} 
+                data-testid="vouches-content"
+              >
+                <Card className="bg-white border border-purple-200 dark:bg-gray-900 dark:border-purple-700 hover:shadow-lg transition-all duration-200">
+                  <CardHeader className="bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30">
+                    <CardTitle className="flex items-center gap-2 text-purple-800 dark:text-purple-200">
+                      <ThumbsUp className="w-5 h-5" />
+                      Vouches Received ({userVouches?.length || 0})
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="bg-white dark:bg-gray-900 pt-4">
+                    <div className="space-y-3">
+                      {userVouches?.map((vouch: any) => (
+                        <div 
+                          key={vouch.id} 
+                          className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-100 dark:border-purple-700"
+                        >
+                          <div className="flex items-center gap-2 mb-2">
+                            <ThumbsUp className="w-4 h-4 text-purple-600" />
+                            <span className="font-medium text-purple-800 dark:text-purple-200">
+                              Vouched by @{vouch.voucherUsername || 'Unknown'}
+                            </span>
+                          </div>
+                          {vouch.message && (
+                            <p className="text-sm text-gray-600 dark:text-gray-300 italic">
+                              "{vouch.message}"
+                            </p>
+                          )}
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                            {new Date(vouch.createdAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Vouch button for visitors in vouches tab */}
+                {!isOwnProfile && currentUser?.id && (
+                  <Card className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700">
+                    <CardContent className="py-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <ThumbsUp className="w-5 h-5 text-purple-600" />
+                          <span className="text-purple-800 dark:text-purple-200 font-medium">Vouch for {user?.username}</span>
+                        </div>
+                        <VouchButton
+                          currentUserId={currentUser.id}
+                          targetUserId={user?.id || 0}
+                          targetUsername={user?.username || ''}
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             )}
 
