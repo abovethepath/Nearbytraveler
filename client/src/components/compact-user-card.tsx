@@ -77,52 +77,56 @@ export default function CompactUserCard({
 
   return (
     <Card 
-      className="cursor-pointer bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 overflow-hidden"
+      className="cursor-pointer bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 overflow-hidden h-full flex flex-col"
       onClick={handleCardClick}
     >
-      {/* Compact gradient header */}
+      {/* LinkedIn-style cover/header - shorter */}
       <div 
-        className="h-10 relative"
+        className="h-12 relative flex-shrink-0"
         style={{ background: getUserGradient() }}
       />
       
-      {/* Content */}
-      <div className="px-2 pb-3 -mt-6 text-center">
-        {/* Avatar */}
+      {/* Content - centered layout like LinkedIn */}
+      <div className="px-3 pb-3 -mt-8 text-center flex flex-col flex-grow">
+        {/* Avatar - larger, with white ring like LinkedIn */}
         <div className="flex justify-center mb-2">
-          <div className="w-12 h-12 rounded-full bg-white dark:bg-gray-800 p-0.5 shadow-md">
+          <div className="w-14 h-14 rounded-full bg-white dark:bg-gray-800 p-1 shadow-lg ring-2 ring-white dark:ring-gray-800">
             <SimpleAvatar 
               user={user} 
-              size="md" 
-              className="w-full h-full ring-2 ring-white dark:ring-gray-800"
+              size="lg" 
+              className="w-full h-full"
             />
           </div>
         </div>
         
-        {/* Name */}
-        <h3 className="font-bold text-xs text-gray-900 dark:text-white truncate px-1 leading-tight">
+        {/* Name - bold like LinkedIn */}
+        <h3 className="font-bold text-sm text-gray-900 dark:text-white truncate leading-tight">
           {displayName}
         </h3>
         
-        {/* Subtitle */}
-        <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate leading-tight mt-0.5">
-          {getSubtitle()}
-          {getLocation() && <span className="hidden xs:inline"> • {getLocation()}</span>}
+        {/* Subtitle - role/location like LinkedIn */}
+        <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 leading-tight mt-0.5 min-h-[2rem]">
+          {getSubtitle()} • {getLocation()}
         </p>
         
         {/* Mutual connections - LinkedIn style */}
-        {mutualConnections && mutualConnections > 0 && (
-          <div className="flex items-center justify-center gap-1 mt-1.5">
-            <div className="w-3 h-3 rounded-full bg-gray-300 dark:bg-gray-600" />
-            <span className="text-[9px] text-gray-500 dark:text-gray-400">
+        {mutualConnections && mutualConnections > 0 ? (
+          <div className="flex items-center justify-center gap-1.5 mt-2">
+            <div className="w-4 h-4 rounded-full bg-gray-300 dark:bg-gray-600 flex-shrink-0" />
+            <span className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
               {mutualConnections} mutual
             </span>
           </div>
+        ) : (
+          <div className="h-6 mt-2" />
         )}
         
-        {/* Connect button */}
+        {/* Spacer */}
+        <div className="flex-grow" />
+        
+        {/* Connect button - LinkedIn blue outlined style */}
         <button 
-          className="w-full mt-2 py-1.5 px-2 border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 rounded-full text-xs font-semibold hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+          className="w-full mt-2 py-2 px-3 border-2 border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 rounded-full text-sm font-semibold hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
           onClick={(e) => {
             e.stopPropagation();
             handleCardClick(e);

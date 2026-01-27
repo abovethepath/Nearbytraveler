@@ -127,10 +127,10 @@ export default function ConnectButton({
     }
     
     if (connectionStatus?.status === 'pending') {
-      // Request already sent - show toast
+      // Request already sent - show toast (use username, not full name)
       toast({
         title: "Request Already Sent",
-        description: `You've already sent a connection request to ${targetName || targetUsername}.`,
+        description: `You've already sent a connection request to @${targetUsername}.`,
       });
       return;
     }

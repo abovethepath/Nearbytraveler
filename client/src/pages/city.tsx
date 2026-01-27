@@ -406,8 +406,8 @@ export default function CityPage({ cityName }: CityPageProps) {
                 {/* Users Grid */}
                 {filteredUsers.length > 0 ? (
                   <>
-                    {/* Mobile: LinkedIn-style compact 2-column grid */}
-                    <div className="grid grid-cols-2 gap-2 sm:hidden">
+                    {/* Mobile/Tablet: LinkedIn-style compact 2-column grid */}
+                    <div className="grid grid-cols-2 gap-3 md:hidden">
                       {displayedUsers.map((user: User) => (
                         <CompactUserCard 
                           key={user.id} 
@@ -425,8 +425,8 @@ export default function CityPage({ cityName }: CityPageProps) {
                       ))}
                     </div>
                     
-                    {/* Tablet/Desktop: Full cards */}
-                    <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {/* Desktop: Full cards */}
+                    <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                       {displayedUsers.map((user: User) => (
                         <UserCard 
                           key={user.id} 

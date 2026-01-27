@@ -1970,8 +1970,8 @@ export default function Home() {
               
               return (
                 <>
-                  {/* Mobile: LinkedIn-style compact 2-column grid */}
-                  <div className="grid grid-cols-2 gap-2 sm:hidden">
+                  {/* Mobile/Tablet: LinkedIn-style compact 2-column grid */}
+                  <div className="grid grid-cols-2 gap-3 md:hidden">
                     {sortedAndFilteredUsers.length > 0 ? (
                       sortedAndFilteredUsers.slice(0, showAllUsers ? sortedAndFilteredUsers.length : 8).map((otherUser) => (
                         <CompactUserCard 
@@ -1990,8 +1990,8 @@ export default function Home() {
                     )}
                   </div>
                   
-                  {/* Tablet/Desktop: Full cards */}
-                  <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {/* Desktop: Full cards */}
+                  <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     {sortedAndFilteredUsers.length > 0 ? (
                       sortedAndFilteredUsers.slice(0, showAllUsers ? sortedAndFilteredUsers.length : 8).map((otherUser) => (
                         <div key={otherUser.id} className="transform hover:scale-[1.02] transition-transform min-w-0 overflow-hidden">
