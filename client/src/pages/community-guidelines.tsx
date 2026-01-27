@@ -61,8 +61,21 @@ export default function CommunityGuidelines() {
 
           <div className="prose prose-gray max-w-none space-y-8">
             <p className="text-sm text-gray-600 mb-8">
-              <strong>Last Updated:</strong> January 27, 2025
+              <strong>Last Updated:</strong> January 27, 2026
             </p>
+
+            {/* Age Requirement Notice */}
+            <div className="bg-amber-50 border-2 border-amber-300 rounded-lg p-6 mb-8">
+              <div className="flex items-start gap-3">
+                <div className="text-2xl">🔞</div>
+                <div>
+                  <h3 className="text-lg font-bold text-amber-900 mb-2">Age Requirement: 17+</h3>
+                  <p className="text-amber-800">
+                    NearbyTraveler is designed for users aged 17 and older. By creating an account, you confirm that you are at least 17 years of age. This platform contains features designed for mature audiences, including the ability to meet new people and share personal preferences. Users under 17 are not permitted to create accounts.
+                  </p>
+                </div>
+              </div>
+            </div>
 
             {/* Our Values Section */}
             <section>
@@ -173,25 +186,50 @@ export default function CommunityGuidelines() {
                 <div>
                   <h3 className="text-xl font-semibold text-gray-800 mb-4">🛡️ Safety & Trust</h3>
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                    <p className="text-blue-800 mb-4">Your safety is our priority. Here's how we maintain a trusted community:</p>
-                    <ul className="text-blue-800 text-sm space-y-2">
-                      <li className="flex items-start gap-2">
-                        <span className="text-blue-600 mt-1">•</span>
-                        <span><strong>Meet in public places</strong> for first meetings and inform someone of your plans</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-blue-600 mt-1">•</span>
-                        <span><strong>Trust your instincts</strong> - if something doesn't feel right, prioritize your safety</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-blue-600 mt-1">•</span>
-                        <span><strong>Report concerns</strong> immediately to our community team</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-blue-600 mt-1">•</span>
-                        <span><strong>Verify profiles</strong> through our authentication features when available</span>
-                      </li>
-                    </ul>
+                    <p className="text-blue-800 mb-4 font-medium">Your safety is our top priority. Follow these essential guidelines:</p>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="font-semibold text-blue-900 mb-2">Before Meeting Someone</h4>
+                        <ul className="text-blue-800 text-sm space-y-1 ml-4">
+                          <li>• Review their profile thoroughly, including references and vouches</li>
+                          <li>• Chat within the app first to get to know them</li>
+                          <li>• Video call before meeting in person when possible</li>
+                          <li>• Never share personal financial information</li>
+                        </ul>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-semibold text-blue-900 mb-2">During Your Meetup</h4>
+                        <ul className="text-blue-800 text-sm space-y-1 ml-4">
+                          <li>• Always meet in public, well-lit places for first meetings</li>
+                          <li>• Tell a friend or family member your plans, location, and who you're meeting</li>
+                          <li>• Keep your phone charged and stay in contact with someone you trust</li>
+                          <li>• Arrange your own transportation to and from the meeting</li>
+                          <li>• Trust your instincts - if something feels wrong, leave immediately</li>
+                        </ul>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-semibold text-blue-900 mb-2">Protecting Your Privacy</h4>
+                        <ul className="text-blue-800 text-sm space-y-1 ml-4">
+                          <li>• Don't share your home address until you fully trust someone</li>
+                          <li>• Keep conversations within the app initially</li>
+                          <li>• Be cautious about sharing personal details like workplace or daily routines</li>
+                          <li>• Watch for red flags like requests for money or overly personal questions too soon</li>
+                        </ul>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-semibold text-blue-900 mb-2">If Something Goes Wrong</h4>
+                        <ul className="text-blue-800 text-sm space-y-1 ml-4">
+                          <li>• Use the Report button on any profile to report concerning behavior</li>
+                          <li>• Block users who make you uncomfortable</li>
+                          <li>• For immediate danger, contact local emergency services (911 in the US)</li>
+                          <li>• Document any concerning messages or behavior</li>
+                        </ul>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
