@@ -391,7 +391,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                                 onClick={() => setLocation(`/profile/${user?.id}`)}
                                 className="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline text-left truncate"
                               >
-                                {user?.name || user?.username || 'Unknown'}
+                                {user?.username || user?.name || 'Unknown'}
                               </button>
                               {user?.id === event?.organizerId && event?.isOriginalOrganizer !== false && (
                                 <Badge variant="default" className="text-xs bg-orange-500 hover:bg-orange-600 shrink-0">
