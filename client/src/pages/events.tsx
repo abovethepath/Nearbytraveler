@@ -351,14 +351,14 @@ export default function Events() {
   // Import unified categories to eliminate duplicates
   // Enhanced categories with emojis and colors
   const categoryData = [
-    { name: "Food & Dining", emoji: "🍕", color: "bg-orange-100 text-orange-700 border-orange-300 dark:bg-orange-900/30 dark:text-orange-300" },
-    { name: "Music & Entertainment", emoji: "🎵", color: "bg-purple-100 text-purple-700 border-purple-300 dark:bg-purple-900/30 dark:text-purple-300" },
-    { name: "Sports & Fitness", emoji: "⚽", color: "bg-green-100 text-green-700 border-green-300 dark:bg-green-900/30 dark:text-green-300" },
-    { name: "Nightlife & Parties", emoji: "🌃", color: "bg-indigo-100 text-indigo-700 border-indigo-300 dark:bg-indigo-900/30 dark:text-indigo-300" },
-    { name: "Social & Networking", emoji: "👥", color: "bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-900/30 dark:text-blue-300" },
-    { name: "Arts & Culture", emoji: "🎨", color: "bg-pink-100 text-pink-700 border-pink-300 dark:bg-pink-900/30 dark:text-pink-300" },
-    { name: "Family Activities", emoji: "👨‍👩‍👧", color: "bg-teal-100 text-teal-700 border-teal-300 dark:bg-teal-900/30 dark:text-teal-300" },
-    { name: "Health & Wellness", emoji: "🧘", color: "bg-emerald-100 text-emerald-700 border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-300" },
+    { name: "Food & Dining", emoji: "🍕", color: "bg-white text-orange-600 border-orange-300 hover:bg-orange-50 dark:bg-gray-800 dark:text-orange-400 dark:border-orange-600 dark:hover:bg-orange-900/20", selectedColor: "bg-orange-500 text-white border-orange-500" },
+    { name: "Music & Entertainment", emoji: "🎵", color: "bg-white text-purple-600 border-purple-300 hover:bg-purple-50 dark:bg-gray-800 dark:text-purple-400 dark:border-purple-600 dark:hover:bg-purple-900/20", selectedColor: "bg-purple-500 text-white border-purple-500" },
+    { name: "Sports & Fitness", emoji: "⚽", color: "bg-white text-green-600 border-green-300 hover:bg-green-50 dark:bg-gray-800 dark:text-green-400 dark:border-green-600 dark:hover:bg-green-900/20", selectedColor: "bg-green-500 text-white border-green-500" },
+    { name: "Nightlife & Parties", emoji: "🌃", color: "bg-white text-indigo-600 border-indigo-300 hover:bg-indigo-50 dark:bg-gray-800 dark:text-indigo-400 dark:border-indigo-600 dark:hover:bg-indigo-900/20", selectedColor: "bg-indigo-500 text-white border-indigo-500" },
+    { name: "Social & Networking", emoji: "👥", color: "bg-white text-blue-600 border-blue-300 hover:bg-blue-50 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-600 dark:hover:bg-blue-900/20", selectedColor: "bg-blue-500 text-white border-blue-500" },
+    { name: "Arts & Culture", emoji: "🎨", color: "bg-white text-pink-600 border-pink-300 hover:bg-pink-50 dark:bg-gray-800 dark:text-pink-400 dark:border-pink-600 dark:hover:bg-pink-900/20", selectedColor: "bg-pink-500 text-white border-pink-500" },
+    { name: "Family Activities", emoji: "👨‍👩‍👧", color: "bg-white text-teal-600 border-teal-300 hover:bg-teal-50 dark:bg-gray-800 dark:text-teal-400 dark:border-teal-600 dark:hover:bg-teal-900/20", selectedColor: "bg-teal-500 text-white border-teal-500" },
+    { name: "Health & Wellness", emoji: "🧘", color: "bg-white text-emerald-600 border-emerald-300 hover:bg-emerald-50 dark:bg-gray-800 dark:text-emerald-400 dark:border-emerald-600 dark:hover:bg-emerald-900/20", selectedColor: "bg-emerald-500 text-white border-emerald-500" },
   ];
   const categories = categoryData.map(c => c.name);
 
@@ -743,8 +743,8 @@ export default function Events() {
                 onClick={() => setCategoryFilter("all")}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all border whitespace-nowrap ${
                   categoryFilter === "all" 
-                    ? "bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-gray-900" 
-                    : "bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700"
+                    ? "bg-gradient-to-r from-orange-500 to-pink-500 text-white border-transparent shadow-md" 
+                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700"
                 }`}
               >
                 ✨ All Events
@@ -755,7 +755,7 @@ export default function Events() {
                   onClick={() => setCategoryFilter(cat.name.toLowerCase())}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all border whitespace-nowrap ${
                     categoryFilter === cat.name.toLowerCase() 
-                      ? "ring-2 ring-offset-1 ring-gray-400 " + cat.color
+                      ? cat.selectedColor + " shadow-md"
                       : cat.color
                   }`}
                 >
