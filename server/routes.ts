@@ -59,6 +59,7 @@ import {
   userEventInterests,
   vouches,
   blockedUsers,
+  userReports,
   insertWaitlistLeadSchema,
   userPhotos,
   passportStamps
@@ -3649,6 +3650,21 @@ Questions? Just reply to this message!
       if (processedData.dateOfBirth && typeof processedData.dateOfBirth === 'string') {
         processedData.dateOfBirth = new Date(processedData.dateOfBirth);
       }
+      
+      // SAFETY: Enforce 17+ minimum age requirement
+      if (processedData.dateOfBirth) {
+        const today = new Date();
+        const birthDate = new Date(processedData.dateOfBirth);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+        }
+        if (age < 17) {
+          return res.status(400).json({ message: "You must be 17 or older to use this app" });
+        }
+      }
+      
       if (processedData.travelStartDate && typeof processedData.travelStartDate === 'string') {
         processedData.travelStartDate = new Date(processedData.travelStartDate);
       }
@@ -3999,6 +4015,20 @@ Questions? Just reply to this message!
       }
       if (processedData.travelEndDate && typeof processedData.travelEndDate === 'string') {
         processedData.travelEndDate = new Date(processedData.travelEndDate);
+      }
+
+      // SAFETY: Enforce 17+ minimum age requirement (for non-business users)
+      if (processedData.dateOfBirth && processedData.userType !== 'business') {
+        const today = new Date();
+        const birthDate = new Date(processedData.dateOfBirth);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+        }
+        if (age < 17) {
+          return res.status(400).json({ message: "You must be 17 or older to use this app" });
+        }
       }
 
       // For businesses, dateOfBirth is not required, so we'll add a default if missing
@@ -6519,6 +6549,101 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error) {
       console.error("❌ Error unblocking user:", error);
       res.status(500).json({ error: "Failed to unblock user" });
+    }
+  });
+
+  // POST /api/users/report - Report a user for safety/moderation
+  app.post("/api/users/report", async (req, res) => {
+    try {
+      const { reportedUserId, reason, details } = req.body;
+      const reporterId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+
+      if (!reporterId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      if (!reportedUserId) {
+        return res.status(400).json({ error: "Reported user ID is required" });
+      }
+
+      if (!reason) {
+        return res.status(400).json({ error: "Report reason is required" });
+      }
+
+      if (reporterId === reportedUserId) {
+        return res.status(400).json({ error: "Cannot report yourself" });
+      }
+
+      const validReasons = ['harassment', 'spam', 'inappropriate', 'fake_profile', 'scam', 'other'];
+      if (!validReasons.includes(reason)) {
+        return res.status(400).json({ error: "Invalid report reason" });
+      }
+
+      // Check if user has already reported this person
+      const existingReport = await db.select()
+        .from(userReports)
+        .where(and(
+          eq(userReports.reporterId, reporterId),
+          eq(userReports.reportedId, reportedUserId),
+          eq(userReports.status, 'pending')
+        ))
+        .limit(1);
+
+      if (existingReport.length > 0) {
+        return res.status(400).json({ error: "You have already reported this user. Our team is reviewing it." });
+      }
+
+      // Create the report
+      await db.insert(userReports).values({
+        reporterId,
+        reportedId: reportedUserId,
+        reason,
+        details: details || null,
+        status: 'pending',
+        createdAt: new Date()
+      });
+
+      console.log(`🚨 REPORT: User ${reporterId} reported user ${reportedUserId} for ${reason}`);
+
+      res.json({ 
+        success: true, 
+        message: "Report submitted successfully. Our team will review it." 
+      });
+
+    } catch (error) {
+      console.error("❌ Error reporting user:", error);
+      res.status(500).json({ error: "Failed to submit report" });
+    }
+  });
+
+  // GET /api/admin/reports - Get all user reports (admin only)
+  app.get("/api/admin/reports", async (req, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      
+      // Check if user is admin (user ID 2 is admin)
+      if (userId !== 2) {
+        return res.status(403).json({ error: "Admin access required" });
+      }
+
+      const reports = await db.select({
+        id: userReports.id,
+        reporterId: userReports.reporterId,
+        reportedId: userReports.reportedId,
+        reason: userReports.reason,
+        details: userReports.details,
+        status: userReports.status,
+        createdAt: userReports.createdAt,
+        reviewedAt: userReports.reviewedAt
+      })
+      .from(userReports)
+      .orderBy(desc(userReports.createdAt));
+
+      res.json(reports);
+
+    } catch (error) {
+      console.error("❌ Error fetching reports:", error);
+      res.status(500).json({ error: "Failed to fetch reports" });
     }
   });
 

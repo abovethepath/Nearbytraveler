@@ -322,6 +322,7 @@ import { CustomerUploadedPhotos } from "@/components/customer-uploaded-photos";
 import BusinessEventsWidget from "@/components/business-events-widget";
 import ReferralWidget from "@/components/referral-widget";
 import { BlockUserButton } from "@/components/block-user-button";
+import { ReportUserButton } from "@/components/report-user-button";
 
 
 
@@ -3963,6 +3964,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <MessageSquare className="w-4 h-4 mr-2" />
                     Write Reference
                   </Button>
+                )}
+                {/* Report User Button */}
+                {currentUser && user && (
+                  <ReportUserButton
+                    userId={currentUser.id}
+                    targetUserId={user.id}
+                    targetUsername={user.username}
+                    variant="ghost"
+                    size="sm"
+                  />
                 )}
               </div>
             ) : (

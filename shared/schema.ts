@@ -652,6 +652,19 @@ export const blockedUsers = pgTable("blocked_users", {
   unique().on(table.blockerId, table.blockedId), // Prevent duplicate blocks
 ]);
 
+// User reports for safety/moderation
+export const userReports = pgTable("user_reports", {
+  id: serial("id").primaryKey(),
+  reporterId: integer("reporter_id").notNull(), // User who is reporting
+  reportedId: integer("reported_id").notNull(), // User who is being reported
+  reason: text("reason").notNull(), // Reason for report: 'harassment', 'spam', 'inappropriate', 'fake_profile', 'other'
+  details: text("details"), // Additional details from reporter
+  status: text("status").default("pending"), // 'pending', 'reviewed', 'resolved', 'dismissed'
+  adminNotes: text("admin_notes"), // Notes from admin review
+  createdAt: timestamp("created_at").defaultNow(),
+  reviewedAt: timestamp("reviewed_at"),
+});
+
 // Waitlist for launch leads
 export const waitlistLeads = pgTable("waitlist_leads", {
   id: serial("id").primaryKey(),
