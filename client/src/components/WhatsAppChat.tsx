@@ -889,44 +889,116 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                       </div>
                     )}
 
+                    {/* Message Action Menu - Bottom Sheet Style for Mobile */}
                     {selectedMessage === message.id && (
                       <>
+                      {/* Backdrop */}
                       <div 
-                        className="fixed inset-0 bg-black/50 z-[99998]"
-                        onClick={() => setSelectedMessage(null)}
+                        className="fixed inset-0 bg-black/60 z-[99998]"
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedMessage(null); }}
+                        onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedMessage(null); }}
+                        style={{ touchAction: 'none' }}
                       />
+                      {/* Bottom Sheet Menu */}
                       <div 
-                        className={`fixed left-1/2 -translate-x-1/2 bg-gray-800 rounded-lg shadow-xl p-2 z-[99999] min-w-[180px] border border-gray-600`}
-                        style={{ top: '50%', transform: 'translate(-50%, -50%)' }}
+                        className="fixed left-0 right-0 bottom-0 bg-gray-900 rounded-t-2xl shadow-2xl z-[99999] pb-8"
+                        style={{ 
+                          touchAction: 'auto',
+                          paddingBottom: 'max(2rem, env(safe-area-inset-bottom))'
+                        }}
+                        onClick={(e) => e.stopPropagation()}
                       >
-                        <div className="text-center text-xs text-gray-400 mb-2 pb-2 border-b border-gray-700">Message Options</div>
-                        <button type="button" onClick={() => { navigator.clipboard.writeText(message.content); toast({ title: "Copied" }); setSelectedMessage(null); }} className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 active:bg-gray-600 rounded-lg text-white cursor-pointer" style={{ WebkitTapHighlightColor: 'transparent' }} data-testid="button-copy-message">
-                          <Copy className="w-5 h-5 pointer-events-none" />
-                          <span className="pointer-events-none">Copy text</span>
-                        </button>
-                        <button type="button" onClick={() => { setReplyingTo(message); setSelectedMessage(null); }} className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 active:bg-gray-600 rounded-lg text-white cursor-pointer" style={{ WebkitTapHighlightColor: 'transparent' }} data-testid="button-reply-message">
-                          <Reply className="w-5 h-5 pointer-events-none" />
-                          <span className="pointer-events-none">Reply</span>
-                        </button>
-                        <button type="button" onClick={() => { handleReaction(message.id, '❤️'); setSelectedMessage(null); }} className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 active:bg-gray-600 rounded-lg text-white cursor-pointer" style={{ WebkitTapHighlightColor: 'transparent' }} data-testid="button-react-message">
-                          <Heart className="w-5 h-5 pointer-events-none" />
-                          <span className="pointer-events-none">React ❤️</span>
-                        </button>
-                        {isOwnMessage && (
-                          <>
-                            <button type="button" onClick={() => startEdit(message)} className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 active:bg-gray-600 rounded-lg text-white cursor-pointer" style={{ WebkitTapHighlightColor: 'transparent' }} data-testid="button-edit-message">
-                              <Edit2 className="w-5 h-5 pointer-events-none" />
-                              <span className="pointer-events-none">Edit</span>
-                            </button>
-                            <button type="button" onClick={() => handleDeleteMessage(message.id)} className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 active:bg-gray-600 rounded-lg text-red-400 cursor-pointer" style={{ WebkitTapHighlightColor: 'transparent' }} data-testid="button-delete-message">
-                              <Trash2 className="w-5 h-5 pointer-events-none" />
-                              <span className="pointer-events-none">Delete</span>
-                            </button>
-                          </>
-                        )}
-                        <button type="button" onClick={() => setSelectedMessage(null)} className="flex items-center justify-center gap-2 w-full px-3 py-2 mt-2 border-t border-gray-700 text-gray-400 hover:text-white active:text-white cursor-pointer" style={{ WebkitTapHighlightColor: 'transparent' }}>
-                          <span className="pointer-events-none">Cancel</span>
-                        </button>
+                        {/* Handle bar */}
+                        <div className="flex justify-center py-3">
+                          <div className="w-10 h-1 bg-gray-600 rounded-full"></div>
+                        </div>
+                        
+                        {/* Message preview */}
+                        <div className="px-4 pb-3 mb-2 border-b border-gray-700">
+                          <p className="text-xs text-gray-400 mb-1">{isOwnMessage ? 'Your message' : `From ${message.sender?.name || 'Unknown'}`}</p>
+                          <p className="text-sm text-white truncate">{message.content}</p>
+                        </div>
+                        
+                        {/* Action buttons - Different for own vs other messages */}
+                        <div className="px-2">
+                          {isOwnMessage ? (
+                            /* OWN MESSAGE: Edit and Delete */
+                            <>
+                              <button 
+                                type="button" 
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(message); }}
+                                onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(message); }}
+                                className="flex items-center gap-4 w-full px-4 py-4 hover:bg-gray-800 active:bg-gray-700 rounded-xl text-white"
+                                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', minHeight: '56px' }}
+                                data-testid="button-edit-message"
+                              >
+                                <Edit2 className="w-6 h-6 text-blue-400" />
+                                <span className="text-base font-medium">Edit message</span>
+                              </button>
+                              <button 
+                                type="button" 
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDeleteMessage(message.id); }}
+                                onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); handleDeleteMessage(message.id); }}
+                                className="flex items-center gap-4 w-full px-4 py-4 hover:bg-gray-800 active:bg-gray-700 rounded-xl text-red-400"
+                                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', minHeight: '56px' }}
+                                data-testid="button-delete-message"
+                              >
+                                <Trash2 className="w-6 h-6" />
+                                <span className="text-base font-medium">Delete message</span>
+                              </button>
+                            </>
+                          ) : (
+                            /* OTHER'S MESSAGE: Reply and React */
+                            <>
+                              <button 
+                                type="button" 
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setReplyingTo(message); setSelectedMessage(null); }}
+                                onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setReplyingTo(message); setSelectedMessage(null); }}
+                                className="flex items-center gap-4 w-full px-4 py-4 hover:bg-gray-800 active:bg-gray-700 rounded-xl text-white"
+                                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', minHeight: '56px' }}
+                                data-testid="button-reply-message"
+                              >
+                                <Reply className="w-6 h-6 text-green-400" />
+                                <span className="text-base font-medium">Reply</span>
+                              </button>
+                              <button 
+                                type="button" 
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleReaction(message.id, '❤️'); setSelectedMessage(null); }}
+                                onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); handleReaction(message.id, '❤️'); setSelectedMessage(null); }}
+                                className="flex items-center gap-4 w-full px-4 py-4 hover:bg-gray-800 active:bg-gray-700 rounded-xl text-white"
+                                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', minHeight: '56px' }}
+                                data-testid="button-react-message"
+                              >
+                                <Heart className="w-6 h-6 text-red-400" />
+                                <span className="text-base font-medium">React ❤️</span>
+                              </button>
+                            </>
+                          )}
+                          
+                          {/* Copy - available for all messages */}
+                          <button 
+                            type="button" 
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigator.clipboard.writeText(message.content); toast({ title: "Copied to clipboard" }); setSelectedMessage(null); }}
+                            onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); navigator.clipboard.writeText(message.content); toast({ title: "Copied to clipboard" }); setSelectedMessage(null); }}
+                            className="flex items-center gap-4 w-full px-4 py-4 hover:bg-gray-800 active:bg-gray-700 rounded-xl text-white"
+                            style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', minHeight: '56px' }}
+                            data-testid="button-copy-message"
+                          >
+                            <Copy className="w-6 h-6 text-gray-400" />
+                            <span className="text-base font-medium">Copy text</span>
+                          </button>
+                          
+                          {/* Cancel button */}
+                          <button 
+                            type="button" 
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedMessage(null); }}
+                            onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedMessage(null); }}
+                            className="flex items-center justify-center w-full px-4 py-4 mt-2 bg-gray-800 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-gray-300"
+                            style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', minHeight: '56px' }}
+                          >
+                            <span className="text-base font-medium">Cancel</span>
+                          </button>
+                        </div>
                       </div>
                       </>
                     )}
