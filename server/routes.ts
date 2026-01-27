@@ -5246,10 +5246,10 @@ Questions? Just reply to this message. Welcome aboard!
         db.select().from(connections).where(
           and(eq(connections.receiverId, userId), eq(connections.status, 'pending'))
         ),
-        // 5. User references
+        // 5. User references received by this user
         db.select().from(userReferences).where(eq(userReferences.revieweeId, userId)),
-        // 6. User vouches (references given by this user)
-        db.select().from(userReferences).where(eq(userReferences.reviewerId, userId)),
+        // 6. User vouches received by this user (from actual vouches table)
+        db.select().from(vouches).where(eq(vouches.vouchedUserId, userId)),
         // 7. User photos
         db.select().from(userPhotos).where(eq(userPhotos.userId, userId)),
         // 8. Travel memories (completed trips)
@@ -12513,6 +12513,127 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error joining quick meetup:", error);
       return res.status(500).json({ message: "Failed to join meetup" });
+    }
+  });
+
+  // GET unread event chat notifications for a user
+  // Returns list of event chats with unread message counts
+  app.get("/api/users/:userId/unread-event-chats", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId || '0');
+      if (!userId) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+
+      // Get all events the user is participating in (going or interested)
+      const userParticipations = await db.select()
+        .from(eventParticipants)
+        .where(eq(eventParticipants.userId, userId));
+      
+      const eventIds = userParticipations.map(p => p.eventId);
+      
+      if (eventIds.length === 0) {
+        return res.json({ unreadChats: [], totalUnread: 0 });
+      }
+
+      // Get event chatrooms for these events
+      const chatrooms = await db.select()
+        .from(eventChatrooms)
+        .where(inArray(eventChatrooms.eventId, eventIds));
+      
+      const unreadChats = [];
+      let totalUnread = 0;
+
+      for (const chatroom of chatrooms) {
+        // Get user's membership to find lastReadAt
+        const membership = await db.select()
+          .from(chatroomMembers)
+          .where(and(
+            eq(chatroomMembers.chatroomId, chatroom.id),
+            eq(chatroomMembers.userId, userId)
+          ))
+          .limit(1);
+        
+        const lastReadAt = membership[0]?.lastReadAt || new Date(0);
+        
+        // Count messages after lastReadAt (excluding user's own messages)
+        const unreadMessages = await db.select({ count: sql<number>`count(*)::int` })
+          .from(chatroomMessages)
+          .where(and(
+            eq(chatroomMessages.chatroomId, chatroom.id),
+            gt(chatroomMessages.createdAt, lastReadAt),
+            ne(chatroomMessages.senderId, userId)
+          ));
+        
+        const unreadCount = unreadMessages[0]?.count || 0;
+        
+        if (unreadCount > 0) {
+          // Get event details
+          const eventData = await db.select()
+            .from(events)
+            .where(eq(events.id, chatroom.eventId))
+            .limit(1);
+          
+          if (eventData[0]) {
+            unreadChats.push({
+              eventId: chatroom.eventId,
+              chatroomId: chatroom.id,
+              eventTitle: eventData[0].title,
+              unreadCount,
+              eventDate: eventData[0].date
+            });
+            totalUnread += unreadCount;
+          }
+        }
+      }
+
+      return res.json({ unreadChats, totalUnread });
+    } catch (error: any) {
+      console.error("Error fetching unread event chats:", error);
+      return res.status(500).json({ message: "Failed to fetch unread event chats" });
+    }
+  });
+
+  // POST mark event chat as read
+  app.post("/api/event-chatrooms/:chatroomId/mark-read", async (req, res) => {
+    try {
+      const chatroomId = parseInt(req.params.chatroomId || '0');
+      const { userId } = req.body;
+      
+      if (!chatroomId || !userId) {
+        return res.status(400).json({ message: "Missing chatroom ID or user ID" });
+      }
+
+      // Update or insert the lastReadAt for this user in this chatroom
+      const existingMembership = await db.select()
+        .from(chatroomMembers)
+        .where(and(
+          eq(chatroomMembers.chatroomId, chatroomId),
+          eq(chatroomMembers.userId, userId)
+        ))
+        .limit(1);
+      
+      if (existingMembership.length > 0) {
+        // Update existing membership
+        await db.update(chatroomMembers)
+          .set({ lastReadAt: new Date() })
+          .where(and(
+            eq(chatroomMembers.chatroomId, chatroomId),
+            eq(chatroomMembers.userId, userId)
+          ));
+      } else {
+        // Create new membership with lastReadAt
+        await db.insert(chatroomMembers).values({
+          chatroomId,
+          userId,
+          lastReadAt: new Date()
+        });
+      }
+
+      return res.json({ success: true, lastReadAt: new Date() });
+    } catch (error: any) {
+      console.error("Error marking event chat as read:", error);
+      return res.status(500).json({ message: "Failed to mark chat as read" });
     }
   });
 
