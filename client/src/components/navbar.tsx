@@ -62,7 +62,6 @@ function Navbar() {
   const { toggleTheme } = useTheme();
   const headerRef = React.useRef<HTMLDivElement>(null);
   const [menuTop, setMenuTop] = useState(0);
-  const lastToggleTime = React.useRef(0);
 
   // Keyboard shortcut for theme toggle
   useEffect(() => {
@@ -433,32 +432,18 @@ function Navbar() {
                   <AdaptiveThemeToggle />
                 </div>
 
-                {/* Mobile Menu Button - Fixed for iOS WebView */}
+                {/* Mobile Menu Button - Simplified for Capacitor WebView */}
                 <button
                   type="button"
-                  className="md:hidden h-12 w-12 p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 cursor-pointer select-none relative z-[1100]"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const now = Date.now();
-                    if (now - lastToggleTime.current < 300) return;
-                    lastToggleTime.current = now;
-                    console.log('🍔 Hamburger clicked via onClick');
-                    setIsMobileMenuOpen(o => !o);
-                  }}
-                  onTouchEnd={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const now = Date.now();
-                    if (now - lastToggleTime.current < 300) return;
-                    lastToggleTime.current = now;
-                    console.log('🍔 Hamburger touched via onTouchEnd');
+                  className="md:hidden h-12 w-12 p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 cursor-pointer relative z-[1100]"
+                  onClick={() => {
+                    console.log('🍔 Hamburger clicked');
                     setIsMobileMenuOpen(o => !o);
                   }}
                   aria-controls="mobile-menu"
                   aria-expanded={isMobileMenuOpen}
                   aria-label={isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
-                  style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation', userSelect: 'none' }}
+                  style={{ WebkitTapHighlightColor: 'transparent', cursor: 'pointer' }}
                 >
                   {isMobileMenuOpen ? <X className="h-7 w-7 pointer-events-none" /> : <Menu className="h-7 w-7 pointer-events-none" />}
                 </button>
@@ -467,11 +452,8 @@ function Navbar() {
                 <DropdownMenuTrigger asChild>
                   <button 
                     type="button"
-                    className="relative h-12 w-12 rounded-full p-0 flex items-center justify-center cursor-pointer select-none z-[1100]"
-                    style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation', userSelect: 'none' }}
-                    onClick={(e) => {
-                      console.log('👤 Avatar clicked via onClick');
-                    }}
+                    className="relative h-12 w-12 rounded-full p-0 flex items-center justify-center cursor-pointer z-[1100]"
+                    style={{ WebkitTapHighlightColor: 'transparent', cursor: 'pointer' }}
                   >
                     <SimpleAvatar 
                       key={`navbar-avatar-${directUser?.id}-${avatarKey}-${navbarRefreshTrigger}`}
