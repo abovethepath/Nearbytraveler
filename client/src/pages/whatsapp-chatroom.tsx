@@ -1,4 +1,4 @@
-import { useParams } from "wouter";
+import { useParams, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import WhatsAppChat from "@/components/WhatsAppChat";
 import { authStorage } from "@/lib/auth";
@@ -12,6 +12,8 @@ interface ChatroomDetails {
 }
 
 export default function WhatsAppChatroom() {
+  const [, navigate] = useLocation();
+  
   // CRITICAL FIX: Extract ID from window.location since useParams doesn't work with startsWith routes
   const pathParts = window.location.pathname.split('/');
   const chatroomId = parseInt(pathParts[2] || '0');
@@ -45,6 +47,7 @@ export default function WhatsAppChatroom() {
       title={chatroom.name}
       subtitle={`${chatroom.memberCount} members`}
       currentUserId={currentUserId}
+      onBack={() => navigate('/chatrooms')}
     />
   );
 }

@@ -522,7 +522,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => onBack ? onBack() : navigate(-1)}
+          onClick={() => onBack ? onBack() : window.history.back()}
           className="text-white hover:bg-gray-700 h-8 w-8"
         >
           <ArrowLeft className="w-4 h-4" />
