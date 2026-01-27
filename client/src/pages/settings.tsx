@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BlockedUsersList } from "@/components/blocked-users-list";
-import { Settings, Shield, Users, Bell, Eye, MapPin, MessageSquare, Camera, Mail, Loader2, X, User } from "lucide-react";
+import { Settings, Shield, Users, Bell, Eye, MapPin, MessageSquare, Camera, Mail, Loader2, X, User, Sun, Moon, Monitor } from "lucide-react";
+import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/App";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -18,6 +19,7 @@ export default function SettingsPage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
+  const { theme, setTheme } = useTheme();
 
   // Early return if no user
   if (!isAuthenticated || !user?.id) {
@@ -140,6 +142,46 @@ export default function SettingsPage() {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   
+                  {/* Appearance / Theme */}
+                  <div className="space-y-3">
+                    <Label className="text-base font-medium flex items-center gap-2">
+                      <Sun className="h-4 w-4" />
+                      Appearance
+                    </Label>
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        variant={theme === "light" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setTheme("light")}
+                        className={theme === "light" ? "bg-orange-500 hover:bg-orange-600" : ""}
+                      >
+                        <Sun className="h-4 w-4 mr-2" />
+                        Light
+                      </Button>
+                      <Button
+                        variant={theme === "dark" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setTheme("dark")}
+                        className={theme === "dark" ? "bg-orange-500 hover:bg-orange-600" : ""}
+                      >
+                        <Moon className="h-4 w-4 mr-2" />
+                        Dark
+                      </Button>
+                      <Button
+                        variant={theme === "system" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setTheme("system")}
+                        className={theme === "system" ? "bg-orange-500 hover:bg-orange-600" : ""}
+                      >
+                        <Monitor className="h-4 w-4 mr-2" />
+                        System
+                      </Button>
+                    </div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Choose light mode, dark mode, or follow your device settings
+                    </p>
+                  </div>
+
                   {/* Display Name Settings */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
