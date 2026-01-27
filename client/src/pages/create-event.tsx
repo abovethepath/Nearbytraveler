@@ -14,7 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarIcon, MapPin, Users, Clock, Tag, Info, ArrowLeft, X, Image as ImageIcon } from "lucide-react";
+import { CalendarIcon, MapPin, Users, Clock, Tag, Info, ArrowLeft, X, Image as ImageIcon, ChevronDown, ChevronUp } from "lucide-react";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
 import Logo from "@/components/logo";
 import { COUNTRIES, US_CITIES_BY_STATE } from "@shared/locationData";
@@ -87,6 +87,7 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
   const [isOriginalOrganizer, setIsOriginalOrganizer] = useState<boolean | null>(null);
   const [importedPlatform, setImportedPlatform] = useState("");
   const [externalOrganizerName, setExternalOrganizerName] = useState("");
+  const [showPrivateSettings, setShowPrivateSettings] = useState(false);
   const [additionalCities, setAdditionalCities] = useState<string[]>([]);
   const [showAdditionalCities, setShowAdditionalCities] = useState(false);
   const { toast } = useToast();
@@ -1292,16 +1293,28 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
               />
             </div>
 
-            {/* PRIVATE EVENT VISIBILITY TAGS */}
+            {/* PRIVATE EVENT VISIBILITY TAGS - Collapsible */}
             <Card className="border-2 border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-950/20">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg flex items-center gap-2 text-orange-800 dark:text-orange-200">
-                  🔒 Private Event Settings
+              <CardHeader 
+                className="pb-3 cursor-pointer hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors rounded-t-lg"
+                onClick={() => setShowPrivateSettings(!showPrivateSettings)}
+              >
+                <CardTitle className="text-lg flex items-center justify-between text-orange-800 dark:text-orange-200">
+                  <span className="flex items-center gap-2">
+                    🔒 Private Event Settings
+                    <span className="text-xs font-normal text-orange-600 dark:text-orange-400">(Optional)</span>
+                  </span>
+                  {showPrivateSettings ? (
+                    <ChevronUp className="w-5 h-5" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5" />
+                  )}
                 </CardTitle>
                 <p className="text-sm text-orange-700 dark:text-orange-300">
-                  Control who can see this event based on demographics. These settings create safe spaces for specific communities.
+                  Control who can see this event based on demographics. Click to expand.
                 </p>
               </CardHeader>
+              {showPrivateSettings && (
               <CardContent className="space-y-4">
                 {/* Gender Restrictions */}
                 <div className="space-y-2">
@@ -1399,6 +1412,7 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                   <p className="text-xs text-gray-500">These notes are private and only visible to you as the organizer.</p>
                 </div>
               </CardContent>
+              )}
             </Card>
 
             {/* Tags section removed - keeping it simple! Event descriptions cover everything */}
