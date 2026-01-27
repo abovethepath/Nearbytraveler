@@ -3643,8 +3643,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       )}
     
       {/* PROFILE HEADER - Mobile Responsive - Full Bleed */}
-      <section
-        className={`relative -mt-px isolate w-full max-w-full bg-gradient-to-r ${gradientOptions[selectedGradient]} px-3 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12 overflow-hidden`}
+      <div
+        className={`relative w-full bg-gradient-to-r ${gradientOptions[selectedGradient]} px-3 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12`}
       >
         {/* floating color button */}
         {isOwnProfile && (
@@ -3997,7 +3997,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </div>
           </div>
         )}
-      </section>
+      </div>
 
       {/* Navigation Tabs - Card Style with Border */}
       <div className="w-auto bg-white border border-black dark:bg-gray-900 dark:border-gray-700 px-3 sm:px-6 lg:px-10 py-4 mx-4 sm:mx-6 lg:mx-8 rounded-lg mt-4">
