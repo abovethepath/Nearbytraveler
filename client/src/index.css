@@ -167,8 +167,8 @@ body {
     overflow-x: hidden !important;
   }
   
-  /* Fix gradient sections that might overflow */
-  [class*="bg-gradient"] {
+  /* Fix gradient sections that might overflow - but allow full-bleed profile headers */
+  [class*="bg-gradient"]:not(.w-screen) {
     max-width: 100% !important;
     overflow: hidden;
   }
