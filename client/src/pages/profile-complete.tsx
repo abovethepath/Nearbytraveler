@@ -3876,25 +3876,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     );
                   })()}
 
-                  {/* Stats Badges */}
-                  <div className="flex items-center gap-3 mt-3 flex-wrap">
-                    {user?.userType !== 'business' && (
-                      <>
-                        <Badge variant="outline" className="text-xs px-3 py-1 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
-                          <Globe className="w-3 h-3 mr-1 inline" />
-                          {countriesVisited.length} {countriesVisited.length === 1 ? 'Country' : 'Countries'}
-                        </Badge>
-                        <Badge variant="outline" className="text-xs px-3 py-1 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
-                          <Star className="w-3 h-3 mr-1 inline" />
-                          {userReferences?.length || 0} {(userReferences?.length || 0) === 1 ? 'Reference' : 'References'}
-                        </Badge>
-                        <Badge variant="outline" className="text-xs px-3 py-1 bg-purple-100 dark:bg-purple-900 border-purple-300 dark:border-purple-600">
-                          <ThumbsUp className="w-3 h-3 mr-1 inline" />
-                          {userVouches?.length || 0} {(userVouches?.length || 0) === 1 ? 'Vouch' : 'Vouches'}
-                        </Badge>
-                      </>
-                    )}
-                  </div>
+                  {/* Stats badges removed from header - now shown only in tabs below for cleaner layout */}
                   
                   {/* Mutual Connections Display - LinkedIn style */}
                   {!isOwnProfile && connectionDegreeData?.mutualCount && connectionDegreeData.mutualCount > 0 && (
@@ -3939,11 +3921,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   targetName={user?.name}
                   className="px-6 py-2 rounded-lg shadow-md transition-all"
                 />
-                <VouchButton
-                  currentUserId={currentUser?.id || 0}
-                  targetUserId={user?.id || 0}
-                  targetUsername={user?.username}
-                />
+                {/* VouchButton moved to References section below for cleaner header */}
                 {/* Write Reference Button - visible at top for mobile accessibility */}
                 {userConnections.some((conn: any) => conn.status === 'accepted') ? (
                   <Button
@@ -6646,14 +6624,32 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
                 )}
 
-                {/* Vouch Widget */}
+                {/* Vouch Section - includes Vouch button for visitors */}
               {user?.id && (
-                <div>
-                <VouchWidget 
-                  userId={user.id} 
-                  isOwnProfile={isOwnProfile}
-                  currentUserId={currentUser?.id || 0}
-                />
+                <div className="space-y-4 mt-4">
+                  {/* VouchButton for non-own profiles - moved from header for cleaner layout */}
+                  {!isOwnProfile && currentUser?.id && (
+                    <Card className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700">
+                      <CardContent className="py-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <ThumbsUp className="w-5 h-5 text-purple-600" />
+                            <span className="text-purple-800 dark:text-purple-200 font-medium">Vouch for {user.username}</span>
+                          </div>
+                          <VouchButton
+                            currentUserId={currentUser.id}
+                            targetUserId={user.id}
+                            targetUsername={user.username}
+                          />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                  <VouchWidget 
+                    userId={user.id} 
+                    isOwnProfile={isOwnProfile}
+                    currentUserId={currentUser?.id || 0}
+                  />
                 </div>
               )}
 
