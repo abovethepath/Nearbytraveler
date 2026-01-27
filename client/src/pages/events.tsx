@@ -598,29 +598,8 @@ export default function Events() {
                           className="w-full h-full object-cover"
                         />
                         
-                        {/* Enhanced overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10">
-                          <div className="absolute bottom-0 left-0 right-0 p-4 text-center">
-                            <p className="text-white/90 font-medium italic text-base drop-shadow-lg leading-relaxed">
-                              "Where Stories Come to Life"
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Floating stats badges */}
-                      <div className="absolute -top-3 -right-3 bg-white dark:bg-gray-800 rounded-xl px-3 py-2 shadow-xl border border-gray-200 dark:border-gray-600 transform rotate-3 group-hover:rotate-6 transition-transform duration-300">
-                        <div className="text-center">
-                          <div className="text-xl font-bold text-green-600 dark:text-green-400">∞</div>
-                          <div className="text-xs text-gray-600 dark:text-gray-400">Events</div>
-                        </div>
-                      </div>
-                      
-                      <div className="absolute -bottom-3 -left-3 bg-white dark:bg-gray-800 rounded-xl px-3 py-2 shadow-xl border border-gray-200 dark:border-gray-600 transform -rotate-3 group-hover:-rotate-6 transition-transform duration-300">
-                        <div className="text-center">
-                          <div className="text-xl font-bold text-purple-600 dark:text-purple-400">Live</div>
-                          <div className="text-xs text-gray-600 dark:text-gray-400">Now</div>
-                        </div>
+                        {/* Simple gradient overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
                       </div>
                     </div>
                   </div>
