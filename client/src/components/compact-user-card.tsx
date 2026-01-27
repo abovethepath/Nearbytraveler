@@ -5,6 +5,7 @@ export interface CompactUser {
   id: number;
   username: string;
   name?: string;
+  bio?: string;
   hometownCity?: string;
   hometownState?: string;
   hometownCountry?: string;
@@ -22,12 +23,16 @@ interface CompactUserCardProps {
   user: CompactUser;
   searchLocation?: string;
   mutualConnections?: number;
+  compatibilityScore?: number;
+  sharedInterestsCount?: number;
 }
 
 export default function CompactUserCard({ 
   user, 
   searchLocation,
-  mutualConnections 
+  mutualConnections = 0,
+  compatibilityScore = 0,
+  sharedInterestsCount = 0
 }: CompactUserCardProps) {
   
   const handleCardClick = (e: React.MouseEvent) => {
@@ -51,20 +56,18 @@ export default function CompactUserCard({
     return gradients[user.id % gradients.length];
   };
 
-  const getSubtitle = () => {
+  const getStatusLine = () => {
     if (user.userType === 'business' && user.businessName) {
       return 'Nearby Business';
     }
     if (user.isTravelerToCity || user.isCurrentlyTraveling) {
-      return 'Nearby Traveler';
+      const destination = user.travelDestination?.split(',')[0] || '';
+      return destination ? `Traveling to ${destination}` : 'Nearby Traveler';
     }
     return 'Nearby Local';
   };
 
   const getLocation = () => {
-    if (user.isTravelerToCity && user.travelDestination) {
-      return user.travelDestination.split(',')[0];
-    }
     if (user.hometownCity) {
       return user.hometownCity.split(',')[0];
     }
@@ -75,58 +78,72 @@ export default function CompactUserCard({
     ? user.businessName 
     : user.name || user.username;
 
+  // Truncate bio to ~40 chars
+  const shortBio = user.bio ? (user.bio.length > 40 ? user.bio.substring(0, 40) + '...' : user.bio) : '';
+
   return (
     <Card 
-      className="cursor-pointer bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 overflow-hidden h-full flex flex-col"
+      className="cursor-pointer bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 overflow-hidden"
       onClick={handleCardClick}
     >
-      {/* LinkedIn-style cover/header - shorter */}
+      {/* Cover/header gradient */}
       <div 
-        className="h-12 relative flex-shrink-0"
+        className="h-10 relative"
         style={{ background: getUserGradient() }}
       />
       
-      {/* Content - centered layout like LinkedIn */}
-      <div className="px-3 pb-3 -mt-8 text-center flex flex-col flex-grow">
-        {/* Avatar - larger, with white ring like LinkedIn */}
-        <div className="flex justify-center mb-2">
-          <div className="w-14 h-14 rounded-full bg-white dark:bg-gray-800 p-1 shadow-lg ring-2 ring-white dark:ring-gray-800">
+      {/* Content */}
+      <div className="px-2 pb-2 -mt-6 text-center">
+        {/* Avatar */}
+        <div className="flex justify-center mb-1">
+          <div className="w-12 h-12 rounded-full bg-white dark:bg-gray-800 p-0.5 shadow-lg ring-2 ring-white dark:ring-gray-800">
             <SimpleAvatar 
               user={user} 
-              size="lg" 
+              size="md" 
               className="w-full h-full"
             />
           </div>
         </div>
         
-        {/* Name - bold like LinkedIn */}
-        <h3 className="font-bold text-sm text-gray-900 dark:text-white truncate leading-tight">
+        {/* Name */}
+        <h3 className="font-bold text-xs text-gray-900 dark:text-white truncate leading-tight">
           {displayName}
         </h3>
         
-        {/* Subtitle - role/location like LinkedIn */}
-        <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 leading-tight mt-0.5 min-h-[2rem]">
-          {getSubtitle()} • {getLocation()}
+        {/* Status: Nearby Local / Traveling to X */}
+        <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate leading-tight">
+          {getStatusLine()} {getLocation() && `• ${getLocation()}`}
         </p>
         
-        {/* Mutual connections - LinkedIn style */}
-        {mutualConnections && mutualConnections > 0 ? (
-          <div className="flex items-center justify-center gap-1.5 mt-2">
-            <div className="w-4 h-4 rounded-full bg-gray-300 dark:bg-gray-600 flex-shrink-0" />
-            <span className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
-              {mutualConnections} mutual
-            </span>
-          </div>
-        ) : (
-          <div className="h-6 mt-2" />
+        {/* Short bio */}
+        {shortBio && (
+          <p className="text-[9px] text-gray-400 dark:text-gray-500 truncate mt-0.5 italic">
+            {shortBio}
+          </p>
         )}
         
-        {/* Spacer */}
-        <div className="flex-grow" />
+        {/* Compatibility & Mutual connections */}
+        <div className="flex items-center justify-center gap-1 mt-1 flex-wrap">
+          {compatibilityScore > 0 && (
+            <span className="text-[9px] bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded-full font-medium">
+              {Math.round(compatibilityScore * 100)}% match
+            </span>
+          )}
+          {sharedInterestsCount > 0 && (
+            <span className="text-[9px] bg-orange-100 dark:bg-orange-900/40 text-orange-600 dark:text-orange-400 px-1.5 py-0.5 rounded-full font-medium">
+              {sharedInterestsCount} in common
+            </span>
+          )}
+          {mutualConnections > 0 && (
+            <span className="text-[9px] bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400 px-1.5 py-0.5 rounded-full font-medium">
+              {mutualConnections} mutual
+            </span>
+          )}
+        </div>
         
-        {/* Connect button - LinkedIn blue outlined style */}
+        {/* Connect button */}
         <button 
-          className="w-full mt-2 py-2 px-3 border-2 border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 rounded-full text-sm font-semibold hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
+          className="w-full mt-1.5 py-1 px-2 border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 rounded-full text-[10px] font-semibold hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
           onClick={(e) => {
             e.stopPropagation();
             handleCardClick(e);

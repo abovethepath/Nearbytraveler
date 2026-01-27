@@ -1971,14 +1971,24 @@ export default function Home() {
               return (
                 <>
                   {/* Mobile/Tablet: LinkedIn-style compact 2-column grid */}
-                  <div className="grid grid-cols-2 gap-3 md:hidden">
+                  <div className="grid grid-cols-2 gap-2 md:hidden">
                     {sortedAndFilteredUsers.length > 0 ? (
-                      sortedAndFilteredUsers.slice(0, showAllUsers ? sortedAndFilteredUsers.length : 8).map((otherUser) => (
-                        <CompactUserCard 
-                          key={otherUser.id}
-                          user={otherUser} 
-                        />
-                      ))
+                      sortedAndFilteredUsers.slice(0, showAllUsers ? sortedAndFilteredUsers.length : 8).map((otherUser) => {
+                        const matchData = compatibilityData?.find((match: any) => match.userId === otherUser.id);
+                        const connectionDegree = connectionDegreesData?.degrees?.[otherUser.id];
+                        return (
+                          <CompactUserCard 
+                            key={otherUser.id}
+                            user={otherUser}
+                            compatibilityScore={matchData?.score || 0}
+                            sharedInterestsCount={
+                              (matchData?.sharedInterests?.length || 0) + 
+                              (matchData?.sharedActivities?.length || 0)
+                            }
+                            mutualConnections={connectionDegree?.degree === 2 ? connectionDegree.mutualCount : 0}
+                          />
+                        );
+                      })
                     ) : (
                       <div className="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">
                         {filters.location || filters.search || activeFilter !== "all" ? (
