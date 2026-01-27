@@ -93,20 +93,9 @@ export function MobileTopNav() {
               type="button"
               aria-expanded={showDropdown}
               aria-controls="mobile-menu"
-              className="hamburger-btn w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 cursor-pointer relative"
-              style={{ 
-                WebkitTapHighlightColor: 'rgba(0,0,0,0.1)', 
-                cursor: 'pointer',
-                touchAction: 'manipulation',
-                userSelect: 'none',
-                WebkitUserSelect: 'none',
-                zIndex: 50002,
-                position: 'relative',
-                isolation: 'isolate'
-              }}
-              onClick={(e) => {
-                e.stopPropagation();
-                console.log('🍔 MobileTopNav Hamburger clicked');
+              className="hamburger-btn w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700"
+              onClick={() => {
+                console.log('🍔 Hamburger clicked');
                 setShowDropdown((s) => !s);
               }}
             >
