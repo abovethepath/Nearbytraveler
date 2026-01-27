@@ -75,6 +75,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   // Fetch chatroom members (for city chatrooms, meetup chatrooms, and event chatrooms)
   const membersEndpoint = chatType === 'event' 
@@ -359,6 +360,11 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
       chatType,
       chatroomId: chatId
     }));
+    
+    // Auto-focus input after sending so user can immediately type next message
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 50);
   };
 
   const handleTyping = (text: string) => {
@@ -868,6 +874,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
         <div className="px-3 py-2 bg-gray-800 border-t border-gray-700">
           <div className="flex items-end gap-2">
             <Textarea
+              ref={inputRef}
               value={messageText}
               onChange={(e) => handleTyping(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
