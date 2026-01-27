@@ -1066,6 +1066,14 @@ div[class*="bg-"][class*="text-"][class*="rounded"] {
     z-index: 9999 !important;
   }
   
+  /* CAPACITOR FIX: Override touch-action for navigation and chat buttons */
+  .mobile-top-nav button,
+  .mobile-bottom-nav button,
+  [data-testid^="button-"] {
+    touch-action: auto !important;
+    -webkit-touch-callout: default !important;
+  }
+  
   /* Ensure mobile top navigation shows */
   .md\\:hidden {
     display: block !important;
