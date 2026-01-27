@@ -625,38 +625,23 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                   <Badge variant="outline" className="mb-4">Event Organizer</Badge>
                   <p className="text-sm text-gray-600 mb-4">You're organizing this event</p>
                   
-                  {/* Show rejoin button if organizer is somehow not in participant list */}
-                  {!isParticipant && (
+                  {/* Organizer is always "Going" - show status or auto-add button */}
+                  {isParticipant ? (
+                    <Badge className="w-full justify-center py-2 mb-3 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                      ✓ Going (Organizer)
+                    </Badge>
+                  ) : (
+                    /* If organizer somehow isn't in participant list, show button to add them */
                     <div className="mb-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-700">
-                      <p className="text-sm text-yellow-800 dark:text-yellow-200 mb-2">You're not in the attendee list</p>
+                      <p className="text-sm text-yellow-800 dark:text-yellow-200 mb-2">You need to be in the attendee list</p>
                       <Button 
                         className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white"
                         onClick={() => joinEventMutation.mutate('going')}
                         disabled={joinEventMutation.isPending}
                       >
-                        {joinEventMutation.isPending ? "Rejoining..." : "Rejoin as Going"}
+                        {joinEventMutation.isPending ? "Joining..." : "Join as Going"}
                       </Button>
                     </div>
-                  )}
-                  
-                  {/* Show current status if organizer is a participant */}
-                  {isParticipant && (
-                    <>
-                      <Badge className="w-full justify-center py-2 mb-2 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                        ✓ {participantStatus === 'going' ? 'Going' : 'Interested'}
-                      </Badge>
-                      {/* Allow organizer to change their status */}
-                      <button
-                        onClick={() => {
-                          const newStatus = participantStatus === 'going' ? 'interested' : 'going';
-                          joinEventMutation.mutate(newStatus);
-                        }}
-                        className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline mb-3 w-full text-center"
-                        disabled={joinEventMutation.isPending}
-                      >
-                        {joinEventMutation.isPending ? "Updating..." : (participantStatus === 'going' ? 'Change to Interested' : 'Change to Going')}
-                      </button>
-                    </>
                   )}
                   
                   <Button 
@@ -678,16 +663,10 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                     Open Chat
                   </Button>
                   
-                  {/* Leave event option for organizers who are participants */}
-                  {isParticipant && (
-                    <button
-                      onClick={() => leaveEventMutation.mutate()}
-                      className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 underline mt-2"
-                      disabled={leaveEventMutation.isPending}
-                    >
-                      {leaveEventMutation.isPending ? "Leaving..." : "Leave event"}
-                    </button>
-                  )}
+                  {/* Organizers cannot leave their own event - they must delete it instead */}
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
+                    As the organizer, you're always going to this event
+                  </p>
                   
                   {/* Preview how others see the join button */}
                   <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
