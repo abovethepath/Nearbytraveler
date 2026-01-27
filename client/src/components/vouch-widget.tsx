@@ -86,10 +86,17 @@ export function VouchWidget({ userId, isOwnProfile, currentUserId, variant = 'de
       setShowVouchDialog(false);
       setVouchMessage('');
       setVouchCategory('general');
-      // Refresh vouches and network stats
+      // Refresh vouches, network stats, and profile bundle (for vouch count display)
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/vouches`] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${currentUserId}/can-vouch`] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/vouch-network`] });
+      // Invalidate profile bundle - use predicate to match any viewer
+      queryClient.invalidateQueries({ 
+        predicate: (query) => {
+          const key = query.queryKey;
+          return Array.isArray(key) && typeof key[0] === 'string' && key[0].includes(`/api/users/${userId}/profile-bundle`);
+        }
+      });
     },
     onError: (error: any) => {
       toast({
