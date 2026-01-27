@@ -728,13 +728,13 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           </div>
         )}
         
-        <div className="flex-1 min-w-0">
-          <h1 className="font-semibold text-xs truncate">{title}</h1>
-          <div className="flex items-center gap-1">
-            {subtitle && <p className="text-[9px] text-gray-400 truncate">{subtitle}</p>}
-            <span className={`w-2 h-2 rounded-full ${isWsConnected ? 'bg-green-500' : 'bg-yellow-500 animate-pulse'}`} 
+        <div className="flex-1 min-w-0 overflow-hidden">
+          <div className="flex items-center gap-1.5">
+            <h1 className="font-semibold text-sm truncate">{title}</h1>
+            <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isWsConnected ? 'bg-green-500' : 'bg-yellow-500 animate-pulse'}`} 
                   title={isWsConnected ? 'Connected' : 'Connecting...'} />
           </div>
+          {subtitle && <p className="text-[11px] text-gray-400 truncate leading-tight">{subtitle}</p>}
         </div>
         {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
           <Sheet open={showMembers} onOpenChange={setShowMembers}>
