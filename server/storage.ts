@@ -191,6 +191,12 @@ export interface IStorage {
   getUserExternalEventInterests(userId: number): Promise<any[]>;
   removeExternalEventInterest(userId: number, eventId: string, eventSource: string): Promise<boolean>;
   
+  // Unified event interest methods (for both internal and external events)
+  addEventInterest(userId: number, eventId?: number, externalEventId?: string, eventSource?: string): Promise<any>;
+  removeEventInterest(userId: number, eventId?: number, externalEventId?: string, eventSource?: string): Promise<boolean>;
+  getUserEventInterests(userId: number, cityName?: string): Promise<any[]>;
+  getEventInterestedUsers(eventId?: number, externalEventId?: string, eventSource?: string): Promise<any[]>;
+  
   // Landmark methods
   createLandmark(landmark: any): Promise<any>;
   getCityLandmarks(city: string, state?: string, country?: string): Promise<any>;
@@ -11312,6 +11318,135 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error("Error removing external event interest:", error);
       return false;
+    }
+  }
+
+  // Unified event interest methods (for both internal and external events)
+  async addEventInterest(userId: number, eventId?: number, externalEventId?: string, eventSource?: string): Promise<any> {
+    try {
+      if (eventId) {
+        // Internal event - use eventParticipants with 'interested' status
+        const existingParticipant = await db
+          .select()
+          .from(eventParticipants)
+          .where(
+            and(
+              eq(eventParticipants.eventId, eventId),
+              eq(eventParticipants.userId, userId)
+            )
+          );
+
+        if (existingParticipant.length > 0) {
+          // Update existing to interested
+          const [updated] = await db
+            .update(eventParticipants)
+            .set({ status: 'interested' })
+            .where(eq(eventParticipants.id, existingParticipant[0].id))
+            .returning();
+          return updated;
+        }
+
+        const [participant] = await db
+          .insert(eventParticipants)
+          .values({
+            eventId,
+            userId,
+            status: 'interested'
+          })
+          .returning();
+        return participant;
+      } else if (externalEventId && eventSource) {
+        // External event
+        return this.addExternalEventInterest({ userId, eventId: externalEventId, eventSource, status: 'interested' });
+      }
+      throw new Error('Either eventId or externalEventId must be provided');
+    } catch (error) {
+      console.error("Error adding event interest:", error);
+      throw error;
+    }
+  }
+
+  async removeEventInterest(userId: number, eventId?: number, externalEventId?: string, eventSource?: string): Promise<boolean> {
+    try {
+      if (eventId) {
+        // Internal event - remove from eventParticipants
+        const result = await db
+          .delete(eventParticipants)
+          .where(
+            and(
+              eq(eventParticipants.eventId, eventId),
+              eq(eventParticipants.userId, userId),
+              eq(eventParticipants.status, 'interested')
+            )
+          )
+          .returning();
+        return result.length > 0;
+      } else if (externalEventId && eventSource) {
+        // External event
+        return this.removeExternalEventInterest(userId, externalEventId, eventSource);
+      }
+      return false;
+    } catch (error) {
+      console.error("Error removing event interest:", error);
+      return false;
+    }
+  }
+
+  async getUserEventInterests(userId: number, cityName?: string): Promise<any[]> {
+    try {
+      // Get internal event interests
+      const internalInterests = await db
+        .select({
+          eventId: eventParticipants.eventId,
+          userId: eventParticipants.userId,
+          status: eventParticipants.status,
+          joinedAt: eventParticipants.joinedAt
+        })
+        .from(eventParticipants)
+        .where(
+          and(
+            eq(eventParticipants.userId, userId),
+            eq(eventParticipants.status, 'interested')
+          )
+        );
+
+      // Get external event interests
+      const externalInterests = await this.getUserExternalEventInterests(userId);
+
+      return [...internalInterests, ...externalInterests];
+    } catch (error) {
+      console.error("Error getting user event interests:", error);
+      return [];
+    }
+  }
+
+  async getEventInterestedUsers(eventId?: number, externalEventId?: string, eventSource?: string): Promise<any[]> {
+    try {
+      if (eventId) {
+        // Internal event
+        const participants = await db
+          .select({
+            userId: eventParticipants.userId,
+            status: eventParticipants.status,
+            user: users
+          })
+          .from(eventParticipants)
+          .leftJoin(users, eq(eventParticipants.userId, users.id))
+          .where(
+            and(
+              eq(eventParticipants.eventId, eventId),
+              eq(eventParticipants.status, 'interested')
+            )
+          );
+        return participants;
+      } else if (externalEventId && eventSource) {
+        // External event
+        return this.getExternalEventInterests(externalEventId, eventSource);
+      }
+      return [];
+    } catch (error) {
+      console.error("Error getting event interested users:", error);
+      return [];
     }
   }
 

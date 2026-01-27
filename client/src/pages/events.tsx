@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Calendar, Clock, MapPin, Users, Search, Filter, Plus, Info, X, Heart, UserCheck, CheckCircle, Star, Sparkles, ChevronDown, MessageCircle, History } from "lucide-react";
+import { Calendar, Clock, MapPin, Users, Search, Filter, Plus, Info, X, Heart, UserCheck, CheckCircle, Star, Sparkles, ChevronDown, MessageCircle, History, Link2 } from "lucide-react";
 import { useIsMobile, useIsDesktop } from "@/hooks/useDeviceType";
 
 import { type Event, type EventParticipant, type User as UserType } from "@shared/schema";
@@ -643,16 +643,28 @@ export default function Events() {
             </Button>
           </div>
 
-          {/* Right: Create Event Button */}
-          <Button 
-            onClick={() => setShowCreateEvent(true)}
-            size="sm"
-            className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-3 sm:px-4 py-2 rounded-lg shadow-md text-xs sm:text-sm font-medium w-full sm:w-auto"
-            data-testid="create-event-main-cta"
-          >
-            <Plus className="w-4 h-4 mr-1" />
-            Create Event
-          </Button>
+          {/* Right: Action Buttons */}
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Button 
+              onClick={() => setLocation('/create-event?import=true')}
+              size="sm"
+              variant="outline"
+              className="flex-1 sm:flex-none border-purple-300 text-purple-600 hover:bg-purple-50 dark:border-purple-600 dark:text-purple-400 dark:hover:bg-purple-900/20 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium"
+              data-testid="import-event-cta"
+            >
+              <Link2 className="w-4 h-4 mr-1" />
+              <span className="hidden sm:inline">Import from </span>Meetup/CS
+            </Button>
+            <Button 
+              onClick={() => setShowCreateEvent(true)}
+              size="sm"
+              className="flex-1 sm:flex-none bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-3 sm:px-4 py-2 rounded-lg shadow-md text-xs sm:text-sm font-medium"
+              data-testid="create-event-main-cta"
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              Create Event
+            </Button>
+          </div>
         </div>
 
         {/* Unified Location Selector - Works for ALL tabs */}
