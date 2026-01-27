@@ -885,32 +885,45 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                     )}
 
                     {selectedMessage === message.id && (
-                      <div className="absolute top-full mt-2 bg-gray-800 rounded-lg shadow-lg p-2 z-10 min-w-[150px]">
-                        <button onClick={() => { navigator.clipboard.writeText(message.content); toast({ title: "Copied" }); setSelectedMessage(null); }} className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-700 rounded-lg" data-testid="button-copy-message">
-                          <Copy className="w-4 h-4" />
+                      <>
+                      <div 
+                        className="fixed inset-0 bg-black/50 z-[99998]"
+                        onClick={() => setSelectedMessage(null)}
+                      />
+                      <div 
+                        className={`fixed left-1/2 -translate-x-1/2 bg-gray-800 rounded-lg shadow-xl p-2 z-[99999] min-w-[180px] border border-gray-600`}
+                        style={{ top: '50%', transform: 'translate(-50%, -50%)' }}
+                      >
+                        <div className="text-center text-xs text-gray-400 mb-2 pb-2 border-b border-gray-700">Message Options</div>
+                        <button onClick={() => { navigator.clipboard.writeText(message.content); toast({ title: "Copied" }); setSelectedMessage(null); }} className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 rounded-lg text-white" data-testid="button-copy-message">
+                          <Copy className="w-5 h-5" />
                           <span>Copy text</span>
                         </button>
-                        <button onClick={() => { setReplyingTo(message); setSelectedMessage(null); }} className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-700 rounded-lg" data-testid="button-reply-message">
-                          <Reply className="w-4 h-4" />
+                        <button onClick={() => { setReplyingTo(message); setSelectedMessage(null); }} className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 rounded-lg text-white" data-testid="button-reply-message">
+                          <Reply className="w-5 h-5" />
                           <span>Reply</span>
                         </button>
-                        <button onClick={() => handleReaction(message.id, '❤️')} className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-700 rounded-lg" data-testid="button-react-message">
-                          <Heart className="w-4 h-4" />
-                          <span>React</span>
+                        <button onClick={() => { handleReaction(message.id, '❤️'); setSelectedMessage(null); }} className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 rounded-lg text-white" data-testid="button-react-message">
+                          <Heart className="w-5 h-5" />
+                          <span>React ❤️</span>
                         </button>
                         {isOwnMessage && (
                           <>
-                            <button onClick={() => startEdit(message)} className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-700 rounded-lg" data-testid="button-edit-message">
-                              <Edit2 className="w-4 h-4" />
+                            <button onClick={() => startEdit(message)} className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 rounded-lg text-white" data-testid="button-edit-message">
+                              <Edit2 className="w-5 h-5" />
                               <span>Edit</span>
                             </button>
-                            <button onClick={() => handleDeleteMessage(message.id)} className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-700 rounded-lg text-red-400" data-testid="button-delete-message">
-                              <Trash2 className="w-4 h-4" />
+                            <button onClick={() => handleDeleteMessage(message.id)} className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 rounded-lg text-red-400" data-testid="button-delete-message">
+                              <Trash2 className="w-5 h-5" />
                               <span>Delete</span>
                             </button>
                           </>
                         )}
+                        <button onClick={() => setSelectedMessage(null)} className="flex items-center justify-center gap-2 w-full px-3 py-2 mt-2 border-t border-gray-700 text-gray-400 hover:text-white">
+                          <span>Cancel</span>
+                        </button>
                       </div>
+                      </>
                     )}
                   </div>
                 </div>
