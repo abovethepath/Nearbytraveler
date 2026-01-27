@@ -613,57 +613,23 @@ export default function Events() {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-        {/* Clean Navigation Row - Tabs + Create Button */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-6">
-          {/* Left: Tab buttons */}
-          <div className="flex gap-2">
-            <Button 
-              onClick={() => setSelectedTab('explore')}
-              variant={selectedTab === 'explore' ? 'default' : 'outline'}
-              size="sm"
-              className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium ${
-                selectedTab === 'explore' 
-                  ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                  : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300'
-              }`}
-            >
-              Community Events
-            </Button>
-            <Button 
-              onClick={() => setSelectedTab('meetup')}
-              variant={selectedTab === 'meetup' ? 'default' : 'outline'}
-              size="sm"
-              className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium ${
-                selectedTab === 'meetup' 
-                  ? 'bg-green-600 hover:bg-green-700 text-white' 
-                  : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300'
-              }`}
-            >
-              Meetups
-            </Button>
-          </div>
-
-          {/* Right: Action Buttons */}
-          <div className="flex gap-2 w-full sm:w-auto">
-            <Button 
-              onClick={() => setLocation('/create-event?import=true')}
-              size="sm"
-              variant="outline"
-              className="flex-1 sm:flex-none border-gray-300 text-gray-600 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-800 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium"
-              data-testid="import-event-cta"
-            >
-              <Link2 className="w-4 h-4 mr-1" />
-              <span className="hidden sm:inline">Link </span>External Event
-            </Button>
-            <Button 
-              onClick={() => setShowCreateEvent(true)}
-              size="sm"
-              className="flex-1 sm:flex-none bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 sm:px-5 py-2.5 rounded-lg shadow-lg text-sm sm:text-base font-semibold border-2 border-green-400"
-              data-testid="create-event-main-cta"
-            >
-              <Plus className="w-5 h-5 mr-1.5" />
-              Create Event
-            </Button>
+        {/* Hero Create Event Button */}
+        <div className="mb-8">
+          <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-6 shadow-lg">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="text-center sm:text-left">
+                <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">Host a Meetup</h2>
+                <p className="text-green-100 text-sm sm:text-base">Bring people together - create an event in your city</p>
+              </div>
+              <Button 
+                onClick={() => setShowCreateEvent(true)}
+                className="bg-white text-green-700 hover:bg-green-50 px-6 py-3 rounded-lg shadow-md text-base font-bold"
+                data-testid="create-event-main-cta"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Create Event
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -730,34 +696,6 @@ export default function Events() {
 
           </div>
 
-          {/* Colorful Category Chips - Scrollable on mobile */}
-          <div className="overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
-            <div className="flex gap-2 min-w-max">
-              <button
-                onClick={() => setCategoryFilter("all")}
-                className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all border whitespace-nowrap ${
-                  categoryFilter === "all" 
-                    ? "bg-gradient-to-r from-orange-500 to-pink-500 text-white border-transparent shadow-md" 
-                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700"
-                }`}
-              >
-                ✨ All
-              </button>
-              {categoryData.map((cat) => (
-                <button
-                  key={cat.name}
-                  onClick={() => setCategoryFilter(cat.name.toLowerCase())}
-                  className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all border whitespace-nowrap ${
-                    categoryFilter === cat.name.toLowerCase() 
-                      ? cat.selectedColor + " shadow-md"
-                      : cat.color
-                  }`}
-                >
-                  {cat.emoji} <span className="hidden sm:inline">{cat.name.split(" & ")[0]}</span>
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
 
         {selectedTab === 'explore' && (
