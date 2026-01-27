@@ -875,10 +875,8 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                   <div 
                     className={`chat-message-container relative max-w-[75%] ${isOwnMessage ? 'mr-2' : 'ml-2'}`}
                     style={{ 
-                      WebkitTapHighlightColor: 'transparent', 
-                      touchAction: 'pan-y', 
-                      WebkitUserSelect: 'none', 
-                      userSelect: 'none',
+                      WebkitTapHighlightColor: 'transparent',
+                      touchAction: 'auto',
                       transform: swipingMessageId === message.id ? `translateX(${isOwnMessage ? -swipeOffset : swipeOffset}px)` : 'none',
                       transition: swipingMessageId === message.id ? 'none' : 'transform 0.2s ease-out'
                     }}
@@ -981,83 +979,74 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                       {/* Backdrop */}
                       <div 
                         className="fixed inset-0 bg-black/60 z-[99998]"
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedMessage(null); }}
-                        onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedMessage(null); }}
-                        style={{ touchAction: 'none' }}
+                        onClick={() => setSelectedMessage(null)}
+                        style={{ touchAction: 'auto' }}
                       />
                       {/* Bottom Sheet Menu - positioned above bottom nav */}
                       <div 
                         className="fixed left-2 right-2 bg-gray-800 rounded-2xl shadow-2xl z-[99999] border border-gray-700"
-                        style={{ 
-                          touchAction: 'auto',
-                          bottom: '90px'
-                        }}
+                        style={{ touchAction: 'auto', bottom: '90px' }}
                         onClick={(e) => e.stopPropagation()}
                       >
-                        {/* Handle bar */}
-                        <div className="flex justify-center py-2">
-                          <div className="w-10 h-1 bg-gray-600 rounded-full"></div>
-                        </div>
-                        
                         {/* Quick Emoji Reactions - WhatsApp Style */}
-                        <div className="flex justify-center gap-3 px-3 pb-3 border-b border-gray-700">
+                        <div className="flex justify-center gap-3 px-3 py-3 pt-4 border-b border-gray-700">
                           {['👍', '❤️', '😂', '😮', '😢', '🙏'].map((emoji) => (
                             <button
                               key={emoji}
                               type="button"
                               onClick={() => { handleReaction(message.id, emoji); setSelectedMessage(null); }}
                               className="w-10 h-10 flex items-center justify-center text-xl bg-gray-700 hover:bg-gray-600 active:bg-gray-500 active:scale-110 rounded-full transition-transform"
-                              style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                              style={{ touchAction: 'auto' }}
                             >
                               {emoji}
                             </button>
                           ))}
                         </div>
                         
-                        {/* Action buttons - compact */}
+                        {/* Action buttons */}
                         <div className="px-2 py-2 space-y-1">
                           {isOwnMessage ? (
-                            /* OWN MESSAGE: Edit, Delete, Reply */
+                            /* OWN MESSAGE: Edit, Delete, Reply, Copy */
                             <>
                               <button 
                                 type="button" 
                                 onClick={() => startEdit(message)}
-                                className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
-                                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                                className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
+                                style={{ touchAction: 'auto' }}
                                 data-testid="button-edit-message"
                               >
-                                <Edit2 className="w-5 h-5 text-blue-400" />
-                                <span className="text-sm">Edit</span>
+                                <Edit2 className="w-5 h-5 text-blue-400 pointer-events-none" />
+                                <span className="text-sm pointer-events-none">Edit</span>
                               </button>
                               <button 
                                 type="button" 
                                 onClick={() => handleDeleteMessage(message.id)}
-                                className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
-                                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                                className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
+                                style={{ touchAction: 'auto' }}
                                 data-testid="button-delete-message"
                               >
-                                <Trash2 className="w-5 h-5 text-red-400" />
-                                <span className="text-sm">Delete</span>
+                                <Trash2 className="w-5 h-5 text-red-400 pointer-events-none" />
+                                <span className="text-sm pointer-events-none">Delete</span>
                               </button>
                               <button 
                                 type="button" 
                                 onClick={() => { setReplyingTo(message); setSelectedMessage(null); }}
-                                className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
-                                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                                className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
+                                style={{ touchAction: 'auto' }}
                                 data-testid="button-reply-message"
                               >
-                                <Reply className="w-5 h-5 text-green-400" />
-                                <span className="text-sm">Reply</span>
+                                <Reply className="w-5 h-5 text-green-400 pointer-events-none" />
+                                <span className="text-sm pointer-events-none">Reply</span>
                               </button>
                               <button 
                                 type="button" 
                                 onClick={() => { navigator.clipboard.writeText(message.content); toast({ title: "Copied" }); setSelectedMessage(null); }}
-                                className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
-                                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                                className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
+                                style={{ touchAction: 'auto' }}
                                 data-testid="button-copy-message"
                               >
-                                <Copy className="w-5 h-5 text-gray-400" />
-                                <span className="text-sm">Copy</span>
+                                <Copy className="w-5 h-5 text-gray-400 pointer-events-none" />
+                                <span className="text-sm pointer-events-none">Copy</span>
                               </button>
                             </>
                           ) : (
@@ -1066,22 +1055,22 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                               <button 
                                 type="button" 
                                 onClick={() => { setReplyingTo(message); setSelectedMessage(null); }}
-                                className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
-                                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                                className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
+                                style={{ touchAction: 'auto' }}
                                 data-testid="button-reply-message"
                               >
-                                <Reply className="w-5 h-5 text-green-400" />
-                                <span className="text-sm">Reply</span>
+                                <Reply className="w-5 h-5 text-green-400 pointer-events-none" />
+                                <span className="text-sm pointer-events-none">Reply</span>
                               </button>
                               <button 
                                 type="button" 
                                 onClick={() => { navigator.clipboard.writeText(message.content); toast({ title: "Copied" }); setSelectedMessage(null); }}
-                                className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
-                                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                                className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
+                                style={{ touchAction: 'auto' }}
                                 data-testid="button-copy-message"
                               >
-                                <Copy className="w-5 h-5 text-gray-400" />
-                                <span className="text-sm">Copy</span>
+                                <Copy className="w-5 h-5 text-gray-400 pointer-events-none" />
+                                <span className="text-sm pointer-events-none">Copy</span>
                               </button>
                             </>
                           )}
