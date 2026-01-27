@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { MessageCircle, Users, MapPin, UserPlus, Loader2, Plus, ArrowLeft } from "lucide-react";
+import { MessageCircle, Users, MapPin, UserPlus, Loader2, Plus, ArrowLeft, Lock, Globe } from "lucide-react";
 import { useLocation } from "wouter";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 
@@ -24,6 +24,7 @@ interface CityChatroom {
   memberCount: number;
   userIsMember: boolean;
   tags: string[];
+  isPublic?: boolean;
 }
 
 export default function CityChatroomsPage() {
@@ -36,7 +37,8 @@ export default function CityChatroomsPage() {
     description: '',
     city: '',
     state: '',
-    country: ''
+    country: '',
+    isPublic: true
   });
   
   // Get current user
@@ -185,12 +187,13 @@ export default function CityChatroomsPage() {
 
   // Create chatroom mutation
   const createChatroomMutation = useMutation({
-    mutationFn: async (chatroomData: { name: string; description: string; city: string; state: string; country: string }) => {
+    mutationFn: async (chatroomData: { name: string; description: string; city: string; state: string; country: string; isPublic: boolean }) => {
       if (!currentUser) throw new Error("User not found");
       
       const response = await apiRequest('POST', '/api/chatrooms', {
         ...chatroomData,
         createdById: currentUser.id,
+        isPublic: chatroomData.isPublic,
         city: chatroomData.city || 'Unknown',
         state: chatroomData.state || 'Unknown', 
         country: chatroomData.country || 'United States'
@@ -209,7 +212,7 @@ export default function CityChatroomsPage() {
         description: `Successfully created "${data.name}". You are now the organizer.`,
       });
       setIsCreateDialogOpen(false);
-      setNewChatroom({ name: '', description: '', city: '', state: '', country: '' });
+      setNewChatroom({ name: '', description: '', city: '', state: '', country: '', isPublic: true });
       queryClient.invalidateQueries({ queryKey: ['/api/chatrooms/my-locations'] });
     },
     onError: (error: any) => {
@@ -317,6 +320,32 @@ export default function CityChatroomsPage() {
                     data-testid="input-chatroom-location"
                   />
                 </div>
+                
+                {/* Public/Private Toggle */}
+                <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    {newChatroom.isPublic ? (
+                      <Globe className="w-5 h-5 text-green-600" />
+                    ) : (
+                      <Lock className="w-5 h-5 text-orange-600" />
+                    )}
+                    <div>
+                      <p className="font-medium text-sm">
+                        {newChatroom.isPublic ? 'Public Chatroom' : 'Private Chatroom'}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {newChatroom.isPublic 
+                          ? 'Anyone can find and join this chatroom' 
+                          : 'Only people you invite can join'}
+                      </p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={newChatroom.isPublic}
+                    onCheckedChange={(checked) => setNewChatroom(prev => ({ ...prev, isPublic: checked }))}
+                  />
+                </div>
+                
                 <div className="flex gap-2 pt-4">
                   <Button
                     onClick={() => setIsCreateDialogOpen(false)}
@@ -373,7 +402,8 @@ export default function CityChatroomsPage() {
                 <CardContent className="p-6">
                   {/* Title and Location */}
                   <div className="mb-4">
-                    <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-2 line-clamp-2">
+                    <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-2 line-clamp-2 flex items-center gap-2">
+                      {chatroom.isPublic === false && <Lock className="w-4 h-4 text-orange-600 flex-shrink-0" />}
                       {chatroom.name}
                     </h3>
                     <div className="flex items-center text-gray-600 dark:text-gray-400 text-sm">
