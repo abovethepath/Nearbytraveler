@@ -635,13 +635,14 @@ export default function Events() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
         {/* Clean Navigation Row - Tabs + Create Button */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-6">
           {/* Left: Tab buttons */}
           <div className="flex gap-2">
             <Button 
               onClick={() => setSelectedTab('explore')}
               variant={selectedTab === 'explore' ? 'default' : 'outline'}
-              className={`px-4 py-2 rounded-lg text-sm font-medium ${
+              size="sm"
+              className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium ${
                 selectedTab === 'explore' 
                   ? 'bg-blue-600 hover:bg-blue-700 text-white' 
                   : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300'
@@ -652,7 +653,8 @@ export default function Events() {
             <Button 
               onClick={() => setSelectedTab('meetup')}
               variant={selectedTab === 'meetup' ? 'default' : 'outline'}
-              className={`px-4 py-2 rounded-lg text-sm font-medium ${
+              size="sm"
+              className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium ${
                 selectedTab === 'meetup' 
                   ? 'bg-green-600 hover:bg-green-700 text-white' 
                   : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300'
@@ -662,10 +664,11 @@ export default function Events() {
             </Button>
           </div>
 
-          {/* Right: Create Event Button - visible on all screen sizes */}
+          {/* Right: Create Event Button */}
           <Button 
             onClick={() => setShowCreateEvent(true)}
-            className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-4 py-2 rounded-lg shadow-md text-sm font-medium"
+            size="sm"
+            className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-3 sm:px-4 py-2 rounded-lg shadow-md text-xs sm:text-sm font-medium w-full sm:w-auto"
             data-testid="create-event-main-cta"
           >
             <Plus className="w-4 h-4 mr-1" />
@@ -736,30 +739,30 @@ export default function Events() {
 
           </div>
 
-          {/* Colorful Category Chips */}
-          <div className="overflow-x-auto pb-2 -mx-4 px-4">
+          {/* Colorful Category Chips - Scrollable on mobile */}
+          <div className="overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
             <div className="flex gap-2 min-w-max">
               <button
                 onClick={() => setCategoryFilter("all")}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all border whitespace-nowrap ${
+                className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all border whitespace-nowrap ${
                   categoryFilter === "all" 
                     ? "bg-gradient-to-r from-orange-500 to-pink-500 text-white border-transparent shadow-md" 
                     : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700"
                 }`}
               >
-                ✨ All Events
+                ✨ All
               </button>
               {categoryData.map((cat) => (
                 <button
                   key={cat.name}
                   onClick={() => setCategoryFilter(cat.name.toLowerCase())}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all border whitespace-nowrap ${
+                  className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all border whitespace-nowrap ${
                     categoryFilter === cat.name.toLowerCase() 
                       ? cat.selectedColor + " shadow-md"
                       : cat.color
                   }`}
                 >
-                  {cat.emoji} {cat.name.split(" & ")[0]}
+                  {cat.emoji} <span className="hidden sm:inline">{cat.name.split(" & ")[0]}</span>
                 </button>
               ))}
             </div>
@@ -1060,15 +1063,15 @@ export default function Events() {
                   )}
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {filteredUpcomingEvents.map((event) => (
                     <Card 
                       key={event.id} 
-                      className="cursor-pointer hover:shadow-xl transition-all duration-300 hover:-translate-y-1 w-full min-w-0 overflow-hidden bg-white dark:bg-gray-800 border-0 shadow-md rounded-xl group"
+                      className="cursor-pointer hover:shadow-xl transition-all duration-300 sm:hover:-translate-y-1 w-full min-w-0 overflow-hidden bg-white dark:bg-gray-800 border-0 shadow-md rounded-xl group"
                       onClick={() => setLocation(`/events/${event.id}`)}
                     >
                       {/* Image with Date Badge */}
-                      <div className="relative h-36 sm:h-44 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 overflow-hidden">
+                      <div className="relative h-32 sm:h-44 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 overflow-hidden">
                         {event.imageUrl ? (
                           <img
                             src={event.imageUrl}
@@ -1100,21 +1103,21 @@ export default function Events() {
                         )}
                       </div>
 
-                      <CardContent className="p-4">
+                      <CardContent className="p-3 sm:p-4">
                         {/* Title */}
-                        <h3 className="font-bold text-gray-900 dark:text-white text-base sm:text-lg line-clamp-2 mb-2 group-hover:text-orange-600 transition-colors">
+                        <h3 className="font-bold text-gray-900 dark:text-white text-sm sm:text-lg line-clamp-2 mb-1.5 sm:mb-2 group-hover:text-orange-600 transition-colors">
                           {event.title}
                         </h3>
 
                         {/* Location */}
-                        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-2">
-                          <MapPin className="w-4 h-4 flex-shrink-0" />
+                        <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-1 sm:mb-2">
+                          <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
                           <span className="line-clamp-1">{formatEventLocation(event)}</span>
                         </div>
 
                         {/* Time */}
-                        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-3">
-                          <Clock className="w-4 h-4 flex-shrink-0" />
+                        <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-2 sm:mb-3">
+                          <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
                           <span>
                             {new Date(event.date).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
                           </span>
