@@ -404,8 +404,137 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Event Details */}
-        <div className="lg:col-span-2 space-y-6">
+        {/* Sidebar - Going List on LEFT like Couchsurfing */}
+        <div className="order-2 lg:order-1 space-y-6">
+          {/* Participants - Couchsurfing Style */}
+          {participants.length > 0 && (() => {
+            const goingCount = participants.filter(p => p.status === 'going').length;
+            const interestedCount = participants.filter(p => p.status === 'interested').length;
+            
+            return (
+              <Card className="border-0 shadow-lg sticky top-4">
+                <CardHeader className="pb-2 border-b border-gray-100 dark:border-gray-700">
+                  <div className="flex items-center justify-between">
+                    <span className="text-lg font-bold text-blue-600 dark:text-blue-400" data-testid="badge-going-count">
+                      {goingCount} Going
+                    </span>
+                    {interestedCount > 0 && (
+                      <span className="text-sm text-yellow-600 dark:text-yellow-400" data-testid="badge-interested-count">
+                        +{interestedCount} Interested
+                      </span>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-4">
+                  <div className="space-y-4">
+                    {goingParticipants
+                      .sort((a, b) => {
+                        if (a.userId === event?.organizerId) return -1;
+                        if (b.userId === event?.organizerId) return 1;
+                        const userA = users.find(u => u.id === a.userId);
+                        const userB = users.find(u => u.id === b.userId);
+                        return (userA?.username || '').localeCompare(userB?.username || '');
+                      })
+                      .slice(0, 15).map((participant) => {
+                      const user = users.find(u => u.id === participant.userId);
+                      const userLocation = user?.hometownCity && user?.hometownState 
+                        ? `${user.hometownCity}, ${user.hometownState.length > 2 ? user.hometownState.substring(0, 2).toUpperCase() : user.hometownState}, ${user.hometownCountry === 'United States' ? 'USA' : user.hometownCountry || ''}`
+                        : user?.hometownCity || '';
+                      
+                      return (
+                        <div key={participant.id} className="flex items-start gap-3 pb-3 border-b border-gray-50 dark:border-gray-800 last:border-0 last:pb-0">
+                          <Avatar 
+                            className="w-10 h-10 cursor-pointer ring-2 ring-blue-100 dark:ring-blue-900"
+                            onClick={() => setLocation(`/profile/${user?.id}`)}
+                          >
+                            <AvatarImage src={user?.profileImage || undefined} />
+                            <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white">
+                              {user?.username?.charAt(0).toUpperCase() || 'U'}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => setLocation(`/profile/${user?.id}`)}
+                                className="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline text-left truncate"
+                              >
+                                {user?.name || user?.username || 'Unknown'}
+                              </button>
+                              {user?.id === event?.organizerId && event?.isOriginalOrganizer !== false && (
+                                <Badge variant="default" className="text-xs bg-orange-500 hover:bg-orange-600 shrink-0">
+                                  Host
+                                </Badge>
+                              )}
+                              {user?.id === event?.sharedBy && (
+                                <Badge variant="outline" className="text-xs border-purple-500 text-purple-600 dark:text-purple-400 shrink-0">
+                                  Shared
+                                </Badge>
+                              )}
+                            </div>
+                            {userLocation && (
+                              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                {userLocation}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                    {goingParticipants.length > 15 && (
+                      <button 
+                        className="w-full text-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 py-2"
+                      >
+                        View all {goingParticipants.length} attendees
+                      </button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })()}
+          
+          {/* Join This Event Card - Also on left sidebar */}
+          {currentUser && !isOrganizer && (
+            <Card className="border-0 shadow-lg bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-gray-800 dark:to-gray-700">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg">Join this event</CardTitle>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Connect with other attendees and get event updates</p>
+              </CardHeader>
+              <CardContent>
+                {participantStatus ? (
+                  <div className="space-y-3">
+                    <Badge className="w-full justify-center py-2 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                      ✓ {participantStatus === 'going' ? 'Going' : 'Interested'}
+                    </Badge>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <Button 
+                      className="flex-1 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white border-0"
+                      onClick={() => joinEventMutation.mutate('going')}
+                      disabled={joinEventMutation.isPending}
+                      data-testid="button-going"
+                    >
+                      {joinEventMutation.isPending ? "..." : "Going"}
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      className="flex-1"
+                      onClick={() => joinEventMutation.mutate('interested')}
+                      disabled={joinEventMutation.isPending}
+                      data-testid="button-interested"
+                    >
+                      {joinEventMutation.isPending ? "..." : "Interested"}
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        {/* Main Event Details - on RIGHT */}
+        <div className="order-1 lg:order-2 lg:col-span-2 space-y-6">
           <Card>
             <CardHeader>
               <div>
@@ -681,92 +810,6 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
               )}
             </CardContent>
           </Card>
-
-          {/* Participants - Couchsurfing Style */}
-          {participants.length > 0 && (() => {
-            const goingCount = participants.filter(p => p.status === 'going').length;
-            const interestedCount = participants.filter(p => p.status === 'interested').length;
-            
-            return (
-              <Card className="border-0 shadow-lg">
-                <CardHeader className="pb-2 border-b border-gray-100 dark:border-gray-700">
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold text-blue-600 dark:text-blue-400" data-testid="badge-going-count">
-                      {goingCount} Going
-                    </span>
-                    {interestedCount > 0 && (
-                      <span className="text-sm text-yellow-600 dark:text-yellow-400" data-testid="badge-interested-count">
-                        +{interestedCount} Interested
-                      </span>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-4">
-                  <div className="space-y-4">
-                    {/* Only show "going" participants' names - interested users show count only per privacy */}
-                    {goingParticipants
-                      .sort((a, b) => {
-                        // Event creator first, then alphabetical
-                        if (a.userId === event.organizerId) return -1;
-                        if (b.userId === event.organizerId) return 1;
-                        
-                        const userA = users.find(u => u.id === a.userId);
-                        const userB = users.find(u => u.id === b.userId);
-                        return (userA?.username || '').localeCompare(userB?.username || '');
-                      })
-                      .slice(0, 15).map((participant) => {
-                      const user = users.find(u => u.id === participant.userId);
-                      const userLocation = user?.hometownCity && user?.hometownState 
-                        ? `${user.hometownCity}, ${user.hometownState.length > 2 ? user.hometownState.substring(0, 2).toUpperCase() : user.hometownState}, ${user.hometownCountry === 'United States' ? 'USA' : user.hometownCountry || ''}`
-                        : user?.hometownCity || '';
-                      
-                      return (
-                        <div key={participant.id} className="flex items-start gap-3 pb-3 border-b border-gray-50 dark:border-gray-800 last:border-0 last:pb-0">
-                          <Avatar 
-                            className="w-10 h-10 cursor-pointer ring-2 ring-blue-100 dark:ring-blue-900"
-                            onClick={() => setLocation(`/profile/${user?.id}`)}
-                          >
-                            <AvatarImage src={user?.profileImage || undefined} />
-                            <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white">
-                              {user?.username?.charAt(0).toUpperCase() || 'U'}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <button
-                                onClick={() => setLocation(`/profile/${user?.id}`)}
-                                className="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline text-left truncate"
-                              >
-                                {user?.name || user?.username || 'Unknown'}
-                              </button>
-                              {user?.id === event.organizerId && (
-                                <Badge variant="default" className="text-xs bg-orange-500 hover:bg-orange-600 shrink-0">
-                                  Host
-                                </Badge>
-                              )}
-                            </div>
-                            {userLocation && (
-                              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                {userLocation}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                    {goingParticipants.length > 15 && (
-                      <button 
-                        className="w-full text-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 py-2"
-                        onClick={() => {/* Could show modal with all participants */}}
-                      >
-                        View all {goingParticipants.length} attendees
-                      </button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })()}
         </div>
       </div>
     </div>
