@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,6 @@ export function MobileTopNav() {
   const [, setLocation] = useLocation();
   const [showDropdown, setShowDropdown] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
-  const lastToggleTime = useRef(0);
 
   // hydrate currentUser from best source available - fixed for auth consistency
   useEffect(() => {
@@ -88,34 +87,20 @@ export function MobileTopNav() {
       {/* NAV BAR (no inline 100vw — prevents ghost scrollbar) */}
       <div className="mobile-top-nav fixed inset-x-0 top-0 z-[50000] h-16 w-full bg-white dark:bg-gray-900 shadow-sm md:hidden overflow-visible">
         <div className="flex items-center justify-between h-16 px-4">
-          {/* Left: Hamburger - CRITICAL: High z-index to ensure clickability on all pages */}
+          {/* Left: Hamburger - Simplified for Capacitor WebView */}
           <div className="flex items-center">
             <button
               type="button"
               aria-expanded={showDropdown}
               aria-controls="mobile-menu"
-              className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 relative z-[50001]"
-              style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation', userSelect: 'none' }}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                const now = Date.now();
-                if (now - lastToggleTime.current < 300) return;
-                lastToggleTime.current = now;
-                console.log('🍔 MobileTopNav Hamburger clicked via onClick');
-                setShowDropdown((s) => !s);
-              }}
-              onTouchEnd={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                const now = Date.now();
-                if (now - lastToggleTime.current < 300) return;
-                lastToggleTime.current = now;
-                console.log('🍔 MobileTopNav Hamburger touched via onTouchEnd');
+              className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 cursor-pointer relative z-[50001]"
+              style={{ WebkitTapHighlightColor: 'transparent', cursor: 'pointer' }}
+              onClick={() => {
+                console.log('🍔 MobileTopNav Hamburger clicked');
                 setShowDropdown((s) => !s);
               }}
             >
-              {showDropdown ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {showDropdown ? <X className="w-6 h-6 pointer-events-none" /> : <Menu className="w-6 h-6 pointer-events-none" />}
             </button>
           </div>
 
@@ -124,25 +109,26 @@ export function MobileTopNav() {
             <Logo variant="navbar" />
           </div>
 
-          {/* Right: Avatar - wrapped in button for reliable click handling */}
+          {/* Right: Avatar - Simplified for Capacitor WebView */}
           <div className="flex items-center gap-3 relative z-[50001]">
             <button
               type="button"
-              onClick={(e) => {
-                e.stopPropagation();
+              onClick={() => {
                 console.log('Avatar clicked, navigating to profile:', currentUser?.id);
                 setShowDropdown(false);
                 currentUser?.id ? go(`/profile/${currentUser.id}`) : go("/profile");
               }}
-              className="rounded-full focus:outline-none focus:ring-2 focus:ring-orange-400"
+              className="rounded-full focus:outline-none focus:ring-2 focus:ring-orange-400 cursor-pointer"
+              style={{ WebkitTapHighlightColor: 'transparent', cursor: 'pointer' }}
               aria-label="Go to profile"
             >
-              <Avatar className="w-9 h-9 cursor-pointer border-2 border-gray-200 dark:border-gray-700 hover:border-orange-400 transition-colors pointer-events-none">
+              <Avatar className="w-9 h-9 border-2 border-gray-200 dark:border-gray-700 hover:border-orange-400 transition-colors pointer-events-none">
                 <AvatarImage
                   src={currentUser?.profileImage || undefined}
                   alt={currentUser?.name || currentUser?.username || "User"}
+                  className="pointer-events-none"
                 />
-                <AvatarFallback className="text-xs bg-blue-500 text-white">
+                <AvatarFallback className="text-xs bg-blue-500 text-white pointer-events-none">
                   {currentUser?.name?.charAt(0)?.toUpperCase() ||
                     currentUser?.username?.charAt(0)?.toUpperCase() ||
                     "U"}
