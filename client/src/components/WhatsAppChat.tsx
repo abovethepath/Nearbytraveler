@@ -70,6 +70,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   const [muteReason, setMuteReason] = useState("");
   const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
+  const [isWsConnected, setIsWsConnected] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
@@ -212,6 +213,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
         case 'auth:success':
           console.log('✅ WhatsApp Chat: Authenticated, requesting message history');
           isAuthenticated = true;
+          setIsWsConnected(true);
           // Now request message history
           ws.send(JSON.stringify({
             type: 'sync:history',
@@ -282,7 +284,10 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
       }
     };
 
-    ws.onclose = () => console.log('🔴 WebSocket disconnected');
+    ws.onclose = () => {
+      console.log('🔴 WebSocket disconnected');
+      setIsWsConnected(false);
+    };
 
     return () => ws.close();
   }, [currentUserId, chatId]);
@@ -314,8 +319,16 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
       console.log('❌ sendMessage blocked:', {
         noText: !messageText.trim(),
         noWs: !wsRef.current,
-        noUserId: !currentUserId
+        noUserId: !currentUserId,
+        wsReadyState: wsRef.current?.readyState
       });
+      // Show alert for debugging on mobile - remove later
+      if (!currentUserId) {
+        console.error('🚨 CRITICAL: No currentUserId - user not authenticated');
+      }
+      if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+        console.error('🚨 CRITICAL: WebSocket not connected, state:', wsRef.current?.readyState);
+      }
       return;
     }
 
@@ -570,7 +583,11 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
         
         <div className="flex-1 min-w-0">
           <h1 className="font-semibold text-xs truncate">{title}</h1>
-          {subtitle && <p className="text-[9px] text-gray-400 truncate">{subtitle}</p>}
+          <div className="flex items-center gap-1">
+            {subtitle && <p className="text-[9px] text-gray-400 truncate">{subtitle}</p>}
+            <span className={`w-2 h-2 rounded-full ${isWsConnected ? 'bg-green-500' : 'bg-yellow-500 animate-pulse'}`} 
+                  title={isWsConnected ? 'Connected' : 'Connecting...'} />
+          </div>
         </div>
         {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
           <Sheet open={showMembers} onOpenChange={setShowMembers}>
@@ -851,7 +868,17 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
               className="flex-1 min-h-[36px] max-h-[100px] bg-gray-700 border-gray-600 text-white resize-none rounded-full px-3 py-2 text-sm"
               rows={1}
             />
-            <Button onClick={sendMessage} disabled={!messageText.trim()} size="icon" className="bg-green-600 hover:bg-green-700 rounded-full h-9 w-9 shrink-0">
+            <Button 
+              onClick={sendMessage} 
+              disabled={!messageText.trim() || !currentUserId || !isWsConnected} 
+              size="icon" 
+              className={`rounded-full h-9 w-9 shrink-0 ${
+                !currentUserId || !isWsConnected
+                  ? 'bg-gray-500 cursor-not-allowed' 
+                  : 'bg-green-600 hover:bg-green-700'
+              }`}
+              title={!currentUserId ? 'Not logged in' : !isWsConnected ? 'Connecting...' : 'Send message'}
+            >
               <Send className="w-4 h-4" />
             </Button>
           </div>
