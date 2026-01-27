@@ -3815,10 +3815,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           )}
                         </div>
                         
-                        {/* ALWAYS show hometown - NEVER remove - compact text for mobile */}
-                        <div className="flex items-center gap-1.5 text-sm sm:text-base font-medium text-black">
+                        {/* ALWAYS show hometown - NEVER remove - compact text for mobile - NO TRUNCATE to ensure full visibility */}
+                        <div className="flex items-center gap-1.5 text-sm sm:text-base font-medium text-black flex-wrap">
                           <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0" />
-                          <span className="truncate">Nearby Local • {hometown}</span>
+                          <span className="whitespace-nowrap">Nearby Local • {hometown}</span>
                           {user.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
                             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100 border border-green-300 dark:border-green-600 flex-shrink-0">
                               New to Town
@@ -3831,9 +3831,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
                           if (currentTravelPlan) {
                             return (
-                              <div className="flex items-center gap-1.5 text-sm sm:text-base font-medium text-black">
+                              <div className="flex items-center gap-1.5 text-sm sm:text-base font-medium text-black flex-wrap">
                                 <Plane className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600 flex-shrink-0" />
-                                <span className="truncate">Nearby Traveler • {currentTravelPlan}</span>
+                                <span className="whitespace-nowrap">Nearby Traveler • {currentTravelPlan}</span>
                               </div>
                             );
                           }
@@ -6271,12 +6271,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             </div>
                           )}
                           
-                          {/* Show connection note for others viewing */}
-                          {!isOwnProfile && connection.connectionNote && (
-                            <div className="mt-2 text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded px-2 py-1">
-                              📍 {connection.connectionNote}
-                            </div>
-                          )}
+                          {/* PRIVACY FIX: Connection notes are private - only the person who wrote them can see them */}
+                          {/* Notes are NOT shown to others viewing this profile */}
                         </div>
 
                         {/* Show the button on ≥sm only; on mobile the whole tile is tappable */}

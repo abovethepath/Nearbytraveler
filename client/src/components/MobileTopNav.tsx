@@ -86,15 +86,15 @@ export function MobileTopNav() {
   return (
     <>
       {/* NAV BAR (no inline 100vw — prevents ghost scrollbar) */}
-      <div className="mobile-top-nav fixed inset-x-0 top-0 z-[1000] h-16 w-full bg-white dark:bg-gray-900 shadow-sm md:hidden overflow-visible">
+      <div className="mobile-top-nav fixed inset-x-0 top-0 z-[50000] h-16 w-full bg-white dark:bg-gray-900 shadow-sm md:hidden overflow-visible">
         <div className="flex items-center justify-between h-16 px-4">
-          {/* Left: Hamburger */}
+          {/* Left: Hamburger - CRITICAL: High z-index to ensure clickability on all pages */}
           <div className="flex items-center">
             <button
               type="button"
               aria-expanded={showDropdown}
               aria-controls="mobile-menu"
-              className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 relative z-[1001]"
+              className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 relative z-[50001]"
               style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation', userSelect: 'none' }}
               onClick={(e) => {
                 e.preventDefault();
@@ -125,7 +125,7 @@ export function MobileTopNav() {
           </div>
 
           {/* Right: Avatar - wrapped in button for reliable click handling */}
-          <div className="flex items-center gap-3 relative z-[1001]">
+          <div className="flex items-center gap-3 relative z-[50001]">
             <button
               type="button"
               onClick={(e) => {
@@ -157,7 +157,7 @@ export function MobileTopNav() {
       {showDropdown && (
         <div
           onClick={() => setShowDropdown(false)}
-          className="fixed inset-0 top-16 z-[998] bg-black/30 md:hidden"
+          className="fixed inset-0 top-16 z-[49998] bg-black/30 md:hidden"
         />
       )}
 
@@ -165,7 +165,7 @@ export function MobileTopNav() {
       {showDropdown && (
         <div
           id="mobile-menu"
-          className="fixed top-16 left-0 right-0 z-[999] md:hidden
+          className="fixed top-16 left-0 right-0 z-[49999] md:hidden
                      bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700
                      shadow-lg max-h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain"
         >
