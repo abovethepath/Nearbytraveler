@@ -39,6 +39,7 @@ interface EventFormData {
   country: string;
   zipcode: string;
   location: string; // Combined display address
+  additionalCities?: string[]; // Cross-metro visibility - show event in these cities too
   date: string;
   startTime: string;
   endDate?: string;
@@ -86,6 +87,8 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
   const [isOriginalOrganizer, setIsOriginalOrganizer] = useState<boolean | null>(null);
   const [importedPlatform, setImportedPlatform] = useState("");
   const [externalOrganizerName, setExternalOrganizerName] = useState("");
+  const [additionalCities, setAdditionalCities] = useState<string[]>([]);
+  const [showAdditionalCities, setShowAdditionalCities] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
@@ -501,6 +504,8 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
         importedPlatform: importedFromUrl ? importedPlatform : null,
         isOriginalOrganizer: importedFromUrl ? (isOriginalOrganizer === true) : true,
         externalOrganizerName: (importedFromUrl && externalOrganizerName) ? externalOrganizerName : null,
+        // Cross-metro visibility - show event in additional cities
+        additionalCities: additionalCities.length > 0 ? additionalCities : null,
       };
 
       await createEventMutation.mutateAsync(eventData);
@@ -948,6 +953,89 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
                 />
               </div>
 
+              {/* Additional Cities for Cross-Metro Visibility */}
+              <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <button
+                  type="button"
+                  onClick={() => setShowAdditionalCities(!showAdditionalCities)}
+                  className="flex items-center gap-2 text-sm font-medium text-blue-700 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-200"
+                >
+                  <svg className={`w-4 h-4 transition-transform ${showAdditionalCities ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                  📍 Show event in additional cities (expand reach)
+                </button>
+                
+                {showAdditionalCities && (
+                  <div className="mt-3 space-y-3">
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                      Your event in Westminster can also appear when people search for nearby cities like Los Angeles. Add cities where you want more visibility.
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {additionalCities.map((city, index) => (
+                        <span key={index} className="flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 rounded-full text-sm">
+                          {city}
+                          <button
+                            type="button"
+                            onClick={() => setAdditionalCities(additionalCities.filter((_, i) => i !== index))}
+                            className="hover:text-red-600"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="Type a city name (e.g., Los Angeles)"
+                        className="flex-1 px-3 py-2 text-sm border rounded-lg dark:bg-gray-800 dark:border-gray-600"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const input = e.currentTarget;
+                            const cityName = input.value.trim();
+                            if (cityName && !additionalCities.includes(cityName)) {
+                              setAdditionalCities([...additionalCities, cityName]);
+                              input.value = '';
+                            }
+                          }
+                        }}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          const input = e.currentTarget.previousElementSibling as HTMLInputElement;
+                          const cityName = input.value.trim();
+                          if (cityName && !additionalCities.includes(cityName)) {
+                            setAdditionalCities([...additionalCities, cityName]);
+                            input.value = '';
+                          }
+                        }}
+                      >
+                        Add
+                      </Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2 text-xs">
+                      <span className="text-gray-500 dark:text-gray-400">Quick add:</span>
+                      {['Los Angeles', 'Orange County', 'San Diego', 'Long Beach', 'Irvine'].map(city => (
+                        !additionalCities.includes(city) && (
+                          <button
+                            key={city}
+                            type="button"
+                            onClick={() => setAdditionalCities([...additionalCities, city])}
+                            className="px-2 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-blue-100 dark:hover:bg-blue-800 rounded text-gray-700 dark:text-gray-300"
+                          >
+                            + {city}
+                          </button>
+                        )
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
 
             </div>
 

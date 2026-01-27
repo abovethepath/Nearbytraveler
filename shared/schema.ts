@@ -488,6 +488,9 @@ export const events = pgTable("events", {
   externalOrganizerName: text("external_organizer_name"), // Name of the organizer from external platform (e.g., "Dan Cullen" from Couchsurfing)
   attendeeCount: integer("attendee_count"), // Number of attendees from source platform (for imported events)
   
+  // Cross-metro visibility - events can appear in multiple city searches
+  additionalCities: text("additional_cities").array(), // Array of city names where event should also be visible (e.g., ["Los Angeles", "Long Beach"])
+  
   createdAt: timestamp("created_at").defaultNow(),
 }, (table) => [
   index("idx_events_city_date").on(table.city, table.date),

@@ -8524,31 +8524,55 @@ Questions? Just reply to this message. Welcome aboard!
         if (process.env.NODE_ENV === 'development') console.log(`🌍 EVENTS: Final searchCities array:`, searchCities);
         
         // Search events in relevant cities - OPTIMIZED single query
+        // Also includes events where the searched city is in additionalCities for cross-metro visibility
         const now = new Date();
         const sixWeeksFromNow = new Date(now.getTime() + (42 * 24 * 60 * 60 * 1000));
         
         // PERFORMANCE FIX: Use single query with OR condition instead of loop
+        const { inArray, arrayContains } = await import('drizzle-orm');
+        
         if (searchCities.length === 1) {
-          // Single city - simple query
+          // Single city - check both primary city and additionalCities
           eventsQuery = await db.select().from(events)
             .where(and(
-              eq(events.city, searchCities[0]),
+              or(
+                eq(events.city, searchCities[0]),
+                arrayContains(events.additionalCities, [searchCities[0]])
+              ),
               gte(events.date, now),
               lte(events.date, sixWeeksFromNow)
             ))
             .orderBy(asc(events.date));
-          if (process.env.NODE_ENV === 'development') console.log(`🔍 EVENTS: Found ${eventsQuery.length} events in "${searchCities[0]}"`);
+          if (process.env.NODE_ENV === 'development') console.log(`🔍 EVENTS: Found ${eventsQuery.length} events in "${searchCities[0]}" (including additionalCities)`);
         } else {
-          // Multiple cities - single query with IN clause
-          const { inArray } = await import('drizzle-orm');
-          eventsQuery = await db.select().from(events)
+          // Multiple cities - check both primary city (IN) and additionalCities (overlaps any)
+          // First get events where city is in searchCities
+          const primaryCityEvents = await db.select().from(events)
             .where(and(
               inArray(events.city, searchCities),
               gte(events.date, now),
               lte(events.date, sixWeeksFromNow)
             ))
             .orderBy(asc(events.date));
-          if (process.env.NODE_ENV === 'development') console.log(`🔍 EVENTS: Found ${eventsQuery.length} events across ${searchCities.length} metro cities`);
+          
+          // Then get events where any searchCity is in additionalCities
+          const additionalCityEvents = await db.select().from(events)
+            .where(and(
+              gte(events.date, now),
+              lte(events.date, sixWeeksFromNow)
+            ))
+            .orderBy(asc(events.date));
+          
+          // Filter additionalCityEvents to only those where additionalCities overlaps with searchCities
+          const additionalFiltered = additionalCityEvents.filter(event => 
+            event.additionalCities?.some(ac => 
+              searchCities.some(sc => sc.toLowerCase() === ac.toLowerCase())
+            )
+          );
+          
+          // Combine and deduplicate
+          eventsQuery = [...primaryCityEvents, ...additionalFiltered];
+          if (process.env.NODE_ENV === 'development') console.log(`🔍 EVENTS: Found ${eventsQuery.length} events across ${searchCities.length} metro cities (including additionalCities)`);
         }
         
         // Remove duplicates based on event ID
