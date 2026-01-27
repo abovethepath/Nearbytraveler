@@ -198,6 +198,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       
       // Authenticate
+      console.log('🔐 WhatsApp Chat: Authenticating with userId:', currentUserId, 'chatId:', chatId, 'chatType:', chatType);
       ws.send(JSON.stringify({
         type: 'auth',
         userId: currentUserId,
@@ -207,25 +208,31 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      console.log('📨 WhatsApp Chat: Received WebSocket message:', data.type);
+      console.log('📨 WhatsApp Chat: Received WebSocket message:', data.type, 'for chatId:', chatId);
 
       switch (data.type) {
         case 'auth:success':
-          console.log('✅ WhatsApp Chat: Authenticated, requesting message history');
+          console.log('✅ WhatsApp Chat: Authenticated, requesting message history for chatId:', chatId, 'chatType:', chatType);
           isAuthenticated = true;
           setIsWsConnected(true);
           // Now request message history
-          ws.send(JSON.stringify({
+          const historyRequest = {
             type: 'sync:history',
             chatType,
             chatroomId: chatId,
             payload: {}
-          }));
+          };
+          console.log('📤 WhatsApp Chat: Sending sync:history request:', JSON.stringify(historyRequest));
+          ws.send(JSON.stringify(historyRequest));
           break;
 
         case 'sync:response':
-          console.log('📬 WhatsApp Chat: Received', data.payload.messages.length, 'messages');
-          setMessages(data.payload.messages.reverse());
+          console.log('📬 WhatsApp Chat: Received', data.payload?.messages?.length || 0, 'messages for chatId:', chatId);
+          if (data.payload?.messages) {
+            setMessages(data.payload.messages.reverse());
+          } else {
+            console.warn('⚠️ WhatsApp Chat: No messages array in sync:response payload');
+          }
           scrollToBottom();
           break;
 

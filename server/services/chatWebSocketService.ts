@@ -942,6 +942,13 @@ export class ChatWebSocketService {
     const { chatType, chatroomId, payload } = event;
     const { lastMessageTimestamp } = payload;
 
+    console.log('📜 handleHistorySync called:', { 
+      chatType, 
+      chatroomId, 
+      userId: ws.userId,
+      lastMessageTimestamp 
+    });
+
     let messagesData: any[] = [];
 
     // Handle DM history separately
