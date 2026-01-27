@@ -3617,7 +3617,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
       {/* Profile Completion Warning - Only show for incomplete own profiles */}
       {isProfileIncomplete() && (
-        <div className="bg-red-600 text-white px-4 py-3" style={{ marginLeft: 'calc(-1 * var(--sal, 0px))', width: '100vw' }}>
+        <div className="bg-red-600 text-white px-4 py-3" style={{ position: 'relative', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw', width: '100vw' }}>
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3 flex-1">
@@ -3644,8 +3644,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     
       {/* PROFILE HEADER - Mobile Responsive - Full Bleed - breaks out of body padding */}
       <div
-        className={`relative w-[100vw] -ml-[var(--sal,0px)] bg-gradient-to-r ${gradientOptions[selectedGradient]} px-3 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12`}
-        style={{ marginLeft: 'calc(-1 * var(--sal, 0px))', width: '100vw' }}
+        className={`bg-gradient-to-r ${gradientOptions[selectedGradient]} px-3 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12`}
+        style={{ position: 'relative', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw', width: '100vw' }}
       >
         {/* floating color button */}
         {isOwnProfile && (
