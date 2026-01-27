@@ -1241,10 +1241,12 @@ export default function Events() {
                   </div>
                 </div>
                 <div className="p-4 sm:p-6 overflow-y-auto flex-1">
-                  <CreateEvent onEventCreated={() => {
-                    setShowCreateEvent(false);
-                    queryClient.invalidateQueries({ queryKey: ["/api/events"] });
-                  }} />
+                  <CreateEvent 
+                    isModal={true}
+                    onEventCreated={() => {
+                      setShowCreateEvent(false);
+                      queryClient.invalidateQueries({ queryKey: ["/api/events"] });
+                    }} />
                 </div>
               </div>
             </div>

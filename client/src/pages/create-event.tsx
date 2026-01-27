@@ -26,6 +26,7 @@ import { authStorage } from "@/lib/auth";
 
 interface CreateEventProps {
   onEventCreated?: () => void;
+  isModal?: boolean; // When true, hide the header since parent modal provides it
 }
 
 // Extended form type to include separate time fields, full address, and recurring options
@@ -71,7 +72,7 @@ interface EventFormData {
   privateNotes?: string;
 }
 
-export default function CreateEvent({ onEventCreated }: CreateEventProps) {
+export default function CreateEvent({ onEventCreated, isModal = false }: CreateEventProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedState, setSelectedState] = useState("");
@@ -538,23 +539,26 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
 
   return (
     <div>
-      {/* Header with Navigation */}
-      <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-4">
-              <UniversalBackButton 
-                destination="/events"
-                label="Back"
-                className="bg-transparent"
-              />
+      {/* Header with Navigation - Hidden when in modal mode */}
+      {!isModal && (
+        <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+              <div className="flex items-center gap-4">
+                <UniversalBackButton 
+                  destination="/events"
+                  label="Back"
+                  className="bg-transparent"
+                />
+              </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
+      )}
 
-      <div className="max-w-2xl mx-auto p-6">
-        <Card>
+      <div className={isModal ? "" : "max-w-2xl mx-auto p-6"}>
+        <Card className={isModal ? "border-0 shadow-none" : ""}>
+          {!isModal && (
           <CardHeader>
           <CardTitle className="flex items-center gap-2 text-2xl">
             <Users className="w-6 h-6 text-blue-600" />
@@ -564,6 +568,7 @@ export default function CreateEvent({ onEventCreated }: CreateEventProps) {
             Create an event for your city where locals and travelers can connect and join
           </p>
         </CardHeader>
+          )}
         
         <CardContent>
           <form 
