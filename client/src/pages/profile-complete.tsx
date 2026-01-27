@@ -3648,7 +3648,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     
       {/* PROFILE HEADER - Mobile Responsive - Full Bleed */}
       <div
-        className={`w-full bg-gradient-to-r ${gradientOptions[selectedGradient]} px-3 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12 relative`}
+        className={`w-screen max-w-full bg-gradient-to-r ${gradientOptions[selectedGradient]} px-3 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12 relative`}
       >
         {/* floating color button */}
         {isOwnProfile && (
