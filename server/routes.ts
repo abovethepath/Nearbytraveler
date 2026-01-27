@@ -4840,6 +4840,7 @@ Questions? Just reply to this message. Welcome aboard!
               sql`LOWER(COALESCE(array_to_string(${users.defaultTravelActivities}, ' '), '')) LIKE ${pattern}`,
               sql`LOWER(COALESCE(array_to_string(${users.defaultTravelEvents}, ' '), '')) LIKE ${pattern}`,
               sql`LOWER(COALESCE(array_to_string(${users.tags}, ' '), '')) LIKE ${pattern}`,
+              sql`LOWER(COALESCE(array_to_string(${users.sexualPreference}, ' '), '')) LIKE ${pattern}`,
               // Also search user_city_interests and user_event_interests tables
               sql`EXISTS (
                 SELECT 1 FROM user_city_interests 
