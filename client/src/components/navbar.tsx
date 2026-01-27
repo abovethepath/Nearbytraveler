@@ -384,7 +384,7 @@ function Navbar() {
         </div>
       )}
       
-      <header ref={headerRef} className="sticky top-0 z-[200] bg-white dark:bg-black shadow-sm overflow-hidden">
+      <header ref={headerRef} className="sticky top-0 z-[1000] bg-white dark:bg-black shadow-sm overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20 py-1">
             <div className="flex items-center justify-start">
@@ -436,7 +436,7 @@ function Navbar() {
                 {/* Mobile Menu Button - Fixed for iOS WebView */}
                 <button
                   type="button"
-                  className="md:hidden h-12 w-12 p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 cursor-pointer select-none relative z-[300]"
+                  className="md:hidden h-12 w-12 p-0 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 cursor-pointer select-none relative z-[1100]"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -467,7 +467,7 @@ function Navbar() {
                 <DropdownMenuTrigger asChild>
                   <button 
                     type="button"
-                    className="relative h-12 w-12 rounded-full p-0 flex items-center justify-center cursor-pointer select-none z-[300]"
+                    className="relative h-12 w-12 rounded-full p-0 flex items-center justify-center cursor-pointer select-none z-[1100]"
                     style={{ WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation', userSelect: 'none' }}
                     onClick={(e) => {
                       console.log('👤 Avatar clicked via onClick');
