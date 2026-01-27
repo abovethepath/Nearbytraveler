@@ -654,7 +654,15 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
               </div>
               <div className="grid gap-4">
                 {advancedSearchResults.map((user) => (
-                  <Card key={user.id} className="hover:shadow-lg transition-shadow border-l-4 border-l-blue-500">
+                  <Card 
+                    key={user.id} 
+                    className="hover:shadow-lg transition-shadow border-l-4 border-l-blue-500 cursor-pointer"
+                    onClick={() => {
+                      onOpenChange(false);
+                      window.location.href = `/profile/${user.id}`;
+                    }}
+                    data-testid={`user-card-${user.id}`}
+                  >
                     <CardContent className="p-4">
                       {/* Header row with avatar, name, and connect button */}
                       <div className="flex items-center gap-3 mb-3">
@@ -673,21 +681,19 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                           )}
                         </div>
                         
-                        {/* Name and type */}
+                        {/* Username only - no real name or type tags */}
                         <div className="flex-1 min-w-0">
                           <h4 className="font-semibold text-black dark:text-white truncate">
                             {user.username}
                           </h4>
-                          {user.userType && (
-                            <Badge variant="secondary" className="text-xs">
-                              {user.userType}
-                            </Badge>
-                          )}
                         </div>
                         
                         {/* Connect Button */}
                         <Button
-                          onClick={() => connectionMutation.mutate(user.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            connectionMutation.mutate(user.id);
+                          }}
                           disabled={connectionMutation.isPending}
                           size="sm"
                           className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-3 py-1 flex-shrink-0"
@@ -698,13 +704,8 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                         </Button>
                       </div>
                       
-                      {/* User details */}
+                      {/* User details - location and interests only */}
                       <div className="space-y-2">
-                        {user.name && (
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {user.name}
-                          </p>
-                        )}
                         {user.location && (
                           <p className="text-sm text-gray-500 dark:text-gray-500 flex items-center gap-1">
                             <MapPin className="w-3 h-3 flex-shrink-0" />

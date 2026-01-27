@@ -2081,7 +2081,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         const ctx = canvas.getContext('2d');
         const img = new Image();
         
-        img.onload = () => {
+        img.onload = async () => {
           try {
             // Calculate dimensions to maintain aspect ratio (max 400x400)
             const MAX_DIMENSION = 400;
