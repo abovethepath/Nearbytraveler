@@ -17,6 +17,15 @@ body {
   padding-right: var(--sar);
 }
 
+/* Full-bleed elements that need to extend edge-to-edge, breaking out of body safe area padding */
+.full-bleed {
+  margin-left: calc(-1 * var(--sal, 0px));
+  margin-right: calc(-1 * var(--sar, 0px));
+  padding-left: var(--sal, 0px);
+  padding-right: var(--sar, 0px);
+  width: calc(100% + var(--sal, 0px) + var(--sar, 0px));
+}
+
 /* Ensure fixed elements respect safe areas */
 .mobile-top-nav {
   padding-top: var(--sat);
