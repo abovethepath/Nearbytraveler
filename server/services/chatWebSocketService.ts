@@ -1130,6 +1130,7 @@ export class ChatWebSocketService {
       }));
     } else {
       // Handle chatroom history with reply metadata
+      console.log('📬 Loading chatroom messages for chatroomId:', chatroomId, 'chatType:', chatType);
       const chatMessages = await db.query.chatroomMessages.findMany({
         where: and(
           eq(chatroomMessages.chatroomId, chatroomId),
@@ -1148,6 +1149,7 @@ export class ChatWebSocketService {
           }
         }
       });
+      console.log('📬 Found', chatMessages.length, 'messages for chatroom', chatroomId);
       
       // Fetch replyTo data for each message
       messagesData = await Promise.all(chatMessages.map(async (msg) => {
