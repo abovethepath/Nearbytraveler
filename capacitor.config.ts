@@ -9,7 +9,7 @@ const config: CapacitorConfig = {
     cleartext: false
   },
   ios: {
-    contentInset: 'automatic',
+    contentInset: 'always',
     preferredContentMode: 'mobile',
     scheme: 'Nearby Traveler'
   },

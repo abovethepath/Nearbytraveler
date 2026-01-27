@@ -1,6 +1,31 @@
 /* Import modern mobile-optimized font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
+/* CAPACITOR iOS Safe Area Support */
+:root {
+  --sat: env(safe-area-inset-top);
+  --sab: env(safe-area-inset-bottom);
+  --sal: env(safe-area-inset-left);
+  --sar: env(safe-area-inset-right);
+}
+
+/* Apply safe area padding for iOS notch/home indicator */
+body {
+  padding-top: var(--sat);
+  padding-bottom: var(--sab);
+  padding-left: var(--sal);
+  padding-right: var(--sar);
+}
+
+/* Ensure fixed elements respect safe areas */
+.mobile-top-nav {
+  padding-top: var(--sat);
+}
+
+.mobile-bottom-nav {
+  padding-bottom: var(--sab);
+}
+
 .hero-clean h1 .hero-blue,
 .hero-clean h1 span.hero-blue,
 .hero-clean h1 span[class*="hero-blue"],
