@@ -632,11 +632,24 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                     {isPrimaryOrganizer ? "You're organizing this event" : "You're co-organizing this event"}
                   </p>
                   
-                  {/* Organizer status - show current status or add button */}
+                  {/* Organizer status - show current status with change option */}
                   {isParticipant ? (
-                    <Badge className="w-full justify-center py-2 mb-3 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                      ✓ {participantStatus === 'going' ? 'Going' : 'Interested'} ({isPrimaryOrganizer ? 'Organizer' : 'Co-Organizer'})
-                    </Badge>
+                    <>
+                      <Badge className="w-full justify-center py-2 mb-2 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                        ✓ {participantStatus === 'going' ? 'Going' : 'Interested'} ({isPrimaryOrganizer ? 'Organizer' : 'Co-Organizer'})
+                      </Badge>
+                      {/* Allow organizer/co-organizer to change their status */}
+                      <button
+                        onClick={() => {
+                          const newStatus = participantStatus === 'going' ? 'interested' : 'going';
+                          joinEventMutation.mutate(newStatus);
+                        }}
+                        className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline mb-3 w-full text-center"
+                        disabled={joinEventMutation.isPending}
+                      >
+                        {joinEventMutation.isPending ? "Updating..." : (participantStatus === 'going' ? 'Change to Interested' : 'Change to Going')}
+                      </button>
+                    </>
                   ) : (
                     /* If organizer somehow isn't in participant list, show button to add them */
                     <div className="mb-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-700">
