@@ -684,11 +684,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   
   const handleBackToChat = () => {
     console.log('🔙 Back to Chat clicked!');
-    console.log('🔍 returnToChatData raw:', returnToChatData);
+    // Read fresh from localStorage - don't use stale captured value
+    const freshReturnToChatData = localStorage.getItem('returnToChat');
+    console.log('🔍 returnToChatData raw:', freshReturnToChatData);
     
-    if (returnToChatData) {
+    if (freshReturnToChatData) {
       try {
-        const context = JSON.parse(returnToChatData);
+        const context = JSON.parse(freshReturnToChatData);
         console.log('✅ Parsed context:', JSON.stringify(context, null, 2));
         console.log('🔍 chatType:', context.chatType);
         console.log('🔍 eventId:', context.eventId);
