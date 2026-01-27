@@ -1005,8 +1005,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                             <button
                               key={emoji}
                               type="button"
-                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleReaction(message.id, emoji); setSelectedMessage(null); }}
-                              onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); handleReaction(message.id, emoji); setSelectedMessage(null); }}
+                              onClick={() => { handleReaction(message.id, emoji); setSelectedMessage(null); }}
                               className="w-10 h-10 flex items-center justify-center text-xl bg-gray-700 hover:bg-gray-600 active:bg-gray-500 active:scale-110 rounded-full transition-transform"
                               style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                             >
@@ -1022,8 +1021,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                             <>
                               <button 
                                 type="button" 
-                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(message); }}
-                                onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); startEdit(message); }}
+                                onClick={() => startEdit(message)}
                                 className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
                                 style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                                 data-testid="button-edit-message"
@@ -1033,8 +1031,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                               </button>
                               <button 
                                 type="button" 
-                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDeleteMessage(message.id); }}
-                                onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); handleDeleteMessage(message.id); }}
+                                onClick={() => handleDeleteMessage(message.id)}
                                 className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
                                 style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                                 data-testid="button-delete-message"
@@ -1044,8 +1041,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                               </button>
                               <button 
                                 type="button" 
-                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setReplyingTo(message); setSelectedMessage(null); }}
-                                onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setReplyingTo(message); setSelectedMessage(null); }}
+                                onClick={() => { setReplyingTo(message); setSelectedMessage(null); }}
                                 className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
                                 style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                                 data-testid="button-reply-message"
@@ -1055,8 +1051,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                               </button>
                               <button 
                                 type="button" 
-                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigator.clipboard.writeText(message.content); toast({ title: "Copied" }); setSelectedMessage(null); }}
-                                onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); navigator.clipboard.writeText(message.content); toast({ title: "Copied" }); setSelectedMessage(null); }}
+                                onClick={() => { navigator.clipboard.writeText(message.content); toast({ title: "Copied" }); setSelectedMessage(null); }}
                                 className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
                                 style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                                 data-testid="button-copy-message"
@@ -1070,8 +1065,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                             <>
                               <button 
                                 type="button" 
-                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setReplyingTo(message); setSelectedMessage(null); }}
-                                onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); setReplyingTo(message); setSelectedMessage(null); }}
+                                onClick={() => { setReplyingTo(message); setSelectedMessage(null); }}
                                 className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
                                 style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                                 data-testid="button-reply-message"
@@ -1081,8 +1075,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                               </button>
                               <button 
                                 type="button" 
-                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigator.clipboard.writeText(message.content); toast({ title: "Copied" }); setSelectedMessage(null); }}
-                                onTouchEnd={(e) => { e.preventDefault(); e.stopPropagation(); navigator.clipboard.writeText(message.content); toast({ title: "Copied" }); setSelectedMessage(null); }}
+                                onClick={() => { navigator.clipboard.writeText(message.content); toast({ title: "Copied" }); setSelectedMessage(null); }}
                                 className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
                                 style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                                 data-testid="button-copy-message"

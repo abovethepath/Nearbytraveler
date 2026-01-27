@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,6 @@ export function MobileTopNav() {
   const [, setLocation] = useLocation();
   const [showDropdown, setShowDropdown] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
-  const touchHandledRef = useRef(false);
 
   // hydrate currentUser from best source available - fixed for auth consistency
   useEffect(() => {
@@ -106,25 +105,8 @@ export function MobileTopNav() {
                 isolation: 'isolate'
               }}
               onClick={(e) => {
-                // Only handle if touch event didn't already toggle
-                if (touchHandledRef.current) {
-                  touchHandledRef.current = false;
-                  return;
-                }
-                e.preventDefault();
                 e.stopPropagation();
-                console.log('🍔 MobileTopNav Hamburger clicked via onClick');
-                setShowDropdown((s) => !s);
-              }}
-              onTouchStart={(e) => {
-                console.log('🍔 MobileTopNav Hamburger touchstart');
-                touchHandledRef.current = false;
-              }}
-              onTouchEnd={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                touchHandledRef.current = true;
-                console.log('🍔 MobileTopNav Hamburger touchend - toggling menu');
+                console.log('🍔 MobileTopNav Hamburger clicked');
                 setShowDropdown((s) => !s);
               }}
             >
