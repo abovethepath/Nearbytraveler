@@ -5207,35 +5207,47 @@ export class DatabaseStorage implements IStorage {
         console.error(`❌ CITY SETUP: Error creating city page for ${city}:`, error);
       }
 
-      // 2. Create default chatrooms for the city
+      // 2. Create default chatrooms for the city (SKIP for metro sub-cities)
       try {
-        // Check if chatrooms already exist
-        const existingChatrooms = await db
-          .select()
-          .from(citychatrooms)
-          .where(and(
-            eq(citychatrooms.city, city),
-            eq(citychatrooms.country, country)
-          ))
-          .limit(2);
+        // Import metro areas to check if this is a sub-city
+        const { METRO_AREAS } = await import('@shared/constants');
+        const LA_METRO_CITIES = METRO_AREAS['Los Angeles']?.cities || [];
+        
+        // SKIP chatroom creation for metro sub-cities (e.g., Playa del Rey, Culver City)
+        // Users should be directed to the main metro area chatroom instead
+        const isMetroSubCity = country === 'United States' && LA_METRO_CITIES.includes(city);
+        
+        if (isMetroSubCity) {
+          console.log(`⏭️ CITY SETUP: Skipping chatroom creation for metro sub-city ${city} - users should use Los Angeles Metro chatroom`);
+        } else {
+          // Check if chatrooms already exist
+          const existingChatrooms = await db
+            .select()
+            .from(citychatrooms)
+            .where(and(
+              eq(citychatrooms.city, city),
+              eq(citychatrooms.country, country)
+            ))
+            .limit(2);
 
-        if (existingChatrooms.length < 1) {
-          // Create single Welcome Newcomers chatroom
-          if (!existingChatrooms.some(room => room.name.includes("Welcome Newcomers"))) {
-            await db.insert(citychatrooms).values({
-              name: `Welcome Newcomers ${city}`,
-              description: `Welcome new visitors and locals to ${city}`,
-              city,
-              state: state || '',
-              country,
-              createdById: 1, // System user (prevents notification spam)
-              isActive: true,
-              isPublic: true,
-              maxMembers: 500,
-              tags: ['welcome', 'newcomers', 'locals', 'travelers'],
-              rules: 'Be respectful and helpful to fellow travelers and locals'
-            });
-            console.log(`✅ CITY SETUP: Created Welcome Newcomers chatroom for ${city}`);
+          if (existingChatrooms.length < 1) {
+            // Create single Welcome Newcomers chatroom
+            if (!existingChatrooms.some(room => room.name.includes("Welcome Newcomers"))) {
+              await db.insert(citychatrooms).values({
+                name: `Welcome Newcomers ${city}`,
+                description: `Welcome new visitors and locals to ${city}`,
+                city,
+                state: state || '',
+                country,
+                createdById: 1, // System user (prevents notification spam)
+                isActive: true,
+                isPublic: true,
+                maxMembers: 500,
+                tags: ['welcome', 'newcomers', 'locals', 'travelers'],
+                rules: 'Be respectful and helpful to fellow travelers and locals'
+              });
+              console.log(`✅ CITY SETUP: Created Welcome Newcomers chatroom for ${city}`);
+            }
           }
         }
       } catch (error) {
