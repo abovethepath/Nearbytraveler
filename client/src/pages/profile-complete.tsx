@@ -3818,10 +3818,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           )}
                         </div>
                         
-                        {/* ALWAYS show hometown - NEVER remove - compact text for mobile - NO TRUNCATE to ensure full visibility */}
-                        <div className="flex items-center gap-1.5 text-sm sm:text-base font-medium text-black flex-wrap">
-                          <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0" />
-                          <span className="whitespace-nowrap">Nearby Local • {hometown}</span>
+                        {/* ALWAYS show hometown - NEVER remove - compact text for mobile - allow wrapping for full visibility */}
+                        <div className="flex items-start gap-1.5 text-sm sm:text-base font-medium text-black flex-wrap">
+                          <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                          <span className="break-words">Nearby Local • {hometown}</span>
                           {user.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
                             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100 border border-green-300 dark:border-green-600 flex-shrink-0">
                               New to Town
@@ -3834,9 +3834,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
                           if (currentTravelPlan) {
                             return (
-                              <div className="flex items-center gap-1.5 text-sm sm:text-base font-medium text-black flex-wrap">
-                                <Plane className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600 flex-shrink-0" />
-                                <span className="whitespace-nowrap">Nearby Traveler • {currentTravelPlan}</span>
+                              <div className="flex items-start gap-1.5 text-sm sm:text-base font-medium text-black flex-wrap">
+                                <Plane className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                                <span className="break-words">Nearby Traveler • {currentTravelPlan}</span>
                               </div>
                             );
                           }
