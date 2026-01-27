@@ -26,6 +26,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
   const queryClient = useQueryClient();
   const [copied, setCopied] = useState(false);
   const [viewAsGuest, setViewAsGuest] = useState(false);
+  const [showFullNames, setShowFullNames] = useState(false);
   
   // Get current user
   const getCurrentUser = () => {
@@ -357,6 +358,12 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                       </span>
                     )}
                   </div>
+                  <button
+                    onClick={() => setShowFullNames(!showFullNames)}
+                    className="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 mt-1"
+                  >
+                    {showFullNames ? "Show usernames" : "Show real names"}
+                  </button>
                 </CardHeader>
                 <CardContent className="pt-4">
                   <div className="space-y-4">
@@ -391,7 +398,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                                 onClick={() => setLocation(`/profile/${user?.id}`)}
                                 className="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline text-left truncate"
                               >
-                                {user?.username || user?.name || 'Unknown'}
+                                {showFullNames ? (user?.name || user?.username || 'Unknown') : (user?.username || user?.name || 'Unknown')}
                               </button>
                               {user?.id === event?.organizerId && event?.isOriginalOrganizer !== false && (
                                 <Badge variant="default" className="text-xs bg-orange-500 hover:bg-orange-600 shrink-0">
