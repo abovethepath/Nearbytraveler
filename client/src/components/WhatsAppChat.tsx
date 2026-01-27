@@ -895,32 +895,32 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                         style={{ top: '50%', transform: 'translate(-50%, -50%)' }}
                       >
                         <div className="text-center text-xs text-gray-400 mb-2 pb-2 border-b border-gray-700">Message Options</div>
-                        <button onClick={() => { navigator.clipboard.writeText(message.content); toast({ title: "Copied" }); setSelectedMessage(null); }} className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 rounded-lg text-white" data-testid="button-copy-message">
-                          <Copy className="w-5 h-5" />
-                          <span>Copy text</span>
+                        <button type="button" onClick={() => { navigator.clipboard.writeText(message.content); toast({ title: "Copied" }); setSelectedMessage(null); }} className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 active:bg-gray-600 rounded-lg text-white cursor-pointer" style={{ WebkitTapHighlightColor: 'transparent' }} data-testid="button-copy-message">
+                          <Copy className="w-5 h-5 pointer-events-none" />
+                          <span className="pointer-events-none">Copy text</span>
                         </button>
-                        <button onClick={() => { setReplyingTo(message); setSelectedMessage(null); }} className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 rounded-lg text-white" data-testid="button-reply-message">
-                          <Reply className="w-5 h-5" />
-                          <span>Reply</span>
+                        <button type="button" onClick={() => { setReplyingTo(message); setSelectedMessage(null); }} className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 active:bg-gray-600 rounded-lg text-white cursor-pointer" style={{ WebkitTapHighlightColor: 'transparent' }} data-testid="button-reply-message">
+                          <Reply className="w-5 h-5 pointer-events-none" />
+                          <span className="pointer-events-none">Reply</span>
                         </button>
-                        <button onClick={() => { handleReaction(message.id, '❤️'); setSelectedMessage(null); }} className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 rounded-lg text-white" data-testid="button-react-message">
-                          <Heart className="w-5 h-5" />
-                          <span>React ❤️</span>
+                        <button type="button" onClick={() => { handleReaction(message.id, '❤️'); setSelectedMessage(null); }} className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 active:bg-gray-600 rounded-lg text-white cursor-pointer" style={{ WebkitTapHighlightColor: 'transparent' }} data-testid="button-react-message">
+                          <Heart className="w-5 h-5 pointer-events-none" />
+                          <span className="pointer-events-none">React ❤️</span>
                         </button>
                         {isOwnMessage && (
                           <>
-                            <button onClick={() => startEdit(message)} className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 rounded-lg text-white" data-testid="button-edit-message">
-                              <Edit2 className="w-5 h-5" />
-                              <span>Edit</span>
+                            <button type="button" onClick={() => startEdit(message)} className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 active:bg-gray-600 rounded-lg text-white cursor-pointer" style={{ WebkitTapHighlightColor: 'transparent' }} data-testid="button-edit-message">
+                              <Edit2 className="w-5 h-5 pointer-events-none" />
+                              <span className="pointer-events-none">Edit</span>
                             </button>
-                            <button onClick={() => handleDeleteMessage(message.id)} className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 rounded-lg text-red-400" data-testid="button-delete-message">
-                              <Trash2 className="w-5 h-5" />
-                              <span>Delete</span>
+                            <button type="button" onClick={() => handleDeleteMessage(message.id)} className="flex items-center gap-3 w-full px-3 py-2.5 hover:bg-gray-700 active:bg-gray-600 rounded-lg text-red-400 cursor-pointer" style={{ WebkitTapHighlightColor: 'transparent' }} data-testid="button-delete-message">
+                              <Trash2 className="w-5 h-5 pointer-events-none" />
+                              <span className="pointer-events-none">Delete</span>
                             </button>
                           </>
                         )}
-                        <button onClick={() => setSelectedMessage(null)} className="flex items-center justify-center gap-2 w-full px-3 py-2 mt-2 border-t border-gray-700 text-gray-400 hover:text-white">
-                          <span>Cancel</span>
+                        <button type="button" onClick={() => setSelectedMessage(null)} className="flex items-center justify-center gap-2 w-full px-3 py-2 mt-2 border-t border-gray-700 text-gray-400 hover:text-white active:text-white cursor-pointer" style={{ WebkitTapHighlightColor: 'transparent' }}>
+                          <span className="pointer-events-none">Cancel</span>
                         </button>
                       </div>
                       </>
