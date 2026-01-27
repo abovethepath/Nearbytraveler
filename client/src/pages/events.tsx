@@ -613,22 +613,37 @@ export default function Events() {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-        {/* Hero Create Event Button */}
-        <div className="mb-8">
-          <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-6 shadow-lg">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="text-center sm:text-left">
-                <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">Host a Meetup</h2>
-                <p className="text-green-100 text-sm sm:text-base">Bring people together - create an event in your city</p>
+        {/* Hero Create Event Box - Fully Clickable */}
+        <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div 
+            onClick={() => setShowCreateEvent(true)}
+            className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-6 shadow-lg cursor-pointer hover:from-blue-700 hover:to-indigo-800 transition-all"
+            data-testid="create-event-main-cta"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center">
+                <Plus className="w-8 h-8 text-white" />
               </div>
-              <Button 
-                onClick={() => setShowCreateEvent(true)}
-                className="bg-white text-green-700 hover:bg-green-50 px-6 py-3 rounded-lg shadow-md text-base font-bold"
-                data-testid="create-event-main-cta"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                Create Event
-              </Button>
+              <div>
+                <h2 className="text-xl font-bold text-white">Create An Event</h2>
+                <p className="text-blue-100 text-sm">Organize a gathering in your city</p>
+              </div>
+            </div>
+          </div>
+          
+          <div 
+            onClick={() => setLocation('/create-event?import=true')}
+            className="bg-gradient-to-r from-gray-700 to-gray-800 rounded-xl p-6 shadow-lg cursor-pointer hover:from-gray-800 hover:to-gray-900 transition-all border border-gray-600"
+            data-testid="import-event-cta"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center">
+                <Link2 className="w-7 h-7 text-gray-300" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-white">Link External Event</h2>
+                <p className="text-gray-400 text-sm">Add a Meetup or Couchsurfing URL</p>
+              </div>
             </div>
           </div>
         </div>
@@ -639,10 +654,15 @@ export default function Events() {
           <div className="w-full">
             <Select value={selectedLocation} onValueChange={setSelectedLocation}>
               <SelectTrigger className="w-full bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white">
-                <SelectValue placeholder="Select location" />
+                <MapPin className="w-4 h-4 mr-2 text-gray-500" />
+                <SelectValue placeholder="Select city to browse events" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="current">Current Location</SelectItem>
+                {currentUser?.hometownCity && (
+                  <SelectItem value="hometown">
+                    {currentUser.hometownCity}{currentUser.hometownState ? `, ${currentUser.hometownState}` : ''}{currentUser.hometownCountry ? `, ${currentUser.hometownCountry}` : ''}
+                  </SelectItem>
+                )}
                 {userTravelPlans.length > 0 && (
                   <>
                     {userTravelPlans.map((plan: any) => (
@@ -652,8 +672,8 @@ export default function Events() {
                     ))}
                   </>
                 )}
-                <SelectItem value="hometown">Hometown</SelectItem>
-                <SelectItem value="custom">Custom City</SelectItem>
+                <SelectItem value="current">Use My Current Location</SelectItem>
+                <SelectItem value="custom">Search Another City...</SelectItem>
               </SelectContent>
             </Select>
 
