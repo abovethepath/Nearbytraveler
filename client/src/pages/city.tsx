@@ -9,6 +9,7 @@ import { Users, MapPin, Calendar, Filter, ArrowLeft, ArrowUpDown, ChevronDown, X
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 import UserCard from "@/components/user-card";
+import CompactUserCard from "@/components/compact-user-card";
 import EventCard from "@/components/event-card";
 import { SimpleAvatar } from "@/components/simple-avatar";
 
@@ -405,7 +406,27 @@ export default function CityPage({ cityName }: CityPageProps) {
                 {/* Users Grid */}
                 {filteredUsers.length > 0 ? (
                   <>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
+                    {/* Mobile: LinkedIn-style compact 2-column grid */}
+                    <div className="grid grid-cols-2 gap-2 sm:hidden">
+                      {displayedUsers.map((user: User) => (
+                        <CompactUserCard 
+                          key={user.id} 
+                          user={{
+                            ...user, 
+                            hometownCity: user.hometownCity || "",
+                            hometownState: user.hometownState || "",
+                            hometownCountry: user.hometownCountry || "",
+                            profileImage: user.profileImage || "",
+                            interests: user.interests || [],
+                            isCurrentlyTraveling: user.isCurrentlyTraveling || false,
+                          }} 
+                          searchLocation={decodedCityName} 
+                        />
+                      ))}
+                    </div>
+                    
+                    {/* Tablet/Desktop: Full cards */}
+                    <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                       {displayedUsers.map((user: User) => (
                         <UserCard 
                           key={user.id} 
