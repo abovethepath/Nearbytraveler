@@ -3695,7 +3695,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       id="avatar-upload-input"
                       type="file"
                       accept="image/*"
-                      capture="environment"
                       onChange={(e) => {
                         console.log('📸 Avatar file input changed, files:', e.target.files?.length);
                         handleAvatarUpload(e);
