@@ -71,11 +71,42 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
   const [isWsConnected, setIsWsConnected] = useState(false);
+  const [messagesLoaded, setMessagesLoaded] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // HTTP fallback for fetching messages when WebSocket sync fails
+  const fetchMessagesViaHttp = async () => {
+    if (messagesLoaded) return; // Already loaded
+    
+    console.log('📡 WhatsApp Chat: Fetching messages via HTTP fallback for chatId:', chatId, 'chatType:', chatType);
+    try {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const response = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatType}&format=whatsapp`, {
+        headers: {
+          'x-user-id': (currentUserId || user.id || '').toString()
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.messages && Array.isArray(data.messages)) {
+          console.log('📬 WhatsApp Chat: HTTP fallback loaded', data.messages.length, 'messages');
+          setMessages(data.messages.reverse());
+          setMessagesLoaded(true);
+          scrollToBottom();
+        }
+      } else {
+        console.warn('⚠️ WhatsApp Chat: HTTP fallback failed with status:', response.status);
+      }
+    } catch (error) {
+      console.error('❌ WhatsApp Chat: HTTP fallback error:', error);
+    }
+  };
 
   // Fetch chatroom members (for city chatrooms, meetup chatrooms, and event chatrooms)
   const membersEndpoint = chatType === 'event' 
@@ -187,6 +218,10 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   // Initialize WebSocket connection with auto-reconnect
   useEffect(() => {
     if (!currentUserId || !chatId) return;
+    
+    // Reset messages state when chatId changes
+    setMessages([]);
+    setMessagesLoaded(false);
 
     let ws: WebSocket | null = null;
     let reconnectTimeout: NodeJS.Timeout | null = null;
@@ -229,12 +264,25 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
             };
             console.log('📤 WhatsApp Chat: Sending sync:history request:', JSON.stringify(historyRequest));
             ws?.send(JSON.stringify(historyRequest));
+            
+            // Set a timeout to fetch via HTTP if sync:response doesn't arrive within 3 seconds
+            if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
+            syncTimeoutRef.current = setTimeout(() => {
+              console.log('⏱️ WhatsApp Chat: Sync timeout - falling back to HTTP');
+              fetchMessagesViaHttp();
+            }, 3000);
             break;
 
           case 'sync:response':
             console.log('📬 WhatsApp Chat: Received', data.payload?.messages?.length || 0, 'messages for chatId:', chatId);
+            // Clear the HTTP fallback timeout since WebSocket sync succeeded
+            if (syncTimeoutRef.current) {
+              clearTimeout(syncTimeoutRef.current);
+              syncTimeoutRef.current = null;
+            }
             if (data.payload?.messages) {
               setMessages(data.payload.messages.reverse());
+              setMessagesLoaded(true);
             } else {
               console.warn('⚠️ WhatsApp Chat: No messages array in sync:response payload');
             }
@@ -317,6 +365,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     return () => {
       isCleaningUp = true;
       if (reconnectTimeout) clearTimeout(reconnectTimeout);
+      if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
       if (ws) ws.close();
     };
   }, [currentUserId, chatId]);

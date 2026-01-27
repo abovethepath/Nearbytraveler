@@ -15825,11 +15825,119 @@ Questions? Just reply to this message. Welcome aboard!
     try {
       const roomId = parseInt(req.params.roomId || '0');
       const userId = req.headers['x-user-id'];
+      const chatType = req.query.chatType as string || 'city';
+      const format = req.query.format as string || 'legacy';
       
       if (!userId) {
         return res.status(401).json({ message: "User ID required" });
       }
 
+      console.log(`📨 HTTP MESSAGES: Fetching messages for room ${roomId}, type ${chatType}, format ${format}`);
+
+      // For WhatsApp-style format (used by WhatsAppChat component)
+      if (format === 'whatsapp') {
+        let messagesData: any[] = [];
+        
+        if (chatType === 'city') {
+          const rawMessages = await db.query.chatroomMessages.findMany({
+            where: eq(chatroomMessages.chatroomId, roomId),
+            orderBy: desc(chatroomMessages.createdAt),
+            limit: 50,
+          });
+          
+          messagesData = await Promise.all(rawMessages.map(async (msg) => {
+            const sender = await db.query.users.findFirst({
+              where: eq(users.id, msg.senderId),
+              columns: {
+                id: true,
+                username: true,
+                name: true,
+                profileImage: true,
+              }
+            });
+            
+            let replyTo = null;
+            if (msg.replyToId) {
+              const replyMessage = await db.query.chatroomMessages.findFirst({
+                where: eq(chatroomMessages.id, msg.replyToId),
+              });
+              
+              if (replyMessage) {
+                const replySender = await db.query.users.findFirst({
+                  where: eq(users.id, replyMessage.senderId),
+                  columns: {
+                    id: true,
+                    username: true,
+                    name: true,
+                    profileImage: true,
+                  }
+                });
+                
+                replyTo = {
+                  id: replyMessage.id,
+                  content: replyMessage.content,
+                  createdAt: replyMessage.createdAt,
+                  senderId: replyMessage.senderId,
+                  messageType: replyMessage.messageType ?? 'text',
+                  sender: replySender,
+                };
+              }
+            }
+            
+            return {
+              id: msg.id,
+              content: msg.content,
+              createdAt: msg.createdAt,
+              senderId: msg.senderId,
+              messageType: msg.messageType ?? 'text',
+              replyToId: msg.replyToId,
+              mediaUrl: msg.mediaUrl,
+              reactions: msg.reactions,
+              isEdited: msg.isEdited,
+              editedAt: msg.editedAt,
+              sender,
+              replyTo,
+            };
+          }));
+        } else {
+          // Event/meetup chatrooms
+          const meetupMessages = await db.query.meetupChatroomMessages.findMany({
+            where: eq(meetupChatroomMessages.meetupId, roomId),
+            orderBy: desc(meetupChatroomMessages.sentAt),
+            limit: 50,
+          });
+          
+          messagesData = await Promise.all(meetupMessages.map(async (msg) => {
+            const sender = await db.query.users.findFirst({
+              where: eq(users.id, msg.userId),
+              columns: {
+                id: true,
+                username: true,
+                name: true,
+                profileImage: true,
+              }
+            });
+            
+            return {
+              id: msg.id,
+              content: msg.message,
+              createdAt: msg.sentAt,
+              senderId: msg.userId,
+              messageType: msg.messageType ?? 'text',
+              replyToId: msg.replyToId,
+              reactions: msg.reactions,
+              isEdited: msg.isEdited,
+              editedAt: msg.editedAt,
+              sender,
+            };
+          }));
+        }
+        
+        console.log(`📨 HTTP MESSAGES: Returning ${messagesData.length} messages for room ${roomId}`);
+        return res.json({ messages: messagesData });
+      }
+
+      // Legacy format for old chat components
       // 🔒 SECURITY CHECK: Verify user is a member of the chatroom before returning messages
       const memberCheck = await db
         .select()
@@ -15865,7 +15973,7 @@ Questions? Just reply to this message. Welcome aboard!
       
       return res.json(flattenedMessages);
     } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("Error fetching chatroom messages:", error);
+      console.error("Error fetching chatroom messages:", error);
       return res.status(500).json({ message: "Failed to fetch messages" });
     }
   });
@@ -16342,6 +16450,7 @@ Questions? Just reply to this message. Welcome aboard!
           case 'typing:stop':
           case 'receipt:read':
           case 'sync:history':
+            console.log(`📬 SYNC_HISTORY DEBUG: Routing ${data.type} to chatWebSocketService for user ${ws.userId}, chatroom ${data.chatroomId}`);
             await chatWebSocketService.handleEvent(ws, data);
             break;
 
