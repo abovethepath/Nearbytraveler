@@ -2117,14 +2117,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 throw new Error('Image is still too large after compression. Please choose a smaller image.');
               }
               console.log('Profile image compressed to lower quality, final size:', lowerQualityBase64.length);
-              resolve(apiRequest('PUT', `/api/users/${effectiveUserId}/profile-photo`, {
+              const response = await apiRequest('PUT', `/api/users/${effectiveUserId}/profile-photo`, {
                 imageData: lowerQualityBase64
-              }));
+              });
+              // CRITICAL: Parse JSON response properly
+              const jsonData = await response.json();
+              resolve(jsonData);
             } else {
               console.log('Profile image compressed successfully, final size:', compressedBase64.length);
-              resolve(apiRequest('PUT', `/api/users/${effectiveUserId}/profile-photo`, {
+              const response = await apiRequest('PUT', `/api/users/${effectiveUserId}/profile-photo`, {
                 imageData: compressedBase64
-              }));
+              });
+              // CRITICAL: Parse JSON response properly
+              const jsonData = await response.json();
+              resolve(jsonData);
             }
           } catch (error) {
             console.error('Image processing error:', error);
@@ -2140,12 +2146,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         img.src = URL.createObjectURL(file);
       });
     },
-    onSuccess: async (response: any) => {
+    onSuccess: async (data: any) => {
       // CRITICAL: Clear localStorage cache to prevent stale data
       invalidateUserCache();
       
       // API returns { user, profileImage, message } - extract the user data
-      const updatedUser = response?.user || response;
+      const updatedUser = data?.user || data;
       console.log('Profile upload success, user has image:', !!updatedUser?.profileImage);
       
       // Update localStorage immediately
