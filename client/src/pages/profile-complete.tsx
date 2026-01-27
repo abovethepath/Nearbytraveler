@@ -3595,14 +3595,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       <MobileTopNav />
       <MobileBottomNav />
       
-      <div className="min-h-screen profile-page w-full max-w-full overflow-x-hidden">
-
-      {/* Back to Chat Button - Show when navigated from a chatroom */}
+      {/* Back to Chat Button - Show when navigated from a chatroom - OUTSIDE overflow container */}
       {shouldShowBackToChat && (
         <div className="w-full bg-blue-600 text-white px-4 py-2 shadow-md">
           <div className="max-w-7xl mx-auto">
             <Button
-              onClick={handleBackToChat}
+              onClick={() => {
+                const chatSource = sessionStorage.getItem('chatSource');
+                if (chatSource) {
+                  sessionStorage.removeItem('chatSource');
+                  setLocation(chatSource);
+                }
+              }}
               variant="ghost"
               size="sm"
               className="text-white hover:bg-blue-700 -ml-2"
@@ -3615,9 +3619,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </div>
       )}
 
-      {/* Profile Completion Warning - Only show for incomplete own profiles */}
+      {/* Profile Completion Warning - OUTSIDE overflow container for full bleed */}
       {isProfileIncomplete() && (
-        <div className="bg-red-600 text-white px-4 py-3" style={{ position: 'relative', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw', width: '100vw' }}>
+        <div className="w-full bg-red-600 text-white px-4 py-3">
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3 flex-1">
@@ -3642,10 +3646,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </div>
       )}
     
-      {/* PROFILE HEADER - Mobile Responsive - Full Bleed - breaks out of body padding */}
+      {/* PROFILE HEADER - Mobile Responsive - Full Bleed */}
       <div
-        className={`bg-gradient-to-r ${gradientOptions[selectedGradient]} px-3 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12`}
-        style={{ position: 'relative', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw', width: '100vw' }}
+        className={`w-full bg-gradient-to-r ${gradientOptions[selectedGradient]} px-3 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12`}
       >
         {/* floating color button */}
         {isOwnProfile && (
@@ -3999,6 +4002,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           </div>
         )}
       </div>
+
+      {/* Main Content Container - with overflow-x-hidden for rest of page */}
+      <div className="min-h-screen profile-page w-full max-w-full overflow-x-hidden">
 
       {/* Navigation Tabs - Card Style with Border */}
       <div className="w-auto bg-white border border-black dark:bg-gray-900 dark:border-gray-700 px-3 sm:px-6 lg:px-10 py-4 mx-4 sm:mx-6 lg:mx-8 rounded-lg mt-4">
