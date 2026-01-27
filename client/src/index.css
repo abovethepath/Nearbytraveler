@@ -26,6 +26,25 @@ body {
   padding-bottom: var(--sab);
 }
 
+/* CRITICAL: Hamburger menu button must be touchable on mobile - iOS Safari & WebView fix */
+.hamburger-btn,
+.mobile-top-nav button {
+  position: relative !important;
+  z-index: 50002 !important;
+  pointer-events: auto !important;
+  touch-action: manipulation !important;
+  -webkit-touch-callout: none !important;
+  cursor: pointer !important;
+  isolation: isolate !important;
+}
+
+/* Ensure mobile-top-nav creates its own stacking context above everything */
+.mobile-top-nav {
+  isolation: isolate !important;
+  z-index: 50000 !important;
+  contain: layout !important;
+}
+
 .hero-clean h1 .hero-blue,
 .hero-clean h1 span.hero-blue,
 .hero-clean h1 span[class*="hero-blue"],

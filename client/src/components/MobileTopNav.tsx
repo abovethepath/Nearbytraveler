@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Menu, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ export function MobileTopNav() {
   const [, setLocation] = useLocation();
   const [showDropdown, setShowDropdown] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const touchHandledRef = useRef(false);
 
   // hydrate currentUser from best source available - fixed for auth consistency
   useEffect(() => {
@@ -87,16 +88,43 @@ export function MobileTopNav() {
       {/* NAV BAR (no inline 100vw — prevents ghost scrollbar) */}
       <div className="mobile-top-nav fixed inset-x-0 top-0 z-[50000] h-16 w-full bg-white dark:bg-gray-900 shadow-sm md:hidden overflow-visible">
         <div className="flex items-center justify-between h-16 px-4">
-          {/* Left: Hamburger - Simplified for Capacitor WebView */}
-          <div className="flex items-center">
+          {/* Left: Hamburger - CRITICAL FIX for mobile touch on iOS Safari and WebViews */}
+          <div className="flex items-center" style={{ isolation: 'isolate', zIndex: 50002 }}>
             <button
               type="button"
               aria-expanded={showDropdown}
               aria-controls="mobile-menu"
-              className="w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 cursor-pointer relative z-[50001]"
-              style={{ WebkitTapHighlightColor: 'transparent', cursor: 'pointer' }}
-              onClick={() => {
-                console.log('🍔 MobileTopNav Hamburger clicked');
+              className="hamburger-btn w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700 cursor-pointer relative"
+              style={{ 
+                WebkitTapHighlightColor: 'rgba(0,0,0,0.1)', 
+                cursor: 'pointer',
+                touchAction: 'manipulation',
+                userSelect: 'none',
+                WebkitUserSelect: 'none',
+                zIndex: 50002,
+                position: 'relative',
+                isolation: 'isolate'
+              }}
+              onClick={(e) => {
+                // Only handle if touch event didn't already toggle
+                if (touchHandledRef.current) {
+                  touchHandledRef.current = false;
+                  return;
+                }
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🍔 MobileTopNav Hamburger clicked via onClick');
+                setShowDropdown((s) => !s);
+              }}
+              onTouchStart={(e) => {
+                console.log('🍔 MobileTopNav Hamburger touchstart');
+                touchHandledRef.current = false;
+              }}
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                touchHandledRef.current = true;
+                console.log('🍔 MobileTopNav Hamburger touchend - toggling menu');
                 setShowDropdown((s) => !s);
               }}
             >

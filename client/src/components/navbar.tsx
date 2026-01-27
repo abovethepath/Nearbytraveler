@@ -600,8 +600,13 @@ function Navbar() {
 
       </header>
 
-      {/* Portal-based Mobile Menu - renders outside header to avoid z-index issues */}
-      {createPortal(
+      {/* 
+        DISABLED: Portal-based Mobile Menu - This was causing touch interference with MobileTopNav
+        Mobile navigation is now handled exclusively by MobileTopNav component.
+        Keeping this code commented for reference in case desktop hamburger menu is needed in future.
+      */}
+      {/* Desktop-only mobile menu - only render when NOT on mobile to avoid portal interference */}
+      {false && createPortal(
         <div
           id="mobile-menu"
           className={`md:hidden fixed inset-x-0 transition-opacity duration-200 ${

@@ -123,18 +123,25 @@ export function MobileBottomNav() {
           {navItems.slice(0, 2).map((item, index) => {
             const isActive = item.path ? (location === item.path || (item.path === '/' && location === '/')) : false;
             const Icon = item.icon;
+            const handleNavClick = (e: React.MouseEvent | React.TouchEvent) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (item.action === "search") {
+                console.log('🎯 MOBILE NAV: Opening Advanced Search Widget');
+                setShowSearchWidget(true);
+              } else if (item.path) {
+                console.log('🎯 MOBILE NAV: Navigating to', item.path);
+                setLocation(item.path);
+              }
+            };
             return (
               <button
                 key={item.path || item.action || index}
-                onClick={() => {
-                  if (item.action === "search") {
-                    console.log('🎯 MOBILE NAV: Opening Advanced Search Widget');
-                    setShowSearchWidget(true);
-                  } else if (item.path) {
-                    setLocation(item.path);
-                  }
-                }}
-                className="flex flex-col items-center justify-center min-w-0 flex-1"
+                type="button"
+                onClick={handleNavClick}
+                onTouchEnd={handleNavClick}
+                className="flex flex-col items-center justify-center min-w-0 flex-1 py-2"
+                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', minHeight: '60px' }}
                 aria-label={item.label}
               >
                 <Icon className={`w-6 h-6 md:w-7 md:h-7 mb-1 ${isActive ? 'text-orange-500' : 'text-gray-400 dark:text-gray-500'}`} />
