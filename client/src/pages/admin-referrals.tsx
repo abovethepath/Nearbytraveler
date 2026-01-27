@@ -11,8 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { Users, Gift, TrendingUp, DollarSign, Search, Award, Settings } from "lucide-react";
-import { format } from "date-fns";
+import { Users, Gift, TrendingUp, DollarSign, Search, Award, Settings, Trophy, Calendar } from "lucide-react";
+import { format, startOfMonth, endOfMonth, subMonths } from "date-fns";
 
 interface ReferralData {
   id: number;
@@ -49,6 +49,7 @@ interface ReferralStats {
 export default function AdminReferrals() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [monthFilter, setMonthFilter] = useState<string>("all");
   const [showRewardDialog, setShowRewardDialog] = useState(false);
   const [selectedReferral, setSelectedReferral] = useState<ReferralData | null>(null);
   const [rewardConfig, setRewardConfig] = useState({
@@ -58,6 +59,19 @@ export default function AdminReferrals() {
   });
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  const getMonthOptions = () => {
+    const options = [];
+    const now = new Date();
+    for (let i = 0; i < 12; i++) {
+      const date = subMonths(now, i);
+      options.push({
+        value: format(date, 'yyyy-MM'),
+        label: format(date, 'MMMM yyyy')
+      });
+    }
+    return options;
+  };
 
   // Fetch referral statistics
   const { data: stats } = useQuery({
@@ -118,8 +132,37 @@ export default function AdminReferrals() {
     
     const matchesStatus = statusFilter === "all" || referral.status === statusFilter;
     
-    return matchesSearch && matchesStatus;
+    let matchesMonth = true;
+    if (monthFilter !== "all") {
+      const referralDate = new Date(referral.createdAt);
+      const filterMonth = format(referralDate, 'yyyy-MM');
+      matchesMonth = filterMonth === monthFilter;
+    }
+    
+    return matchesSearch && matchesStatus && matchesMonth;
   }) || [];
+
+  const getMonthlyLeaderboard = () => {
+    if (!referrals) return [];
+    
+    const targetMonth = monthFilter === "all" ? format(new Date(), 'yyyy-MM') : monthFilter;
+    const monthlyReferrals = referrals.filter(r => {
+      const referralMonth = format(new Date(r.createdAt), 'yyyy-MM');
+      return referralMonth === targetMonth && r.status !== 'pending';
+    });
+    
+    const referrerCounts: Record<string, { username: string; count: number; userId: number }> = {};
+    monthlyReferrals.forEach(r => {
+      if (!referrerCounts[r.referrerUsername]) {
+        referrerCounts[r.referrerUsername] = { username: r.referrerUsername, count: 0, userId: r.referrerId };
+      }
+      referrerCounts[r.referrerUsername].count++;
+    });
+    
+    return Object.values(referrerCounts).sort((a, b) => b.count - a.count).slice(0, 10);
+  };
+
+  const monthlyLeaderboard = getMonthlyLeaderboard();
 
   const getStatusBadge = (status: string) => {
     const statusColors = {
@@ -200,21 +243,95 @@ export default function AdminReferrals() {
         </div>
       )}
 
-      {/* Top Referrers */}
+      {/* Monthly Prize Leaderboard */}
+      <Card className="border-2 border-orange-200 bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20 dark:border-orange-700">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Trophy className="h-6 w-6 text-orange-500" />
+              <CardTitle className="text-orange-700 dark:text-orange-400">Monthly Prize Leaderboard</CardTitle>
+            </div>
+            <Select value={monthFilter} onValueChange={setMonthFilter}>
+              <SelectTrigger className="w-[180px]">
+                <Calendar className="h-4 w-4 mr-2" />
+                <SelectValue placeholder="Select month" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Current Month</SelectItem>
+                {getMonthOptions().map(option => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Top referrer wins monthly prize! Showing {monthFilter === "all" ? format(new Date(), 'MMMM yyyy') : getMonthOptions().find(o => o.value === monthFilter)?.label || monthFilter}
+          </p>
+        </CardHeader>
+        <CardContent>
+          {monthlyLeaderboard.length === 0 ? (
+            <div className="text-center py-4 text-gray-500">
+              No successful referrals this month yet. Be the first!
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {monthlyLeaderboard.map((referrer, index) => (
+                <div 
+                  key={referrer.userId} 
+                  className={`flex items-center justify-between p-3 rounded-lg ${
+                    index === 0 
+                      ? 'bg-gradient-to-r from-yellow-200 to-orange-200 dark:from-yellow-800/50 dark:to-orange-800/50 border-2 border-yellow-400' 
+                      : index === 1 
+                        ? 'bg-gray-100 dark:bg-gray-700 border border-gray-300'
+                        : index === 2
+                          ? 'bg-orange-50 dark:bg-orange-900/30 border border-orange-200'
+                          : 'bg-white dark:bg-gray-800 border border-gray-200'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    {index === 0 ? (
+                      <div className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center">
+                        <Trophy className="h-5 w-5 text-yellow-800" />
+                      </div>
+                    ) : (
+                      <Badge variant="outline" className="w-8 h-8 flex items-center justify-center rounded-full text-lg">
+                        {index + 1}
+                      </Badge>
+                    )}
+                    <span className={`font-medium ${index === 0 ? 'text-lg text-yellow-800 dark:text-yellow-200' : ''}`}>
+                      {referrer.username}
+                    </span>
+                    {index === 0 && (
+                      <Badge className="bg-yellow-500 text-yellow-900">WINNER</Badge>
+                    )}
+                  </div>
+                  <div className={`font-bold ${index === 0 ? 'text-xl text-yellow-800 dark:text-yellow-200' : 'text-gray-700 dark:text-gray-300'}`}>
+                    {referrer.count} {referrer.count === 1 ? 'referral' : 'referrals'}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Top Referrers (All Time) */}
       {stats?.topReferrers && stats.topReferrers.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Top Referrers</CardTitle>
+            <CardTitle>Top Referrers (All Time)</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
               {stats.topReferrers.slice(0, 5).map((referrer, index) => (
-                <div key={referrer.userId} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                <div key={referrer.userId} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded">
                   <div className="flex items-center gap-2">
                     <Badge variant="outline">#{index + 1}</Badge>
                     <span className="font-medium">{referrer.username}</span>
                   </div>
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
                     {referrer.referralCount} referrals • {referrer.rewardsEarned} rewards
                   </div>
                 </div>
@@ -230,8 +347,8 @@ export default function AdminReferrals() {
           <CardTitle>All Referrals</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-4 mb-4">
-            <div className="flex-1">
+          <div className="flex flex-wrap gap-4 mb-4">
+            <div className="flex-1 min-w-[200px]">
               <div className="relative">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -243,7 +360,7 @@ export default function AdminReferrals() {
               </div>
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
               <SelectContent>
@@ -253,6 +370,19 @@ export default function AdminReferrals() {
                 <SelectItem value="completed_profile">Completed Profile</SelectItem>
                 <SelectItem value="first_connection">First Connection</SelectItem>
                 <SelectItem value="first_event">First Event</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={monthFilter} onValueChange={setMonthFilter}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filter by month" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Months</SelectItem>
+                {getMonthOptions().map(option => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
