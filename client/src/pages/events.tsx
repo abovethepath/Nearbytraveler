@@ -649,19 +649,19 @@ export default function Events() {
               onClick={() => setLocation('/create-event?import=true')}
               size="sm"
               variant="outline"
-              className="flex-1 sm:flex-none border-purple-300 text-purple-600 hover:bg-purple-50 dark:border-purple-600 dark:text-purple-400 dark:hover:bg-purple-900/20 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium"
+              className="flex-1 sm:flex-none border-gray-300 text-gray-600 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-800 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium"
               data-testid="import-event-cta"
             >
               <Link2 className="w-4 h-4 mr-1" />
-              <span className="hidden sm:inline">Import from </span>Meetup/CS
+              <span className="hidden sm:inline">Link </span>External Event
             </Button>
             <Button 
               onClick={() => setShowCreateEvent(true)}
               size="sm"
-              className="flex-1 sm:flex-none bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-3 sm:px-4 py-2 rounded-lg shadow-md text-xs sm:text-sm font-medium"
+              className="flex-1 sm:flex-none bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 sm:px-5 py-2.5 rounded-lg shadow-lg text-sm sm:text-base font-semibold border-2 border-green-400"
               data-testid="create-event-main-cta"
             >
-              <Plus className="w-4 h-4 mr-1" />
+              <Plus className="w-5 h-5 mr-1.5" />
               Create Event
             </Button>
           </div>
