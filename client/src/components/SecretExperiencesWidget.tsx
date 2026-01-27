@@ -112,7 +112,7 @@ export function SecretExperiencesWidget({ city, state, country }: SecretExperien
                   }
                 }}
               >
-                <p className={`text-gray-800 dark:text-white font-medium leading-relaxed ${
+                <p className={`text-gray-900 dark:text-white font-semibold leading-relaxed text-sm ${
                   shouldTruncate && !isExpanded ? 'line-clamp-2' : ''
                 }`}>
                   {experience.experience}
@@ -123,17 +123,17 @@ export function SecretExperiencesWidget({ city, state, country }: SecretExperien
                       e.stopPropagation();
                       toggleExperience(experience.id);
                     }}
-                    className="text-xs text-black dark:text-white mt-1 hover:underline cursor-pointer"
+                    className="text-xs text-blue-600 dark:text-blue-400 mt-1 hover:underline cursor-pointer"
                   >
                     {isExpanded ? "Show less" : "Show more"}
                   </button>
                 )}
               </div>
               <div className="mt-2">
-                <div className="flex items-center gap-2">
-                  <User className="h-3 w-3 text-orange-600 dark:text-orange-400" />
+                <div className="flex items-center gap-1.5">
+                  <User className="h-3 w-3 text-orange-500 dark:text-orange-400" />
                   <span 
-                    className="text-xs text-gray-800 dark:text-white font-medium cursor-pointer hover:underline"
+                    className="text-xs text-orange-600 dark:text-orange-400 font-medium cursor-pointer hover:underline"
                     onClick={(e) => {
                       e.stopPropagation();
                       window.location.href = `/profile/${experience.id}`;
