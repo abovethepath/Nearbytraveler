@@ -195,6 +195,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
   const userTypeOptions = ["Local", "Traveler", "Business"];
   const travelerTypeOptions = ["Solo", "Couple", "Group", "Family", "Business"];
   const militaryStatusOptions = MILITARY_STATUS_OPTIONS;
+  const topChoicesOptions = TOP_CHOICES;
 
   // Use ALL_INTERESTS to match what users select in signup and profile editing
   // TOP_CHOICES (30 items) + ADDITIONAL_INTERESTS (73 items) = ALL_INTERESTS (103 items)
