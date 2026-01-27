@@ -74,9 +74,10 @@ export default function CompactUserCard({
     return '';
   };
 
+  // Always use username for individuals, businessName for businesses
   const displayName = user.userType === 'business' && user.businessName 
     ? user.businessName 
-    : user.name || user.username;
+    : `@${user.username}`;
 
   // Truncate bio to ~40 chars
   const shortBio = user.bio ? (user.bio.length > 40 ? user.bio.substring(0, 40) + '...' : user.bio) : '';
