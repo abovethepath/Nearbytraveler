@@ -184,120 +184,141 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     return parts[0] || 'User';
   };
 
-  // Initialize WebSocket connection
+  // Initialize WebSocket connection with auto-reconnect
   useEffect(() => {
     if (!currentUserId || !chatId) return;
 
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
-    wsRef.current = ws;
+    let ws: WebSocket | null = null;
+    let reconnectTimeout: NodeJS.Timeout | null = null;
+    let isCleaningUp = false;
 
-    let isAuthenticated = false;
-
-    ws.onopen = () => {
-      console.log('🟢 WhatsApp Chat: WebSocket connected');
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const connect = () => {
+      if (isCleaningUp) return;
       
-      // Authenticate
-      console.log('🔐 WhatsApp Chat: Authenticating with userId:', currentUserId, 'chatId:', chatId, 'chatType:', chatType);
-      ws.send(JSON.stringify({
-        type: 'auth',
-        userId: currentUserId,
-        username: user.username
-      }));
-    };
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
+      wsRef.current = ws;
 
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log('📨 WhatsApp Chat: Received WebSocket message:', data.type, 'for chatId:', chatId);
+      ws.onopen = () => {
+        console.log('🟢 WhatsApp Chat: WebSocket connected');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        
+        // Authenticate
+        console.log('🔐 WhatsApp Chat: Authenticating with userId:', currentUserId, 'chatId:', chatId, 'chatType:', chatType);
+        ws?.send(JSON.stringify({
+          type: 'auth',
+          userId: currentUserId,
+          username: user.username
+        }));
+      };
 
-      switch (data.type) {
-        case 'auth:success':
-          console.log('✅ WhatsApp Chat: Authenticated, requesting message history for chatId:', chatId, 'chatType:', chatType);
-          isAuthenticated = true;
-          setIsWsConnected(true);
-          // Now request message history
-          const historyRequest = {
-            type: 'sync:history',
-            chatType,
-            chatroomId: chatId,
-            payload: {}
-          };
-          console.log('📤 WhatsApp Chat: Sending sync:history request:', JSON.stringify(historyRequest));
-          ws.send(JSON.stringify(historyRequest));
-          break;
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log('📨 WhatsApp Chat: Received WebSocket message:', data.type, 'for chatId:', chatId);
 
-        case 'sync:response':
-          console.log('📬 WhatsApp Chat: Received', data.payload?.messages?.length || 0, 'messages for chatId:', chatId);
-          if (data.payload?.messages) {
-            setMessages(data.payload.messages.reverse());
-          } else {
-            console.warn('⚠️ WhatsApp Chat: No messages array in sync:response payload');
-          }
-          scrollToBottom();
-          break;
+        switch (data.type) {
+          case 'auth:success':
+            console.log('✅ WhatsApp Chat: Authenticated, requesting message history for chatId:', chatId, 'chatType:', chatType);
+            setIsWsConnected(true);
+            // Now request message history
+            const historyRequest = {
+              type: 'sync:history',
+              chatType,
+              chatroomId: chatId,
+              payload: {}
+            };
+            console.log('📤 WhatsApp Chat: Sending sync:history request:', JSON.stringify(historyRequest));
+            ws?.send(JSON.stringify(historyRequest));
+            break;
 
-        case 'message:new':
-          console.log('💬 WhatsApp Chat: New message received');
-          setMessages(prev => [...prev, data.payload]);
-          scrollToBottom();
-          break;
+          case 'sync:response':
+            console.log('📬 WhatsApp Chat: Received', data.payload?.messages?.length || 0, 'messages for chatId:', chatId);
+            if (data.payload?.messages) {
+              setMessages(data.payload.messages.reverse());
+            } else {
+              console.warn('⚠️ WhatsApp Chat: No messages array in sync:response payload');
+            }
+            scrollToBottom();
+            break;
 
-        case 'message:edit':
-          console.log('✏️ WhatsApp Chat: Message edited');
-          setMessages(prev => prev.map(msg => 
-            msg.id === data.payload.id
-              ? { ...msg, ...data.payload, isEdited: true }
-              : msg
-          ));
-          break;
+          case 'message:new':
+            console.log('💬 WhatsApp Chat: New message received');
+            setMessages(prev => [...prev, data.payload]);
+            scrollToBottom();
+            break;
 
-        case 'message:delete':
-          console.log('🗑️ WhatsApp Chat: Message deleted');
-          setMessages(prev => prev.filter(msg => msg.id !== data.payload.messageId));
-          break;
+          case 'message:edit':
+            console.log('✏️ WhatsApp Chat: Message edited');
+            setMessages(prev => prev.map(msg => 
+              msg.id === data.payload.id
+                ? { ...msg, ...data.payload, isEdited: true }
+                : msg
+            ));
+            break;
 
-        case 'message:reaction':
-          setMessages(prev => prev.map(msg => 
-            msg.id === data.payload.messageId
-              ? { ...msg, reactions: data.payload.reactions }
-              : msg
-          ));
-          break;
+          case 'message:delete':
+            console.log('🗑️ WhatsApp Chat: Message deleted');
+            setMessages(prev => prev.filter(msg => msg.id !== data.payload.messageId));
+            break;
 
-        case 'typing:start':
-          if (data.payload.userId !== currentUserId) {
-            setTypingUsers(prev => new Set([...prev, data.payload.username]));
-          }
-          break;
+          case 'message:reaction':
+            setMessages(prev => prev.map(msg => 
+              msg.id === data.payload.messageId
+                ? { ...msg, reactions: data.payload.reactions }
+                : msg
+            ));
+            break;
 
-        case 'typing:stop':
-          if (data.payload.userId !== currentUserId) {
-            setTypingUsers(prev => {
-              const newSet = new Set(prev);
-              newSet.delete(data.payload.username);
-              return newSet;
+          case 'typing:start':
+            if (data.payload.userId !== currentUserId) {
+              setTypingUsers(prev => new Set([...prev, data.payload.username]));
+            }
+            break;
+
+          case 'typing:stop':
+            if (data.payload.userId !== currentUserId) {
+              setTypingUsers(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(data.payload.username);
+                return newSet;
+              });
+            }
+            break;
+
+          case 'system:error':
+            console.error('❌ WhatsApp Chat: Error:', data.payload.message);
+            toast({
+              title: "Error",
+              description: data.payload.message,
+              variant: "destructive"
             });
-          }
-          break;
+            break;
+        }
+      };
 
-        case 'system:error':
-          console.error('❌ WhatsApp Chat: Error:', data.payload.message);
-          toast({
-            title: "Error",
-            description: data.payload.message,
-            variant: "destructive"
-          });
-          break;
-      }
+      ws.onclose = () => {
+        console.log('🔴 WebSocket disconnected');
+        setIsWsConnected(false);
+        
+        // Auto-reconnect after 2 seconds if not cleaning up
+        if (!isCleaningUp) {
+          console.log('🔄 Attempting WebSocket reconnection in 2 seconds...');
+          reconnectTimeout = setTimeout(connect, 2000);
+        }
+      };
+      
+      ws.onerror = (error) => {
+        console.error('❌ WebSocket error:', error);
+      };
     };
 
-    ws.onclose = () => {
-      console.log('🔴 WebSocket disconnected');
-      setIsWsConnected(false);
-    };
+    connect();
 
-    return () => ws.close();
+    return () => {
+      isCleaningUp = true;
+      if (reconnectTimeout) clearTimeout(reconnectTimeout);
+      if (ws) ws.close();
+    };
   }, [currentUserId, chatId]);
 
   const scrollToBottom = () => {
@@ -872,15 +893,22 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
 
         {/* Input box - fixed at bottom */}
         <div className="px-3 py-2 bg-gray-800 border-t border-gray-700">
+          {/* Connection status indicator */}
+          {!isWsConnected && (
+            <div className="text-center text-yellow-400 text-xs mb-2 animate-pulse">
+              Reconnecting...
+            </div>
+          )}
           <div className="flex items-end gap-2">
             <Textarea
               ref={inputRef}
               value={messageText}
               onChange={(e) => handleTyping(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
-              placeholder="Message"
+              placeholder={isWsConnected ? "Message" : "Connecting..."}
               className="flex-1 min-h-[36px] max-h-[100px] bg-gray-700 border-gray-600 text-white resize-none rounded-full px-3 py-2 text-sm"
               rows={1}
+              disabled={!isWsConnected}
             />
             <Button 
               onClick={sendMessage} 
