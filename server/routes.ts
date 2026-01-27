@@ -1596,6 +1596,18 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             AND hometown_city != ''
             AND hometown_city NOT IN ('Test City', 'Global', 'test city', 'global')
             AND hometown_city NOT IN (SELECT city FROM city_pages WHERE city IS NOT NULL)
+          
+          UNION
+          
+          -- Get cities from travel_plans (user's planned destinations)
+          SELECT DISTINCT 
+            destination_city as city_name,
+            destination_state as state,
+            destination_country as country
+          FROM travel_plans
+          WHERE destination_city IS NOT NULL 
+            AND destination_city != ''
+            AND destination_city NOT IN ('Test City', 'Global', 'test city', 'global')
         )
         SELECT city_name, state, country
         FROM city_data
