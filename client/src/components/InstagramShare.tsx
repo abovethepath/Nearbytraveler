@@ -214,9 +214,10 @@ export function InstagramShare({ event, trigger }: InstagramShareProps) {
             size="sm"
             className="gap-2"
             data-testid="button-share-instagram"
+            title="Share on Instagram"
           >
             <Instagram className="h-4 w-4" />
-            Share on Instagram
+            <span className="hidden sm:inline">Share on Instagram</span>
           </Button>
         )}
       </DialogTrigger>
