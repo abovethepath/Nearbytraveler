@@ -3682,26 +3682,30 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </div>
                   )}
                   
-                  <label
-                    htmlFor="avatar-upload-input"
-                    aria-label="Change avatar"
+                  <div
                     className={`absolute bottom-2 right-2
                                h-10 w-10 sm:h-11 sm:w-11 rounded-full p-0 flex items-center justify-center cursor-pointer
                                ${!user?.profileImage ? 'bg-orange-500 hover:bg-orange-600 animate-bounce' : 'bg-gray-600 hover:bg-gray-500'} 
-                               text-white shadow-lg border-2 border-white z-10
+                               text-white shadow-lg border-2 border-white z-10 overflow-hidden
                                ${uploadingPhoto ? 'pointer-events-none opacity-50' : ''}`}
                     data-testid="button-upload-avatar"
                   >
-                    <Camera className="h-4 w-4 sm:h-5 sm:w-5" />
-                  </label>
-                  <input
-                    id="avatar-upload-input"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleAvatarUpload}
-                    className="sr-only"
-                    disabled={uploadingPhoto}
-                  />
+                    <Camera className="h-4 w-4 sm:h-5 sm:w-5 pointer-events-none" />
+                    <input
+                      id="avatar-upload-input"
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      onChange={(e) => {
+                        console.log('📸 Avatar file input changed, files:', e.target.files?.length);
+                        handleAvatarUpload(e);
+                      }}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      style={{ fontSize: '200px' }}
+                      disabled={uploadingPhoto}
+                      aria-label="Change avatar"
+                    />
+                  </div>
                 </>
               )}
             </div>
