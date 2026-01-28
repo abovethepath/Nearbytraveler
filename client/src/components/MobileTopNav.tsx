@@ -88,14 +88,24 @@ export function MobileTopNav() {
       <div className="mobile-top-nav fixed inset-x-0 top-0 z-[50000] h-16 w-full bg-white dark:bg-gray-900 shadow-sm md:hidden overflow-visible">
         <div className="flex items-center justify-between h-16 px-4">
           {/* Left: Hamburger - CRITICAL FIX for mobile touch on iOS Safari and WebViews */}
-          <div className="flex items-center" style={{ isolation: 'isolate', zIndex: 50002 }}>
+          <div className="flex items-center" style={{ isolation: 'isolate', zIndex: 50002, position: 'relative' }}>
             <button
               type="button"
               aria-expanded={showDropdown}
               aria-controls="mobile-menu"
+              data-testid="button-mobile-menu"
               className="hamburger-btn w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700"
-              onClick={() => {
-                console.log('🍔 Hamburger clicked');
+              style={{ 
+                touchAction: 'auto', 
+                WebkitTapHighlightColor: 'transparent',
+                cursor: 'pointer',
+                position: 'relative',
+                zIndex: 999999
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                console.log('🍔 Hamburger clicked via onClick');
                 setShowDropdown((s) => !s);
               }}
             >
