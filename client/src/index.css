@@ -1311,6 +1311,25 @@ button[class*="hamburger"] {
   cursor: pointer !important;
 }
 
+/* FORCE navbar to be on top - CRITICAL FIX */
+.mobile-top-nav {
+  position: fixed !important;
+  z-index: 2147483647 !important;
+  isolation: isolate !important;
+  pointer-events: auto !important;
+}
+
+.mobile-top-nav * {
+  pointer-events: auto !important;
+}
+
+.mobile-top-nav button {
+  position: relative !important;
+  z-index: 2147483647 !important;
+  pointer-events: auto !important;
+  touch-action: auto !important;
+}
+
 /* Sheet/Drawer Close Button */
 [data-testid*="close"],
 button[aria-label*="close" i] {

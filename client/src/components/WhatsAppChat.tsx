@@ -85,6 +85,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   
   // WhatsApp-style long press detection (500ms)
   const handleTouchStart = (e: React.TouchEvent, message: Message) => {
+    console.log('Touch start on message:', message.id, 'senderId:', message.senderId, 'currentUserId:', currentUserId, 'isOwn:', message.senderId == currentUserId);
     const touch = e.touches[0];
     touchStartRef.current = { x: touch.clientX, y: touch.clientY, time: Date.now() };
     setSwipingMessageId(message.id);
@@ -92,6 +93,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     
     // Start long press timer
     longPressTimerRef.current = setTimeout(() => {
+      console.log('Long press detected! Opening action menu for message:', message.id);
       // Vibrate if supported (haptic feedback)
       if (navigator.vibrate) navigator.vibrate(50);
       setSelectedMessage(message.id);
@@ -988,31 +990,20 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                         style={{ touchAction: 'auto', bottom: '90px' }}
                         onClick={(e) => e.stopPropagation()}
                       >
-                        {/* Quick Emoji Reactions - WhatsApp Style */}
-                        <div className="flex justify-center gap-3 px-3 py-3 pt-4 border-b border-gray-700">
-                          {['👍', '❤️', '😂', '😮', '😢', '🙏'].map((emoji) => (
-                            <button
-                              key={emoji}
-                              type="button"
-                              onClick={() => { handleReaction(message.id, emoji); setSelectedMessage(null); }}
-                              className="w-10 h-10 flex items-center justify-center text-xl bg-gray-700 hover:bg-gray-600 active:bg-gray-500 active:scale-110 rounded-full transition-transform"
-                              style={{ touchAction: 'auto' }}
-                            >
-                              {emoji}
-                            </button>
-                          ))}
-                        </div>
-                        
-                        {/* Action buttons */}
-                        <div className="px-2 py-2 space-y-1">
+                        {/* Action buttons - simplified */}
+                        <div className="px-2 py-3 space-y-1">
                           {isOwnMessage ? (
-                            /* OWN MESSAGE: Edit, Delete, Reply, Copy */
+                            /* YOUR OWN MESSAGE: Edit and Delete only */
                             <>
                               <button 
                                 type="button" 
-                                onClick={() => startEdit(message)}
+                                onClick={() => { 
+                                  console.log('Edit clicked for message:', message.id);
+                                  startEdit(message); 
+                                  setSelectedMessage(null);
+                                }}
                                 className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
-                                style={{ touchAction: 'auto' }}
+                                style={{ touchAction: 'auto', cursor: 'pointer' }}
                                 data-testid="button-edit-message"
                               >
                                 <Edit2 className="w-5 h-5 text-blue-400 pointer-events-none" />
@@ -1020,59 +1011,34 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                               </button>
                               <button 
                                 type="button" 
-                                onClick={() => handleDeleteMessage(message.id)}
+                                onClick={() => { 
+                                  console.log('Delete clicked for message:', message.id);
+                                  handleDeleteMessage(message.id); 
+                                }}
                                 className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
-                                style={{ touchAction: 'auto' }}
+                                style={{ touchAction: 'auto', cursor: 'pointer' }}
                                 data-testid="button-delete-message"
                               >
                                 <Trash2 className="w-5 h-5 text-red-400 pointer-events-none" />
                                 <span className="text-sm pointer-events-none">Delete</span>
                               </button>
-                              <button 
-                                type="button" 
-                                onClick={() => { setReplyingTo(message); setSelectedMessage(null); }}
-                                className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
-                                style={{ touchAction: 'auto' }}
-                                data-testid="button-reply-message"
-                              >
-                                <Reply className="w-5 h-5 text-green-400 pointer-events-none" />
-                                <span className="text-sm pointer-events-none">Reply</span>
-                              </button>
-                              <button 
-                                type="button" 
-                                onClick={() => { navigator.clipboard.writeText(message.content); toast({ title: "Copied" }); setSelectedMessage(null); }}
-                                className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
-                                style={{ touchAction: 'auto' }}
-                                data-testid="button-copy-message"
-                              >
-                                <Copy className="w-5 h-5 text-gray-400 pointer-events-none" />
-                                <span className="text-sm pointer-events-none">Copy</span>
-                              </button>
                             </>
                           ) : (
-                            /* OTHER'S MESSAGE: Reply and Copy */
-                            <>
-                              <button 
-                                type="button" 
-                                onClick={() => { setReplyingTo(message); setSelectedMessage(null); }}
-                                className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
-                                style={{ touchAction: 'auto' }}
-                                data-testid="button-reply-message"
-                              >
-                                <Reply className="w-5 h-5 text-green-400 pointer-events-none" />
-                                <span className="text-sm pointer-events-none">Reply</span>
-                              </button>
-                              <button 
-                                type="button" 
-                                onClick={() => { navigator.clipboard.writeText(message.content); toast({ title: "Copied" }); setSelectedMessage(null); }}
-                                className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
-                                style={{ touchAction: 'auto' }}
-                                data-testid="button-copy-message"
-                              >
-                                <Copy className="w-5 h-5 text-gray-400 pointer-events-none" />
-                                <span className="text-sm pointer-events-none">Copy</span>
-                              </button>
-                            </>
+                            /* OTHER PERSON'S MESSAGE: Reply only */
+                            <button 
+                              type="button" 
+                              onClick={() => { 
+                                console.log('Reply clicked for message:', message.id);
+                                setReplyingTo(message); 
+                                setSelectedMessage(null); 
+                              }}
+                              className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
+                              style={{ touchAction: 'auto', cursor: 'pointer' }}
+                              data-testid="button-reply-message"
+                            >
+                              <Reply className="w-5 h-5 text-green-400 pointer-events-none" />
+                              <span className="text-sm pointer-events-none">Reply</span>
+                            </button>
                           )}
                         </div>
                       </div>
