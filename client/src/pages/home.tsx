@@ -1832,9 +1832,9 @@ export default function Home() {
 </section>
 )}
 
-      <main className="pt-2 sm:pt-4 pb-24 md:pb-8 lg:pb-4 relative">
-        {/* Border-to-Border Soft Blue-Orange Gradient Background - starts below navbar to avoid touch conflicts */}
-        <div className="fixed inset-x-0 top-16 bottom-0 overflow-hidden pointer-events-none -z-10 md:top-0">
+      <div className="pt-2 sm:pt-4 pb-24 md:pb-8 lg:pb-4 relative">
+        {/* Border-to-Border Soft Blue-Orange Gradient Background - ABSOLUTE not fixed to avoid touch conflicts */}
+        <div className="absolute inset-x-0 top-0 bottom-0 overflow-hidden pointer-events-none -z-10">
           {/* Soft Blue Orb - Top Left */}
           <div className="absolute -top-40 -left-40 w-[800px] h-[800px] bg-gradient-to-br from-blue-300 via-blue-400 to-cyan-300 rounded-full opacity-20 blur-3xl animate-float"></div>
           
@@ -2143,7 +2143,7 @@ export default function Home() {
 
         </div>
         {/* End of main content */}
-      </main>
+      </div>
       
       {/* Connect and Destination Modals */}
       <DestinationModal 
