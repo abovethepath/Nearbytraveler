@@ -96,21 +96,29 @@ export function MobileTopNav() {
               data-testid="button-mobile-menu"
               className="hamburger-btn w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700"
               style={{ 
-                touchAction: 'auto', 
-                WebkitTapHighlightColor: 'transparent',
+                touchAction: 'manipulation',
+                WebkitTapHighlightColor: 'rgba(255, 165, 0, 0.3)',
+                WebkitUserSelect: 'none',
+                userSelect: 'none',
                 cursor: 'pointer',
                 position: 'relative',
                 zIndex: 999999
               }}
-              onPointerDown={(e) => {
+              onTouchStart={(e) => {
+                console.log('🍔 Hamburger TOUCH START');
                 e.stopPropagation();
+              }}
+              onTouchEnd={(e) => {
                 e.preventDefault();
-                console.log('🍔 Hamburger pressed via onPointerDown');
+                e.stopPropagation();
+                console.log('🍔 Hamburger TOUCH END - toggling menu');
                 setShowDropdown((s) => !s);
               }}
               onClick={(e) => {
-                e.stopPropagation();
                 e.preventDefault();
+                e.stopPropagation();
+                console.log('🍔 Hamburger CLICK - toggling menu');
+                setShowDropdown((s) => !s);
               }}
             >
               {showDropdown ? <X className="w-6 h-6 pointer-events-none" /> : <Menu className="w-6 h-6 pointer-events-none" />}

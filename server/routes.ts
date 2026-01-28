@@ -16592,6 +16592,12 @@ Questions? Just reply to this message. Welcome aboard!
         if (process.env.NODE_ENV === 'development') console.log('📥 WebSocket message received:', data.type);
 
         switch (data.type) {
+          // Client heartbeat ping - respond with pong to keep connection alive
+          case 'ping':
+            ws.isAlive = true;
+            ws.send(JSON.stringify({ type: 'pong', timestamp: Date.now() }));
+            break;
+
           case 'auth':
             ws.userId = data.userId;
             ws.username = data.username;

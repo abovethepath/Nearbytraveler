@@ -7,6 +7,7 @@ class WebSocketService {
   private maxReconnectAttempts = 5;
   private reconnectInterval = 1000;
   private isAuthenticated = false;
+  private heartbeatInterval: ReturnType<typeof setInterval> | null = null;
   
   // Event listeners
   private eventListeners: Map<string, Function[]> = new Map();
@@ -69,6 +70,9 @@ class WebSocketService {
         // Authenticate immediately
         this.authenticate();
         
+        // Start client-side heartbeat to keep connection alive (prevents proxy timeouts)
+        this.startHeartbeat();
+        
         resolve();
       };
 
@@ -84,6 +88,7 @@ class WebSocketService {
       this.ws.onclose = (event) => {
         console.log('🔴 WebSocket disconnected:', event.code, event.reason);
         this.isAuthenticated = false;
+        this.stopHeartbeat();
         this.attemptReconnect();
       };
 
@@ -102,6 +107,29 @@ class WebSocketService {
         username: this.username
       }));
       this.isAuthenticated = true;
+    }
+  }
+
+  // Client-side heartbeat to prevent proxy/load balancer timeouts
+  private startHeartbeat() {
+    this.stopHeartbeat(); // Clear any existing interval
+    
+    // Send ping every 25 seconds to keep connection alive
+    this.heartbeatInterval = setInterval(() => {
+      if (this.ws?.readyState === WebSocket.OPEN) {
+        try {
+          this.ws.send(JSON.stringify({ type: 'ping', timestamp: Date.now() }));
+        } catch (e) {
+          console.warn('Failed to send heartbeat ping:', e);
+        }
+      }
+    }, 25000);
+  }
+
+  private stopHeartbeat() {
+    if (this.heartbeatInterval) {
+      clearInterval(this.heartbeatInterval);
+      this.heartbeatInterval = null;
     }
   }
 

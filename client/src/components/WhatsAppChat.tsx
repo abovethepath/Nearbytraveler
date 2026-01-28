@@ -877,14 +877,21 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                   <div 
                     className={`chat-message-container relative max-w-[75%] ${isOwnMessage ? 'mr-2' : 'ml-2'}`}
                     style={{ 
-                      WebkitTapHighlightColor: 'transparent',
-                      touchAction: 'auto',
+                      WebkitTapHighlightColor: 'rgba(255, 165, 0, 0.2)',
+                      WebkitUserSelect: 'none',
+                      userSelect: 'none',
+                      touchAction: 'pan-y',
                       transform: swipingMessageId === message.id ? `translateX(${isOwnMessage ? -swipeOffset : swipeOffset}px)` : 'none',
-                      transition: swipingMessageId === message.id ? 'none' : 'transform 0.2s ease-out'
+                      transition: swipingMessageId === message.id ? 'none' : 'transform 0.2s ease-out',
+                      cursor: 'pointer'
                     }}
                     onTouchStart={(e) => handleTouchStart(e, message)}
                     onTouchMove={(e) => handleTouchMove(e, message, isOwnMessage)}
                     onTouchEnd={(e) => handleTouchEnd(e, message)}
+                    onDoubleClick={() => {
+                      console.log('Double-click on message (desktop):', message.id);
+                      setSelectedMessage(message.id);
+                    }}
                     data-testid={`message-${message.id}`}
                   >
                     {/* Swipe reply indicator */}
@@ -997,13 +1004,22 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                             <>
                               <button 
                                 type="button" 
-                                onClick={() => { 
-                                  console.log('Edit clicked for message:', message.id);
+                                onTouchEnd={(e) => { 
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  console.log('Edit TOUCH for message:', message.id);
+                                  startEdit(message); 
+                                  setSelectedMessage(null);
+                                }}
+                                onClick={(e) => { 
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  console.log('Edit CLICK for message:', message.id);
                                   startEdit(message); 
                                   setSelectedMessage(null);
                                 }}
                                 className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
-                                style={{ touchAction: 'auto', cursor: 'pointer' }}
+                                style={{ touchAction: 'manipulation', cursor: 'pointer', WebkitTapHighlightColor: 'rgba(59, 130, 246, 0.3)' }}
                                 data-testid="button-edit-message"
                               >
                                 <Edit2 className="w-5 h-5 text-blue-400 pointer-events-none" />
@@ -1011,12 +1027,20 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                               </button>
                               <button 
                                 type="button" 
-                                onClick={() => { 
-                                  console.log('Delete clicked for message:', message.id);
+                                onTouchEnd={(e) => { 
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  console.log('Delete TOUCH for message:', message.id);
+                                  handleDeleteMessage(message.id); 
+                                }}
+                                onClick={(e) => { 
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  console.log('Delete CLICK for message:', message.id);
                                   handleDeleteMessage(message.id); 
                                 }}
                                 className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
-                                style={{ touchAction: 'auto', cursor: 'pointer' }}
+                                style={{ touchAction: 'manipulation', cursor: 'pointer', WebkitTapHighlightColor: 'rgba(239, 68, 68, 0.3)' }}
                                 data-testid="button-delete-message"
                               >
                                 <Trash2 className="w-5 h-5 text-red-400 pointer-events-none" />
@@ -1027,13 +1051,22 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                             /* OTHER PERSON'S MESSAGE: Reply only */
                             <button 
                               type="button" 
-                              onClick={() => { 
-                                console.log('Reply clicked for message:', message.id);
+                              onTouchEnd={(e) => { 
+                                e.preventDefault();
+                                e.stopPropagation();
+                                console.log('Reply TOUCH for message:', message.id);
+                                setReplyingTo(message); 
+                                setSelectedMessage(null); 
+                              }}
+                              onClick={(e) => { 
+                                e.preventDefault();
+                                e.stopPropagation();
+                                console.log('Reply CLICK for message:', message.id);
                                 setReplyingTo(message); 
                                 setSelectedMessage(null); 
                               }}
                               className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
-                              style={{ touchAction: 'auto', cursor: 'pointer' }}
+                              style={{ touchAction: 'manipulation', cursor: 'pointer', WebkitTapHighlightColor: 'rgba(34, 197, 94, 0.3)' }}
                               data-testid="button-reply-message"
                             >
                               <Reply className="w-5 h-5 text-green-400 pointer-events-none" />
