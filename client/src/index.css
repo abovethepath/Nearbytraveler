@@ -1047,14 +1047,8 @@ div[class*="bg-"][class*="text-"][class*="rounded"] {
   
   /* Fix touch targets on iOS */
   button, a, input, select, textarea {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
     -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
+    touch-action: auto;
   }
   
   /* Fix input zoom on iOS */
