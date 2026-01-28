@@ -102,11 +102,15 @@ export function MobileTopNav() {
                 position: 'relative',
                 zIndex: 999999
               }}
+              onPointerDown={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                console.log('🍔 Hamburger pressed via onPointerDown');
+                setShowDropdown((s) => !s);
+              }}
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
-                console.log('🍔 Hamburger clicked via onClick');
-                setShowDropdown((s) => !s);
               }}
             >
               {showDropdown ? <X className="w-6 h-6 pointer-events-none" /> : <Menu className="w-6 h-6 pointer-events-none" />}
