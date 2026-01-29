@@ -13,6 +13,7 @@ export function MobileTopNav() {
   const [, setLocation] = useLocation();
   const [showDropdown, setShowDropdown] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [touchedRecently, setTouchedRecently] = useState(false);
 
   // hydrate currentUser from best source available - fixed for auth consistency
   useEffect(() => {
@@ -88,21 +89,36 @@ export function MobileTopNav() {
       <div className="mobile-top-nav fixed inset-x-0 top-0 z-[50000] h-16 w-full bg-white dark:bg-gray-900 shadow-sm md:hidden overflow-visible">
         <div className="flex items-center justify-between h-16 px-4">
           {/* Left: Hamburger - CRITICAL FIX for mobile touch on iOS Safari and WebViews */}
-          <div className="flex items-center" style={{ isolation: 'isolate', zIndex: 50002, position: 'relative' }}>
+          <div 
+            className="flex items-center" 
+            style={{ 
+              isolation: 'isolate', 
+              zIndex: 2147483647, 
+              position: 'relative',
+              pointerEvents: 'auto'
+            }}
+          >
             <button
               type="button"
               aria-expanded={showDropdown}
               aria-controls="mobile-menu"
               data-testid="button-mobile-menu"
-              className="hamburger-btn w-12 h-12 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700"
+              className="hamburger-btn w-14 h-14 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-orange-100 dark:active:bg-orange-900"
               style={{ 
                 touchAction: 'manipulation',
-                WebkitTapHighlightColor: 'rgba(255, 165, 0, 0.3)',
+                WebkitTapHighlightColor: 'rgba(255, 165, 0, 0.5)',
                 WebkitUserSelect: 'none',
                 userSelect: 'none',
                 cursor: 'pointer',
                 position: 'relative',
-                zIndex: 999999
+                zIndex: 2147483647,
+                pointerEvents: 'auto',
+                minWidth: '56px',
+                minHeight: '56px'
+              }}
+              onPointerDown={(e) => {
+                console.log('🍔 Hamburger POINTER DOWN');
+                e.stopPropagation();
               }}
               onTouchStart={(e) => {
                 console.log('🍔 Hamburger TOUCH START');
@@ -112,16 +128,22 @@ export function MobileTopNav() {
                 e.preventDefault();
                 e.stopPropagation();
                 console.log('🍔 Hamburger TOUCH END - toggling menu');
+                setTouchedRecently(true);
+                setTimeout(() => setTouchedRecently(false), 300);
                 setShowDropdown((s) => !s);
               }}
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                if (touchedRecently) {
+                  console.log('🍔 Hamburger CLICK ignored (touch handled)');
+                  return;
+                }
                 console.log('🍔 Hamburger CLICK - toggling menu');
                 setShowDropdown((s) => !s);
               }}
             >
-              {showDropdown ? <X className="w-6 h-6 pointer-events-none" /> : <Menu className="w-6 h-6 pointer-events-none" />}
+              {showDropdown ? <X className="w-7 h-7 pointer-events-none" /> : <Menu className="w-7 h-7 pointer-events-none" />}
             </button>
           </div>
 
