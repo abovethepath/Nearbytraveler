@@ -5,12 +5,39 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/App";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
 import { getTravelActivities } from "@shared/base-options";
 import { METRO_AREAS } from "@shared/constants";
+
+// City Pick categories for user-created picks
+const CITY_PICK_CATEGORIES = [
+  { id: 'food', label: 'Food & Dining', emoji: '🍽️' },
+  { id: 'nightlife', label: 'Nightlife', emoji: '🌙' },
+  { id: 'culture', label: 'Culture & Arts', emoji: '🎭' },
+  { id: 'outdoor', label: 'Outdoors', emoji: '🏞️' },
+  { id: 'fitness', label: 'Fitness', emoji: '💪' },
+  { id: 'shopping', label: 'Shopping', emoji: '🛍️' },
+  { id: 'other', label: 'Other', emoji: '✨' },
+];
+
+// Detect if input looks like an event (has date/time patterns)
+const looksLikeEvent = (text: string): boolean => {
+  const datePatterns = [
+    /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+\d{1,2}/i,
+    /\b\d{1,2}\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)/i,
+    /\b\d{1,2}\/\d{1,2}/,
+    /\b\d{1,2}-\d{1,2}/,
+    /\b(tonight|tomorrow|today|this weekend|next week|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/i,
+    /\b\d{1,2}(:\d{2})?\s*(am|pm)\b/i,
+    /\bat\s+\d{1,2}/i,
+  ];
+  return datePatterns.some(pattern => pattern.test(text));
+};
 
 // Universal → categories mapping for finding city-specific activities
 const UNIVERSAL_TO_CATEGORIES: Record<string, string[]> = {
@@ -110,6 +137,12 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [editingActivityName, setEditingActivityName] = useState('');
   const [activitySearchFilter, setActivitySearchFilter] = useState('');
   const [activeMobileSection, setActiveMobileSection] = useState<'popular' | 'ai' | 'preferences' | 'selected' | 'all'>('all');
+
+  // Add City Pick Modal State
+  const [showAddPickModal, setShowAddPickModal] = useState(false);
+  const [newPickName, setNewPickName] = useState('');
+  const [newPickCategory, setNewPickCategory] = useState('other');
+  const [showEventSuggestion, setShowEventSuggestion] = useState(false);
 
   // AI Features State
   const [aiSuggestions, setAiSuggestions] = useState<any[]>([]);
@@ -933,6 +966,98 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     }
   };
 
+  // Add City Pick with category (for the modal)
+  const handleAddCityPick = async () => {
+    if (!newPickName.trim()) return;
+    
+    const storedUser = localStorage.getItem('travelconnect_user');
+    const authUser = localStorage.getItem('user');
+    const actualUser = user || (storedUser ? JSON.parse(storedUser) : null) || (authUser ? JSON.parse(authUser) : null);
+    const userId = actualUser?.id;
+    
+    if (!userId) {
+      toast({ title: "Error", description: "Please log in to add picks", variant: "destructive" });
+      return;
+    }
+
+    try {
+      const apiBase = getApiBaseUrl();
+      const response = await fetch(`${apiBase}/api/city-activities`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': userId.toString()
+        },
+        body: JSON.stringify({
+          cityName: selectedCity,
+          activityName: newPickName.trim(),
+          category: newPickCategory,
+          createdByUserId: userId,
+          source: 'user',
+          description: `User-created ${newPickCategory} activity`
+        })
+      });
+
+      if (response.ok) {
+        const newActivityData = await response.json();
+        setCityActivities(prev => [...prev, newActivityData]);
+        
+        // Auto-select the new pick
+        const interestResponse = await fetch(`${apiBase}/api/user-city-interests`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-user-id': userId.toString() },
+          body: JSON.stringify({ activityId: newActivityData.id, cityName: selectedCity })
+        });
+        
+        if (interestResponse.ok) {
+          const newUserActivity = await interestResponse.json();
+          setUserActivities(prev => [...prev, newUserActivity]);
+        }
+        
+        setNewPickName('');
+        setNewPickCategory('other');
+        setShowAddPickModal(false);
+        setShowEventSuggestion(false);
+        
+        toast({
+          title: "City Pick Added!",
+          description: `"${newPickName}" added to your picks for ${selectedCity}`,
+        });
+      } else {
+        const error = await response.json();
+        toast({ title: "Error", description: error.error || "Failed to add pick", variant: "destructive" });
+      }
+    } catch (error) {
+      console.error('Add city pick error:', error);
+      toast({ title: "Error", description: "Failed to add pick", variant: "destructive" });
+    }
+  };
+
+  // Unselect a pick (for popular/AI items - doesn't delete globally)
+  const handleUnselectPick = async (userActivityId: number, activityName: string) => {
+    const storedUser = localStorage.getItem('travelconnect_user');
+    const authUser = localStorage.getItem('user');
+    const actualUser = user || (storedUser ? JSON.parse(storedUser) : null) || (authUser ? JSON.parse(authUser) : null);
+    const userId = actualUser?.id;
+    
+    try {
+      const apiBase = getApiBaseUrl();
+      const response = await fetch(`${apiBase}/api/user-city-interests/${userActivityId}`, {
+        method: 'DELETE',
+        headers: { 'x-user-id': userId?.toString() || '' }
+      });
+      
+      if (response.ok) {
+        setUserActivities(prev => prev.filter(ua => ua.id !== userActivityId));
+        toast({ title: "Removed", description: `"${activityName}" removed from your picks` });
+        fetchMatchingUsers();
+      }
+    } catch (error) {
+      console.error('Unselect error:', error);
+      toast({ title: "Error", description: "Failed to remove pick", variant: "destructive" });
+    }
+  };
+
   // Toggle activity function for the simple interface
   const handleToggleActivity = async (activityId: number, activityName: string) => {
     // Get user from localStorage if not in context
@@ -1498,10 +1623,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
               <div className="md:hidden sticky top-0 z-30 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm py-3 -mx-8 px-4 mb-6 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                   {[
+                    { id: 'selected', label: `✓ Your Picks`, count: userActivities.filter(ua => ua.cityName === selectedCity).length },
                     { id: 'popular', label: '⭐ Popular', count: cityActivities.filter(a => (a as any).isFeatured || (a as any).source === 'featured').length },
                     { id: 'ai', label: '✨ AI Ideas', count: cityActivities.filter(a => !((a as any).isFeatured || (a as any).source === 'featured') && a.category !== 'universal').length },
                     { id: 'preferences', label: '✈️ Preferences', count: 20 },
-                    { id: 'selected', label: `✓ Selected`, count: userActivities.filter(ua => ua.cityName === selectedCity).length },
                   ].map((section) => (
                     <button
                       key={section.id}
@@ -1548,32 +1673,187 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 </div>
               </div>
 
-              {/* Add new activity section - GORGEOUS DESIGN - MOVED TO TOP */}
-              <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-2xl border border-blue-200/50 dark:border-blue-700/50 shadow-inner">
-                <div className="text-center mb-4">
-                  <h4 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent mb-2">✨ Create Your Own Experience</h4>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">Share something unique you want to do in {selectedCity}</p>
-                </div>
-                <div className="flex gap-3">
-                  <Input
-                    placeholder="e.g., Taylor Swift November 8th, Pickleball Saturday Mornings..."
-                    value={newActivity}
-                    onChange={(e) => setNewActivity(e.target.value)}
-                    className="border-blue-200 dark:border-blue-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm focus:border-blue-400 dark:focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-800 rounded-xl text-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 shadow-md"
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter') {
-                        handleAddActivity();
-                      }
-                    }}
-                  />
-                  <Button 
-                    onClick={handleAddActivity}
-                    className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
-                  >
-                    <Plus className="w-5 h-5" />
-                  </Button>
-                </div>
-              </div>
+              {/* SECTION 1: YOUR PICKS - User's selected + user-created activities */}
+              {(() => {
+                const userPicksForCity = userActivities.filter(ua => ua.cityName === selectedCity);
+                const storedUser = localStorage.getItem('travelconnect_user');
+                const authUser = localStorage.getItem('user');
+                const actualUser = user || (storedUser ? JSON.parse(storedUser) : null) || (authUser ? JSON.parse(authUser) : null);
+                const currentUserId = actualUser?.id;
+                
+                // Mobile: only show if this section is active or showing all
+                const isMobileVisible = activeMobileSection === 'selected' || activeMobileSection === 'all';
+                
+                return (
+                  <div className={`mb-8 md:block ${isMobileVisible ? 'block' : 'hidden'}`}>
+                    {/* Header with action buttons */}
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                      <div>
+                        <h3 className="text-xl font-bold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
+                          Your Picks {userPicksForCity.length > 0 && <span className="text-green-600">({userPicksForCity.length})</span>}
+                        </h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Things you want to do in {selectedCity}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={() => setShowAddPickModal(true)}
+                          size="sm"
+                          className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white"
+                        >
+                          <Plus className="w-4 h-4 mr-1" />
+                          Add a City Pick
+                        </Button>
+                        <Button
+                          onClick={() => setLocation(`/create-event?city=${encodeURIComponent(selectedCity)}`)}
+                          size="sm"
+                          variant="outline"
+                          className="border-blue-300 text-blue-600 hover:bg-blue-50 dark:border-blue-600 dark:text-blue-400 dark:hover:bg-blue-900/30"
+                        >
+                          <Plus className="w-4 h-4 mr-1" />
+                          Add an Event
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    {/* User's picks display */}
+                    {userPicksForCity.length > 0 ? (
+                      <div className="p-4 bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20 rounded-xl border border-green-200 dark:border-green-700">
+                        <div className="flex flex-wrap gap-2">
+                          {userPicksForCity.map((ua) => {
+                            const activity = cityActivities.find(ca => ca.id === ua.activityId);
+                            const activityName = ua.activityName || activity?.activityName || 'Unknown';
+                            // Check if user-created: from activity data, or from userActivity source field, or if creator matches current user
+                            const isUserCreated = (activity?.createdByUserId === currentUserId) || 
+                                                  (activity?.source === 'user' && activity?.createdByUserId === currentUserId) ||
+                                                  (ua.source === 'user' && ua.createdByUserId === currentUserId);
+                            const categoryInfo = CITY_PICK_CATEGORIES.find(c => c.id === activity?.category);
+                            
+                            return (
+                              <div key={ua.id} className="group relative">
+                                <div className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-lg text-sm font-medium shadow-md">
+                                  {categoryInfo && <span className="text-xs">{categoryInfo.emoji}</span>}
+                                  <span>{activityName}</span>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (isUserCreated && activity) {
+                                        // Delete user-created pick
+                                        if (confirm(`Delete "${activityName}"? This will remove it completely.`)) {
+                                          handleDeleteCityActivity(activity.id);
+                                        }
+                                      } else {
+                                        // Unselect (not delete)
+                                        handleUnselectPick(ua.id, activityName);
+                                      }
+                                    }}
+                                    className="ml-1 p-0.5 rounded-full hover:bg-white/20 transition-colors"
+                                    title={isUserCreated ? "Delete pick" : "Remove from your picks"}
+                                  >
+                                    <X className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-6 bg-gray-50 dark:bg-gray-800/50 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 text-center">
+                        <p className="text-gray-500 dark:text-gray-400 text-sm">
+                          No picks yet. Select from below or add your own!
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+
+              {/* Add City Pick Modal */}
+              <Dialog open={showAddPickModal} onOpenChange={(open) => {
+                setShowAddPickModal(open);
+                if (!open) {
+                  // Reset state when closing modal
+                  setShowEventSuggestion(false);
+                  setNewPickName('');
+                  setNewPickCategory('other');
+                }
+              }}>
+                <DialogContent className="sm:max-w-md bg-white dark:bg-gray-900">
+                  <DialogHeader>
+                    <DialogTitle className="text-xl font-bold">Add a City Pick</DialogTitle>
+                    <DialogDescription>
+                      Add a recurring activity you want to do in {selectedCity}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+                        What do you want to do?
+                      </label>
+                      <Input
+                        placeholder="e.g., Jogging buddies, Vintage shopping, Poker night..."
+                        value={newPickName}
+                        onChange={(e) => {
+                          setNewPickName(e.target.value);
+                          setShowEventSuggestion(looksLikeEvent(e.target.value));
+                        }}
+                        className="text-gray-800 dark:text-white"
+                        autoFocus
+                      />
+                      {showEventSuggestion && (
+                        <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
+                          <p className="text-sm text-blue-700 dark:text-blue-300 mb-2">
+                            This looks like a specific event with a date. Would you like to add it as an Event instead?
+                          </p>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="border-blue-300 text-blue-600"
+                            onClick={() => {
+                              setShowAddPickModal(false);
+                              setLocation(`/create-event?city=${encodeURIComponent(selectedCity)}&title=${encodeURIComponent(newPickName)}`);
+                            }}
+                          >
+                            Add as Event
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+                        Category
+                      </label>
+                      <Select value={newPickCategory} onValueChange={setNewPickCategory}>
+                        <SelectTrigger className="text-gray-800 dark:text-white">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {CITY_PICK_CATEGORIES.map(cat => (
+                            <SelectItem key={cat.id} value={cat.id}>
+                              <span className="flex items-center gap-2">
+                                <span>{cat.emoji}</span>
+                                <span>{cat.label}</span>
+                              </span>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 justify-end">
+                    <Button variant="outline" onClick={() => setShowAddPickModal(false)}>
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleAddCityPick}
+                      disabled={!newPickName.trim()}
+                      className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white"
+                    >
+                      Add Pick
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
               
               {/* Dynamic City Activities - Featured + AI + Universal */}
               <div className="space-y-8">
