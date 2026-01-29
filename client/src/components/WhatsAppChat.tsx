@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -62,7 +63,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   const [messageText, setMessageText] = useState("");
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
   const [typingUsers, setTypingUsers] = useState<Set<string>>(new Set());
-  const [selectedMessage, setSelectedMessage] = useState<number | null>(null);
+  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const [showMembers, setShowMembers] = useState(false);
   const [memberSearch, setMemberSearch] = useState("");
   const [muteDialogOpen, setMuteDialogOpen] = useState(false);
@@ -96,7 +97,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
       console.log('Long press detected! Opening action menu for message:', message.id);
       // Vibrate if supported (haptic feedback)
       if (navigator.vibrate) navigator.vibrate(50);
-      setSelectedMessage(message.id);
+      setSelectedMessage(message);
       touchStartRef.current = null;
     }, 500);
   };
@@ -1004,101 +1005,6 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                       </div>
                     )}
 
-                    {/* Message Action Menu - WhatsApp Style Bottom Sheet */}
-                    {selectedMessage === message.id && (
-                      <>
-                      {/* Backdrop */}
-                      <div 
-                        className="fixed inset-0 bg-black/60 z-[99998]"
-                        onClick={() => setSelectedMessage(null)}
-                        style={{ touchAction: 'auto' }}
-                      />
-                      {/* Bottom Sheet Menu - positioned above bottom nav */}
-                      <div 
-                        className="fixed left-2 right-2 bg-gray-800 rounded-2xl shadow-2xl z-[99999] border border-gray-700"
-                        style={{ touchAction: 'auto', bottom: '90px' }}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {/* Action buttons - simplified */}
-                        <div className="px-2 py-3 space-y-1">
-                          {isOwnMessage ? (
-                            /* YOUR OWN MESSAGE: Edit and Delete only */
-                            <>
-                              <button 
-                                type="button" 
-                                onTouchEnd={(e) => { 
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  console.log('Edit TOUCH for message:', message.id);
-                                  startEdit(message); 
-                                  setSelectedMessage(null);
-                                }}
-                                onClick={(e) => { 
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  console.log('Edit CLICK for message:', message.id);
-                                  startEdit(message); 
-                                  setSelectedMessage(null);
-                                }}
-                                className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
-                                style={{ touchAction: 'manipulation', cursor: 'pointer', WebkitTapHighlightColor: 'rgba(59, 130, 246, 0.3)' }}
-                                data-testid="button-edit-message"
-                              >
-                                <Edit2 className="w-5 h-5 text-blue-400 pointer-events-none" />
-                                <span className="text-sm pointer-events-none">Edit</span>
-                              </button>
-                              <button 
-                                type="button" 
-                                onTouchEnd={(e) => { 
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  console.log('Delete TOUCH for message:', message.id);
-                                  handleDeleteMessage(message.id); 
-                                }}
-                                onClick={(e) => { 
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  console.log('Delete CLICK for message:', message.id);
-                                  handleDeleteMessage(message.id); 
-                                }}
-                                className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
-                                style={{ touchAction: 'manipulation', cursor: 'pointer', WebkitTapHighlightColor: 'rgba(239, 68, 68, 0.3)' }}
-                                data-testid="button-delete-message"
-                              >
-                                <Trash2 className="w-5 h-5 text-red-400 pointer-events-none" />
-                                <span className="text-sm pointer-events-none">Delete</span>
-                              </button>
-                            </>
-                          ) : (
-                            /* OTHER PERSON'S MESSAGE: Reply only */
-                            <button 
-                              type="button" 
-                              onTouchEnd={(e) => { 
-                                e.preventDefault();
-                                e.stopPropagation();
-                                console.log('Reply TOUCH for message:', message.id);
-                                setReplyingTo(message); 
-                                setSelectedMessage(null); 
-                              }}
-                              onClick={(e) => { 
-                                e.preventDefault();
-                                e.stopPropagation();
-                                console.log('Reply CLICK for message:', message.id);
-                                setReplyingTo(message); 
-                                setSelectedMessage(null); 
-                              }}
-                              className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
-                              style={{ touchAction: 'manipulation', cursor: 'pointer', WebkitTapHighlightColor: 'rgba(34, 197, 94, 0.3)' }}
-                              data-testid="button-reply-message"
-                            >
-                              <Reply className="w-5 h-5 text-green-400 pointer-events-none" />
-                              <span className="text-sm pointer-events-none">Reply</span>
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                      </>
-                    )}
                   </div>
                 </div>
               );
@@ -1216,6 +1122,103 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Message Action Menu - Portal rendered at body level for proper iOS fixed positioning */}
+      {selectedMessage && createPortal(
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black/60 z-[99998]"
+            onClick={() => setSelectedMessage(null)}
+            style={{ touchAction: 'auto' }}
+          />
+          {/* Bottom Sheet Menu - positioned above bottom nav */}
+          <div 
+            className="fixed left-2 right-2 bg-gray-800 rounded-2xl shadow-2xl z-[99999] border border-gray-700"
+            style={{ touchAction: 'auto', bottom: '90px' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Action buttons */}
+            <div className="px-2 py-3 space-y-1">
+              {selectedMessage.senderId == currentUserId ? (
+                /* YOUR OWN MESSAGE: Edit and Delete only */
+                <>
+                  <button 
+                    type="button" 
+                    onTouchEnd={(e) => { 
+                      e.preventDefault();
+                      e.stopPropagation();
+                      console.log('Edit TOUCH for message:', selectedMessage.id);
+                      startEdit(selectedMessage); 
+                      setSelectedMessage(null);
+                    }}
+                    onClick={(e) => { 
+                      e.preventDefault();
+                      e.stopPropagation();
+                      console.log('Edit CLICK for message:', selectedMessage.id);
+                      startEdit(selectedMessage); 
+                      setSelectedMessage(null);
+                    }}
+                    className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
+                    style={{ touchAction: 'manipulation', cursor: 'pointer', WebkitTapHighlightColor: 'rgba(59, 130, 246, 0.3)' }}
+                    data-testid="button-edit-message"
+                  >
+                    <Edit2 className="w-5 h-5 text-blue-400 pointer-events-none" />
+                    <span className="text-sm pointer-events-none">Edit</span>
+                  </button>
+                  <button 
+                    type="button" 
+                    onTouchEnd={(e) => { 
+                      e.preventDefault();
+                      e.stopPropagation();
+                      console.log('Delete TOUCH for message:', selectedMessage.id);
+                      handleDeleteMessage(selectedMessage.id); 
+                    }}
+                    onClick={(e) => { 
+                      e.preventDefault();
+                      e.stopPropagation();
+                      console.log('Delete CLICK for message:', selectedMessage.id);
+                      handleDeleteMessage(selectedMessage.id); 
+                    }}
+                    className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
+                    style={{ touchAction: 'manipulation', cursor: 'pointer', WebkitTapHighlightColor: 'rgba(239, 68, 68, 0.3)' }}
+                    data-testid="button-delete-message"
+                  >
+                    <Trash2 className="w-5 h-5 text-red-400 pointer-events-none" />
+                    <span className="text-sm pointer-events-none">Delete</span>
+                  </button>
+                </>
+              ) : (
+                /* OTHER PERSON'S MESSAGE: Reply only */
+                <button 
+                  type="button" 
+                  onTouchEnd={(e) => { 
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Reply TOUCH for message:', selectedMessage.id);
+                    setReplyingTo(selectedMessage); 
+                    setSelectedMessage(null); 
+                  }}
+                  onClick={(e) => { 
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Reply CLICK for message:', selectedMessage.id);
+                    setReplyingTo(selectedMessage); 
+                    setSelectedMessage(null); 
+                  }}
+                  className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
+                  style={{ touchAction: 'manipulation', cursor: 'pointer', WebkitTapHighlightColor: 'rgba(34, 197, 94, 0.3)' }}
+                  data-testid="button-reply-message"
+                >
+                  <Reply className="w-5 h-5 text-green-400 pointer-events-none" />
+                  <span className="text-sm pointer-events-none">Reply</span>
+                </button>
+              )}
+            </div>
+          </div>
+        </>,
+        document.body
+      )}
     </div>
   );
 }
