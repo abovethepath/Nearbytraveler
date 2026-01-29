@@ -230,7 +230,6 @@ export const STATIC_CITY_ACTIVITIES: Record<string, Array<{name: string, descrip
     { name: "In-N-Out Burger", description: "California's beloved burger chain - a must-try local institution", category: "food" },
     
     // OUTDOOR & NATURE
-    { name: "Runyon Canyon", description: "Popular hiking spot with Hollywood Sign views and celebrity sightings", category: "outdoor" },
     { name: "Mulholland Drive", description: "Scenic mountain road with panoramic city and valley views", category: "outdoor" },
     { name: "Topanga Canyon", description: "Bohemian mountain community with hiking trails and vintage shops", category: "outdoor" },
     { name: "Malibu Wine Safari", description: "Wine tasting with exotic animals in Malibu mountains", category: "outdoor" },
