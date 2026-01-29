@@ -18,29 +18,39 @@ body {
 }
 
 /* Ensure fixed elements respect safe areas */
-.mobile-top-nav {
-  padding-top: var(--sat);
-}
-
 .mobile-bottom-nav {
   padding-bottom: var(--sab);
 }
 
-/* CRITICAL: Hamburger menu button must be touchable on mobile - iOS Safari & WebView fix */
-.hamburger-btn,
-.mobile-top-nav button {
+/* FORCE navbar clickable - CRITICAL NUCLEAR FIX */
+.mobile-top-nav {
+  position: fixed !important;
+  z-index: 2147483647 !important; /* Maximum possible z-index */
+  isolation: isolate !important;
+  pointer-events: auto !important;
+  padding-top: var(--sat);
+}
+
+.mobile-top-nav * {
+  pointer-events: auto !important;
+}
+
+.mobile-top-nav button,
+.mobile-top-nav .hamburger-btn {
   position: relative !important;
-  z-index: 50002 !important;
+  z-index: 2147483647 !important;
   pointer-events: auto !important;
   touch-action: auto !important;
   cursor: pointer !important;
 }
 
-/* Ensure mobile-top-nav creates its own stacking context above everything */
-.mobile-top-nav {
-  isolation: isolate !important;
-  z-index: 50000 !important;
-  contain: layout !important;
+/* Push ALL page content below navbar */
+body > div:not(.mobile-top-nav),
+main,
+[role="main"],
+.page-container {
+  position: relative;
+  z-index: 1 !important;
 }
 
 .hero-clean h1 .hero-blue,
