@@ -1324,7 +1324,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     {/* Match button like in screenshots */}
                     <div className="mt-3">
                       <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-md">
-                        ⚡ Start City Matching
+                        ⚡ Start City Picks
                       </button>
                     </div>
                   </div>
@@ -1420,7 +1420,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
             <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
               {/* Mobile: Stack vertically, Desktop: Side by side */}
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2 mb-2">
-                <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-200">🎯 How City Matching Works</h3>
+                <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-200">🎯 How City Picks Works</h3>
                 <Button
                   variant="outline"
                   size="sm"

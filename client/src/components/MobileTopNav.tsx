@@ -113,7 +113,7 @@ export function MobileTopNav() {
     { icon: Compass, label: "Plan Trip", path: "/plan-trip" },
     { icon: Zap, label: "Quick Meetups", path: "/quick-meetups" },
     { icon: MessageCircle, label: "Chat Rooms", path: "/chatrooms" },
-    { icon: Users, label: "City Match", path: "/match-in-city" },
+    { icon: Users, label: "City Picks", path: "/match-in-city" },
     { icon: Users, label: "Connect", path: "/connect" },
     { icon: MessageCircle, label: "Messages", path: "/messages" },
     { icon: User, label: "Profile", path: currentUser?.id ? `/profile/${currentUser.id}` : "/profile" },

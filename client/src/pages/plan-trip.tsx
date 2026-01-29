@@ -41,6 +41,7 @@ interface TripPlan {
   isVeteran?: boolean;
   isActiveDuty?: boolean;
   travelStyle?: string[];
+  travelGroup?: string; // Per-trip override: solo, couple, friends, family
 }
 
 interface User {
@@ -109,6 +110,7 @@ export default function PlanTrip() {
     isVeteran: false,
     isActiveDuty: false,
     travelStyle: [],
+    travelGroup: user?.travelGroup || "", // Pre-fill from profile
   });
   const [hiddenGems, setHiddenGems] = useState<any[]>([]);
   const [isDiscoveringGems, setIsDiscoveringGems] = useState(false);
@@ -211,7 +213,8 @@ export default function PlanTrip() {
         travelerTypes: Array.isArray(existingPlan?.travelStyle) ? existingPlan.travelStyle : [],
         accommodation: existingPlan?.accommodation || '',
         transportation: existingPlan?.transportation || '',
-        notes: existingPlan?.notes || ''
+        notes: existingPlan?.notes || '',
+        travelGroup: existingPlan?.travelGroup || user?.travelGroup || '' // Trip override or profile default
       };
       
       console.log('=== PARSED PLAN DATA FOR EDITING ===');
@@ -407,7 +410,8 @@ export default function PlanTrip() {
         travelerTypes: plan.travelerTypes || [], // This gets mapped to travelStyle on server
         accommodation: plan.accommodation || '',
         transportation: plan.transportation || '',
-        notes: plan.notes || ''
+        notes: plan.notes || '',
+        travelGroup: plan.travelGroup || null // Per-trip override (solo/couple/friends/family)
       };
 
       if (isEditMode && editingPlanId) {
@@ -965,6 +969,24 @@ export default function PlanTrip() {
 
 
 
+
+              {/* Trip Group (Who you're traveling with) */}
+              <div className="overflow-hidden break-words">
+                <Label htmlFor="travelGroup" className="text-sm sm:text-base font-medium text-black dark:text-white break-words">
+                  Trip Vibe (Who are you traveling with?)
+                </Label>
+                <Select value={tripPlan.travelGroup || ""} onValueChange={(value) => setTripPlan(prev => ({ ...prev, travelGroup: value }))}>
+                  <SelectTrigger className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 text-sm sm:text-base h-9 sm:h-10 md:h-11">
+                    <SelectValue placeholder="Select trip vibe" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-lg max-w-[90vw] w-full">
+                    <SelectItem value="solo" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Solo</SelectItem>
+                    <SelectItem value="couple" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Couple</SelectItem>
+                    <SelectItem value="friends" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Friends</SelectItem>
+                    <SelectItem value="family" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Family</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
               {/* Accommodation - Mobile Responsive */}
               <div className="overflow-hidden break-words">

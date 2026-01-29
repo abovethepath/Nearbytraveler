@@ -343,7 +343,7 @@ function Navbar() {
       { path: "/", label: "Home", icon: "🏠" },
       { path: "/discover", label: "Cities", icon: "🌍" },
       { path: "/events", label: "Events", icon: "📅" },
-      { path: "/match-in-city", label: "City Match", icon: "🎯" },
+      { path: "/match-in-city", label: "City Picks", icon: "🎯" },
       { path: "/connect", label: "Connect", icon: "💝" },
       { path: "/messages", label: "Messages", icon: "💬" },
       { path: profilePath, label: "Profile", icon: "👤" },

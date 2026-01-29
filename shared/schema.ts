@@ -522,6 +522,7 @@ export const travelPlans = pgTable("travel_plans", {
   activities: text("activities").array(),
   events: text("events").array(),
   travelStyle: text("travel_style").array(), // Solo, couple, friends, business, etc.
+  travelGroup: text("travel_group"), // Per-trip override: solo, couple, friends, family (nullable - falls back to user profile)
   accommodation: text("accommodation"), // Hotel, Airbnb, hostel, etc.
   transportation: text("transportation"), // Flight, train, car, etc.
   notes: text("notes"), // Additional notes about the trip

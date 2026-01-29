@@ -27,10 +27,10 @@ export default function MobileNav() {
     },
     { 
       path: "/match-in-city", 
-      label: "City Match", 
+      label: "City Picks", 
       icon: MapPin,
       isActive: location.startsWith("/match-in-city") || location === "/cities",
-      isSpecial: true // Mark this as the special City Match tab
+      isSpecial: true // Mark this as the special City Picks tab
     },
     { 
       path: "/messages", 

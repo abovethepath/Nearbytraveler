@@ -4896,7 +4896,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                   href="/match-in-city" 
                                   className="text-xs text-blue-600 dark:text-blue-400 underline hover:text-blue-800 dark:hover:text-blue-200"
                                 >
-                                  Go to City Match Page to manage city activities →
+                                  Go to City Picks page to manage city activities →
                                 </a>
                               </div>
                             )}
