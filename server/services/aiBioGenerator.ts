@@ -38,7 +38,17 @@ export class AiBioGenerator {
       };
     }
 
-    // Try Anthropic first (primary AI)
+    // Try Replit AI Integration first (uses Replit credits, most reliable)
+    if (process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
+      try {
+        console.log('Attempting bio generation with Replit AI Integration...');
+        return await this.generateWithReplitAI(context);
+      } catch (error) {
+        console.error('Replit AI bio generation failed:', error);
+      }
+    }
+
+    // Fallback to Anthropic (user's API key)
     if (process.env.ANTHROPIC_API_KEY) {
       try {
         return await this.generateWithAnthropic(context);
@@ -47,11 +57,10 @@ export class AiBioGenerator {
       }
     }
 
-    // Fallback to OpenAI (check both regular key and Replit integration key)
-    const openaiKey = process.env.OPENAI_API_KEY || process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
-    if (openaiKey) {
+    // Fallback to OpenAI (user's API key)
+    if (process.env.OPENAI_API_KEY) {
       try {
-        return await this.generateWithOpenAI(context, openaiKey);
+        return await this.generateWithOpenAI(context, process.env.OPENAI_API_KEY);
       } catch (error) {
         console.error('OpenAI bio generation failed:', error);
       }
@@ -143,6 +152,43 @@ ${parts.join('\n')}
 Write the bio now (first-person, 50-120 words):`;
 
     return { prompt, hasEnoughData };
+  }
+
+  private async generateWithReplitAI(context: { prompt: string }): Promise<GeneratedBio> {
+    // Use Replit AI Integration - bills to Replit credits, not user's API keys
+    const response = await fetch(`${process.env.AI_INTEGRATIONS_OPENAI_BASE_URL}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.AI_INTEGRATIONS_OPENAI_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'user',
+            content: context.prompt
+          }
+        ],
+        max_tokens: 300,
+      })
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error('Replit AI API error details:', response.status, errorBody);
+      throw new Error(`Replit AI API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const bio = data.choices?.[0]?.message?.content?.trim();
+
+    if (!bio) {
+      throw new Error('Empty response from Replit AI');
+    }
+
+    console.log('Bio generated successfully with Replit AI Integration');
+    return { bio, success: true };
   }
 
   private async generateWithAnthropic(context: { prompt: string }): Promise<GeneratedBio> {
