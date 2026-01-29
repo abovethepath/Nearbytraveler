@@ -433,15 +433,24 @@ export default function Messages() {
     }
   };
 
-  // Handle reaction/like
+  // Handle reaction/like - with debounce to prevent double-firing on iOS
+  const [isReacting, setIsReacting] = useState(false);
   const handleReaction = async (messageId: number, emoji: string) => {
+    if (isReacting) return; // Prevent double-tap
+    setIsReacting(true);
+    
     try {
+      console.log('👍 Sending reaction:', messageId, emoji);
       await apiRequest('POST', `/api/messages/${messageId}/reaction`, { emoji });
       
+      toast({ title: "Liked!" });
       setSelectedMessage(null);
       queryClient.invalidateQueries({ queryKey: [`/api/messages/${user?.id}`] });
     } catch (error: any) {
+      console.error('❌ Reaction failed:', error);
       toast({ title: "Failed to react to message", variant: "destructive" });
+    } finally {
+      setTimeout(() => setIsReacting(false), 500); // Debounce reset
     }
   };
 
@@ -667,8 +676,9 @@ export default function Messages() {
                     ) : (
                       conversationMessages.map((msg: any) => {
                         const isOwnMessage = msg.senderId === user?.id;
+                        const hasReactions = msg.reactions && msg.reactions.length > 0;
                         return (
-                          <div key={msg.id} className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
+                          <div key={msg.id} className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'} ${hasReactions ? 'mb-4' : ''}`}>
                             <div 
                               className="relative max-w-[70%]" 
                               style={{ 
@@ -749,6 +759,16 @@ export default function Messages() {
                                     </p>
                                     {msg.isEdited && <span className="text-xs opacity-60 italic text-gray-400">Edited</span>}
                                   </div>
+                                  
+                                  {/* Reactions display */}
+                                  {msg.reactions && msg.reactions.length > 0 && (
+                                    <div className={`absolute -bottom-3 ${isOwnMessage ? 'right-2' : 'left-2'} bg-white dark:bg-gray-800 rounded-full px-2 py-0.5 shadow-md border border-gray-200 dark:border-gray-600`}>
+                                      <span className="text-sm">
+                                        {msg.reactions.map((r: any) => r.emoji).join('')}
+                                        {msg.reactions.length > 1 && <span className="text-xs ml-1 text-gray-500">{msg.reactions.length}</span>}
+                                      </span>
+                                    </div>
+                                  )}
                                 </div>
                               )}
 
