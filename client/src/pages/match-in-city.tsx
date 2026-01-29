@@ -1841,7 +1841,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         <Button
                           onClick={() => setShowAddPickModal(true)}
                           size="sm"
-                          className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white"
+                          className="bg-gradient-to-r from-orange-500 to-blue-500 hover:from-orange-600 hover:to-blue-600 text-white"
                         >
                           <Plus className="w-4 h-4 mr-1" />
                           Add a City Pick
