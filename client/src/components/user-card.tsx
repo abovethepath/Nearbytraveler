@@ -110,8 +110,8 @@ export default function UserCard({
       onClick={handleCardClick}
       data-testid={`user-card-${user.id}`}
     >
-      {/* Large Photo - 4:5 aspect ratio for portrait style */}
-      <div className="relative aspect-[4/5] overflow-hidden" style={{ background: getUserGradient() }}>
+      {/* Photo - 3:4 aspect ratio for compact portrait */}
+      <div className="relative aspect-[3/4] overflow-hidden" style={{ background: getUserGradient() }}>
         {user.profileImage ? (
           <img 
             src={user.profileImage} 
