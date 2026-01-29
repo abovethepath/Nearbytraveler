@@ -11,6 +11,29 @@ import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
 import { getTravelActivities } from "@shared/base-options";
 import { METRO_AREAS } from "@shared/constants";
+
+// Suggestion mappings: Universal pick → suggested city-specific follow-ups
+// These are generic templates - the system tries to find existing city activities first
+const SUGGESTION_MAPPINGS: Record<string, string[]> = {
+  "Guided Tours": ["Architecture Walk", "Street Art Walk", "Historical Walking Tour", "Food Walking Tour", "Neighborhood Tour"],
+  "Hiking & Nature": ["Viewpoint Hike", "Scenic Trail", "Nature Preserve", "Botanical Gardens", "Park Walk"],
+  "Beach / Waterfront": ["Beach", "Boardwalk", "Pier", "Waterfront Walk", "Harbor"],
+  "Museums & Galleries": ["Art Museum", "History Museum", "Science Museum", "Gallery", "Cultural Center"],
+  "Nightlife & Dancing": ["Nightlife District", "Live Music Venue", "Dance Club", "Late Night Scene"],
+  "Restaurants & Local Eats": ["Local Restaurant", "Food Market", "Iconic Diner", "Farm-to-Table"],
+  "Coffee & Brunch": ["Coffee Shop", "Brunch Spot", "Bakery", "Cafe"],
+  "Live Music": ["Music Venue", "Jazz Club", "Concert Hall", "Live Music Spot"],
+  "History & Architecture": ["Historic District", "Historic Building", "Old Town", "Heritage Site"],
+  "Local Markets": ["Market", "Flea Market", "Artisan Market", "Farmers Market"],
+  "Bars / Happy Hour": ["Bar District", "Cocktail Bar", "Wine Bar", "Beer Garden"],
+  "Street Food / Food Trucks": ["Food Truck Park", "Street Food Spot", "Food Truck"],
+  "Scenic / Photography Spots": ["Photo Spot", "Sunset Viewpoint", "Skyline View", "Vista Point"],
+  "Biking / Cycling": ["Bike Path", "Bike Route", "Cycling Trail"],
+  "Fitness / Workouts": ["Running Path", "Outdoor Gym", "Fitness Spot"],
+};
+
+// Normalize string for comparison
+const normalizeName = (name: string) => name.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
 import { 
   MapPin, 
   Plus, 
@@ -1587,6 +1610,148 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         >
                           <span>✈️</span> Jump to Match Preferences
                         </button>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* SUGGESTED FOR YOU - Contextual follow-ups based on selections */}
+                {(() => {
+                  // Get user's selected universal preferences for this city
+                  const selectedUniversals = userActivities
+                    .filter(ua => ua.cityName === selectedCity)
+                    .map(ua => ua.activityName)
+                    .filter(name => getTravelActivities().includes(name));
+                  
+                  if (selectedUniversals.length === 0) return null;
+                  
+                  // Track already-suggested normalized names to avoid duplicates
+                  const suggestedNormalized = new Set<string>();
+                  
+                  // Track user's already-selected activity names (normalized)
+                  const userSelectedNormalized = new Set(
+                    userActivities
+                      .filter(ua => ua.cityName === selectedCity)
+                      .map(ua => normalizeName(ua.activityName))
+                  );
+                  
+                  // Generate suggestions based on selected universals
+                  const suggestions: { name: string; because: string; existingActivity?: any }[] = [];
+                  
+                  for (const universal of selectedUniversals) {
+                    const mappedSuggestions = SUGGESTION_MAPPINGS[universal] || [];
+                    
+                    for (const suggestionTemplate of mappedSuggestions) {
+                      const templateNorm = normalizeName(suggestionTemplate);
+                      
+                      // Skip if we already suggested something similar
+                      if (suggestedNormalized.has(templateNorm)) continue;
+                      
+                      // Try to find a matching city-specific activity (exact or contains key words)
+                      const existingActivity = cityActivities.find(ca => {
+                        const caNorm = normalizeName(ca.activityName);
+                        // Match if existing activity contains all key words from template
+                        const templateWords = templateNorm.split(/\s+/).filter(w => w.length > 2);
+                        return templateWords.every(word => caNorm.includes(word));
+                      });
+                      
+                      const finalName = existingActivity ? existingActivity.activityName : suggestionTemplate;
+                      const finalNorm = normalizeName(finalName);
+                      
+                      // Skip if user already selected this
+                      if (userSelectedNormalized.has(finalNorm)) continue;
+                      
+                      suggestedNormalized.add(templateNorm);
+                      suggestions.push({
+                        name: finalName,
+                        because: universal,
+                        existingActivity
+                      });
+                      
+                      if (suggestions.length >= 5) break;
+                    }
+                    if (suggestions.length >= 5) break;
+                  }
+                  
+                  if (suggestions.length === 0) return null;
+                  
+                  return (
+                    <div className="mb-8 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-4 sm:p-6 border border-green-200 dark:border-green-700">
+                      <div className="text-center mb-4">
+                        <h3 className="text-lg font-bold text-green-700 dark:text-green-300 mb-1">
+                          <Lightbulb className="inline-block w-5 h-5 mr-1 -mt-1" />
+                          Suggested for you
+                        </h3>
+                        <p className="text-green-600 dark:text-green-400 text-sm">Based on what you picked...</p>
+                      </div>
+                      <div className="flex flex-wrap gap-2 justify-center">
+                        {suggestions.map((suggestion, index) => {
+                          const isAlreadySelected = userActivities.some(ua => 
+                            ua.cityName === selectedCity && ua.activityName === suggestion.name
+                          );
+                          
+                          return (
+                            <div key={index} className="relative group">
+                              <button
+                                onClick={async () => {
+                                  if (isAlreadySelected) return;
+                                  
+                                  const actualUser = user || JSON.parse(localStorage.getItem('user') || '{}');
+                                  if (!actualUser?.id) return;
+                                  
+                                  try {
+                                    const apiBase = getApiBaseUrl();
+                                    
+                                    if (suggestion.existingActivity) {
+                                      // Add existing activity to user's interests
+                                      await fetch(`${apiBase}/api/user-city-interests`, {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json', 'x-user-id': actualUser.id.toString() },
+                                        body: JSON.stringify({ userId: actualUser.id, activityId: suggestion.existingActivity.id, cityName: selectedCity })
+                                      });
+                                    } else {
+                                      // Create new activity then add to interests
+                                      const createResponse = await fetch(`${apiBase}/api/city-activities`, {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json', 'x-user-id': actualUser.id.toString() },
+                                        body: JSON.stringify({ cityName: selectedCity, activityName: suggestion.name, createdByUserId: actualUser.id, description: `Suggested based on ${suggestion.because}`, category: 'suggested' })
+                                      });
+                                      
+                                      if (createResponse.ok) {
+                                        const newActivity = await createResponse.json();
+                                        await fetch(`${apiBase}/api/user-city-interests`, {
+                                          method: 'POST',
+                                          headers: { 'Content-Type': 'application/json', 'x-user-id': actualUser.id.toString() },
+                                          body: JSON.stringify({ userId: actualUser.id, activityId: newActivity.id, cityName: selectedCity })
+                                        });
+                                      }
+                                    }
+                                    
+                                    fetchUserActivities();
+                                    fetchCityActivities();
+                                    toast({ title: "Added!", description: suggestion.name });
+                                  } catch (error) {
+                                    console.error('Error adding suggestion:', error);
+                                  }
+                                }}
+                                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all border-2 ${
+                                  isAlreadySelected 
+                                    ? 'bg-green-500 text-white border-green-400'
+                                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-green-300 dark:border-green-600 hover:border-green-400 hover:bg-green-50 dark:hover:bg-green-900/30'
+                                }`}
+                              >
+                                <span className="flex items-center gap-1.5">
+                                  {isAlreadySelected ? '✓' : <Plus className="w-3 h-3" />}
+                                  {suggestion.name}
+                                </span>
+                              </button>
+                              {/* "Why?" tooltip */}
+                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+                                Because you picked "{suggestion.because}"
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   );
