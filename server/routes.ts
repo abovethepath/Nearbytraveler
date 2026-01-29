@@ -16833,11 +16833,35 @@ Questions? Just reply to this message. Welcome aboard!
       const sock = ws as AliveWS;
       if (sock.isAlive === false) return sock.terminate();
       sock.isAlive = false;
-      try { sock.ping(); } catch {}
+      try { sock.ping(); } catch {};
     });
   }, 30000);
 
   wss.on("close", () => clearInterval(wsHeartbeat));
+
+  // Cleanup expired dated activities (runs every hour)
+  const cleanupExpiredDatedActivities = async () => {
+    try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const result = await db.delete(cityActivities)
+        .where(
+          and(
+            isNotNull(cityActivities.activityDate),
+            lt(cityActivities.activityDate, today.toISOString().split('T')[0])
+          )
+        );
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🧹 Cleaned up expired dated activities');
+      }
+    } catch (error) {
+      console.error('Error cleaning up expired dated activities:', error);
+    }
+  };
+  
+  // Run cleanup on startup and every hour
+  cleanupExpiredDatedActivities();
+  setInterval(cleanupExpiredDatedActivities, 60 * 60 * 1000);
 
   // Import chat WebSocket service
   const { chatWebSocketService } = await import('./services/chatWebSocketService.js');
