@@ -5935,15 +5935,27 @@ Questions? Just reply to this message. Welcome aboard!
       const headerUserId = req.headers['x-user-id'] ? parseInt(req.headers['x-user-id'] as string) : null;
       const userId = sessionUserId || headerUserId;
       
+      console.log('🤖 AI Bio Generate - Auth check:', { sessionUserId, headerUserId, userId });
+      
       if (!userId) {
+        console.log('🤖 AI Bio Generate - No user ID found');
         return res.status(401).json({ message: "Authentication required", success: false });
       }
 
       // Get user's current profile data
       const user = await storage.getUser(userId);
       if (!user) {
+        console.log('🤖 AI Bio Generate - User not found:', userId);
         return res.status(404).json({ message: "User not found" });
       }
+
+      console.log('🤖 AI Bio Generate - User data:', { 
+        userId, 
+        interestsCount: user.interests?.length || 0,
+        activitiesCount: user.activities?.length || 0,
+        hasAnthropicKey: !!process.env.ANTHROPIC_API_KEY,
+        hasOpenAIKey: !!process.env.OPENAI_API_KEY
+      });
 
       // Import the bio generator service
       const { aiBioGenerator } = await import('./services/aiBioGenerator');
@@ -5966,6 +5978,8 @@ Questions? Just reply to this message. Welcome aboard!
         customActivities: user.customActivities || undefined,
       });
 
+      console.log('🤖 AI Bio Generate - Result:', { success: result.success, error: result.error, hasBio: !!result.bio });
+
       if (!result.success) {
         return res.status(400).json({ message: result.error, success: false });
       }
@@ -5973,7 +5987,7 @@ Questions? Just reply to this message. Welcome aboard!
       console.log(`✨ Generated AI bio for user ${userId}`);
       return res.json({ bio: result.bio, success: true });
     } catch (error: any) {
-      console.error("Error generating AI bio:", error);
+      console.error("🤖 AI Bio Generate - Error:", error);
       return res.status(500).json({ message: "Failed to generate bio. Please try again.", success: false });
     }
   });

@@ -8290,9 +8290,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             type="button"
                             variant="outline"
                             size="sm"
+                            onTouchEnd={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (!isGeneratingBio) handleGenerateBio();
+                            }}
                             onClick={handleGenerateBio}
                             disabled={isGeneratingBio}
                             className="text-xs h-7 px-2 gap-1 border-orange-300 text-orange-600 hover:bg-orange-50 dark:border-orange-600 dark:text-orange-400 dark:hover:bg-orange-900/20"
+                            style={{ touchAction: 'manipulation' }}
                           >
                             <Sparkles className="w-3 h-3" />
                             {isGeneratingBio ? 'Generating...' : 'Generate bio for me'}
