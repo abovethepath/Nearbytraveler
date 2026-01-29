@@ -47,10 +47,11 @@ export class AiBioGenerator {
       }
     }
 
-    // Fallback to OpenAI
-    if (process.env.OPENAI_API_KEY) {
+    // Fallback to OpenAI (check both regular key and Replit integration key)
+    const openaiKey = process.env.OPENAI_API_KEY || process.env.AI_INTEGRATIONS_OPENAI_API_KEY;
+    if (openaiKey) {
       try {
-        return await this.generateWithOpenAI(context);
+        return await this.generateWithOpenAI(context, openaiKey);
       } catch (error) {
         console.error('OpenAI bio generation failed:', error);
       }
@@ -153,7 +154,7 @@ Write the bio now (first-person, 50-120 words):`;
         'content-type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'claude-3-5-sonnet-20241022',
+        model: 'claude-sonnet-4-20250514',
         max_tokens: 300,
         messages: [
           {
@@ -165,6 +166,8 @@ Write the bio now (first-person, 50-120 words):`;
     });
 
     if (!response.ok) {
+      const errorBody = await response.text();
+      console.error('Anthropic API error details:', response.status, errorBody);
       throw new Error(`Anthropic API error: ${response.status}`);
     }
 
@@ -178,15 +181,15 @@ Write the bio now (first-person, 50-120 words):`;
     return { bio, success: true };
   }
 
-  private async generateWithOpenAI(context: { prompt: string }): Promise<GeneratedBio> {
+  private async generateWithOpenAI(context: { prompt: string }, apiKey: string): Promise<GeneratedBio> {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'user',
@@ -198,6 +201,8 @@ Write the bio now (first-person, 50-120 words):`;
     });
 
     if (!response.ok) {
+      const errorBody = await response.text();
+      console.error('OpenAI API error details:', response.status, errorBody);
       throw new Error(`OpenAI API error: ${response.status}`);
     }
 
