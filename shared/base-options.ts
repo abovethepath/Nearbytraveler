@@ -154,70 +154,44 @@ export const ACTIVITIES = [
 ];
 
 // ========================================
-// TRAVEL_ACTIVITIES (40 items) - TRIP PLANNING ONLY
+// TRAVEL_ACTIVITIES (20 items) - UNIVERSAL INTENTS
 // ========================================
-// Clean, travel-focused activities for trip planning
-// Removes duplicates and non-travel items (activism, tech, volunteering, book clubs, coworking)
-// Based on Claude's consolidation recommendations
+// Clean, universal activity intents that apply to ALL cities
+// These are WHAT people want to DO, not specific places
+// Consolidated to 20 core intents for cleaner UX
 
 export const TRAVEL_ACTIVITIES = [
-  // Food & Dining (consolidated from 15+ options)
-  "Restaurants & Dining",
-  "Street Food & Food Trucks",
-  "Brunch & Coffee Spots",
-  "Late Night Eats",
-  "Vegan/Vegetarian",
-  "Food Tours & Experiences",
+  // Social
+  "Meet New People",
+  "Language Exchange",
   
-  // Bars & Nightlife (consolidated from 8 options)
-  "Bars & Happy Hour",
-  "Craft Beer & Breweries",
-  "Wine Bars & Vineyards",
+  // Food & Dining
+  "Restaurants & Local Eats",
+  "Coffee & Brunch",
+  "Street Food / Food Trucks",
+  "Food Tours / Tastings",
+  
+  // Nightlife & Entertainment
+  "Bars / Happy Hour",
+  "Live Music",
+  "Comedy Shows",
   "Nightlife & Dancing",
   
-  // Entertainment
-  "Live Music",
-  "Karaoke",
-  "Comedy Shows",
-  "Theater & Performing Arts",
-  "Movie Watching",
-  "Shopping Districts",
-  
-  // Culture & Sightseeing (removed duplicate "Local Hidden Gems")
-  "Historical Tours & Architecture",
+  // Culture & Sightseeing
   "Museums & Galleries",
-  "Cultural Experiences",
-  "Photography & Scenic Spots",
-  "Local Markets & Bazaars",
-  "Sunset & Sunrise Watching",
+  "History & Architecture",
+  "Scenic / Photography Spots",
+  "Local Markets",
   
-  // Outdoor & Sports (consolidated sports categories)
+  // Outdoor & Fitness
   "Hiking & Nature",
-  "Beach Activities",
-  "Water Sports",
-  "Cycling & Biking",
-  "Team Sports",
-  "Fitness & Workouts",
-  "Yoga & Meditation",
-  "Adventure Sports",
+  "Beach / Waterfront",
+  "Biking / Cycling",
+  "Fitness / Workouts",
+  "Yoga / Meditation",
   
-  // Social & Community (TRAVEL-FOCUSED ONLY)
-  "Meeting New People",
-  "Open to Dating",
-  "Language Practice",
-  
-  // Lifestyle & Wellness
-  "Wellness & Mindfulness",
-  "Sober/Alcohol-Free",
-  "420-Friendly",
-  "Religious & Spiritual Sites",
-  
-  // Family & Kids (consolidated)
-  "Family-Oriented Activities",
-  
-  // Travel Style
-  "Luxury Experiences",
-  "Budget Travel"
+  // Tours
+  "Guided Tours"
 ];
 
 // ========================================
@@ -484,7 +458,7 @@ export const getSexualPreferenceOptions = () => SEXUAL_PREFERENCE_OPTIONS;
 // - TOP_CHOICES: 30 items (broad categories for meeting travelers and locals)
 // - INTERESTS: 74 items (specific interests and preferences for deeper matching - added Nudism)
 // - ACTIVITIES: 18 items (concrete "let's do this" activities for meetups and planning)
-// - TRAVEL_ACTIVITIES: 40 items (clean, travel-focused activities for trip planning - no duplicates, no non-travel items)
+// - TRAVEL_ACTIVITIES: 20 items (universal intents - what people want to DO, not specific places)
 //
 // Items removed from INTERESTS that now exist only as ACTIVITIES:
 // - "Concerts" → "Concert Going"
