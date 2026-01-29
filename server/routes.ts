@@ -1748,10 +1748,30 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         })
       );
 
-      // Sort by total activity
-      citiesWithStats.sort((a, b) => 
-        (b.localCount + b.travelerCount + b.eventCount) - (a.localCount + a.travelerCount + a.eventCount)
-      );
+      // Featured cities that should appear first (have curated "Popular" activities)
+      const FEATURED_CITIES = [
+        'Los Angeles', 'Los Angeles Metro', 'San Francisco', 'New York City', 
+        'Austin', 'New Orleans', 'Miami', 'Chicago',
+        'Paris', 'London', 'Rome', 'Barcelona', 'Tokyo', 
+        'Dubai', 'Bangkok', 'Singapore', 'Istanbul', 'Amsterdam'
+      ];
+      
+      // Sort: featured cities first (in order), then by total activity
+      citiesWithStats.sort((a, b) => {
+        const aFeaturedIndex = FEATURED_CITIES.indexOf(a.city);
+        const bFeaturedIndex = FEATURED_CITIES.indexOf(b.city);
+        
+        // Both are featured - sort by featured order
+        if (aFeaturedIndex !== -1 && bFeaturedIndex !== -1) {
+          return aFeaturedIndex - bFeaturedIndex;
+        }
+        // Only a is featured - a comes first
+        if (aFeaturedIndex !== -1) return -1;
+        // Only b is featured - b comes first
+        if (bFeaturedIndex !== -1) return 1;
+        // Neither is featured - sort by total activity
+        return (b.localCount + b.travelerCount + b.eventCount) - (a.localCount + a.travelerCount + a.eventCount);
+      });
 
       const elapsed = Date.now() - startTime;
       if (process.env.NODE_ENV === 'development') console.log(`⚡ OPTIMIZED: Returned ${citiesWithStats.length} cities in ${elapsed}ms (was taking 30+ seconds!)`);
