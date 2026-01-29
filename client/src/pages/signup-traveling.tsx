@@ -541,7 +541,6 @@ export default function SignupTraveling() {
                     selected={formData.interests}
                     onChange={(selected) => setFormData(prev => ({ ...prev, interests: selected }))}
                     minRequired={7}
-                    showCategories={true}
                     placeholder="Search interests..."
                     extraSelectedCount={getCustomInterestsCount()}
                   />

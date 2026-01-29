@@ -428,7 +428,6 @@ export default function SignupLocal() {
                     selected={formData.interests}
                     onChange={(selected) => setFormData(prev => ({ ...prev, interests: selected }))}
                     minRequired={7}
-                    showCategories={true}
                     placeholder="Search interests..."
                     extraSelectedCount={getCustomInterestsCount()}
                   />

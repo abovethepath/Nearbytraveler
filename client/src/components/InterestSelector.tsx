@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Input } from '@/components/ui/input';
-import { Search, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 
 interface InterestSelectorProps {
   options: string[];
@@ -8,73 +8,9 @@ interface InterestSelectorProps {
   onChange: (selected: string[]) => void;
   minRequired?: number;
   maxAllowed?: number;
-  showCategories?: boolean;
   placeholder?: string;
   className?: string;
   extraSelectedCount?: number;
-}
-
-const INTEREST_CATEGORIES: Record<string, string[]> = {
-  "Food & Dining": [
-    "Restaurants & Food Scene", "Brunch Spots", "Street Food", "Coffee Shops & Cafes",
-    "Late Night Eats", "Vegan/Vegetarian", "Food Tours", "Bakeries & Desserts",
-    "Ethnic Cuisine", "Farm-to-Table Dining", "Food Trucks", "Fine Dining", "Cheap Eats"
-  ],
-  "Bars & Nightlife": [
-    "Happy Hour", "Craft Beer & Breweries", "Wine Bars & Vineyards", "Nightlife & Dancing",
-    "Rooftop Bars", "Cocktail Bars & Speakeasies", "Hookah Lounges", "Jazz Clubs",
-    "Karaoke", "Trivia Nights"
-  ],
-  "Entertainment": [
-    "Live Music", "Comedy Shows", "Theater", "Performing Arts", "Film Festivals",
-    "Electronic/DJ Scene"
-  ],
-  "Culture & Sightseeing": [
-    "Local Hidden Gems", "Historical Sites & Tours", "Museums", "Cultural Experiences",
-    "Photography & Scenic Spots", "Local Markets & Bazaars", "Architecture", "Street Art",
-    "Ghost Tours", "Religious & Spiritual Sites"
-  ],
-  "Sports & Fitness": [
-    "Beach Activities", "Water Sports", "Hiking", "Fitness Classes", "Working Out",
-    "Golf", "Pickleball", "Tennis", "Running & Jogging", "Team Sports", "Yoga & Meditation",
-    "Extreme Sports", "Rock Climbing", "Surfing", "Skiing & Snowboarding", "Scuba Diving",
-    "Cycling & Biking", "Sailing & Boating", "Kayaking & Canoeing", "Beach Volleyball"
-  ],
-  "Social & Community": [
-    "Meeting New People", "Open to Dating", "LGBTQIA+", "Family-Oriented",
-    "Volunteering", "Activism", "Animal Rescue & Shelters", "Pet Lovers",
-    "Sports Events", "Street Festivals", "Community Events", "Parenting Meetups"
-  ],
-  "Lifestyle": [
-    "Sober/Alcohol-Free Lifestyle", "420-Friendly", "Wellness & Mindfulness",
-    "Luxury Experiences", "Budget Travel", "Smoke-Free Environments",
-    "Health-Conscious/Vaccinated", "Digital Nomads"
-  ],
-  "Hobbies & Interests": [
-    "Arts", "Crafts", "Fashion & Style", "Classical Music", "Indie Music Scene",
-    "Vintage & Thrift Shopping", "Antiques & Collectibles", "Book Clubs", "Reading",
-    "Tech Meetups", "Innovation", "Blogging", "Sunset Watching", "Stargazing"
-  ],
-  "Family": [
-    "Kid-Friendly Activities", "Family Travel"
-  ],
-  "Outdoor & Adventure": [
-    "Camping & RV Travel", "Nature Walks", "Hot Air Balloons", "Frisbee & Disc Golf",
-    "Fishing", "Outdoor BBQ", "Park Picnics"
-  ],
-  "Events & Festivals": [
-    "Food & Wine Festivals", "Beer Festivals", "Pop-up Restaurants"
-  ]
-};
-
-function categorizeInterest(interest: string): string {
-  const lowerInterest = interest.toLowerCase();
-  for (const [category, items] of Object.entries(INTEREST_CATEGORIES)) {
-    if (items.some(item => item.toLowerCase() === lowerInterest)) {
-      return category;
-    }
-  }
-  return "Other";
 }
 
 export function InterestSelector({
@@ -83,13 +19,11 @@ export function InterestSelector({
   onChange,
   minRequired = 0,
   maxAllowed = Infinity,
-  showCategories = true,
   placeholder = "Search interests...",
   className = "",
   extraSelectedCount = 0
 }: InterestSelectorProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [touchedRecently, setTouchedRecently] = useState(false);
 
   const totalSelected = selected.length + extraSelectedCount;
@@ -122,55 +56,6 @@ export function InterestSelector({
     const query = searchQuery.toLowerCase();
     return options.filter(opt => opt.toLowerCase().includes(query));
   }, [options, searchQuery]);
-
-  const groupedOptions = useMemo(() => {
-    if (!showCategories) return { "All": filteredOptions };
-    
-    const groups: Record<string, string[]> = {};
-    filteredOptions.forEach(option => {
-      const category = categorizeInterest(option);
-      if (!groups[category]) groups[category] = [];
-      groups[category].push(option);
-    });
-    
-    const sortedKeys = Object.keys(groups).sort((a, b) => {
-      if (a === "Other") return 1;
-      if (b === "Other") return -1;
-      return a.localeCompare(b);
-    });
-    
-    const sortedGroups: Record<string, string[]> = {};
-    sortedKeys.forEach(key => {
-      sortedGroups[key] = groups[key].sort();
-    });
-    
-    return sortedGroups;
-  }, [filteredOptions, showCategories]);
-
-  const toggleCategory = (category: string) => {
-    const newExpanded = new Set(expandedCategories);
-    if (newExpanded.has(category)) {
-      newExpanded.delete(category);
-    } else {
-      newExpanded.add(category);
-    }
-    setExpandedCategories(newExpanded);
-  };
-
-  const isCategoryExpanded = (category: string) => {
-    if (searchQuery.trim()) return true;
-    return expandedCategories.has(category);
-  };
-
-  const selectAllInCategory = (category: string, items: string[]) => {
-    const unselectedItems = items.filter(item => !selected.includes(item));
-    const newSelected = [...selected, ...unselectedItems].slice(0, maxAllowed);
-    onChange(newSelected);
-  };
-
-  const countSelectedInCategory = (items: string[]) => {
-    return items.filter(item => selected.includes(item)).length;
-  };
 
   return (
     <div className={`space-y-3 ${className}`}>
@@ -233,64 +118,29 @@ export function InterestSelector({
         </div>
       )}
 
-      <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1" style={{ touchAction: 'pan-y' }}>
-        {Object.entries(groupedOptions).map(([category, items]) => (
-          <div key={category} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-            {showCategories && category !== "All" && (
+      <div className="max-h-[400px] overflow-y-auto pr-1" style={{ touchAction: 'pan-y' }}>
+        <div className="flex flex-wrap gap-1.5 p-2">
+          {filteredOptions.map(interest => {
+            const isSelected = selected.includes(interest);
+            return (
               <button
+                key={interest}
                 type="button"
-                onClick={() => toggleCategory(category)}
-                onTouchEnd={(e) => { 
-                  if (!searchQuery.trim()) {
-                    e.preventDefault(); 
-                    toggleCategory(category); 
-                  }
-                }}
-                className="w-full flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left"
+                onClick={() => handleClick(interest)}
+                onTouchEnd={(e) => handleTouch(e, interest)}
+                disabled={!isSelected && selected.length >= maxAllowed}
+                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                  isSelected
+                    ? 'bg-gradient-to-r from-blue-600 to-orange-500 text-white shadow-sm'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700'
+                } ${!isSelected && selected.length >= maxAllowed ? 'opacity-50 cursor-not-allowed' : ''}`}
                 style={{ touchAction: 'manipulation' }}
               >
-                <span className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                  {category}
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    ({countSelectedInCategory(items)}/{items.length})
-                  </span>
-                </span>
-                {searchQuery.trim() ? null : (
-                  isCategoryExpanded(category) ? (
-                    <ChevronUp className="w-4 h-4 text-gray-500" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4 text-gray-500" />
-                  )
-                )}
+                {interest}
               </button>
-            )}
-            
-            {isCategoryExpanded(category) && (
-              <div className="p-2 flex flex-wrap gap-1.5 bg-white dark:bg-gray-900">
-                {items.map(interest => {
-                  const isSelected = selected.includes(interest);
-                  return (
-                    <button
-                      key={interest}
-                      type="button"
-                      onClick={() => handleClick(interest)}
-                      onTouchEnd={(e) => handleTouch(e, interest)}
-                      disabled={!isSelected && selected.length >= maxAllowed}
-                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                        isSelected
-                          ? 'bg-gradient-to-r from-blue-600 to-orange-500 text-white shadow-sm'
-                          : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700'
-                      } ${!isSelected && selected.length >= maxAllowed ? 'opacity-50 cursor-not-allowed' : ''}`}
-                      style={{ touchAction: 'manipulation' }}
-                    >
-                      {interest}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        ))}
+            );
+          })}
+        </div>
         
         {filteredOptions.length === 0 && (
           <div className="text-center py-8 text-gray-500 dark:text-gray-400">
