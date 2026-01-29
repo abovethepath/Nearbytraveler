@@ -4761,7 +4761,25 @@ export class DatabaseStorage implements IStorage {
       .where(eq(chatroomMessages.chatroomId, chatroomId))
       .orderBy(chatroomMessages.createdAt);
 
-      return messages;
+      // Populate replyTo for messages that are replies
+      const messagesWithReplies = messages.map(msg => {
+        if (msg.replyToId) {
+          const replyToMessage = messages.find(m => m.id === msg.replyToId);
+          if (replyToMessage) {
+            return {
+              ...msg,
+              replyTo: {
+                id: replyToMessage.id,
+                content: replyToMessage.content,
+                sender: replyToMessage.sender
+              }
+            };
+          }
+        }
+        return msg;
+      });
+
+      return messagesWithReplies;
     } catch (error) {
       console.error('Error fetching chatroom messages:', error);
       return [];
