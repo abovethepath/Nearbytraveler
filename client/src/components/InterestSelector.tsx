@@ -15,54 +15,54 @@ interface InterestSelectorProps {
 }
 
 const INTEREST_CATEGORIES: Record<string, string[]> = {
-  "🍽️ Food & Dining": [
+  "Food & Dining": [
     "Restaurants & Food Scene", "Brunch Spots", "Street Food", "Coffee Shops & Cafes",
     "Late Night Eats", "Vegan/Vegetarian", "Food Tours", "Bakeries & Desserts",
     "Ethnic Cuisine", "Farm-to-Table Dining", "Food Trucks", "Fine Dining", "Cheap Eats"
   ],
-  "🍺 Bars & Nightlife": [
+  "Bars & Nightlife": [
     "Happy Hour", "Craft Beer & Breweries", "Wine Bars & Vineyards", "Nightlife & Dancing",
     "Rooftop Bars", "Cocktail Bars & Speakeasies", "Hookah Lounges", "Jazz Clubs",
     "Karaoke", "Trivia Nights"
   ],
-  "🎵 Entertainment": [
+  "Entertainment": [
     "Live Music", "Comedy Shows", "Theater", "Performing Arts", "Film Festivals",
     "Electronic/DJ Scene"
   ],
-  "🏛️ Culture & Sightseeing": [
+  "Culture & Sightseeing": [
     "Local Hidden Gems", "Historical Sites & Tours", "Museums", "Cultural Experiences",
     "Photography & Scenic Spots", "Local Markets & Bazaars", "Architecture", "Street Art",
     "Ghost Tours", "Religious & Spiritual Sites"
   ],
-  "🏃 Sports & Fitness": [
+  "Sports & Fitness": [
     "Beach Activities", "Water Sports", "Hiking", "Fitness Classes", "Working Out",
     "Golf", "Pickleball", "Tennis", "Running & Jogging", "Team Sports", "Yoga & Meditation",
     "Extreme Sports", "Rock Climbing", "Surfing", "Skiing & Snowboarding", "Scuba Diving",
     "Cycling & Biking", "Sailing & Boating", "Kayaking & Canoeing", "Beach Volleyball"
   ],
-  "👥 Social & Community": [
+  "Social & Community": [
     "Meeting New People", "Open to Dating", "LGBTQIA+", "Family-Oriented",
     "Volunteering", "Activism", "Animal Rescue & Shelters", "Pet Lovers",
     "Sports Events", "Street Festivals", "Community Events", "Parenting Meetups"
   ],
-  "🌿 Lifestyle": [
+  "Lifestyle": [
     "Sober/Alcohol-Free Lifestyle", "420-Friendly", "Wellness & Mindfulness",
     "Luxury Experiences", "Budget Travel", "Smoke-Free Environments",
     "Health-Conscious/Vaccinated", "Digital Nomads"
   ],
-  "🎨 Hobbies & Interests": [
+  "Hobbies & Interests": [
     "Arts", "Crafts", "Fashion & Style", "Classical Music", "Indie Music Scene",
     "Vintage & Thrift Shopping", "Antiques & Collectibles", "Book Clubs", "Reading",
     "Tech Meetups", "Innovation", "Blogging", "Sunset Watching", "Stargazing"
   ],
-  "👨‍👩‍👧 Family": [
+  "Family": [
     "Kid-Friendly Activities", "Family Travel"
   ],
-  "🏕️ Outdoor & Adventure": [
+  "Outdoor & Adventure": [
     "Camping & RV Travel", "Nature Walks", "Hot Air Balloons", "Frisbee & Disc Golf",
     "Fishing", "Outdoor BBQ", "Park Picnics"
   ],
-  "🎉 Events & Festivals": [
+  "Events & Festivals": [
     "Food & Wine Festivals", "Beer Festivals", "Pop-up Restaurants"
   ]
 };
@@ -74,7 +74,7 @@ function categorizeInterest(interest: string): string {
       return category;
     }
   }
-  return "✨ Other";
+  return "Other";
 }
 
 export function InterestSelector({
@@ -134,8 +134,8 @@ export function InterestSelector({
     });
     
     const sortedKeys = Object.keys(groups).sort((a, b) => {
-      if (a === "✨ Other") return 1;
-      if (b === "✨ Other") return -1;
+      if (a === "Other") return 1;
+      if (b === "Other") return -1;
       return a.localeCompare(b);
     });
     
