@@ -1669,36 +1669,55 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     const keywords = UNIVERSAL_KEYWORDS[universal] || [];
                     
                     // Find city activities matching this universal by category or keywords
-                    // Prefer featured/ranked items, then AI-generated, sorted by rank
-                    const matchingActivities = cityActivities
-                      .filter(ca => {
+                    // Use scoring: +3 category match, +2 exact keyword match, +1 partial match
+                    const scoredActivities = cityActivities
+                      .map(ca => {
                         // Skip if already in Popular section
-                        if (featuredActivityIds.has(ca.id)) return false;
+                        if (featuredActivityIds.has(ca.id)) return null;
                         // Skip if already selected by user
-                        if (userSelectedIds.has(ca.id)) return false;
+                        if (userSelectedIds.has(ca.id)) return null;
                         // Skip if already suggested
-                        if (suggestedIds.has(ca.id)) return false;
+                        if (suggestedIds.has(ca.id)) return null;
                         // Skip universal activities (they belong in preferences section)
-                        if (ca.category === 'universal') return false;
+                        if (ca.category === 'universal') return null;
                         
-                        // Match by category
+                        let score = 0;
+                        const nameNorm = normalizeName(ca.activityName);
+                        
+                        // +3 for category match
                         if (ca.category && categories.some(cat => 
                           cat.toLowerCase() === ca.category?.toLowerCase()
-                        )) return true;
+                        )) {
+                          score += 3;
+                        }
                         
-                        // Match by keywords in activity name
-                        const nameNorm = normalizeName(ca.activityName);
-                        if (keywords.some(kw => nameNorm.includes(kw.toLowerCase()))) return true;
+                        // +2 for exact keyword match in name
+                        if (keywords.some(kw => {
+                          const kwNorm = kw.toLowerCase();
+                          // Exact word match (not substring)
+                          return nameNorm.split(/\s+/).some(word => word === kwNorm || word.startsWith(kwNorm));
+                        })) {
+                          score += 2;
+                        }
                         
-                        return false;
+                        // Must have some match to be included
+                        if (score === 0) return null;
+                        
+                        return { activity: ca, score };
                       })
+                      .filter((item): item is { activity: any; score: number } => item !== null)
                       .sort((a, b) => {
-                        // Featured first, then by rank
-                        const aFeat = (a as any).isFeatured ? 1 : 0;
-                        const bFeat = (b as any).isFeatured ? 1 : 0;
+                        // Sort by score first
+                        if (a.score !== b.score) return b.score - a.score;
+                        // Then featured first
+                        const aFeat = (a.activity as any).isFeatured ? 1 : 0;
+                        const bFeat = (b.activity as any).isFeatured ? 1 : 0;
                         if (aFeat !== bFeat) return bFeat - aFeat;
-                        return ((a as any).rank || 999) - ((b as any).rank || 999);
+                        // Then by rank
+                        return ((a.activity as any).rank || 999) - ((b.activity as any).rank || 999);
                       });
+                    
+                    const matchingActivities = scoredActivities.map(s => s.activity);
                     
                     // Add up to 2 suggestions per universal to keep variety
                     let addedForUniversal = 0;
@@ -1720,7 +1739,16 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     }
                   }
                   
-                  if (suggestions.length === 0) return null;
+                  // If no suggestions but user has selections, show fallback hint
+                  if (suggestions.length === 0) {
+                    return (
+                      <div className="mb-6 text-center">
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          Want more ideas? Tap <span className="font-medium text-purple-600 dark:text-purple-400">"Suggest 6 more"</span> below.
+                        </p>
+                      </div>
+                    );
+                  }
                   
                   // Get unique trigger universals for display
                   const triggerUniversals = [...new Set(suggestions.map(s => s.because))];
