@@ -1064,7 +1064,42 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     }
   };
 
-  const fetchCityGuide = async () => {
+  // Auto-load cached city guide when city changes
+  const loadCachedCityGuide = async (city: string) => {
+    if (!city) return;
+    
+    try {
+      const apiBase = getApiBaseUrl();
+      const response = await fetch(`${apiBase}/api/city-guide/${encodeURIComponent(city)}`, {
+        credentials: 'include',
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.cached) {
+          setCityGuide(data);
+          console.log(`✅ Auto-loaded cached city guide for ${city}`);
+        } else {
+          setCityGuide(null);
+          console.log(`⚪ No cached city guide for ${city}`);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load cached city guide:', error);
+      setCityGuide(null);
+    }
+  };
+
+  // Effect to auto-load city guide when city changes
+  useEffect(() => {
+    if (selectedCity) {
+      loadCachedCityGuide(selectedCity);
+    } else {
+      setCityGuide(null);
+    }
+  }, [selectedCity]);
+
+  const fetchCityGuide = async (forceRefresh = false) => {
     if (!selectedCity) return;
     
     // Get user ID from multiple sources (matching existing pattern)
@@ -1085,16 +1120,16 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         method: 'POST',
         headers,
         credentials: 'include',
-        body: JSON.stringify({ cityName: selectedCity })
+        body: JSON.stringify({ cityName: selectedCity, forceRefresh })
       });
       
       if (response.ok) {
         const data = await response.json();
-        if (data.success && data.guide) {
-          setCityGuide(data.guide);
+        if (data.overview) {
+          setCityGuide(data);
           toast({
-            title: "City Guide Ready!",
-            description: `Your personalized ${selectedCity} guide is ready`,
+            title: data.cached ? "City Guide Loaded" : "City Guide Generated!",
+            description: `${selectedCity} guide is ready`,
           });
         } else {
           toast({
@@ -1508,9 +1543,9 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 {/* City-Specific AI Activities Section */}
                 <div>
                   <div className="text-center mb-6">
-                    <h3 className="text-2xl font-bold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent mb-2">📍 {selectedCity} Specific Activities</h3>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">AI-generated activities unique to this city</p>
-                    <div className="w-24 h-1 bg-gradient-to-r from-red-500 to-orange-500 mx-auto rounded-full"></div>
+                    <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent mb-2">📍 {selectedCity} Activities</h3>
+                    <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm mb-4">AI-generated activities unique to this city</p>
+                    <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-red-500 to-orange-500 mx-auto rounded-full"></div>
                     
                     {/* AI Enhancement Button */}
                     <Button
@@ -1518,7 +1553,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         try {
                           setIsLoading(true);
                           toast({
-                            title: "🤖 Generating AI Activities",
+                            title: "Generating AI Activities",
                             description: `Creating unique activities for ${selectedCity}...`,
                           });
                           
@@ -1532,7 +1567,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           
                           if (response.ok) {
                             toast({
-                              title: "✨ AI Activities Generated!",
+                              title: "AI Activities Generated!",
                               description: `Added unique ${selectedCity} activities`,
                             });
                             fetchCityActivities(); // Refresh the list
@@ -1549,11 +1584,12 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           setIsLoading(false);
                         }
                       }}
+                      size="sm"
                       className="mt-4 bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white"
                       data-testid="button-enhance-ai-activities"
                       disabled={isLoading}
                     >
-                      {isLoading ? '🤖 Generating...' : '🤖 Get More AI Activities'}
+                      {isLoading ? 'Generating...' : 'Get More AI Activities'}
                     </Button>
                   </div>
                   
@@ -1792,168 +1828,124 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
             </div>
           </div>
 
-          {/* AI Features Section */}
-          <div className="mt-8 space-y-6">
-            {/* AI Activity Suggestions */}
-            <Card className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border border-purple-200 dark:border-purple-700">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="w-6 h-6 text-purple-600" />
-                    <h3 className="text-xl font-bold text-purple-900 dark:text-purple-100">AI Activity Suggestions</h3>
-                  </div>
-                  <Button
-                    onClick={fetchAiActivitySuggestions}
-                    disabled={aiSuggestionsLoading}
-                    className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white"
-                  >
-                    {aiSuggestionsLoading ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Generating...
-                      </>
-                    ) : (
-                      <>
-                        <Lightbulb className="w-4 h-4 mr-2" />
-                        Get Personalized Ideas
-                      </>
-                    )}
-                  </Button>
+          {/* AI City Guide - Auto-loaded and cached per city */}
+          <Card className="mt-6 bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20 border border-green-200 dark:border-green-700">
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                <div className="flex items-center gap-2">
+                  <Map className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 flex-shrink-0" />
+                  <h3 className="text-lg sm:text-xl font-bold text-green-900 dark:text-green-100">AI City Guide</h3>
+                  {cityGuide?.cached && (
+                    <Badge variant="outline" className="text-xs bg-green-100 text-green-700 border-green-300">
+                      Cached
+                    </Badge>
+                  )}
                 </div>
-                <p className="text-purple-700 dark:text-purple-300 text-sm mb-4">
-                  AI will analyze your interests and suggest unique activities for {selectedCity}
-                </p>
-                
-                {aiSuggestions.length > 0 && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-                    {aiSuggestions.map((suggestion, index) => (
-                      <div key={index} className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-md border border-purple-100 dark:border-purple-800">
-                        <h4 className="font-semibold text-gray-900 dark:text-white mb-2">{suggestion.activityName}</h4>
-                        <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">{suggestion.description}</p>
-                        <div className="flex items-start gap-2">
-                          <Sparkles className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
-                          <p className="text-purple-600 dark:text-purple-400 text-xs italic">{suggestion.whyRecommended}</p>
-                        </div>
-                        <Button
-                          size="sm"
-                          className="mt-3 w-full bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-800"
-                          onClick={() => {
-                            setNewActivity(suggestion.activityName);
-                            toast({
-                              title: "Activity Added to Input",
-                              description: "Click the + button to add it to the city!",
-                            });
-                          }}
-                        >
-                          <Plus className="w-4 h-4 mr-1" />
-                          Add This Activity
-                        </Button>
-                      </div>
-                    ))}
+                <Button
+                  onClick={() => fetchCityGuide(!!cityGuide)}
+                  disabled={cityGuideLoading}
+                  size="sm"
+                  className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white w-full sm:w-auto"
+                >
+                  {cityGuideLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      {cityGuide ? 'Updating...' : 'Generating...'}
+                    </>
+                  ) : (
+                    <>
+                      <Map className="w-4 h-4 mr-2" />
+                      {cityGuide ? 'Refresh Guide' : 'Generate Guide'}
+                    </>
+                  )}
+                </Button>
+              </div>
+              <p className="text-green-700 dark:text-green-300 text-sm mb-4">
+                {cityGuide 
+                  ? `Local tips, hidden gems, and insider knowledge about ${selectedCity}`
+                  : `Click "Generate Guide" to get personalized tips for ${selectedCity}`
+                }
+              </p>
+              
+              {cityGuide && cityGuide.overview && (
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 shadow-md border border-green-100 dark:border-green-800 space-y-4">
+                  {/* Overview */}
+                  <div>
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                      <Target className="w-4 h-4 text-green-600" />
+                      Overview
+                    </h4>
+                    <p className="text-gray-700 dark:text-gray-300 text-sm sm:text-base">{cityGuide.overview}</p>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* AI City Guide */}
-            <Card className="bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20 border border-green-200 dark:border-green-700">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <Map className="w-6 h-6 text-green-600" />
-                    <h3 className="text-xl font-bold text-green-900 dark:text-green-100">AI City Guide</h3>
-                  </div>
-                  <Button
-                    onClick={fetchCityGuide}
-                    disabled={cityGuideLoading}
-                    className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white"
-                  >
-                    {cityGuideLoading ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Creating Guide...
-                      </>
-                    ) : (
-                      <>
-                        <Map className="w-4 h-4 mr-2" />
-                        Generate City Guide
-                      </>
-                    )}
-                  </Button>
-                </div>
-                <p className="text-green-700 dark:text-green-300 text-sm mb-4">
-                  Get personalized local tips, hidden gems, and insider knowledge about {selectedCity}
-                </p>
-                
-                {cityGuide && (
-                  <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border border-green-100 dark:border-green-800 space-y-4">
-                    {/* Overview */}
+                  
+                  {/* Best Time to Visit */}
+                  {cityGuide.bestTimeToVisit && (
                     <div>
-                      <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-                        <Target className="w-4 h-4 text-green-600" />
-                        Overview
-                      </h4>
-                      <p className="text-gray-700 dark:text-gray-300">{cityGuide.overview}</p>
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-2 text-sm sm:text-base">Best Time to Visit</h4>
+                      <p className="text-gray-700 dark:text-gray-300 text-sm">{cityGuide.bestTimeToVisit}</p>
                     </div>
-                    
-                    {/* Best Time to Visit */}
+                  )}
+                  
+                  {/* Local Tips */}
+                  {cityGuide.localTips && cityGuide.localTips.length > 0 && (
                     <div>
-                      <h4 className="font-semibold text-gray-900 dark:text-white mb-2">🌤️ Best Time to Visit</h4>
-                      <p className="text-gray-700 dark:text-gray-300">{cityGuide.bestTimeToVisit}</p>
-                    </div>
-                    
-                    {/* Local Tips */}
-                    <div>
-                      <h4 className="font-semibold text-gray-900 dark:text-white mb-2">💡 Local Tips</h4>
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-2 text-sm sm:text-base">Local Tips</h4>
                       <ul className="space-y-1">
-                        {cityGuide.localTips?.map((tip: string, i: number) => (
+                        {cityGuide.localTips.map((tip: string, i: number) => (
                           <li key={i} className="text-gray-700 dark:text-gray-300 text-sm flex items-start gap-2">
                             <span className="text-green-500">•</span> {tip}
                           </li>
                         ))}
                       </ul>
                     </div>
-                    
-                    {/* Hidden Gems */}
+                  )}
+                  
+                  {/* Hidden Gems */}
+                  {cityGuide.hiddenGems && cityGuide.hiddenGems.length > 0 && (
                     <div>
-                      <h4 className="font-semibold text-gray-900 dark:text-white mb-2">💎 Hidden Gems</h4>
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-2 text-sm sm:text-base">Hidden Gems</h4>
                       <ul className="space-y-1">
-                        {cityGuide.hiddenGems?.map((gem: string, i: number) => (
+                        {cityGuide.hiddenGems.map((gem: string, i: number) => (
                           <li key={i} className="text-gray-700 dark:text-gray-300 text-sm flex items-start gap-2">
                             <span className="text-teal-500">•</span> {gem}
                           </li>
                         ))}
                       </ul>
                     </div>
-                    
-                    {/* Food Recommendations */}
+                  )}
+                  
+                  {/* Food Recommendations */}
+                  {cityGuide.foodRecommendations && cityGuide.foodRecommendations.length > 0 && (
                     <div>
-                      <h4 className="font-semibold text-gray-900 dark:text-white mb-2">🍽️ Food Recommendations</h4>
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-2 text-sm sm:text-base">Food Recommendations</h4>
                       <ul className="space-y-1">
-                        {cityGuide.foodRecommendations?.map((food: string, i: number) => (
+                        {cityGuide.foodRecommendations.map((food: string, i: number) => (
                           <li key={i} className="text-gray-700 dark:text-gray-300 text-sm flex items-start gap-2">
                             <span className="text-orange-500">•</span> {food}
                           </li>
                         ))}
                       </ul>
                     </div>
-                    
-                    {/* Safety Tips */}
+                  )}
+                  
+                  {/* Safety Tips */}
+                  {cityGuide.safetyTips && cityGuide.safetyTips.length > 0 && (
                     <div>
-                      <h4 className="font-semibold text-gray-900 dark:text-white mb-2">🛡️ Safety Tips</h4>
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-2 text-sm sm:text-base">Safety Tips</h4>
                       <ul className="space-y-1">
-                        {cityGuide.safetyTips?.map((tip: string, i: number) => (
+                        {cityGuide.safetyTips.map((tip: string, i: number) => (
                           <li key={i} className="text-gray-700 dark:text-gray-300 text-sm flex items-start gap-2">
                             <span className="text-blue-500">•</span> {tip}
                           </li>
                         ))}
                       </ul>
                     </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
         </div>
 
         {/* Matching Users with AI Insights */}

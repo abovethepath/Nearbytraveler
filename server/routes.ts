@@ -52,6 +52,7 @@ import {
   businessOffers,
   cityPages,
   cityActivities,
+  cityGuides,
   userCityInterests,
   businessInterestNotifications,
   references,
@@ -17237,14 +17238,66 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // POST generate AI city guide
+  // GET cached city guide (auto-loads from database)
+  app.get("/api/city-guide/:cityName", async (req, res) => {
+    try {
+      const { cityName } = req.params;
+      if (!cityName) {
+        return res.status(400).json({ error: 'City name is required' });
+      }
+
+      // Check if cached guide exists
+      const [cachedGuide] = await db.select().from(cityGuides).where(eq(cityGuides.cityName, cityName)).limit(1);
+      
+      if (cachedGuide) {
+        console.log(`✅ City guide cache HIT for ${cityName}`);
+        return res.json({
+          cached: true,
+          overview: cachedGuide.overview,
+          bestTimeToVisit: cachedGuide.bestTimeToVisit,
+          localTips: cachedGuide.localTips,
+          hiddenGems: cachedGuide.hiddenGems,
+          foodRecommendations: cachedGuide.foodRecommendations,
+          safetyTips: cachedGuide.safetyTips,
+          updatedAt: cachedGuide.updatedAt
+        });
+      }
+
+      // No cached guide
+      console.log(`⚪ City guide cache MISS for ${cityName}`);
+      res.json({ cached: false });
+    } catch (error: any) {
+      console.error('Get city guide error:', error);
+      res.status(500).json({ error: 'Failed to get city guide' });
+    }
+  });
+
+  // POST generate AI city guide (generates and saves to cache)
   app.post("/api/ai/city-guide", async (req, res) => {
     try {
       const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
       
-      const { cityName } = req.body;
+      const { cityName, forceRefresh } = req.body;
       if (!cityName) {
         return res.status(400).json({ error: 'City name is required' });
+      }
+
+      // Check if cached guide exists (unless force refresh)
+      if (!forceRefresh) {
+        const [cachedGuide] = await db.select().from(cityGuides).where(eq(cityGuides.cityName, cityName)).limit(1);
+        if (cachedGuide) {
+          console.log(`✅ City guide cache HIT for ${cityName}`);
+          return res.json({
+            cached: true,
+            overview: cachedGuide.overview,
+            bestTimeToVisit: cachedGuide.bestTimeToVisit,
+            localTips: cachedGuide.localTips,
+            hiddenGems: cachedGuide.hiddenGems,
+            foodRecommendations: cachedGuide.foodRecommendations,
+            safetyTips: cachedGuide.safetyTips,
+            updatedAt: cachedGuide.updatedAt
+          });
+        }
       }
 
       // Optionally fetch user data for personalized guide
@@ -17254,10 +17307,63 @@ Questions? Just reply to this message. Welcome aboard!
         userData = user as any;
       }
 
+      console.log(`🤖 Generating AI city guide for ${cityName}...`);
       const { aiCityMatchService } = await import('./services/aiCityMatch');
       const result = await aiCityMatchService.generateCityGuide(cityName, userData);
 
-      res.json(result);
+      if (!result.success || !result.guide) {
+        return res.status(400).json({ error: result.error || 'Failed to generate city guide' });
+      }
+
+      const guide = result.guide;
+
+      // Save to database cache (upsert)
+      try {
+        const [existing] = await db.select().from(cityGuides).where(eq(cityGuides.cityName, cityName)).limit(1);
+        
+        if (existing) {
+          // Update existing
+          await db.update(cityGuides)
+            .set({
+              overview: guide.overview,
+              bestTimeToVisit: guide.bestTimeToVisit,
+              localTips: guide.localTips,
+              hiddenGems: guide.hiddenGems,
+              foodRecommendations: guide.foodRecommendations,
+              safetyTips: guide.safetyTips,
+              updatedAt: new Date()
+            })
+            .where(eq(cityGuides.cityName, cityName));
+          console.log(`✅ Updated city guide cache for ${cityName}`);
+        } else {
+          // Insert new
+          await db.insert(cityGuides).values({
+            cityName,
+            country: 'United States',
+            overview: guide.overview,
+            bestTimeToVisit: guide.bestTimeToVisit,
+            localTips: guide.localTips,
+            hiddenGems: guide.hiddenGems,
+            foodRecommendations: guide.foodRecommendations,
+            safetyTips: guide.safetyTips
+          });
+          console.log(`✅ Saved new city guide to cache for ${cityName}`);
+        }
+      } catch (cacheError) {
+        console.error('Failed to cache city guide:', cacheError);
+        // Don't fail the request, just log the error
+      }
+
+      // Return guide with top-level fields for frontend compatibility
+      res.json({
+        cached: false,
+        overview: guide.overview,
+        bestTimeToVisit: guide.bestTimeToVisit,
+        localTips: guide.localTips,
+        hiddenGems: guide.hiddenGems,
+        foodRecommendations: guide.foodRecommendations,
+        safetyTips: guide.safetyTips
+      });
     } catch (error: any) {
       console.error('AI city guide error:', error);
       res.status(500).json({ error: 'Failed to generate city guide' });

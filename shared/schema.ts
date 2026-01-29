@@ -1209,6 +1209,25 @@ export type InsertUserCityInterest = z.infer<typeof insertUserCityInterestSchema
 export type UserEventInterest = typeof userEventInterests.$inferSelect;
 export type InsertUserEventInterest = z.infer<typeof insertUserEventInterestSchema>;
 
+// City Guides - Cached AI-generated city guide content
+export const cityGuides = pgTable("city_guides", {
+  id: serial("id").primaryKey(),
+  cityName: text("city_name").notNull().unique(),
+  country: text("country").notNull().default("United States"),
+  overview: text("overview").notNull(),
+  bestTimeToVisit: text("best_time_to_visit"),
+  localTips: jsonb("local_tips").$type<string[]>(),
+  hiddenGems: jsonb("hidden_gems").$type<string[]>(),
+  foodRecommendations: jsonb("food_recommendations").$type<string[]>(),
+  safetyTips: jsonb("safety_tips").$type<string[]>(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertCityGuideSchema = createInsertSchema(cityGuides).omit({ id: true });
+export type CityGuide = typeof cityGuides.$inferSelect;
+export type InsertCityGuide = z.infer<typeof insertCityGuideSchema>;
+
 // Passport Stamps - Gamified collection system
 export const passportStamps = pgTable("passport_stamps", {
   id: serial("id").primaryKey(),
