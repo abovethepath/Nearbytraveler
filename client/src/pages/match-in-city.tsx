@@ -12,24 +12,42 @@ import { useQuery } from "@tanstack/react-query";
 import { getTravelActivities } from "@shared/base-options";
 import { METRO_AREAS } from "@shared/constants";
 
-// Suggestion mappings: Universal pick → suggested city-specific follow-ups
-// These are generic templates - the system tries to find existing city activities first
-const SUGGESTION_MAPPINGS: Record<string, string[]> = {
-  "Guided Tours": ["Architecture Walk", "Street Art Walk", "Historical Walking Tour", "Food Walking Tour", "Neighborhood Tour"],
-  "Hiking & Nature": ["Viewpoint Hike", "Scenic Trail", "Nature Preserve", "Botanical Gardens", "Park Walk"],
-  "Beach / Waterfront": ["Beach", "Boardwalk", "Pier", "Waterfront Walk", "Harbor"],
-  "Museums & Galleries": ["Art Museum", "History Museum", "Science Museum", "Gallery", "Cultural Center"],
-  "Nightlife & Dancing": ["Nightlife District", "Live Music Venue", "Dance Club", "Late Night Scene"],
-  "Restaurants & Local Eats": ["Local Restaurant", "Food Market", "Iconic Diner", "Farm-to-Table"],
-  "Coffee & Brunch": ["Coffee Shop", "Brunch Spot", "Bakery", "Cafe"],
-  "Live Music": ["Music Venue", "Jazz Club", "Concert Hall", "Live Music Spot"],
-  "History & Architecture": ["Historic District", "Historic Building", "Old Town", "Heritage Site"],
-  "Local Markets": ["Market", "Flea Market", "Artisan Market", "Farmers Market"],
-  "Bars / Happy Hour": ["Bar District", "Cocktail Bar", "Wine Bar", "Beer Garden"],
-  "Street Food / Food Trucks": ["Food Truck Park", "Street Food Spot", "Food Truck"],
-  "Scenic / Photography Spots": ["Photo Spot", "Sunset Viewpoint", "Skyline View", "Vista Point"],
-  "Biking / Cycling": ["Bike Path", "Bike Route", "Cycling Trail"],
-  "Fitness / Workouts": ["Running Path", "Outdoor Gym", "Fitness Spot"],
+// Universal → categories mapping for finding city-specific activities
+const UNIVERSAL_TO_CATEGORIES: Record<string, string[]> = {
+  "Guided Tours": ["Tourism", "Culture", "Local", "Sightseeing"],
+  "Hiking & Nature": ["Outdoor", "Nature", "Parks"],
+  "Beach / Waterfront": ["Outdoor", "Beach", "Nature"],
+  "Museums & Galleries": ["Culture", "Tourism", "Art"],
+  "Nightlife & Dancing": ["Nightlife", "Entertainment"],
+  "Restaurants & Local Eats": ["Food", "Local", "Dining"],
+  "Coffee & Brunch": ["Food", "Dining", "Local"],
+  "Live Music": ["Entertainment", "Nightlife", "Events"],
+  "History & Architecture": ["Culture", "Tourism", "Local"],
+  "Local Markets": ["Shopping", "Food", "Local"],
+  "Bars / Happy Hour": ["Nightlife", "Food"],
+  "Street Food / Food Trucks": ["Food", "Local"],
+  "Scenic / Photography Spots": ["Tourism", "Outdoor", "Nature"],
+  "Biking / Cycling": ["Outdoor", "Sports"],
+  "Fitness / Workouts": ["Sports", "Outdoor"],
+};
+
+// Keywords that help match universals to city activities (for keyword-based fallback)
+const UNIVERSAL_KEYWORDS: Record<string, string[]> = {
+  "Guided Tours": ["tour", "walk", "hike", "guide"],
+  "Hiking & Nature": ["hike", "trail", "park", "nature", "garden", "observatory"],
+  "Beach / Waterfront": ["beach", "pier", "boardwalk", "waterfront", "harbor", "marina"],
+  "Museums & Galleries": ["museum", "gallery", "art", "center", "exhibit"],
+  "Nightlife & Dancing": ["club", "bar", "nightlife", "lounge", "dance"],
+  "Restaurants & Local Eats": ["restaurant", "diner", "eatery", "food", "market", "kitchen"],
+  "Coffee & Brunch": ["coffee", "cafe", "brunch", "bakery", "roastery"],
+  "Live Music": ["music", "venue", "jazz", "concert", "hall"],
+  "History & Architecture": ["historic", "architecture", "old town", "heritage", "landmark"],
+  "Local Markets": ["market", "flea", "artisan", "farmers"],
+  "Bars / Happy Hour": ["bar", "pub", "cocktail", "wine", "beer", "speakeasy"],
+  "Street Food / Food Trucks": ["food truck", "street food"],
+  "Scenic / Photography Spots": ["view", "vista", "skyline", "sunset", "overlook", "scenic"],
+  "Biking / Cycling": ["bike", "cycling", "path", "trail"],
+  "Fitness / Workouts": ["run", "gym", "fitness", "yoga"],
 };
 
 // Normalize string for comparison
@@ -1625,55 +1643,87 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   
                   if (selectedUniversals.length === 0) return null;
                   
-                  // Track already-suggested normalized names to avoid duplicates
-                  const suggestedNormalized = new Set<string>();
-                  
-                  // Track user's already-selected activity names (normalized)
-                  const userSelectedNormalized = new Set(
-                    userActivities
-                      .filter(ua => ua.cityName === selectedCity)
-                      .map(ua => normalizeName(ua.activityName))
+                  // Get featured activities (Popular section) to exclude
+                  const featuredActivityIds = new Set(
+                    cityActivities
+                      .filter(a => (a as any).isFeatured || (a as any).source === 'featured')
+                      .map(a => a.id)
                   );
                   
-                  // Generate suggestions based on selected universals
-                  const suggestions: { name: string; because: string; existingActivity?: any }[] = [];
+                  // Track user's already-selected activity IDs
+                  const userSelectedIds = new Set(
+                    userActivities.filter(ua => ua.cityName === selectedCity).map(ua => ua.activityId)
+                  );
+                  
+                  // Track already-suggested to avoid duplicates
+                  const suggestedIds = new Set<number>();
+                  const suggestedNormalized = new Set<string>();
+                  
+                  // Generate suggestions - prefer named city-specific items first
+                  const suggestions: { name: string; because: string; existingActivity: any }[] = [];
                   
                   for (const universal of selectedUniversals) {
-                    const mappedSuggestions = SUGGESTION_MAPPINGS[universal] || [];
-                    
-                    for (const suggestionTemplate of mappedSuggestions) {
-                      const templateNorm = normalizeName(suggestionTemplate);
-                      
-                      // Skip if we already suggested something similar
-                      if (suggestedNormalized.has(templateNorm)) continue;
-                      
-                      // Try to find a matching city-specific activity (exact or contains key words)
-                      const existingActivity = cityActivities.find(ca => {
-                        const caNorm = normalizeName(ca.activityName);
-                        // Match if existing activity contains all key words from template
-                        const templateWords = templateNorm.split(/\s+/).filter(w => w.length > 2);
-                        return templateWords.every(word => caNorm.includes(word));
-                      });
-                      
-                      const finalName = existingActivity ? existingActivity.activityName : suggestionTemplate;
-                      const finalNorm = normalizeName(finalName);
-                      
-                      // Skip if user already selected this
-                      if (userSelectedNormalized.has(finalNorm)) continue;
-                      
-                      suggestedNormalized.add(templateNorm);
-                      suggestions.push({
-                        name: finalName,
-                        because: universal,
-                        existingActivity
-                      });
-                      
-                      if (suggestions.length >= 5) break;
-                    }
                     if (suggestions.length >= 5) break;
+                    
+                    const categories = UNIVERSAL_TO_CATEGORIES[universal] || [];
+                    const keywords = UNIVERSAL_KEYWORDS[universal] || [];
+                    
+                    // Find city activities matching this universal by category or keywords
+                    // Prefer featured/ranked items, then AI-generated, sorted by rank
+                    const matchingActivities = cityActivities
+                      .filter(ca => {
+                        // Skip if already in Popular section
+                        if (featuredActivityIds.has(ca.id)) return false;
+                        // Skip if already selected by user
+                        if (userSelectedIds.has(ca.id)) return false;
+                        // Skip if already suggested
+                        if (suggestedIds.has(ca.id)) return false;
+                        // Skip universal activities (they belong in preferences section)
+                        if (ca.category === 'universal') return false;
+                        
+                        // Match by category
+                        if (ca.category && categories.some(cat => 
+                          cat.toLowerCase() === ca.category?.toLowerCase()
+                        )) return true;
+                        
+                        // Match by keywords in activity name
+                        const nameNorm = normalizeName(ca.activityName);
+                        if (keywords.some(kw => nameNorm.includes(kw.toLowerCase()))) return true;
+                        
+                        return false;
+                      })
+                      .sort((a, b) => {
+                        // Featured first, then by rank
+                        const aFeat = (a as any).isFeatured ? 1 : 0;
+                        const bFeat = (b as any).isFeatured ? 1 : 0;
+                        if (aFeat !== bFeat) return bFeat - aFeat;
+                        return ((a as any).rank || 999) - ((b as any).rank || 999);
+                      });
+                    
+                    // Add up to 2 suggestions per universal to keep variety
+                    let addedForUniversal = 0;
+                    for (const activity of matchingActivities) {
+                      if (suggestions.length >= 5 || addedForUniversal >= 2) break;
+                      
+                      const nameNorm = normalizeName(activity.activityName);
+                      // Skip synonyms/duplicates
+                      if (suggestedNormalized.has(nameNorm)) continue;
+                      
+                      suggestedIds.add(activity.id);
+                      suggestedNormalized.add(nameNorm);
+                      suggestions.push({
+                        name: activity.activityName,
+                        because: universal,
+                        existingActivity: activity
+                      });
+                      addedForUniversal++;
+                    }
                   }
                   
                   if (suggestions.length === 0) return null;
+                  
+                  // Get unique trigger universals for display
+                  const triggerUniversals = [...new Set(suggestions.map(s => s.because))];
                   
                   return (
                     <div className="mb-8 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-4 sm:p-6 border border-green-200 dark:border-green-700">
@@ -1682,16 +1732,17 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           <Lightbulb className="inline-block w-5 h-5 mr-1 -mt-1" />
                           Suggested for you
                         </h3>
-                        <p className="text-green-600 dark:text-green-400 text-sm">Based on what you picked...</p>
+                        <p className="text-green-600 dark:text-green-400 text-sm">
+                          Because you picked: {triggerUniversals.slice(0, 2).join(', ')}
+                          {triggerUniversals.length > 2 && ` +${triggerUniversals.length - 2} more`}
+                        </p>
                       </div>
                       <div className="flex flex-wrap gap-2 justify-center">
                         {suggestions.map((suggestion, index) => {
-                          const isAlreadySelected = userActivities.some(ua => 
-                            ua.cityName === selectedCity && ua.activityName === suggestion.name
-                          );
+                          const isAlreadySelected = userSelectedIds.has(suggestion.existingActivity.id);
                           
                           return (
-                            <div key={index} className="relative group">
+                            <div key={suggestion.existingActivity.id} className="relative group">
                               <button
                                 onClick={async () => {
                                   if (isAlreadySelected) return;
@@ -1701,31 +1752,12 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                   
                                   try {
                                     const apiBase = getApiBaseUrl();
-                                    
-                                    if (suggestion.existingActivity) {
-                                      // Add existing activity to user's interests
-                                      await fetch(`${apiBase}/api/user-city-interests`, {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json', 'x-user-id': actualUser.id.toString() },
-                                        body: JSON.stringify({ userId: actualUser.id, activityId: suggestion.existingActivity.id, cityName: selectedCity })
-                                      });
-                                    } else {
-                                      // Create new activity then add to interests
-                                      const createResponse = await fetch(`${apiBase}/api/city-activities`, {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json', 'x-user-id': actualUser.id.toString() },
-                                        body: JSON.stringify({ cityName: selectedCity, activityName: suggestion.name, createdByUserId: actualUser.id, description: `Suggested based on ${suggestion.because}`, category: 'suggested' })
-                                      });
-                                      
-                                      if (createResponse.ok) {
-                                        const newActivity = await createResponse.json();
-                                        await fetch(`${apiBase}/api/user-city-interests`, {
-                                          method: 'POST',
-                                          headers: { 'Content-Type': 'application/json', 'x-user-id': actualUser.id.toString() },
-                                          body: JSON.stringify({ userId: actualUser.id, activityId: newActivity.id, cityName: selectedCity })
-                                        });
-                                      }
-                                    }
+                                    // Add existing activity to user's interests
+                                    await fetch(`${apiBase}/api/user-city-interests`, {
+                                      method: 'POST',
+                                      headers: { 'Content-Type': 'application/json', 'x-user-id': actualUser.id.toString() },
+                                      body: JSON.stringify({ userId: actualUser.id, activityId: suggestion.existingActivity.id, cityName: selectedCity })
+                                    });
                                     
                                     fetchUserActivities();
                                     fetchCityActivities();
@@ -1747,7 +1779,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                               </button>
                               {/* "Why?" tooltip */}
                               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
-                                Because you picked "{suggestion.because}"
+                                You picked {suggestion.because}
                               </div>
                             </div>
                           );
