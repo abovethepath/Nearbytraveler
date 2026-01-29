@@ -11062,6 +11062,7 @@ export class DatabaseStorage implements IStorage {
         description: activity.description || '',
         category: activity.category || 'general',
         createdByUserId: activity.createdByUserId,
+        activityDate: activity.activityDate || null,
         isActive: true
       }).returning();
 

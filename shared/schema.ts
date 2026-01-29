@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, real, varchar, jsonb, unique, bigint, decimal, index } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, real, varchar, jsonb, unique, bigint, decimal, index, date } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -1167,6 +1167,7 @@ export const cityActivities = pgTable("city_activities", {
   isFeatured: boolean("is_featured").notNull().default(false),
   isHidden: boolean("is_hidden").notNull().default(false), // Hidden from display (legacy/junk items)
   rank: integer("rank").default(0), // For ordering featured items
+  activityDate: date("activity_date"), // Optional date for dated picks like "Taylor Swift Jan 30"
   createdByUserId: integer("created_by_user_id").notNull(),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),

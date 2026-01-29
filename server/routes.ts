@@ -17134,13 +17134,13 @@ Questions? Just reply to this message. Welcome aboard!
   // POST new city activity 
   app.post("/api/city-activities", async (req, res) => {
     try {
-      const { cityName, state, country, activityName, category, description, createdByUserId } = req.body;
+      const { cityName, state, country, activityName, category, description, createdByUserId, activityDate } = req.body;
       
       if (!cityName || !activityName || !createdByUserId) {
         return res.status(400).json({ error: 'Missing required fields: cityName, activityName, createdByUserId' });
       }
       
-      if (process.env.NODE_ENV === 'development') console.log(`🏃 CITY ACTIVITIES POST: Creating activity "${activityName}" for ${cityName}`);
+      if (process.env.NODE_ENV === 'development') console.log(`🏃 CITY ACTIVITIES POST: Creating activity "${activityName}" for ${cityName}${activityDate ? ` on ${activityDate}` : ''}`);
       
       const newActivity = await storage.createCityActivity({
         cityName,
@@ -17149,7 +17149,8 @@ Questions? Just reply to this message. Welcome aboard!
         activityName,
         category: category || 'general',
         description: description || 'User added activity',
-        createdByUserId
+        createdByUserId,
+        activityDate: activityDate || null
       });
       
       if (process.env.NODE_ENV === 'development') console.log(`✅ CITY ACTIVITIES POST: Created activity ${newActivity.id} for ${cityName}`);

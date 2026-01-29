@@ -145,6 +145,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [showAddPickModal, setShowAddPickModal] = useState(false);
   const [newPickName, setNewPickName] = useState('');
   const [newPickCategory, setNewPickCategory] = useState('other');
+  const [newPickDate, setNewPickDate] = useState(''); // Optional date for dated picks like "Taylor Swift Jan 30"
   const [showEventSuggestion, setShowEventSuggestion] = useState(false);
   const [similarActivity, setSimilarActivity] = useState<{id: number, name: string} | null>(null);
 
@@ -1018,7 +1019,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           category: newPickCategory,
           createdByUserId: userId,
           source: 'user',
-          description: `User-created ${newPickCategory} activity`
+          description: `User-created ${newPickCategory} activity`,
+          activityDate: newPickDate || null
         })
       });
 
@@ -1040,6 +1042,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         
         setNewPickName('');
         setNewPickCategory('other');
+        setNewPickDate('');
         setShowAddPickModal(false);
         setShowEventSuggestion(false);
         
@@ -1963,6 +1966,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   setShowEventSuggestion(false);
                   setNewPickName('');
                   setNewPickCategory('other');
+                  setNewPickDate('');
                   setSimilarActivity(null);
                 }
               }}>
@@ -2078,6 +2082,21 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           ))}
                         </SelectContent>
                       </Select>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+                        Date (optional)
+                      </label>
+                      <Input
+                        type="date"
+                        value={newPickDate}
+                        onChange={(e) => setNewPickDate(e.target.value)}
+                        className="text-gray-800 dark:text-white"
+                        min={new Date().toISOString().split('T')[0]}
+                      />
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Add a date to match with others going to a specific event like "Taylor Swift Jan 30"
+                      </p>
                     </div>
                   </div>
                   <div className="flex gap-2 justify-end">
@@ -2470,6 +2489,11 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                               <span className="relative z-10 flex items-center justify-center gap-1.5">
                                 {isAICreated && <span className="text-xs">✨</span>}
                                 {activity.activityName}
+                                {(activity as any).activityDate && (
+                                  <span className="text-xs opacity-80">
+                                    • {new Date((activity as any).activityDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                  </span>
+                                )}
                               </span>
                             </button>
                             
