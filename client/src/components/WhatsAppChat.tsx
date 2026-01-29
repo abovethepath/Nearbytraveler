@@ -596,7 +596,12 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     if (!editText.trim()) return;
     
     try {
-      await apiRequest('PATCH', `/api/chatroom-messages/${messageId}`, {
+      // Use different endpoint for DMs vs chatrooms
+      const endpoint = chatType === 'dm' 
+        ? `/api/messages/${messageId}` 
+        : `/api/chatroom-messages/${messageId}`;
+      
+      await apiRequest('PATCH', endpoint, {
         content: editText.trim(),
         userId: currentUserId
       });
@@ -619,7 +624,12 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     setSelectedMessage(null);
     
     try {
-      const response = await fetch(`${getApiBaseUrl()}/api/chatroom-messages/${messageId}`, {
+      // Use different endpoint for DMs vs chatrooms
+      const endpoint = chatType === 'dm' 
+        ? `/api/messages/${messageId}` 
+        : `/api/chatroom-messages/${messageId}`;
+      
+      const response = await fetch(`${getApiBaseUrl()}${endpoint}`, {
         method: 'DELETE',
         headers: { 
           'Content-Type': 'application/json',
@@ -953,7 +963,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                     onTouchEnd={(e) => handleTouchEnd(e, message)}
                     onDoubleClick={() => {
                       console.log('Double-click on message (desktop):', message.id);
-                      setSelectedMessage(message.id);
+                      setSelectedMessage(message);
                     }}
                     data-testid={`message-${message.id}`}
                   >

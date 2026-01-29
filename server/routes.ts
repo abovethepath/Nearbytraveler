@@ -16098,6 +16098,78 @@ Questions? Just reply to this message. Welcome aboard!
       if (format === 'whatsapp') {
         let messagesData: any[] = [];
         
+        // Handle DM messages (roomId is the other user's ID)
+        if (chatType === 'dm') {
+          const currentUserId = parseInt(userId as string);
+          const otherUserId = roomId;
+          
+          const dmMessages = await db.query.messages.findMany({
+            where: or(
+              and(eq(messages.senderId, currentUserId), eq(messages.receiverId, otherUserId)),
+              and(eq(messages.senderId, otherUserId), eq(messages.receiverId, currentUserId))
+            ),
+            orderBy: desc(messages.createdAt),
+            limit: 50,
+          });
+          
+          messagesData = await Promise.all(dmMessages.map(async (msg) => {
+            const sender = await db.query.users.findFirst({
+              where: eq(users.id, msg.senderId),
+              columns: {
+                id: true,
+                username: true,
+                name: true,
+                profileImage: true,
+              }
+            });
+            
+            let replyTo = null;
+            if (msg.replyToId) {
+              const replyMessage = await db.query.messages.findFirst({
+                where: eq(messages.id, msg.replyToId),
+              });
+              
+              if (replyMessage) {
+                const replySender = await db.query.users.findFirst({
+                  where: eq(users.id, replyMessage.senderId),
+                  columns: {
+                    id: true,
+                    username: true,
+                    name: true,
+                    profileImage: true,
+                  }
+                });
+                
+                replyTo = {
+                  id: replyMessage.id,
+                  content: replyMessage.content,
+                  createdAt: replyMessage.createdAt,
+                  senderId: replyMessage.senderId,
+                  messageType: replyMessage.messageType ?? 'text',
+                  sender: replySender,
+                };
+              }
+            }
+            
+            return {
+              id: msg.id,
+              content: msg.content,
+              createdAt: msg.createdAt,
+              senderId: msg.senderId,
+              messageType: msg.messageType ?? 'text',
+              replyToId: msg.replyToId,
+              reactions: msg.reactions,
+              isEdited: msg.isEdited,
+              editedAt: msg.editedAt,
+              sender,
+              replyTo,
+            };
+          }));
+          
+          console.log(`📨 HTTP MESSAGES: Returning ${messagesData.length} DM messages for conversation ${currentUserId} <-> ${otherUserId}`);
+          return res.json({ messages: messagesData });
+        }
+        
         if (chatType === 'city') {
           const rawMessages = await db.query.chatroomMessages.findMany({
             where: eq(chatroomMessages.chatroomId, roomId),
