@@ -478,7 +478,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     scrollToBottom();
   }, [messages.length]);
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     console.log('📤 sendMessage called:', { 
       messageText: messageText.trim(), 
       hasWs: !!wsRef.current, 
@@ -488,43 +488,97 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
       chatId
     });
     
-    if (!messageText.trim() || !wsRef.current || !currentUserId) {
-      console.log('❌ sendMessage blocked:', {
-        noText: !messageText.trim(),
-        noWs: !wsRef.current,
-        noUserId: !currentUserId,
-        wsReadyState: wsRef.current?.readyState
-      });
-      // Show alert for debugging on mobile - remove later
-      if (!currentUserId) {
-        console.error('🚨 CRITICAL: No currentUserId - user not authenticated');
-      }
-      if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
-        console.error('🚨 CRITICAL: WebSocket not connected, state:', wsRef.current?.readyState);
-      }
+    if (!messageText.trim() || !currentUserId) {
+      console.log('❌ sendMessage blocked - missing text or userId');
       return;
     }
 
-    console.log('✅ Sending message via WebSocket...');
-    wsRef.current.send(JSON.stringify({
-      type: 'message:new',
-      chatType,
-      chatroomId: chatId,
-      payload: {
-        content: messageText.trim(),
-        messageType: 'text',
-        replyToId: replyingTo?.id
-      }
-    }));
-
+    const content = messageText.trim();
+    const replyToId = replyingTo?.id;
+    
+    // Clear input immediately for responsive feel
     setMessageText("");
     setReplyingTo(null);
-    
-    wsRef.current.send(JSON.stringify({
-      type: 'typing:stop',
-      chatType,
-      chatroomId: chatId
-    }));
+
+    // Try WebSocket first if available
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      console.log('✅ Sending message via WebSocket...');
+      wsRef.current.send(JSON.stringify({
+        type: 'message:new',
+        chatType,
+        chatroomId: chatId,
+        payload: {
+          content,
+          messageType: 'text',
+          replyToId
+        }
+      }));
+      
+      wsRef.current.send(JSON.stringify({
+        type: 'typing:stop',
+        chatType,
+        chatroomId: chatId
+      }));
+    } else {
+      // HTTP fallback when WebSocket not ready
+      console.log('📡 Sending message via HTTP fallback...');
+      try {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        let endpoint = '';
+        let body: any = { content, messageType: 'text', replyToId };
+        
+        if (chatType === 'dm') {
+          // For DMs, use the direct messages endpoint
+          endpoint = `${getApiBaseUrl()}/api/messages`;
+          body = { receiverId: chatId, content, messageType: 'text', replyToId };
+        } else {
+          // For chatrooms/events/meetups
+          endpoint = `${getApiBaseUrl()}/api/chatrooms/${chatId}/messages`;
+        }
+        
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-id': (currentUserId || user.id || '').toString()
+          },
+          body: JSON.stringify(body)
+        });
+        
+        if (response.ok) {
+          const newMessage = await response.json();
+          console.log('✅ Message sent via HTTP:', newMessage);
+          // Add optimistic update - message will be added to list
+          if (newMessage && newMessage.id) {
+            const formattedMessage: Message = {
+              id: newMessage.id,
+              senderId: currentUserId,
+              content: newMessage.content,
+              messageType: newMessage.messageType || 'text',
+              replyToId: newMessage.replyToId,
+              createdAt: newMessage.createdAt || new Date().toISOString(),
+              sender: {
+                id: currentUserId,
+                username: user.username || 'You',
+                name: user.name || 'You',
+                profileImage: user.profileImage
+              }
+            };
+            setMessages(prev => [...prev, formattedMessage]);
+            scrollToBottom();
+          }
+        } else {
+          console.error('❌ HTTP message send failed:', response.status);
+          toast({ title: "Failed to send message", variant: "destructive" });
+          // Restore the message text so user can try again
+          setMessageText(content);
+        }
+      } catch (error) {
+        console.error('❌ HTTP message send error:', error);
+        toast({ title: "Failed to send message", variant: "destructive" });
+        setMessageText(content);
+      }
+    }
     
     // Auto-focus input after sending so user can immediately type next message
     setTimeout(() => {
@@ -807,8 +861,13 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
         <div className="flex-1 min-w-0 overflow-hidden">
           <div className="flex items-center gap-1.5">
             <h1 className="font-semibold text-sm truncate">{title}</h1>
-            <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isWsConnected ? 'bg-green-500' : 'bg-yellow-500 animate-pulse'}`} 
-                  title={isWsConnected ? 'Connected' : (hasConnectedBefore ? 'Reconnecting...' : 'Connecting...')} />
+            {/* Show green once messages are loaded (chat is usable), not just WebSocket */}
+            <span className={`w-2 h-2 rounded-full flex-shrink-0 ${
+              messagesLoaded || isWsConnected 
+                ? 'bg-green-500' 
+                : 'bg-yellow-500 animate-pulse'
+            }`} 
+                  title={messagesLoaded || isWsConnected ? 'Ready' : 'Loading...'} />
           </div>
           {subtitle && <p className="text-[11px] text-gray-400 truncate leading-tight">{subtitle}</p>}
         </div>
@@ -1107,10 +1166,10 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
 
         {/* Input box - fixed at bottom */}
         <div className="px-3 py-2 bg-gray-800 border-t border-gray-700">
-          {/* Connection status indicator */}
-          {!isWsConnected && (
+          {/* Connection status - only show briefly if not connected AND no messages loaded */}
+          {!messagesLoaded && !isWsConnected && (
             <div className="text-center text-yellow-400 text-xs mb-2 animate-pulse">
-              {hasConnectedBefore ? 'Reconnecting...' : 'Connecting...'}
+              Loading...
             </div>
           )}
           <div className="flex items-end gap-2">
@@ -1119,21 +1178,21 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
               value={messageText}
               onChange={(e) => handleTyping(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
-              placeholder={isWsConnected ? "Message" : "Connecting..."}
+              placeholder="Message"
               className="flex-1 min-h-[36px] max-h-[100px] bg-gray-700 border-gray-600 text-white resize-none rounded-full px-3 py-2 text-sm"
               rows={1}
-              disabled={!isWsConnected}
+              disabled={!messagesLoaded && !isWsConnected}
             />
             <Button 
               onClick={sendMessage} 
-              disabled={!messageText.trim() || !currentUserId || !isWsConnected} 
+              disabled={!messageText.trim() || !currentUserId || (!messagesLoaded && !isWsConnected)} 
               size="icon" 
               className={`rounded-full h-9 w-9 shrink-0 ${
-                !currentUserId || !isWsConnected
+                !currentUserId || (!messagesLoaded && !isWsConnected)
                   ? 'bg-gray-500 cursor-not-allowed' 
                   : 'bg-green-600 hover:bg-green-700'
               }`}
-              title={!currentUserId ? 'Not logged in' : !isWsConnected ? 'Connecting...' : 'Send message'}
+              title={!currentUserId ? 'Not logged in' : 'Send message'}
             >
               <Send className="w-4 h-4" />
             </Button>
