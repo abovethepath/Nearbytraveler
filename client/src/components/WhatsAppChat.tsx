@@ -527,8 +527,30 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   };
 
   const handleReaction = (messageId: number, emoji: string) => {
-    if (!wsRef.current) return;
+    if (!wsRef.current || !currentUserId) return;
 
+    // Optimistic update - immediately update local state
+    setMessages(prev => prev.map(msg => {
+      if (msg.id !== messageId) return msg;
+      
+      const reactions = { ...(msg.reactions || {}) };
+      if (!reactions[emoji]) {
+        reactions[emoji] = [];
+      }
+      
+      // Toggle reaction
+      const userIndex = reactions[emoji].indexOf(currentUserId);
+      if (userIndex > -1) {
+        reactions[emoji] = reactions[emoji].filter((id: number) => id !== currentUserId);
+        if (reactions[emoji].length === 0) delete reactions[emoji];
+      } else {
+        reactions[emoji] = [...reactions[emoji], currentUserId];
+      }
+      
+      return { ...msg, reactions };
+    }));
+
+    // Send to server (will broadcast to other users)
     wsRef.current.send(JSON.stringify({
       type: 'message:reaction',
       chatType,
