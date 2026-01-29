@@ -100,7 +100,7 @@ export default function UserCard({
 
   return (
     <button 
-      className="rounded-xl overflow-hidden bg-white/5 dark:bg-gray-800/50 border border-gray-200/50 dark:border-white/10 shadow-sm hover:shadow-md transition-all w-full text-left"
+      className="w-full min-w-0 max-w-none rounded-xl overflow-hidden bg-white/5 dark:bg-gray-800/50 border border-gray-200/50 dark:border-white/10 shadow-sm hover:shadow-md transition-all text-left"
       onClick={handleCardClick}
       data-testid={`user-card-${user.id}`}
     >

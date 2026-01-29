@@ -1,0 +1,89 @@
+from that screenshot you’re basically getting one giant tile per row, which defeats the point. That usually happens for one of two reasons:
+
+The parent layout is still flex flex-col (or a list), so everything stacks.
+
+The card wrapper is forcing full width (w-full, max-w-*, col-span-full, or min-w-[…]), so the grid can’t form 2 columns.
+
+Here’s exactly what to tell Replit to do.
+
+What to tell Replit (copy/paste)
+
+Goal: Make “Discover People” a 2-column grid on mobile, not a single-column list.
+
+1) Fix the parent container (this is the main issue)
+
+Replace the list wrapper with a grid:
+
+Mobile: grid-cols-2
+
+Tablet: md:grid-cols-3
+
+Desktop: lg:grid-cols-4 xl:grid-cols-5
+
+Gap tight: gap-2
+
+2) Remove full-width / max-width constraints that force 1 column
+
+Search the card + wrapper for any of these and remove/override them:
+
+max-w-sm, max-w-md, max-w-lg, w-full on an outer wrapper
+
+col-span-2, col-span-full, flex-col list wrappers
+
+min-w-[320px] or similar
+
+In tile view, each card should be: w-full min-w-0 max-w-none
+
+3) Force a compact tile height (no “content grows taller”)
+
+Use a fixed aspect ratio for the image tile:
+
+aspect-[3/4] or aspect-[4/5]
+
+Image: object-cover
+
+4) Keep text minimal
+
+Only show:
+
+name (1 line)
+
+city (1 line)
+
+optional “X shared picks • Y prefs” (1 line)
+
+No bio paragraphs. No big tag stacks. Max 0–2 chips.
+
+Minimal Tailwind example (what Replit should implement)
+// DiscoverPeople.tsx (or wherever the list is rendered)
+<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+  {users.map((u) => (
+    <button
+      key={u.id}
+      className="w-full min-w-0 max-w-none rounded-2xl overflow-hidden bg-white/5 border border-white/10"
+    >
+      <div className="relative aspect-[4/5]">
+        <img
+          src={u.photoUrl}
+          className="absolute inset-0 w-full h-full object-cover"
+          alt=""
+        />
+        <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/70 to-transparent">
+          <div className="text-sm font-semibold truncate">{u.username}</div>
+          <div className="text-xs opacity-80 truncate">{u.city}</div>
+        </div>
+      </div>
+    </button>
+  ))}
+</div>
+
+Quick diagnostic (why yours is still 1 column)
+
+If Replit “made a grid” but you still see 1 column, it’s almost always because each tile is inside something like:
+
+<div className="w-full max-w-md mx-auto"> ...tile... </div> ✅ (this forces a single column)
+or the wrapper is still flex flex-col.
+
+Tell Replit: remove the max-width wrapper around each card and apply grid at the list level only.
+
+If you paste the component names (the file that renders “Discover People” + the card component), I’ll tell you exactly where to remove the max-w-* / w-full that’s blocking the 2-column grid.

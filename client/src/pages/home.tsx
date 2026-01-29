@@ -1971,9 +1971,9 @@ export default function Home() {
                 <>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
                     {sortedAndFilteredUsers.length > 0 ? (
-                      sortedAndFilteredUsers.slice(0, showAllUsers ? sortedAndFilteredUsers.length : 8).map((otherUser) => (
-                        <div key={otherUser.id} className="transform hover:scale-[1.02] transition-transform min-w-0 overflow-hidden">
+                      sortedAndFilteredUsers.slice(0, showAllUsers ? sortedAndFilteredUsers.length : 12).map((otherUser) => (
                           <UserCard 
+                            key={otherUser.id}
                             user={otherUser} 
                             currentUserId={effectiveUser?.id}
                             isCurrentUser={otherUser.id === effectiveUser?.id}
@@ -1981,7 +1981,6 @@ export default function Home() {
                             compact={isCompactMode}
                             connectionDegree={connectionDegreesData?.degrees?.[otherUser.id]}
                           />
-                        </div>
                       ))
                     ) : (
                       <div className="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">
