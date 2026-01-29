@@ -9,7 +9,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, VolumeX, Edit2, Trash2, Check, X } from "lucide-react";
+import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, VolumeX, Edit2, Trash2, Check, X, ThumbsUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
@@ -1148,8 +1148,29 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           >
             {/* Action buttons */}
             <div className="px-2 py-3 space-y-1">
+              {/* Thumbs up reaction - available for ALL messages */}
+              <button 
+                type="button" 
+                onTouchEnd={(e) => { 
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleReaction(selectedMessage.id, '👍');
+                }}
+                onClick={(e) => { 
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleReaction(selectedMessage.id, '👍');
+                }}
+                className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
+                style={{ touchAction: 'manipulation', cursor: 'pointer', WebkitTapHighlightColor: 'rgba(59, 130, 246, 0.3)' }}
+                data-testid="button-react-thumbsup"
+              >
+                <ThumbsUp className="w-5 h-5 text-blue-400 pointer-events-none" />
+                <span className="text-sm pointer-events-none">Like</span>
+              </button>
+              
               {selectedMessage.senderId == currentUserId ? (
-                /* YOUR OWN MESSAGE: Edit and Delete only */
+                /* YOUR OWN MESSAGE: Edit and Delete */
                 <>
                   <button 
                     type="button" 
@@ -1197,7 +1218,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                   </button>
                 </>
               ) : (
-                /* OTHER PERSON'S MESSAGE: Reply only */
+                /* OTHER PERSON'S MESSAGE: Reply */
                 <button 
                   type="button" 
                   onTouchEnd={(e) => { 
