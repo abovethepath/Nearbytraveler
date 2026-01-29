@@ -73,6 +73,42 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [aiSuggestionsLoading, setAiSuggestionsLoading] = useState(false);
   const [matchingInsight, setMatchingInsight] = useState<{ [userId: number]: any }>({});
   const [matchingInsightLoading, setMatchingInsightLoading] = useState<{ [userId: number]: boolean }>({});
+  
+  // Dismissed AI activities (persisted in localStorage per city)
+  const [dismissedAIActivities, setDismissedAIActivities] = useState<Set<number>>(() => {
+    try {
+      const saved = localStorage.getItem(`dismissedAIActivities_${selectedCity}`);
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch {
+      return new Set();
+    }
+  });
+  
+  // Update dismissed activities when city changes
+  useEffect(() => {
+    if (selectedCity) {
+      try {
+        const saved = localStorage.getItem(`dismissedAIActivities_${selectedCity}`);
+        setDismissedAIActivities(saved ? new Set(JSON.parse(saved)) : new Set());
+      } catch {
+        setDismissedAIActivities(new Set());
+      }
+    }
+  }, [selectedCity]);
+  
+  const dismissAIActivity = (activityId: number) => {
+    setDismissedAIActivities(prev => {
+      const newSet = new Set(prev);
+      newSet.add(activityId);
+      // Persist to localStorage
+      localStorage.setItem(`dismissedAIActivities_${selectedCity}`, JSON.stringify([...newSet]));
+      return newSet;
+    });
+    toast({
+      title: "Activity Dismissed",
+      description: "This AI activity has been hidden from your view",
+    });
+  };
 
   // Hero section visibility state (for after city selection)
   const [isHeroVisible, setIsHeroVisible] = useState<boolean>(() => {
@@ -430,7 +466,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
   const fetchUserActivities = async () => {
     // Get user from multiple storage locations
-    const storedUser = localStorage.getItem('travelConnectUser');
+    const storedUser = localStorage.getItem('travelconnect_user');
     const authUser = localStorage.getItem('user');
     
     let actualUser = user;
@@ -540,7 +576,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   };
 
   const toggleActivity = async (activity: any) => {
-    const storedUser = localStorage.getItem('travelConnectUser');
+    const storedUser = localStorage.getItem('travelconnect_user');
     const authUser = localStorage.getItem('user');
     const actualUser = user || (storedUser ? JSON.parse(storedUser) : null) || (authUser ? JSON.parse(authUser) : null);
     const userId = actualUser?.id;
@@ -668,7 +704,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       return;
     }
 
-    const storedUser = localStorage.getItem('travelConnectUser');
+    const storedUser = localStorage.getItem('travelconnect_user');
     const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
     const userId = actualUser?.id;
     console.log('🔧 UPDATE: using userId =', userId);
@@ -736,7 +772,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       return;
     }
 
-    const storedUser = localStorage.getItem('travelConnectUser');
+    const storedUser = localStorage.getItem('travelconnect_user');
     const authUser = localStorage.getItem('user');
     const actualUser = user || (storedUser ? JSON.parse(storedUser) : null) || (authUser ? JSON.parse(authUser) : null);
     const userId = actualUser?.id;
@@ -784,7 +820,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     if (!newActivity.trim()) return;
     
     // Get user from localStorage if not in context (same as toggle function)
-    const storedUser = localStorage.getItem('travelConnectUser');
+    const storedUser = localStorage.getItem('travelconnect_user');
     const authUser = localStorage.getItem('user');
     const actualUser = user || (storedUser ? JSON.parse(storedUser) : null) || (authUser ? JSON.parse(authUser) : null);
     const userId = actualUser?.id;
@@ -857,7 +893,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   // Toggle activity function for the simple interface
   const handleToggleActivity = async (activityId: number, activityName: string) => {
     // Get user from localStorage if not in context
-    const storedUser = localStorage.getItem('travelConnectUser');
+    const storedUser = localStorage.getItem('travelconnect_user');
     const authUser = localStorage.getItem('user');
     const actualUser = user || (storedUser ? JSON.parse(storedUser) : null) || (authUser ? JSON.parse(authUser) : null);
     const userId = actualUser?.id;
@@ -934,7 +970,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
   // Delete user activity function
   const handleDeleteActivity = async (userActivityId: number) => {
-    const storedUser = localStorage.getItem('travelConnectUser');
+    const storedUser = localStorage.getItem('travelconnect_user');
     const authUser = localStorage.getItem('user');
     const travelconnectUser = localStorage.getItem('travelconnect_user');
     const actualUser = user || 
@@ -1000,7 +1036,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     if (!selectedCity) return;
     
     // Get user ID from multiple sources (matching existing pattern)
-    const storedUser = localStorage.getItem('travelConnectUser');
+    const storedUser = localStorage.getItem('travelconnect_user');
     const authUser = localStorage.getItem('user');
     const actualUser = user || (storedUser ? JSON.parse(storedUser) : null) || (authUser ? JSON.parse(authUser) : null);
     const userId = actualUser?.id;
@@ -1066,7 +1102,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     if (!selectedCity) return;
     
     // Get user ID from multiple sources (matching existing pattern)
-    const storedUser = localStorage.getItem('travelConnectUser');
+    const storedUser = localStorage.getItem('travelconnect_user');
     const authUser = localStorage.getItem('user');
     const actualUser = user || (storedUser ? JSON.parse(storedUser) : null) || (authUser ? JSON.parse(authUser) : null);
     const userId = actualUser?.id;
@@ -1515,25 +1551,40 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           });
                         };
                         
-                        // Filter out universal category AND activities similar to universal ones
+                        // Filter out universal category, similar to universal, and dismissed AI activities
+                        // Then sort: AI-created activities first, then user-created
                         return cityActivities
-                          .filter(activity => activity.category !== 'universal' && !isSimilarToUniversal(activity.activityName))
+                          .filter(activity => {
+                            if (activity.category === 'universal') return false;
+                            if (isSimilarToUniversal(activity.activityName)) return false;
+                            // Filter out dismissed AI activities
+                            if (activity.createdByUserId === 1 && dismissedAIActivities.has(activity.id)) return false;
+                            return true;
+                          })
+                          .sort((a, b) => {
+                            // AI-created (createdByUserId === 1) activities first
+                            const aIsAI = a.createdByUserId === 1;
+                            const bIsAI = b.createdByUserId === 1;
+                            if (aIsAI && !bIsAI) return -1;
+                            if (!aIsAI && bIsAI) return 1;
+                            return 0;
+                          })
                           .map((activity, index) => {
                         const isSelected = userActivities.some(ua => ua.activityId === activity.id);
                         const userActivity = userActivities.find(ua => ua.activityId === activity.id);
                         
                         // Get current user ID - check multiple sources
-                        const storedUser = localStorage.getItem('travelConnectUser');
+                        const storedUser = localStorage.getItem('travelconnect_user');
                         const actualUser = user || (storedUser ? JSON.parse(storedUser) : null);
                         const currentUserId = actualUser?.id;
                         
                         // Check if this activity was created by current user (for EDIT permission)
                         const isUserCreated = activity.createdByUserId === currentUserId;
                         
-                        // CRITICAL: Only show edit/delete buttons for USER-created activities
-                        // AI-created activities (createdByUserId === 1) should NEVER be editable/deletable
+                        // AI-created activities can be dismissed (not deleted from DB, just hidden)
                         const isAICreated = activity.createdByUserId === 1;
-                        const canShowActions = !isAICreated && activity.createdByUserId && activity.createdByUserId > 1;
+                        // User-created activities can be edited/deleted
+                        const canShowUserActions = !isAICreated && activity.createdByUserId && activity.createdByUserId > 1;
                         
                         return (
                           <div key={activity.id} className="group relative">
@@ -1541,7 +1592,9 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                               className={`w-full px-5 py-4 rounded-2xl text-sm font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl border-2 ${
                                 isSelected 
                                   ? 'bg-gradient-to-r from-blue-600 to-orange-600 text-white border-blue-400 shadow-blue-200'
-                                  : 'bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-100 border-gray-200 dark:border-gray-500 hover:border-blue-300 dark:hover:border-blue-400 hover:shadow-blue-100 dark:hover:shadow-blue-900/50'
+                                  : isAICreated
+                                    ? 'bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 text-gray-700 dark:text-gray-100 border-purple-200 dark:border-purple-500 hover:border-purple-300 dark:hover:border-purple-400'
+                                    : 'bg-gradient-to-r from-gray-50 to-white dark:from-gray-700 dark:to-gray-600 text-gray-700 dark:text-gray-100 border-gray-200 dark:border-gray-500 hover:border-blue-300 dark:hover:border-blue-400 hover:shadow-blue-100 dark:hover:shadow-blue-900/50'
                               }`}
                               onClick={() => {
                                 toggleActivity(activity);
@@ -1553,11 +1606,30 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                               type="button"
                               style={{ pointerEvents: 'auto', zIndex: 1 }}
                             >
-                              <span className="relative z-10">{activity.activityName}</span>
+                              <span className="relative z-10 flex items-center justify-center gap-1.5">
+                                {isAICreated && <span className="text-xs">✨</span>}
+                                {activity.activityName}
+                              </span>
                             </button>
                             
+                            {/* DISMISS button for AI-created activities */}
+                            {isAICreated && (
+                              <div className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                <button
+                                  className="w-5 h-5 bg-gray-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-gray-600"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    dismissAIActivity(activity.id);
+                                  }}
+                                  title="Dismiss this AI suggestion"
+                                >
+                                  <X className="w-2.5 h-2.5" />
+                                </button>
+                              </div>
+                            )}
+                            
                             {/* Edit/Delete buttons - ONLY show for USER-created activities (NOT AI/system activities) */}
-                            {canShowActions && (
+                            {canShowUserActions && (
                               <div className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-1">
                                 {/* EDIT button - only for activity creator */}
                                 {isUserCreated && (
@@ -1627,7 +1699,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                             console.log('🎯 Universal activity clicked:', activity);
                             
                             // Get authenticated user - check multiple sources
-                            const storedUser = localStorage.getItem('travelConnectUser');
+                            const storedUser = localStorage.getItem('travelconnect_user');
                             const authStorageUser = localStorage.getItem('user');
                             
                             let actualUser = user;
