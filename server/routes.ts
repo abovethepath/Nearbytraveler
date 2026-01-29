@@ -17187,6 +17187,72 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // POST seed city with static + featured activities, then refresh featured status
+  app.post("/api/city-activities/:cityName/seed-and-refresh", async (req, res) => {
+    try {
+      const { cityName } = req.params;
+      
+      if (!cityName) {
+        return res.status(400).json({ error: 'City name is required' });
+      }
+      
+      console.log(`🌱 SEED: Starting seed for ${cityName}...`);
+      
+      // First, seed the city with static activities
+      const { ensureCityHasActivities } = await import('./auto-city-setup.js');
+      await ensureCityHasActivities(cityName, '', 'United States', 1);
+      
+      // Now refresh featured status
+      const { getFeaturedActivitiesForCity } = await import('./static-city-activities.js');
+      const featuredActivities = getFeaturedActivitiesForCity(cityName);
+      
+      if (featuredActivities.length === 0) {
+        return res.json({ 
+          message: `Seeded ${cityName} but no curated featured list found`, 
+          seeded: true,
+          updated: 0 
+        });
+      }
+      
+      // First, unflag ALL activities for this city as not featured
+      await db.update(cityActivities)
+        .set({ isFeatured: false, source: 'static' })
+        .where(and(
+          eq(cityActivities.cityName, cityName),
+          eq(cityActivities.isFeatured, true)
+        ));
+      
+      // Now set the curated featured activities
+      let updated = 0;
+      for (const featured of featuredActivities) {
+        const result = await db.update(cityActivities)
+          .set({ 
+            isFeatured: true, 
+            source: 'featured',
+            rank: featured.rank 
+          })
+          .where(and(
+            eq(cityActivities.cityName, cityName),
+            eq(cityActivities.activityName, featured.name)
+          ))
+          .returning();
+        
+        if (result.length > 0) updated++;
+      }
+      
+      console.log(`✅ SEED-AND-REFRESH: Seeded and updated ${updated} featured activities for ${cityName}`);
+      res.json({ 
+        message: `Seeded and updated ${updated} activities as featured for ${cityName}`,
+        seeded: true,
+        updated,
+        featuredList: featuredActivities.map(a => a.name)
+      });
+    } catch (error: any) {
+      console.error('Error seeding city activities:', error);
+      res.status(500).json({ error: 'Failed to seed city activities' });
+    }
+  });
+
   // POST refresh/update featured status for city activities (admin)
   app.post("/api/city-activities/:cityName/refresh-featured", async (req, res) => {
     try {
