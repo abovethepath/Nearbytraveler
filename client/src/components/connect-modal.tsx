@@ -431,10 +431,15 @@ export default function ConnectModal({ isOpen, onClose, userTravelPlans: propTra
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[999999] flex items-start sm:items-center justify-center bg-black/60 backdrop-blur-sm pt-4 sm:pt-0" onClick={onClose}>
+    <div 
+      className="fixed inset-0 z-[999999] flex items-start sm:items-center justify-center bg-black/95 pt-4 sm:pt-0" 
+      onClick={onClose}
+      style={{ touchAction: 'none' }}
+    >
       <div 
-        className="relative bg-gradient-to-br from-white via-blue-50 to-orange-50 dark:from-gray-800 dark:via-blue-900/20 dark:to-orange-900/20 rounded-xl sm:rounded-2xl shadow-2xl max-w-6xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto mx-2 sm:mx-4 my-2 sm:my-4 border border-blue-200/20 dark:border-blue-600/20"
+        className="relative bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl shadow-2xl max-w-6xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto mx-2 sm:mx-4 my-2 sm:my-4 border border-gray-200 dark:border-gray-700"
         onClick={(e) => e.stopPropagation()}
+        style={{ touchAction: 'auto' }}
       >
         {/* Close button - positioned absolutely on the modal container */}
         <Button 

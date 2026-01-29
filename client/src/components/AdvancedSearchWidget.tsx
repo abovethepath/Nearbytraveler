@@ -208,16 +208,20 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
   return (
     <div 
       className="fixed inset-x-0 top-0 bottom-16 md:bottom-0 z-[999999] flex items-center justify-center"
-      style={{ zIndex: 999999 }}
+      style={{ zIndex: 999999, touchAction: 'none' }}
     >
-      {/* Backdrop */}
+      {/* Backdrop - solid 95% opacity per platform requirements */}
       <div 
-        className="absolute inset-0 bg-black/80"
+        className="absolute inset-0 bg-black/95"
         onClick={() => onOpenChange(false)}
       />
       
-      {/* Modal Content */}
-      <div className="relative w-full max-w-4xl max-h-[85vh] md:max-h-[90vh] mx-4 bg-white dark:bg-gray-900 rounded-lg shadow-2xl flex flex-col">
+      {/* Modal Content - solid background for maximum readability */}
+      <div 
+        className="relative w-full max-w-4xl max-h-[85vh] md:max-h-[90vh] mx-4 bg-white dark:bg-gray-900 rounded-lg shadow-2xl flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+        style={{ touchAction: 'auto' }}
+      >
         {/* Header - Sticky */}
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
           <div className="flex-1 min-w-0">
