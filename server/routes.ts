@@ -17020,6 +17020,109 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // === AI CITY MATCH FEATURES ===
+  
+  // POST generate AI activity suggestions for a city based on user's interests
+  app.post("/api/ai/activity-suggestions", async (req, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+
+      const { cityName } = req.body;
+      if (!cityName) {
+        return res.status(400).json({ error: 'City name is required' });
+      }
+
+      // Fetch user data
+      const userData = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+      if (!userData.length) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Fetch existing activities for this city
+      const existingActivities = await db
+        .select({ activityName: cityActivities.activityName })
+        .from(cityActivities)
+        .where(eq(cityActivities.city, cityName));
+
+      const { aiCityMatchService } = await import('./services/aiCityMatch');
+      const result = await aiCityMatchService.generateActivitySuggestions(
+        userData[0] as any,
+        cityName,
+        existingActivities.map(a => a.activityName)
+      );
+
+      res.json(result);
+    } catch (error: any) {
+      console.error('AI activity suggestions error:', error);
+      res.status(500).json({ error: 'Failed to generate activity suggestions' });
+    }
+  });
+
+  // POST generate AI matching insight between two users
+  app.post("/api/ai/matching-insight", async (req, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+
+      const { matchedUserId, cityName } = req.body;
+      if (!matchedUserId || !cityName) {
+        return res.status(400).json({ error: 'Matched user ID and city name are required' });
+      }
+
+      // Fetch both users
+      const [currentUser] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+      const [matchedUser] = await db.select().from(users).where(eq(users.id, parseInt(matchedUserId))).limit(1);
+
+      if (!currentUser || !matchedUser) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      const { aiCityMatchService } = await import('./services/aiCityMatch');
+      const result = await aiCityMatchService.generateMatchingInsight(
+        currentUser as any,
+        matchedUser as any,
+        cityName
+      );
+
+      res.json(result);
+    } catch (error: any) {
+      console.error('AI matching insight error:', error);
+      res.status(500).json({ error: 'Failed to generate matching insight' });
+    }
+  });
+
+  // POST generate AI city guide
+  app.post("/api/ai/city-guide", async (req, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      
+      const { cityName } = req.body;
+      if (!cityName) {
+        return res.status(400).json({ error: 'City name is required' });
+      }
+
+      // Optionally fetch user data for personalized guide
+      let userData = null;
+      if (userId) {
+        const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+        userData = user as any;
+      }
+
+      const { aiCityMatchService } = await import('./services/aiCityMatch');
+      const result = await aiCityMatchService.generateCityGuide(cityName, userData);
+
+      res.json(result);
+    } catch (error: any) {
+      console.error('AI city guide error:', error);
+      res.status(500).json({ error: 'Failed to generate city guide' });
+    }
+  });
+
   // GET all user city interests for a specific user (across all cities)
   app.get("/api/user-city-interests/:userId", async (req, res) => {
     try {

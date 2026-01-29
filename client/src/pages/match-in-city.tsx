@@ -23,7 +23,12 @@ import {
   Zap,
   ArrowLeft,
   X,
-  ChevronDown
+  ChevronDown,
+  Sparkles,
+  MessageCircle,
+  Map,
+  Lightbulb,
+  Loader2
 } from "lucide-react";
 
 interface MatchInCityProps {
@@ -62,6 +67,14 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [newActivity, setNewActivity] = useState('');
   const [isCitiesLoading, setIsCitiesLoading] = useState(true);
   const [editingActivityName, setEditingActivityName] = useState('');
+
+  // AI Features State
+  const [aiSuggestions, setAiSuggestions] = useState<any[]>([]);
+  const [aiSuggestionsLoading, setAiSuggestionsLoading] = useState(false);
+  const [cityGuide, setCityGuide] = useState<any>(null);
+  const [cityGuideLoading, setCityGuideLoading] = useState(false);
+  const [matchingInsight, setMatchingInsight] = useState<{ [userId: number]: any }>({});
+  const [matchingInsightLoading, setMatchingInsightLoading] = useState<{ [userId: number]: boolean }>({});
 
   // Hero section visibility state (for after city selection)
   const [isHeroVisible, setIsHeroVisible] = useState<boolean>(() => {
@@ -984,6 +997,193 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     }
   };
 
+  // AI Feature Functions
+  const fetchAiActivitySuggestions = async () => {
+    if (!selectedCity) return;
+    
+    // Get user ID from multiple sources (matching existing pattern)
+    const storedUser = localStorage.getItem('travelConnectUser');
+    const authUser = localStorage.getItem('user');
+    const actualUser = user || (storedUser ? JSON.parse(storedUser) : null) || (authUser ? JSON.parse(authUser) : null);
+    const userId = actualUser?.id;
+    
+    if (!userId) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to get personalized activity suggestions",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setAiSuggestionsLoading(true);
+    try {
+      const apiBase = getApiBaseUrl();
+      const response = await fetch(`${apiBase}/api/ai/activity-suggestions`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-user-id': userId.toString()
+        },
+        credentials: 'include',
+        body: JSON.stringify({ cityName: selectedCity })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.suggestions) {
+          setAiSuggestions(data.suggestions);
+          toast({
+            title: "AI Suggestions Ready!",
+            description: `Generated ${data.suggestions.length} personalized activity ideas`,
+          });
+        } else {
+          toast({
+            title: "Note",
+            description: data.error || "Could not generate suggestions",
+            variant: "destructive",
+          });
+        }
+      } else {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        toast({
+          title: "Error",
+          description: errorData.error || "Failed to generate activity suggestions",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('AI suggestions error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to get AI suggestions",
+        variant: "destructive",
+      });
+    } finally {
+      setAiSuggestionsLoading(false);
+    }
+  };
+
+  const fetchCityGuide = async () => {
+    if (!selectedCity) return;
+    
+    // Get user ID from multiple sources (matching existing pattern)
+    const storedUser = localStorage.getItem('travelConnectUser');
+    const authUser = localStorage.getItem('user');
+    const actualUser = user || (storedUser ? JSON.parse(storedUser) : null) || (authUser ? JSON.parse(authUser) : null);
+    const userId = actualUser?.id;
+    
+    setCityGuideLoading(true);
+    try {
+      const apiBase = getApiBaseUrl();
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (userId) {
+        headers['x-user-id'] = userId.toString();
+      }
+      
+      const response = await fetch(`${apiBase}/api/ai/city-guide`, {
+        method: 'POST',
+        headers,
+        credentials: 'include',
+        body: JSON.stringify({ cityName: selectedCity })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.guide) {
+          setCityGuide(data.guide);
+          toast({
+            title: "City Guide Ready!",
+            description: `Your personalized ${selectedCity} guide is ready`,
+          });
+        } else {
+          toast({
+            title: "Note",
+            description: data.error || "Could not generate city guide",
+            variant: "destructive",
+          });
+        }
+      } else {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        toast({
+          title: "Error",
+          description: errorData.error || "Failed to generate city guide",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('City guide error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to get city guide",
+        variant: "destructive",
+      });
+    } finally {
+      setCityGuideLoading(false);
+    }
+  };
+
+  const fetchMatchingInsight = async (matchedUserId: number) => {
+    if (!selectedCity) return;
+    
+    // Get user ID from multiple sources (matching existing pattern)
+    const storedUser = localStorage.getItem('travelConnectUser');
+    const authUser = localStorage.getItem('user');
+    const actualUser = user || (storedUser ? JSON.parse(storedUser) : null) || (authUser ? JSON.parse(authUser) : null);
+    const userId = actualUser?.id;
+    
+    if (!userId) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to see compatibility insights",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setMatchingInsightLoading(prev => ({ ...prev, [matchedUserId]: true }));
+    try {
+      const apiBase = getApiBaseUrl();
+      const response = await fetch(`${apiBase}/api/ai/matching-insight`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-user-id': userId.toString()
+        },
+        credentials: 'include',
+        body: JSON.stringify({ matchedUserId, cityName: selectedCity })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.insight) {
+          setMatchingInsight(prev => ({ ...prev, [matchedUserId]: data.insight }));
+        } else {
+          toast({
+            title: "Note",
+            description: data.error || "Could not generate compatibility insight",
+          });
+        }
+      } else {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        toast({
+          title: "Error",
+          description: errorData.error || "Failed to get compatibility insight",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Matching insight error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to get compatibility insight",
+        variant: "destructive",
+      });
+    } finally {
+      setMatchingInsightLoading(prev => ({ ...prev, [matchedUserId]: false }));
+    }
+  };
+
   // Update activity function
   const handleUpdateActivity = async () => {
     if (!editingActivity || !editingActivityName.trim()) return;
@@ -1591,31 +1791,212 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
               </div>
             </div>
           </div>
+
+          {/* AI Features Section */}
+          <div className="mt-8 space-y-6">
+            {/* AI Activity Suggestions */}
+            <Card className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border border-purple-200 dark:border-purple-700">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-6 h-6 text-purple-600" />
+                    <h3 className="text-xl font-bold text-purple-900 dark:text-purple-100">AI Activity Suggestions</h3>
+                  </div>
+                  <Button
+                    onClick={fetchAiActivitySuggestions}
+                    disabled={aiSuggestionsLoading}
+                    className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white"
+                  >
+                    {aiSuggestionsLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Lightbulb className="w-4 h-4 mr-2" />
+                        Get Personalized Ideas
+                      </>
+                    )}
+                  </Button>
+                </div>
+                <p className="text-purple-700 dark:text-purple-300 text-sm mb-4">
+                  AI will analyze your interests and suggest unique activities for {selectedCity}
+                </p>
+                
+                {aiSuggestions.length > 0 && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                    {aiSuggestions.map((suggestion, index) => (
+                      <div key={index} className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-md border border-purple-100 dark:border-purple-800">
+                        <h4 className="font-semibold text-gray-900 dark:text-white mb-2">{suggestion.activityName}</h4>
+                        <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">{suggestion.description}</p>
+                        <div className="flex items-start gap-2">
+                          <Sparkles className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
+                          <p className="text-purple-600 dark:text-purple-400 text-xs italic">{suggestion.whyRecommended}</p>
+                        </div>
+                        <Button
+                          size="sm"
+                          className="mt-3 w-full bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-800"
+                          onClick={() => {
+                            setNewActivity(suggestion.activityName);
+                            toast({
+                              title: "Activity Added to Input",
+                              description: "Click the + button to add it to the city!",
+                            });
+                          }}
+                        >
+                          <Plus className="w-4 h-4 mr-1" />
+                          Add This Activity
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* AI City Guide */}
+            <Card className="bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20 border border-green-200 dark:border-green-700">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Map className="w-6 h-6 text-green-600" />
+                    <h3 className="text-xl font-bold text-green-900 dark:text-green-100">AI City Guide</h3>
+                  </div>
+                  <Button
+                    onClick={fetchCityGuide}
+                    disabled={cityGuideLoading}
+                    className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white"
+                  >
+                    {cityGuideLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Creating Guide...
+                      </>
+                    ) : (
+                      <>
+                        <Map className="w-4 h-4 mr-2" />
+                        Generate City Guide
+                      </>
+                    )}
+                  </Button>
+                </div>
+                <p className="text-green-700 dark:text-green-300 text-sm mb-4">
+                  Get personalized local tips, hidden gems, and insider knowledge about {selectedCity}
+                </p>
+                
+                {cityGuide && (
+                  <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border border-green-100 dark:border-green-800 space-y-4">
+                    {/* Overview */}
+                    <div>
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                        <Target className="w-4 h-4 text-green-600" />
+                        Overview
+                      </h4>
+                      <p className="text-gray-700 dark:text-gray-300">{cityGuide.overview}</p>
+                    </div>
+                    
+                    {/* Best Time to Visit */}
+                    <div>
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-2">🌤️ Best Time to Visit</h4>
+                      <p className="text-gray-700 dark:text-gray-300">{cityGuide.bestTimeToVisit}</p>
+                    </div>
+                    
+                    {/* Local Tips */}
+                    <div>
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-2">💡 Local Tips</h4>
+                      <ul className="space-y-1">
+                        {cityGuide.localTips?.map((tip: string, i: number) => (
+                          <li key={i} className="text-gray-700 dark:text-gray-300 text-sm flex items-start gap-2">
+                            <span className="text-green-500">•</span> {tip}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    {/* Hidden Gems */}
+                    <div>
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-2">💎 Hidden Gems</h4>
+                      <ul className="space-y-1">
+                        {cityGuide.hiddenGems?.map((gem: string, i: number) => (
+                          <li key={i} className="text-gray-700 dark:text-gray-300 text-sm flex items-start gap-2">
+                            <span className="text-teal-500">•</span> {gem}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    {/* Food Recommendations */}
+                    <div>
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-2">🍽️ Food Recommendations</h4>
+                      <ul className="space-y-1">
+                        {cityGuide.foodRecommendations?.map((food: string, i: number) => (
+                          <li key={i} className="text-gray-700 dark:text-gray-300 text-sm flex items-start gap-2">
+                            <span className="text-orange-500">•</span> {food}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    {/* Safety Tips */}
+                    <div>
+                      <h4 className="font-semibold text-gray-900 dark:text-white mb-2">🛡️ Safety Tips</h4>
+                      <ul className="space-y-1">
+                        {cityGuide.safetyTips?.map((tip: string, i: number) => (
+                          <li key={i} className="text-gray-700 dark:text-gray-300 text-sm flex items-start gap-2">
+                            <span className="text-blue-500">•</span> {tip}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
-        {/* Matching Users */}
+        {/* Matching Users with AI Insights */}
         {matchingUsers.length > 0 && (
           <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm mt-8">
             <CardContent className="p-6">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">🤝 People Who Match</h2>
+              <div className="flex items-center gap-2 mb-6">
+                <Users className="w-6 h-6 text-blue-600" />
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">🤝 People Who Match</h2>
+              </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {matchingUsers.map((user) => (
-                  <div key={user.id} className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                {matchingUsers.map((matchedUser) => (
+                  <div key={matchedUser.id} className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
                     <div className="flex items-center gap-3 mb-3">
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-orange-600 flex items-center justify-center text-white font-bold">
-                        {user.name.charAt(0)}
+                        {matchedUser.name.charAt(0)}
                       </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white">{user.name}</h3>
-                        <p className="text-gray-600 dark:text-gray-300 text-sm">@{user.username}</p>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-900 dark:text-white">{matchedUser.name}</h3>
+                        <p className="text-gray-600 dark:text-gray-300 text-sm">@{matchedUser.username}</p>
                       </div>
+                      {/* AI Insight Button */}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => fetchMatchingInsight(matchedUser.id)}
+                        disabled={matchingInsightLoading[matchedUser.id]}
+                        className="text-purple-600 hover:text-purple-700 hover:bg-purple-50 dark:hover:bg-purple-900/30"
+                        title="Get AI insights about your compatibility"
+                      >
+                        {matchingInsightLoading[matchedUser.id] ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Sparkles className="w-4 h-4" />
+                        )}
+                      </Button>
                     </div>
                     
                     <div className="space-y-2">
                       <h4 className="text-gray-700 dark:text-gray-200 font-medium text-sm">Shared Interests:</h4>
                       <div className="flex flex-wrap gap-1">
-                        {user.sharedActivities.map((activity: string, index: number) => (
+                        {matchedUser.sharedActivities.map((activity: string, index: number) => (
                           <span 
                             key={index}
                             className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded text-xs"
@@ -1625,6 +2006,47 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         ))}
                       </div>
                     </div>
+                    
+                    {/* AI Matching Insight */}
+                    {matchingInsight[matchedUser.id] && (
+                      <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Sparkles className="w-4 h-4 text-purple-500" />
+                          <span className="text-sm font-medium text-purple-700 dark:text-purple-300">AI Compatibility Insight</span>
+                        </div>
+                        
+                        {/* Compatibility Score */}
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"
+                              style={{ width: `${matchingInsight[matchedUser.id].compatibilityScore}%` }}
+                            />
+                          </div>
+                          <span className="text-sm font-bold text-purple-600 dark:text-purple-400">
+                            {matchingInsight[matchedUser.id].compatibilityScore}%
+                          </span>
+                        </div>
+                        
+                        {/* Why You'll Connect */}
+                        <p className="text-gray-600 dark:text-gray-300 text-xs mb-3">
+                          {matchingInsight[matchedUser.id].whyYoullConnect}
+                        </p>
+                        
+                        {/* Conversation Starters */}
+                        <div>
+                          <div className="flex items-center gap-1 mb-1">
+                            <MessageCircle className="w-3 h-3 text-blue-500" />
+                            <span className="text-xs font-medium text-gray-700 dark:text-gray-300">Conversation Starters:</span>
+                          </div>
+                          <ul className="space-y-1">
+                            {matchingInsight[matchedUser.id].conversationStarters?.slice(0, 3).map((starter: string, i: number) => (
+                              <li key={i} className="text-xs text-gray-500 dark:text-gray-400 pl-3">• {starter}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
