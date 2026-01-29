@@ -2734,118 +2734,100 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
 
         </div>
 
-        {/* Matching Users with AI Insights */}
+        {/* Matching Users - Photo Grid Layout */}
         {matchingUsers.length > 0 && (
-          <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm mt-8">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-2 mb-6">
-                <Users className="w-6 h-6 text-blue-600" />
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">🤝 People Who Match</h2>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {matchingUsers.map((matchedUser) => (
-                  <div key={matchedUser.id} className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-orange-600 flex items-center justify-center text-white font-bold">
-                        {matchedUser.name.charAt(0)}
+          <div className="mt-8">
+            <div className="flex items-center gap-2 mb-4 px-2">
+              <Users className="w-5 h-5 text-blue-600" />
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">🤝 People Who Match</h2>
+              <span className="text-sm text-gray-500 dark:text-gray-400">({matchingUsers.length})</span>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3">
+              {matchingUsers.map((matchedUser) => (
+                <div 
+                  key={matchedUser.id} 
+                  className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                  onClick={() => setLocation(`/profile/${matchedUser.id}`)}
+                >
+                  {/* Large Photo - 4:5 aspect ratio for portrait style */}
+                  <div className="relative aspect-[4/5] bg-gradient-to-br from-blue-400 to-orange-500">
+                    {matchedUser.profileImage ? (
+                      <img 
+                        src={matchedUser.profileImage} 
+                        alt={matchedUser.username}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <span className="text-4xl md:text-5xl font-bold text-white/90">
+                          {matchedUser.name?.charAt(0) || matchedUser.username?.charAt(0) || '?'}
+                        </span>
                       </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 dark:text-white">{matchedUser.name}</h3>
-                        <p className="text-gray-600 dark:text-gray-300 text-sm">@{matchedUser.username}</p>
-                        {/* Match summary line */}
-                        {(matchedUser.sharedCityPicksCount > 0 || matchedUser.sharedPreferencesCount > 0) && (
-                          <p className="text-xs text-green-600 dark:text-green-400 mt-0.5 font-medium">
-                            {matchedUser.sharedCityPicksCount > 0 && `${matchedUser.sharedCityPicksCount} shared pick${matchedUser.sharedCityPicksCount !== 1 ? 's' : ''}`}
-                            {matchedUser.sharedCityPicksCount > 0 && matchedUser.sharedPreferencesCount > 0 && ' • '}
-                            {matchedUser.sharedPreferencesCount > 0 && `${matchedUser.sharedPreferencesCount} shared pref${matchedUser.sharedPreferencesCount !== 1 ? 's' : ''}`}
-                          </p>
-                        )}
-                      </div>
-                      {/* AI Insight Button */}
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => fetchMatchingInsight(matchedUser.id)}
-                        disabled={matchingInsightLoading[matchedUser.id]}
-                        className="text-purple-600 hover:text-purple-700 hover:bg-purple-50 dark:hover:bg-purple-900/30"
-                        title="Get AI insights about your compatibility"
-                      >
-                        {matchingInsightLoading[matchedUser.id] ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Sparkles className="w-4 h-4" />
-                        )}
-                      </Button>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <h4 className="text-gray-700 dark:text-gray-200 font-medium text-sm flex items-center gap-1">
-                        <Heart className="w-3.5 h-3.5 text-pink-500" />
-                        You both selected:
-                      </h4>
-                      <div className="flex flex-wrap gap-1">
-                        {matchedUser.sharedActivities.slice(0, 4).map((activity: string, index: number) => (
-                          <span 
-                            key={index}
-                            className="bg-gradient-to-r from-green-100 to-teal-100 dark:from-green-900/30 dark:to-teal-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-xs font-medium border border-green-200 dark:border-green-700"
-                          >
-                            {activity}
-                          </span>
-                        ))}
-                        {matchedUser.sharedActivities.length > 4 && (
-                          <span className="text-gray-500 dark:text-gray-400 text-xs px-2 py-1">
-                            +{matchedUser.sharedActivities.length - 4} more
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    
-                    {/* AI Matching Insight */}
-                    {matchingInsight[matchedUser.id] && (
-                      <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Sparkles className="w-4 h-4 text-purple-500" />
-                          <span className="text-sm font-medium text-purple-700 dark:text-purple-300">AI Compatibility Insight</span>
-                        </div>
-                        
-                        {/* Compatibility Score */}
-                        <div className="flex items-center gap-2 mb-3">
-                          <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
-                            <div 
-                              className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"
-                              style={{ width: `${matchingInsight[matchedUser.id].compatibilityScore}%` }}
-                            />
-                          </div>
-                          <span className="text-sm font-bold text-purple-600 dark:text-purple-400">
-                            {matchingInsight[matchedUser.id].compatibilityScore}%
-                          </span>
-                        </div>
-                        
-                        {/* Why You'll Connect */}
-                        <p className="text-gray-600 dark:text-gray-300 text-xs mb-3">
-                          {matchingInsight[matchedUser.id].whyYoullConnect}
-                        </p>
-                        
-                        {/* Conversation Starters */}
-                        <div>
-                          <div className="flex items-center gap-1 mb-1">
-                            <MessageCircle className="w-3 h-3 text-blue-500" />
-                            <span className="text-xs font-medium text-gray-700 dark:text-gray-300">Conversation Starters:</span>
-                          </div>
-                          <ul className="space-y-1">
-                            {matchingInsight[matchedUser.id].conversationStarters?.slice(0, 3).map((starter: string, i: number) => (
-                              <li key={i} className="text-xs text-gray-500 dark:text-gray-400 pl-3">• {starter}</li>
-                            ))}
-                          </ul>
-                        </div>
+                    )}
+                    {/* AI Insight star badge */}
+                    <button
+                      className="absolute top-2 right-2 w-7 h-7 bg-white/90 dark:bg-gray-900/90 rounded-full flex items-center justify-center shadow-sm hover:bg-white"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        fetchMatchingInsight(matchedUser.id);
+                      }}
+                      title="Get AI compatibility insight"
+                    >
+                      {matchingInsightLoading[matchedUser.id] ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-purple-600" />
+                      ) : (
+                        <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+                      )}
+                    </button>
+                    {/* Match count badge */}
+                    {matchedUser.sharedActivities.length > 0 && (
+                      <div className="absolute bottom-2 left-2 bg-green-500/90 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                        {matchedUser.sharedActivities.length} match{matchedUser.sharedActivities.length !== 1 ? 'es' : ''}
                       </div>
                     )}
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                  
+                  {/* User Info - Compact */}
+                  <div className="p-2">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-gray-900 dark:text-white text-sm truncate">
+                        {matchedUser.username}
+                      </h3>
+                      {matchedUser.age && (
+                        <span className="text-xs text-gray-500 dark:text-gray-400">{matchedUser.age}</span>
+                      )}
+                    </div>
+                    {/* Shared activities preview */}
+                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
+                      {matchedUser.sharedActivities.slice(0, 2).join(', ')}
+                      {matchedUser.sharedActivities.length > 2 && '...'}
+                    </p>
+                    
+                    {/* AI Insight (expandable) */}
+                    {matchingInsight[matchedUser.id] && (
+                      <div className="mt-2 pt-2 border-t border-gray-100 dark:border-gray-700">
+                        <div className="flex items-center gap-1 mb-1">
+                          <div className="flex-1 h-1.5 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
+                              style={{ width: `${matchingInsight[matchedUser.id].compatibilityScore}%` }}
+                            />
+                          </div>
+                          <span className="text-xs font-bold text-purple-600 dark:text-purple-400">
+                            {matchingInsight[matchedUser.id].compatibilityScore}%
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
+                          {matchingInsight[matchedUser.id].whyYoullConnect}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
       </div>
 
