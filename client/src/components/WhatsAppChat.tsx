@@ -527,7 +527,11 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   };
 
   const handleReaction = (messageId: number, emoji: string) => {
-    if (!wsRef.current || !currentUserId) return;
+    console.log('👍 handleReaction called:', { messageId, emoji, hasWs: !!wsRef.current, currentUserId });
+    if (!wsRef.current || !currentUserId) {
+      console.log('👍 handleReaction early exit - missing ws or userId');
+      return;
+    }
 
     // Optimistic update - immediately update local state
     setMessages(prev => prev.map(msg => {
