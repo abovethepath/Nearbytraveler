@@ -208,18 +208,17 @@ export class TravelMatchingService {
   }
 
   /**
-   * Calculate interest-based compatibility (includes private interests and custom interests)
+   * Calculate interest-based compatibility (includes custom interests)
+   * Note: privateInterests removed for Apple App Store compliance (January 2025)
    */
   private calculateInterestCompatibility(user1: User, user2: User) {
-    // Combine regular, private, and custom interests for comprehensive matching
+    // Combine regular and custom interests for comprehensive matching
     const user1Interests = [
       ...this.parseInterests(user1.interests),
-      ...this.parseInterests(user1.privateInterests),
       ...this.parseCustomInterests(user1.customInterests)
     ];
     const user2Interests = [
       ...this.parseInterests(user2.interests),
-      ...this.parseInterests(user2.privateInterests),
       ...this.parseCustomInterests(user2.customInterests)
     ];
     
@@ -838,15 +837,14 @@ export class TravelMatchingService {
   }
 
   private getSharedInterests(user1: User, user2: User): string[] {
-    // Combine regular, private, and custom interests for comprehensive matching (same as calculateInterestCompatibility)
+    // Combine regular and custom interests for comprehensive matching
+    // Note: privateInterests removed for Apple App Store compliance (January 2025)
     const user1Interests = [
       ...this.parseInterests(user1.interests),
-      ...this.parseInterests(user1.privateInterests),
       ...this.parseCustomInterests(user1.customInterests)
     ];
     const user2Interests = [
       ...this.parseInterests(user2.interests),
-      ...this.parseInterests(user2.privateInterests),
       ...this.parseCustomInterests(user2.customInterests)
     ];
     

@@ -11,6 +11,7 @@ import { getAllInterests, getAllActivities, getAllLanguages, validateSelections,
 import { validateCustomInput, filterCustomEntries } from "@/lib/contentFilter";
 import { AuthContext } from "@/App";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
+import { InterestSelector } from "@/components/InterestSelector";
 import { authStorage } from "@/lib/auth";
 import { ArrowLeft } from "lucide-react";
 import { getDateInputConstraints } from "@/lib/ageUtils";
@@ -529,37 +530,21 @@ export default function SignupTraveling() {
 
               {/* Top Choices */}
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-bold text-gray-900">Top Choices to Meet Travelers and Locals * (Choose at least 7)</h3>
-                  <span className="text-sm text-gray-600">
-                    {getTotalInterestsCount()}/7 minimum selected
-                  </span>
-                </div>
+                <h3 className="text-xl font-bold text-gray-900">Top Choices to Meet Travelers and Locals *</h3>
                 <p className="text-gray-700 text-sm">
                   What are you interested in? Select at least 7 choices to help us match you with like-minded travelers and locals.
                 </p>
 
                 <div className="bg-gray-50 p-4 rounded-lg space-y-4">
-                  <div>
-                    <Label className="text-gray-900 font-medium">🎯 What are you interested in?</Label>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {getHometownInterests().map((interest) => (
-                        <button
-                          key={interest}
-                          type="button"
-                          onClick={() => toggleInterest(interest)}
-                          className={`px-3 py-2 rounded-full text-sm font-medium transition-all ${
-                            formData.interests.includes(interest)
-                              ? 'bg-gradient-to-r from-blue-600 to-orange-500 text-white shadow-md transform scale-105'
-                              : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-                          }`}
-                          data-testid={`interest-${interest}`}
-                        >
-                          {interest}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+                  <InterestSelector
+                    options={getHometownInterests()}
+                    selected={formData.interests}
+                    onChange={(selected) => setFormData(prev => ({ ...prev, interests: selected }))}
+                    minRequired={7}
+                    showCategories={true}
+                    placeholder="Search interests..."
+                    extraSelectedCount={getCustomInterestsCount()}
+                  />
 
                   {/* Custom Interests Input */}
                   <div className="pt-4 border-t border-gray-200">
