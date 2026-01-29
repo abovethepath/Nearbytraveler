@@ -18123,8 +18123,82 @@ Questions? Just reply to this message. Welcome aboard!
         return isInTargetCity || hasSharedInterests;
       });
 
+      // ===== ENHANCED MATCHING: Get city picks for all compatible users =====
+      // Get all city interests/picks for each compatible user (to calculate shared picks)
+      const allUserCityInterests = await db
+        .select({
+          userId: userCityInterests.userId,
+          activityId: userCityInterests.activityId,
+          activityName: userCityInterests.activityName
+        })
+        .from(userCityInterests)
+        .where(and(
+          ilike(userCityInterests.cityName, `%${city}%`),
+          eq(userCityInterests.isActive, true)
+        ));
+      
+      // Group interests by user
+      const interestsByUser: Record<number, {activityId: number, activityName: string}[]> = {};
+      for (const interest of allUserCityInterests) {
+        if (!interestsByUser[interest.userId]) {
+          interestsByUser[interest.userId] = [];
+        }
+        interestsByUser[interest.userId].push({
+          activityId: interest.activityId,
+          activityName: interest.activityName || ''
+        });
+      }
+      
+      // Current user's picks (activity IDs for comparison)
+      const currentUserPickIds = new Set(userInterests.map(i => i.activityId));
+      
+      // Get current user's profile interests (universal preferences)
+      const currentUserProfile = userId ? await db
+        .select({ interests: users.interests })
+        .from(users)
+        .where(eq(users.id, parseInt(userId as string)))
+        .limit(1) : [];
+      const currentUserProfileInterests = (currentUserProfile[0]?.interests || []).map((i: string) => i.toLowerCase());
+      
+      // Enhance compatible users with shared picks info and sort by best fit
+      const enhancedUsers = compatibleUsers.map(user => {
+        const theirPicks = interestsByUser[user.id] || [];
+        
+        // Calculate shared city picks
+        const sharedCityPicks = theirPicks.filter(p => currentUserPickIds.has(p.activityId));
+        const sharedCityPicksCount = sharedCityPicks.length;
+        const sharedActivities = sharedCityPicks.map(p => p.activityName);
+        
+        // Calculate shared universal preferences (from profile interests - not city picks)
+        const theirProfileInterests = (user.interests || []).map((i: string) => i.toLowerCase());
+        const sharedPreferences = theirProfileInterests.filter((i: string) => currentUserProfileInterests.includes(i));
+        const sharedPreferencesCount = sharedPreferences.length;
+        
+        return {
+          ...user,
+          sharedActivities,
+          sharedCityPicksCount,
+          sharedPreferencesCount,
+          totalMatchScore: sharedCityPicksCount * 2 + sharedPreferencesCount // Weight city picks more
+        };
+      });
+      
+      // Sort by best fit: city picks first, then preferences
+      enhancedUsers.sort((a, b) => {
+        // Primary: shared city picks count (most important)
+        if (b.sharedCityPicksCount !== a.sharedCityPicksCount) {
+          return b.sharedCityPicksCount - a.sharedCityPicksCount;
+        }
+        // Secondary: shared preferences count
+        return b.sharedPreferencesCount - a.sharedPreferencesCount;
+      });
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`🎯 CITY MATCH: Sorted ${enhancedUsers.length} users by best fit (top: ${enhancedUsers[0]?.username || 'none'} with ${enhancedUsers[0]?.sharedCityPicksCount || 0} shared picks)`);
+      }
+
       const response = {
-        users: compatibleUsers.slice(0, 5),
+        users: enhancedUsers.slice(0, 20), // Return top 20 matches
         events: relevantEvents,
         userInterestCount: userInterests.length,
         matchingSummary: {

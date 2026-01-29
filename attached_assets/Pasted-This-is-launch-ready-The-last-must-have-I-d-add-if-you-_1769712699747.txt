@@ -1,0 +1,90 @@
+This is launch-ready. The last “must-have” I’d add (if you do only one more thing) is ranking + filters on the match results, powered by City Picks.
+
+Next best feature: Better matches list (small build, big perceived value)
+1) Sort matches by “best fit”
+
+On the city matches results page, rank users by:
+
+# shared City Picks (highest)
+
+then # shared Universal Preferences
+
+then proximity / last active (if you have it)
+
+2) Add quick filters (mobile friendly)
+
+At the top of the results list:
+
+Has ≥2 shared picks (toggle)
+
+Same Trip Group (toggle)
+
+Same dates overlap (toggle, if you have dates)
+
+Only people going to my event(s) (if events exist)
+
+3) Make the “why” obvious
+
+On each user card, show:
+
+“3 shared picks • 2 shared preferences”
+and your “You both selected…” chips underneath (you already have this).
+
+Second-best quick win: analytics for your launch
+
+Track these events so you can iterate fast in LA:
+
+City Picks opened
+
+picks selected
+
+added custom pick
+
+used Reset to Popular
+
+clicked Suggest 6 more
+
+clicked a match card
+
+sent first message / RSVP’d to an event
+
+Even basic logging to DB helps.
+
+If you want me to pick one: Match ranking + filters. That’s the fastest way to make users feel “wow, it actually found my people.”
+
+is this getting to be too much
+
+No — what you’ve built is the right amount for launch as long as you stop adding new surface area.
+
+You’re at a good “feature-complete” point:
+
+City Picks is clear
+
+Users can add/delete
+
+Popular is curated
+
+AI is controlled
+
+Mutual picks shows value
+
+If you keep stacking more filters/ranking/analytics right now, it can start to feel heavy and distract from the core loop.
+
+What I’d do for LA launch
+
+Freeze features. Only do:
+
+Bug fixes
+
+Performance + mobile polish
+
+Small copy tweaks
+
+One metric to watch: % of users who select 3–8 picks and then message/meet
+
+If you must add one more thing
+
+Do sorting by shared picks (silent improvement, no extra UI).
+Skip adding new filters until you see real user behavior.
+
+So: not too much — but you’re at the point where “more” is less valuable than polish + stability + usage.

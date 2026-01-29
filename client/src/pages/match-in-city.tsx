@@ -592,7 +592,9 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       const apiBase = getApiBaseUrl();
       const response = await fetch(`${apiBase}/api/matching-users/${encodeURIComponent(selectedCity)}`);
       if (response.ok) {
-        const users = await response.json();
+        const data = await response.json();
+        // Handle both old format (array) and new format (object with users property)
+        const users = Array.isArray(data) ? data : (data.users || []);
         console.log('👥 MATCHING USERS FETCHED:', users.length);
         setMatchingUsers(users);
       }
@@ -2701,6 +2703,14 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                       <div className="flex-1">
                         <h3 className="font-semibold text-gray-900 dark:text-white">{matchedUser.name}</h3>
                         <p className="text-gray-600 dark:text-gray-300 text-sm">@{matchedUser.username}</p>
+                        {/* Match summary line */}
+                        {(matchedUser.sharedCityPicksCount > 0 || matchedUser.sharedPreferencesCount > 0) && (
+                          <p className="text-xs text-green-600 dark:text-green-400 mt-0.5 font-medium">
+                            {matchedUser.sharedCityPicksCount > 0 && `${matchedUser.sharedCityPicksCount} shared pick${matchedUser.sharedCityPicksCount !== 1 ? 's' : ''}`}
+                            {matchedUser.sharedCityPicksCount > 0 && matchedUser.sharedPreferencesCount > 0 && ' • '}
+                            {matchedUser.sharedPreferencesCount > 0 && `${matchedUser.sharedPreferencesCount} shared pref${matchedUser.sharedPreferencesCount !== 1 ? 's' : ''}`}
+                          </p>
+                        )}
                       </div>
                       {/* AI Insight Button */}
                       <Button
