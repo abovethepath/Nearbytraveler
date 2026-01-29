@@ -2964,12 +2964,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // AI Bio Generator - generates a personalized bio from user's profile data
   const handleGenerateBio = async () => {
+    console.log('🤖 AI Bio button clicked!');
     if (isGeneratingBio) return;
     
     setIsGeneratingBio(true);
+    console.log('🤖 Starting bio generation...');
     try {
       const response = await apiRequest("POST", "/api/users/generate-bio");
+      console.log('🤖 Response received:', response.status, response.ok);
       const data = await response.json();
+      console.log('🤖 Response data:', data);
       
       if (data.success && data.bio) {
         // Set the generated bio into the form field
