@@ -680,13 +680,14 @@ export default function Messages() {
                         return (
                           <div key={msg.id} className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'} ${hasReactions ? 'mb-4' : ''}`}>
                             <div 
-                              className="relative max-w-[70%]" 
+                              className="relative max-w-[70%] overflow-visible" 
                               style={{ 
                                 WebkitTapHighlightColor: 'rgba(255, 165, 0, 0.2)',
                                 WebkitUserSelect: 'none',
                                 userSelect: 'none',
                                 touchAction: 'pan-y',
-                                cursor: 'pointer'
+                                cursor: 'pointer',
+                                overflow: 'visible'
                               }}
                               onTouchStart={(e) => handleMessageTouchStart(e, msg)}
                               onTouchMove={handleMessageTouchMove}
@@ -713,11 +714,11 @@ export default function Messages() {
                                   </div>
                                 </div>
                               ) : (
-                                <div className={`px-4 py-2 rounded-2xl cursor-pointer ${
+                                <div className={`relative px-4 py-2 rounded-2xl cursor-pointer overflow-visible ${
                                   isOwnMessage 
                                     ? 'bg-green-600 dark:bg-green-600' 
                                     : 'bg-gray-200 dark:bg-gray-700'
-                                }`}>
+                                }`} style={{ overflow: 'visible' }}>
                                   {/* Reply Context */}
                                   {msg.replyToId && msg.repliedMessage && (
                                     <div className={`mb-2 pl-2 border-l-2 ${
