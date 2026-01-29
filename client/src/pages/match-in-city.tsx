@@ -1447,8 +1447,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           <div className="bg-gradient-to-br from-white via-blue-50 to-orange-50 dark:from-gray-800 dark:via-blue-900/30 dark:to-orange-900/30 border border-blue-200/50 dark:border-blue-700/50 rounded-2xl shadow-2xl backdrop-blur-sm">
             <div className="p-8">
               <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent mb-4">⭐ Discover Your Perfect {selectedCity} Experience</h2>
-                <p className="text-lg text-gray-600 dark:text-gray-300">Select activities that inspire you and connect with fellow adventurers</p>
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent mb-2">⭐ City Picks for {selectedCity}</h2>
+                <p className="text-lg text-gray-600 dark:text-gray-300 font-medium">Pick to match faster in this city.</p>
               </div>
 
               {/* Add new activity section - GORGEOUS DESIGN - MOVED TO TOP */}
