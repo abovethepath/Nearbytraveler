@@ -483,7 +483,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     try {
       console.log('🏙️ MATCH: Fetching cities from city stats API...');
       const apiBase = getApiBaseUrl();
-      const response = await fetch(`${apiBase}/api/city-stats`);
+      // Add refresh=true to clear any stale cache and get featured cities in order
+      const response = await fetch(`${apiBase}/api/city-stats?refresh=true`);
       if (response.ok) {
         const citiesData = await response.json();
         console.log('🏙️ MATCH: Loaded', citiesData.length, 'cities from API');

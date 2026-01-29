@@ -1564,9 +1564,16 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   app.get("/api/city-stats", async (req, res) => {
     try {
       const cacheKey = "city-stats:all";
-      const cached = await cache.get<any[]>(cacheKey);
-      if (cached) {
-        return res.json(cached);
+      const skipCache = req.query.refresh === 'true';
+      
+      if (!skipCache) {
+        const cached = await cache.get<any[]>(cacheKey);
+        if (cached) {
+          return res.json(cached);
+        }
+      } else {
+        // Clear old cache when refresh requested
+        await cache.delete(cacheKey);
       }
 
       const startTime = Date.now();
