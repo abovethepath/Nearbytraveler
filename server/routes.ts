@@ -5927,6 +5927,54 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // AI Bio Generator endpoint - generates a personalized bio from user's profile data
+  app.post("/api/users/generate-bio", async (req, res) => {
+    try {
+      // Use session-based authentication (secure - can't be spoofed by client)
+      const sessionUserId = (req as any).session?.user?.id;
+      if (!sessionUserId) {
+        return res.status(401).json({ message: "Authentication required", success: false });
+      }
+
+      // Get user's current profile data
+      const user = await storage.getUser(sessionUserId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Import the bio generator service
+      const { aiBioGenerator } = await import('./services/aiBioGenerator');
+
+      // Generate bio from user's profile data
+      const result = await aiBioGenerator.generateBio({
+        userType: user.userType,
+        hometownCity: user.hometownCity || undefined,
+        hometownState: user.hometownState || undefined,
+        hometownCountry: user.hometownCountry || undefined,
+        interests: user.interests || undefined,
+        activities: user.activities || undefined,
+        travelStyle: user.travelStyle || undefined,
+        languagesSpoken: user.languagesSpoken || undefined,
+        countriesVisited: user.countriesVisited || undefined,
+        travelingWithChildren: user.travelingWithChildren || undefined,
+        isNewToTown: user.isNewToTown || undefined,
+        gender: user.gender || undefined,
+        customInterests: user.customInterests || undefined,
+        customActivities: user.customActivities || undefined,
+      });
+
+      if (!result.success) {
+        return res.status(400).json({ message: result.error, success: false });
+      }
+
+      console.log(`✨ Generated AI bio for user ${sessionUserId}`);
+      return res.json({ bio: result.bio, success: true });
+    } catch (error: any) {
+      console.error("Error generating AI bio:", error);
+      return res.status(500).json({ message: "Failed to generate bio. Please try again.", success: false });
+    }
+  });
+
   // CRITICAL: Cover photo upload endpoint (POST)
   app.post("/api/users/:id/cover-photo", async (req, res) => {
     try {

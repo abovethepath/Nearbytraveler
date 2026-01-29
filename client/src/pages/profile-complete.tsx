@@ -783,6 +783,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const [showAllInterests, setShowAllInterests] = useState(false);
   const [showAllActivities, setShowAllActivities] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGeneratingBio, setIsGeneratingBio] = useState(false);
   const editingActivities = activeEditSection === 'activities';
   const editingLanguages = activeEditSection === 'languages';
   const editingCountries = activeEditSection === 'countries';
@@ -2959,6 +2960,41 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     setTempInterests(userInterests);
     setActiveEditSection('interests');
     console.log('🔧 EDIT INTERESTS: Edit mode activated');
+  };
+
+  // AI Bio Generator - generates a personalized bio from user's profile data
+  const handleGenerateBio = async () => {
+    if (isGeneratingBio) return;
+    
+    setIsGeneratingBio(true);
+    try {
+      const response = await apiRequest("POST", "/api/users/generate-bio");
+      const data = await response.json();
+      
+      if (data.success && data.bio) {
+        // Set the generated bio into the form field
+        profileForm.setValue('bio', data.bio);
+        toast({
+          title: "Bio generated!",
+          description: "Review and edit the bio if you'd like, then save your profile.",
+        });
+      } else {
+        toast({
+          title: "Couldn't generate bio",
+          description: data.message || "Please add more interests first.",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      console.error('Bio generation error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate bio. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGeneratingBio(false);
+    }
   };
 
   const handleSaveInterests = () => {
@@ -8248,7 +8284,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     name="bio"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Bio</FormLabel>
+                        <div className="flex items-center justify-between">
+                          <FormLabel>Bio</FormLabel>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={handleGenerateBio}
+                            disabled={isGeneratingBio}
+                            className="text-xs h-7 px-2 gap-1 border-orange-300 text-orange-600 hover:bg-orange-50 dark:border-orange-600 dark:text-orange-400 dark:hover:bg-orange-900/20"
+                          >
+                            <Sparkles className="w-3 h-3" />
+                            {isGeneratingBio ? 'Generating...' : 'Generate bio for me'}
+                          </Button>
+                        </div>
                         <FormControl>
                           <Textarea 
                             {...field} 
