@@ -1234,35 +1234,34 @@ function Router() {
         // Show full app with navbar when ANY authentication evidence exists
         <>
           {console.log('🔍 APP ROUTING: Authentication evidence found, showing authenticated app for location:', location)}
-          <div className="min-h-screen w-full max-w-full flex flex-col bg-background text-foreground overflow-x-hidden">
-            {/* Navigation - ALWAYS show for authenticated users regardless of user state timing */}
-            <>
-              {/* Desktop Navigation */}
-              <div className="hidden md:block">
-                <Navbar />
-              </div>
-
-              {/* Mobile Navigation */}
-              <div className="md:hidden">
-                <MobileTopNav />
-              </div>
-            </>
-
-            <main className="flex-1 w-full max-w-full pt-16 pb-24 md:pt-0 md:pb-20 overflow-x-hidden main-with-bottom-nav">
+          
+          {/* Mobile Navigation - OUTSIDE the flex container to prevent stacking context issues */}
+          <div className="md:hidden" style={{ position: 'relative', zIndex: 99999 }}>
+            <MobileTopNav />
+          </div>
+          
+          {/* Desktop Navigation */}
+          <div className="hidden md:block">
+            <Navbar />
+          </div>
+          
+          {/* Main content - no stacking context blocking */}
+          <div className="min-h-screen w-full max-w-full bg-background text-foreground overflow-x-hidden" style={{ position: 'relative', zIndex: 1 }}>
+            <main className="w-full max-w-full pt-16 pb-24 md:pt-0 md:pb-20 overflow-x-hidden main-with-bottom-nav">
               <div className="w-full max-w-full overflow-x-hidden">
                 {renderPage()}
               </div>
             </main>
-
-            {/* Bottom Navigation - show on all screen sizes for authenticated users */}
-            {(user || localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token')) && (
-              <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 9999 }}>
-                <MobileBottomNav />
-              </div>
-            )}
-
-            {/* REMOVED: Instant Messaging Components - obsolete functionality */}
           </div>
+
+          {/* Bottom Navigation - show on all screen sizes for authenticated users */}
+          {(user || localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || localStorage.getItem('auth_token')) && (
+            <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 9999 }}>
+              <MobileBottomNav />
+            </div>
+          )}
+
+          {/* REMOVED: Instant Messaging Components - obsolete functionality */}
         </>
       )}
     </AuthContext.Provider>

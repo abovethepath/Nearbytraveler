@@ -178,8 +178,7 @@ import { ThingsIWantToDoSection } from "@/components/ThingsIWantToDoSection";
 
 
 import { PhotoAlbumWidget } from "@/components/photo-album-widget";
-import { MobileTopNav } from "@/components/MobileTopNav";
-import { MobileBottomNav } from "@/components/MobileBottomNav";
+// MobileTopNav and MobileBottomNav removed - now handled globally in App.tsx
 import { SimpleAvatar } from "@/components/simple-avatar";
 // Removed Navbar import since App.tsx handles navigation
 // Removed animated loading for static interface
@@ -3652,9 +3651,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   return (
     <>
-      {/* Mobile Navigation */}
-      <MobileTopNav />
-      <MobileBottomNav />
+      {/* Mobile Navigation - REMOVED: App.tsx now handles MobileTopNav and MobileBottomNav globally */}
+      {/* This was causing duplicate navbars and the profile page's internal nav was working */}
+      {/* while other pages used App.tsx's nav which had stacking context issues */}
       
       {/* Back to Chat Button - Show when navigated from a chatroom - OUTSIDE overflow container */}
       {shouldShowBackToChat && (
