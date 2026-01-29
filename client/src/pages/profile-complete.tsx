@@ -680,8 +680,29 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const { user: authContextUser, setUser: setAuthUser } = useContext(AuthContext);
   
   // Check for chat return context (from event chatrooms, meetup chatrooms, or city chatrooms)
+  // Only show "Back to Chat" if came from chat recently (within 60 seconds)
   const returnToChatData = localStorage.getItem('returnToChat');
-  const shouldShowBackToChat = returnToChatData !== null;
+  const shouldShowBackToChat = (() => {
+    if (!returnToChatData) return false;
+    try {
+      const context = JSON.parse(returnToChatData);
+      // If no timestamp, it's old data - clear it and don't show
+      if (!context.timestamp) {
+        localStorage.removeItem('returnToChat');
+        return false;
+      }
+      // Only show if navigated from chat within the last 60 seconds
+      const isRecent = Date.now() - context.timestamp < 60000;
+      if (!isRecent) {
+        localStorage.removeItem('returnToChat');
+        return false;
+      }
+      return true;
+    } catch {
+      localStorage.removeItem('returnToChat');
+      return false;
+    }
+  })();
   
   const handleBackToChat = () => {
     console.log('🔙 Back to Chat clicked!');

@@ -625,7 +625,8 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                         chatType,
                         title,
                         subtitle,
-                        eventId
+                        eventId,
+                        timestamp: Date.now()
                       }));
                       navigate(`/profile/${member.id}`);
                     }}
@@ -706,7 +707,8 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                     chatType,
                     title,
                     subtitle,
-                    eventId // For event chats, store the eventId so we can navigate back properly
+                    eventId,
+                    timestamp: Date.now() // For event chats, store the eventId so we can navigate back properly
                   }));
                   navigate(`/profile/${member.id}`);
                 }}
@@ -782,7 +784,8 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                             chatType,
                             title,
                             subtitle,
-                            eventId // For event chats, store the eventId so we can navigate back properly
+                            eventId,
+                            timestamp: Date.now() // For event chats, store the eventId so we can navigate back properly
                           }));
                           navigate(`/profile/${member.id}`);
                         }}
