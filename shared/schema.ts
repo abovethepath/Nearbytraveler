@@ -1165,6 +1165,7 @@ export const cityActivities = pgTable("city_activities", {
   category: text("category").default("general"), // 'outdoor', 'cultural', 'food', 'nightlife', 'adventure', 'relaxation'
   source: text("source").notNull().default("user"), // 'featured' | 'ai' | 'user'
   isFeatured: boolean("is_featured").notNull().default(false),
+  isHidden: boolean("is_hidden").notNull().default(false), // Hidden from display (legacy/junk items)
   rank: integer("rank").default(0), // For ordering featured items
   createdByUserId: integer("created_by_user_id").notNull(),
   isActive: boolean("is_active").notNull().default(true),

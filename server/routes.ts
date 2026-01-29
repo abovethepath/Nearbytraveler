@@ -17106,16 +17106,22 @@ Questions? Just reply to this message. Welcome aboard!
       const { cityName } = req.params;
       if (process.env.NODE_ENV === 'development') console.log(`🏃 CITY ACTIVITIES GET: Fetching activities for ${cityName}`);
       
+      // Fetch activities: exclude hidden items, prioritize featured
       const activities = await db
         .select()
         .from(cityActivities)
         .where(
           and(
             eq(cityActivities.cityName, cityName),
-            eq(cityActivities.isActive, true)
+            eq(cityActivities.isActive, true),
+            eq(cityActivities.isHidden, false) // Don't show hidden/legacy items
           )
         )
-        .orderBy(desc(cityActivities.createdAt));
+        .orderBy(
+          desc(cityActivities.isFeatured), // Featured first
+          cityActivities.rank, // Then by rank
+          desc(cityActivities.createdAt) // Then by newest
+        );
       
       if (process.env.NODE_ENV === 'development') console.log(`✅ CITY ACTIVITIES GET: Found ${activities.length} activities for ${cityName}`);
       res.json(activities);

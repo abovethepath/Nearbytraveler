@@ -1,0 +1,68 @@
+los angles still has all these 
+Thought for 39s
+
+You’re not looking at the Popular list in that screenshot — you’re looking at the AI Ideas + legacy junk that’s still being rendered from the database for Los Angeles Metro. The curated “Popular 12” can be perfect and you’ll still see this pile if:
+
+the page query is “show all non-featured activities,” and
+
+your DB already contains hundreds of old AI/generic rows from before you added the new rules.
+
+What to do (so LA Metro stops showing “all these”)
+1) Stop displaying the entire AI dump by default
+
+AI Ideas should show a capped feed, not the full table.
+
+Change query/UI:
+
+show latest 24 AI items max
+
+button: “Load 24 more”
+
+keep “Suggest 6 more ideas” to append
+
+This alone fixes the “endless scroll” problem.
+
+2) Hide the old garbage that was generated before your ban rules
+
+Even if your ban list is perfect now, it won’t remove the existing rows already stored.
+
+Add isHidden (boolean) to city_activities and then run a one-time cleanup for LA Metro:
+Mark isHidden=true for anything that:
+
+matches your ban list (food hall tastings, bar crawls, night markets, rooftop bars, trivia nights, etc.)
+
+or matches universal (isSimilarToUniversal)
+
+or is those gray legacy chips (SINGLE, FAMILY FRIENDLY, BUSINESS NETWORKING, DUNE JUMPING, etc.)
+
+Then update your “AI Ideas” fetch to:
+
+WHERE source='ai' AND isHidden=false AND isFeatured=false
+
+3) Fix the “gray chip” leak
+
+Those gray ones should not be in City Picks at all. They’re either:
+
+old “universal/user” rows in the city table, or
+
+a second list being rendered accidentally.
+
+Hard rule in the UI:
+
+Only render City Picks from two sources:
+
+source='featured' (Popular)
+
+source='ai' | source='user' (Ideas / Your Picks)
+
+Never render anything with category/type like: universal, professional, dating, budget, general, etc. in the city-specific area.
+
+Paste this to Replit (exact ask)
+
+“LA Metro still shows a massive legacy AI list. Fix by:
+
+Cap AI Ideas display to latest 24 with ‘Load 24 more’.
+
+Add isHidden to city_activities and run a cleanup migration for LA Metro: hide anything matching ban list, anything isSimilarToUniversal, and hide legacy gray chips (SINGLE, FAMILY FRIENDLY, BUSINESS NETWORKING, etc.).
+
+Update City Picks queries so Popular = source='featured', AI Ideas = source='ai' AND isHidden=false, Your Picks = source='user' AND isHidden=false. Do not render any other categories in the city-specific section.”
