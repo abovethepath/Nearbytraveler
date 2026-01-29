@@ -18131,7 +18131,8 @@ Questions? Just reply to this message. Welcome aboard!
         ));
 
       // Find users with compatible interests or in the target city
-      const compatibleUsers = allUsers.filter(user => {
+      // IMPORTANT: Only return matches if current user has at least one city pick
+      const compatibleUsers = userInterests.length > 0 ? allUsers.filter(user => {
         // Include users from the target city
         const isInTargetCity = user.location?.toLowerCase().includes(city.toLowerCase()) ||
                               user.hometownCity?.toLowerCase().includes(city.toLowerCase());
@@ -18148,7 +18149,7 @@ Questions? Just reply to this message. Welcome aboard!
           );
 
         return isInTargetCity || hasSharedInterests;
-      });
+      }) : []; // No matches if user has no city picks
 
       // ===== ENHANCED MATCHING: Get city picks for all compatible users =====
       // Get all city interests/picks for each compatible user (to calculate shared picks)
