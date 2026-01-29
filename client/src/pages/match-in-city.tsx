@@ -719,6 +719,23 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           console.log('✅ Successfully removed activity');
           // Immediately update local state
           setUserActivities(prev => prev.filter(ua => ua.activityId !== activity.id));
+          
+          // If this is a user-created activity, also delete the underlying city_activity
+          // so it doesn't show as a gray chip
+          if (activity.source === 'user' && activity.createdByUserId === userId) {
+            console.log('🗑️ Also deleting user-created city_activity:', activity.id);
+            try {
+              await fetch(`${apiBase}/api/city-activities/${activity.id}`, {
+                method: 'DELETE',
+                headers: { 'x-user-id': userId.toString() }
+              });
+              // Remove from local cityActivities state
+              setCityActivities(prev => prev.filter(ca => ca.id !== activity.id));
+            } catch (err) {
+              console.error('Failed to delete city_activity:', err);
+            }
+          }
+          
           // Refresh to sync with database
           await fetchUserActivities();
           // CRITICAL: Invalidate profile page cache so changes appear immediately
