@@ -4785,8 +4785,65 @@ export class DatabaseStorage implements IStorage {
       return [];
     }
   }
-  async updateChatroomMessage(): Promise<any> { return undefined; }
-  async deleteChatroomMessage(): Promise<any> { return true; }
+  async updateChatroomMessage(messageId: number, content: string, senderId: number): Promise<any> {
+    try {
+      // First verify the user owns the message
+      const [existingMessage] = await db
+        .select()
+        .from(chatroomMessages)
+        .where(eq(chatroomMessages.id, messageId));
+      
+      if (!existingMessage) {
+        return null;
+      }
+      
+      if (existingMessage.senderId !== senderId) {
+        throw new Error('Unauthorized: You can only edit your own messages');
+      }
+      
+      const [updated] = await db
+        .update(chatroomMessages)
+        .set({ 
+          content, 
+          isEdited: true,
+          editedAt: new Date()
+        })
+        .where(eq(chatroomMessages.id, messageId))
+        .returning();
+      
+      return updated;
+    } catch (error) {
+      console.error('Error updating chatroom message:', error);
+      throw error;
+    }
+  }
+  
+  async deleteChatroomMessage(messageId: number, senderId: number): Promise<boolean> {
+    try {
+      // First verify the user owns the message
+      const [existingMessage] = await db
+        .select()
+        .from(chatroomMessages)
+        .where(eq(chatroomMessages.id, messageId));
+      
+      if (!existingMessage) {
+        return false;
+      }
+      
+      if (existingMessage.senderId !== senderId) {
+        throw new Error('Unauthorized: You can only delete your own messages');
+      }
+      
+      await db
+        .delete(chatroomMessages)
+        .where(eq(chatroomMessages.id, messageId));
+      
+      return true;
+    } catch (error) {
+      console.error('Error deleting chatroom message:', error);
+      throw error;
+    }
+  }
   
   // Chatroom moderation methods
   async muteChatroomUser(chatroomId: number, targetUserId: number, actedById: number, reason?: string, expiresAt?: Date): Promise<any> {

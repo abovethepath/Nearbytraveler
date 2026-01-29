@@ -542,10 +542,15 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     if (!editText.trim()) return;
     
     try {
-      await apiRequest('PATCH', `/api/messages/${messageId}`, {
+      await apiRequest('PATCH', `/api/chatroom-messages/${messageId}`, {
         content: editText.trim(),
         userId: currentUserId
       });
+      
+      // Update local state immediately for instant feedback
+      setMessages(prev => prev.map(m => 
+        m.id === messageId ? { ...m, content: editText.trim(), isEdited: true } : m
+      ));
       
       toast({ title: "Message edited successfully" });
       setEditingMessageId(null);
@@ -560,7 +565,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     setSelectedMessage(null);
     
     try {
-      const response = await fetch(`${getApiBaseUrl()}/api/messages/${messageId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/api/chatroom-messages/${messageId}`, {
         method: 'DELETE',
         headers: { 
           'Content-Type': 'application/json',

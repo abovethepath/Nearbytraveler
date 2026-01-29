@@ -16280,6 +16280,58 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Edit chatroom message (only sender can edit their own messages)
+  app.patch("/api/chatroom-messages/:messageId", async (req, res) => {
+    try {
+      const messageId = parseInt(req.params.messageId);
+      const { content, userId } = req.body;
+      
+      if (!content || !userId) {
+        return res.status(400).json({ message: "content and userId are required" });
+      }
+      
+      const updated = await storage.updateChatroomMessage(messageId, content.trim(), parseInt(userId));
+      
+      if (!updated) {
+        return res.status(404).json({ message: "Message not found" });
+      }
+      
+      return res.json(updated);
+    } catch (error: any) {
+      if (error.message?.includes('Unauthorized')) {
+        return res.status(403).json({ message: error.message });
+      }
+      console.error("Error editing chatroom message:", error);
+      return res.status(500).json({ message: "Failed to edit message" });
+    }
+  });
+
+  // Delete chatroom message (only sender can delete their own messages)
+  app.delete("/api/chatroom-messages/:messageId", async (req, res) => {
+    try {
+      const messageId = parseInt(req.params.messageId);
+      const userId = req.headers['x-user-id'] || req.body?.userId;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      
+      const deleted = await storage.deleteChatroomMessage(messageId, parseInt(userId as string));
+      
+      if (!deleted) {
+        return res.status(404).json({ message: "Message not found" });
+      }
+      
+      return res.json({ success: true });
+    } catch (error: any) {
+      if (error.message?.includes('Unauthorized')) {
+        return res.status(403).json({ message: error.message });
+      }
+      console.error("Error deleting chatroom message:", error);
+      return res.status(500).json({ message: "Failed to delete message" });
+    }
+  });
+
   // Get individual chatroom details
   app.get("/api/chatrooms/:roomId", async (req, res) => {
     try {
