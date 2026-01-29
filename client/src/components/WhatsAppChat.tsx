@@ -1272,25 +1272,30 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
             {/* Action buttons */}
             <div className="px-2 py-3 space-y-1">
               {/* Thumbs up reaction - available for ALL messages */}
-              <button 
-                type="button" 
-                onTouchEnd={(e) => { 
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleReaction(selectedMessage.id, '👍');
-                }}
-                onClick={(e) => { 
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleReaction(selectedMessage.id, '👍');
-                }}
-                className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
-                style={{ touchAction: 'manipulation', cursor: 'pointer', WebkitTapHighlightColor: 'rgba(59, 130, 246, 0.3)' }}
-                data-testid="button-react-thumbsup"
-              >
-                <ThumbsUp className="w-5 h-5 text-blue-400 pointer-events-none" />
-                <span className="text-sm pointer-events-none">Like</span>
-              </button>
+              {(() => {
+                const hasLiked = currentUserId ? selectedMessage.reactions?.['👍']?.includes(currentUserId) : false;
+                return (
+                  <button 
+                    type="button" 
+                    onTouchEnd={(e) => { 
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleReaction(selectedMessage.id, '👍');
+                    }}
+                    onClick={(e) => { 
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleReaction(selectedMessage.id, '👍');
+                    }}
+                    className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-700 active:bg-gray-600 rounded-xl text-white"
+                    style={{ touchAction: 'manipulation', cursor: 'pointer', WebkitTapHighlightColor: 'rgba(59, 130, 246, 0.3)' }}
+                    data-testid="button-react-thumbsup"
+                  >
+                    <ThumbsUp className={`w-5 h-5 pointer-events-none ${hasLiked ? 'text-orange-400 fill-orange-400' : 'text-blue-400'}`} />
+                    <span className="text-sm pointer-events-none">{hasLiked ? 'Unlike' : 'Like'}</span>
+                  </button>
+                );
+              })()}
               
               {selectedMessage.senderId == currentUserId ? (
                 /* YOUR OWN MESSAGE: Edit and Delete */
