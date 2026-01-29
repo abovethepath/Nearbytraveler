@@ -2437,6 +2437,14 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                             if (isSimilarToUniversal(activity.activityName)) return false;
                             // Filter out dismissed AI activities
                             if (activity.createdByUserId === 1 && dismissedAIActivities.has(activity.id)) return false;
+                            // Hide dated picks after their date has passed
+                            const activityDate = (activity as any).activityDate;
+                            if (activityDate) {
+                              const pickDate = new Date(activityDate);
+                              const today = new Date();
+                              today.setHours(0, 0, 0, 0);
+                              if (pickDate < today) return false; // Hide expired dated picks
+                            }
                             // Apply search filter
                             if (activitySearchFilter && !activity.activityName.toLowerCase().includes(activitySearchFilter.toLowerCase())) return false;
                             return true;
