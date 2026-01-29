@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Menu, X } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { Menu, X, Home, MapPin, Calendar, Users, MessageCircle, User, LogOut, Compass, Zap, Building2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { AuthContext } from "@/App";
 import { useLocation } from "wouter";
 import Logo from "@/components/logo";
@@ -11,102 +11,36 @@ export function MobileTopNav() {
   const authContext = React.useContext(AuthContext);
   const { user, logout } = authContext;
   const [, setLocation] = useLocation();
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
-  const [touchedRecently, setTouchedRecently] = useState(false);
-  const hamburgerRef = useRef<HTMLButtonElement>(null);
-  
-  // Use native DOM event listeners for better WebView compatibility
-  // React synthetic events sometimes fail in iOS WebViews
-  const toggleMenu = useCallback(() => {
-    console.log('🍔 Menu toggled via native listener');
-    setShowDropdown(prev => !prev);
-  }, []);
-  
-  useEffect(() => {
-    const button = hamburgerRef.current;
-    if (!button) return;
-    
-    let touchHandled = false;
-    
-    const handleTouchStart = (e: TouchEvent) => {
-      console.log('🍔 NATIVE TouchStart fired');
-      e.stopPropagation();
-    };
-    
-    const handleTouchEnd = (e: TouchEvent) => {
-      console.log('🍔 NATIVE TouchEnd fired - toggling menu');
-      e.preventDefault();
-      e.stopPropagation();
-      touchHandled = true;
-      toggleMenu();
-      // Reset after a short delay
-      setTimeout(() => { touchHandled = false; }, 300);
-    };
-    
-    const handleClick = (e: MouseEvent) => {
-      if (touchHandled) {
-        console.log('🍔 NATIVE Click ignored (touch handled)');
-        return;
-      }
-      console.log('🍔 NATIVE Click fired - toggling menu');
-      e.preventDefault();
-      e.stopPropagation();
-      toggleMenu();
-    };
-    
-    // Use capture phase to ensure we get events first
-    button.addEventListener('touchstart', handleTouchStart, { passive: false, capture: true });
-    button.addEventListener('touchend', handleTouchEnd, { passive: false, capture: true });
-    button.addEventListener('click', handleClick, { capture: true });
-    
-    console.log('🍔 Native hamburger event listeners attached');
-    
-    return () => {
-      button.removeEventListener('touchstart', handleTouchStart, { capture: true });
-      button.removeEventListener('touchend', handleTouchEnd, { capture: true });
-      button.removeEventListener('click', handleClick, { capture: true });
-    };
-  }, [toggleMenu]);
 
-  // hydrate currentUser from best source available - fixed for auth consistency
+  // Hydrate user from best source
   useEffect(() => {
-    // Try multiple sources in order of preference
     let effectiveUser = null;
-    
-    // 1. AuthContext user (should be primary)
     if (user?.username) {
       effectiveUser = user;
-    } 
-    // 2. AuthStorage 
-    else {
+    } else {
       const storedUser = authStorage.getUser();
       if (storedUser?.username) {
         effectiveUser = storedUser;
       } else {
-        // 3. Raw localStorage as fallback
         try {
           const raw = localStorage.getItem("user") || localStorage.getItem("travelconnect_user");
           if (raw) {
             const parsed = JSON.parse(raw);
-            if (parsed?.username) {
-              effectiveUser = parsed;
-            }
+            if (parsed?.username) effectiveUser = parsed;
           }
         } catch {}
       }
     }
-    
     setCurrentUser(effectiveUser);
   }, [user]);
 
-  // close on profile updates
+  // Listen for profile updates
   useEffect(() => {
     const handleUpdate = (e: any) => {
       if (e?.detail) {
-        console.log('📸 Navbar received profile update:', { hasProfileImage: !!e.detail.profileImage });
         setCurrentUser(e.detail);
-        // Also update localStorage to persist the change
         localStorage.setItem('travelconnect_user', JSON.stringify(e.detail));
       }
     };
@@ -120,201 +54,231 @@ export function MobileTopNav() {
     };
   }, []);
 
-  // lock body scroll when menu open
+  // Lock body scroll when menu open
   useEffect(() => {
-    if (showDropdown) {
-      const prev = document.body.style.overflow;
+    if (isOpen) {
       document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = prev;
-      };
+      return () => { document.body.style.overflow = ""; };
     }
-    return undefined;
-  }, [showDropdown]);
+  }, [isOpen]);
 
-  const go = (path: string) => {
-    setShowDropdown(false);
+  const handleMenuToggle = (e: React.TouchEvent | React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('🍔 Menu toggle');
+    setIsOpen(prev => !prev);
+  };
+
+  const handleAvatarTap = (e: React.TouchEvent | React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('👤 Avatar tap');
+    setIsOpen(false);
+    const profilePath = currentUser?.id ? `/profile/${currentUser.id}` : "/profile";
+    setLocation(profilePath);
+  };
+
+  const navigate = (path: string) => {
+    setIsOpen(false);
     setLocation(path);
   };
 
+  const handleLogout = () => {
+    setIsOpen(false);
+    if (!authContext.user && currentUser) {
+      localStorage.clear();
+      sessionStorage.clear();
+      authStorage.clearUser();
+      window.location.href = '/';
+    } else {
+      logout();
+    }
+  };
+
+  const isBusiness = currentUser?.userType === "business";
+
+  const menuItems = isBusiness ? [
+    { icon: Home, label: "Dashboard", path: "/" },
+    { icon: Building2, label: "Manage Deals", path: "/business-dashboard" },
+    { icon: Calendar, label: "Create Event", path: "/create-event" },
+    { icon: Calendar, label: "View Events", path: "/events" },
+    { icon: MessageCircle, label: "Chat Rooms", path: "/chatrooms" },
+    { icon: MessageCircle, label: "Customer Messages", path: "/messages" },
+    { icon: User, label: "Business Profile", path: currentUser?.id ? `/profile/${currentUser.id}` : "/profile" },
+    { icon: MapPin, label: "View Cities", path: "/discover" },
+  ] : [
+    { icon: Home, label: "Home", path: "/" },
+    { icon: MapPin, label: "Cities", path: "/discover" },
+    { icon: Calendar, label: "Events", path: "/events" },
+    { icon: Compass, label: "Plan Trip", path: "/plan-trip" },
+    { icon: Zap, label: "Quick Meetups", path: "/quick-meetups" },
+    { icon: MessageCircle, label: "Chat Rooms", path: "/chatrooms" },
+    { icon: Users, label: "City Match", path: "/match-in-city" },
+    { icon: Users, label: "Connect", path: "/connect" },
+    { icon: MessageCircle, label: "Messages", path: "/messages" },
+    { icon: User, label: "Profile", path: currentUser?.id ? `/profile/${currentUser.id}` : "/profile" },
+  ];
+
   return (
     <>
-      {/* NAV BAR (no inline 100vw — prevents ghost scrollbar) */}
-      <div className="mobile-top-nav fixed inset-x-0 top-0 z-[50000] h-16 w-full bg-white dark:bg-gray-900 shadow-sm md:hidden overflow-visible">
-        <div className="flex items-center justify-between h-16 px-4">
-          {/* Left: Hamburger - CRITICAL FIX for mobile touch on iOS Safari and WebViews */}
-          <div 
-            className="flex items-center" 
-            style={{ 
-              isolation: 'isolate', 
-              zIndex: 2147483647, 
-              position: 'relative',
-              pointerEvents: 'auto'
+      {/* Fixed Top Navbar */}
+      <header className="fixed top-0 left-0 right-0 z-[10000] h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 md:hidden">
+        <div className="flex items-center justify-between h-full px-3">
+          {/* Left: Hamburger */}
+          <button
+            type="button"
+            aria-label="Menu"
+            aria-expanded={isOpen}
+            data-testid="button-mobile-menu"
+            className="mobile-touch-btn w-12 h-12 flex items-center justify-center rounded-lg text-gray-700 dark:text-gray-200"
+            style={{
+              touchAction: 'manipulation',
+              WebkitTapHighlightColor: 'rgba(255, 165, 0, 0.3)',
+              WebkitUserSelect: 'none',
+              userSelect: 'none',
             }}
+            onTouchEnd={handleMenuToggle}
+            onClick={handleMenuToggle}
           >
-            <button
-              ref={hamburgerRef}
-              type="button"
-              aria-expanded={showDropdown}
-              aria-controls="mobile-menu"
-              data-testid="button-mobile-menu"
-              className="hamburger-btn w-14 h-14 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-orange-100 dark:active:bg-orange-900"
-              style={{ 
-                touchAction: 'manipulation',
-                WebkitTapHighlightColor: 'rgba(255, 165, 0, 0.5)',
-                WebkitUserSelect: 'none',
-                userSelect: 'none',
-                cursor: 'pointer',
-                position: 'relative',
-                zIndex: 2147483647,
-                pointerEvents: 'auto',
-                minWidth: '56px',
-                minHeight: '56px'
-              }}
-            >
-              {showDropdown ? <X className="w-7 h-7 pointer-events-none" /> : <Menu className="w-7 h-7 pointer-events-none" />}
-            </button>
-          </div>
+            {isOpen ? <X className="w-6 h-6 pointer-events-none" /> : <Menu className="w-6 h-6 pointer-events-none" />}
+          </button>
 
           {/* Center: Logo */}
-          <div className="flex-1 flex justify-center">
+          <div className="flex-1 flex justify-center pointer-events-none">
             <Logo variant="navbar" />
           </div>
 
-          {/* Right: Avatar - Simplified for Capacitor WebView */}
-          <div className="flex items-center gap-3 relative z-[50001]">
-            <button
-              type="button"
-              onClick={() => {
-                console.log('Avatar clicked, navigating to profile:', currentUser?.id);
-                setShowDropdown(false);
-                currentUser?.id ? go(`/profile/${currentUser.id}`) : go("/profile");
-              }}
-              className="rounded-full focus:outline-none focus:ring-2 focus:ring-orange-400 cursor-pointer"
-              style={{ WebkitTapHighlightColor: 'transparent', cursor: 'pointer' }}
-              aria-label="Go to profile"
-            >
-              <Avatar className="w-9 h-9 border-2 border-gray-200 dark:border-gray-700 hover:border-orange-400 transition-colors pointer-events-none">
-                <AvatarImage
-                  src={currentUser?.profileImage || undefined}
-                  alt={currentUser?.name || currentUser?.username || "User"}
-                  className="pointer-events-none"
-                />
-                <AvatarFallback className="text-xs bg-blue-500 text-white pointer-events-none">
-                  {currentUser?.name?.charAt(0)?.toUpperCase() ||
-                    currentUser?.username?.charAt(0)?.toUpperCase() ||
-                    "U"}
-                </AvatarFallback>
-              </Avatar>
-            </button>
-          </div>
+          {/* Right: Avatar */}
+          <button
+            type="button"
+            aria-label="Profile"
+            className="mobile-touch-btn w-12 h-12 flex items-center justify-center rounded-full"
+            style={{
+              touchAction: 'manipulation',
+              WebkitTapHighlightColor: 'rgba(255, 165, 0, 0.3)',
+              WebkitUserSelect: 'none',
+              userSelect: 'none',
+            }}
+            onTouchEnd={handleAvatarTap}
+            onClick={handleAvatarTap}
+          >
+            <Avatar className="w-9 h-9 border-2 border-gray-200 dark:border-gray-600 pointer-events-none">
+              <AvatarImage
+                src={currentUser?.profileImage || undefined}
+                alt={currentUser?.name || currentUser?.username || "User"}
+                className="pointer-events-none"
+              />
+              <AvatarFallback className="text-sm bg-orange-500 text-white pointer-events-none">
+                {currentUser?.name?.charAt(0)?.toUpperCase() ||
+                  currentUser?.username?.charAt(0)?.toUpperCase() ||
+                  "U"}
+              </AvatarFallback>
+            </Avatar>
+          </button>
         </div>
-      </div>
+      </header>
 
-      {/* OVERLAY (below nav so hamburger remains clickable) */}
-      {showDropdown && (
-        <div
-          onClick={() => setShowDropdown(false)}
-          className="fixed inset-0 top-16 z-[49998] bg-black/30 md:hidden"
-        />
-      )}
+      {/* Menu Portal - Rendered at body level for proper z-index */}
+      {isOpen && createPortal(
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/50 z-[10001] md:hidden"
+            style={{ touchAction: 'auto' }}
+            onTouchEnd={(e) => { e.preventDefault(); setIsOpen(false); }}
+            onClick={() => setIsOpen(false)}
+          />
 
-      {/* DROPDOWN (sibling, not inside the 64px nav; no more nav scrollbar) */}
-      {showDropdown && (
-        <div
-          id="mobile-menu"
-          className="fixed top-16 left-0 right-0 z-[49999] md:hidden
-                     bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700
-                     shadow-lg max-h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain"
-        >
-          <div className="flex flex-col py-2">
-            {currentUser?.userType === "business" ? (
-              <>
-                <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/")}>
-                  Business Dashboard
-                </button>
-                <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/business-dashboard")}>
-                  Manage Deals
-                </button>
-                <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/create-event")}>
-                  Create Event
-                </button>
-                <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/events")}>
-                  View Events
-                </button>
-                <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/chatrooms")}>
-                  Chat Rooms
-                </button>
-                <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/messages")}>
-                  Customer Messages
-                </button>
-                <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go(currentUser?.id ? `/profile/${currentUser.id}` : "/profile")}>
-                  Business Profile
-                </button>
-                <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/discover")}>
-                  View Cities
-                </button>
-                <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/welcome-business")}>
-                  Business Welcome
-                </button>
-              </>
-            ) : (
-              <>
-                <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/")}>
-                  Home
-                </button>
-                <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/discover")}>
-                  Cities
-                </button>
-                <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/events")}>
-                  Events
-                </button>
-                <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/plan-trip")}>
-                  Plan Trip
-                </button>
-                <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/quick-meetups")}>
-                  Quick Meetups
-                </button>
-                <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/chatrooms")}>
-                  Chat Rooms
-                </button>
-                <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/match-in-city")}>
-                  City Match
-                </button>
-                <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/connect")}>
-                  Connect
-                </button>
-                <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go("/messages")}>
-                  Messages
-                </button>
-                <button className="px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800" onClick={() => go(currentUser?.id ? `/profile/${currentUser.id}` : "/profile")}>
-                  Profile
-                </button>
-              </>
+          {/* Slide-out Menu Panel */}
+          <nav
+            className="fixed top-0 left-0 bottom-0 w-72 max-w-[85vw] bg-white dark:bg-gray-900 z-[10002] shadow-xl md:hidden overflow-y-auto"
+            style={{
+              animation: 'slideInLeft 0.25s ease-out',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Menu Header */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+              <span className="text-lg font-semibold text-gray-900 dark:text-white">Menu</span>
+              <button
+                type="button"
+                className="mobile-touch-btn w-10 h-10 flex items-center justify-center rounded-lg text-gray-600 dark:text-gray-300"
+                style={{ touchAction: 'manipulation' }}
+                onTouchEnd={(e) => { e.preventDefault(); setIsOpen(false); }}
+                onClick={() => setIsOpen(false)}
+              >
+                <X className="w-5 h-5 pointer-events-none" />
+              </button>
+            </div>
+
+            {/* User Info */}
+            {currentUser && (
+              <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                <div className="flex items-center gap-3">
+                  <Avatar className="w-12 h-12 pointer-events-none">
+                    <AvatarImage src={currentUser.profileImage} className="pointer-events-none" />
+                    <AvatarFallback className="bg-orange-500 text-white pointer-events-none">
+                      {currentUser.name?.charAt(0)?.toUpperCase() || currentUser.username?.charAt(0)?.toUpperCase() || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-medium text-gray-900 dark:text-white">@{currentUser.username}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{currentUser.hometownCity || 'Location'}</p>
+                  </div>
+                </div>
+              </div>
             )}
 
-            <button
-              className="px-4 py-3 text-left hover:bg-red-50 dark:hover:bg-red-900/20 border-t border-gray-200 dark:border-gray-700 text-red-600 dark:text-red-400 font-medium"
-              onClick={() => {
-                setShowDropdown(false);
-                
-                // Force logout by clearing everything manually if AuthContext is inconsistent
-                if (!authContext.user && currentUser) {
-                  // Clear all auth data manually
-                  localStorage.clear();
-                  sessionStorage.clear();
-                  authStorage.clearUser();
-                  window.location.href = '/';
-                } else {
-                  logout();
-                }
-              }}
-            >
-              Sign Out
-            </button>
-          </div>
-        </div>
+            {/* Menu Items */}
+            <div className="py-2">
+              {menuItems.map((item, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  className="mobile-touch-btn w-full flex items-center gap-4 px-4 py-3 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-orange-50 dark:active:bg-orange-900/20"
+                  style={{ touchAction: 'manipulation' }}
+                  onTouchEnd={(e) => { e.preventDefault(); navigate(item.path); }}
+                  onClick={() => navigate(item.path)}
+                >
+                  <item.icon className="w-5 h-5 text-gray-500 dark:text-gray-400 pointer-events-none" />
+                  <span className="pointer-events-none">{item.label}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Logout */}
+            <div className="border-t border-gray-200 dark:border-gray-700 py-2">
+              <button
+                type="button"
+                className="mobile-touch-btn w-full flex items-center gap-4 px-4 py-3 text-left text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 active:bg-red-100 dark:active:bg-red-900/30"
+                style={{ touchAction: 'manipulation' }}
+                onTouchEnd={(e) => { e.preventDefault(); handleLogout(); }}
+                onClick={handleLogout}
+              >
+                <LogOut className="w-5 h-5 pointer-events-none" />
+                <span className="pointer-events-none">Sign Out</span>
+              </button>
+            </div>
+          </nav>
+        </>,
+        document.body
       )}
+
+      {/* CSS Animation */}
+      <style>{`
+        @keyframes slideInLeft {
+          from { transform: translateX(-100%); }
+          to { transform: translateX(0); }
+        }
+        .mobile-touch-btn {
+          -webkit-tap-highlight-color: rgba(255, 165, 0, 0.2);
+          touch-action: manipulation;
+          cursor: pointer;
+        }
+        .mobile-touch-btn:active {
+          background-color: rgba(249, 115, 22, 0.1);
+        }
+      `}</style>
     </>
   );
 }
