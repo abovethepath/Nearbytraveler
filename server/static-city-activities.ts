@@ -1,6 +1,85 @@
 // Static city-specific activities for major destinations
 // These iconic attractions and experiences should always be available for matching
 
+// CURATED TOP 12 "POPULAR" ACTIVITIES - These are the must-see tourist anchors
+// Used for the "Popular" section - should NOT be AI-generated
+export const FEATURED_CITY_ACTIVITIES: Record<string, Array<{name: string, description: string, category: string, rank: number}>> = {
+  "Los Angeles": [
+    { name: "Griffith Observatory", description: "Iconic observatory with planetarium and Hollywood Sign views", category: "landmarks", rank: 1 },
+    { name: "Hollywood Sign Hike", description: "Hike to views of the famous sign", category: "outdoor", rank: 2 },
+    { name: "Santa Monica Pier", description: "Classic amusement park on the Pacific with Ferris wheel", category: "entertainment", rank: 3 },
+    { name: "Venice Beach", description: "Bohemian beach with street performers, muscle beach, and boardwalk", category: "beach", rank: 4 },
+    { name: "Getty Center", description: "World-class art museum with architecture and stunning city views", category: "culture", rank: 5 },
+    { name: "The Broad Museum", description: "Contemporary art museum with Yayoi Kusama infinity rooms", category: "culture", rank: 6 },
+    { name: "Los Angeles County Museum of Art", description: "Largest art museum in the western United States", category: "culture", rank: 7 },
+    { name: "Universal Studios Hollywood", description: "Movie studio tours and thrilling theme park rides", category: "theme_park", rank: 8 },
+    { name: "Grand Central Market", description: "Historic food hall with diverse vendors and cuisines", category: "food", rank: 9 },
+    { name: "Hollywood Walk of Fame", description: "Celebrity stars embedded in sidewalk along Hollywood Boulevard", category: "landmarks", rank: 10 },
+    { name: "TCL Chinese Theatre", description: "Historic movie palace with celebrity handprints and premieres", category: "landmarks", rank: 11 },
+    { name: "Rodeo Drive", description: "World-famous luxury shopping street in Beverly Hills", category: "shopping", rank: 12 },
+  ],
+  "New York City": [
+    { name: "Empire State Building Tour", description: "Visit the iconic Art Deco skyscraper and observation deck", category: "landmarks", rank: 1 },
+    { name: "Statue of Liberty & Ellis Island", description: "Visit the iconic symbol of freedom", category: "landmarks", rank: 2 },
+    { name: "Central Park Activities", description: "Enjoy the green oasis in Manhattan", category: "outdoor", rank: 3 },
+    { name: "Times Square Experience", description: "Feel the energy of the city's crossroads", category: "landmarks", rank: 4 },
+    { name: "Brooklyn Bridge Walk", description: "Cross the historic suspension bridge", category: "landmarks", rank: 5 },
+    { name: "9/11 Memorial & Museum", description: "Pay respects at this moving memorial", category: "history", rank: 6 },
+    { name: "Broadway Shows", description: "Experience world-class theater in the Theater District", category: "entertainment", rank: 7 },
+    { name: "High Line Walk", description: "Stroll along the elevated urban park built on former railway", category: "outdoor", rank: 8 },
+    { name: "Museum of Modern Art", description: "World-renowned modern art museum", category: "culture", rank: 9 },
+    { name: "Rockefeller Center", description: "Top of the Rock observation deck and iconic plaza", category: "landmarks", rank: 10 },
+    { name: "One World Observatory", description: "Stunning views from tallest building in Western Hemisphere", category: "landmarks", rank: 11 },
+    { name: "Grand Central Terminal", description: "Stunning Beaux-Arts train station", category: "landmarks", rank: 12 },
+  ],
+  "London": [
+    { name: "Big Ben & Parliament", description: "Iconic clock tower and government buildings", category: "landmarks", rank: 1 },
+    { name: "Tower of London", description: "Historic castle and Crown Jewels", category: "history", rank: 2 },
+    { name: "British Museum", description: "World history and cultural artifacts", category: "culture", rank: 3 },
+    { name: "Buckingham Palace", description: "Royal residence and changing of the guard", category: "history", rank: 4 },
+    { name: "London Eye", description: "Giant observation wheel on Thames", category: "landmarks", rank: 5 },
+    { name: "West End Shows", description: "World-class theater productions", category: "entertainment", rank: 6 },
+    { name: "Tower Bridge", description: "Iconic Victorian bridge crossing the Thames", category: "landmarks", rank: 7 },
+    { name: "Westminster Abbey", description: "Gothic abbey and royal coronation site", category: "history", rank: 8 },
+    { name: "Hyde Park", description: "Royal park with Speaker's Corner", category: "outdoor", rank: 9 },
+    { name: "Borough Market", description: "Historic food market with gourmet offerings", category: "food", rank: 10 },
+    { name: "St. Paul's Cathedral", description: "Christopher Wren's masterpiece with iconic dome", category: "history", rank: 11 },
+    { name: "Thames River Cruise", description: "See London's landmarks from the water", category: "sightseeing", rank: 12 },
+  ],
+  "Paris": [
+    { name: "Eiffel Tower", description: "Iconic iron tower and symbol of Paris", category: "landmarks", rank: 1 },
+    { name: "Louvre Museum", description: "World's largest art museum", category: "culture", rank: 2 },
+    { name: "Arc de Triomphe", description: "Triumphal arch on Champs-Élysées", category: "landmarks", rank: 3 },
+    { name: "Notre-Dame Cathedral", description: "Gothic masterpiece on Île de la Cité", category: "history", rank: 4 },
+    { name: "Montmartre & Sacré-Cœur", description: "Artist quarter with basilica views", category: "culture", rank: 5 },
+    { name: "Versailles Palace", description: "Opulent royal palace and gardens", category: "history", rank: 6 },
+    { name: "Seine River Cruise", description: "See Paris monuments from the water", category: "sightseeing", rank: 7 },
+    { name: "Musée d'Orsay", description: "Impressionist and Post-Impressionist masterpieces", category: "culture", rank: 8 },
+    { name: "Champs-Élysées Shopping", description: "Famous avenue for shopping and strolling", category: "shopping", rank: 9 },
+    { name: "Latin Quarter", description: "Historic student district with narrow streets", category: "culture", rank: 10 },
+    { name: "French Café Culture", description: "Experience sidewalk cafés and pastries", category: "food", rank: 11 },
+    { name: "Marais District", description: "Historic Jewish quarter with boutiques", category: "culture", rank: 12 },
+  ],
+};
+
+// Helper to get featured activities for a city
+export function getFeaturedActivitiesForCity(cityName: string): Array<{name: string, description: string, category: string, rank: number}> {
+  const normalizedCity = cityName.trim();
+  
+  // Check direct match
+  if (FEATURED_CITY_ACTIVITIES[normalizedCity]) {
+    return FEATURED_CITY_ACTIVITIES[normalizedCity];
+  }
+  
+  // Check LA Metro cities
+  if (['Playa del Rey', 'Santa Monica', 'Venice', 'Culver City', 'West Hollywood', 'Beverly Hills', 
+       'Malibu', 'Manhattan Beach', 'Hermosa Beach', 'Redondo Beach', 'Long Beach', 'Pasadena'].includes(normalizedCity)) {
+    return FEATURED_CITY_ACTIVITIES['Los Angeles'] || [];
+  }
+  
+  return [];
+}
+
 export const STATIC_CITY_ACTIVITIES: Record<string, Array<{name: string, description: string, category: string}>> = {
   "New York City": [
     { name: "Empire State Building Tour", description: "Visit the iconic Art Deco skyscraper and observation deck", category: "landmarks" },

@@ -3,7 +3,7 @@ import { cityActivities } from '../shared/schema';
 import { eq, and } from 'drizzle-orm';
 import { generateCityActivities } from './ai-city-activities.js';
 import { GENERIC_CITY_ACTIVITIES } from './generic-city-activities.js';
-import { getStaticActivitiesForCity } from './static-city-activities.js';
+import { getStaticActivitiesForCity, getFeaturedActivitiesForCity } from './static-city-activities.js';
 
 export async function ensureCityHasActivities(cityName: string, state?: string, country?: string, userId: number = 1): Promise<void> {
   try {
@@ -75,13 +75,73 @@ export async function ensureCityHasActivities(cityName: string, state?: string, 
     
     console.log(`✅ AUTO-SETUP: Added ${savedActivities.length} universal activities to ${cityName}`);
     
-    // Now add static city-specific activities if they exist
+    // First, add FEATURED activities (curated top 12 for Popular section)
+    const featuredActivities = getFeaturedActivitiesForCity(cityName);
+    if (featuredActivities.length > 0) {
+      console.log(`⭐ AUTO-SETUP: Adding ${featuredActivities.length} FEATURED activities to ${cityName}...`);
+      
+      let featuredAdded = 0;
+      for (const featuredActivity of featuredActivities) {
+        try {
+          const existing = await db
+            .select()
+            .from(cityActivities)
+            .where(and(
+              eq(cityActivities.cityName, cityName),
+              eq(cityActivities.activityName, featuredActivity.name)
+            ))
+            .limit(1);
+            
+          if (existing.length === 0) {
+            await db.insert(cityActivities).values({
+              cityName,
+              activityName: featuredActivity.name,
+              description: featuredActivity.description,
+              category: featuredActivity.category,
+              state: state || '',
+              country: country || 'United States',
+              createdByUserId: userId,
+              isActive: true,
+              source: 'featured',
+              isFeatured: true,
+              rank: featuredActivity.rank
+            });
+            featuredAdded++;
+          } else {
+            // Update existing to be featured if not already
+            await db.update(cityActivities)
+              .set({ 
+                source: 'featured', 
+                isFeatured: true, 
+                rank: featuredActivity.rank 
+              })
+              .where(and(
+                eq(cityActivities.cityName, cityName),
+                eq(cityActivities.activityName, featuredActivity.name)
+              ));
+          }
+        } catch (error) {
+          if (!(error as any)?.message?.includes('duplicate key')) {
+            console.error(`Error saving featured activity ${featuredActivity.name}:`, error);
+          }
+        }
+      }
+      console.log(`✅ AUTO-SETUP: Added ${featuredAdded} FEATURED activities to ${cityName}`);
+    }
+    
+    // Get set of featured names to avoid marking them as static
+    const featuredNames = new Set(featuredActivities.map(a => a.name));
+    
+    // Now add static city-specific activities (More Ideas section)
     const staticActivities = getStaticActivitiesForCity(cityName);
     if (staticActivities.length > 0) {
       console.log(`🏛️ AUTO-SETUP: Adding ${staticActivities.length} static city-specific activities to ${cityName}...`);
       
       let staticActivitiesAdded = 0;
       for (const staticActivity of staticActivities) {
+        // Skip if it's already in featured
+        if (featuredNames.has(staticActivity.name)) continue;
+        
         try {
           // Check if this static activity already exists
           const existing = await db
@@ -94,7 +154,7 @@ export async function ensureCityHasActivities(cityName: string, state?: string, 
             .limit(1);
             
           if (existing.length === 0) {
-            // Add missing static activity
+            // Add missing static activity (NOT featured)
             await db.insert(cityActivities).values({
               cityName,
               activityName: staticActivity.name,
@@ -103,7 +163,10 @@ export async function ensureCityHasActivities(cityName: string, state?: string, 
               state: state || '',
               country: country || 'United States',
               createdByUserId: userId,
-              isActive: true
+              isActive: true,
+              source: 'static',
+              isFeatured: false,
+              rank: 0
             });
             
             staticActivitiesAdded++;

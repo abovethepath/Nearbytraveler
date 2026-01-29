@@ -17187,6 +17187,63 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // POST refresh/update featured status for city activities (admin)
+  app.post("/api/city-activities/:cityName/refresh-featured", async (req, res) => {
+    try {
+      const { cityName } = req.params;
+      
+      if (!cityName) {
+        return res.status(400).json({ error: 'City name is required' });
+      }
+      
+      const { getFeaturedActivitiesForCity } = await import('./static-city-activities.js');
+      const featuredActivities = getFeaturedActivitiesForCity(cityName);
+      
+      if (featuredActivities.length === 0) {
+        return res.json({ 
+          message: `No curated featured list for ${cityName}`, 
+          updated: 0 
+        });
+      }
+      
+      // First, unflag ALL activities for this city as not featured
+      await db.update(cityActivities)
+        .set({ isFeatured: false, source: 'static' })
+        .where(and(
+          eq(cityActivities.cityName, cityName),
+          eq(cityActivities.isFeatured, true)
+        ));
+      
+      // Now set the curated featured activities
+      let updated = 0;
+      for (const featured of featuredActivities) {
+        const result = await db.update(cityActivities)
+          .set({ 
+            isFeatured: true, 
+            source: 'featured',
+            rank: featured.rank 
+          })
+          .where(and(
+            eq(cityActivities.cityName, cityName),
+            eq(cityActivities.activityName, featured.name)
+          ))
+          .returning();
+        
+        if (result.length > 0) updated++;
+      }
+      
+      console.log(`✅ REFRESH-FEATURED: Updated ${updated} activities as featured for ${cityName}`);
+      res.json({ 
+        message: `Updated ${updated} activities as featured for ${cityName}`,
+        updated,
+        featuredList: featuredActivities.map(a => a.name)
+      });
+    } catch (error: any) {
+      console.error('Error refreshing featured activities:', error);
+      res.status(500).json({ error: 'Failed to refresh featured activities' });
+    }
+  });
+
   // === AI CITY MATCH FEATURES ===
   
   // POST generate AI activity suggestions for a city based on user's interests
