@@ -234,29 +234,7 @@ export function VouchWidget({ userId, isOwnProfile, currentUserId, variant = 'de
                   </div>
                 )}
               </div>
-            ) : (
-              <Card className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-600">
-                <CardContent className="p-4 space-y-3">
-                  <Button 
-                    className="w-full bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-400 dark:border-gray-600 cursor-not-allowed hover:bg-gray-300 dark:hover:bg-gray-700" 
-                    size="sm" 
-                    disabled
-                    data-testid="button-vouch-disabled"
-                  >
-                    <CheckCircle className="h-4 w-4 mr-2 opacity-60" />
-                    Vouch for This Person
-                  </Button>
-                  <div className="bg-amber-100 dark:bg-amber-900/30 border border-amber-300 dark:border-amber-700 rounded-lg p-3">
-                    <p className="text-sm text-amber-800 dark:text-amber-200 text-center font-medium">
-                      🔒 {canVouchData?.reason || 'You must be vouched by someone to unlock vouching'}
-                    </p>
-                    <p className="text-xs text-amber-700 dark:text-amber-300 text-center mt-1">
-                      Get vouched by trusted members to unlock this feature!
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+            ) : null}
           </>
         )}
       </div>
