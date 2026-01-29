@@ -631,7 +631,14 @@ export default function Messages() {
 
       {/* Main Chat Area - WhatsApp Desktop Style */}
       <div className="flex-1 flex flex-col min-h-full bg-white dark:bg-gray-900">
-        {selectedConversation && selectedUser ? (
+        {/* Loading state when conversation is selected but user data not loaded yet */}
+        {selectedConversation && !selectedUser && (connectionsLoading || messagesLoading || conversations.length === 0) ? (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center text-gray-600 dark:text-gray-400">
+              <div className="animate-pulse">Loading conversation...</div>
+            </div>
+          </div>
+        ) : selectedConversation && selectedUser ? (
           <>
             {/* Compact Header - Just show name on top */}
             <div ref={headerRef} className="px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 shrink-0">
