@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/App";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
@@ -96,7 +97,9 @@ import {
   MessageCircle,
   Map,
   Lightbulb,
-  Loader2
+  Loader2,
+  MoreHorizontal,
+  RotateCcw
 } from "lucide-react";
 
 interface MatchInCityProps {
@@ -143,6 +146,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [newPickName, setNewPickName] = useState('');
   const [newPickCategory, setNewPickCategory] = useState('other');
   const [showEventSuggestion, setShowEventSuggestion] = useState(false);
+  const [similarActivity, setSimilarActivity] = useState<{id: number, name: string} | null>(null);
 
   // AI Features State
   const [aiSuggestions, setAiSuggestions] = useState<any[]>([]);
@@ -1058,6 +1062,142 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     }
   };
 
+  // Find similar existing activity for quality control
+  const findSimilarActivity = (input: string): {id: number, name: string} | null => {
+    if (!input || input.length < 3) return null;
+    const normalized = normalizeName(input);
+    
+    // Skip common short words
+    if (['the', 'and', 'for', 'with'].includes(normalized)) return null;
+    
+    // Check all city activities for similarity
+    for (const activity of cityActivities) {
+      const activityNormalized = normalizeName(activity.activityName);
+      
+      // Exact match
+      if (normalized === activityNormalized) {
+        return { id: activity.id, name: activity.activityName };
+      }
+      
+      // One contains the other (with reasonable length)
+      if (normalized.length >= 4 && activityNormalized.length >= 4) {
+        if (activityNormalized.includes(normalized) || normalized.includes(activityNormalized)) {
+          return { id: activity.id, name: activity.activityName };
+        }
+      }
+      
+      // Word-based similarity (>= 60% common words)
+      const inputWords = normalized.split(/\s+/).filter(w => w.length > 2);
+      const activityWords = activityNormalized.split(/\s+/).filter(w => w.length > 2);
+      if (inputWords.length >= 2 && activityWords.length >= 2) {
+        const commonWords = inputWords.filter(w => activityWords.includes(w));
+        const similarity = commonWords.length / Math.min(inputWords.length, activityWords.length);
+        if (similarity >= 0.6) {
+          return { id: activity.id, name: activity.activityName };
+        }
+      }
+    }
+    return null;
+  };
+
+  // Clear all picks for this city
+  const handleClearAllPicks = async () => {
+    const userPicksForCity = userActivities.filter(ua => ua.cityName === selectedCity);
+    if (userPicksForCity.length === 0) {
+      toast({ title: "No picks", description: "You don't have any picks to clear" });
+      return;
+    }
+    
+    if (!confirm(`Clear all ${userPicksForCity.length} picks for ${selectedCity}?`)) return;
+    
+    const storedUser = localStorage.getItem('travelconnect_user');
+    const authUser = localStorage.getItem('user');
+    const actualUser = user || (storedUser ? JSON.parse(storedUser) : null) || (authUser ? JSON.parse(authUser) : null);
+    const userId = actualUser?.id;
+    
+    try {
+      const apiBase = getApiBaseUrl();
+      // Delete all picks for this city
+      for (const pick of userPicksForCity) {
+        await fetch(`${apiBase}/api/user-city-interests/${pick.id}`, {
+          method: 'DELETE',
+          headers: { 'x-user-id': userId?.toString() || '' }
+        });
+      }
+      
+      setUserActivities(prev => prev.filter(ua => ua.cityName !== selectedCity));
+      toast({ title: "Cleared", description: `All picks for ${selectedCity} have been cleared` });
+      fetchMatchingUsers();
+    } catch (error) {
+      console.error('Clear all error:', error);
+      toast({ title: "Error", description: "Failed to clear picks", variant: "destructive" });
+    }
+  };
+
+  // Reset to popular picks only (clears user-created, keeps popular/featured)
+  const handleResetToPopular = async () => {
+    const userPicksForCity = userActivities.filter(ua => ua.cityName === selectedCity);
+    const storedUser = localStorage.getItem('travelconnect_user');
+    const authUser = localStorage.getItem('user');
+    const actualUser = user || (storedUser ? JSON.parse(storedUser) : null) || (authUser ? JSON.parse(authUser) : null);
+    const currentUserId = actualUser?.id;
+    
+    // Find featured activities for this city
+    const featuredActivities = cityActivities.filter(a => 
+      (a as any).isFeatured || (a as any).source === 'featured'
+    );
+    
+    if (featuredActivities.length === 0) {
+      toast({ title: "No popular picks", description: `No curated picks available for ${selectedCity}` });
+      return;
+    }
+    
+    if (!confirm(`Reset to ${featuredActivities.length} popular picks for ${selectedCity}? This will remove your custom picks.`)) return;
+    
+    try {
+      const apiBase = getApiBaseUrl();
+      
+      // First clear all current picks
+      for (const pick of userPicksForCity) {
+        await fetch(`${apiBase}/api/user-city-interests/${pick.id}`, {
+          method: 'DELETE',
+          headers: { 'x-user-id': currentUserId?.toString() || '' }
+        });
+      }
+      
+      // Then add all featured activities
+      const newPicks: any[] = [];
+      for (const activity of featuredActivities) {
+        const response = await fetch(`${apiBase}/api/user-city-interests`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-id': currentUserId?.toString() || ''
+          },
+          body: JSON.stringify({
+            activityId: activity.id,
+            cityName: selectedCity
+          })
+        });
+        
+        if (response.ok) {
+          const newPick = await response.json();
+          newPicks.push(newPick);
+        }
+      }
+      
+      setUserActivities(prev => [
+        ...prev.filter(ua => ua.cityName !== selectedCity),
+        ...newPicks
+      ]);
+      toast({ title: "Reset complete", description: `Added ${newPicks.length} popular picks for ${selectedCity}` });
+      fetchMatchingUsers();
+    } catch (error) {
+      console.error('Reset to popular error:', error);
+      toast({ title: "Error", description: "Failed to reset picks", variant: "destructive" });
+    }
+  };
+
   // Toggle activity function for the simple interface
   const handleToggleActivity = async (activityId: number, activityName: string) => {
     // Get user from localStorage if not in context
@@ -1694,7 +1834,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         </h3>
                         <p className="text-sm text-gray-500 dark:text-gray-400">Things you want to do in {selectedCity}</p>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 items-center">
                         <Button
                           onClick={() => setShowAddPickModal(true)}
                           size="sm"
@@ -1712,6 +1852,33 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           <Plus className="w-4 h-4 mr-1" />
                           Add an Event
                         </Button>
+                        {/* Overflow menu for cleanup actions */}
+                        {userPicksForCity.length > 0 && (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="bg-white dark:bg-gray-900">
+                              <DropdownMenuItem 
+                                onClick={handleClearAllPicks}
+                                className="text-red-600 dark:text-red-400 cursor-pointer"
+                              >
+                                <Trash2 className="w-4 h-4 mr-2" />
+                                Clear all picks
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem 
+                                onClick={handleResetToPopular}
+                                className="cursor-pointer"
+                              >
+                                <RotateCcw className="w-4 h-4 mr-2" />
+                                Reset to Popular
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
                       </div>
                     </div>
                     
@@ -1776,6 +1943,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   setShowEventSuggestion(false);
                   setNewPickName('');
                   setNewPickCategory('other');
+                  setSimilarActivity(null);
                 }
               }}>
                 <DialogContent className="sm:max-w-md bg-white dark:bg-gray-900">
@@ -1794,12 +1962,64 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         placeholder="e.g., Jogging buddies, Vintage shopping, Poker night..."
                         value={newPickName}
                         onChange={(e) => {
-                          setNewPickName(e.target.value);
-                          setShowEventSuggestion(looksLikeEvent(e.target.value));
+                          const value = e.target.value;
+                          setNewPickName(value);
+                          setShowEventSuggestion(looksLikeEvent(value));
+                          // Check for similar existing activities
+                          const similar = findSimilarActivity(value);
+                          setSimilarActivity(similar);
                         }}
                         className="text-gray-800 dark:text-white"
                         autoFocus
                       />
+                      {/* Similar activity suggestion - quality control */}
+                      {similarActivity && !showEventSuggestion && (() => {
+                        // Check if this activity is already selected
+                        const isAlreadySelected = userActivities.some(
+                          ua => ua.activityId === similarActivity.id && ua.cityName === selectedCity
+                        );
+                        
+                        if (isAlreadySelected) {
+                          return (
+                            <div className="mt-2 p-3 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-200 dark:border-green-700">
+                              <p className="text-sm text-green-700 dark:text-green-300">
+                                ✓ You already have <strong>"{similarActivity.name}"</strong> in your picks!
+                              </p>
+                            </div>
+                          );
+                        }
+                        
+                        return (
+                          <div className="mt-2 p-3 bg-amber-50 dark:bg-amber-900/30 rounded-lg border border-amber-200 dark:border-amber-700">
+                            <p className="text-sm text-amber-700 dark:text-amber-300 mb-2">
+                              This already exists as <strong>"{similarActivity.name}"</strong> — add that instead?
+                            </p>
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                className="bg-amber-500 hover:bg-amber-600 text-white"
+                                onClick={() => {
+                                  // Add the existing activity (not toggle - always add)
+                                  handleToggleActivity(similarActivity.id, similarActivity.name);
+                                  setShowAddPickModal(false);
+                                  setNewPickName('');
+                                  setSimilarActivity(null);
+                                }}
+                              >
+                                Add "{similarActivity.name}"
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="border-amber-300 text-amber-600"
+                                onClick={() => setSimilarActivity(null)}
+                              >
+                                Create new anyway
+                              </Button>
+                            </div>
+                          </div>
+                        );
+                      })()}
                       {showEventSuggestion && (
                         <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
                           <p className="text-sm text-blue-700 dark:text-blue-300 mb-2">
@@ -2500,16 +2720,24 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     </div>
                     
                     <div className="space-y-2">
-                      <h4 className="text-gray-700 dark:text-gray-200 font-medium text-sm">Shared Interests:</h4>
+                      <h4 className="text-gray-700 dark:text-gray-200 font-medium text-sm flex items-center gap-1">
+                        <Heart className="w-3.5 h-3.5 text-pink-500" />
+                        You both selected:
+                      </h4>
                       <div className="flex flex-wrap gap-1">
-                        {matchedUser.sharedActivities.map((activity: string, index: number) => (
+                        {matchedUser.sharedActivities.slice(0, 4).map((activity: string, index: number) => (
                           <span 
                             key={index}
-                            className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded text-xs"
+                            className="bg-gradient-to-r from-green-100 to-teal-100 dark:from-green-900/30 dark:to-teal-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-xs font-medium border border-green-200 dark:border-green-700"
                           >
                             {activity}
                           </span>
                         ))}
+                        {matchedUser.sharedActivities.length > 4 && (
+                          <span className="text-gray-500 dark:text-gray-400 text-xs px-2 py-1">
+                            +{matchedUser.sharedActivities.length - 4} more
+                          </span>
+                        )}
                       </div>
                     </div>
                     
