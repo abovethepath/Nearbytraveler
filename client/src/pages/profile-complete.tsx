@@ -9728,7 +9728,7 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-3 sm:space-y-0">
                     <div className="flex-1">
                       <h4 className="font-semibold text-gray-900 dark:text-white">{event.title}</h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{event.description}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">{event.description}</p>
                       <div className="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400 mt-2">
                         <span className="flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
