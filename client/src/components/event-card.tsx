@@ -1,13 +1,13 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Users, Instagram } from "lucide-react";
+import { Calendar, MapPin, Users, Instagram, Check } from "lucide-react";
 import { useLocation } from "wouter";
 import type { Event } from "@shared/schema";
 import ConnectionCelebration from "./connection-celebration";
 import { useConnectionCelebration } from "@/hooks/useConnectionCelebration";
-import { useMutation } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import ImageLoader from "./ImageLoader";
 import { InstagramShare } from "./InstagramShare";
@@ -30,6 +30,31 @@ export default function EventCard({ event, compact = false, featured = false }: 
   };
   
   const currentUser = getCurrentUser();
+  
+  // Check if user is the event organizer
+  const isOrganizer = currentUser?.id === event.organizerId;
+  
+  // Fetch participant status for current user
+  const { data: participantStatus } = useQuery({
+    queryKey: ['/api/events', event.id, 'participants', 'user-status', currentUser?.id],
+    queryFn: async () => {
+      if (!currentUser?.id) return null;
+      const response = await fetch(`${getApiBaseUrl()}/api/events/${event.id}/participants`, {
+        credentials: 'include',
+      });
+      if (!response.ok) return null;
+      const participants = await response.json();
+      const userParticipant = participants.find((p: any) => p.userId === currentUser.id);
+      return userParticipant?.status || null;
+    },
+    enabled: !!currentUser?.id && !isOrganizer,
+    staleTime: 10000, // Cache for 10 seconds
+  });
+  
+  // User is already attending if they have 'going' or 'interested' status
+  const isAlreadyAttending = participantStatus === 'going' || participantStatus === 'interested';
+  const isGoing = participantStatus === 'going';
+  const isInterested = participantStatus === 'interested';
 
   // Join event mutation (with status: 'interested' or 'going')
   const joinEventMutation = useMutation({
@@ -213,36 +238,80 @@ export default function EventCard({ event, compact = false, featured = false }: 
             >
               Chat
             </Button>
-            <Button 
-              size="sm" 
-              className="flex-1 min-w-[60px] text-white border-0"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleJoinEvent('going');
-              }}
-              disabled={joinEventMutation.isPending}
-              style={{ 
-                background: 'linear-gradient(to right, #3b82f6, #ea580c)',
-                border: 'none',
-                color: 'white'
-              }}
-              data-testid="button-going"
-            >
-              {joinEventMutation.isPending ? "..." : "Going"}
-            </Button>
-            <Button 
-              size="sm" 
-              variant="outline"
-              className="flex-1 min-w-[80px]"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleJoinEvent('interested');
-              }}
-              disabled={joinEventMutation.isPending}
-              data-testid="button-interested"
-            >
-              {joinEventMutation.isPending ? "..." : "Interested"}
-            </Button>
+            
+            {/* Show organizer badge if user is the organizer */}
+            {isOrganizer ? (
+              <Badge className="flex items-center gap-1 bg-gradient-to-r from-blue-500 to-orange-500 text-white px-3 py-1">
+                <Users className="h-3 w-3" />
+                Organizer
+              </Badge>
+            ) : isGoing ? (
+              /* Show "Going" badge if already going */
+              <Badge className="flex items-center gap-1 bg-green-500 text-white px-3 py-1">
+                <Check className="h-3 w-3" />
+                Going
+              </Badge>
+            ) : isInterested ? (
+              /* Show "Interested" badge and upgrade to Going button */
+              <>
+                <Badge className="flex items-center gap-1 bg-blue-500 text-white px-3 py-1">
+                  <Check className="h-3 w-3" />
+                  Interested
+                </Badge>
+                <Button 
+                  size="sm" 
+                  className="flex-1 min-w-[60px] text-white border-0"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleJoinEvent('going');
+                  }}
+                  disabled={joinEventMutation.isPending}
+                  style={{ 
+                    background: 'linear-gradient(to right, #3b82f6, #ea580c)',
+                    border: 'none',
+                    color: 'white'
+                  }}
+                  data-testid="button-going"
+                >
+                  {joinEventMutation.isPending ? "..." : "I'm Going!"}
+                </Button>
+              </>
+            ) : (
+              /* Show both buttons for users not yet attending */
+              <>
+                <Button 
+                  size="sm" 
+                  className="flex-1 min-w-[60px] text-white border-0"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleJoinEvent('going');
+                  }}
+                  disabled={joinEventMutation.isPending}
+                  style={{ 
+                    background: 'linear-gradient(to right, #3b82f6, #ea580c)',
+                    border: 'none',
+                    color: 'white'
+                  }}
+                  data-testid="button-going"
+                >
+                  {joinEventMutation.isPending ? "..." : "Going"}
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  className="flex-1 min-w-[80px]"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleJoinEvent('interested');
+                  }}
+                  disabled={joinEventMutation.isPending}
+                  data-testid="button-interested"
+                >
+                  {joinEventMutation.isPending ? "..." : "Interested"}
+                </Button>
+              </>
+            )}
+            
             <div onClick={(e) => e.stopPropagation()} className="flex-shrink-0">
               <InstagramShare 
                 event={event} 

@@ -1097,7 +1097,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
               </div>
 
               {/* Same Day Checkbox */}
-              <div className="flex items-center gap-3 py-2">
+              <div className="flex items-center gap-3 py-3 px-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
                 <Checkbox
                   id="isSameDay"
                   checked={watch("isSameDay") || false}
@@ -1111,8 +1111,9 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                       }
                     }
                   }}
+                  className="h-5 w-5 border-2 border-blue-500 dark:border-blue-400 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                 />
-                <Label htmlFor="isSameDay" className="text-sm font-medium text-gray-700 dark:text-white cursor-pointer">
+                <Label htmlFor="isSameDay" className="text-sm font-medium text-gray-800 dark:text-white cursor-pointer">
                   Same day event (most events start and end on the same day)
                 </Label>
               </div>
@@ -1176,7 +1177,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
               </div>
               
               <div className="border rounded-lg p-4 space-y-4 bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3 py-2 px-2 bg-purple-50 dark:bg-purple-900/30 rounded-lg border border-purple-200 dark:border-purple-700">
                   <Checkbox
                     id="isRecurring"
                     checked={isRecurring}
@@ -1189,8 +1190,9 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                         setValue("recurrenceEnd", "");
                       }
                     }}
+                    className="h-5 w-5 border-2 border-purple-500 dark:border-purple-400 data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
                   />
-                  <Label htmlFor="isRecurring" className="text-sm font-medium text-gray-700 dark:text-white cursor-pointer">
+                  <Label htmlFor="isRecurring" className="text-sm font-medium text-gray-800 dark:text-white cursor-pointer">
                     Make this a recurring event
                   </Label>
                 </div>

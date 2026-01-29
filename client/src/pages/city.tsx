@@ -18,6 +18,7 @@ import { CityChatlroomsWidget } from "@/components/CityChatlroomsWidget";
 import { CityStatsWidget } from "@/components/CityStatsWidget";
 import { CityMap } from "@/components/CityMap";
 import { SecretExperiencesWidget } from "@/components/SecretExperiencesWidget";
+import { AICityGuideWidget } from "@/components/AICityGuideWidget";
 import { useAuth } from "@/App";
 import { getApiBaseUrl } from "@/lib/queryClient";
 import type { User, Event } from "@shared/schema";
@@ -596,6 +597,10 @@ export default function CityPage({ cityName }: CityPageProps) {
                     state={parsedStateName || 'California'} 
                     country={parsedCountryName} 
                   />
+                </div>
+                {/* AI City Guide Widget - Travel tips and insights */}
+                <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
+                  <AICityGuideWidget cityName={parsedCityName} compact={false} />
                 </div>
                 {/* City Stats Widget - Always Loaded */}
                 <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
