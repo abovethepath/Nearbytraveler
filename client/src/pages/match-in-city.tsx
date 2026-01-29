@@ -68,6 +68,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [isCitiesLoading, setIsCitiesLoading] = useState(true);
   const [editingActivityName, setEditingActivityName] = useState('');
   const [activitySearchFilter, setActivitySearchFilter] = useState('');
+  const [activeMobileSection, setActiveMobileSection] = useState<'popular' | 'ai' | 'preferences' | 'selected' | 'all'>('all');
 
   // AI Features State
   const [aiSuggestions, setAiSuggestions] = useState<any[]>([]);
@@ -1452,6 +1453,60 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 <p className="text-lg text-gray-600 dark:text-gray-300 font-medium">Pick to match faster in this city.</p>
               </div>
 
+              {/* Mobile Section Switcher - Show only on mobile */}
+              <div className="md:hidden sticky top-0 z-30 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm py-3 -mx-8 px-4 mb-6 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                  {[
+                    { id: 'popular', label: '⭐ Popular', count: cityActivities.filter(a => (a as any).isFeatured || (a as any).source === 'featured').length },
+                    { id: 'ai', label: '✨ AI Ideas', count: cityActivities.filter(a => !((a as any).isFeatured || (a as any).source === 'featured') && a.category !== 'universal').length },
+                    { id: 'preferences', label: '✈️ Preferences', count: 20 },
+                    { id: 'selected', label: `✓ Selected`, count: userActivities.filter(ua => ua.cityName === selectedCity).length },
+                  ].map((section) => (
+                    <button
+                      key={section.id}
+                      onClick={() => setActiveMobileSection(section.id as typeof activeMobileSection)}
+                      className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                        activeMobileSection === section.id
+                          ? 'bg-gradient-to-r from-blue-500 to-orange-500 text-white shadow-lg'
+                          : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                      }`}
+                    >
+                      {section.label} {section.count > 0 && <span className="ml-1 opacity-80">({section.count})</span>}
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => setActiveMobileSection('all')}
+                    className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                      activeMobileSection === 'all'
+                        ? 'bg-gradient-to-r from-gray-600 to-gray-700 text-white shadow-lg'
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    Show All
+                  </button>
+                </div>
+                {/* Search filter for activities */}
+                <div className="mt-3">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Input
+                      placeholder="Search city picks..."
+                      value={activitySearchFilter}
+                      onChange={(e) => setActivitySearchFilter(e.target.value)}
+                      className="pl-9 py-2 text-sm bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-full"
+                    />
+                    {activitySearchFilter && (
+                      <button
+                        onClick={() => setActivitySearchFilter('')}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
               {/* Add new activity section - GORGEOUS DESIGN - MOVED TO TOP */}
               <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-2xl border border-blue-200/50 dark:border-blue-700/50 shadow-inner">
                 <div className="text-center mb-4">
@@ -1484,11 +1539,16 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 
                 {/* SECTION 1: Popular in {City} - Featured Activities */}
                 {(() => {
-                  const featuredActivities = cityActivities.filter(a => (a as any).isFeatured || (a as any).source === 'featured');
-                  if (featuredActivities.length === 0) return null;
+                  const featuredActivities = cityActivities
+                    .filter(a => (a as any).isFeatured || (a as any).source === 'featured')
+                    .filter(a => !activitySearchFilter || a.activityName.toLowerCase().includes(activitySearchFilter.toLowerCase()));
+                  if (featuredActivities.length === 0 && !activitySearchFilter) return null;
+                  
+                  // Mobile: only show if this section is active or showing all
+                  const isMobileVisible = activeMobileSection === 'popular' || activeMobileSection === 'all';
                   
                   return (
-                    <div>
+                    <div className={`md:block ${isMobileVisible ? 'block' : 'hidden'}`}>
                       <div className="text-center mb-6">
                         <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent mb-2">⭐ Popular in {selectedCity}</h3>
                         <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">Must-see spots and local favorites</p>
@@ -1523,7 +1583,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 })()}
 
                 {/* SECTION 2: More {City} Ideas - AI-Generated Activities */}
-                <div>
+                <div className={`md:block ${activeMobileSection === 'ai' || activeMobileSection === 'all' ? 'block' : 'hidden'}`}>
                   <div className="text-center mb-6">
                     <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent mb-2">✨ More {selectedCity} Ideas</h3>
                     <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm mb-4">AI-generated unique experiences for this city</p>
@@ -1603,6 +1663,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                             if (isSimilarToUniversal(activity.activityName)) return false;
                             // Filter out dismissed AI activities
                             if (activity.createdByUserId === 1 && dismissedAIActivities.has(activity.id)) return false;
+                            // Apply search filter
+                            if (activitySearchFilter && !activity.activityName.toLowerCase().includes(activitySearchFilter.toLowerCase())) return false;
                             return true;
                           })
                           .sort((a, b) => {
@@ -1715,17 +1777,18 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   )}
                 </div>
 
-                {/* Universal Travel Activities - Always show these for every city */}
-                <div className="mt-8">
+                {/* SECTION 3: Universal Travel Activities - Always show these for every city */}
+                <div className={`mt-8 md:block ${activeMobileSection === 'preferences' || activeMobileSection === 'all' ? 'block' : 'hidden'}`}>
                   <div className="text-center mb-6">
-                    <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-orange-500 bg-clip-text text-transparent mb-2">✈️ Universal Travel Activities</h3>
+                    <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-orange-500 bg-clip-text text-transparent mb-2">✈️ Universal Match Preferences</h3>
                     <p className="text-gray-600 dark:text-gray-300 text-sm">Match with travelers & locals who want to do these same things in {selectedCity}</p>
                     <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-orange-500 mx-auto rounded-full mt-2"></div>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
                     {(() => {
                       // Use the proper TRAVEL_ACTIVITIES from base-options.ts
-                      const travelActivities = getTravelActivities();
+                      const travelActivities = getTravelActivities()
+                        .filter(a => !activitySearchFilter || a.toLowerCase().includes(activitySearchFilter.toLowerCase()));
                       
                       return travelActivities.map((activity, index) => {
                       // Check if user already has this activity in their interests
@@ -1842,6 +1905,40 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     });
                     })()}
                   </div>
+                </div>
+
+                {/* SECTION 4: Selected Items - Mobile Only View */}
+                <div className={`mt-8 md:hidden ${activeMobileSection === 'selected' ? 'block' : 'hidden'}`}>
+                  <div className="text-center mb-6">
+                    <h3 className="text-2xl font-bold bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent mb-2">✓ Your Selected Picks</h3>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm">{userActivities.filter(ua => ua.cityName === selectedCity).length} picks for {selectedCity}</p>
+                    <div className="w-24 h-1 bg-gradient-to-r from-green-500 to-blue-500 mx-auto rounded-full mt-2"></div>
+                  </div>
+                  {userActivities.filter(ua => ua.cityName === selectedCity).length > 0 ? (
+                    <div className="grid grid-cols-2 gap-3">
+                      {userActivities.filter(ua => ua.cityName === selectedCity).map((activity) => (
+                        <div key={activity.id} className="group relative">
+                          <div className="px-4 py-3 rounded-xl text-sm font-semibold bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-lg border-2 border-green-400">
+                            <span className="flex items-center justify-center gap-1.5">
+                              <span className="text-xs">✓</span>
+                              {activity.activityName}
+                            </span>
+                          </div>
+                          <button
+                            className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600"
+                            onClick={() => handleDeleteActivity(activity.id)}
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                      <p>No picks selected yet.</p>
+                      <p className="text-sm mt-2">Tap on activities in other sections to add them!</p>
+                    </div>
+                  )}
                 </div>
 
               </div>
