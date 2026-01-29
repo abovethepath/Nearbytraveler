@@ -1316,12 +1316,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return "business";
     }
     
-    // PRIORITY 1: Check isCurrentlyTraveling flag (most reliable)
-    if (user.isCurrentlyTraveling && (user.destinationCity || user.travelDestination)) {
-      return "traveler";
-    }
-    
-    // PRIORITY 2: Check current travel plans for active trips
+    // PRIORITY 1: Check current travel plans for active trips (date-validated)
+    // This is the most reliable check because it verifies startDate <= today <= endDate
     const currentDestination = getCurrentTravelDestination(travelPlans || []);
     if (currentDestination && user.hometownCity) {
       const travelDestination = currentDestination.toLowerCase();
@@ -1331,6 +1327,21 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       if (!travelDestination.includes(hometown) && !hometown.includes(travelDestination)) {
         return "traveler";
       }
+    }
+    
+    // PRIORITY 2: Only trust isCurrentlyTraveling flag if we don't have travel plan data
+    // AND if there are date fields to validate against
+    if (user.isCurrentlyTraveling && (user.destinationCity || user.travelDestination)) {
+      const now = new Date();
+      // Only trust this if user has date fields AND dates are currently active
+      if (user.travelStartDate && user.travelEndDate) {
+        const start = new Date(user.travelStartDate);
+        const end = new Date(user.travelEndDate);
+        if (start <= now && end >= now) {
+          return "traveler";
+        }
+      }
+      // If no date fields, don't trust the flag (it may be stale)
     }
     
     // PRIORITY 3: Fallback to old travel fields for backwards compatibility
