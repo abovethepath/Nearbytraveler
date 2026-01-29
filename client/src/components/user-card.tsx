@@ -1,5 +1,4 @@
 import React from "react";
-import { METRO_AREAS } from "@shared/constants";
 
 export interface User {
   id: number;
@@ -61,11 +60,8 @@ export default function UserCard({
     window.dispatchEvent(new PopStateEvent('popstate'));
   };
 
-  // Get user's individual gradient for fallback
   const getUserGradient = () => {
-    if (user.avatarGradient) {
-      return user.avatarGradient;
-    }
+    if (user.avatarGradient) return user.avatarGradient;
     const gradients = [
       'linear-gradient(135deg, #3B82F6 0%, #A855F7 50%, #F97316 100%)',
       'linear-gradient(135deg, #10B981 0%, #059669 50%, #F97316 100%)',
@@ -76,12 +72,10 @@ export default function UserCard({
       'linear-gradient(135deg, #14B8A6 0%, #3B82F6 50%, #A855F7 100%)',
       'linear-gradient(135deg, #EAB308 0%, #F97316 50%, #EF4444 100%)',
     ];
-    const index = user.id % gradients.length;
-    return gradients[index];
+    return gradients[user.id % gradients.length];
   };
 
-  // Get travel status for badge
-  const getTravelBadge = () => {
+  const getTravelCity = () => {
     if ((user as any).travelPlans && Array.isArray((user as any).travelPlans)) {
       const now = new Date();
       const currentTrip = (user as any).travelPlans.find((plan: any) => {
@@ -89,111 +83,84 @@ export default function UserCard({
         const end = new Date(plan.endDate);
         return now >= start && now <= end;
       });
-      if (currentTrip && currentTrip.destinationCity) {
-        return { text: `In ${currentTrip.destinationCity}`, isTraveling: true };
-      }
+      if (currentTrip?.destinationCity) return currentTrip.destinationCity;
     }
     if (user.isCurrentlyTraveling && user.travelDestination) {
       const city = user.travelDestination.split(',')[0].trim();
-      if (city && city.toLowerCase() !== 'null') {
-        return { text: `In ${city}`, isTraveling: true };
-      }
+      if (city && city.toLowerCase() !== 'null') return city;
     }
     return null;
   };
 
-  const travelBadge = getTravelBadge();
+  const travelCity = getTravelCity();
+  const displayCity = user.hometownCity || 'Unknown';
+  const displayName = user.userType === 'business' && user.businessName 
+    ? user.businessName 
+    : `@${user.username}`;
 
   return (
-    <div 
-      className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all duration-200 cursor-pointer group"
+    <button 
+      className="rounded-xl overflow-hidden bg-white/5 dark:bg-gray-800/50 border border-gray-200/50 dark:border-white/10 shadow-sm hover:shadow-md transition-all w-full text-left"
       onClick={handleCardClick}
       data-testid={`user-card-${user.id}`}
     >
-      {/* Photo - 3:4 aspect ratio for compact portrait */}
-      <div className="relative aspect-[3/4] overflow-hidden" style={{ background: getUserGradient() }}>
+      <div className="relative aspect-[4/5]">
+        {/* Photo or gradient fallback */}
         {user.profileImage ? (
           <img 
             src={user.profileImage} 
             alt={user.username}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            className="absolute inset-0 w-full h-full object-cover"
             loading="lazy"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <span className="text-5xl md:text-6xl font-bold text-white/90">
+          <div 
+            className="absolute inset-0 w-full h-full flex items-center justify-center"
+            style={{ background: getUserGradient() }}
+          >
+            <span className="text-4xl font-bold text-white/90">
               {user.name?.charAt(0) || user.username?.charAt(0) || '?'}
             </span>
           </div>
         )}
         
-        {/* Travel badge overlay */}
-        {travelBadge && (
-          <div className="absolute top-2 left-2 bg-blue-500/90 text-white text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1">
-            <span>✈️</span> {travelBadge.text}
-          </div>
-        )}
-        
-        {/* Business badge */}
-        {user.userType === 'business' && (
-          <div className="absolute top-2 right-2 bg-orange-500/90 text-white text-xs font-semibold px-2 py-1 rounded-full">
-            Business
-          </div>
-        )}
+        {/* Top badges */}
+        <div className="absolute top-1.5 left-1.5 right-1.5 flex justify-between">
+          {travelCity && (
+            <span className="bg-blue-500/90 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full">
+              ✈️ {travelCity}
+            </span>
+          )}
+          {user.userType === 'business' && (
+            <span className="bg-orange-500/90 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full ml-auto">
+              Biz
+            </span>
+          )}
+        </div>
         
         {/* Connection degree badge */}
         {connectionDegree && connectionDegree.degree > 0 && connectionDegree.degree <= 2 && (
-          <div className="absolute bottom-2 right-2 bg-purple-500/90 text-white text-xs font-semibold px-2 py-1 rounded-full">
-            {connectionDegree.degree === 1 ? '1st' : '2nd'} • {connectionDegree.mutualCount} mutual
+          <div className="absolute top-1.5 right-1.5 bg-purple-500/90 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full">
+            {connectionDegree.mutualCount} mutual
           </div>
         )}
-      </div>
-      
-      {/* User Info - Compact below photo */}
-      <div className="p-2 sm:p-3">
-        {/* Username/Business Name */}
-        <h3 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base truncate">
-          {user.userType === 'business' && user.businessName 
-            ? user.businessName 
-            : `@${user.username}`}
-        </h3>
         
-        {/* Location line */}
-        <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
-          {user.userType === 'business' 
-            ? (user.businessType || 'Local Business')
-            : (user.hometownCity 
-                ? `${user.hometownCity}${user.hometownState ? `, ${user.hometownState}` : ''}` 
-                : 'Location not set')}
-        </p>
-        
-        {/* Bio preview - only show if not compact */}
-        {!compact && user.bio && (
-          <p className="text-xs text-gray-600 dark:text-gray-300 mt-1.5 line-clamp-2">
-            {user.bio.replace(/Born:\s*[^\n]*/gi, '').trim().slice(0, 80)}
-            {user.bio.length > 80 ? '...' : ''}
-          </p>
-        )}
-        
-        {/* Interests preview */}
-        {!compact && user.interests && user.interests.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-2">
-            {user.interests.slice(0, 2).map((interest, idx) => (
-              <span 
-                key={idx}
-                className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs px-1.5 py-0.5 rounded"
-              >
-                {interest}
-              </span>
-            ))}
-            {user.interests.length > 2 && (
-              <span className="text-xs text-gray-400">
-                +{user.interests.length - 2}
-              </span>
-            )}
+        {/* Bottom overlay with name/city */}
+        <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/80 via-black/50 to-transparent pt-8">
+          <div className="text-sm font-semibold text-white truncate leading-tight">
+            {displayName}
           </div>
-        )}
+          <div className="text-xs text-white/80 truncate leading-tight">
+            {displayCity}
+          </div>
+          {/* Shared interests count */}
+          {compatibilityData?.sharedInterests?.length > 0 && (
+            <div className="text-[10px] text-orange-300 mt-0.5">
+              {compatibilityData.sharedInterests.length} shared
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </button>
   );
 }

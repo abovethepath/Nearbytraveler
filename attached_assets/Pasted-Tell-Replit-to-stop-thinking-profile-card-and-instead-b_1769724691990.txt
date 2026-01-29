@@ -1,0 +1,86 @@
+Tell Replit to stop thinking “profile card” and instead build a compact “tile” grid (thumbnail-first, minimal text) like a marketplace/feed.
+
+Here’s the exact instruction you can paste to Replit:
+
+Replit prompt: Make user cards compact “tiles” (grid), not tall cards
+
+Goal: On the People/Matches list, redesign user cards into small, compact tiles (thumbnail-first) so you can fit 2 columns on mobile and 3–5 columns on desktop, with minimal text and no tall scrolling.
+
+Layout
+
+Replace the current list with a CSS Grid container:
+
+Mobile: 2 columns
+
+Tablet: 3 columns
+
+Desktop: 4–5 columns
+
+Use gap: 8px (tight) and small padding.
+
+Card “tile” design
+
+Card is a fixed aspect ratio (not content-driven height), e.g. aspect-[4/5] or aspect-[3/4]
+
+Top area: profile photo fills the tile (use object-fit: cover)
+
+Bottom overlay (or below image, but small):
+
+Name (single line)
+
+City (single line, smaller)
+
+Optional: “X shared picks” (tiny)
+
+Hide long bios, paragraphs, and big tag stacks from the tile view.
+
+Text + spacing rules
+
+Use text-xs / text-sm, leading-tight
+
+Apply truncate / line-clamp-1 to name + city
+
+Remove big inner padding: keep card padding 6–8px max
+
+Reduce border thickness, keep subtle shadow
+
+Badges/tags
+
+Show max 2 small chips (or just “+N”)
+
+Or show nothing in tile view; open details on tap
+
+Interaction
+
+Entire tile is clickable
+
+Add a quick action icon overlay (optional): message/like
+
+Performance
+
+If list is large, add virtualization later (don’t block redesign)
+
+Deliverable
+
+Create a UserTileCard component and swap it into the matches list.
+
+Keep the old larger card as a “detail view” when tapping a tile (optional).
+
+If you want a quick Tailwind baseline to hand Replit (optional), this is the essence:
+
+<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+  {users.map(u => (
+    <button key={u.id} className="rounded-xl overflow-hidden bg-white/5 border border-white/10">
+      <div className="relative aspect-[4/5]">
+        <img src={u.photoUrl} className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/70 to-transparent">
+          <div className="text-sm font-semibold truncate">{u.name}</div>
+          <div className="text-xs opacity-80 truncate">{u.city}</div>
+        </div>
+      </div>
+    </button>
+  ))}
+</div>
+
+
+If you tell me what file currently renders the match cards (e.g., PeopleWhoMatch.tsx, UserCard.tsx, etc.), I’ll tailor the prompt to your exact component names so Replit doesn’t wander.

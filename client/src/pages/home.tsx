@@ -1969,7 +1969,7 @@ export default function Home() {
               
               return (
                 <>
-                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3 sm:gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
                     {sortedAndFilteredUsers.length > 0 ? (
                       sortedAndFilteredUsers.slice(0, showAllUsers ? sortedAndFilteredUsers.length : 8).map((otherUser) => (
                         <div key={otherUser.id} className="transform hover:scale-[1.02] transition-transform min-w-0 overflow-hidden">
