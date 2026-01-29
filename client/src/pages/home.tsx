@@ -1969,7 +1969,7 @@ export default function Home() {
               
               return (
                 <>
-                  <div className="!grid !grid-cols-2 md:!grid-cols-3 lg:!grid-cols-4 xl:!grid-cols-5 gap-2 border-4 border-red-500 bg-red-500/10">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
                     {sortedAndFilteredUsers.length > 0 ? (
                       sortedAndFilteredUsers.slice(0, showAllUsers ? sortedAndFilteredUsers.length : 12).map((otherUser) => (
                           <UserCard 
