@@ -929,11 +929,33 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
                           data-testid="textarea-edit-message"
                         />
                         <div className="flex gap-2">
-                          <Button size="sm" onClick={() => handleEditMessage(message.id)} className="bg-green-600 hover:bg-green-700" data-testid="button-save-edit">
+                          <Button 
+                            size="sm" 
+                            onClick={() => handleEditMessage(message.id)} 
+                            onTouchEnd={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleEditMessage(message.id);
+                            }}
+                            className="bg-green-600 hover:bg-green-700" 
+                            style={{ touchAction: 'manipulation' }}
+                            data-testid="button-save-edit"
+                          >
                             <Check className="w-4 h-4 mr-1" />
                             Save
                           </Button>
-                          <Button size="sm" variant="outline" onClick={cancelEdit} data-testid="button-cancel-edit">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={cancelEdit}
+                            onTouchEnd={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              cancelEdit();
+                            }}
+                            style={{ touchAction: 'manipulation' }}
+                            data-testid="button-cancel-edit"
+                          >
                             <X className="w-4 h-4 mr-1" />
                             Cancel
                           </Button>
