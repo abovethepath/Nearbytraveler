@@ -27,6 +27,7 @@ WRAPPED iOS APP API COMPATIBILITY: All API calls must use absolute URLs when run
 CUSTOM INTERESTS IN MATCHING: Custom interests (user-added interests like "Poker", "Flea Markets") are now fully integrated into compatibility matching in `server/services/matching.ts`. Both search and matching include custom interests, ensuring users with unique custom interests can find and connect with others who share them.
 PROFILE HEADER COMPACT LOCATION FORMAT: Profile page now uses compact location formatting for mobile-friendly display. US state names abbreviated (California → CA), country names abbreviated (United States → USA, United Kingdom → UK). Helper functions `formatLocationCompact()`, `abbreviateState()`, `abbreviateCountry()` in `client/src/lib/dateUtils.ts`. Text size reduced on mobile (text-sm) with truncate class to prevent overflow.
 ADVANCED SEARCH WIDGET PRIVACY: Search results show username only - no real names or local/traveler type tags displayed. User cards are clickable to view full profiles. Connect button works independently from card click navigation.
+AI BIO GENERATOR: Profile page includes "Generate bio for me" button that uses AI (Anthropic Claude with OpenAI fallback) to generate a personalized bio based on user's existing profile data (interests, activities, travel style, hometown, languages, etc.). Requires at least 3 interests/activities to generate. Uses session-based authentication for security. Service at `server/services/aiBioGenerator.ts`, endpoint at POST `/api/users/generate-bio`.
 
 ## System Architecture
 
