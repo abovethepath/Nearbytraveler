@@ -67,6 +67,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [newActivity, setNewActivity] = useState('');
   const [isCitiesLoading, setIsCitiesLoading] = useState(true);
   const [editingActivityName, setEditingActivityName] = useState('');
+  const [activitySearchFilter, setActivitySearchFilter] = useState('');
 
   // AI Features State
   const [aiSuggestions, setAiSuggestions] = useState<any[]>([]);
@@ -1478,14 +1479,55 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 </div>
               </div>
               
-              {/* Dynamic City Activities - Universal + City-Specific + AI */}
+              {/* Dynamic City Activities - Featured + AI + Universal */}
               <div className="space-y-8">
-                {/* City-Specific AI Activities Section */}
+                
+                {/* SECTION 1: Popular in {City} - Featured Activities */}
+                {(() => {
+                  const featuredActivities = cityActivities.filter(a => (a as any).isFeatured || (a as any).source === 'featured');
+                  if (featuredActivities.length === 0) return null;
+                  
+                  return (
+                    <div>
+                      <div className="text-center mb-6">
+                        <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-yellow-500 to-orange-500 bg-clip-text text-transparent mb-2">⭐ Popular in {selectedCity}</h3>
+                        <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">Must-see spots and local favorites</p>
+                        <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-yellow-500 to-orange-500 mx-auto rounded-full mt-2"></div>
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                        {featuredActivities
+                          .sort((a, b) => ((a as any).rank || 0) - ((b as any).rank || 0))
+                          .map((activity) => {
+                            const isSelected = userActivities.some(ua => ua.activityId === activity.id);
+                            return (
+                              <button
+                                key={activity.id}
+                                className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:shadow-lg border-2 ${
+                                  isSelected 
+                                    ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-yellow-400 shadow-yellow-200'
+                                    : 'bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/30 dark:to-orange-900/30 text-gray-700 dark:text-gray-100 border-yellow-200 dark:border-yellow-600 hover:border-yellow-300 dark:hover:border-yellow-500'
+                                }`}
+                                onClick={() => toggleActivity(activity)}
+                                data-testid={`featured-activity-${activity.id}`}
+                              >
+                                <span className="flex items-center justify-center gap-1.5">
+                                  <span className="text-xs">⭐</span>
+                                  {activity.activityName}
+                                </span>
+                              </button>
+                            );
+                          })}
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* SECTION 2: More {City} Ideas - AI-Generated Activities */}
                 <div>
                   <div className="text-center mb-6">
-                    <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent mb-2">📍 {selectedCity} Activities</h3>
-                    <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm mb-4">AI-generated activities unique to this city</p>
-                    <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-red-500 to-orange-500 mx-auto rounded-full"></div>
+                    <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent mb-2">✨ More {selectedCity} Ideas</h3>
+                    <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm mb-4">AI-generated unique experiences for this city</p>
+                    <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto rounded-full"></div>
                     
                     {/* AI Enhancement Button */}
                     <Button
@@ -1493,8 +1535,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         try {
                           setIsLoading(true);
                           toast({
-                            title: "Generating AI Activities",
-                            description: `Creating unique activities for ${selectedCity}...`,
+                            title: "Generating Ideas",
+                            description: `Finding unique ${selectedCity} experiences...`,
                           });
                           
                           const apiBase = getApiBaseUrl();
@@ -1507,8 +1549,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           
                           if (response.ok) {
                             toast({
-                              title: "AI Activities Generated!",
-                              description: `Added unique ${selectedCity} activities`,
+                              title: "New Ideas Added!",
+                              description: `Found unique ${selectedCity} experiences`,
                             });
                             fetchCityActivities(); // Refresh the list
                           } else {
@@ -1517,7 +1559,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         } catch (error) {
                           toast({
                             title: "Error",
-                            description: "Failed to generate AI activities",
+                            description: "Failed to generate ideas",
                             variant: "destructive",
                           });
                         } finally {
@@ -1525,11 +1567,11 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         }
                       }}
                       size="sm"
-                      className="mt-4 bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white"
+                      className="mt-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
                       data-testid="button-enhance-ai-activities"
                       disabled={isLoading}
                     >
-                      {isLoading ? 'Generating...' : 'Get More AI Activities'}
+                      {isLoading ? 'Finding ideas...' : 'Suggest 6 more ideas'}
                     </Button>
                   </div>
                   
@@ -1551,10 +1593,12 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           });
                         };
                         
-                        // Filter out universal category, similar to universal, and dismissed AI activities
-                        // Then sort: AI-created activities first, then user-created
+                        // Filter out universal category, featured, similar to universal, and dismissed AI activities
+                        // Only show AI and user-created activities in this section
                         return cityActivities
                           .filter(activity => {
+                            // Exclude featured (they have their own section)
+                            if ((activity as any).isFeatured || (activity as any).source === 'featured') return false;
                             if (activity.category === 'universal') return false;
                             if (isSimilarToUniversal(activity.activityName)) return false;
                             // Filter out dismissed AI activities
