@@ -138,27 +138,27 @@ export default function UserCard({
           )}
         </div>
         
-        {/* Connection degree badge */}
-        {connectionDegree && connectionDegree.degree > 0 && connectionDegree.degree <= 2 && (
-          <div className="absolute top-1.5 right-1.5 bg-purple-500/90 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full">
-            {connectionDegree.mutualCount} mutual
-          </div>
-        )}
-        
         {/* Bottom overlay with name/city */}
-        <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/80 via-black/50 to-transparent pt-8">
+        <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/90 via-black/60 to-transparent pt-10">
           <div className="text-sm font-semibold text-white truncate leading-tight">
             {displayName}
           </div>
           <div className="text-xs text-white/80 truncate leading-tight">
             {displayCity}
           </div>
-          {/* Shared interests count */}
-          {compatibilityData?.sharedInterests?.length > 0 && (
-            <div className="text-[10px] text-orange-300 mt-0.5">
-              {compatibilityData.sharedInterests.length} shared
-            </div>
-          )}
+          {/* Shared interests & mutual friends */}
+          <div className="flex flex-wrap gap-x-2 mt-1">
+            {compatibilityData?.sharedInterests?.length > 0 && (
+              <span className="text-[10px] text-orange-300">
+                {compatibilityData.sharedInterests.length} in common
+              </span>
+            )}
+            {connectionDegree && connectionDegree.mutualCount > 0 && (
+              <span className="text-[10px] text-cyan-300">
+                {connectionDegree.mutualCount} mutual
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </button>
