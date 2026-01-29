@@ -1,0 +1,377 @@
+top nav bar/ hamburger avatar is STILL not working for any page but the profile, it needs a rebuild
+
+9:24 PM
+Okay, you're right - let's completely rebuild the top navbar from scratch with a mobile-first approach.
+
+Step 1: Complete Navbar Rebuild
+Replace your entire MobileTopNav.tsx with this clean, mobile-optimized version:
+
+tsx
+import React, { useState } from 'react';
+import { Menu, X, User, LogOut, Settings, Bell } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
+interface MobileTopNavProps {
+  user: any;
+  onLogout: () => void;
+}
+
+export const MobileTopNav: React.FC<MobileTopNavProps> = ({ user, onLogout }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleMenuToggle = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    setIsMenuOpen(false);
+  };
+
+  const handleLogout = () => {
+    setIsMenuOpen(false);
+    onLogout();
+  };
+
+  return (
+    <>
+      {/* Fixed Top Navbar */}
+      <div className="mobile-navbar-fixed">
+        <div className="mobile-navbar-container">
+          {/* Left: Hamburger */}
+          <button
+            type="button"
+            className="mobile-nav-button"
+            onTouchEnd={handleMenuToggle}
+            onClick={handleMenuToggle}
+            aria-label="Menu"
+          >
+            {isMenuOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
+          </button>
+
+          {/* Center: Logo/Title */}
+          <div className="mobile-nav-title">
+            <span className="font-semibold text-lg">Nearby Traveler</span>
+          </div>
+
+          {/* Right: Avatar */}
+          <button
+            type="button"
+            className="mobile-nav-avatar"
+            onTouchEnd={() => handleNavigation('/profile')}
+            onClick={() => handleNavigation('/profile')}
+            aria-label="Profile"
+          >
+            {user?.profile_photo ? (
+              <img 
+                src={user.profile_photo} 
+                alt="Profile" 
+                className="w-8 h-8 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+                <User className="w-5 h-5 text-white" />
+              </div>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Slide-out Menu */}
+      {isMenuOpen && (
+        <>
+          {/* Backdrop */}
+          <div 
+            className="mobile-menu-backdrop"
+            onTouchEnd={handleMenuToggle}
+            onClick={handleMenuToggle}
+          />
+          
+          {/* Menu Panel */}
+          <div className="mobile-menu-panel">
+            <div className="mobile-menu-header">
+              <h2 className="text-xl font-semibold">Menu</h2>
+              <button
+                type="button"
+                onTouchEnd={handleMenuToggle}
+                onClick={handleMenuToggle}
+                className="p-2"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <nav className="mobile-menu-nav">
+              <button
+                type="button"
+                className="mobile-menu-item"
+                onTouchEnd={() => handleNavigation('/home')}
+                onClick={() => handleNavigation('/home')}
+              >
+                <span>🏠</span>
+                <span>Home</span>
+              </button>
+
+              <button
+                type="button"
+                className="mobile-menu-item"
+                onTouchEnd={() => handleNavigation('/matches')}
+                onClick={() => handleNavigation('/matches')}
+              >
+                <span>💬</span>
+                <span>Messages</span>
+              </button>
+
+              <button
+                type="button"
+                className="mobile-menu-item"
+                onTouchEnd={() => handleNavigation('/events')}
+                onClick={() => handleNavigation('/events')}
+              >
+                <span>📅</span>
+                <span>Events</span>
+              </button>
+
+              <button
+                type="button"
+                className="mobile-menu-item"
+                onTouchEnd={() => handleNavigation('/profile')}
+                onClick={() => handleNavigation('/profile')}
+              >
+                <User className="w-5 h-5" />
+                <span>Profile</span>
+              </button>
+
+              <button
+                type="button"
+                className="mobile-menu-item"
+                onTouchEnd={() => handleNavigation('/settings')}
+                onClick={() => handleNavigation('/settings')}
+              >
+                <Settings className="w-5 h-5" />
+                <span>Settings</span>
+              </button>
+
+              <div className="mobile-menu-divider" />
+
+              <button
+                type="button"
+                className="mobile-menu-item text-red-600"
+                onTouchEnd={handleLogout}
+                onClick={handleLogout}
+              >
+                <LogOut className="w-5 h-5" />
+                <span>Logout</span>
+              </button>
+            </nav>
+          </div>
+        </>
+      )}
+    </>
+  );
+};
+Step 2: Add Mobile-Optimized CSS
+Add this to your index.css:
+
+css
+/* ============================================
+   MOBILE NAVBAR - COMPLETE REBUILD
+   ============================================ */
+
+.mobile-navbar-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10000;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  height: 64px;
+}
+
+.mobile-navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding: 0 16px;
+  max-width: 100%;
+}
+
+.mobile-nav-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  color: #374151;
+}
+
+.mobile-nav-button:active {
+  background: #f3f4f6;
+}
+
+.mobile-nav-title {
+  flex: 1;
+  text-align: center;
+  font-weight: 600;
+  font-size: 18px;
+  color: #111827;
+}
+
+.mobile-nav-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.mobile-nav-avatar:active {
+  opacity: 0.7;
+}
+
+/* Menu Backdrop */
+.mobile-menu-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9998;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Menu Panel */
+.mobile-menu-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 280px;
+  max-width: 85vw;
+  background: white;
+  z-index: 9999;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  animation: slideIn 0.3s ease-out;
+  overflow-y: auto;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+.mobile-menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.mobile-menu-nav {
+  padding: 8px 0;
+}
+
+.mobile-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 16px 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #374151;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.mobile-menu-item:active {
+  background: #f3f4f6;
+}
+
+.mobile-menu-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 8px 0;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .mobile-navbar-fixed,
+  .mobile-menu-panel {
+    background: #1f2937;
+    border-color: #374151;
+  }
+  
+  .mobile-nav-button,
+  .mobile-menu-item {
+    color: #f9fafb;
+  }
+  
+  .mobile-nav-button:active,
+  .mobile-menu-item:active {
+    background: #374151;
+  }
+  
+  .mobile-nav-title {
+    color: #f9fafb;
+  }
+}
+
+/* Hide on desktop */
+@media (min-width: 768px) {
+  .mobile-navbar-fixed,
+  .mobile-menu-backdrop,
+  .mobile-menu-panel {
+    display: none;
+  }
+}
+Step 3: Ensure Page Content Has Proper Spacing
+Make sure your page wrappers have top padding. In each page component, wrap content like this:
+
+tsx
+<div className="page-content-mobile">
+  {/* Your page content */}
+</div>
+And add this CSS:
+
+css
+.page-content-mobile {
+  padding-top: 64px; /* Height of navbar */
+  min-height: 100vh;
+}
+
+@media (min-width: 768px) {
+  .page-content-mobile {
+    padding-top: 0;
+  }
+}
+This is a complete ground-up rebuild optimized specifically for mobile touch events. Test it and let me know if the hamburger and avatar work on your phone now!

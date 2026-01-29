@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { authStorage } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
@@ -6,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ChatInput } from '@/components/ui/chat-input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { MessageCircle, Send, Users, ArrowLeft, Heart, Reply, Copy, Edit2, Trash2, Check, X } from 'lucide-react';
+import { MessageCircle, Send, Users, ArrowLeft, Heart, Reply, Copy, Edit2, Trash2, Check, X, ThumbsUp } from 'lucide-react';
 import { apiRequest, getApiBaseUrl } from '@/lib/queryClient';
 import { queryClient } from '@/lib/queryClient';
 import { SimpleAvatar } from '@/components/simple-avatar';
@@ -25,7 +26,7 @@ export default function Messages() {
   const [instantMessages, setInstantMessages] = useState<any[]>([]);
   const [typingUsers, setTypingUsers] = useState<{ [userId: number]: boolean }>({});
   const [replyingTo, setReplyingTo] = useState<any | null>(null);
-  const [selectedMessage, setSelectedMessage] = useState<number | null>(null);
+  const [selectedMessage, setSelectedMessage] = useState<any | null>(null);
   const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
   const [editText, setEditText] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -33,6 +34,42 @@ export default function Messages() {
   const headerRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const [, navigate] = useLocation();
+  
+  // Long-press detection for iOS (500ms like WhatsApp)
+  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+  
+  const handleMessageTouchStart = (e: React.TouchEvent, msg: any) => {
+    const touch = e.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY, time: Date.now() };
+    
+    longPressTimerRef.current = setTimeout(() => {
+      console.log('Long press detected on message:', msg.id);
+      if (navigator.vibrate) navigator.vibrate(50);
+      setSelectedMessage(msg);
+    }, 500);
+  };
+  
+  const handleMessageTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartRef.current) return;
+    const touch = e.touches[0];
+    const dx = Math.abs(touch.clientX - touchStartRef.current.x);
+    const dy = Math.abs(touch.clientY - touchStartRef.current.y);
+    if (dx > 10 || dy > 10) {
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current);
+        longPressTimerRef.current = null;
+      }
+    }
+  };
+  
+  const handleMessageTouchEnd = () => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+    touchStartRef.current = null;
+  };
   
   // Get target user ID from URL - supports both path (/messages/123) and query (?userId=123)
   const [location] = useLocation();
@@ -632,7 +669,20 @@ export default function Messages() {
                         const isOwnMessage = msg.senderId === user?.id;
                         return (
                           <div key={msg.id} className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
-                            <div className="relative max-w-[70%]" onClick={() => setSelectedMessage(selectedMessage === msg.id ? null : msg.id)}>
+                            <div 
+                              className="relative max-w-[70%]" 
+                              style={{ 
+                                WebkitTapHighlightColor: 'rgba(255, 165, 0, 0.2)',
+                                WebkitUserSelect: 'none',
+                                userSelect: 'none',
+                                touchAction: 'pan-y',
+                                cursor: 'pointer'
+                              }}
+                              onTouchStart={(e) => handleMessageTouchStart(e, msg)}
+                              onTouchMove={handleMessageTouchMove}
+                              onTouchEnd={handleMessageTouchEnd}
+                              onDoubleClick={() => setSelectedMessage(msg)}
+                            >
                               {editingMessageId === msg.id ? (
                                 <div className={`px-4 py-2 rounded-2xl ${isOwnMessage ? 'bg-green-600' : 'bg-gray-700'}`}>
                                   <Textarea
@@ -702,50 +752,7 @@ export default function Messages() {
                                 </div>
                               )}
 
-                              {/* Interaction Menu */}
-                              {selectedMessage === msg.id && (
-                                <div className="absolute top-full mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 z-10 min-w-[150px] border border-gray-200 dark:border-gray-700">
-                                  <button 
-                                    onClick={() => { navigator.clipboard.writeText(msg.content); toast({ title: "Copied" }); setSelectedMessage(null); }} 
-                                    className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-900 dark:text-white"
-                                  >
-                                    <Copy className="w-4 h-4" />
-                                    <span>Copy text</span>
-                                  </button>
-                                  <button 
-                                    onClick={() => { setReplyingTo(msg); setSelectedMessage(null); }} 
-                                    className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-900 dark:text-white"
-                                  >
-                                    <Reply className="w-4 h-4" />
-                                    <span>Reply</span>
-                                  </button>
-                                  <button 
-                                    onClick={() => handleReaction(msg.id, '❤️')} 
-                                    className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-900 dark:text-white"
-                                  >
-                                    <Heart className="w-4 h-4" />
-                                    <span>React</span>
-                                  </button>
-                                  {isOwnMessage && (
-                                    <>
-                                      <button 
-                                        onClick={() => startEdit(msg)} 
-                                        className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-900 dark:text-white"
-                                      >
-                                        <Edit2 className="w-4 h-4" />
-                                        <span>Edit</span>
-                                      </button>
-                                      <button 
-                                        onClick={() => handleDeleteMessage(msg.id)} 
-                                        className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-red-600 dark:text-red-400"
-                                      >
-                                        <Trash2 className="w-4 h-4" />
-                                        <span>Delete</span>
-                                      </button>
-                                    </>
-                                  )}
-                                </div>
-                              )}
+                              {/* Interaction Menu - removed, using portal instead */}
                             </div>
                           </div>
                         );
@@ -878,6 +885,137 @@ export default function Messages() {
           )}
         </div>
       </div>
+      
+      {/* Message Action Menu - Portal rendered at body level for iOS */}
+      {selectedMessage && createPortal(
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black/60 z-[99998]"
+            onClick={() => setSelectedMessage(null)}
+            style={{ touchAction: 'auto' }}
+          />
+          {/* Bottom Sheet Menu */}
+          <div 
+            className="fixed left-2 right-2 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl z-[99999] border border-gray-200 dark:border-gray-700"
+            style={{ touchAction: 'auto', bottom: '90px' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="px-2 py-3 space-y-1">
+              {/* Like reaction */}
+              <button 
+                type="button" 
+                onTouchEnd={(e) => { 
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleReaction(selectedMessage.id, '👍');
+                }}
+                onClick={(e) => { 
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleReaction(selectedMessage.id, '👍');
+                }}
+                className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 rounded-xl text-gray-900 dark:text-white"
+                style={{ touchAction: 'manipulation', cursor: 'pointer' }}
+              >
+                <ThumbsUp className="w-5 h-5 text-blue-500 pointer-events-none" />
+                <span className="text-sm pointer-events-none">Like</span>
+              </button>
+              
+              {/* Copy */}
+              <button 
+                type="button" 
+                onTouchEnd={(e) => { 
+                  e.preventDefault();
+                  e.stopPropagation();
+                  navigator.clipboard.writeText(selectedMessage.content); 
+                  toast({ title: "Copied" }); 
+                  setSelectedMessage(null);
+                }}
+                onClick={(e) => { 
+                  e.preventDefault();
+                  e.stopPropagation();
+                  navigator.clipboard.writeText(selectedMessage.content); 
+                  toast({ title: "Copied" }); 
+                  setSelectedMessage(null);
+                }}
+                className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 rounded-xl text-gray-900 dark:text-white"
+                style={{ touchAction: 'manipulation', cursor: 'pointer' }}
+              >
+                <Copy className="w-5 h-5 text-gray-500 pointer-events-none" />
+                <span className="text-sm pointer-events-none">Copy</span>
+              </button>
+              
+              {/* Reply */}
+              <button 
+                type="button" 
+                onTouchEnd={(e) => { 
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setReplyingTo(selectedMessage); 
+                  setSelectedMessage(null);
+                }}
+                onClick={(e) => { 
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setReplyingTo(selectedMessage); 
+                  setSelectedMessage(null);
+                }}
+                className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 rounded-xl text-gray-900 dark:text-white"
+                style={{ touchAction: 'manipulation', cursor: 'pointer' }}
+              >
+                <Reply className="w-5 h-5 text-green-500 pointer-events-none" />
+                <span className="text-sm pointer-events-none">Reply</span>
+              </button>
+              
+              {/* Edit/Delete for own messages */}
+              {selectedMessage.senderId === user?.id && (
+                <>
+                  <button 
+                    type="button" 
+                    onTouchEnd={(e) => { 
+                      e.preventDefault();
+                      e.stopPropagation();
+                      startEdit(selectedMessage); 
+                      setSelectedMessage(null);
+                    }}
+                    onClick={(e) => { 
+                      e.preventDefault();
+                      e.stopPropagation();
+                      startEdit(selectedMessage); 
+                      setSelectedMessage(null);
+                    }}
+                    className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 rounded-xl text-gray-900 dark:text-white"
+                    style={{ touchAction: 'manipulation', cursor: 'pointer' }}
+                  >
+                    <Edit2 className="w-5 h-5 text-blue-500 pointer-events-none" />
+                    <span className="text-sm pointer-events-none">Edit</span>
+                  </button>
+                  <button 
+                    type="button" 
+                    onTouchEnd={(e) => { 
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleDeleteMessage(selectedMessage.id);
+                    }}
+                    onClick={(e) => { 
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleDeleteMessage(selectedMessage.id);
+                    }}
+                    className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 rounded-xl text-red-600 dark:text-red-400"
+                    style={{ touchAction: 'manipulation', cursor: 'pointer' }}
+                  >
+                    <Trash2 className="w-5 h-5 pointer-events-none" />
+                    <span className="text-sm pointer-events-none">Delete</span>
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </>,
+        document.body
+      )}
     </div>
   );
 }
