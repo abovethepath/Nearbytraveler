@@ -5506,17 +5506,34 @@ Questions? Just reply to this message. Welcome aboard!
         delete updates.showLGBTQIAOwned;
       }
 
+      // Helper function to normalize custom interests/activities for consistent matching
+      // - Lowercase for case-insensitive matching
+      // - Trim whitespace
+      // - Collapse multiple spaces to single space
+      // - Remove duplicate entries
+      // - Filter empty strings
+      const normalizeCustomList = (value: string | undefined | null): string => {
+        if (!value || typeof value !== 'string') return '';
+        const items = value.split(',')
+          .map(item => item.trim().toLowerCase().replace(/\s+/g, ' '))
+          .filter(Boolean);
+        // Remove duplicates while preserving order
+        const uniqueItems = [...new Set(items)];
+        return uniqueItems.join(', ');
+      };
+
       // MAP CUSTOM FIELDS: Convert camelCase frontend fields to snake_case database fields
+      // Also normalize for consistent matching (lowercase, trimmed, deduped)
       if (updates.customInterests !== undefined) {
-        updates.custom_interests = updates.customInterests;
+        updates.custom_interests = normalizeCustomList(updates.customInterests);
         delete updates.customInterests;
       }
       if (updates.customActivities !== undefined) {
-        updates.custom_activities = updates.customActivities;
+        updates.custom_activities = normalizeCustomList(updates.customActivities);
         delete updates.customActivities;
       }
       if (updates.customEvents !== undefined) {
-        updates.custom_events = updates.customEvents;
+        updates.custom_events = normalizeCustomList(updates.customEvents);
         delete updates.customEvents;
       }
       
