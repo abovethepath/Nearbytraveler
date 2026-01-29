@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Menu, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,60 @@ export function MobileTopNav() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [touchedRecently, setTouchedRecently] = useState(false);
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
+  
+  // Use native DOM event listeners for better WebView compatibility
+  // React synthetic events sometimes fail in iOS WebViews
+  const toggleMenu = useCallback(() => {
+    console.log('🍔 Menu toggled via native listener');
+    setShowDropdown(prev => !prev);
+  }, []);
+  
+  useEffect(() => {
+    const button = hamburgerRef.current;
+    if (!button) return;
+    
+    let touchHandled = false;
+    
+    const handleTouchStart = (e: TouchEvent) => {
+      console.log('🍔 NATIVE TouchStart fired');
+      e.stopPropagation();
+    };
+    
+    const handleTouchEnd = (e: TouchEvent) => {
+      console.log('🍔 NATIVE TouchEnd fired - toggling menu');
+      e.preventDefault();
+      e.stopPropagation();
+      touchHandled = true;
+      toggleMenu();
+      // Reset after a short delay
+      setTimeout(() => { touchHandled = false; }, 300);
+    };
+    
+    const handleClick = (e: MouseEvent) => {
+      if (touchHandled) {
+        console.log('🍔 NATIVE Click ignored (touch handled)');
+        return;
+      }
+      console.log('🍔 NATIVE Click fired - toggling menu');
+      e.preventDefault();
+      e.stopPropagation();
+      toggleMenu();
+    };
+    
+    // Use capture phase to ensure we get events first
+    button.addEventListener('touchstart', handleTouchStart, { passive: false, capture: true });
+    button.addEventListener('touchend', handleTouchEnd, { passive: false, capture: true });
+    button.addEventListener('click', handleClick, { capture: true });
+    
+    console.log('🍔 Native hamburger event listeners attached');
+    
+    return () => {
+      button.removeEventListener('touchstart', handleTouchStart, { capture: true });
+      button.removeEventListener('touchend', handleTouchEnd, { capture: true });
+      button.removeEventListener('click', handleClick, { capture: true });
+    };
+  }, [toggleMenu]);
 
   // hydrate currentUser from best source available - fixed for auth consistency
   useEffect(() => {
@@ -99,6 +153,7 @@ export function MobileTopNav() {
             }}
           >
             <button
+              ref={hamburgerRef}
               type="button"
               aria-expanded={showDropdown}
               aria-controls="mobile-menu"
@@ -115,32 +170,6 @@ export function MobileTopNav() {
                 pointerEvents: 'auto',
                 minWidth: '56px',
                 minHeight: '56px'
-              }}
-              onPointerDown={(e) => {
-                console.log('🍔 Hamburger POINTER DOWN');
-                e.stopPropagation();
-              }}
-              onTouchStart={(e) => {
-                console.log('🍔 Hamburger TOUCH START');
-                e.stopPropagation();
-              }}
-              onTouchEnd={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('🍔 Hamburger TOUCH END - toggling menu');
-                setTouchedRecently(true);
-                setTimeout(() => setTouchedRecently(false), 300);
-                setShowDropdown((s) => !s);
-              }}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (touchedRecently) {
-                  console.log('🍔 Hamburger CLICK ignored (touch handled)');
-                  return;
-                }
-                console.log('🍔 Hamburger CLICK - toggling menu');
-                setShowDropdown((s) => !s);
               }}
             >
               {showDropdown ? <X className="w-7 h-7 pointer-events-none" /> : <Menu className="w-7 h-7 pointer-events-none" />}

@@ -72,6 +72,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
   const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
   const [isWsConnected, setIsWsConnected] = useState(false);
+  const [hasConnectedBefore, setHasConnectedBefore] = useState(false);
   const [messagesLoaded, setMessagesLoaded] = useState(false);
   const [swipingMessageId, setSwipingMessageId] = useState<number | null>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
@@ -289,6 +290,32 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     // Reset messages state when chatId changes
     setMessages([]);
     setMessagesLoaded(false);
+    
+    // Immediately fetch messages via HTTP for fast initial display
+    // WebSocket will update with real-time messages once connected
+    const loadMessagesImmediately = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const response = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatType}&format=whatsapp`, {
+          headers: {
+            'x-user-id': (currentUserId || user.id || '').toString()
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.messages && Array.isArray(data.messages)) {
+            console.log('🚀 WhatsApp Chat: Immediate HTTP load:', data.messages.length, 'messages');
+            setMessages(data.messages.reverse());
+            setMessagesLoaded(true);
+            scrollToBottom();
+          }
+        }
+      } catch (error) {
+        console.warn('⚠️ WhatsApp Chat: Immediate HTTP load failed, will use WebSocket:', error);
+      }
+    };
+    loadMessagesImmediately();
 
     let ws: WebSocket | null = null;
     let reconnectTimeout: NodeJS.Timeout | null = null;
@@ -322,6 +349,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           case 'auth:success':
             console.log('✅ WhatsApp Chat: Authenticated, requesting message history for chatId:', chatId, 'chatType:', chatType);
             setIsWsConnected(true);
+            setHasConnectedBefore(true);
             // Now request message history
             const historyRequest = {
               type: 'sync:history',
@@ -332,12 +360,12 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
             console.log('📤 WhatsApp Chat: Sending sync:history request:', JSON.stringify(historyRequest));
             ws?.send(JSON.stringify(historyRequest));
             
-            // Set a timeout to fetch via HTTP if sync:response doesn't arrive within 3 seconds
+            // Set a timeout to fetch via HTTP if sync:response doesn't arrive within 1 second
             if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
             syncTimeoutRef.current = setTimeout(() => {
               console.log('⏱️ WhatsApp Chat: Sync timeout - falling back to HTTP');
               fetchMessagesViaHttp();
-            }, 3000);
+            }, 1000);
             break;
 
           case 'sync:response':
@@ -770,7 +798,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           <div className="flex items-center gap-1.5">
             <h1 className="font-semibold text-sm truncate">{title}</h1>
             <span className={`w-2 h-2 rounded-full flex-shrink-0 ${isWsConnected ? 'bg-green-500' : 'bg-yellow-500 animate-pulse'}`} 
-                  title={isWsConnected ? 'Connected' : 'Connecting...'} />
+                  title={isWsConnected ? 'Connected' : (hasConnectedBefore ? 'Reconnecting...' : 'Connecting...')} />
           </div>
           {subtitle && <p className="text-[11px] text-gray-400 truncate leading-tight">{subtitle}</p>}
         </div>
@@ -1072,7 +1100,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           {/* Connection status indicator */}
           {!isWsConnected && (
             <div className="text-center text-yellow-400 text-xs mb-2 animate-pulse">
-              Reconnecting...
+              {hasConnectedBefore ? 'Reconnecting...' : 'Connecting...'}
             </div>
           )}
           <div className="flex items-end gap-2">
