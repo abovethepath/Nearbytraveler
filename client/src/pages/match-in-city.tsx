@@ -1937,6 +1937,57 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           </div>
         </div>
       )}
+
+      {/* Sticky Selected Bar - Always visible when activities are selected for current city */}
+      {selectedCity && userActivities.filter(ua => ua.cityName === selectedCity).length > 0 && (
+        <div className="fixed bottom-16 md:bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 shadow-lg z-40">
+          <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Badge className="bg-blue-500 text-white px-3 py-1 text-sm font-semibold">
+                Selected: {userActivities.filter(ua => ua.cityName === selectedCity).length}
+              </Badge>
+            </div>
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={async () => {
+                  // Clear all activities for this city
+                  const activitiesToClear = userActivities.filter(ua => ua.cityName === selectedCity);
+                  for (const activity of activitiesToClear) {
+                    try {
+                      await apiRequest('DELETE', `/api/user-activities/${activity.id}`);
+                    } catch (error) {
+                      console.error('Error clearing activity:', error);
+                    }
+                  }
+                  setUserActivities(prev => prev.filter(ua => ua.cityName !== selectedCity));
+                  toast({
+                    title: "Cleared",
+                    description: `All picks for ${selectedCity} have been cleared.`,
+                  });
+                }}
+                className="text-gray-600 dark:text-gray-400 hover:text-red-500"
+              >
+                Clear
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => {
+                  toast({
+                    title: "Picks Saved!",
+                    description: `Your ${userActivities.filter(ua => ua.cityName === selectedCity).length} picks for ${selectedCity} are saved. You'll match with others who share these interests.`,
+                  });
+                  setLocation('/discover');
+                }}
+                className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-semibold"
+              >
+                Done
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
