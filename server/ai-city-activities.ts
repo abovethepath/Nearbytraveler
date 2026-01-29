@@ -23,6 +23,97 @@ export interface GeneratedActivity {
   description: string;
 }
 
+// Ban list for generic intent-style activities (filter out from AI results)
+// These are EXACT PHRASE matches (not substring) to avoid false positives
+const AI_ACTIVITY_BAN_PHRASES = [
+  // Generic nightlife / social - exact phrases
+  'bar crawl', 'bar crawls', 'pub crawl', 'pub crawls', 'happy hour spots',
+  'rooftop bars', 'speakeasies', 'club nights', 'dj nights', 'dance nights',
+  'trivia nights', 'comedy nights', 'meet locals', 'meet travelers', 'meet new people',
+  
+  // Generic food (not a named place) - exact phrases
+  'food halls', 'food tastings', 'food tours', 'street food tours', 'food trucks',
+  'dessert shops', 'ice cream parlors', 'coffee crawl', 'farmers markets', 'night markets',
+  
+  // Generic culture / sightseeing - exact phrases
+  'street art tours', 'photography walks', 'walking tours', 'historic neighborhoods',
+  'architecture tours', 'sunset viewpoints', 'scenic spots', 'ghost tours',
+  
+  // Generic outdoors / activities - exact phrases
+  'hiking trails', 'nature trails', 'bike tours', 'beach activities', 'water sports',
+  'spa day', 'yoga classes', 'fitness centers', 'escape rooms', 'board game cafes',
+  
+  // Too-vague catchalls - exact phrases only
+  'things to do', 'local favorites', 'hidden gems', 'must-see attractions', 'best of',
+  'top spots', 'popular spots', 'museums & galleries', 'art galleries'
+];
+
+// Words that when appearing ALONE (as the entire activity) indicate generic intent
+const AI_ACTIVITY_BAN_SINGLE_WORDS = [
+  'nightlife', 'dating', 'brunch', 'hiking', 'yoga', 'fitness', 'workout', 'karaoke'
+];
+
+// Generic modifiers that don't make a museum/gallery name specific
+const GENERIC_MODIFIERS = ['art', 'local', 'city', 'downtown', 'popular', 'famous', 'best', 'top'];
+
+// Check if an activity name should be banned (too generic)
+function shouldBanActivity(name: string): boolean {
+  const normalized = name.toLowerCase().trim();
+  
+  // Check single-word bans (activity is ONLY this word)
+  if (AI_ACTIVITY_BAN_SINGLE_WORDS.includes(normalized)) {
+    console.log(`🚫 BAN: Filtered out single-word generic: "${name}"`);
+    return true;
+  }
+  
+  // Check for standalone "Museums" or "Galleries" (plural, no proper name)
+  if (/^museums?$/i.test(normalized) || /^galler(y|ies)$/i.test(normalized)) {
+    console.log(`🚫 BAN: Filtered out standalone museum/gallery: "${name}"`);
+    return true;
+  }
+  
+  // Check against exact phrase ban list
+  for (const banned of AI_ACTIVITY_BAN_PHRASES) {
+    if (normalized === banned || normalized.startsWith(banned + ' ') || normalized.endsWith(' ' + banned)) {
+      console.log(`🚫 BAN: Filtered out generic phrase: "${name}" (matched: "${banned}")`);
+      return true;
+    }
+  }
+  
+  // Special handling for "museum" and "gallery" - ban ONLY if generic (no proper name)
+  // Allow: "The Getty Museum", "Museum of Contemporary Art", "Picasso Museum"
+  // Ban: "Art Gallery", "Local Gallery", "City Museum"
+  if (/\b(museum|gallery|museums|galleries)\b/i.test(normalized)) {
+    const words = name.split(/\s+/);
+    const wordsLower = words.map(w => w.toLowerCase());
+    
+    // Check for proper name indicators:
+    // 1. Starts with "The" + proper noun
+    // 2. Contains "of" (Museum of X)
+    // 3. Has a non-generic proper noun before museum/gallery
+    const startsWithThe = /^the\s/i.test(name);
+    const containsOf = /\bof\b/i.test(name);
+    
+    // Get words that aren't generic modifiers or museum/gallery
+    const specificWords = wordsLower.filter(w => 
+      !GENERIC_MODIFIERS.includes(w) && 
+      !/^(museum|gallery|museums|galleries)$/i.test(w)
+    );
+    
+    // Need at least one specific word that's not just "the"
+    const hasSpecificName = specificWords.some(w => w !== 'the' && w.length > 2);
+    
+    const isProperName = (startsWithThe && hasSpecificName) || containsOf || hasSpecificName;
+    
+    if (!isProperName) {
+      console.log(`🚫 BAN: Filtered out generic museum/gallery: "${name}"`);
+      return true;
+    }
+  }
+  
+  return false;
+}
+
 // Function to check if two activities are similar/duplicates
 function areActivitiesSimilar(activity1: string, activity2: string): boolean {
   const normalize = (str: string) => str.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
@@ -41,11 +132,18 @@ function areActivitiesSimilar(activity1: string, activity2: string): boolean {
   return similarity > 0.8;
 }
 
-// Function to deduplicate activities
+// Function to deduplicate and filter activities
 function deduplicateActivities(activities: GeneratedActivity[]): GeneratedActivity[] {
   const unique: GeneratedActivity[] = [];
+  let bannedCount = 0;
   
   for (const activity of activities) {
+    // First check if activity should be banned (too generic)
+    if (shouldBanActivity(activity.name)) {
+      bannedCount++;
+      continue;
+    }
+    
     const isDuplicate = unique.some(existing => 
       areActivitiesSimilar(existing.name, activity.name)
     );
@@ -55,6 +153,10 @@ function deduplicateActivities(activities: GeneratedActivity[]): GeneratedActivi
     } else {
       console.log(`🔄 DEDUP: Skipping similar activity: "${activity.name}"`);
     }
+  }
+  
+  if (bannedCount > 0) {
+    console.log(`🚫 BAN FILTER: Removed ${bannedCount} generic activities`);
   }
   
   return unique;

@@ -1578,6 +1578,16 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                             );
                           })}
                       </div>
+                      
+                      {/* Mobile-only Jump to Match Preferences button */}
+                      <div className="md:hidden mt-4 text-center">
+                        <button
+                          onClick={() => setActiveMobileSection('preferences')}
+                          className="text-sm text-blue-600 dark:text-blue-400 font-medium hover:underline flex items-center justify-center gap-1 mx-auto"
+                        >
+                          <span>✈️</span> Jump to Match Preferences
+                        </button>
+                      </div>
                     </div>
                   );
                 })()}

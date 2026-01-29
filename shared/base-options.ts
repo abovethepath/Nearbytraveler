@@ -188,10 +188,10 @@ export const TRAVEL_ACTIVITIES = [
   "Beach / Waterfront",
   "Biking / Cycling",
   "Fitness / Workouts",
-  "Yoga / Meditation",
   
-  // Tours
-  "Guided Tours"
+  // Tours & Experiences
+  "Guided Tours",
+  "Ghost Tours"
 ];
 
 // ========================================

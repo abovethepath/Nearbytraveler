@@ -1,0 +1,245 @@
+Here’s a practical ban list for your AI City Picks generator so it stops outputting generic “intent” pills and only produces real city-specific places/experiences.
+
+AI Ban List (filter out if name contains these)
+
+Use case-insensitive substring match after normalizing (lowercase, trim).
+
+Generic nightlife / social
+
+bar crawl
+
+pub crawl
+
+bar crawls
+
+happy hour
+
+rooftop bar
+
+rooftop bars
+
+speakeasy
+
+speakeasies
+
+nightlife
+
+club night
+
+club nights
+
+dj night
+
+dance night
+
+trivia
+
+trivia night
+
+trivia nights
+
+karaoke
+
+comedy night
+
+live music
+
+meet locals
+
+meet travelers
+
+meet new people
+
+dating
+
+Generic food (not a named place)
+
+food hall
+
+food halls
+
+food hall tast
+
+food tasting
+
+tastings
+
+food tour
+
+food tours
+
+street food tour
+
+street food tours
+
+food truck
+
+food trucks
+
+food truck culture
+
+dessert shops
+
+ice cream parlors
+
+brunch
+
+coffee crawl
+
+coffee
+
+farmers market
+
+farmers markets
+
+night market
+
+night markets
+
+Generic culture / sightseeing
+
+museum (unless it’s a proper name like “The Broad Museum”—see rule below)
+
+gallery (unless proper name)
+
+street art
+
+photography walk
+
+photography walks
+
+walking tour
+
+historic neighborhoods
+
+architecture tour
+
+sunset viewpoints
+
+scenic spots
+
+cultural experiences
+
+ghost tour
+
+ghost tours
+
+Generic outdoors / activities
+
+hiking
+
+nature trail
+
+bike share
+
+bike ride
+
+bike tour
+
+beach activities
+
+water sports
+
+spa day
+
+yoga
+
+fitness
+
+workout
+
+rock climbing gym
+
+escape room
+
+board game cafe
+
+bookstore browsing
+
+skatepark
+
+tennis court
+
+basketball court
+
+soccer field
+
+public swimming pool
+
+Too-vague catchalls
+
+scene
+
+culture
+
+experience
+
+adventures
+
+tips
+
+things to do
+
+activities
+
+Two rules that make this ban list work (important)
+Rule 1: Require “specificity”
+
+Only accept AI items that look like a named place/neighborhood/venue:
+
+Contains a proper noun pattern (at least 2 words with Title Case), OR
+
+Contains a known place type with a name (“X Park”, “Y Beach”, “Z Market”, “A Museum”)
+
+Rule 2: Museum/Gallery exception
+
+Don’t blanket-ban “museum/gallery” if it’s clearly a real name:
+✅ “Museum of Contemporary Art” / “The Broad Museum” / “Getty Center”
+❌ “Museums & Galleries” / “Art Galleries”
+
+Implementation shortcut: allow “museum/gallery” only if the string has 2+ Title Case words or starts with “The”.
+
+If you want the cleanest solution (even better than a ban list)
+
+Tell the AI: “Return only items that include a specific proper name (landmark, venue, neighborhood). If it’s generic, don’t include it.”
+Then still run the ban filter as a safety net.
+
+If you paste your existing isSimilarToUniversal() / normalize code, I can format this ban list exactly as a JS array + a single shouldBan(name) function that drops right into your server route.
+
+the issue is where is a user who is traveling to a city going to let people know they want to go biking, jogging, to gyms, to the beach, on a ghost tour? where can a user add this
+Thought for 20s
+
+They add that stuff in Universal Match Preferences — that’s exactly what that section is for.
+
+So:
+
+Biking → Biking / Cycling (universal)
+
+Jogging / gym / workouts → Fitness / Workouts (universal)
+
+Beach → Beach / Waterfront (universal)
+
+Ghost tour → should live under Guided Tours (universal) or as its own universal chip Ghost Tours (I’d add it as an optional universal chip if you want it explicit).
+
+Why we “ban list” those from AI
+
+Because AI city picks should be named, city-specific (places/venues/neighborhoods), not generic intents. Users still express generic intents via the universal section.
+
+Two quick UX fixes so mobile users don’t miss universals
+
+Add a button near the top: “Jump to Match Preferences” (scrolls to the universal section).
+
+Add a search bar that searches BOTH city picks + universal so someone can type “gym” or “bike” and instantly toggle it without scrolling.
+
+How ghost tours should work (cleanest)
+
+User selects Guided Tours (universal) and optionally Ghost Tours (universal optional).
+
+AI can still generate specific ghost options like:
+
+“Old Town Ghost Walk (Prague)”
+
+“Hollywood Forever Cemetery Tour (LA)”
+Those are city-specific and not generic.
+
+If you want, I’ll give you the exact updated universal list with Ghost Tours added (and what to remove to keep it at 20).
