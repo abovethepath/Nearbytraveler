@@ -67,6 +67,7 @@ function QuickMeetupsPage() {
   const [selectedMeetupId, setSelectedMeetupId] = useState<number | null>(null);
   const [isEditingMeetup, setIsEditingMeetup] = useState(false);
   const [restartDuration, setRestartDuration] = useState<string>('1hour');
+  const [restartingMeetup, setRestartingMeetup] = useState<QuickMeetup | null>(null);
   const [deletingMeetup, setDeletingMeetup] = useState<QuickMeetup | null>(null);
   const [editForm, setEditForm] = useState({
     title: '',
@@ -438,71 +439,18 @@ function QuickMeetupsPage() {
             
             {isOwn ? (
               isExpired ? (
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button 
-                      size="sm" 
-                      className="flex-1 text-xs h-7 bg-orange-500 hover:bg-orange-600 text-white"
-                    >
-                      <RotateCcw className="w-3 h-3 mr-1" />
-                      Restart Meetup
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                      <DialogTitle>Restart "{meetup.title}"</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                          This will create a new meetup with the same details but a fresh participant list. Choose how long it should stay active:
-                        </p>
-                        
-                        <Select value={restartDuration} onValueChange={setRestartDuration}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select duration" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="1hour">1 Hour</SelectItem>
-                            <SelectItem value="2hours">2 Hours</SelectItem>
-                            <SelectItem value="3hours">3 Hours</SelectItem>
-                            <SelectItem value="4hours">4 Hours</SelectItem>
-                            <SelectItem value="6hours">6 Hours</SelectItem>
-                            <SelectItem value="12hours">12 Hours</SelectItem>
-                            <SelectItem value="24hours">24 Hours</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          className="flex-1"
-                          onClick={() => {
-                            // Close dialog by clicking outside or some other method
-                            document.querySelector('[data-state="open"]')?.querySelector('button')?.click();
-                          }}
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          className="flex-1 bg-orange-500 hover:bg-orange-600"
-                          onClick={() => {
-                            restartMeetupMutation.mutate({ 
-                              meetupId: meetup.id, 
-                              duration: restartDuration 
-                            });
-                            // Close dialog
-                            document.querySelector('[data-state="open"]')?.querySelector('button')?.click();
-                          }}
-                          disabled={restartMeetupMutation.isPending}
-                        >
-                          {restartMeetupMutation.isPending ? 'Restarting...' : 'Restart Meetup'}
-                        </Button>
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
+                <Button 
+                  size="sm" 
+                  className="flex-1 text-xs h-7 bg-orange-500 hover:bg-orange-600 text-white"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setRestartingMeetup(meetup);
+                  }}
+                >
+                  <RotateCcw className="w-3 h-3 mr-1" />
+                  Restart Meetup
+                </Button>
               ) : (
                 <div className="flex gap-1 flex-1">
                   <Button 
@@ -1091,6 +1039,62 @@ function QuickMeetupsPage() {
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
+
+    {/* Restart Meetup Dialog - Controlled */}
+    <Dialog open={!!restartingMeetup} onOpenChange={(open) => !open && setRestartingMeetup(null)}>
+      <DialogContent className="sm:max-w-md bg-white dark:bg-gray-900">
+        <DialogHeader>
+          <DialogTitle>Restart "{restartingMeetup?.title}"</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+              This will create a new meetup with the same details but a fresh participant list. Choose how long it should stay active:
+            </p>
+            
+            <Select value={restartDuration} onValueChange={setRestartDuration}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select duration" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1hour">1 Hour</SelectItem>
+                <SelectItem value="2hours">2 Hours</SelectItem>
+                <SelectItem value="3hours">3 Hours</SelectItem>
+                <SelectItem value="4hours">4 Hours</SelectItem>
+                <SelectItem value="6hours">6 Hours</SelectItem>
+                <SelectItem value="12hours">12 Hours</SelectItem>
+                <SelectItem value="24hours">24 Hours</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => setRestartingMeetup(null)}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="flex-1 bg-orange-500 hover:bg-orange-600"
+              onClick={() => {
+                if (restartingMeetup) {
+                  restartMeetupMutation.mutate({ 
+                    meetupId: restartingMeetup.id, 
+                    duration: restartDuration 
+                  });
+                  setRestartingMeetup(null);
+                }
+              }}
+              disabled={restartMeetupMutation.isPending}
+            >
+              {restartMeetupMutation.isPending ? 'Restarting...' : 'Restart Meetup'}
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
     </>
   );
 }
