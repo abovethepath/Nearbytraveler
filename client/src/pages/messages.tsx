@@ -83,21 +83,24 @@ export default function Messages() {
   // Use path format first, fall back to query parameter
   const targetUserId = pathUserId || queryUserId;
 
-  // Fetch connections
+  // Fetch connections - OPTIMIZED: Show cached data instantly
   const { data: connections = [], isLoading: connectionsLoading } = useQuery({
     queryKey: [`/api/connections/${user?.id}`],
     enabled: !!user?.id,
+    staleTime: 60000, // Cache connections for 1 minute (they don't change often)
+    gcTime: 300000, // Keep in cache for 5 minutes
   });
 
   // Fetch messages with automatic polling for instant updates
+  // OPTIMIZED: Show cached messages instantly, refetch in background
   const { data: messages = [], isLoading: messagesLoading, refetch: refetchMessages } = useQuery({
     queryKey: [`/api/messages/${user?.id}`],
     enabled: !!user?.id,
-    staleTime: 0, // Always consider stale for fresh data
-    gcTime: 10000, // Keep in cache for 10 seconds
-    refetchOnMount: 'always', // Always refetch when component mounts
+    staleTime: 30000, // Show cached data instantly for 30 seconds before refetching
+    gcTime: 300000, // Keep in cache for 5 minutes for instant re-entry
+    refetchOnMount: true, // Refetch in background when mounting (but show cache first)
     refetchOnWindowFocus: true, // Refetch when user returns to tab
-    refetchInterval: 10000, // Poll every 10 seconds
+    refetchInterval: 10000, // Poll every 10 seconds for new messages
   });
 
   // CRITICAL: Handle mobile app resume - reconnect WebSocket and refetch messages
