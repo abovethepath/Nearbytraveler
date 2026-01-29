@@ -1,0 +1,110 @@
+Yep — this code is correct. If it’s still 1 column, the problem is not in this snippet. It’s one of these “environment / override” issues. Here’s how to pinpoint it fast (and fix it decisively):
+
+1) Prove whether the container is actually display: grid
+
+Add a screaming debug border + background right on that exact div:
+
+<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 border-4 border-red-500 bg-red-500/10">
+
+
+If you don’t see the red border → you are not rendering the element you think you are (different component/state).
+
+If you do see it → inspect it in DevTools and check Computed → display.
+
+If display ≠ grid, then something is overriding it.
+
+2) Force the grid with !important (this immediately reveals class conflicts)
+
+If Tailwind classes are being overridden by a flex somewhere (often from a wrapper class), this fixes it:
+
+<div className="!grid !grid-cols-2 md:!grid-cols-3 lg:!grid-cols-4 xl:!grid-cols-5 gap-2">
+
+
+If this works, you’ve confirmed: some other class is overriding grid.
+
+3) The most common real cause: you’re viewing it on a “md+” width but it’s still “xs” due to scaling
+
+If you’re testing inside an iframe/webview/zoomed container, your viewport may be under md, so you’re expecting 3–5 cols but seeing 2.
+But you said you’re seeing 1, so this is less likely.
+
+Still: add a temporary grid-cols-2 only (no breakpoints) to make sure:
+
+<div className="grid grid-cols-2 gap-2">
+
+
+If it’s still 1 → it’s definitely override (#1/#2).
+
+4) Child items spanning full width (rare but happens via inherited styles)
+
+Even though your UserCard doesn’t have col-span-*, a wrapper inside UserCard might be applying it conditionally elsewhere.
+
+Quick test: add this to the button:
+
+className="w-full min-w-0 max-w-none col-span-1 ..."
+
+
+Also try removing w-full temporarily:
+
+className="min-w-0 max-w-none ..."
+
+
+w-full usually doesn’t break grid, but if something weird is happening with the layout, this exposes it.
+
+5) You have global CSS that changes .grid (this happens more than people think)
+
+Search your repo for ".grid" in CSS. If any stylesheet contains:
+
+.grid { display: flex; }
+
+
+or any reset library doing something insane, it will nuke Tailwind’s .grid.
+
+Search terms:
+
+grid {
+
+.grid {
+
+display: flex
+
+grid-template-columns
+
+6) It’s in a wrapper state (compact mode / layout switch) in home.tsx
+
+Your snippet passes compact={isCompactMode} — I’m betting there’s conditional layout above that changes the container you’re actually seeing.
+
+Search home.tsx for:
+
+isCompactMode ?
+
+compact
+
+flex
+
+grid
+
+className={
+
+A very common pattern:
+
+<div className={isCompactMode ? "flex flex-col" : "grid grid-cols-2 ..."}>
+
+
+…and you’re in compact mode, so you get 1 “column”.
+
+The fastest path to the answer
+
+Do these two things:
+
+Change the container to:
+
+<div className="!grid !grid-cols-2 gap-2 border-4 border-red-500">
+
+
+Tell me what you observe:
+
+Do you see the red border around the user cards?
+
+In DevTools → computed styles on that element: what is display?
+
+With that, I can tell you exactly where the override is coming from and what line to change.
