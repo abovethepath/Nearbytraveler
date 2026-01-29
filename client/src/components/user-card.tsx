@@ -1,8 +1,4 @@
 import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { SimpleAvatar } from "./simple-avatar";
-import { InterestPills } from "./InterestPills";
-import ConnectButton from "./ConnectButton";
 import { METRO_AREAS } from "@shared/constants";
 
 export interface User {
@@ -48,32 +44,6 @@ interface UserCardProps {
   };
 }
 
-function getCurrentOrNextTrip(travelPlans: any[]) {
-  const now = new Date();
-  
-  // Find current trip (ongoing)
-  const currentTrip = travelPlans.find(plan => {
-    const start = new Date(plan.startDate);
-    const end = new Date(plan.endDate);
-    return now >= start && now <= end;
-  });
-  
-  if (currentTrip) {
-    return { ...currentTrip, isCurrent: true };
-  }
-  
-  // Find next upcoming trip
-  const upcomingTrips = travelPlans
-    .filter(plan => new Date(plan.startDate) > now)
-    .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
-    
-  if (upcomingTrips.length > 0) {
-    return { ...upcomingTrips[0], isCurrent: false };
-  }
-  
-  return null;
-}
-
 export default function UserCard({ 
   user, 
   searchLocation, 
@@ -87,304 +57,143 @@ export default function UserCard({
   
   const handleCardClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    // Direct navigation without flash
     window.history.pushState({}, '', `/profile/${user.id}`);
     window.dispatchEvent(new PopStateEvent('popstate'));
   };
 
-  const getLocation = () => {
-    // ALWAYS use hometownCity - never fall back to location field (which contains metro area)
-    if (user.hometownCity && user.hometownCountry) {
-      return `${user.hometownCity}, ${user.hometownCountry}`;
-    }
-    if (user.hometownCity) {
-      return user.hometownCity;
-    }
-    return "Location not set";
-  };
-
-  // Get user's individual gradient - matches profile page gradient
+  // Get user's individual gradient for fallback
   const getUserGradient = () => {
     if (user.avatarGradient) {
       return user.avatarGradient;
     }
-    
-    // CSS gradient mapping matching ProfileComplete gradients
     const gradients = [
-      'linear-gradient(135deg, #3B82F6 0%, #A855F7 50%, #F97316 100%)', // Blue-Purple-Orange
-      'linear-gradient(135deg, #10B981 0%, #059669 50%, #F97316 100%)', // Green-Emerald-Orange
-      'linear-gradient(135deg, #3B82F6 0%, #06B6D4 50%, #F97316 100%)', // Blue-Cyan-Orange
-      'linear-gradient(135deg, #A855F7 0%, #EC4899 50%, #EF4444 100%)', // Purple-Pink-Red
-      'linear-gradient(135deg, #6366F1 0%, #3B82F6 50%, #10B981 100%)', // Indigo-Blue-Green
-      'linear-gradient(135deg, #F97316 0%, #EF4444 50%, #EC4899 100%)', // Orange-Red-Pink
-      'linear-gradient(135deg, #14B8A6 0%, #3B82F6 50%, #A855F7 100%)', // Teal-Blue-Purple
-      'linear-gradient(135deg, #EAB308 0%, #F97316 50%, #EF4444 100%)', // Yellow-Orange-Red
+      'linear-gradient(135deg, #3B82F6 0%, #A855F7 50%, #F97316 100%)',
+      'linear-gradient(135deg, #10B981 0%, #059669 50%, #F97316 100%)',
+      'linear-gradient(135deg, #3B82F6 0%, #06B6D4 50%, #F97316 100%)',
+      'linear-gradient(135deg, #A855F7 0%, #EC4899 50%, #EF4444 100%)',
+      'linear-gradient(135deg, #6366F1 0%, #3B82F6 50%, #10B981 100%)',
+      'linear-gradient(135deg, #F97316 0%, #EF4444 50%, #EC4899 100%)',
+      'linear-gradient(135deg, #14B8A6 0%, #3B82F6 50%, #A855F7 100%)',
+      'linear-gradient(135deg, #EAB308 0%, #F97316 50%, #EF4444 100%)',
     ];
-    
-    // Use user ID to consistently pick the same gradient
     const index = user.id % gradients.length;
     return gradients[index];
   };
 
+  // Get travel status for badge
+  const getTravelBadge = () => {
+    if ((user as any).travelPlans && Array.isArray((user as any).travelPlans)) {
+      const now = new Date();
+      const currentTrip = (user as any).travelPlans.find((plan: any) => {
+        const start = new Date(plan.startDate);
+        const end = new Date(plan.endDate);
+        return now >= start && now <= end;
+      });
+      if (currentTrip && currentTrip.destinationCity) {
+        return { text: `In ${currentTrip.destinationCity}`, isTraveling: true };
+      }
+    }
+    if (user.isCurrentlyTraveling && user.travelDestination) {
+      const city = user.travelDestination.split(',')[0].trim();
+      if (city && city.toLowerCase() !== 'null') {
+        return { text: `In ${city}`, isTraveling: true };
+      }
+    }
+    return null;
+  };
+
+  const travelBadge = getTravelBadge();
+
   return (
-    <Card 
-      className="user-card h-full flex flex-col backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border border-gray-300/50 dark:border-gray-600/50 shadow-xl hover:shadow-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:bg-white/90 dark:hover:bg-gray-800/90"
+    <div 
+      className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all duration-200 cursor-pointer group"
       onClick={handleCardClick}
       data-testid={`user-card-${user.id}`}
     >
-      {/* Individual User Gradient Banner - keeps user's personal color */}
-      <div 
-        className={`${compact ? 'h-12' : 'h-24'} relative overflow-visible flex-shrink-0`}
-        style={{ background: getUserGradient() }}
-      >
-        {/* Subtle overlay for depth */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10"></div>
-      </div>
-      
-      <CardContent className={`${compact ? 'p-2 pb-3 -mt-6' : 'p-4 pb-5 -mt-12'} flex flex-col flex-grow min-h-0 overflow-visible`}>
-        {/* User Info - Content that can vary */}
-        <div className={`${compact ? 'space-y-1' : 'space-y-3'} flex flex-col overflow-visible`}>
-          {/* Large Circular Avatar with enhanced ring */}
-          <div className="flex justify-center overflow-visible">
-            <SimpleAvatar 
-              user={user} 
-              size="lg" 
-              className={`ring-4 ring-white dark:ring-gray-800 shadow-2xl ${compact ? 'w-12 h-12' : 'w-20 h-20 sm:w-24 sm:h-24'} border-2 border-white/50 dark:border-gray-700/50 flex-shrink-0`}
-            />
-          </div>
-          
-          <div className="text-center">
-            {user.userType === 'business' && user.businessName ? (
-              <>
-                <h3 className={`${compact ? 'text-sm' : 'text-xl'} font-bold text-gray-900 dark:text-white truncate bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text`}>
-                  {user.businessName}
-                </h3>
-                {!compact && (
-                  <div className="flex items-center justify-center gap-1 mt-1">
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
-                      Nearby Business
-                    </span>
-                    {(user as any).businessType && (
-                      <>
-                        <span className="text-xs text-gray-400">•</span>
-                        <span className="text-xs text-gray-600 dark:text-gray-400">
-                          {(user as any).businessType}
-                        </span>
-                      </>
-                    )}
-                  </div>
-                )}
-              </>
-            ) : (
-              <h3 className={`${compact ? 'text-sm' : 'text-xl'} font-bold text-gray-900 dark:text-white truncate bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-200 bg-clip-text`}>
-                @{user.username}
-              </h3>
-            )}
-          </div>
-          
-          {/* Location and Travel Info - hide in compact mode */}
-          {!compact && (
-          <div className="space-y-2">
-            {user.userType === 'business' ? (
-              /* Business Contact Information */
-              <div className="space-y-2 text-sm">
-                {user.streetAddress && (
-                  <div className="flex flex-col items-center justify-center gap-1 text-gray-700 dark:text-gray-300">
-                    <div className="flex items-center gap-2">
-                      <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      <span className="truncate">{user.streetAddress}</span>
-                    </div>
-                    {(user.hometownCity || user.city) && (
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {user.hometownCity || user.city}{user.hometownState && `, ${user.hometownState}`}
-                      </span>
-                    )}
-                  </div>
-                )}
-                {(user as any).phoneNumber && (
-                  <div className="flex items-center justify-center gap-2 text-gray-700 dark:text-gray-300">
-                    <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                    </svg>
-                    <span>{(user as any).phoneNumber}</span>
-                  </div>
-                )}
-              </div>
-            ) : (
-              /* Regular User Travel/Location Info */
-              <>
-                {(() => {
-                  // Check if user has travel plans data and use new logic
-                  if ((user as any).travelPlans && Array.isArray((user as any).travelPlans)) {
-                    const currentOrNextTrip = getCurrentOrNextTrip((user as any).travelPlans);
-                    // FIX: Check for null/undefined/empty destination before displaying
-                    if (currentOrNextTrip && currentOrNextTrip.destination && currentOrNextTrip.destination.trim() && currentOrNextTrip.destination.toLowerCase() !== 'null') {
-                      // Extract first valid city (filter out null/undefined/empty parts)
-                      const cityParts = currentOrNextTrip.destination.split(',')
-                        .map(part => part.trim())
-                        .filter(part => part && part.toLowerCase() !== 'null' && part.toLowerCase() !== 'undefined');
-                      
-                      if (cityParts.length > 0) {
-                        return (
-                          <div className="flex items-center justify-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-lg">
-                            {currentOrNextTrip.isCurrent ? '🧳' : '✈️'} 
-                            <span className="text-center">
-                              {currentOrNextTrip.isCurrent ? 'Traveling to' : 'Next trip to'} {cityParts[0]}
-                            </span>
-                          </div>
-                        );
-                      }
-                    }
-                  }
-                  
-                  // Check if this user is a traveler to the current city (from search) with travel dates
-                  if (user.isTravelerToCity && user.travelStartDate && user.travelEndDate) {
-                    const startDate = new Date(user.travelStartDate);
-                    const endDate = new Date(user.travelEndDate);
-                    const now = new Date();
-                    const isCurrent = now >= startDate && now <= endDate;
-                    const formatDate = (date: Date) => date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                    
-                    return (
-                      <div className="flex flex-col items-center gap-1">
-                        <div className="flex items-center justify-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-lg">
-                          {isCurrent ? '🧳' : '✈️'} 
-                          <span className="text-center">{isCurrent ? 'Currently visiting' : 'Visiting'}</span>
-                        </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                          {formatDate(startDate)} - {formatDate(endDate)}
-                        </div>
-                      </div>
-                    );
-                  }
-                  
-                  // Fallback to existing logic for backward compatibility
-                  // FIX: Check for null/undefined/empty destination before displaying
-                  if (user.isCurrentlyTraveling && user.travelDestination && user.travelDestination.trim() && user.travelDestination.toLowerCase() !== 'null') {
-                    // Extract first valid city (filter out null/undefined/empty parts)
-                    const cityParts = user.travelDestination.split(',')
-                      .map(part => part.trim())
-                      .filter(part => part && part.toLowerCase() !== 'null' && part.toLowerCase() !== 'undefined');
-                    
-                    if (cityParts.length > 0) {
-                      return (
-                        <div className="flex items-center justify-center gap-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-lg">
-                          🧳 <span className="text-center">Traveling to {cityParts[0]}</span>
-                        </div>
-                      );
-                    }
-                  }
-                  
-                  return null;
-                })() as React.ReactNode}
-                <div className="flex items-center justify-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700/30 px-3 py-1.5 rounded-lg">
-                  🏠 <span className="text-center">Local in {user.hometownCity ? user.hometownCity.split(',')[0] : getLocation()}</span>
-                </div>
-              </>
-            )}
-          </div>
-          )}
-          
-          {/* Bio - Fixed height to ensure alignment - hide in compact mode */}
-          {!compact && (
-          <div className="min-h-[3rem] flex items-start justify-center">
-            {user.bio && (() => {
-              // Remove "Born: [date]" information from bio display
-              const cleanBio = String(user.bio)
-                .replace(/Born:\s*[^\n]*/gi, '') // Remove "Born: ..." lines
-                .replace(/\n\n+/g, '\n') // Replace multiple newlines with single
-                .trim(); // Remove leading/trailing whitespace
-              
-              return cleanBio ? (
-                <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2 leading-relaxed text-center font-medium">
-                  {cleanBio}
-                </p>
-              ) : null;
-            })()}
-          </div>
-          )}
-
-          {/* Secret Activities - For hometown city pages (with metro area support) - hide in compact mode */}
-          {!compact && user.secretActivities && searchLocation && (() => {
-            // Check if hometown matches search location directly
-            if (user.hometownCity?.toLowerCase().includes(searchLocation.toLowerCase())) {
-              return true;
-            }
-            
-            // Check metro area consolidation (e.g., Playa del Rey shows on Los Angeles page)
-            for (const metro of Object.values(METRO_AREAS)) {
-              if (metro.mainCity.toLowerCase() === searchLocation.toLowerCase()) {
-                // User viewing the main metro city page
-                return metro.cities.some(city => 
-                  user.hometownCity?.toLowerCase().includes(city.toLowerCase())
-                );
-              }
-            }
-            
-            return false;
-          })() && (
-            <div className="mt-3 p-3 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-orange-900/20 dark:to-blue-900/20 rounded-lg border border-orange-200 dark:border-orange-700/30">
-              <h4 className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Secret things I would do if my closest friends came to town:</h4>
-              <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">{user.secretActivities}</p>
-            </div>
-          )}
-        </div>
-        
-        {/* Spacer to push CTA to bottom */}
-        <div className="flex-grow"></div>
-        
-        {/* CTA Section - Always at bottom */}
-        {!isCurrentUser && currentUserId && (
-          <div className="pt-4">
-              <div className="flex flex-col gap-2">
-                {/* Things in Common Badge */}
-                {compatibilityData && (() => {
-                  const data = compatibilityData as any;
-                  const totalCommon = 
-                    (data.sharedInterests?.length || 0) +
-                    (data.sharedActivities?.length || 0) +
-                    (data.sharedEvents?.length || 0);
-                  
-                  const matchPercentage = Math.round((data.score || 0) * 100);
-                  
-                  return totalCommon > 0 ? (
-                    <div className="bg-gradient-to-r from-blue-500 to-orange-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md text-center">
-                      {totalCommon} Things in Common • {matchPercentage}% Match
-                    </div>
-                  ) : null;
-                })()}
-                
-                {/* Connect Button with Connection Degree subtitle */}
-                <div onClick={(e) => e.stopPropagation()} className="flex flex-col items-center">
-                  <ConnectButton
-                    currentUserId={currentUserId}
-                    targetUserId={user.id}
-                    targetUsername={user.username}
-                    targetName={user.name}
-                    className="w-full bg-white dark:bg-gray-800 border-2 border-gray-900 dark:border-white text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold shadow-md hover:shadow-lg transition-all duration-300"
-                    size="default"
-                  />
-                  {/* Connection Degree subtitle under Connect button */}
-                  {connectionDegree && connectionDegree.degree > 0 && connectionDegree.degree !== 1 && (
-                    <span className={`text-xs mt-2 font-medium ${
-                      connectionDegree.degree === 2 
-                        ? 'text-blue-500 dark:text-blue-400' 
-                        : 'text-purple-500 dark:text-purple-400'
-                    }`}>
-                      {connectionDegree.degree === 2 
-                        ? `${connectionDegree.mutualCount} mutual connection${connectionDegree.mutualCount !== 1 ? 's' : ''}`
-                        : '3rd degree connection'
-                      }
-                    </span>
-                  )}
-                </div>
-            </div>
+      {/* Large Photo - 4:5 aspect ratio for portrait style */}
+      <div className="relative aspect-[4/5] overflow-hidden" style={{ background: getUserGradient() }}>
+        {user.profileImage ? (
+          <img 
+            src={user.profileImage} 
+            alt={user.username}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <span className="text-5xl md:text-6xl font-bold text-white/90">
+              {user.name?.charAt(0) || user.username?.charAt(0) || '?'}
+            </span>
           </div>
         )}
-      </CardContent>
-    </Card>
+        
+        {/* Travel badge overlay */}
+        {travelBadge && (
+          <div className="absolute top-2 left-2 bg-blue-500/90 text-white text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1">
+            <span>✈️</span> {travelBadge.text}
+          </div>
+        )}
+        
+        {/* Business badge */}
+        {user.userType === 'business' && (
+          <div className="absolute top-2 right-2 bg-orange-500/90 text-white text-xs font-semibold px-2 py-1 rounded-full">
+            Business
+          </div>
+        )}
+        
+        {/* Connection degree badge */}
+        {connectionDegree && connectionDegree.degree > 0 && connectionDegree.degree <= 2 && (
+          <div className="absolute bottom-2 right-2 bg-purple-500/90 text-white text-xs font-semibold px-2 py-1 rounded-full">
+            {connectionDegree.degree === 1 ? '1st' : '2nd'} • {connectionDegree.mutualCount} mutual
+          </div>
+        )}
+      </div>
+      
+      {/* User Info - Compact below photo */}
+      <div className="p-2 sm:p-3">
+        {/* Username/Business Name */}
+        <h3 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base truncate">
+          {user.userType === 'business' && user.businessName 
+            ? user.businessName 
+            : `@${user.username}`}
+        </h3>
+        
+        {/* Location line */}
+        <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
+          {user.userType === 'business' 
+            ? (user.businessType || 'Local Business')
+            : (user.hometownCity 
+                ? `${user.hometownCity}${user.hometownState ? `, ${user.hometownState}` : ''}` 
+                : 'Location not set')}
+        </p>
+        
+        {/* Bio preview - only show if not compact */}
+        {!compact && user.bio && (
+          <p className="text-xs text-gray-600 dark:text-gray-300 mt-1.5 line-clamp-2">
+            {user.bio.replace(/Born:\s*[^\n]*/gi, '').trim().slice(0, 80)}
+            {user.bio.length > 80 ? '...' : ''}
+          </p>
+        )}
+        
+        {/* Interests preview */}
+        {!compact && user.interests && user.interests.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-2">
+            {user.interests.slice(0, 2).map((interest, idx) => (
+              <span 
+                key={idx}
+                className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs px-1.5 py-0.5 rounded"
+              >
+                {interest}
+              </span>
+            ))}
+            {user.interests.length > 2 && (
+              <span className="text-xs text-gray-400">
+                +{user.interests.length - 2}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
