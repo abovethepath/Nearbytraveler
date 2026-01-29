@@ -1,0 +1,56 @@
+Nice — that’s the right set of changes. Before you trust it, do these quick sanity checks (this is where stuff usually breaks):
+
+1) DB / migrations: make sure there isn’t a duplicate “travelGroup” column
+
+If the column truly already existed, confirm Replit didn’t accidentally add a second one (or add it with a different casing/name like travel_group vs travelGroup).
+
+Verify in DB schema: only one travelGroup field on travel_plans.
+
+2) Create Trip: confirm it actually saves to the trip row
+
+Create a trip with a non-default group (e.g., profile = Solo, trip = Family), then check:
+
+API request payload includes travelGroup
+
+travel_plans.travelGroup is set in the database
+
+3) Edit Trip: confirm it updates and doesn’t get overwritten
+
+Change the trip vibe on an existing trip and ensure it persists.
+
+Also test editing other fields (dates/city) and confirm travelGroup doesn’t get wiped to null.
+
+4) Matching fallback logic: verify priority order in real output
+
+Test 3 scenarios and confirm “What you have in common” shows the right thing:
+
+Trip has travelGroup set → use trip value
+
+Trip travelGroup null → use user profile travelGroup
+
+Both null → handle gracefully (don’t show weird blanks)
+
+5) City Picks rename: confirm links/routes didn’t break
+
+All nav labels say City Picks
+
+Clicking takes you to the right page
+
+Any deep links/bookmarks still work (keep the route slug if you can)
+
+One important “gotcha” to fix if it’s still in the code
+
+If your backend uses { ...req.body } directly, that’s a mass-assignment risk (users can send fields you didn’t intend). Even if it’s an MVP, it’s worth tightening:
+
+✅ Replace spread with a whitelist of allowed fields for travel plans (cityId, startDate, endDate, travelStyle, travelGroup, etc.).
+
+Tiny content check
+
+You replaced “Day Trips” with Guided Tours — good. Make sure AI generation doesn’t re-add generic universals (bars/museums/hiking) as city-specific items.
+
+If you want, paste:
+
+the travel_plans Drizzle schema, and
+
+the matching query where “what you have in common” is computed,
+and I’ll point out the exact line(s) to confirm the fallback is correct and safe.

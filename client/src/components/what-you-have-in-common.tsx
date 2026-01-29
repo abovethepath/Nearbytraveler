@@ -67,6 +67,8 @@ interface TravelPlan {
   startDate: string;
   endDate: string;
   userId: number;
+  travelGroup?: string; // Per-trip override: solo, couple, friends, family
+  destinationCity?: string;
 }
 
 export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveInCommonProps) {
@@ -338,12 +340,32 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
       travelIntentCommonalities.push(budgetNames[currentTravelBudget] || currentTravelBudget);
     }
 
-    // Travel Group - handle both field name variants
-    const currentTravelGroup = (currentUser as any).travelGroup || (currentUser as any).travel_group;
-    const otherTravelGroup = (otherUser as any).travelGroup || (otherUser as any).travel_group;
+    // Travel Group - use trip's travelGroup if available, otherwise fall back to profile
+    // This ensures per-trip overrides work correctly (e.g., solo traveler on a family trip)
+    const now = new Date();
+    
+    // Find active trips for each user
+    const currentUserActiveTrip = (currentUserTravelPlans as TravelPlan[])?.find(plan => {
+      const start = new Date(plan.startDate);
+      const end = new Date(plan.endDate);
+      return start <= now && end >= now;
+    });
+    const otherUserActiveTrip = (otherUserTravelPlans as TravelPlan[])?.find(plan => {
+      const start = new Date(plan.startDate);
+      const end = new Date(plan.endDate);
+      return start <= now && end >= now;
+    });
+    
+    // Priority: trip travelGroup > profile travelGroup
+    const currentTravelGroup = (currentUserActiveTrip as any)?.travelGroup || 
+                               (currentUser as any).travelGroup || 
+                               (currentUser as any).travel_group;
+    const otherTravelGroup = (otherUserActiveTrip as any)?.travelGroup || 
+                             (otherUser as any).travelGroup || 
+                             (otherUser as any).travel_group;
     
     if (currentTravelGroup && otherTravelGroup && currentTravelGroup === otherTravelGroup) {
-      const groupNames = {
+      const groupNames: Record<string, string> = {
         solo: 'Solo travelers',
         couple: 'Couple travel',
         friends: 'Friends group',

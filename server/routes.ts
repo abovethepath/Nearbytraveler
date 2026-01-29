@@ -6748,7 +6748,23 @@ Questions? Just reply to this message. Welcome aboard!
       if (process.env.NODE_ENV === 'development') console.log('=== CREATE TRAVEL PLAN API ===');
       if (process.env.NODE_ENV === 'development') console.log('Request body:', req.body);
       
-      const travelPlanData = { ...req.body };
+      // SECURITY: Whitelist allowed fields to prevent mass-assignment
+      const travelPlanData: any = {
+        userId: req.body.userId,
+        destination: req.body.destination,
+        destinationCity: req.body.destinationCity,
+        destinationState: req.body.destinationState,
+        destinationCountry: req.body.destinationCountry,
+        startDate: req.body.startDate,
+        endDate: req.body.endDate,
+        interests: req.body.interests,
+        activities: req.body.activities,
+        travelStyle: req.body.travelerTypes || req.body.travelStyle, // Handle both field names
+        travelGroup: req.body.travelGroup, // Per-trip override (solo/couple/friends/family)
+        accommodation: req.body.accommodation,
+        transportation: req.body.transportation,
+        notes: req.body.notes,
+      };
       
       // Validate required fields
       if (!travelPlanData.userId) {
@@ -6967,7 +6983,24 @@ Questions? Just reply to this message. Welcome aboard!
       if (process.env.NODE_ENV === 'development') console.log('Request body:', req.body);
       
       const planId = parseInt(req.params.id || '0');
-      const updateData = { ...req.body };
+      
+      // SECURITY: Whitelist allowed fields to prevent mass-assignment
+      const updateData: any = {};
+      const allowedFields = [
+        'destination', 'destinationCity', 'destinationState', 'destinationCountry',
+        'startDate', 'endDate', 'interests', 'activities', 'travelStyle', 'travelGroup',
+        'accommodation', 'transportation', 'notes', 'status'
+      ];
+      
+      for (const field of allowedFields) {
+        if (req.body[field] !== undefined) {
+          updateData[field] = req.body[field];
+        }
+      }
+      // Handle travelerTypes -> travelStyle mapping
+      if (req.body.travelerTypes !== undefined) {
+        updateData.travelStyle = req.body.travelerTypes;
+      }
       
       // CRITICAL FIX: Convert string dates to Date objects
       if (updateData.startDate && typeof updateData.startDate === 'string') {
@@ -6977,14 +7010,6 @@ Questions? Just reply to this message. Welcome aboard!
       if (updateData.endDate && typeof updateData.endDate === 'string') {
         updateData.endDate = new Date(updateData.endDate);
         if (process.env.NODE_ENV === 'development') console.log('Converted endDate to Date object:', updateData.endDate);
-      }
-      
-      // CRITICAL FIX: Ensure accommodation and transportation are properly handled
-      if (updateData.accommodation) {
-        if (process.env.NODE_ENV === 'development') console.log('Accommodation field:', updateData.accommodation);
-      }
-      if (updateData.transportation) {
-        if (process.env.NODE_ENV === 'development') console.log('Transportation field:', updateData.transportation);
       }
       
       if (process.env.NODE_ENV === 'development') console.log('=== PROCESSED UPDATE DATA ===');
