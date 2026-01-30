@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
@@ -141,6 +142,9 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [activitySearchFilter, setActivitySearchFilter] = useState('');
   const [activeMobileSection, setActiveMobileSection] = useState<'popular' | 'ai' | 'preferences' | 'selected' | 'events' | 'all'>('all');
 
+  // Clear All Picks Confirmation Dialog
+  const [showClearAllDialog, setShowClearAllDialog] = useState(false);
+  
   // Add City Pick Modal State
   const [showAddPickModal, setShowAddPickModal] = useState(false);
   const [newPickName, setNewPickName] = useState('');
@@ -1166,15 +1170,20 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     return null;
   };
 
-  // Clear all picks for this city
-  const handleClearAllPicks = async () => {
+  // Clear all picks for this city - opens confirmation dialog
+  const handleClearAllPicks = () => {
     const userPicksForCity = userActivities.filter(ua => ua.cityName === selectedCity);
     if (userPicksForCity.length === 0) {
       toast({ title: "No picks", description: "You don't have any picks to clear" });
       return;
     }
-    
-    if (!confirm(`Clear all ${userPicksForCity.length} picks for ${selectedCity}?`)) return;
+    setShowClearAllDialog(true);
+  };
+  
+  // Actually clear all picks after confirmation
+  const confirmClearAllPicks = async () => {
+    setShowClearAllDialog(false);
+    const userPicksForCity = userActivities.filter(ua => ua.cityName === selectedCity);
     
     const storedUser = localStorage.getItem('travelconnect_user');
     const authUser = localStorage.getItem('user');
@@ -2006,6 +2015,24 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   </div>
                 );
               })()}
+
+              {/* Clear All Picks Confirmation Dialog */}
+              <AlertDialog open={showClearAllDialog} onOpenChange={setShowClearAllDialog}>
+                <AlertDialogContent className="bg-white dark:bg-gray-900">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Clear all picks?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will remove all {userActivities.filter(ua => ua.cityName === selectedCity).length} picks for {selectedCity}. This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={confirmClearAllPicks} className="bg-red-600 hover:bg-red-700">
+                      Clear all
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
 
               {/* Add City Pick Modal */}
               <Dialog open={showAddPickModal} onOpenChange={(open) => {
