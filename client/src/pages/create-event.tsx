@@ -314,11 +314,10 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
   };
 
   const handleAiDraftReady = (draft: any) => {
-    toast({
-      title: "Event details loaded!",
-      description: "Review the form below and make any edits before creating.",
-    });
+    // Close AI Quick Create panel first
+    setShowAiQuickCreate(false);
     
+    // Populate all form fields
     if (draft.title) setValue("title", draft.title, { shouldValidate: true, shouldDirty: true });
     if (draft.description) setValue("description", draft.description, { shouldValidate: true, shouldDirty: true });
     if (draft.venueName) setValue("venueName", draft.venueName, { shouldValidate: true, shouldDirty: true });
@@ -389,7 +388,20 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
       setValue("location", locationParts.join(", "), { shouldValidate: true, shouldDirty: true });
     }
     
-    setShowAiQuickCreate(false);
+    // Show toast and scroll to form after a brief delay to let React re-render
+    setTimeout(() => {
+      toast({
+        title: "Form populated!",
+        description: "Scroll down to review and edit your event details.",
+      });
+      
+      // Scroll to the title field so user can see the populated form
+      const titleInput = document.getElementById("title");
+      if (titleInput) {
+        titleInput.scrollIntoView({ behavior: "smooth", block: "center" });
+        titleInput.focus();
+      }
+    }, 150);
   };
 
   const updateLocationString = () => {
@@ -1063,7 +1075,37 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
 
               {/* Event Location - Use SmartLocationInput like signup forms */}
               <div className="space-y-2">
-                <Label className="text-sm font-medium dark:text-white">Event Location *</Label>
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm font-medium dark:text-white">Event Location *</Label>
+                  {currentUser?.hometownCity && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="text-xs h-7 px-2 text-orange-600 border-orange-300 hover:bg-orange-50 dark:text-orange-400 dark:border-orange-700 dark:hover:bg-orange-900/20"
+                      onClick={() => {
+                        setValue("city", currentUser.hometownCity || "");
+                        setValue("state", currentUser.hometownState || "");
+                        setValue("country", currentUser.hometownCountry || "United States");
+                        setValue("location", `${currentUser.hometownCity}${currentUser.hometownState ? `, ${currentUser.hometownState}` : ""}`);
+                        setSelectedCountry(currentUser.hometownCountry || "United States");
+                        setSelectedState(currentUser.hometownState || "");
+                        if (currentUser.hometownCountry === "United States") {
+                          setAvailableStates(Object.keys(US_CITIES_BY_STATE));
+                          if (currentUser.hometownState && US_CITIES_BY_STATE[currentUser.hometownState]) {
+                            setAvailableCities(US_CITIES_BY_STATE[currentUser.hometownState]);
+                          }
+                        }
+                        toast({
+                          title: "Location set!",
+                          description: `Using your hometown: ${currentUser.hometownCity}`,
+                        });
+                      }}
+                    >
+                      🏠 Use my hometown
+                    </Button>
+                  )}
+                </div>
                 <SmartLocationInput
                   city={watch("city") || ""}
                   state={watch("state") || ""}
