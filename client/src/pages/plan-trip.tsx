@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Calendar, MapPin, Users, Building2, Heart, MessageCircle, Star, ArrowLeft, Home, User, Plus, X, Compass, Sparkles, Camera, Coffee, Utensils, Palette, Music, TreePine, ChevronDown } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -126,6 +127,7 @@ export default function PlanTrip() {
   // Check for edit mode from URL parameters
   const [editingPlanId, setEditingPlanId] = useState<number | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [showEndTripConfirm, setShowEndTripConfirm] = useState(false);
 
   // Scroll to top when component mounts
   useEffect(() => {
@@ -1023,17 +1025,38 @@ export default function PlanTrip() {
                     variant="destructive" 
                     className="w-full mt-2 text-sm sm:text-base py-3 sm:py-4 h-12 sm:h-14 break-words"
                     disabled={endTrip.isPending}
-                    onClick={() => {
-                      if (confirm("Are you sure you want to end this trip? This action cannot be undone.")) {
-                        if (editingPlanId) {
-                          endTrip.mutate(editingPlanId);
-                        }
-                      }
-                    }}
+                    onClick={() => setShowEndTripConfirm(true)}
                   >
                     <span className="break-words">{endTrip.isPending ? "Ending Trip..." : "End Trip"}</span>
                   </Button>
                 )}
+                
+                {/* End Trip Confirmation Dialog */}
+                <AlertDialog open={showEndTripConfirm} onOpenChange={setShowEndTripConfirm}>
+                  <AlertDialogContent className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle className="text-gray-900 dark:text-white">End This Trip?</AlertDialogTitle>
+                      <AlertDialogDescription className="text-gray-600 dark:text-gray-400">
+                        Are you sure you want to end this trip? This action cannot be undone and will remove the trip from your profile.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border-gray-200 dark:border-gray-600">
+                        Cancel
+                      </AlertDialogCancel>
+                      <AlertDialogAction 
+                        className="bg-red-600 hover:bg-red-700 text-white"
+                        onClick={() => {
+                          if (editingPlanId) {
+                            endTrip.mutate(editingPlanId);
+                          }
+                        }}
+                      >
+                        End Trip
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </form>
           </div>

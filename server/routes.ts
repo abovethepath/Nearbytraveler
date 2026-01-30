@@ -7147,7 +7147,7 @@ Questions? Just reply to this message. Welcome aboard!
       }
       
       // Get remaining travel plans for this user
-      const remainingTravelPlans = await storage.getTravelPlansForUser(userId);
+      const remainingTravelPlans = await storage.getTravelPlansByUserId(userId);
       if (process.env.NODE_ENV === 'development') console.log('=== REMAINING TRAVEL PLANS ===', remainingTravelPlans?.length || 0);
       
       // If user has no remaining travel plans, clear their travel status
