@@ -887,7 +887,7 @@ export default function PlanTrip() {
                   Trip Vibe (Who are you traveling with?)
                 </Label>
                 <Select value={tripPlan.travelGroup || ""} onValueChange={(value) => setTripPlan(prev => ({ ...prev, travelGroup: value }))}>
-                  <SelectTrigger className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 text-sm sm:text-base h-9 sm:h-10 md:h-11">
+                  <SelectTrigger className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 text-sm sm:text-base h-9 sm:h-10 md:h-11 focus:ring-1 focus:ring-orange-500 focus:border-orange-500 focus:ring-offset-0">
                     <SelectValue placeholder="Select trip vibe" />
                   </SelectTrigger>
                   <SelectContent className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-lg max-w-[90vw] w-full">
