@@ -1370,3 +1370,11 @@ button[type="submit"],
   touch-action: auto !important;
   cursor: pointer !important;
 }
+
+/* CRITICAL: Dialog/Modal must appear above mobile-top-nav */
+[data-radix-dialog-overlay],
+[data-radix-dialog-content],
+[data-radix-alert-dialog-overlay],
+[data-radix-alert-dialog-content] {
+  z-index: 2147483647 !important;
+}
