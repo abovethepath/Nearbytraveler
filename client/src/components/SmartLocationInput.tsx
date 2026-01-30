@@ -101,16 +101,16 @@ export function SmartLocationInput({
     const newCity = e.target.value;
     setCity(newCity);
 
-    // Try to auto-fill region/state from lookup
-    let nextState = state;
+    // Try to auto-fill region/state from lookup - ALWAYS clear old state when city changes
+    let nextState = "";
     if (country) {
       const auto = getRegionForCity(newCity, country);
       if (auto) {
         nextState = auto;
-        setState(auto);
       }
     }
-    emit({ city: newCity, state: nextState || "", country });
+    setState(nextState);
+    emit({ city: newCity, state: nextState, country });
   };
 
   const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement> | React.ChangeEvent<HTMLInputElement>) => {
