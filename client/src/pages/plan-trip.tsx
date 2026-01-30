@@ -814,9 +814,6 @@ export default function PlanTrip() {
               <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400 break-words">
                 Create your travel plan and connect with Nearby Locals AND fellow Nearby Travelers.
               </p>
-              <p className="text-xs sm:text-sm md:text-base text-gray-700 dark:text-gray-300 font-medium mt-1 sm:mt-2 break-words">
-                FILL OUT AS DETAILED AS POSSIBLE TO ENSURE THE BEST MATCHES. YOU CAN SAVE YOUR CHOICES AS DEFAULTS ON ALL FUTURE TRIPS.
-              </p>
             </div>
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6 overflow-hidden break-words">
               {/* Travel Destination - Mobile Responsive */}

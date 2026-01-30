@@ -64,15 +64,6 @@ AUTOMATIC CITY INFRASTRUCTURE: When a user selects a city for their trip destina
 - **Slow Request Logging**: Automatic logging of API requests taking >2 seconds.
 - **WebSocket Multi-Instance Scaling**: Redis pub/sub enables real-time chat messaging across multiple server instances.
 
-### Scaling to 10,000+ Users
-For production scaling on Replit:
-1. **Use Autoscale Deployment**: Automatically scales up to handle traffic spikes.
-2. **Configure Max Instances**: Set maximum number of instances (4-8 recommended for 10K users).
-3. **Instance Size**: Use at least 2 vCPU / 8GB RAM per instance.
-4. **Redis Required**: `REDIS_URL` secret must be configured for session persistence and cross-instance WebSocket messaging.
-5. **Monitor /api/health**: Check database latency and connection pool status regularly.
-6. **Rate Limiting**: 3000 requests per 15 minutes per IP.
-
 ### AI Integration
 - **AI Model**: Anthropic Claude Sonnet.
 - **Capabilities**: AI-powered travel recommendations, photo analysis, user compatibility scoring, smart content generation, and AI-powered city activities enhancement.
