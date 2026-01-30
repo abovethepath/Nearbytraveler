@@ -4779,6 +4779,7 @@ Questions? Just reply to this message. Welcome aboard!
         travelerTypes,
         militaryStatus,
         newToTown,
+        hostelName,
         currentUserId: currentUserIdParam
       } = req.query;
 
@@ -5066,6 +5067,27 @@ Questions? Just reply to this message. Welcome aboard!
           )
         );
         if (process.env.NODE_ENV === 'development') console.log('🆕 NEW TO TOWN FILTER: Searching for users new to town');
+      }
+
+      // Hostel filter - find users with matching hostel names in their travel plans
+      // Only matches PUBLIC visibility hostels with active/upcoming dates
+      if (hostelName && typeof hostelName === 'string' && hostelName.trim()) {
+        const hostelPattern = `%${hostelName.trim().toLowerCase()}%`;
+        // Subquery to find user IDs with matching hostel in travel_plans
+        // Requires: public visibility, matching hostel name, valid dates
+        whereConditions.push(
+          sql`${users.id} IN (
+            SELECT DISTINCT user_id FROM travel_plans 
+            WHERE LOWER(TRIM(hostel_name)) LIKE ${hostelPattern}
+            AND hostel_visibility = 'public'
+            AND start_date IS NOT NULL 
+            AND end_date IS NOT NULL
+            AND end_date >= CURRENT_DATE
+          )`
+        );
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🏨 HOSTEL FILTER: Searching for users at hostel:', hostelName, '(public visibility only)');
+        }
       }
 
       // Top Choices filter - search both predefined and custom interests

@@ -22,7 +22,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight, AlertCircle, Phone, Plane, User as UserIcon, Mail, ThumbsUp } from "lucide-react";
+import { MapPin, Camera, Globe, Users, Calendar, Star, Settings, ArrowLeft, Upload, Edit, Edit2, Heart, MessageSquare, X, Plus, Eye, EyeOff, MessageCircle, ImageIcon, Minus, RotateCcw, Sparkles, Package, Trash2, Home, FileText, TrendingUp, MessageCircleMore, Share2, ChevronDown, Search, Zap, History, Clock, Wifi, Shield, ChevronRight, AlertCircle, Phone, Plane, User as UserIcon, Mail, ThumbsUp, Building2 } from "lucide-react";
 
 type TabKey = 'contacts' | 'photos' | 'references' | 'travel' | 'countries';
 import { compressPhotoAdaptive } from "@/utils/photoCompression";
@@ -3914,11 +3914,32 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         {(() => {
                           const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
                           if (currentTravelPlan) {
+                            // Find the active travel plan that matches the current destination AND has public hostel info
+                            const now = new Date();
+                            const activePlanWithHostel = (travelPlans || []).find((plan: any) => {
+                              if (!plan.startDate || !plan.endDate) return false;
+                              const start = new Date(plan.startDate);
+                              const end = new Date(plan.endDate);
+                              // Must be active, have public hostel, AND match the displayed destination
+                              const isActive = now >= start && now <= end;
+                              const hasPublicHostel = plan.hostelName && plan.hostelVisibility === 'public';
+                              const matchesDestination = plan.destination && currentTravelPlan.toLowerCase().includes(plan.destination.split(',')[0].toLowerCase().trim());
+                              return isActive && hasPublicHostel && matchesDestination;
+                            });
+                            
                             return (
-                              <div className="flex items-start gap-1.5 text-sm sm:text-base font-medium text-black flex-wrap">
-                                <Plane className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600 flex-shrink-0 mt-0.5" />
-                                <span className="break-words">Nearby Traveler • {currentTravelPlan}</span>
-                              </div>
+                              <>
+                                <div className="flex items-start gap-1.5 text-sm sm:text-base font-medium text-black flex-wrap">
+                                  <Plane className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600 flex-shrink-0 mt-0.5" />
+                                  <span className="break-words">Nearby Traveler • {currentTravelPlan}</span>
+                                </div>
+                                {activePlanWithHostel && (
+                                  <div className="flex items-start gap-1.5 text-sm font-medium text-orange-700 dark:text-orange-400 flex-wrap mt-1">
+                                    <Building2 className="w-4 h-4 text-orange-600 flex-shrink-0 mt-0.5" />
+                                    <span className="break-words">🏨 Staying at {activePlanWithHostel.hostelName}</span>
+                                  </div>
+                                )}
+                              </>
                             );
                           }
                           return null;

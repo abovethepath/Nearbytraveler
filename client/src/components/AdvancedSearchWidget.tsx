@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, Search, X, Users, Filter, MapPin } from "lucide-react";
+import { ChevronDown, Search, X, Users, Filter, MapPin, Building2 } from "lucide-react";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
@@ -44,7 +44,8 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
     userType: [] as string[],
     travelerTypes: [] as string[],
     militaryStatus: [] as string[],
-    newToTown: false
+    newToTown: false,
+    hostelName: "" // Hostel search filter
   });
 
   // Location filter state for SmartLocationInput
@@ -120,6 +121,7 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
       if (advancedFilters.travelerTypes.length > 0) params.append('travelerTypes', advancedFilters.travelerTypes.join(','));
       if (advancedFilters.militaryStatus.length > 0) params.append('militaryStatus', advancedFilters.militaryStatus.join(','));
       if (advancedFilters.newToTown) params.append('newToTown', 'true');
+      if (advancedFilters.hostelName) params.append('hostelName', advancedFilters.hostelName);
       if (currentUser?.id) params.append('currentUserId', currentUser.id.toString());
 
       console.log('🔍 Search params:', params.toString());
@@ -171,7 +173,8 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
       userType: [],
       travelerTypes: [],
       militaryStatus: [],
-      newToTown: false
+      newToTown: false,
+      hostelName: ""
     });
     setLocationFilter({
       country: "",
@@ -280,6 +283,29 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                 placeholder="Search by location..."
               />
             </div>
+          </div>
+
+          {/* Hostel Search Filter */}
+          <div className="border border-orange-200 dark:border-orange-700 rounded-lg p-4 bg-orange-50 dark:bg-orange-900/20">
+            <div className="flex items-center gap-2 mb-2">
+              <Building2 className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+              <Label className="text-black dark:text-white font-semibold">Hostel Connect</Label>
+            </div>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+              Find travelers staying at the same hostel
+            </p>
+            <Input
+              placeholder="Enter hostel name to find others there"
+              value={advancedFilters.hostelName}
+              onChange={(e) => setAdvancedFilters(prev => ({ ...prev, hostelName: e.target.value }))}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleAdvancedSearch();
+                }
+              }}
+              className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+              data-testid="input-hostel-search"
+            />
           </div>
 
           {/* Search CTA Buttons */}
@@ -696,11 +722,20 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                           )}
                         </div>
                         
-                        {/* Username only - no real name or type tags */}
+                        {/* Username and hostel match badge */}
                         <div className="flex-1 min-w-0">
                           <h4 className="font-semibold text-black dark:text-white truncate">
                             {user.username}
                           </h4>
+                          {/* Hostel match badge - shown when hostel search was used */}
+                          {advancedFilters.hostelName && (
+                            <div className="flex items-center gap-1 mt-1">
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-700">
+                                <Building2 className="w-3 h-3" />
+                                🏨 Same hostel!
+                              </span>
+                            </div>
+                          )}
                         </div>
                         
                         {/* Connect Button */}
