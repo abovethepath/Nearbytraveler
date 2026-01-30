@@ -1730,11 +1730,16 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       if (response.ok) {
         // Remove from city activities list
         setCityActivities(prev => prev.filter(activity => activity.id !== activityId));
+        // Also remove from user activities (Your Picks) if present
+        setUserActivities(prev => prev.filter(ua => ua.activityId !== activityId));
         
         toast({
           title: "Activity Deleted",
           description: "Activity removed from city",
         });
+        
+        // Refresh matching users
+        fetchMatchingUsers();
       } else {
         const error = await response.json();
         toast({

@@ -60,12 +60,23 @@ export async function fetchTicketmasterEvents(city: string = 'Los Angeles'): Pro
     const today = new Date();
     const startDateTime = today.toISOString().split('T')[0] + 'T00:00:00Z';
     
+    // Normalize city name - strip "Metro" suffix and handle special cases
+    let normalizedCity = city.trim();
+    if (normalizedCity.endsWith(' Metro')) {
+      normalizedCity = normalizedCity.replace(' Metro', '');
+    }
+    // Handle "New York City" -> "New York" for Ticketmaster
+    if (normalizedCity === 'New York City') {
+      normalizedCity = 'New York';
+    }
+    console.log(`🎫 TICKETMASTER: Normalized city "${city}" to "${normalizedCity}"`);
+    
     // City-specific search - determine state from city using shared resolver
-    const stateCode = resolveStateForCity(city);
+    const stateCode = resolveStateForCity(normalizedCity);
     
     const params = new URLSearchParams({
       apikey: apiKey,
-      city: city,
+      city: normalizedCity,
       stateCode: stateCode,
       countryCode: 'US',
       size: '50', // Get more events to filter duplicates
@@ -125,7 +136,7 @@ export async function fetchTicketmasterEvents(city: string = 'Los Angeles'): Pro
           [venue.address.line1, venue.address.line2, venue.address.city]
             .filter(Boolean).join(', ') : 'Address TBD',
         city: venue?.address?.city || city, // Use requested city as fallback
-        state: venue?.address?.stateCode || cityStateMapping[city.toLowerCase()] || 'TX', // Map city to state
+        state: venue?.address?.stateCode || cityStateMap[normalizedCity] || stateCode || 'TX', // Map city to state
         organizer: 'Ticketmaster',
         category: classification?.segment?.name || classification?.genre?.name || 'Entertainment',
         url: event.url,
