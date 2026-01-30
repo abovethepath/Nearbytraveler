@@ -118,12 +118,25 @@ interface UserProfile {
 
 export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [location, setLocation] = useLocation();
-  const { user } = useAuth();
+  const { user: authUser } = useAuth();
   const { toast } = useToast();
+  
+  // iOS app fix: Fall back to localStorage if auth context is empty
+  const user = authUser || (() => {
+    try {
+      const storedUser = localStorage.getItem('travelconnect_user');
+      const authStorageUser = localStorage.getItem('user');
+      if (storedUser) return JSON.parse(storedUser);
+      if (authStorageUser) return JSON.parse(authStorageUser);
+      return null;
+    } catch {
+      return null;
+    }
+  })();
   
   const [selectedCity, setSelectedCity] = useState<string>('');
   
-  console.log('🔧 MATCH IN CITY RENDER - selectedCity:', selectedCity);
+  console.log('🔧 MATCH IN CITY RENDER - selectedCity:', selectedCity, 'authUser:', !!authUser, 'effectiveUser:', !!user, 'userId:', user?.id);
   const [newActivityName, setNewActivityName] = useState('');
   const [newActivityDescription, setNewActivityDescription] = useState('');
   const [editActivityName, setEditActivityName] = useState('');
