@@ -1,0 +1,98 @@
+licking an event should never yank users off-site. Ticketmaster should be secondary, not the primary click.
+
+Fix the flow (what it should do)
+Default click on an event card
+
+✅ Adds it to “Your Picks” (as an Event)
+
+Show a toast: “Added to Your Picks (Interested)”
+
+The card visually toggles “Selected”
+
+Secondary action to open Ticketmaster
+
+Put a small button/link on the card:
+
+“Details / Tickets” (opens Ticketmaster in a new tab)
+
+Or a small external-link icon
+
+Result: primary = matching intent, secondary = ticket purchase.
+
+How to implement (tell Replit)
+1) Change the event card to two actions
+
+Entire card: onClick => toggleInterested(eventId)
+
+“Tickets” button: <a href=... target="_blank" rel="noreferrer">Tickets</a>
+
+2) Store Ticketmaster events as “external events” in your DB
+
+Create a table or reuse existing events model with fields like:
+
+source='ticketmaster'
+
+externalId
+
+name
+
+startDateTime
+
+venueName
+
+cityId
+
+url (Ticketmaster link)
+
+imageUrl
+Then create a join table:
+
+user_event_interest with userId, eventId, status (Interested/Going)
+
+3) Show external events inside “Your Picks”
+
+In Your Picks, show them with a badge:
+
+Event • Interested
+Buttons:
+
+Tickets
+
+Remove
+
+Why the events feel random (and how to make them better)
+Add 2 filters immediately
+
+Date filter: default to next 14 days, not 30
+
+Category filter: default to Music + Festivals + Comedy + Sports (hide niche)
+
+Personalize using the user’s picks
+
+If user selected:
+
+Live Music → show mostly concerts
+
+Sports interests → show sports
+
+Comedy Shows → show comedy
+
+Put it lower on the page (agree)
+
+Order should be:
+
+Your Picks
+
+Popular
+
+AI Ideas / Suggested
+
+Events (Next 30 days) (bottom)
+
+Because events are “nice to have” and noisy unless personalized.
+
+Copy/paste prompt to Replit
+
+“Change Ticketmaster event cards so clicking adds/removes the event to ‘Your Picks’ as an external event interest (status=Interested). Do not navigate away on card click. Add a separate ‘Tickets/Details’ button/icon that opens Ticketmaster in a new tab. Store external events in DB (source=ticketmaster, externalId, name, datetime, venue, url, image) and store user interest in a join table. Move the Events section below AI Ideas and filter/personalize events (default next 14 days; prefer music/festivals/comedy/sports; weight by user’s selected preferences).”
+
+If you tell me whether you already have an events table in your backend, I can suggest the smallest schema change (either reuse it or add external_events + user_event_interest).

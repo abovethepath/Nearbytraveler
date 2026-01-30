@@ -100,7 +100,9 @@ import {
   Lightbulb,
   Loader2,
   MoreHorizontal,
-  RotateCcw
+  RotateCcw,
+  ExternalLink,
+  Check
 } from "lucide-react";
 
 interface MatchInCityProps {
@@ -163,6 +165,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [realEvents, setRealEvents] = useState<any[]>([]);
   const [realEventsLoading, setRealEventsLoading] = useState(false);
   const [showAllEvents, setShowAllEvents] = useState(false);
+  const [selectedEventIds, setSelectedEventIds] = useState<Set<string>>(new Set());
   
   // Dismissed AI activities (persisted in localStorage per city)
   const [dismissedAIActivities, setDismissedAIActivities] = useState<Set<number>>(() => {
@@ -388,6 +391,9 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       fetchUserActivities();
       fetchMatchingUsers();
       fetchRealEvents();
+      // Clear selected events when changing cities
+      setSelectedEventIds(new Set());
+      setShowAllEvents(false);
     }
   }, [selectedCity]);
 
@@ -1169,6 +1175,25 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     }
     return null;
   };
+
+  // Toggle event selection (add/remove from interested events)
+  const toggleEventInterest = (event: any) => {
+    const eventId = event.id;
+    setSelectedEventIds(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(eventId)) {
+        newSet.delete(eventId);
+        toast({ title: "Removed", description: `"${event.title}" removed from your picks` });
+      } else {
+        newSet.add(eventId);
+        toast({ title: "Added to Your Picks", description: `"${event.title}" - Interested` });
+      }
+      return newSet;
+    });
+  };
+  
+  // Check if an event is selected
+  const isEventSelected = (eventId: string) => selectedEventIds.has(eventId);
 
   // Clear all picks for this city - opens confirmation dialog
   const handleClearAllPicks = () => {
@@ -2248,86 +2273,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   );
                 })()}
 
-                {/* SECTION 2: Events in Next 30 Days - Real Events from APIs */}
-                {(() => {
-                  // Mobile: only show if this section is active or showing all
-                  const isMobileVisible = activeMobileSection === 'events' || activeMobileSection === 'all';
-                  
-                  // Show section if we have events or are loading
-                  if (!realEventsLoading && realEvents.length === 0) return null;
-                  
-                  // Limit to first 6 events unless expanded
-                  const displayEvents = showAllEvents ? realEvents : realEvents.slice(0, 6);
-                  
-                  return (
-                    <div className={`md:block ${isMobileVisible ? 'block' : 'hidden'}`}>
-                      <div className="text-center mb-6">
-                        <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent mb-2">📅 Events in Next 30 Days</h3>
-                        <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">Real upcoming events from Ticketmaster</p>
-                        <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto rounded-full mt-2"></div>
-                      </div>
-                      
-                      {realEventsLoading ? (
-                        <div className="text-center py-8">
-                          <div className="animate-spin w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-2"></div>
-                          <p className="text-gray-500 dark:text-gray-400">Loading events...</p>
-                        </div>
-                      ) : (
-                        <>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {displayEvents.map((event: any, index: number) => (
-                              <a
-                                key={event.id || index}
-                                href={event.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="block bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 border border-purple-200 dark:border-purple-700 rounded-xl p-4 hover:shadow-lg transition-all"
-                              >
-                                <div className="flex items-start gap-3">
-                                  {event.image && (
-                                    <img 
-                                      src={event.image} 
-                                      alt={event.title} 
-                                      className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
-                                    />
-                                  )}
-                                  <div className="flex-1 min-w-0">
-                                    <h4 className="font-semibold text-gray-900 dark:text-white text-sm truncate">{event.title}</h4>
-                                    <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
-                                      📅 {new Date(event.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-                                    </p>
-                                    {event.venue && (
-                                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">📍 {event.venue}</p>
-                                    )}
-                                    {event.category && (
-                                      <span className="inline-block mt-2 px-2 py-0.5 bg-purple-100 dark:bg-purple-800/50 text-purple-700 dark:text-purple-300 text-xs rounded-full">
-                                        {event.category}
-                                      </span>
-                                    )}
-                                  </div>
-                                </div>
-                              </a>
-                            ))}
-                          </div>
-                          
-                          {realEvents.length > 6 && (
-                            <div className="text-center mt-4">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setShowAllEvents(!showAllEvents)}
-                                className="bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 border-purple-300 dark:border-purple-600 text-purple-700 dark:text-purple-300 hover:from-purple-200 hover:to-pink-200"
-                              >
-                                {showAllEvents ? 'Show fewer events' : `Show ${realEvents.length - 6} more events`}
-                              </Button>
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  );
-                })()}
-
                 {/* SUGGESTED FOR YOU - Contextual follow-ups based on selections */}
                 {(() => {
                   // Get user's selected universal preferences for this city
@@ -2719,6 +2664,112 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     </div>
                   )}
                 </div>
+
+                {/* SECTION: Events in Next 30 Days - Real Events from APIs (moved to bottom) */}
+                {(() => {
+                  // Mobile: only show if this section is active or showing all
+                  const isMobileVisible = activeMobileSection === 'events' || activeMobileSection === 'all';
+                  
+                  // Show section if we have events or are loading
+                  if (!realEventsLoading && realEvents.length === 0) return null;
+                  
+                  // Limit to first 6 events unless expanded
+                  const displayEvents = showAllEvents ? realEvents : realEvents.slice(0, 6);
+                  
+                  return (
+                    <div className={`mt-8 md:block ${isMobileVisible ? 'block' : 'hidden'}`}>
+                      <div className="text-center mb-6">
+                        <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent mb-2">📅 Events in Next 30 Days</h3>
+                        <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">Click to add to Your Picks • Use "Tickets" button for details</p>
+                        <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto rounded-full mt-2"></div>
+                      </div>
+                      
+                      {realEventsLoading ? (
+                        <div className="text-center py-8">
+                          <div className="animate-spin w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-2"></div>
+                          <p className="text-gray-500 dark:text-gray-400">Loading events...</p>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {displayEvents.map((event: any, index: number) => {
+                              const isSelected = isEventSelected(event.id);
+                              return (
+                                <div
+                                  key={event.id || index}
+                                  onClick={() => toggleEventInterest(event)}
+                                  className={`cursor-pointer rounded-xl p-4 transition-all border-2 ${
+                                    isSelected 
+                                      ? 'bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border-green-400 dark:border-green-600 ring-2 ring-green-300 dark:ring-green-700' 
+                                      : 'bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 border-purple-200 dark:border-purple-700 hover:shadow-lg hover:border-purple-400'
+                                  }`}
+                                >
+                                  <div className="flex items-start gap-3">
+                                    {event.image && (
+                                      <img 
+                                        src={event.image} 
+                                        alt={event.title} 
+                                        className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                                      />
+                                    )}
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-start justify-between gap-2">
+                                        <h4 className="font-semibold text-gray-900 dark:text-white text-sm line-clamp-2">{event.title}</h4>
+                                        {isSelected && (
+                                          <span className="flex-shrink-0 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                                            <Check className="w-3 h-3 text-white" />
+                                          </span>
+                                        )}
+                                      </div>
+                                      <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
+                                        📅 {new Date(event.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                                      </p>
+                                      {event.venue && (
+                                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">📍 {event.venue}</p>
+                                      )}
+                                      <div className="flex items-center justify-between mt-2">
+                                        {event.category && (
+                                          <span className="px-2 py-0.5 bg-purple-100 dark:bg-purple-800/50 text-purple-700 dark:text-purple-300 text-xs rounded-full">
+                                            {event.category}
+                                          </span>
+                                        )}
+                                        {event.url && (
+                                          <a
+                                            href={event.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-800/50 text-blue-700 dark:text-blue-300 text-xs rounded-full hover:bg-blue-200 dark:hover:bg-blue-700/50 transition-colors"
+                                          >
+                                            <ExternalLink className="w-3 h-3" />
+                                            Tickets
+                                          </a>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                          
+                          {realEvents.length > 6 && (
+                            <div className="text-center mt-4">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setShowAllEvents(!showAllEvents)}
+                                className="bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 border-purple-300 dark:border-purple-600 text-purple-700 dark:text-purple-300 hover:from-purple-200 hover:to-pink-200"
+                              >
+                                {showAllEvents ? 'Show fewer events' : `Show ${realEvents.length - 6} more events`}
+                              </Button>
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  );
+                })()}
 
                 {/* SECTION 3: Universal Travel Activities - Always show these for every city */}
                 <div className={`mt-8 md:block ${activeMobileSection === 'preferences' || activeMobileSection === 'all' ? 'block' : 'hidden'}`}>
