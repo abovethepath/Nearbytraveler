@@ -157,32 +157,24 @@ export default function UserCard({
         )}
       </div>
       
-      {/* Info box below photo - fixed height for consistency */}
-      <div className="p-2.5 lg:p-4 bg-white dark:bg-gray-800">
-        {/* Social proof FIRST on desktop - fixed 2-row grid */}
-        <div className="hidden lg:grid lg:grid-rows-2 lg:min-h-[44px] gap-0.5 mb-2">
-          <div className={`text-sm font-semibold ${thingsInCommon > 0 ? 'text-orange-500' : 'text-gray-300 dark:text-gray-600'}`}>
-            {thingsInCommon > 0 ? `${thingsInCommon} things in common` : 'No shared interests yet'}
+      {/* Info box - fixed 4-row grid for perfect consistency */}
+      <div className="p-2.5 lg:p-4 bg-white dark:bg-gray-800 min-h-[72px] lg:min-h-[96px]">
+        <div className="grid grid-rows-4 gap-0 leading-tight">
+          {/* Row 1: Things in common */}
+          <div className={`text-xs lg:text-sm font-semibold truncate ${thingsInCommon > 0 ? 'text-orange-500' : 'text-gray-300 dark:text-gray-600'}`}>
+            {thingsInCommon > 0 ? `${thingsInCommon} things in common` : '0 shared interests'}
           </div>
-          <div className={`text-sm font-medium ${mutualFriends > 0 ? 'text-cyan-600 dark:text-cyan-400' : 'text-gray-300 dark:text-gray-600'}`}>
-            {mutualFriends > 0 ? `${mutualFriends} mutual friends` : 'No mutual friends yet'}
+          {/* Row 2: Mutual friends */}
+          <div className={`text-xs lg:text-sm font-medium truncate ${mutualFriends > 0 ? 'text-cyan-600 dark:text-cyan-400' : 'text-gray-300 dark:text-gray-600'}`}>
+            {mutualFriends > 0 ? `${mutualFriends} mutual friends` : '0 mutual friends'}
           </div>
-        </div>
-        
-        <div className="text-sm lg:text-base font-semibold text-gray-900 dark:text-white truncate">
-          {displayName}
-        </div>
-        <div className="text-xs lg:text-sm text-gray-500 dark:text-gray-400 truncate">
-          {displayCity}
-        </div>
-        
-        {/* Stats box - mobile only, fixed 2-row grid */}
-        <div className="mt-2 grid grid-rows-2 min-h-[36px] gap-0.5 text-xs lg:hidden">
-          <div className={`font-medium ${thingsInCommon > 0 ? 'text-orange-500' : 'text-gray-300 dark:text-gray-600'}`}>
-            {thingsInCommon > 0 ? `${thingsInCommon} things in common` : 'No shared interests yet'}
+          {/* Row 3: Username */}
+          <div className="text-xs lg:text-sm font-semibold text-gray-900 dark:text-white truncate mt-1">
+            {displayName}
           </div>
-          <div className={`${mutualFriends > 0 ? 'text-cyan-600 dark:text-cyan-400' : 'text-gray-300 dark:text-gray-600'}`}>
-            {mutualFriends > 0 ? `${mutualFriends} mutual friends` : 'No mutual friends yet'}
+          {/* Row 4: City */}
+          <div className="text-[10px] lg:text-xs text-gray-500 dark:text-gray-400 truncate">
+            {displayCity}
           </div>
         </div>
       </div>
