@@ -1,0 +1,115 @@
+. When a shadcn/Radix dialog suddenly “stops opening” after working forever, the fastest way out is a binary isolation test: is the dialog system still capable of rendering at all, or is your state getting nuked/closed immediately.
+
+Do these 3 experiments exactly (they take ~2 minutes and will tell us the culprit with certainty).
+
+✅ Experiment 1 — Force the dialog open (proves whether Dialog can render)
+
+Temporarily change your dialog to:
+
+<Dialog open={true}>
+  <DialogContent className="z-[99999] max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
+    <DialogHeader>
+      <DialogTitle>FORCE OPEN TEST</DialogTitle>
+    </DialogHeader>
+    <div className="p-4">If you can see this, Dialog renders fine.</div>
+  </DialogContent>
+</Dialog>
+
+Outcomes:
+
+A) You still see NOTHING → this is not your state. Your Dialog component/portal/overlay/CSS/import is broken.
+
+B) You DO see the dialog → Dialog is fine; your state is being reset or instantly closed.
+
+Don’t skip this step — it’s the cleanest split.
+
+✅ If Experiment 1 shows NOTHING: your Dialog implementation/import is broken
+
+This usually happens when components/ui/dialog.tsx got changed (or a dependency update) and the portal/overlay got removed or z-index got messed up.
+
+Open components/ui/dialog.tsx and make sure your DialogContent looks basically like this (key parts: Portal + Overlay + Content):
+
+import * as React from "react"
+import * as DialogPrimitive from "@radix-ui/react-dialog"
+
+export const Dialog = DialogPrimitive.Root
+export const DialogTrigger = DialogPrimitive.Trigger
+export const DialogClose = DialogPrimitive.Close
+
+export const DialogContent = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Portal>
+    <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/50" />
+    <DialogPrimitive.Content
+      ref={ref}
+      className={"fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 " + (className ?? "")}
+      {...props}
+    />
+  </DialogPrimitive.Portal>
+))
+DialogContent.displayName = DialogPrimitive.Content.displayName
+
+
+Also verify your import where you use it is exactly your shadcn file, not Radix directly or some other wrapper:
+
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+
+
+If your DialogContent is not portaling (no Portal), and it’s nested inside something with overflow-hidden, it will “open” but you’ll never see it.
+
+✅ Experiment 2 — Log whether state flips back (proves reset/instant close)
+
+Put this right under your state:
+
+useEffect(() => {
+  console.log("🧪 isEditMode:", isEditMode);
+}, [isEditMode]);
+
+useEffect(() => {
+  console.log("🧩 MOUNT profile component");
+  return () => console.log("🧩 UNMOUNT profile component");
+}, []);
+
+
+Click the button.
+
+Outcomes:
+
+You see isEditMode: true then UNMOUNT → your component is remounting (state resets). Look for a changing key= above it or conditional rendering that swaps components.
+
+You see isEditMode: true then immediately isEditMode: false → something is closing it (outside click / onOpenChange / another effect calling setIsEditMode(false)).
+
+✅ Experiment 3 — Remove controlled state completely (proves whether Radix trigger works)
+
+This is the “sledgehammer” test. No useState, no open=.... If this doesn’t open, it’s 100% your Dialog system/import/CSS.
+
+<Dialog>
+  <DialogTrigger asChild>
+    <Button size="sm" variant="outline" type="button">
+      Edit Profile
+    </Button>
+  </DialogTrigger>
+
+  <DialogContent className="z-[99999]">
+    <DialogHeader>
+      <DialogTitle>Trigger Test</DialogTitle>
+    </DialogHeader>
+    <div className="p-4">If this doesn't open, Dialog is broken at the component level.</div>
+  </DialogContent>
+</Dialog>
+
+My bet (based on “worked for months, suddenly dead”)
+
+The most common “sudden” break is components/ui/dialog.tsx changed (portal/overlay/z-index), OR your dialog is now rendered inside a container where it doesn’t portal and gets clipped/hidden.
+
+Paste me one thing and I’ll tell you exactly which branch you’re in
+
+After you do Experiment 1 (“open={true}”), tell me only this:
+
+Did you see the forced dialog? yes/no
+
+If “no”: paste your components/ui/dialog.tsx (the DialogContent section only)
+
+That’s enough to pinpoint and fix it immediately.

@@ -4395,37 +4395,47 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </div>
                       )}
                       
-                      {/* Icon-only on phones */}
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setIsEditMode(true);
-                        }}
-                        className={`sm:hidden ${isProfileIncomplete() ? 'bg-red-100 hover:bg-red-200 border-red-400 text-red-700 animate-pulse' : 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800 dark:border-blue-700 dark:text-blue-100'}`}
-                        aria-label="Edit Profile"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </Button>
+                      {/* EXPERIMENT 3: Uncontrolled Dialog with DialogTrigger */}
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            className={`sm:hidden ${isProfileIncomplete() ? 'bg-red-100 hover:bg-red-200 border-red-400 text-red-700 animate-pulse' : 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800 dark:border-blue-700 dark:text-blue-100'}`}
+                            aria-label="Edit Profile"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="z-[99999] max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900">
+                          <DialogHeader>
+                            <DialogTitle>TRIGGER TEST - Mobile</DialogTitle>
+                          </DialogHeader>
+                          <div className="p-4">If you see this, the Dialog system works! The issue was with controlled state.</div>
+                        </DialogContent>
+                      </Dialog>
 
-                      {/* Labeled button on ≥ sm */}
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setIsEditMode(true);
-                        }}
-                        className={`hidden sm:inline-flex ${isProfileIncomplete() ? 'bg-red-100 hover:bg-red-200 border-red-400 text-red-700 animate-pulse' : 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800 dark:border-blue-700 dark:text-blue-100'}`}
-                      >
-                        <Edit2 className="w-4 h-4 mr-2" />
-                        Edit Profile
-                      </Button>
+                      {/* Desktop version */}
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            className={`hidden sm:inline-flex ${isProfileIncomplete() ? 'bg-red-100 hover:bg-red-200 border-red-400 text-red-700 animate-pulse' : 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800 dark:border-blue-700 dark:text-blue-100'}`}
+                          >
+                            <Edit2 className="w-4 h-4 mr-2" />
+                            Edit Profile
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="z-[99999] max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900">
+                          <DialogHeader>
+                            <DialogTitle>TRIGGER TEST - Desktop</DialogTitle>
+                          </DialogHeader>
+                          <div className="p-4">If you see this, the Dialog system works! The issue was with controlled state.</div>
+                        </DialogContent>
+                      </Dialog>
                     </div>
                   )}
                 </div>
