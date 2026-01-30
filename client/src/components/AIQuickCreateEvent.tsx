@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -6,9 +6,52 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, Loader2, Calendar, MapPin, Users, AlertCircle, Check, Edit2, Tag } from "lucide-react";
+import { Sparkles, Loader2, Calendar, MapPin, Users, AlertCircle, Check, Edit2, Tag, Mic, MicOff } from "lucide-react";
 import { getApiBaseUrl } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+
+// Web Speech API types
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList;
+  resultIndex: number;
+}
+
+interface SpeechRecognitionResultList {
+  length: number;
+  item(index: number): SpeechRecognitionResult;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  isFinal: boolean;
+  length: number;
+  item(index: number): SpeechRecognitionAlternative;
+  [index: number]: SpeechRecognitionAlternative;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onerror: ((event: Event) => void) | null;
+  onend: (() => void) | null;
+  start(): void;
+  stop(): void;
+  abort(): void;
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition: new () => SpeechRecognition;
+    webkitSpeechRecognition: new () => SpeechRecognition;
+  }
+}
 
 interface AiEventDraft {
   title: string;
@@ -44,7 +87,89 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
   const [inputText, setInputText] = useState("");
   const [draft, setDraft] = useState<AiEventDraft | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(false);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
   const { toast } = useToast();
+
+  // Check if speech recognition is supported
+  useEffect(() => {
+    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+    setSpeechSupported(!!SpeechRecognitionAPI);
+  }, []);
+
+  const startListening = () => {
+    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognitionAPI) {
+      toast({
+        title: "Voice not supported",
+        description: "Your browser doesn't support voice input. Try Chrome or Safari.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const recognition = new SpeechRecognitionAPI();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      let finalTranscript = "";
+      let interimTranscript = "";
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript + " ";
+        } else {
+          interimTranscript += transcript;
+        }
+      }
+
+      if (finalTranscript) {
+        setInputText(prev => prev + finalTranscript);
+      }
+    };
+
+    recognition.onerror = (event: Event) => {
+      console.error("Speech recognition error:", event);
+      setIsListening(false);
+      toast({
+        title: "Voice error",
+        description: "There was a problem with voice recognition. Please try again.",
+        variant: "destructive"
+      });
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+    setIsListening(true);
+    
+    toast({
+      title: "Listening...",
+      description: "Speak your event details. Tap the mic again to stop.",
+    });
+  };
+
+  const stopListening = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    }
+  };
+
+  const toggleListening = () => {
+    if (isListening) {
+      stopListening();
+    } else {
+      startListening();
+    }
+  };
 
   const generateDraftMutation = useMutation({
     mutationFn: async (text: string) => {
@@ -146,19 +271,57 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
       {!draft ? (
         <>
           <div className="space-y-2">
-            <Label className="flex items-center gap-2 text-base font-medium">
-              <Sparkles className="w-4 h-4 text-orange-500" />
-              Describe your event in your own words
-            </Label>
-            <Textarea
-              placeholder="Tell us about your event: What is it? When? Where? Any restrictions or themes?"
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              className="min-h-[120px] resize-none"
-              disabled={generateDraftMutation.isPending}
-            />
+            <div className="flex items-center justify-between">
+              <Label className="flex items-center gap-2 text-base font-medium">
+                <Sparkles className="w-4 h-4 text-orange-500" />
+                Describe your event in your own words
+              </Label>
+              {speechSupported && (
+                <Button
+                  type="button"
+                  variant={isListening ? "destructive" : "outline"}
+                  size="sm"
+                  onClick={toggleListening}
+                  disabled={generateDraftMutation.isPending}
+                  className={`gap-1 ${isListening ? "animate-pulse" : ""}`}
+                >
+                  {isListening ? (
+                    <>
+                      <MicOff className="w-4 h-4" />
+                      Stop
+                    </>
+                  ) : (
+                    <>
+                      <Mic className="w-4 h-4" />
+                      Voice
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
+            <div className="relative">
+              <Textarea
+                placeholder={isListening ? "Listening... speak now!" : "Tell us about your event: What is it? When? Where? Any restrictions or themes?"}
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                className={`min-h-[120px] resize-none ${isListening ? "border-red-500 border-2" : ""}`}
+                disabled={generateDraftMutation.isPending}
+              />
+              {isListening && (
+                <div className="absolute top-2 right-2 flex items-center gap-1 text-red-500 text-xs">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                  </span>
+                  Recording
+                </div>
+              )}
+            </div>
             <p className="text-xs text-gray-500">
-              Include: date, time, location/address, event name, and any special requirements
+              {speechSupported 
+                ? "Type or tap Voice to speak your event details. Include: date, time, location, event name."
+                : "Include: date, time, location/address, event name, and any special requirements"
+              }
             </p>
           </div>
 
