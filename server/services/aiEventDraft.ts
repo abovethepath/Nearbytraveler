@@ -88,7 +88,7 @@ Your job is to parse free-form text and return ONLY valid JSON with event inform
 
 CRITICAL RULES:
 1. Do NOT invent or guess addresses, dates, or times that aren't clearly stated
-2. If a field is missing or ambiguous, OMIT it from the output and add the field name to the "missing" array
+2. ONLY add to "missing" array if these ESSENTIAL fields are missing: title, date/time, or city. Do NOT add optional fields like zipcode, theme, maxParticipants, privacy, costEstimate, or description to missing array
 3. Use ISO 8601 format for dates/times (YYYY-MM-DDTHH:mm:ss)
 4. For recurring events, set isRecurring=true and recurrenceType to one of: "daily", "weekly", "biweekly", "monthly"
 5. Parse restrictions like "21+", "BYOB", "RSVP required", "No kids" into the restrictions array
@@ -97,31 +97,33 @@ CRITICAL RULES:
 8. Be generous with what counts as a title - if they mention an event name, use it
 9. LOCATION PRIORITY: ALWAYS extract the location (city, street) from the user's description text. Only use the "default city hint" as an absolute last resort if NO location is mentioned at all
 10. COST vs REQUIREMENTS: "bring $X" or "should bring $X" or "bring at least $X" means it's a REQUIREMENT (add to restrictions array like "Bring at least $10"), NOT a cost. Only use costEstimate for actual event ticket prices or entry fees stated as "costs $X", "tickets are $X", or "$X entry"
+11. SPECIAL INSTRUCTIONS GO IN NOTES: Phrases like "ask the manager", "in the back room", "mention Nearby Traveler", "password is X", "look for the blue door" should ALL go in the "notes" field - these are important arrival/entry instructions
+12. ZIPCODE IS OPTIONAL: Never add zipcode to missing array - if we have street + city + state, that's sufficient
+13. DESCRIPTION FROM CONTEXT: If user doesn't explicitly provide a description, create a brief one from the event details (e.g., "Weekly party night at Jameson Pub. 21+ only.")
 
-Return ONLY a JSON object with these optional fields:
+Return ONLY a JSON object with these fields (all optional except where noted):
 {
-  "title": "Event name",
-  "description": "Description of the event",
-  "startDateTime": "2026-02-07T20:00:00",
+  "title": "Event name (REQUIRED - infer from context if not explicit)",
+  "description": "Description - create from context if not provided",
+  "startDateTime": "2026-02-07T20:00:00 (REQUIRED)",
   "endDateTime": "2026-02-07T23:00:00",
   "venueName": "Name of venue if mentioned",
   "street": "Street address if given",
-  "city": "City name",
+  "city": "City name (REQUIRED)",
   "state": "State/region if applicable",
   "country": "Country (default to 'United States' if unclear but in US)",
-  "zipcode": "Zip code if given",
+  "zipcode": "Zip code if explicitly given only",
   "category": "One of the valid categories",
-  "theme": "Party theme if mentioned",
+  "theme": "Party theme if explicitly mentioned",
   "restrictions": ["Array of restrictions like '21+', 'BYOB'"],
-  "maxParticipants": number if mentioned,
+  "maxParticipants": "number ONLY if explicitly mentioned",
   "isRecurring": true/false,
   "recurrenceType": "weekly, monthly, etc.",
   "tags": ["relevant", "tags"],
-  "privacy": "public or friends or invite_only",
-  "costEstimate": "Free, $10-20, etc.",
-  "missing": ["fields that couldn't be determined"],
-  "notes": "Any clarifying questions or warnings",
-  "confidence": 0.0 to 1.0 how confident you are
+  "privacy": "public (default) or friends or invite_only",
+  "costEstimate": "Only if ticket price/entry fee explicitly stated",
+  "missing": ["ONLY essential missing fields: title, startDateTime, city"],
+  "notes": "Special instructions like 'ask manager', 'back room', 'mention Nearby Traveler'"
 }`;
 
       const userPrompt = `User timezone: ${userTimezone || "America/Los_Angeles"}
