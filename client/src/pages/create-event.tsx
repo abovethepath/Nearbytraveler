@@ -319,7 +319,18 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
     
     // Populate all form fields
     if (draft.title) setValue("title", draft.title, { shouldValidate: true, shouldDirty: true });
-    if (draft.description) setValue("description", draft.description, { shouldValidate: true, shouldDirty: true });
+    
+    // Combine description with notes (special instructions like "ask the manager", "back room")
+    let fullDescription = draft.description || "";
+    if (draft.notes && draft.notes.trim()) {
+      // Append notes to description so attendees can see the special instructions
+      if (fullDescription) {
+        fullDescription += "\n\n📋 Special Instructions: " + draft.notes;
+      } else {
+        fullDescription = "📋 Special Instructions: " + draft.notes;
+      }
+    }
+    if (fullDescription) setValue("description", fullDescription, { shouldValidate: true, shouldDirty: true });
     if (draft.venueName) setValue("venueName", draft.venueName, { shouldValidate: true, shouldDirty: true });
     if (draft.street) setValue("street", draft.street, { shouldValidate: true, shouldDirty: true });
     if (draft.city) {
