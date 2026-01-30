@@ -1,0 +1,133 @@
+f this worked for months and now it won’t open at all, it’s almost always one of these regressions:
+
+The click is submitting a form / navigating, so the component re-renders and your state never “sticks”.
+
+The component is re-mounting (state resets back to false immediately).
+
+The dialog is actually opening but is invisible/behind something (z-index / overflow / portal got changed).
+
+Something else is forcing setIsEditMode(false) right after you set it true.
+
+Here’s the fastest way to pinpoint it and the fixes.
+
+1) Add type="button" (this is a huge one)
+
+If your Edit Profile button is inside a <form>, HTML defaults the button type to submit unless explicitly set. That can “work for months” until you wrap something in a form or change layout.
+
+Fix both buttons:
+
+<Button
+  type="button"
+  size="sm"
+  variant="outline"
+  onClick={(e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("📝 EDIT PROFILE BUTTON CLICKED");
+    setIsEditMode(true);
+  }}
+  ...
+>
+
+
+Even if it’s not in a form, adding type="button" is harmless and eliminates this entire class of issues.
+
+2) Log state changes (don’t rely on “should now be true”)
+
+React state updates are async; your “should now be true” log doesn’t prove it stayed true.
+
+Add this near your state:
+
+useEffect(() => {
+  console.log("🧪 isEditMode changed:", isEditMode);
+}, [isEditMode]);
+
+
+Now you’ll see exactly whether it becomes true, then flips back to false, or never changes.
+
+3) Check if the component is unmounting (state resets)
+
+If the owning component unmounts/remounts (responsive branch swap, parent key change, conditional rendering), isEditMode will reset to false.
+
+Add:
+
+useEffect(() => {
+  console.log("🧩 Profile component MOUNT");
+  return () => console.log("🧩 Profile component UNMOUNT");
+}, []);
+
+If you see UNMOUNT right after clicking:
+
+That’s the bug. Look for:
+
+a key={...} above this component that changed recently
+
+conditional rendering like {isMobile ? <ProfileA/> : <ProfileB/>}
+
+switching layouts that replaces the component instance
+
+Fix: move isEditMode state up to a parent that isn’t being swapped/unmounted, or remove the remount trigger.
+
+4) If it becomes true but you still don’t see a modal → it’s CSS/portal
+
+If your logs show:
+
+isEditMode changed: true
+
+no immediate flip back to false
+…but nothing appears, it’s almost certainly hidden/behind.
+
+Quick test: force insane z-index
+<DialogContent className="z-[99999] ...">
+
+Also check your components/ui/dialog.tsx
+
+If that file got edited (or shadcn updated) and DialogPortal / DialogOverlay got removed or altered, the dialog can render inside a container with overflow-hidden and be effectively invisible.
+
+In DevTools → Elements, search for:
+
+role="dialog"
+
+data-radix-portal
+
+If you don’t see them even when isEditMode is true, then the Dialog isn’t rendering / import is wrong / component never reaches that code path.
+
+5) If it flips true → false immediately, you’re “opening then closing”
+
+Your own log will show it:
+
+isEditMode changed: true
+
+then Dialog onOpenChange called with: false
+
+isEditMode changed: false
+
+When that happens, the reliable fix is using Radix’s trigger mechanism (or you’ve got an outside-click/pointerdown interaction closing it).
+
+Hardening fix (even if you keep your controlled open state):
+
+Make sure you have an overlay (shadcn does by default)
+
+Don’t render the <Dialog> inside something that captures pointer events (dropdowns/popovers)
+
+Try moving the <Dialog> to the end of the component (top-level return) so it isn’t nested inside clickable containers
+
+The 3-minute “find the culprit” flow
+
+Add type="button" + preventDefault/stopPropagation to the edit button.
+
+Add the useEffect log for isEditMode changed.
+
+Add the MOUNT/UNMOUNT logger.
+
+That will tell you immediately which bucket it is:
+
+never changes to true → click isn’t firing / handler not running / stale closure issue
+
+true then UNMOUNT → remount/reset
+
+true then false instantly → open/close interaction
+
+true stays true but no modal → z-index/portal/dialog.tsx issue
+
+If you paste the exact console output from one click (the new isEditMode changed, the mount/unmount line, and your existing dialog logs), I can tell you exactly which fix to apply and where.
