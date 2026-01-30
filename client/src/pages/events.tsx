@@ -614,7 +614,7 @@ export default function Events() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
         {/* Hero Create Event Box - Fully Clickable */}
-        <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="mb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div 
             onClick={() => setShowCreateEvent(true)}
             className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-6 shadow-lg cursor-pointer hover:from-blue-700 hover:to-indigo-800 transition-all"
@@ -627,6 +627,22 @@ export default function Events() {
               <div>
                 <h2 className="text-xl font-bold text-white">Create An Event</h2>
                 <p className="text-blue-100 text-sm">Organize a gathering in your city</p>
+              </div>
+            </div>
+          </div>
+          
+          <div 
+            onClick={() => setLocation('/create-event?ai=true')}
+            className="bg-gradient-to-r from-orange-500 to-amber-600 rounded-xl p-6 shadow-lg cursor-pointer hover:from-orange-600 hover:to-amber-700 transition-all"
+            data-testid="ai-create-event-cta"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center">
+                <Sparkles className="w-7 h-7 text-white" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-white">AI Quick Create</h2>
+                <p className="text-orange-100 text-sm">Describe your event, AI fills the form</p>
               </div>
             </div>
           </div>

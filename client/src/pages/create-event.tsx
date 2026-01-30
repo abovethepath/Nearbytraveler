@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -97,6 +97,14 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
+
+  // Auto-open AI Quick Create if ?ai=true in URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('ai') === 'true') {
+      setShowAiQuickCreate(true);
+    }
+  }, []);
 
   // Get current user data
   const currentUser = JSON.parse(localStorage.getItem('travelconnect_user') || '{}');
