@@ -4010,10 +4010,23 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           return null;
                         })()}
                         
-                        {/* Show travel plan actions if currently traveling */}
+                        {/* Show travel plan actions if has ANY travel plans (current or upcoming) */}
                         {(() => {
+                          const hasTravelPlans = travelPlans && travelPlans.length > 0;
                           const currentTravelPlan = getCurrentTravelDestination(travelPlans || []);
-                          return currentTravelPlan && isOwnProfile && (
+                          
+                          // Find upcoming trips (start date in the future)
+                          const now = new Date();
+                          now.setHours(0, 0, 0, 0);
+                          const upcomingTrips = (travelPlans || []).filter((plan: any) => {
+                            if (!plan.startDate) return false;
+                            const start = new Date(plan.startDate);
+                            start.setHours(0, 0, 0, 0);
+                            return start > now;
+                          });
+                          
+                          // Show button if: own profile AND (currently traveling OR has upcoming trips)
+                          return (currentTravelPlan || upcomingTrips.length > 0) && isOwnProfile && (
                               <Button
                                 onClick={() => {
                                   openTab('travel');
@@ -4035,7 +4048,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 data-testid="button-connect-travel-plans"
                               >
                                 <Calendar className="w-4 h-4 mr-2" />
-                                View Travel Plans
+                                {currentTravelPlan ? 'View Travel Plans' : 'View Upcoming Trips'}
                               </Button>
                           );
                         })()}
