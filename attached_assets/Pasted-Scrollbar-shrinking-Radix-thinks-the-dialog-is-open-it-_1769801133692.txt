@@ -1,0 +1,93 @@
+Scrollbar shrinking = Radix thinks the dialog is open (it’s locking scroll), so we’re not dealing with “click didn’t fire.” We’re dealing with “open happens, but content never becomes visible on desktop.”
+
+Given your screenshot + “mobile works, desktop doesn’t,” the most common real cause is:
+
+✅ The desktop trigger is inside a Dropdown/Popover/Menu (or a branch that unmounts)
+
+On desktop, your “Edit Profile” button is usually in a header area / dropdown menu. When you click it:
+
+the menu closes / unmounts
+
+that same interaction is treated as outside click
+
+the dialog either closes immediately or the component holding the dialog gets unmounted
+
+result: you see only the scrollbar shift (open/close side-effect), but no content
+
+This is extremely common with Radix components.
+
+Fix that works reliably (do this even if you keep uncontrolled Trigger)
+1) Keep the <Dialog> mounted OUTSIDE any dropdown/popover
+
+Put the dialog near the end of your page/component JSX so it’s always present (not inside menus, cards, conditional branches):
+
+// at top
+const [isEditMode, setIsEditMode] = useState(false);
+
+// ...buttons anywhere call setIsEditMode(true)
+
+{/* render this once, outside dropdowns/popovers */}
+<Dialog open={isEditMode} onOpenChange={setIsEditMode}>
+  <DialogContent className="max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto">
+    ...
+  </DialogContent>
+</Dialog>
+
+2) If the desktop trigger is in a DropdownMenuItem, use onSelect + prevent default
+
+Do NOT use onClick inside Radix DropdownMenuItem.
+
+<DropdownMenuItem
+  onSelect={(e) => {
+    e.preventDefault();
+    // key: open AFTER the menu finishes closing
+    setTimeout(() => setIsEditMode(true), 0);
+  }}
+>
+  Edit Profile
+</DropdownMenuItem>
+
+
+That setTimeout(..., 0) is the secret sauce when a menu is involved.
+
+If it’s a normal <Button> inside a popover/menu, do this:
+
+<Button
+  type="button"
+  onClick={(e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setTimeout(() => setIsEditMode(true), 0);
+  }}
+>
+  Edit Profile
+</Button>
+
+Quick “is it immediately closing?” proof (no guessing)
+
+Add this temporarily:
+
+<Dialog
+  open={isEditMode}
+  onOpenChange={(open) => {
+    console.log("Dialog onOpenChange:", open);
+    setIsEditMode(open);
+  }}
+>
+  <DialogContent
+    onInteractOutside={(e) => console.log("InteractOutside")}
+    onPointerDownOutside={(e) => console.log("PointerDownOutside")}
+  >
+
+
+If you see PointerDownOutside right after clicking desktop → yep, it’s opening then closing due to the menu/outside interaction.
+
+Why your “pure uncontrolled” test can still fail on desktop
+
+Even if you go fully <DialogTrigger>, if that trigger lives inside a DropdownMenu/Popover, the parent will still close/unmount and you get the same symptom: scrollbar shift, no visible dialog.
+
+Do this now
+
+Find where the desktop edit button lives. If it’s inside any of these: DropdownMenu, Popover, Sheet, Menubar, ContextMenu — apply the onSelect + setTimeout pattern and move the <Dialog> outside.
+
+If you paste the JSX around the desktop button (like 20–40 lines showing whether it’s inside a DropdownMenu/Popover), I’ll tell you the exact edit to make with no back-and-forth.

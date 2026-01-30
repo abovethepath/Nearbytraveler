@@ -4395,28 +4395,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </div>
                       )}
                       
-                      {/* Pure uncontrolled Dialog - single button that always shows */}
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant="outline"
-                            className={isProfileIncomplete() ? 'bg-red-100 hover:bg-red-200 border-red-400 text-red-700 animate-pulse' : 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800 dark:border-blue-700 dark:text-blue-100'}
-                          >
-                            <Edit2 className="w-4 h-4 sm:mr-2" />
-                            <span className="hidden sm:inline">Edit Profile</span>
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent 
-                          className="z-[100000] max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
-                        >
-                          <DialogHeader>
-                            <DialogTitle>SINGLE TRIGGER TEST</DialogTitle>
-                          </DialogHeader>
-                          <div className="p-4">If you see this on DESKTOP, the single trigger approach works!</div>
-                        </DialogContent>
-                      </Dialog>
+                      {/* Edit Profile Button - Dialog is at end of component */}
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setIsEditMode(true)}
+                        className={isProfileIncomplete() ? 'bg-red-100 hover:bg-red-200 border-red-400 text-red-700 animate-pulse' : 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800 dark:border-blue-700 dark:text-blue-100'}
+                      >
+                        <Edit2 className="w-4 h-4 sm:mr-2" />
+                        <span className="hidden sm:inline">Edit Profile</span>
+                      </Button>
                     </div>
                   )}
                 </div>
@@ -8223,10 +8212,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </Card>
       )}
 
-      {/* Profile Edit Modal */}
+      {/* Profile Edit Modal - At root level with high z-index */}
       <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
         <DialogContent 
-          className="max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
+          className="z-[100000] max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
           onPointerDownOutside={(e) => e.preventDefault()}
           onInteractOutside={(e) => e.preventDefault()}
         >
