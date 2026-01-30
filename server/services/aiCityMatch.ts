@@ -194,35 +194,15 @@ Example format:
     }
   }
 
-  // Main AI call method - tries Replit AI first, then fallbacks
+  // Main AI call method - uses Replit AI Integration
   private async callAI(prompt: string): Promise<string> {
-    // Try Replit AI Integration first (most reliable, uses Replit credits)
+    // Use Replit AI Integration (uses Replit credits)
     if (process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
       try {
         console.log('Calling Replit AI Integration for city match feature...');
         return await this.callReplitAI(prompt);
       } catch (error) {
         console.error('Replit AI failed:', error);
-      }
-    }
-
-    // Fallback to Anthropic
-    if (process.env.ANTHROPIC_API_KEY) {
-      try {
-        console.log('Falling back to Anthropic...');
-        return await this.callAnthropic(prompt);
-      } catch (error) {
-        console.error('Anthropic failed:', error);
-      }
-    }
-
-    // Fallback to OpenAI
-    if (process.env.OPENAI_API_KEY) {
-      try {
-        console.log('Falling back to OpenAI...');
-        return await this.callOpenAI(prompt);
-      } catch (error) {
-        console.error('OpenAI failed:', error);
       }
     }
 
@@ -249,57 +229,6 @@ Example format:
 
     if (!response.ok) {
       throw new Error(`Replit AI error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data.choices[0]?.message?.content || '';
-  }
-
-  private async callAnthropic(prompt: string): Promise<string> {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY!,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1500,
-        messages: [
-          { role: 'user', content: prompt }
-        ]
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`Anthropic error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data.content[0]?.text || '';
-  }
-
-  private async callOpenAI(prompt: string): Promise<string> {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          { role: 'system', content: 'You are a helpful assistant that returns only valid JSON. Never include markdown code blocks or extra text.' },
-          { role: 'user', content: prompt }
-        ],
-        temperature: 0.7,
-        max_tokens: 1500
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`OpenAI error: ${response.status}`);
     }
 
     const data = await response.json();

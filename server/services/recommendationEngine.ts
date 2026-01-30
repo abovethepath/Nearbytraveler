@@ -1,4 +1,3 @@
-import Anthropic from '@anthropic-ai/sdk';
 import { db } from '../db';
 import { 
   recommendations, 
@@ -12,11 +11,6 @@ import {
   type User
 } from '@shared/schema';
 import { eq, and, desc, asc, sql, inArray } from 'drizzle-orm';
-
-// the newest Anthropic model is "claude-sonnet-4-20250514" which was released May 14, 2025. Use this by default unless user has already selected claude-3-7-sonnet-20250219
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
 
 interface RecommendationContext {
   user: User;
@@ -67,14 +61,7 @@ export class RecommendationEngine {
     const prompt = this.buildRecommendationPrompt(context, userInteractions, userPrefs[0]);
     
     try {
-      const response = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 2000,
-        messages: [{
-          role: 'user',
-          content: prompt
-        }],
-        system: `You are a local travel expert and recommendation engine. Generate personalized travel recommendations based on user preferences, location, and context. Always provide practical, authentic suggestions with local insights.
+      const systemPrompt = `You are a local travel expert and recommendation engine. Generate personalized travel recommendations based on user preferences, location, and context. Always provide practical, authentic suggestions with local insights.
 
 Return your response as valid JSON with this structure:
 {
@@ -92,12 +79,33 @@ Return your response as valid JSON with this structure:
     }
   ],
   "summary": "Brief overview of the recommendations"
-}`
+}`;
+
+      const response = await fetch(process.env.AI_INTEGRATIONS_OPENAI_BASE_URL + '/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.AI_INTEGRATIONS_OPENAI_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: prompt }
+          ],
+          max_tokens: 2000,
+          response_format: { type: "json_object" }
+        })
       });
 
-      const content = response.content[0];
-      if (content.type === 'text') {
-        const aiResponse = JSON.parse(content.text) as AIRecommendationResponse;
+      if (!response.ok) {
+        throw new Error(`Replit AI error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const content = data.choices[0]?.message?.content;
+      if (content) {
+        const aiResponse = JSON.parse(content) as AIRecommendationResponse;
         return aiResponse;
       }
       

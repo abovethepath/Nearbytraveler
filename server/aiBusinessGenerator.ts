@@ -1,12 +1,6 @@
-import Anthropic from '@anthropic-ai/sdk';
 import { db } from './db';
 import { users } from '@shared/schema';
 import { eq, and, gte, lte, count } from 'drizzle-orm';
-
-// the newest Anthropic model is "claude-sonnet-4-20250514" which was released May 14, 2025. Use this by default unless user has already selected claude-3-7-sonnet-20250219
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
 
 interface AIBusiness {
   name: string;
@@ -37,20 +31,33 @@ export class AIBusinessGenerator {
   ): Promise<AIBusiness[]> {
     try {
       const prompt = this.createBusinessPrompt(city, state, country);
+      const systemPrompt = `You are a local business expert who generates authentic, realistic business listings for cities worldwide. Focus on creating businesses that reflect the unique character, culture, and economic landscape of each specific location.`;
       
-      const response = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 2000,
-        system: `You are a local business expert who generates authentic, realistic business listings for cities worldwide. Focus on creating businesses that reflect the unique character, culture, and economic landscape of each specific location.`,
-        messages: [{
-          role: 'user',
-          content: prompt
-        }]
+      const response = await fetch(process.env.AI_INTEGRATIONS_OPENAI_BASE_URL + '/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.AI_INTEGRATIONS_OPENAI_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: prompt }
+          ],
+          max_tokens: 2000,
+          response_format: { type: "json_object" }
+        })
       });
 
-      const content = response.content[0];
-      if (content.type === 'text') {
-        const businesses = this.parseBusinessResponse(content.text, city, state, country);
+      if (!response.ok) {
+        throw new Error(`Replit AI error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const content = data.choices[0]?.message?.content;
+      if (content) {
+        const businesses = this.parseBusinessResponse(content, city, state, country);
         console.log(`Generated ${businesses.length} businesses for ${city}, ${state}, ${country}`);
         return businesses;
       }

@@ -28,75 +28,31 @@ export class AiRecommendationService {
     
     console.log(`Generating AI recommendations for ${location}, category: ${category}`);
     
-    // Try AI generation first, fallback only if needed
-    if (process.env.ANTHROPIC_API_KEY) {
+    // Use Replit AI Integration
+    if (process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
       try {
-        return await this.generateWithAnthropic(location, category, preferences);
+        return await this.generateWithReplitAI(location, category, preferences);
       } catch (error) {
-        console.error('Anthropic AI failed, falling back to OpenAI:', error);
+        console.error('Replit AI failed:', error);
       }
     }
     
-    if (process.env.OPENAI_API_KEY) {
-      try {
-        return await this.generateWithOpenAI(location, category, preferences);
-      } catch (error) {
-        console.error('OpenAI failed, using fallback:', error);
-      }
-    }
-    
-    // Use fallback only if all AI services fail
-    console.log('All AI services unavailable, using fallback recommendations');
+    // Use fallback only if AI service fails
+    console.log('AI service unavailable, using fallback recommendations');
     return this.getFallbackRecommendations(location, category);
   }
 
-  private async generateWithAnthropic(location: string, category: string, preferences: string): Promise<RecommendationData[]> {
-    const prompt = this.buildPrompt(location, category, preferences);
-    
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': process.env.ANTHROPIC_API_KEY!,
-        'anthropic-version': '2023-06-01',
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'claude-3-5-sonnet-20241022',
-        max_tokens: 2000,
-        messages: [
-          {
-            role: 'user',
-            content: prompt
-          }
-        ]
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`Anthropic API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const content = data.content?.[0]?.text;
-    
-    if (content) {
-      return this.parseAiResponse(content, location, category);
-    } else {
-      throw new Error('No content received from Anthropic');
-    }
-  }
-
-  private async generateWithOpenAI(location: string, category: string, preferences: string): Promise<RecommendationData[]> {
+  private async generateWithReplitAI(location: string, category: string, preferences: string): Promise<RecommendationData[]> {
     const prompt = this.buildPrompt(location, category, preferences);
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch(process.env.AI_INTEGRATIONS_OPENAI_BASE_URL + '/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Authorization': `Bearer ${process.env.AI_INTEGRATIONS_OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o', // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
@@ -114,7 +70,7 @@ export class AiRecommendationService {
     });
 
     if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.status}`);
+      throw new Error(`Replit AI API error: ${response.status}`);
     }
 
     const data = await response.json();
@@ -123,7 +79,7 @@ export class AiRecommendationService {
     if (content) {
       return this.parseAiResponse(content, location, category);
     } else {
-      throw new Error('No content received from OpenAI');
+      throw new Error('No content received from Replit AI');
     }
   }
 

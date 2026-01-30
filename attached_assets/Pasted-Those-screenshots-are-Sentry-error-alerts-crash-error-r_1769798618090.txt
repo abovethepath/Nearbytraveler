@@ -1,0 +1,76 @@
+Those screenshots are Sentry error alerts (crash/error reports) coming from your app. You’ve got 3 separate problems being reported:
+
+1) AI “enhance” endpoint failing (Anthropic credits)
+
+Error: 400 invalid_request_error ... "Your credit balance is too low to access the Anthropic API"
+
+Meaning: Your /api/city-activities/:cityName/enhance route is calling Anthropic, but the Anthropic account tied to that key has no credits left.
+
+Fix options (pick one):
+
+Add credits / upgrade on the Anthropic billing page for that API key.
+
+Switch providers (use OpenAI or another model) for that route.
+
+Temporary safety fix: if AI fails, return a friendly message and fall back to curated/static picks instead of throwing a server error.
+
+What to tell Replit:
+“Handle Anthropic 400 ‘insufficient credits’ gracefully: catch error, return 503 + message like ‘AI temporarily unavailable’, and keep City Plans usable with curated/static picks.”
+
+2) Backend crash: ReferenceError: date is not defined
+
+Error: ReferenceError: date is not defined in shared/schema.ts around activityDate: date("activity_date")
+
+Meaning: In your Drizzle schema, you used date(...) but it’s not imported (or you’re using the wrong column helper).
+
+Fix (typical Drizzle/pg-core):
+
+Make sure you have:
+
+import { date } from "drizzle-orm/pg-core";
+
+
+OR use timestamp-as-date if that’s what you intended:
+
+import { timestamp } from "drizzle-orm/pg-core";
+activityDate: timestamp("activity_date", { mode: "date" })
+
+
+Then regenerate/run your migration if the DB changed.
+
+What to tell Replit:
+“Fix Drizzle schema crash: import date from drizzle-orm/pg-core (or replace with timestamp(..., {mode:'date'})). This is causing a fatal backend error.”
+
+3) Build/runtime crash: missing @babel/parser
+
+Error: Cannot find package '@babel/parser' imported from ... replit vite-plugin cartographer
+
+Meaning: A dependency is missing in your install (or the Replit plugin expects it but it’s not in your node_modules).
+
+Fix:
+
+Add it to dependencies:
+
+npm i @babel/parser
+
+
+If that doesn’t stick: delete and reinstall deps:
+
+rm -rf node_modules package-lock.json
+npm i
+
+
+Restart the repl.
+
+What to tell Replit:
+“Install missing dependency @babel/parser (required by replit vite plugin). If still failing, reinstall node_modules and restart.”
+
+Triage order (do these first)
+
+Fix date is not defined (it’s a true crash)
+
+Fix @babel/parser missing (build/runtime fatal)
+
+Decide AI billing or fallback (feature failure, not core)
+
+If you paste the exact snippet around shared/schema.ts line ~1170 and the imports at the top of that file, I’ll tell you the exact one-line change (date vs timestamp) that matches your DB best.

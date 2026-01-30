@@ -63,10 +63,7 @@ export class HiddenGemsDiscovery {
     );
 
     try {
-      const response = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 4000,
-        system: `You are a local travel expert and hidden gems curator. Your expertise is discovering authentic, lesser-known places that locals love but tourists rarely find. 
+      const systemPrompt = `You are a local travel expert and hidden gems curator. Your expertise is discovering authentic, lesser-known places that locals love but tourists rarely find. 
 
 Guidelines:
 - Focus on genuine local favorites, not tourist traps
@@ -78,26 +75,36 @@ Guidelines:
 - Rate difficulty level realistically
 - Provide actionable local tips
 
-Return response as valid JSON with array of hidden gems.`,
-        messages: [
-          {
-            role: 'user',
-            content: prompt
-          }
-        ]
+Return response as valid JSON with array of hidden gems.`;
+
+      const response = await fetch(process.env.AI_INTEGRATIONS_OPENAI_BASE_URL + '/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.AI_INTEGRATIONS_OPENAI_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: prompt }
+          ],
+          max_tokens: 4000,
+          response_format: { type: "json_object" }
+        })
       });
 
-      const content = response.content[0];
-      if (content.type !== 'text') {
-        throw new Error('Unexpected response type from Anthropic API');
+      if (!response.ok) {
+        throw new Error(`Replit AI error: ${response.status}`);
       }
 
-      const jsonMatch = content.text.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) {
-        throw new Error('No JSON found in response');
+      const aiResponse = await response.json();
+      const content = aiResponse.choices[0]?.message?.content;
+      if (!content) {
+        throw new Error('No content in Replit AI response');
       }
 
-      const data = JSON.parse(jsonMatch[0]);
+      const data = JSON.parse(content);
       
       // Transform and enrich the response
       return this.enrichHiddenGems(data.hiddenGems || [], userProfile);
@@ -234,24 +241,34 @@ Generate 5 new hidden gem recommendations that:
 Use same JSON format as before.`;
 
     try {
-      const response = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 3000,
-        system: `You are a personalized travel curator that learns from user feedback to improve recommendations. Analyze patterns in their preferences and adapt accordingly.`,
-        messages: [{ role: 'user', content: prompt }]
+      const response = await fetch(process.env.AI_INTEGRATIONS_OPENAI_BASE_URL + '/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.AI_INTEGRATIONS_OPENAI_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: 'You are a personalized travel curator that learns from user feedback to improve recommendations. Analyze patterns in their preferences and adapt accordingly.' },
+            { role: 'user', content: prompt }
+          ],
+          max_tokens: 3000,
+          response_format: { type: "json_object" }
+        })
       });
 
-      const content = response.content[0];
-      if (content.type !== 'text') {
-        throw new Error('Unexpected response type from Anthropic API');
+      if (!response.ok) {
+        throw new Error(`Replit AI error: ${response.status}`);
       }
 
-      const jsonMatch = content.text.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) {
-        throw new Error('No JSON found in response');
+      const aiResponse = await response.json();
+      const content = aiResponse.choices[0]?.message?.content;
+      if (!content) {
+        throw new Error('No content in response');
       }
 
-      const data = JSON.parse(jsonMatch[0]);
+      const data = JSON.parse(content);
       return this.enrichHiddenGems(data.hiddenGems || [], userProfile);
       
     } catch (error) {
@@ -284,24 +301,34 @@ Provide authentic local experiences that showcase the destination's character du
 Use same JSON format as before.`;
 
     try {
-      const response = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 3000,
-        system: `You are a seasonal travel expert who knows the best times to experience different places. Focus on unique seasonal aspects that make each recommendation special.`,
-        messages: [{ role: 'user', content: prompt }]
+      const response = await fetch(process.env.AI_INTEGRATIONS_OPENAI_BASE_URL + '/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.AI_INTEGRATIONS_OPENAI_API_KEY}`
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: 'You are a seasonal travel expert who knows the best times to experience different places. Focus on unique seasonal aspects that make each recommendation special.' },
+            { role: 'user', content: prompt }
+          ],
+          max_tokens: 3000,
+          response_format: { type: "json_object" }
+        })
       });
 
-      const content = response.content[0];
-      if (content.type !== 'text') {
-        throw new Error('Unexpected response type from Anthropic API');
+      if (!response.ok) {
+        throw new Error(`Replit AI error: ${response.status}`);
       }
 
-      const jsonMatch = content.text.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) {
-        throw new Error('No JSON found in response');
+      const aiResponse = await response.json();
+      const content = aiResponse.choices[0]?.message?.content;
+      if (!content) {
+        throw new Error('No content in response');
       }
 
-      const data = JSON.parse(jsonMatch[0]);
+      const data = JSON.parse(content);
       return this.enrichHiddenGems(data.hiddenGems || [], userProfile);
       
     } catch (error) {

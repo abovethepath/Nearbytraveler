@@ -38,31 +38,13 @@ export class AiBioGenerator {
       };
     }
 
-    // Try Replit AI Integration first (uses Replit credits, most reliable)
+    // Use Replit AI Integration (uses Replit credits)
     if (process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
       try {
         console.log('Attempting bio generation with Replit AI Integration...');
         return await this.generateWithReplitAI(context);
       } catch (error) {
         console.error('Replit AI bio generation failed:', error);
-      }
-    }
-
-    // Fallback to Anthropic (user's API key)
-    if (process.env.ANTHROPIC_API_KEY) {
-      try {
-        return await this.generateWithAnthropic(context);
-      } catch (error) {
-        console.error('Anthropic bio generation failed:', error);
-      }
-    }
-
-    // Fallback to OpenAI (user's API key)
-    if (process.env.OPENAI_API_KEY) {
-      try {
-        return await this.generateWithOpenAI(context, process.env.OPENAI_API_KEY);
-      } catch (error) {
-        console.error('OpenAI bio generation failed:', error);
       }
     }
 
@@ -191,76 +173,6 @@ Write the bio now (first-person, 50-120 words):`;
     return { bio, success: true };
   }
 
-  private async generateWithAnthropic(context: { prompt: string }): Promise<GeneratedBio> {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': process.env.ANTHROPIC_API_KEY!,
-        'anthropic-version': '2023-06-01',
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 300,
-        messages: [
-          {
-            role: 'user',
-            content: context.prompt
-          }
-        ]
-      })
-    });
-
-    if (!response.ok) {
-      const errorBody = await response.text();
-      console.error('Anthropic API error details:', response.status, errorBody);
-      throw new Error(`Anthropic API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const bio = data.content?.[0]?.text?.trim();
-
-    if (!bio) {
-      throw new Error('Empty response from Anthropic');
-    }
-
-    return { bio, success: true };
-  }
-
-  private async generateWithOpenAI(context: { prompt: string }, apiKey: string): Promise<GeneratedBio> {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'user',
-            content: context.prompt
-          }
-        ],
-        max_tokens: 300,
-      })
-    });
-
-    if (!response.ok) {
-      const errorBody = await response.text();
-      console.error('OpenAI API error details:', response.status, errorBody);
-      throw new Error(`OpenAI API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const bio = data.choices?.[0]?.message?.content?.trim();
-
-    if (!bio) {
-      throw new Error('Empty response from OpenAI');
-    }
-
-    return { bio, success: true };
-  }
 }
 
 export const aiBioGenerator = new AiBioGenerator();

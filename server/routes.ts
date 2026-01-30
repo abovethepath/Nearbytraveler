@@ -6021,8 +6021,7 @@ Questions? Just reply to this message. Welcome aboard!
         userId, 
         interestsCount: user.interests?.length || 0,
         activitiesCount: user.activities?.length || 0,
-        hasAnthropicKey: !!process.env.ANTHROPIC_API_KEY,
-        hasOpenAIKey: !!process.env.OPENAI_API_KEY
+        hasReplitAI: !!(process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL)
       });
 
       // Import the bio generator service
