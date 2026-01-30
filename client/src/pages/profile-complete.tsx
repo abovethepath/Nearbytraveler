@@ -4336,8 +4336,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               )}
             </div>
             
-            {/* Let's Meet Now CTA - Only for travelers and locals, not businesses */}
-            {user?.userType !== 'business' && (
+            {/* Let's Meet Now CTA - Only for OWN profile, travelers and locals, not businesses */}
+            {isOwnProfile && user?.userType !== 'business' && (
               <Button
                 onClick={() => {
                   // Simply scroll to the QuickMeetupWidget and trigger the create form
