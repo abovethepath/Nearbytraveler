@@ -16,7 +16,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getTravelActivities } from "@shared/base-options";
 import { METRO_AREAS } from "@shared/constants";
 
-// City Pick categories for user-created picks
+// City Plan categories for user-created plans
 const CITY_PICK_CATEGORIES = [
   { id: 'food', label: 'Food & Dining', emoji: '🍽️' },
   { id: 'nightlife', label: 'Nightlife', emoji: '🌙' },
@@ -144,14 +144,14 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [activitySearchFilter, setActivitySearchFilter] = useState('');
   const [activeMobileSection, setActiveMobileSection] = useState<'popular' | 'ai' | 'preferences' | 'selected' | 'events' | 'all'>('all');
 
-  // Clear All Picks Confirmation Dialog
+  // Clear All Plans Confirmation Dialog
   const [showClearAllDialog, setShowClearAllDialog] = useState(false);
   
-  // Add City Pick Modal State
+  // Add City Plan Modal State
   const [showAddPickModal, setShowAddPickModal] = useState(false);
   const [newPickName, setNewPickName] = useState('');
   const [newPickCategory, setNewPickCategory] = useState('other');
-  const [newPickDate, setNewPickDate] = useState(''); // Optional date for dated picks like "Taylor Swift Jan 30"
+  const [newPickDate, setNewPickDate] = useState(''); // Optional date for dated plans like "Taylor Swift Jan 30"
   const [showEventSuggestion, setShowEventSuggestion] = useState(false);
   const [similarActivity, setSimilarActivity] = useState<{id: number, name: string} | null>(null);
 
@@ -1044,7 +1044,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     }
   };
 
-  // Add City Pick with category (for the modal)
+  // Add City Plan with category (for the modal)
   const handleAddCityPick = async () => {
     if (!newPickName.trim()) return;
     
@@ -1054,7 +1054,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     const userId = actualUser?.id;
     
     if (!userId) {
-      toast({ title: "Error", description: "Please log in to add picks", variant: "destructive" });
+      toast({ title: "Error", description: "Please log in to add plans", variant: "destructive" });
       return;
     }
 
@@ -1100,16 +1100,16 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         setShowEventSuggestion(false);
         
         toast({
-          title: "City Pick Added!",
-          description: `"${newPickName}" added to your picks for ${selectedCity}`,
+          title: "City Plan Added!",
+          description: `"${newPickName}" added to your plans for ${selectedCity}`,
         });
       } else {
         const error = await response.json();
-        toast({ title: "Error", description: error.error || "Failed to add pick", variant: "destructive" });
+        toast({ title: "Error", description: error.error || "Failed to add plan", variant: "destructive" });
       }
     } catch (error) {
-      console.error('Add city pick error:', error);
-      toast({ title: "Error", description: "Failed to add pick", variant: "destructive" });
+      console.error('Add city plan error:', error);
+      toast({ title: "Error", description: "Failed to add plan", variant: "destructive" });
     }
   };
 
@@ -1129,7 +1129,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       
       if (response.ok) {
         setUserActivities(prev => prev.filter(ua => ua.id !== userActivityId));
-        toast({ title: "Removed", description: `"${activityName}" removed from your picks` });
+        toast({ title: "Removed", description: `"${activityName}" removed from your plans` });
         fetchMatchingUsers();
       }
     } catch (error) {
@@ -1176,36 +1176,122 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     return null;
   };
 
-  // Toggle event selection (add/remove from interested events)
-  const toggleEventInterest = (event: any) => {
+  // Toggle event selection (add/remove from interested events) - saves to backend
+  const toggleEventInterest = async (event: any) => {
     const eventId = event.id;
-    setSelectedEventIds(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(eventId)) {
-        newSet.delete(eventId);
-        toast({ title: "Removed", description: `"${event.title}" removed from your picks` });
-      } else {
-        newSet.add(eventId);
-        toast({ title: "Added to Your Picks", description: `"${event.title}" - Interested` });
+    const isCurrentlySelected = selectedEventIds.has(eventId);
+    
+    const storedUser = localStorage.getItem('travelconnect_user');
+    const authUser = localStorage.getItem('user');
+    const actualUser = user || (storedUser ? JSON.parse(storedUser) : null) || (authUser ? JSON.parse(authUser) : null);
+    const userId = actualUser?.id;
+    
+    if (!userId) {
+      toast({ title: "Error", description: "Please log in to add plans", variant: "destructive" });
+      return;
+    }
+    
+    if (isCurrentlySelected) {
+      // Remove from plans - find the user interest and delete it
+      const eventActivity = userActivities.find(ua => 
+        ua.cityName === selectedCity && 
+        ua.activityName === event.title
+      );
+      
+      if (eventActivity) {
+        try {
+          const apiBase = getApiBaseUrl();
+          // Use user-city-interests endpoint to remove user's selection
+          await fetch(`${apiBase}/api/user-city-interests/${eventActivity.id}`, {
+            method: 'DELETE',
+            headers: { 'x-user-id': userId.toString() }
+          });
+          
+          setSelectedEventIds(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(eventId);
+            return newSet;
+          });
+          
+          await fetchUserActivities();
+          fetchMatchingUsers();
+          toast({ title: "Removed", description: `"${event.title}" removed from your plans` });
+        } catch (error) {
+          toast({ title: "Error", description: "Failed to remove event", variant: "destructive" });
+        }
       }
-      return newSet;
-    });
+    } else {
+      // Add to plans - first create city activity, then add user interest
+      try {
+        const apiBase = getApiBaseUrl();
+        const eventDate = new Date(event.date).toLocaleDateString('en-US', { 
+          weekday: 'short', month: 'short', day: 'numeric' 
+        });
+        
+        // Step 1: Create the city activity
+        const activityResponse = await fetch(`${apiBase}/api/city-activities`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-id': userId.toString()
+          },
+          body: JSON.stringify({
+            cityName: selectedCity,
+            activityName: event.title,
+            category: event.category || 'Events',
+            createdByUserId: userId,
+            description: `${eventDate}${event.venue ? ' at ' + event.venue : ''}`
+          })
+        });
+        
+        if (activityResponse.ok) {
+          const newActivity = await activityResponse.json();
+          
+          // Step 2: Add user interest for this activity
+          const interestResponse = await fetch(`${apiBase}/api/user-city-interests`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-user-id': userId.toString()
+            },
+            body: JSON.stringify({
+              activityId: newActivity.id,
+              cityName: selectedCity
+            })
+          });
+          
+          if (interestResponse.ok) {
+            setSelectedEventIds(prev => {
+              const newSet = new Set(prev);
+              newSet.add(eventId);
+              return newSet;
+            });
+            
+            await fetchUserActivities();
+            fetchMatchingUsers();
+            toast({ title: "Added to Your Plans", description: `"${event.title}" - ${eventDate}` });
+          }
+        }
+      } catch (error) {
+        toast({ title: "Error", description: "Failed to add event", variant: "destructive" });
+      }
+    }
   };
   
   // Check if an event is selected
   const isEventSelected = (eventId: string) => selectedEventIds.has(eventId);
 
-  // Clear all picks for this city - opens confirmation dialog
+  // Clear all plans for this city - opens confirmation dialog
   const handleClearAllPicks = () => {
     const userPicksForCity = userActivities.filter(ua => ua.cityName === selectedCity);
     if (userPicksForCity.length === 0) {
-      toast({ title: "No picks", description: "You don't have any picks to clear" });
+      toast({ title: "No plans", description: "You don't have any plans to clear" });
       return;
     }
     setShowClearAllDialog(true);
   };
   
-  // Actually clear all picks after confirmation
+  // Actually clear all plans after confirmation
   const confirmClearAllPicks = async () => {
     setShowClearAllDialog(false);
     const userPicksForCity = userActivities.filter(ua => ua.cityName === selectedCity);
@@ -1217,7 +1303,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     
     try {
       const apiBase = getApiBaseUrl();
-      // Delete all picks for this city
+      // Delete all plans for this city
       for (const pick of userPicksForCity) {
         await fetch(`${apiBase}/api/user-city-interests/${pick.id}`, {
           method: 'DELETE',
@@ -1226,15 +1312,15 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       }
       
       setUserActivities(prev => prev.filter(ua => ua.cityName !== selectedCity));
-      toast({ title: "Cleared", description: `All picks for ${selectedCity} have been cleared` });
+      toast({ title: "Cleared", description: `All plans for ${selectedCity} have been cleared` });
       fetchMatchingUsers();
     } catch (error) {
       console.error('Clear all error:', error);
-      toast({ title: "Error", description: "Failed to clear picks", variant: "destructive" });
+      toast({ title: "Error", description: "Failed to clear plans", variant: "destructive" });
     }
   };
 
-  // Reset to popular picks only (clears user-created, keeps popular/featured)
+  // Reset to popular plans only (clears user-created, keeps popular/featured)
   const handleResetToPopular = async () => {
     const userPicksForCity = userActivities.filter(ua => ua.cityName === selectedCity);
     const storedUser = localStorage.getItem('travelconnect_user');
@@ -1248,16 +1334,16 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     );
     
     if (featuredActivities.length === 0) {
-      toast({ title: "No popular picks", description: `No curated picks available for ${selectedCity}` });
+      toast({ title: "No popular plans", description: `No curated plans available for ${selectedCity}` });
       return;
     }
     
-    if (!confirm(`Reset to ${featuredActivities.length} popular picks for ${selectedCity}? This will remove your custom picks.`)) return;
+    if (!confirm(`Reset to ${featuredActivities.length} popular plans for ${selectedCity}? This will remove your custom plans.`)) return;
     
     try {
       const apiBase = getApiBaseUrl();
       
-      // First clear all current picks
+      // First clear all current plans
       for (const pick of userPicksForCity) {
         await fetch(`${apiBase}/api/user-city-interests/${pick.id}`, {
           method: 'DELETE',
@@ -1266,7 +1352,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       }
       
       // Then add all featured activities
-      const newPicks: any[] = [];
+      const newPlans: any[] = [];
       for (const activity of featuredActivities) {
         const response = await fetch(`${apiBase}/api/user-city-interests`, {
           method: 'POST',
@@ -1281,20 +1367,20 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
         });
         
         if (response.ok) {
-          const newPick = await response.json();
-          newPicks.push(newPick);
+          const newPlan = await response.json();
+          newPlans.push(newPlan);
         }
       }
       
       setUserActivities(prev => [
         ...prev.filter(ua => ua.cityName !== selectedCity),
-        ...newPicks
+        ...newPlans
       ]);
-      toast({ title: "Reset complete", description: `Added ${newPicks.length} popular picks for ${selectedCity}` });
+      toast({ title: "Reset complete", description: `Added ${newPlans.length} popular plans for ${selectedCity}` });
       fetchMatchingUsers();
     } catch (error) {
       console.error('Reset to popular error:', error);
-      toast({ title: "Error", description: "Failed to reset picks", variant: "destructive" });
+      toast({ title: "Error", description: "Failed to reset plans", variant: "destructive" });
     }
   };
 
@@ -1764,7 +1850,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       if (response.ok) {
         // Remove from city activities list
         setCityActivities(prev => prev.filter(activity => activity.id !== activityId));
-        // Also remove from user activities (Your Picks) if present
+        // Also remove from user activities (Your Plans) if present
         setUserActivities(prev => prev.filter(ua => ua.activityId !== activityId));
         
         toast({
@@ -1868,7 +1954,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
               <div className="md:hidden sticky top-0 z-30 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm py-3 -mx-8 px-4 mb-6 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                   {[
-                    { id: 'selected', label: `✓ Your Picks`, count: userActivities.filter(ua => ua.cityName === selectedCity).length },
+                    { id: 'selected', label: `✓ Your Plans`, count: userActivities.filter(ua => ua.cityName === selectedCity).length },
                     { id: 'popular', label: '⭐ Popular', count: cityActivities.filter(a => (a as any).isFeatured || (a as any).source === 'featured').length },
                     { id: 'events', label: '📅 Events', count: realEvents.length },
                     { id: 'ai', label: '✨ AI Ideas', count: cityActivities.filter(a => !((a as any).isFeatured || (a as any).source === 'featured') && a.category !== 'universal').length },
@@ -1902,7 +1988,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
-                      placeholder="Search city picks..."
+                      placeholder="Search city plans..."
                       value={activitySearchFilter}
                       onChange={(e) => setActivitySearchFilter(e.target.value)}
                       className="pl-9 py-2 text-sm bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-full"
@@ -1919,7 +2005,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 </div>
               </div>
 
-              {/* SECTION 1: YOUR PICKS - User's selected + user-created activities */}
+              {/* SECTION 1: YOUR PLANS - User's selected + user-created activities */}
               {(() => {
                 const userPicksForCity = userActivities.filter(ua => ua.cityName === selectedCity);
                 const storedUser = localStorage.getItem('travelconnect_user');
@@ -1936,7 +2022,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
                       <div>
                         <h3 className="text-xl font-bold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
-                          Your Picks {userPicksForCity.length > 0 && <span className="text-green-600">({userPicksForCity.length})</span>}
+                          Your Plans {userPicksForCity.length > 0 && <span className="text-green-600">({userPicksForCity.length})</span>}
                         </h3>
                         <p className="text-sm text-gray-500 dark:text-gray-400">Things you want to do in {selectedCity}</p>
                       </div>
@@ -1947,7 +2033,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           className="bg-gradient-to-r from-orange-500 to-blue-500 hover:from-orange-600 hover:to-blue-600 text-white"
                         >
                           <Plus className="w-4 h-4 mr-1" />
-                          Add a City Pick
+                          Add a City Plan
                         </Button>
                         <Button
                           onClick={() => setLocation(`/create-event?city=${encodeURIComponent(selectedCity)}`)}
@@ -1972,7 +2058,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                 className="text-red-600 dark:text-red-400 cursor-pointer"
                               >
                                 <Trash2 className="w-4 h-4 mr-2" />
-                                Clear all picks
+                                Clear all plans
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem 
@@ -2020,7 +2106,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                                       }
                                     }}
                                     className="ml-1 p-0.5 rounded-full hover:bg-white/20 transition-colors"
-                                    title={isUserCreated ? "Delete pick" : "Remove from your picks"}
+                                    title={isUserCreated ? "Delete plan" : "Remove from your plans"}
                                   >
                                     <X className="w-3.5 h-3.5" />
                                   </button>
@@ -2033,7 +2119,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     ) : (
                       <div className="p-6 bg-gray-50 dark:bg-gray-800/50 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 text-center">
                         <p className="text-gray-500 dark:text-gray-400 text-sm">
-                          No picks yet. Select from below or add your own!
+                          No plans yet. Select from below or add your own!
                         </p>
                       </div>
                     )}
@@ -2041,13 +2127,13 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 );
               })()}
 
-              {/* Clear All Picks Confirmation Dialog */}
+              {/* Clear All Plans Confirmation Dialog */}
               <AlertDialog open={showClearAllDialog} onOpenChange={setShowClearAllDialog}>
                 <AlertDialogContent className="bg-white dark:bg-gray-900">
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Clear all picks?</AlertDialogTitle>
+                    <AlertDialogTitle>Clear all plans?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This will remove all {userActivities.filter(ua => ua.cityName === selectedCity).length} picks for {selectedCity}. This action cannot be undone.
+                      This will remove all {userActivities.filter(ua => ua.cityName === selectedCity).length} plans for {selectedCity}. This action cannot be undone.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -2059,7 +2145,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 </AlertDialogContent>
               </AlertDialog>
 
-              {/* Add City Pick Modal */}
+              {/* Add City Plan Modal */}
               <Dialog open={showAddPickModal} onOpenChange={(open) => {
                 setShowAddPickModal(open);
                 if (!open) {
@@ -2073,7 +2159,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
               }}>
                 <DialogContent className="sm:max-w-md bg-white dark:bg-gray-900">
                   <DialogHeader>
-                    <DialogTitle className="text-xl font-bold">Add a City Pick</DialogTitle>
+                    <DialogTitle className="text-xl font-bold">Add a City Plan</DialogTitle>
                     <DialogDescription>
                       Add a recurring activity you want to do in {selectedCity}
                     </DialogDescription>
@@ -2108,7 +2194,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           return (
                             <div className="mt-2 p-3 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-200 dark:border-green-700">
                               <p className="text-sm text-green-700 dark:text-green-300">
-                                ✓ You already have <strong>"{similarActivity.name}"</strong> in your picks!
+                                ✓ You already have <strong>"{similarActivity.name}"</strong> in your plans!
                               </p>
                             </div>
                           );
@@ -2209,7 +2295,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                       disabled={!newPickName.trim()}
                       className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white"
                     >
-                      Add Pick
+                      Add Plan
                     </Button>
                   </div>
                 </DialogContent>
@@ -2538,13 +2624,13 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                             if (isSimilarToUniversal(activity.activityName)) return false;
                             // Filter out dismissed AI activities
                             if (activity.createdByUserId === 1 && dismissedAIActivities.has(activity.id)) return false;
-                            // Hide dated picks after their date has passed
+                            // Hide dated plans after their date has passed
                             const activityDate = (activity as any).activityDate;
                             if (activityDate) {
                               const pickDate = new Date(activityDate);
                               const today = new Date();
                               today.setHours(0, 0, 0, 0);
-                              if (pickDate < today) return false; // Hide expired dated picks
+                              if (pickDate < today) return false; // Hide expired dated plans
                             }
                             // Apply search filter
                             if (activitySearchFilter && !activity.activityName.toLowerCase().includes(activitySearchFilter.toLowerCase())) return false;
@@ -2680,7 +2766,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     <div className={`mt-8 md:block ${isMobileVisible ? 'block' : 'hidden'}`}>
                       <div className="text-center mb-6">
                         <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent mb-2">📅 Events in Next 30 Days</h3>
-                        <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">Click to add to Your Picks • Use "Tickets" button for details</p>
+                        <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">Click to add to Your Plans • Use "Tickets" button for details</p>
                         <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto rounded-full mt-2"></div>
                       </div>
                       
@@ -2904,8 +2990,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 {/* SECTION 4: Selected Items - Mobile Only View */}
                 <div className={`mt-8 md:hidden ${activeMobileSection === 'selected' ? 'block' : 'hidden'}`}>
                   <div className="text-center mb-6">
-                    <h3 className="text-2xl font-bold bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent mb-2">✓ Your Selected Picks</h3>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm">{userActivities.filter(ua => ua.cityName === selectedCity).length} picks for {selectedCity}</p>
+                    <h3 className="text-2xl font-bold bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent mb-2">✓ Your Selected Plans</h3>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm">{userActivities.filter(ua => ua.cityName === selectedCity).length} plans for {selectedCity}</p>
                     <div className="w-24 h-1 bg-gradient-to-r from-green-500 to-blue-500 mx-auto rounded-full mt-2"></div>
                   </div>
                   {userActivities.filter(ua => ua.cityName === selectedCity).length > 0 ? (
@@ -2929,7 +3015,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     </div>
                   ) : (
                     <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                      <p>No picks selected yet.</p>
+                      <p>No plans selected yet.</p>
                       <p className="text-sm mt-2">Tap on activities in other sections to add them!</p>
                     </div>
                   )}
@@ -3097,7 +3183,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   setUserActivities(prev => prev.filter(ua => ua.cityName !== selectedCity));
                   toast({
                     title: "Cleared",
-                    description: `All picks for ${selectedCity} have been cleared.`,
+                    description: `All plans for ${selectedCity} have been cleared.`,
                   });
                 }}
                 className="text-gray-600 dark:text-gray-400 hover:text-red-500"
@@ -3108,8 +3194,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 size="sm"
                 onClick={() => {
                   toast({
-                    title: "Picks Saved!",
-                    description: `Your ${userActivities.filter(ua => ua.cityName === selectedCity).length} picks for ${selectedCity} are saved. You'll match with others who share these interests.`,
+                    title: "Plans Saved!",
+                    description: `Your ${userActivities.filter(ua => ua.cityName === selectedCity).length} plans for ${selectedCity} are saved. You'll match with others who share these interests.`,
                   });
                   setLocation('/discover');
                 }}
