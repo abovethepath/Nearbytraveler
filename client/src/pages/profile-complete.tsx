@@ -4366,7 +4366,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <div className="flex-shrink-0 relative">
                       {/* Blinking Arrow - Only show when profile is incomplete */}
                       {isProfileIncomplete() && (
-                        <div className="absolute -top-12 -right-2 flex flex-col items-center z-10">
+                        <div className="absolute -top-12 -right-2 flex flex-col items-center z-10 pointer-events-none">
                           <div className="animate-bounce">
                             <ChevronDown className="w-8 h-8 text-red-500" style={{
                               animation: 'blink 1s ease-in-out infinite'
