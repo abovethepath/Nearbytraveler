@@ -524,6 +524,8 @@ export const travelPlans = pgTable("travel_plans", {
   travelStyle: text("travel_style").array(), // Solo, couple, friends, business, etc.
   travelGroup: text("travel_group"), // Per-trip override: solo, couple, friends, family (nullable - falls back to user profile)
   accommodation: text("accommodation"), // Hotel, Airbnb, hostel, etc.
+  hostelName: text("hostel_name"), // Name of hostel for matching (optional)
+  hostelVisibility: text("hostel_visibility").default("private"), // 'private' (match only) or 'public' (show on profile)
   transportation: text("transportation"), // Flight, train, car, etc.
   notes: text("notes"), // Additional notes about the trip
   autoTags: text("auto_tags").array(), // Auto-generated tags from notes

@@ -39,6 +39,8 @@ interface TripPlan {
   isActiveDuty?: boolean;
   travelStyle?: string[];
   travelGroup?: string; // Per-trip override: solo, couple, friends, family
+  hostelName?: string; // Name of hostel for matching
+  hostelVisibility?: string; // 'private' or 'public'
 }
 
 interface User {
@@ -207,7 +209,9 @@ export default function PlanTrip() {
         
         travelerTypes: Array.isArray(existingPlan?.travelStyle) ? existingPlan.travelStyle : [],
         notes: existingPlan?.notes || '',
-        travelGroup: existingPlan?.travelGroup || user?.travelGroup || '' // Trip override or profile default
+        travelGroup: existingPlan?.travelGroup || user?.travelGroup || '', // Trip override or profile default
+        hostelName: existingPlan?.hostelName || '',
+        hostelVisibility: existingPlan?.hostelVisibility || 'private'
       };
       
       console.log('=== PARSED PLAN DATA FOR EDITING ===');
@@ -401,7 +405,9 @@ export default function PlanTrip() {
         activities: plan.activities || [],
         travelerTypes: plan.travelerTypes || [], // Optional trip tags
         notes: plan.notes || '',
-        travelGroup: plan.travelGroup || null // Per-trip override (solo/couple/friends/family)
+        travelGroup: plan.travelGroup || null, // Per-trip override (solo/couple/friends/family)
+        hostelName: plan.hostelName || null, // Optional hostel name for matching
+        hostelVisibility: plan.hostelVisibility || 'private' // 'private' or 'public'
       };
 
       if (isEditMode && editingPlanId) {
@@ -926,6 +932,63 @@ export default function PlanTrip() {
                 </div>
               </div>
 
+              {/* Hostel Connect - Optional hostel matching feature */}
+              <div className="overflow-hidden break-words border border-orange-200 dark:border-orange-700 rounded-lg p-4 bg-orange-50 dark:bg-orange-900/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <Building2 className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                  <Label className="text-sm sm:text-base font-medium text-black dark:text-white break-words">
+                    Hostel Connect (Optional)
+                  </Label>
+                </div>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mb-3 break-words">
+                  Staying at a hostel? Share your hostel name to connect with other travelers staying nearby!
+                </p>
+                
+                <div className="space-y-3">
+                  <Input
+                    type="text"
+                    placeholder="Enter hostel name (e.g., HI Los Angeles)"
+                    value={tripPlan.hostelName || ""}
+                    onChange={(e) => setTripPlan(prev => ({ ...prev, hostelName: e.target.value }))}
+                    className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 text-sm sm:text-base"
+                  />
+                  
+                  {tripPlan.hostelName && (
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setTripPlan(prev => ({ ...prev, hostelVisibility: 'private' }))}
+                        className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-colors ${
+                          (!tripPlan.hostelVisibility || tripPlan.hostelVisibility === 'private')
+                            ? 'bg-orange-600 text-white'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        }`}
+                      >
+                        🔒 Private (match only)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setTripPlan(prev => ({ ...prev, hostelVisibility: 'public' }))}
+                        className={`px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-colors ${
+                          tripPlan.hostelVisibility === 'public'
+                            ? 'bg-orange-600 text-white'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        }`}
+                      >
+                        🌍 Public (show on profile)
+                      </button>
+                    </div>
+                  )}
+                  
+                  {tripPlan.hostelName && (
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {(!tripPlan.hostelVisibility || tripPlan.hostelVisibility === 'private') 
+                        ? "We'll only use this to match you with others at the same or nearby hostels"
+                        : "Your hostel name will be visible on your profile to help others connect"}
+                    </p>
+                  )}
+                </div>
+              </div>
 
               {/* Action Buttons - Mobile Responsive */}
               <div className="space-y-2 sm:space-y-3 overflow-hidden break-words">
