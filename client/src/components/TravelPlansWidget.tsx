@@ -127,14 +127,16 @@ export default function TravelPlansWidget({ userId, isOwnProfile = false }: Trav
                     </Badge>
                   </div>
                   <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setLocation(`/plan-trip?edit=${plan.id}`)}
-                      className="text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20"
-                    >
-                      Edit
-                    </Button>
+                    {isOwnProfile && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setLocation(`/plan-trip?edit=${plan.id}`)}
+                        className="text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20"
+                      >
+                        Edit
+                      </Button>
+                    )}
                     <Button
                       variant="ghost"
                       size="sm"
@@ -172,14 +174,16 @@ export default function TravelPlansWidget({ userId, isOwnProfile = false }: Trav
                     </p>
                   </div>
                   <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setLocation(`/plan-trip?edit=${plan.id}`)}
-                      className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20"
-                    >
-                      Edit
-                    </Button>
+                    {isOwnProfile && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setLocation(`/plan-trip?edit=${plan.id}`)}
+                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                      >
+                        Edit
+                      </Button>
+                    )}
                     <Button
                       variant="ghost"
                       size="sm"
