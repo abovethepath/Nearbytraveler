@@ -1,0 +1,128 @@
+For a primary discovery surface, this is a touch too small. It looks polished, but it’s under-utilizing the canvas and slightly underselling the people.
+
+Let me break this down cleanly.
+
+What’s good already (don’t lose this)
+
+Density is good → You’re showing enough people to feel alive
+
+Card clarity is strong → Photo, name, city, social proof = readable
+
+Right rail works → Weather + Messages feels like “dashboard”, not clutter
+
+So this isn’t bad — it’s just too conservative for the main page.
+
+The core issue
+
+This page is called Discover People.
+
+Right now it feels like:
+
+“Here’s a list.”
+
+But this should feel like:
+
+“Here are people you might actually meet.”
+
+The cards should visually invite interaction. Bigger faces = more human pull.
+
+What I’d change (high-confidence recommendations)
+1. Increase card size ~15–25%
+
+Not huge — just enough to make faces dominant.
+
+Specifically:
+
+Increase card width OR
+
+Reduce columns by 1 at larger breakpoints
+
+For example:
+
+Current: xl:grid-cols-5
+
+Try: xl:grid-cols-4
+
+This alone will noticeably improve presence.
+
+2. Let cards breathe vertically
+
+They’re a little compressed top-to-bottom.
+
+Small tweaks:
+
+Increase image aspect slightly (e.g. from 4/5 → closer to 3/4)
+
+Add 4–8px more padding in the bottom overlay
+
+This makes the card feel intentional instead of “packed”.
+
+3. Make “things in common” visually louder than username
+
+Right now:
+
+Username + city are visually dominant
+
+The actual reason I should click is secondary
+
+I’d flip emphasis subtly:
+
+Suggested hierarchy:
+
+5 things in common (primary accent color)
+
+mutual friends (secondary)
+
+Username
+
+City
+
+This reinforces your differentiator every time someone scrolls.
+
+4. Full-width grid, not “contained”
+
+If this is a full-page experience, don’t be shy:
+
+Let the grid stretch a bit more horizontally
+
+Reduce side padding slightly on large screens
+
+It should feel like Netflix / Airbnb discovery, not a settings page.
+
+What NOT to do ❌
+
+❌ Don’t add more info to the card
+
+❌ Don’t bring back % match on the card (you’re right to remove it)
+
+❌ Don’t turn this into a swipe UI (grid is right for NT)
+
+Gut check (important)
+
+If I zoom out and squint, I should see:
+
+Faces + social proof
+
+Right now I see:
+
+Faces + text
+
+You’re one sizing adjustment away from nailing that.
+
+TL;DR recommendation
+
+If you do only one thing:
+
+Drop one column at large sizes and slightly increase card height.
+
+That will immediately make this feel like a core product surface, not a secondary list.
+
+If you want, next we can:
+
+Tune breakpoints for desktop vs mobile
+
+Decide if Home ≠ Discover should diverge visually
+
+Add one subtle micro-interaction that increases clicks without clutter
+
+This is good work — you’re in “polish and positioning” territory now, not fundamentals.

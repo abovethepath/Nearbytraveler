@@ -114,12 +114,12 @@ export default function UserCard({
 
   return (
     <button 
-      className="w-full min-w-0 max-w-none rounded-xl overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all text-left"
+      className="w-full min-w-0 max-w-none rounded-xl overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all text-left lg:rounded-2xl"
       onClick={handleCardClick}
       data-testid={`user-card-${user.id}`}
     >
-      {/* Photo section */}
-      <div className="relative aspect-square">
+      {/* Photo section - square on mobile, taller on desktop */}
+      <div className="relative aspect-square lg:aspect-[3/4]">
         {user.profileImage ? (
           <img 
             src={user.profileImage} 
@@ -157,17 +157,31 @@ export default function UserCard({
         )}
       </div>
       
-      {/* Info box below photo */}
-      <div className="p-2.5 bg-white dark:bg-gray-800">
-        <div className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+      {/* Info box below photo - more padding on desktop */}
+      <div className="p-2.5 lg:p-4 bg-white dark:bg-gray-800">
+        {/* Social proof FIRST on desktop - make it primary */}
+        <div className="hidden lg:block space-y-1 mb-2">
+          {thingsInCommon > 0 && (
+            <div className="text-orange-500 font-semibold text-sm">
+              {thingsInCommon} things in common
+            </div>
+          )}
+          {mutualFriends > 0 && (
+            <div className="text-cyan-600 dark:text-cyan-400 font-medium text-sm">
+              {mutualFriends} mutual friends
+            </div>
+          )}
+        </div>
+        
+        <div className="text-sm lg:text-base font-semibold text-gray-900 dark:text-white truncate">
           {displayName}
         </div>
-        <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+        <div className="text-xs lg:text-sm text-gray-500 dark:text-gray-400 truncate">
           {displayCity}
         </div>
         
-        {/* Stats box - no truncation, wrap text */}
-        <div className="mt-2 text-xs text-gray-600 dark:text-gray-300 space-y-1">
+        {/* Stats box - mobile only (desktop shows above) */}
+        <div className="mt-2 text-xs text-gray-600 dark:text-gray-300 space-y-1 lg:hidden">
           {thingsInCommon > 0 && (
             <div className="text-orange-500 font-medium">
               {thingsInCommon} things in common
