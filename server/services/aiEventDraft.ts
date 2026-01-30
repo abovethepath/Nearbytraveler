@@ -100,6 +100,7 @@ CRITICAL RULES:
 11. SPECIAL INSTRUCTIONS GO IN NOTES: Phrases like "ask the manager", "in the back room", "mention Nearby Traveler", "password is X", "look for the blue door" should ALL go in the "notes" field - these are important arrival/entry instructions
 12. ZIPCODE IS OPTIONAL: Never add zipcode to missing array - if we have street + city + state, that's sufficient
 13. DESCRIPTION FROM CONTEXT: If user doesn't explicitly provide a description, create a brief one from the event details (e.g., "Weekly party night at Jameson Pub. 21+ only.")
+14. OVERNIGHT EVENTS: If the end time is earlier than the start time (e.g., starts 8pm, ends 2am), the event ends the NEXT DAY. Set endDateTime to the following day. Example: starts Jan 30 8pm, ends 2am = endDateTime is Jan 31 2am (2026-01-31T02:00:00)
 
 Return ONLY a JSON object with these fields (all optional except where noted):
 {
