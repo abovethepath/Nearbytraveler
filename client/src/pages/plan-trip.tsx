@@ -899,72 +899,6 @@ export default function PlanTrip() {
                 </div>
               </div>
 
-              {/* City Activities Information - Mobile Responsive */}
-              <div className="mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500 p-6 rounded-xl border-2 border-white/20 shadow-xl overflow-hidden break-words">
-                <div className="flex items-start gap-3 mb-3">
-                  <div className="flex-shrink-0 w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                    <Compass className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-xl sm:text-2xl font-bold text-white drop-shadow-lg mb-2 break-words">
-                      📍 Plan Specific Activities for Your Trip!
-                    </p>
-                    <p className="text-sm sm:text-base text-white/95 font-medium break-words leading-relaxed">
-                      After creating your trip, go to <strong>City Picks</strong> and search for your destination city. There you can add specific things you want to do, check off activities, and find locals and travelers doing the same things!
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-4 flex items-center justify-center gap-2 text-white/90 text-sm">
-                  <MapPin className="w-4 h-4" />
-                  <span className="font-medium">Real activity planning happens in City Picks →</span>
-                </div>
-              </div>
-
-              {/* Activities Section - General Preferences Only - Mobile Responsive */}
-              <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-700 rounded-lg p-6">
-                <div className="text-center mb-6">
-                  <Coffee className="w-8 h-8 mx-auto text-green-600 mb-2" />
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">General Activity Preferences</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">Quick picks to help match you with similar travelers</p>
-                </div>
-                
-                <div className="bg-white dark:bg-gray-700 rounded-lg p-4 border border-green-200 dark:border-green-600">
-                  <div className="flex flex-wrap gap-2">
-                    {getTravelActivities().map((activity, index) => {
-                      const displayText = activity.startsWith("**") && activity.endsWith("**") ? 
-                        activity.slice(2, -2) : activity;
-                      const isSelected = tripPlan.activities.includes(activity);
-                      
-                      return (
-                        <Button
-                          key={`activity-${index}`}
-                          variant={isSelected ? "default" : "outline"}
-                          size="sm"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setTripPlan(prev => {
-                              const newActivities = prev.activities.includes(activity)
-                                ? prev.activities.filter(a => a !== activity)
-                                : [...prev.activities, activity];
-                              return { ...prev, activities: newActivities };
-                            });
-                          }}
-                          className={`h-8 px-3 text-xs transition-all ${
-                            isSelected 
-                              ? "bg-green-600 hover:bg-green-700 text-white border-green-600" 
-                              : "bg-white hover:bg-green-50 text-green-700 border-green-300 dark:bg-gray-700 dark:text-green-300 dark:border-green-600 dark:hover:bg-green-900/30"
-                          }`}
-                        >
-                          {displayText}
-                        </Button>
-                      );
-                    })}
-                  </div>
-                </div>
-                
-                
-              </div>
 
 
 
@@ -1037,38 +971,8 @@ export default function PlanTrip() {
 
 
 
-              {/* Notes - Mobile Responsive */}
-              <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-4 sm:p-6 overflow-hidden break-words shadow-sm">
-                <Label className="text-sm sm:text-base font-medium mb-2 block text-black dark:text-white break-words flex items-center gap-2">
-                  <span className="text-amber-600 dark:text-amber-400">💡</span>
-                  Trip Notes (Optional) - Keyword Searchable
-                </Label>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-2 break-words">
-                  Other travelers can search these notes to find you! Include hotels, hostels, concerts, restaurants, or specific events you'll attend.
-                </p>
-                <Textarea
-                  value={tripPlan.notes}
-                  onChange={(e) => setTripPlan(prev => ({ ...prev, notes: e.target.value }))}
-                  placeholder="e.g., Staying at Virgin Hotel, attending Taylor Swift concert Aug 10th, want to check out Gordon Ramsay Hell's Kitchen, looking for hiking buddies to Red Rock Canyon..."
-                  className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 text-sm sm:text-base placeholder:text-gray-400 dark:placeholder:text-gray-500"
-                  rows={4}
-                />
-                
-              </div>
-
               {/* Action Buttons - Mobile Responsive */}
               <div className="space-y-2 sm:space-y-3 overflow-hidden break-words">
-                {(tripPlan.interests.length > 0 || tripPlan.activities.length > 0 || 0 > 0) && (
-                  <Button 
-                    type="button" 
-                    className="w-full bg-red-600 text-white hover:bg-red-700 text-xs sm:text-sm md:text-base py-3 sm:py-4 h-12 sm:h-14 break-words" 
-                    disabled={saveAsDefaults.isPending}
-                    onClick={() => saveAsDefaults.mutate()}
-                  >
-                    <span className="break-words">{saveAsDefaults.isPending ? "Saving..." : "SAVE AS NEW DEFAULT PREFERENCE?"}</span>
-                  </Button>
-                )}
-                
                 <Button 
                   type="submit" 
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-lg transition-colors text-sm sm:text-base md:text-lg h-12 sm:h-14 break-words" 
