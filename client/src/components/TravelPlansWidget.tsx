@@ -130,6 +130,14 @@ export default function TravelPlansWidget({ userId, isOwnProfile = false }: Trav
                     <Button
                       variant="ghost"
                       size="sm"
+                      onClick={() => setLocation(`/plan-trip?edit=${plan.id}`)}
+                      className="text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20"
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => setSelectedTravelPlan(plan)}
                       className="text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20"
                       data-testid={`button-itinerary-${plan.id}`}
