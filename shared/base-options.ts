@@ -101,7 +101,6 @@ export const INTERESTS = [
   "Innovation",
   "Digital Nomads",
   "Beach Volleyball",
-  "Stargazing",
   "Cheap Eats",
   "Sunset Watching",
   "Park Picnics",
