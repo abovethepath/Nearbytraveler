@@ -455,7 +455,7 @@ export default function PlanTrip() {
         const cityName = tripPlan.destinationCity || tripPlan.destination;
         toast({
           title: "Trip Created!",
-          description: "Next: pick 3-8 City Plans to match faster.",
+          description: "Next: pick your City Plans to match faster.",
         });
         
         // Reset form to completely clean state
@@ -1010,7 +1010,7 @@ export default function PlanTrip() {
                       Next: City Plans (2 minutes)
                     </p>
                     <ul className="text-xs text-blue-700 dark:text-blue-300 space-y-1">
-                      <li>• Pick 3-8 things you want to do in your destination</li>
+                      <li>• Pick what you want to do in your destination</li>
                       <li>• We'll use those to show your best matches</li>
                       <li>• You can edit anytime</li>
                     </ul>
