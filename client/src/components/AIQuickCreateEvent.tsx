@@ -110,6 +110,17 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
   const handleUseDraft = () => {
     if (draft) {
       onDraftReady(draft);
+      toast({
+        title: "Form populated!",
+        description: "Scroll down to review and edit your event details, then click Create Event.",
+      });
+      // Scroll to form after a brief delay
+      setTimeout(() => {
+        const formElement = document.querySelector('[data-testid="event-title-input"]') || document.getElementById('title');
+        if (formElement) {
+          formElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
     }
   };
 

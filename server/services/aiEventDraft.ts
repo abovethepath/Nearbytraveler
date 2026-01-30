@@ -95,6 +95,8 @@ CRITICAL RULES:
 6. Infer category from context. Valid categories: ${EVENT_CATEGORIES.join(", ")}
 7. If user says something like "at my place", that's a venue hint but you need the actual address
 8. Be generous with what counts as a title - if they mention an event name, use it
+9. LOCATION PRIORITY: ALWAYS extract the location (city, street) from the user's description text. Only use the "default city hint" as an absolute last resort if NO location is mentioned at all
+10. COST vs REQUIREMENTS: "bring $X" or "should bring $X" or "bring at least $X" means it's a REQUIREMENT (add to restrictions array like "Bring at least $10"), NOT a cost. Only use costEstimate for actual event ticket prices or entry fees stated as "costs $X", "tickets are $X", or "$X entry"
 
 Return ONLY a JSON object with these optional fields:
 {
