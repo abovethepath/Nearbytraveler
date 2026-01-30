@@ -169,9 +169,8 @@ export default function UserCard({
         {/* Stats box - no truncation, wrap text */}
         <div className="mt-2 text-xs text-gray-600 dark:text-gray-300 space-y-1">
           {thingsInCommon > 0 && (
-            <div>
-              <span className="text-orange-500 font-medium">{thingsInCommon} things in common</span>
-              {matchPercent && <span className="text-gray-400"> • {matchPercent}%</span>}
+            <div className="text-orange-500 font-medium">
+              {thingsInCommon} things in common{matchPercent ? ` • ${matchPercent}%` : ''}
             </div>
           )}
           {mutualFriends > 0 && (
