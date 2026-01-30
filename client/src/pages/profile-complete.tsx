@@ -3457,6 +3457,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`, currentUser?.id] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
       queryClient.invalidateQueries({ queryKey: ["/api/users"] });
+      // CRITICAL: Invalidate profile-bundle to refresh interests/activities immediately
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-bundle`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-bundle`, currentUser?.id] });
       
       toast({
         title: "Profile updated",
