@@ -1,5 +1,5 @@
 ## Overview
-Nearby Traveler is a social networking platform designed to connect travelers, locals, and businesses through location-based meetups and cross-cultural interactions. It aims to enrich travel experiences and local engagement by facilitating real-time connections, offering AI-powered city content, robust photo management, mobile responsiveness, and a global map system for discovery. The platform’s vision is to foster authentic human connections and become the premier destination for genuine local experiences.
+Nearby Traveler is a social networking platform that connects travelers, locals, and businesses through location-based meetups and cross-cultural interactions. It aims to enrich travel experiences and local engagement by facilitating real-time connections, offering AI-powered city content, robust photo management, mobile responsiveness, and a global map system for discovery. The platform’s vision is to foster authentic human connections and become the premier destination for genuine local experiences.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
@@ -30,6 +30,8 @@ ADVANCED SEARCH WIDGET PRIVACY: Search results show username only - no real name
 AI BIO GENERATOR: Profile page includes "Generate bio for me" button that uses AI (Anthropic Claude with OpenAI fallback) to generate a personalized bio based on user's existing profile data (interests, activities, travel style, hometown, languages, etc.). Requires at least 3 interests/activities to generate. Uses session-based authentication for security. Service at `server/services/aiBioGenerator.ts`, endpoint at POST `/api/users/generate-bio`.
 CITY MATCH RENAMED TO CITY PLANS: "City Match" has been renamed to "City Plans" throughout the UI for cleaner branding. The feature at /match-in-city now displays 20 universal travel activities (intents like "Meet New People", "Restaurants & Local Eats", "Hiking & Nature") instead of the previous 40 items.
 PER-TRIP TRAVEL GROUP: The `travel_plans` table now has a nullable `travelGroup` field (solo/couple/friends/family) that allows per-trip override of the user's default profile travel group. The Plan Trip form includes a "Trip Vibe" selector pre-filled from the user's profile. Matching logic uses the trip's travelGroup if set, otherwise falls back to the profile's travelGroup. This ensures someone who usually travels solo can correctly match with family travelers when doing a family trip.
+SIMPLIFIED 2-STEP TRIP CREATION FLOW: Step 1 (Plan Trip page) collects minimal info: destination, dates, trip vibe (solo/couple/friends/family), and optional trip tags (Business Trip, Digital Nomad, First time here - max 3). Removed accommodation/transportation fields (not used for matching yet). After creating a trip, user is redirected to Step 2 (City Plans page) to pick 3-8 activities for matching. Edit mode still redirects to profile.
+AUTOMATIC CITY INFRASTRUCTURE: When a user selects a city for their trip destination OR hometown during signup, the system automatically creates city infrastructure if it doesn't exist: city page, chatroom, and city activities. This ensures all cities with users have complete functionality without manual setup.
 
 ## System Architecture
 
@@ -43,7 +45,7 @@ PER-TRIP TRAVEL GROUP: The `travel_plans` table now has a nullable `travelGroup`
 - **Authentication**: Session-based authentication integrated with Replit Auth, utilizing JWT for API requests and session middleware. Supports user roles for locals, travelers, and business accounts.
 - **Real-time**: WebSocket support for live messaging, notifications, event updates, and connection status.
 - **Structure**: Modular route organization.
-- **Feature Specifications**: Automatic city infrastructure creation (city pages, chatrooms, activities) during user signup for both hometown and destination cities. Secure URL import feature for events using web scraping (axios, cheerio) with security measures (HTTPS-only, domain whitelist, timeouts, size limits). Chatroom backfill API for assigning chatrooms to legacy users.
+- **Feature Specifications**: Automatic city infrastructure creation (city pages, chatrooms, activities) during user signup for both hometown and destination cities. Secure URL import feature for events using web scraping with security measures (HTTPS-only, domain whitelist, timeouts, size limits). Chatroom backfill API for assigning chatrooms to legacy users.
 
 ### Database
 - **Primary Database**: PostgreSQL.
@@ -54,22 +56,22 @@ PER-TRIP TRAVEL GROUP: The `travel_plans` table now has a nullable `travelGroup`
 
 ### Performance Optimizations
 - **Profile Bundle Endpoint**: Single `/api/users/:userId/profile-bundle` endpoint consolidates 18 separate API calls into 1 batched request for 5-10x faster profile page loading.
-- **Event Cache**: 5-minute cache for external event API calls (reduced from 30 seconds) for significant API cost savings.
-- **Database Indexes**: 14 optimized indexes on frequently queried columns including user location fields, connection status, event dates, and travel plan dates.
-- **Redis API Caching**: Centralized caching system (`server/cache.ts`) using Redis with in-memory fallback. Caches city stats, platform stats, and other frequently accessed data for 5 minutes.
-- **Database Connection Pooling**: Neon serverless PostgreSQL with 100 connection pool, automatic health monitoring, and retry logic for transient failures.
-- **Health Monitoring**: `/api/health` endpoint provides real-time database health, connection pool status, and latency metrics for monitoring.
-- **Slow Request Logging**: Automatic logging of API requests taking >2 seconds for performance debugging.
-- **WebSocket Multi-Instance Scaling**: Redis pub/sub (`server/services/redisPubSub.ts`) enables real-time chat messaging across multiple server instances for autoscale deployments.
+- **Event Cache**: 5-minute cache for external event API calls.
+- **Database Indexes**: 14 optimized indexes on frequently queried columns.
+- **Redis API Caching**: Centralized caching system using Redis with in-memory fallback for frequently accessed data.
+- **Database Connection Pooling**: Neon serverless PostgreSQL with 100 connection pool, automatic health monitoring, and retry logic.
+- **Health Monitoring**: `/api/health` endpoint provides real-time database health, connection pool status, and latency metrics.
+- **Slow Request Logging**: Automatic logging of API requests taking >2 seconds.
+- **WebSocket Multi-Instance Scaling**: Redis pub/sub enables real-time chat messaging across multiple server instances.
 
 ### Scaling to 10,000+ Users
 For production scaling on Replit:
-1. **Use Autoscale Deployment**: Automatically scales up to handle traffic spikes, scales down to save costs when idle.
+1. **Use Autoscale Deployment**: Automatically scales up to handle traffic spikes.
 2. **Configure Max Instances**: Set maximum number of instances (4-8 recommended for 10K users).
-3. **Instance Size**: Use at least 2 vCPU / 8GB RAM per instance for reliable performance.
-4. **Redis Required**: REDIS_URL secret must be configured for session persistence and cross-instance WebSocket messaging.
+3. **Instance Size**: Use at least 2 vCPU / 8GB RAM per instance.
+4. **Redis Required**: `REDIS_URL` secret must be configured for session persistence and cross-instance WebSocket messaging.
 5. **Monitor /api/health**: Check database latency and connection pool status regularly.
-6. **Rate Limiting**: 3000 requests per 15 minutes per IP to prevent abuse while allowing real-time chat activity.
+6. **Rate Limiting**: 3000 requests per 15 minutes per IP.
 
 ### AI Integration
 - **AI Model**: Anthropic Claude Sonnet.
@@ -87,7 +89,7 @@ For production scaling on Replit:
 ### Communication Services
 - **SendGrid**: Email delivery.
 - **WebSocket (ws)**: Real-time communication.
-- **Twilio**: SMS notifications for event RSVPs.
+- **Twilio**: SMS notifications.
 
 ### Payment Processing
 - **Stripe**: For payments and subscriptions.

@@ -33,16 +33,12 @@ interface TripPlan {
   endDate: string;
   interests: string[];
   activities: string[];
-  travelerTypes: string[];
-  accommodation: string;
-  transportation: string;
+  travelerTypes: string[]; // Optional trip tags: Business Trip, Digital Nomad, First time here
   notes: string;
   isVeteran?: boolean;
   isActiveDuty?: boolean;
   travelStyle?: string[];
   travelGroup?: string; // Per-trip override: solo, couple, friends, family
-  lookingToMeet?: string; // locals, travelers, both
-  tripPace?: string; // chill, balanced, packed
 }
 
 interface User {
@@ -104,16 +100,12 @@ export default function PlanTrip() {
     endDate: "",
     interests: [], // Start empty - user should select what they want for this specific trip
     activities: [], // Start empty - user should select what they want for this specific trip
-    travelerTypes: [],
-    accommodation: "",
-    transportation: "",
+    travelerTypes: [], // Optional trip tags: Business Trip, Digital Nomad, First time here
     notes: "",
     isVeteran: false,
     isActiveDuty: false,
     travelStyle: [],
     travelGroup: user?.travelGroup || "", // Pre-fill from profile
-    lookingToMeet: "both", // Default to meeting both locals and travelers
-    tripPace: "balanced", // Default to balanced pace
   });
   const [hiddenGems, setHiddenGems] = useState<any[]>([]);
   const [isDiscoveringGems, setIsDiscoveringGems] = useState(false);
@@ -214,23 +206,8 @@ export default function PlanTrip() {
         activities: Array.isArray(existingPlan?.activities) ? existingPlan.activities : [],
         
         travelerTypes: Array.isArray(existingPlan?.travelStyle) ? existingPlan.travelStyle : [],
-        accommodation: existingPlan?.accommodation || '',
-        transportation: existingPlan?.transportation || '',
         notes: existingPlan?.notes || '',
-        travelGroup: existingPlan?.travelGroup || user?.travelGroup || '', // Trip override or profile default
-        // Parse lookingToMeet and tripPace from stored travelStyle if present
-        lookingToMeet: (() => {
-          const styles = Array.isArray(existingPlan?.travelStyle) ? existingPlan.travelStyle : [];
-          const meetEntry = styles.find((s: string) => s.startsWith('Looking to meet:'));
-          if (meetEntry) return meetEntry.replace('Looking to meet: ', '');
-          return 'both';
-        })(),
-        tripPace: (() => {
-          const styles = Array.isArray(existingPlan?.travelStyle) ? existingPlan.travelStyle : [];
-          const paceEntry = styles.find((s: string) => s.startsWith('Pace:'));
-          if (paceEntry) return paceEntry.replace('Pace: ', '');
-          return 'balanced';
-        })()
+        travelGroup: existingPlan?.travelGroup || user?.travelGroup || '' // Trip override or profile default
       };
       
       console.log('=== PARSED PLAN DATA FOR EDITING ===');
@@ -250,7 +227,6 @@ export default function PlanTrip() {
       console.log('Loaded interests:', existingPlan.interests);
       console.log('Loaded activities:', existingPlan.activities);
       console.log('Loaded travel style:', existingPlan.travelStyle);
-      console.log('Loaded accommodation:', existingPlan.accommodation);
       console.log('Loaded notes:', existingPlan.notes);
       
       setHasInitialized(true);
@@ -413,11 +389,6 @@ export default function PlanTrip() {
       destinationParts.push(plan.destinationCountry);
       const fullDestination = destinationParts.join(', ');
       
-      // Build travelStyle array from new simpler options
-      const travelStyleFromNewOptions: string[] = [];
-      if (plan.lookingToMeet) travelStyleFromNewOptions.push(`Looking to meet: ${plan.lookingToMeet}`);
-      if (plan.tripPace) travelStyleFromNewOptions.push(`Pace: ${plan.tripPace}`);
-      
       const travelPlanData = {
         userId: user?.id,
         destination: fullDestination,
@@ -428,9 +399,7 @@ export default function PlanTrip() {
         endDate: plan.endDate ? new Date(plan.endDate).toISOString() : null,
         interests: plan.interests || [],
         activities: plan.activities || [],
-        travelerTypes: travelStyleFromNewOptions, // Store new options in travelStyle format
-        accommodation: plan.accommodation || '',
-        transportation: plan.transportation || '',
+        travelerTypes: plan.travelerTypes || [], // Optional trip tags
         notes: plan.notes || '',
         travelGroup: plan.travelGroup || null // Per-trip override (solo/couple/friends/family)
       };
@@ -494,11 +463,7 @@ export default function PlanTrip() {
           interests: [],
           activities: [],
           travelerTypes: [],
-          accommodation: "",
-          transportation: "",
-          notes: "",
-          lookingToMeet: "both",
-          tripPace: "balanced"
+          notes: ""
         });
         
         // Redirect to City Plans page for this city
@@ -910,44 +875,6 @@ export default function PlanTrip() {
                 </div>
               </div>
 
-              {/* Looking to Meet - Simple selector */}
-              <div className="overflow-hidden break-words">
-                <Label htmlFor="lookingToMeet" className="text-sm sm:text-base font-medium text-black dark:text-white break-words">
-                  Who are you looking to meet?
-                </Label>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mb-2 break-words">Helps us match you with the right people</p>
-                <Select value={tripPlan.lookingToMeet || "both"} onValueChange={(value) => setTripPlan(prev => ({ ...prev, lookingToMeet: value }))}>
-                  <SelectTrigger className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 text-sm sm:text-base h-9 sm:h-10 md:h-11">
-                    <SelectValue placeholder="Select preference" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-lg max-w-[90vw] w-full">
-                    <SelectItem value="locals" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Meet Locals</SelectItem>
-                    <SelectItem value="travelers" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Meet Fellow Travelers</SelectItem>
-                    <SelectItem value="both" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Both</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Trip Pace - Simple selector */}
-              <div className="overflow-hidden break-words">
-                <Label htmlFor="tripPace" className="text-sm sm:text-base font-medium text-black dark:text-white break-words">
-                  Trip Pace
-                </Label>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mb-2 break-words">How do you like to travel?</p>
-                <Select value={tripPlan.tripPace || "balanced"} onValueChange={(value) => setTripPlan(prev => ({ ...prev, tripPace: value }))}>
-                  <SelectTrigger className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 text-sm sm:text-base h-9 sm:h-10 md:h-11">
-                    <SelectValue placeholder="Select pace" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-lg max-w-[90vw] w-full">
-                    <SelectItem value="chill" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Chill - Take it easy</SelectItem>
-                    <SelectItem value="balanced" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Balanced - Mix of activities and relaxation</SelectItem>
-                    <SelectItem value="packed" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Packed - See and do everything!</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-
-
 
 
 
@@ -969,53 +896,38 @@ export default function PlanTrip() {
                 </Select>
               </div>
 
-              {/* Accommodation - Mobile Responsive */}
+              {/* Optional Trip Tags - max 3 tags for recommendations */}
               <div className="overflow-hidden break-words">
-                <Label htmlFor="accommodation" className="text-sm sm:text-base font-medium text-black dark:text-white break-words">
-                  Accommodation on This Trip *
+                <Label className="text-sm sm:text-base font-medium text-black dark:text-white break-words">
+                  Optional trip tags
                 </Label>
-                <Select value={tripPlan.accommodation} onValueChange={(value) => setTripPlan(prev => ({ ...prev, accommodation: value }))}>
-                  <SelectTrigger className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 text-sm sm:text-base h-9 sm:h-10 md:h-11">
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-lg max-w-[90vw] w-full">
-                    <SelectItem value="hotel-booked" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Hotel Booked</SelectItem>
-                    <SelectItem value="hostel-booked" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Hostel Booked</SelectItem>
-                    <SelectItem value="airbnb-booked" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Airbnb Booked</SelectItem>
-                    <SelectItem value="hotel" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Looking for Hotel</SelectItem>
-                    <SelectItem value="hostel" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Looking for Hostel</SelectItem>
-                    <SelectItem value="airbnb" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Looking for Airbnb</SelectItem>
-                    <SelectItem value="couch" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Looking for Couch</SelectItem>
-                    <SelectItem value="friends-family" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Stay with Friends/Family</SelectItem>
-                    <SelectItem value="camping" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Camping</SelectItem>
-                    <SelectItem value="undecided" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Undecided</SelectItem>
-                  </SelectContent>
-                </Select>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mb-2 break-words">These help with recommendations. You can skip.</p>
+                <div className="flex flex-wrap gap-2">
+                  {['Business Trip', 'Digital Nomad', 'First time here'].map((tag) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => {
+                        setTripPlan(prev => {
+                          const tags = prev.travelerTypes || [];
+                          if (tags.includes(tag)) {
+                            return { ...prev, travelerTypes: tags.filter(t => t !== tag) };
+                          } else {
+                            return { ...prev, travelerTypes: [...tags, tag] };
+                          }
+                        });
+                      }}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                        (tripPlan.travelerTypes || []).includes(tag)
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                      }`}
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
               </div>
-
-
-
-              {/* Transportation - Mobile Responsive */}
-              <div className="overflow-hidden break-words">
-                <Label className="text-sm sm:text-base font-medium mb-2 block text-black dark:text-white break-words">
-                  Transportation Method
-                </Label>
-                <Select value={tripPlan.transportation} onValueChange={(value) => setTripPlan(prev => ({ ...prev, transportation: value }))}>
-                  <SelectTrigger className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 text-sm sm:text-base h-9 sm:h-10 md:h-11">
-                    <SelectValue placeholder="Select transportation method" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-lg max-w-[90vw] w-full">
-                    <SelectItem value="Flight" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Flight</SelectItem>
-                    <SelectItem value="Car" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Car</SelectItem>
-                    <SelectItem value="Car Rental Need" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Car Rental Need</SelectItem>
-                    <SelectItem value="Train" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Train</SelectItem>
-                    <SelectItem value="Bus" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Bus</SelectItem>
-                    <SelectItem value="Cruise" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Cruise</SelectItem>
-                    <SelectItem value="Other" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
 
 
               {/* Action Buttons - Mobile Responsive */}
