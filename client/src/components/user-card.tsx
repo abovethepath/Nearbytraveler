@@ -170,7 +170,7 @@ export default function UserCard({
         <div className="mt-2 text-xs text-gray-600 dark:text-gray-300 space-y-1">
           {thingsInCommon > 0 && (
             <div className="text-orange-500 font-medium">
-              {thingsInCommon} things in common{matchPercent ? ` • ${matchPercent}%` : ''}
+              {thingsInCommon} things in common
             </div>
           )}
           {mutualFriends > 0 && (
