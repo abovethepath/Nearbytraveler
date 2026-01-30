@@ -98,14 +98,28 @@ export default function UserCard({
     ? user.businessName 
     : `@${user.username}`;
 
+  // Fix percentage - if it's a decimal like 0.234, multiply by 100; if already whole, use as is
+  const getMatchPercent = () => {
+    if (!compatibilityData?.score) return null;
+    const score = compatibilityData.score;
+    if (score < 1) {
+      return Math.round(score * 100);
+    }
+    return Math.round(score);
+  };
+
+  const matchPercent = getMatchPercent();
+  const thingsInCommon = compatibilityData?.sharedInterests?.length || 0;
+  const mutualFriends = connectionDegree?.mutualCount || 0;
+
   return (
     <button 
-      className="w-full min-w-0 max-w-none rounded-xl overflow-hidden bg-white/5 dark:bg-gray-800/50 border border-gray-200/50 dark:border-white/10 shadow-sm hover:shadow-md transition-all text-left"
+      className="w-full min-w-0 max-w-none rounded-xl overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all text-left"
       onClick={handleCardClick}
       data-testid={`user-card-${user.id}`}
     >
-      <div className="relative aspect-[4/5]">
-        {/* Photo or gradient fallback */}
+      {/* Photo section */}
+      <div className="relative aspect-square">
         {user.profileImage ? (
           <img 
             src={user.profileImage} 
@@ -124,38 +138,45 @@ export default function UserCard({
           </div>
         )}
         
-        {/* Top badges */}
-        <div className="absolute top-1.5 left-1.5 right-1.5 flex justify-between">
-          {travelCity && (
+        {/* Travel badge on photo */}
+        {travelCity && (
+          <div className="absolute top-1.5 left-1.5">
             <span className="bg-blue-500/90 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full">
               ✈️ {travelCity}
             </span>
-          )}
-          {user.userType === 'business' && (
-            <span className="bg-orange-500/90 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full ml-auto">
+          </div>
+        )}
+        
+        {/* Business badge */}
+        {user.userType === 'business' && (
+          <div className="absolute top-1.5 right-1.5">
+            <span className="bg-orange-500/90 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full">
               Biz
             </span>
-          )}
+          </div>
+        )}
+      </div>
+      
+      {/* Info box below photo */}
+      <div className="p-2 bg-white dark:bg-gray-800">
+        <div className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+          {displayName}
+        </div>
+        <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+          {displayCity}
         </div>
         
-        {/* Bottom overlay with name/city */}
-        <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/90 via-black/60 to-transparent pt-10">
-          <div className="text-sm font-semibold text-white truncate leading-tight">
-            {displayName}
-          </div>
-          <div className="text-xs text-white/80 truncate leading-tight">
-            {displayCity}
-          </div>
-          {/* Things in common & match % */}
-          {compatibilityData?.sharedInterests?.length > 0 && (
-            <div className="text-[10px] text-orange-300 mt-0.5 truncate">
-              {compatibilityData.sharedInterests.length} things in common{compatibilityData?.score ? ` • ${compatibilityData.score}% match` : ''}
+        {/* Stats box */}
+        <div className="mt-1.5 text-[11px] text-gray-600 dark:text-gray-300 space-y-0.5">
+          {thingsInCommon > 0 && (
+            <div className="truncate">
+              <span className="text-orange-500 font-medium">{thingsInCommon} things in common</span>
+              {matchPercent && <span className="text-gray-400"> • {matchPercent}% match</span>}
             </div>
           )}
-          {/* Mutual friends */}
-          {connectionDegree && connectionDegree.mutualCount > 0 && (
-            <div className="text-[10px] text-cyan-300 truncate">
-              {connectionDegree.mutualCount} mutual friends
+          {mutualFriends > 0 && (
+            <div className="text-cyan-600 dark:text-cyan-400 truncate">
+              {mutualFriends} mutual friends
             </div>
           )}
         </div>
