@@ -53,8 +53,6 @@ export const INTERESTS = [
   "Nudism",
   "Religious & Spiritual Sites",
   "Wellness & Mindfulness",
-  "Volunteering",
-  "Activism",
   "Animal Rescue & Shelters",
   "Pet Lovers",
   "Luxury Experiences",
@@ -108,9 +106,6 @@ export const INTERESTS = [
   "Classical Music",
   "Indie Music Scene",
   "Vintage & Thrift Shopping",
-  "Book Clubs",
-  "Reading",
-  "Tech Meetups",
   "Innovation",
   "Digital Nomads",
   "Beach Volleyball",
@@ -356,13 +351,12 @@ export const LEGACY_TO_NEW_MAPPING: Record<string, string[]> = {
   "Fitness & Workouts": ["Fitness Classes", "Working Out"],
   
   // INTERESTS legacy mappings
-  "Volunteering & Activism": ["Volunteering", "Activism", "Animal Rescue & Shelters"],
+  "Volunteering & Activism": ["Animal Rescue & Shelters"],
   "Theater & Performing Arts": ["Theater", "Performing Arts"],
   "Film & Cinema": ["Movies", "Film Festivals"],
   "Street Festivals & Community Events": ["Street Festivals", "Community Events"],
   "Arts & Crafts": ["Arts", "Crafts"],
-  "Book Clubs & Reading": ["Book Clubs", "Reading"],
-  "Tech & Innovation": ["Tech Meetups", "Innovation"],
+  "Tech & Innovation": ["Innovation"],
 };
 
 // Migrates old combined options to new split options
