@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { MapPin, Calendar, Clock, Users, User, Info, Share2, Copy, Check, ArrowLeft, Mail, Link2, MessageCircle } from "lucide-react";
+import { MapPin, Calendar, Clock, Users, User, Info, Share2, Copy, Check, ArrowLeft, Mail, Link2, MessageCircle, Camera, Upload, Loader2 } from "lucide-react";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
 import { type Event, type EventParticipant, type User as UserType } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
@@ -27,6 +27,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
   const [copied, setCopied] = useState(false);
   const [viewAsGuest, setViewAsGuest] = useState(false);
   const [showFullNames, setShowFullNames] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   
   // Get current user
   const getCurrentUser = () => {
@@ -35,6 +36,67 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
   };
   
   const currentUser = getCurrentUser();
+
+  // Upload event photo mutation
+  const uploadPhotoMutation = useMutation({
+    mutationFn: async (file: File) => {
+      setUploadingImage(true);
+      
+      // Convert file to base64
+      return new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    },
+    onSuccess: async (imageData: string) => {
+      try {
+        // Upload to server
+        const response = await apiRequest("POST", `/api/events/${eventId}/image`, { imageUrl: imageData });
+        
+        toast({
+          title: "Photo uploaded!",
+          description: "Your event photo has been added.",
+        });
+        
+        // Refresh event data
+        queryClient.invalidateQueries({ queryKey: [`/api/events/${eventId}`] });
+      } catch (error) {
+        toast({
+          title: "Upload failed",
+          description: "Failed to save photo. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setUploadingImage(false);
+      }
+    },
+    onError: () => {
+      toast({
+        title: "Upload failed",
+        description: "Failed to process image. Please try again.",
+        variant: "destructive",
+      });
+      setUploadingImage(false);
+    }
+  });
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "File too large",
+          description: "Please choose an image under 5MB.",
+          variant: "destructive",
+        });
+        return;
+      }
+      uploadPhotoMutation.mutate(file);
+    }
+  };
 
   // Fetch event details - allow access without authentication for viral sharing
   const { data: event, isLoading: eventLoading, error: eventError } = useQuery<Event>({
@@ -327,15 +389,70 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
       </div>
 
       {/* Event Image */}
-      {event.imageUrl && (
-        <div className="mb-4 sm:mb-6 md:mb-8 w-full overflow-hidden rounded-xl shadow-lg">
+      {event.imageUrl ? (
+        <div className="mb-4 sm:mb-6 md:mb-8 w-full overflow-hidden rounded-xl shadow-lg relative group">
           <img 
             src={event.imageUrl} 
             alt={event.title}
             className="w-full h-48 sm:h-56 md:h-64 lg:h-80 object-cover"
           />
+          {/* Replace photo button for organizers */}
+          {isOrganizer && !viewAsGuest && (
+            <label className="absolute bottom-3 right-3 cursor-pointer">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoUpload}
+                className="hidden"
+                disabled={uploadingImage}
+              />
+              <div className="flex items-center gap-2 px-3 py-2 bg-black/70 hover:bg-black/90 text-white text-sm rounded-lg transition-colors">
+                {uploadingImage ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    <Camera className="w-4 h-4" />
+                    Change Photo
+                  </>
+                )}
+              </div>
+            </label>
+          )}
         </div>
-      )}
+      ) : isOrganizer && !viewAsGuest ? (
+        <div className="mb-4 sm:mb-6 md:mb-8 w-full">
+          <label className="cursor-pointer block">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handlePhotoUpload}
+              className="hidden"
+              disabled={uploadingImage}
+            />
+            <div className="w-full h-48 sm:h-56 md:h-64 rounded-xl border-2 border-dashed border-orange-300 dark:border-orange-700 bg-orange-50 dark:bg-orange-950/20 flex flex-col items-center justify-center gap-3 hover:border-orange-500 hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors">
+              {uploadingImage ? (
+                <>
+                  <Loader2 className="w-10 h-10 text-orange-500 animate-spin" />
+                  <p className="text-orange-600 dark:text-orange-400 font-medium">Uploading photo...</p>
+                </>
+              ) : (
+                <>
+                  <div className="w-16 h-16 rounded-full bg-orange-100 dark:bg-orange-900/50 flex items-center justify-center">
+                    <Camera className="w-8 h-8 text-orange-500" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-orange-600 dark:text-orange-400 font-medium">Add Event Photo</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Tap to upload an image for your event</p>
+                  </div>
+                </>
+              )}
+            </div>
+          </label>
+        </div>
+      ) : null}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Sidebar - Going List on LEFT like Couchsurfing */}
