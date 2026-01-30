@@ -155,6 +155,9 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [showEventSuggestion, setShowEventSuggestion] = useState(false);
   const [similarActivity, setSimilarActivity] = useState<{id: number, name: string} | null>(null);
 
+  // Pagination for city activities
+  const [displayedActivitiesLimit, setDisplayedActivitiesLimit] = useState(30);
+  
   // AI Features State
   const [aiSuggestions, setAiSuggestions] = useState<any[]>([]);
   const [aiSuggestionsLoading, setAiSuggestionsLoading] = useState(false);
@@ -186,6 +189,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       } catch {
         setDismissedAIActivities(new Set());
       }
+      // Reset the activities display limit when changing cities
+      setDisplayedActivitiesLimit(30);
     }
   }, [selectedCity]);
   
@@ -2616,7 +2621,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                         
                         // Filter out universal category, featured, similar to universal, and dismissed AI activities
                         // Only show AI and user-created activities in this section
-                        return cityActivities
+                        const filteredActivities = cityActivities
                           .filter(activity => {
                             // Exclude featured (they have their own section)
                             if ((activity as any).isFeatured || (activity as any).source === 'featured') return false;
@@ -2643,8 +2648,16 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                             if (aIsAI && !bIsAI) return -1;
                             if (!aIsAI && bIsAI) return 1;
                             return 0;
-                          })
-                          .map((activity, index) => {
+                          });
+                        
+                        // Limit displayed activities and track total count
+                        const totalFilteredCount = filteredActivities.length;
+                        const displayedActivities = filteredActivities.slice(0, displayedActivitiesLimit);
+                        const hasMore = totalFilteredCount > displayedActivitiesLimit;
+                        
+                        return (
+                          <>
+                            {displayedActivities.map((activity, index) => {
                         const isSelected = userActivities.some(ua => ua.activityId === activity.id);
                         const userActivity = userActivities.find(ua => ua.activityId === activity.id);
                         
@@ -2745,7 +2758,22 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                             )}
                           </div>
                         );
-                      });
+                      })}
+                      
+                      {/* Show more button if there are more activities */}
+                      {hasMore && (
+                        <div className="col-span-full flex justify-center mt-4">
+                          <Button
+                            variant="outline"
+                            onClick={() => setDisplayedActivitiesLimit(prev => prev + 30)}
+                            className="text-sm font-medium"
+                          >
+                            Show {Math.min(30, totalFilteredCount - displayedActivitiesLimit)} more ({totalFilteredCount - displayedActivitiesLimit} remaining)
+                          </Button>
+                        </div>
+                      )}
+                    </>
+                  );
                     })()}
                     </div>
                   )}

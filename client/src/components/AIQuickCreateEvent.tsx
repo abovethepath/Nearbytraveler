@@ -102,58 +102,77 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
     const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognitionAPI) {
       toast({
-        title: "Voice not supported",
-        description: "Your browser doesn't support voice input. Try Chrome or Safari.",
+        title: "Voice not available",
+        description: "Voice input isn't supported in this app. Please type your event details instead.",
         variant: "destructive"
       });
       return;
     }
 
-    const recognition = new SpeechRecognitionAPI();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = "en-US";
+    try {
+      const recognition = new SpeechRecognitionAPI();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = "en-US";
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
-      let finalTranscript = "";
-      let interimTranscript = "";
+      recognition.onresult = (event: SpeechRecognitionEvent) => {
+        let finalTranscript = "";
+        let interimTranscript = "";
 
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript;
-        if (event.results[i].isFinal) {
-          finalTranscript += transcript + " ";
-        } else {
-          interimTranscript += transcript;
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript + " ";
+          } else {
+            interimTranscript += transcript;
+          }
         }
-      }
 
-      if (finalTranscript) {
-        setInputText(prev => prev + finalTranscript);
-      }
-    };
+        if (finalTranscript) {
+          setInputText(prev => prev + finalTranscript);
+        }
+      };
 
-    recognition.onerror = (event: Event) => {
-      console.error("Speech recognition error:", event);
-      setIsListening(false);
+      recognition.onerror = (event: any) => {
+        console.error("Speech recognition error:", event);
+        setIsListening(false);
+        
+        let errorMessage = "Voice input isn't available. Please type your event details instead.";
+        if (event.error === 'not-allowed') {
+          errorMessage = "Microphone access was denied. Please enable microphone permissions or type your event details.";
+        } else if (event.error === 'no-speech') {
+          errorMessage = "No speech detected. Please try again or type your event details.";
+        } else if (event.error === 'network') {
+          errorMessage = "Network error. Please check your connection or type your event details.";
+        }
+        
+        toast({
+          title: "Voice unavailable",
+          description: errorMessage,
+          variant: "destructive"
+        });
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+      setIsListening(true);
+      
       toast({
-        title: "Voice error",
-        description: "There was a problem with voice recognition. Please try again.",
+        title: "Listening...",
+        description: "Speak your event details. Tap the mic again to stop.",
+      });
+    } catch (error) {
+      console.error("Speech recognition initialization error:", error);
+      toast({
+        title: "Voice unavailable",
+        description: "Voice input isn't available in this app. Please type your event details instead.",
         variant: "destructive"
       });
-    };
-
-    recognition.onend = () => {
-      setIsListening(false);
-    };
-
-    recognitionRef.current = recognition;
-    recognition.start();
-    setIsListening(true);
-    
-    toast({
-      title: "Listening...",
-      description: "Speak your event details. Tap the mic again to stop.",
-    });
+    }
   };
 
   const stopListening = () => {
