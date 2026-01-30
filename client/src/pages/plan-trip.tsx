@@ -1030,38 +1030,38 @@ export default function PlanTrip() {
                     <span className="break-words">{endTrip.isPending ? "Ending Trip..." : "End Trip"}</span>
                   </Button>
                 )}
-                
-                {/* End Trip Confirmation Dialog */}
-                <AlertDialog open={showEndTripConfirm} onOpenChange={setShowEndTripConfirm}>
-                  <AlertDialogContent className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
-                    <AlertDialogHeader>
-                      <AlertDialogTitle className="text-gray-900 dark:text-white">End This Trip?</AlertDialogTitle>
-                      <AlertDialogDescription className="text-gray-600 dark:text-gray-400">
-                        Are you sure you want to end this trip? This action cannot be undone and will remove the trip from your profile.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border-gray-200 dark:border-gray-600">
-                        Cancel
-                      </AlertDialogCancel>
-                      <AlertDialogAction 
-                        className="bg-red-600 hover:bg-red-700 text-white"
-                        onClick={() => {
-                          if (editingPlanId) {
-                            endTrip.mutate(editingPlanId);
-                          }
-                        }}
-                      >
-                        End Trip
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
               </div>
             </form>
           </div>
         </div>
       </div>
+      
+      {/* End Trip Confirmation Dialog - at root level for proper positioning */}
+      <AlertDialog open={showEndTripConfirm} onOpenChange={setShowEndTripConfirm}>
+        <AlertDialogContent className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 max-w-md mx-4">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-gray-900 dark:text-white">End This Trip?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-600 dark:text-gray-400">
+              Are you sure you want to end this trip? This action cannot be undone and will remove the trip from your profile.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border-gray-200 dark:border-gray-600">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              className="bg-red-600 hover:bg-red-700 text-white"
+              onClick={() => {
+                if (editingPlanId) {
+                  endTrip.mutate(editingPlanId);
+                }
+              }}
+            >
+              End Trip
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
