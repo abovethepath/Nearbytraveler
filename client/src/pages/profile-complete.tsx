@@ -8226,7 +8226,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         setIsEditMode(open);
       }}>
         <DialogContent 
-          className="z-[100000] max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
+          className="z-[100000] max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border-4 border-red-500"
+          style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
           onPointerDownOutside={(e) => {
             console.log('🚫 PointerDownOutside - preventing');
             e.preventDefault();
