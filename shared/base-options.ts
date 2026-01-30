@@ -126,7 +126,7 @@ export const INTERESTS = [
 
 export const ACTIVITIES = [
   "Shopping Adventures",
-  "Day Trips & Excursions",
+  "Day Trips",
   "Group Workouts",
   "Sports & Recreation",
   "Cooking Together",
