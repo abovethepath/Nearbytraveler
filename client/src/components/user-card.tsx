@@ -157,20 +157,16 @@ export default function UserCard({
         )}
       </div>
       
-      {/* Info box below photo - more padding on desktop */}
+      {/* Info box below photo - fixed height for consistency */}
       <div className="p-2.5 lg:p-4 bg-white dark:bg-gray-800">
-        {/* Social proof FIRST on desktop - make it primary */}
-        <div className="hidden lg:block space-y-1 mb-2">
-          {thingsInCommon > 0 && (
-            <div className="text-orange-500 font-semibold text-sm">
-              {thingsInCommon} things in common
-            </div>
-          )}
-          {mutualFriends > 0 && (
-            <div className="text-cyan-600 dark:text-cyan-400 font-medium text-sm">
-              {mutualFriends} mutual friends
-            </div>
-          )}
+        {/* Social proof FIRST on desktop - fixed 2-row grid */}
+        <div className="hidden lg:grid lg:grid-rows-2 lg:min-h-[44px] gap-0.5 mb-2">
+          <div className={`text-sm font-semibold ${thingsInCommon > 0 ? 'text-orange-500' : 'text-gray-300 dark:text-gray-600'}`}>
+            {thingsInCommon > 0 ? `${thingsInCommon} things in common` : 'No shared interests yet'}
+          </div>
+          <div className={`text-sm font-medium ${mutualFriends > 0 ? 'text-cyan-600 dark:text-cyan-400' : 'text-gray-300 dark:text-gray-600'}`}>
+            {mutualFriends > 0 ? `${mutualFriends} mutual friends` : 'No mutual friends yet'}
+          </div>
         </div>
         
         <div className="text-sm lg:text-base font-semibold text-gray-900 dark:text-white truncate">
@@ -180,18 +176,14 @@ export default function UserCard({
           {displayCity}
         </div>
         
-        {/* Stats box - mobile only (desktop shows above) */}
-        <div className="mt-2 text-xs text-gray-600 dark:text-gray-300 space-y-1 lg:hidden">
-          {thingsInCommon > 0 && (
-            <div className="text-orange-500 font-medium">
-              {thingsInCommon} things in common
-            </div>
-          )}
-          {mutualFriends > 0 && (
-            <div className="text-cyan-600 dark:text-cyan-400">
-              {mutualFriends} mutual friends
-            </div>
-          )}
+        {/* Stats box - mobile only, fixed 2-row grid */}
+        <div className="mt-2 grid grid-rows-2 min-h-[36px] gap-0.5 text-xs lg:hidden">
+          <div className={`font-medium ${thingsInCommon > 0 ? 'text-orange-500' : 'text-gray-300 dark:text-gray-600'}`}>
+            {thingsInCommon > 0 ? `${thingsInCommon} things in common` : 'No shared interests yet'}
+          </div>
+          <div className={`${mutualFriends > 0 ? 'text-cyan-600 dark:text-cyan-400' : 'text-gray-300 dark:text-gray-600'}`}>
+            {mutualFriends > 0 ? `${mutualFriends} mutual friends` : 'No mutual friends yet'}
+          </div>
         </div>
       </div>
     </button>
