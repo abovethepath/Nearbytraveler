@@ -157,23 +157,42 @@ export default function UserCard({
         )}
       </div>
       
-      {/* Info box - fixed 4-row grid for perfect consistency */}
-      <div className="p-2.5 lg:p-4 bg-white dark:bg-gray-800 min-h-[72px] lg:min-h-[96px]">
-        <div className="grid grid-rows-4 gap-0 leading-tight">
-          {/* Row 1: Things in common - show signal or quietly blank */}
-          <div className="text-xs lg:text-sm font-semibold truncate text-orange-500 min-h-[16px] lg:min-h-[20px]">
-            {thingsInCommon > 0 ? `${thingsInCommon} things in common` : '\u00A0'}
-          </div>
-          {/* Row 2: Mutual friends - show signal or quietly blank */}
-          <div className="text-xs lg:text-sm font-medium truncate text-cyan-600 dark:text-cyan-400 min-h-[16px] lg:min-h-[20px]">
-            {mutualFriends > 0 ? `${mutualFriends} mutual friends` : '\u00A0'}
-          </div>
-          {/* Row 3: Username */}
-          <div className="text-xs lg:text-sm font-semibold text-gray-900 dark:text-white truncate mt-1">
+      {/* Info box - compact on mobile, spacious on desktop */}
+      <div className="p-2 lg:p-4 bg-white dark:bg-gray-800">
+        {/* Mobile: simple stacked layout */}
+        <div className="lg:hidden">
+          <div className="text-sm font-semibold text-gray-900 dark:text-white truncate">
             {displayName}
           </div>
-          {/* Row 4: City */}
-          <div className="text-[10px] lg:text-xs text-gray-500 dark:text-gray-400 truncate">
+          <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+            {displayCity}
+          </div>
+          <div className="mt-1.5 space-y-0.5">
+            {thingsInCommon > 0 && (
+              <div className="text-xs font-medium text-orange-500 truncate">
+                {thingsInCommon} things in common
+              </div>
+            )}
+            {mutualFriends > 0 && (
+              <div className="text-xs text-cyan-600 dark:text-cyan-400 truncate">
+                {mutualFriends} mutual friends
+              </div>
+            )}
+          </div>
+        </div>
+        
+        {/* Desktop: fixed 4-row grid with social proof first */}
+        <div className="hidden lg:grid lg:grid-rows-4 gap-0 leading-tight min-h-[88px]">
+          <div className="text-sm font-semibold truncate text-orange-500">
+            {thingsInCommon > 0 ? `${thingsInCommon} things in common` : '\u00A0'}
+          </div>
+          <div className="text-sm font-medium truncate text-cyan-600 dark:text-cyan-400">
+            {mutualFriends > 0 ? `${mutualFriends} mutual friends` : '\u00A0'}
+          </div>
+          <div className="text-sm font-semibold text-gray-900 dark:text-white truncate mt-1">
+            {displayName}
+          </div>
+          <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
             {displayCity}
           </div>
         </div>
