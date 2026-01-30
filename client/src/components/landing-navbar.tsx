@@ -58,10 +58,10 @@ export default function LandingNavbar() {
               Sign In
             </button>
             <button 
-              onClick={() => setLocation('/launching-soon')}
+              onClick={() => setLocation('/signup/account')}
               className="bg-orange-500 dark:bg-orange-500 hover:bg-orange-600 dark:hover:bg-orange-600 text-white dark:text-white border-2 border-orange-500 dark:border-orange-500 px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap"
             >
-              Join Now
+              Sign Up Free
             </button>
           </div>
 
@@ -148,11 +148,11 @@ export default function LandingNavbar() {
               <button 
                 onClick={() => {
                   setMobileMenuOpen(false);
-                  setLocation('/launching-soon');
+                  setLocation('/signup/account');
                 }}
                 className="bg-orange-500 dark:bg-orange-500 hover:bg-orange-600 dark:hover:bg-orange-600 text-white dark:text-white border-2 border-orange-500 dark:border-orange-500 text-center px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 active:scale-95 shadow-lg touch-manipulation mb-2"
               >
-                Join Now
+                Sign Up Free
               </button>
               <button 
                 onClick={() => {

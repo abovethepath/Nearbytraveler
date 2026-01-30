@@ -102,8 +102,8 @@ export default function LandingStreamlined() {
   }, []);
 
   const handleGetStarted = () => {
-    trackEvent('landing_page_cta_clicked', 'hero_section', 'Join Waitlist');
-    setLocation('/launching-soon');
+    trackEvent('landing_page_cta_clicked', 'hero_section', 'Get Started');
+    setLocation('/signup/account');
   };
 
   return (
@@ -114,12 +114,12 @@ export default function LandingStreamlined() {
         <Button 
           onClick={() => {
             trackEvent('signup_cta_click', 'landing_page', 'floating_join_now');
-            setLocation('/launching-soon');
+            setLocation('/signup/account');
           }}
           className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 sm:px-6 sm:py-3 rounded-lg shadow-sm transition-all duration-200 text-sm sm:text-base"
           data-testid="button-floating-join-now"
         >
-          Join Now
+          Sign Up Free
         </Button>
       </div>
 
@@ -132,7 +132,7 @@ export default function LandingStreamlined() {
         <div className="bg-gradient-to-r from-orange-600 to-red-600 py-4 sm:py-5 px-4 text-center">
           <div className="max-w-4xl mx-auto">
             <p className="text-xl sm:text-2xl text-white font-bold">
-              🔥 Join the Prelaunch Waitlist
+              🔥 Sign Up Free - Start Connecting Today
             </p>
           </div>
         </div>

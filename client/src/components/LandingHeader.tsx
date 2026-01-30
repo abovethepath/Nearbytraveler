@@ -11,10 +11,10 @@ export default function LandingHeader() {
       <div className="xl:hidden bg-orange-500 text-black py-3 px-4 shadow-lg">
         <div className="max-w-6xl mx-auto flex flex-col items-center">
           <Button
-            onClick={() => setLocation("/launching-soon")}
+            onClick={() => setLocation("/signup/account")}
             className="w-full bg-black text-orange-400 font-bold text-base sm:text-lg px-4 py-3 sm:px-6 sm:py-4 rounded-xl hover:bg-gray-800 transition-all duration-200 transform hover:scale-[1.02] active:scale-95 shadow-lg touch-manipulation"
           >
-            🔥 CONNECT WITH LOCALS & TRAVELERS TODAY!
+            🔥 SIGN UP FREE - CONNECT TODAY!
           </Button>
         </div>
       </div>
@@ -22,10 +22,10 @@ export default function LandingHeader() {
       {/* Desktop announcement bar */}
       <div className="hidden xl:block bg-orange-500 text-black py-3 px-4 text-center">
         <Button
-          onClick={() => setLocation("/launching-soon")}
+          onClick={() => setLocation("/signup/account")}
           className="bg-black text-orange-400 font-bold text-xl px-8 py-3 rounded-xl hover:bg-gray-800 transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg"
         >
-          🔥 CONNECT WITH LOCALS & TRAVELERS TODAY!
+          🔥 SIGN UP FREE - CONNECT TODAY!
         </Button>
       </div>
 
