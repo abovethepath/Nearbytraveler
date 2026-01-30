@@ -34,11 +34,11 @@ export default function SuccessTips() {
         "Fill out your bio with personality and **lots of** photos",
         "Select **as many interests** as possible from our extensive list",
         "Choose **every and all** your preferred activities and events",
-        "Add **as many** of your own location-specific interests and activities in the **city match page**",
+        "Add **as many** of your own location-specific interests and activities in **City Picks**",
         "Upload a profile photo to increase connections",
         "Add your hometown and all your **secret non-touristy** events"
       ],
-      tip: "The more details you add, the better connections you'll make and definitely add your own non-touristy local adventures for travelers to discover! **TAKE ADVANTAGE OF OUR CITY MATCH PAGE!!!!!**"
+      tip: "The more details you add, the better connections you'll make and definitely add your own non-touristy local adventures for travelers to discover! **TAKE ADVANTAGE OF CITY PICKS!!!!!**"
     },
     {
       number: 2,

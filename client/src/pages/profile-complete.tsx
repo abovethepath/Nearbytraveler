@@ -4901,7 +4901,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             {cityActivities.length > 0 && (
                               <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
                                 <p className="text-xs text-blue-700 dark:text-blue-300 mb-2">
-                                  <strong>{cityActivities.length} city-specific activities</strong> are managed on city match pages:
+                                  <strong>{cityActivities.length} city-specific activities</strong> are managed in City Picks:
                                 </p>
                                 <a 
                                   href="/match-in-city" 

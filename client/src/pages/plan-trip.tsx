@@ -910,13 +910,13 @@ export default function PlanTrip() {
                       📍 Plan Specific Activities for Your Trip!
                     </p>
                     <p className="text-sm sm:text-base text-white/95 font-medium break-words leading-relaxed">
-                      After creating your trip, go to the <strong>city match page</strong> and search for your destination city. There you can add specific things you want to do, check off activities, and find locals and travelers doing the same things!
+                      After creating your trip, go to <strong>City Picks</strong> and search for your destination city. There you can add specific things you want to do, check off activities, and find locals and travelers doing the same things!
                     </p>
                   </div>
                 </div>
                 <div className="mt-4 flex items-center justify-center gap-2 text-white/90 text-sm">
                   <MapPin className="w-4 h-4" />
-                  <span className="font-medium">Real activity planning happens in your city's match page →</span>
+                  <span className="font-medium">Real activity planning happens in City Picks →</span>
                 </div>
               </div>
 
