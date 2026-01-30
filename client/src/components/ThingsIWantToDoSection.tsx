@@ -395,7 +395,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
               No activities or events selected yet.
             </p>
             <p className={`text-orange-500 dark:text-orange-400 underline hover:text-orange-600 dark:hover:text-orange-300 ${isMobile ? 'text-sm' : 'text-lg'}`}>
-              Go to City Picks to select activities and events!
+              Go to City Plans to select activities and events!
             </p>
           </div>
         </Link>

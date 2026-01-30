@@ -1655,7 +1655,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     {/* Match button like in screenshots */}
                     <div className="mt-3">
                       <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-md">
-                        ⚡ Start City Picks
+                        ⚡ Start City Plans
                       </button>
                     </div>
                   </div>
@@ -1751,7 +1751,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
             <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
               {/* Mobile: Stack vertically, Desktop: Side by side */}
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2 mb-2">
-                <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-200">🎯 How City Picks Works</h3>
+                <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-200">🎯 How City Plans Works</h3>
                 <Button
                   variant="outline"
                   size="sm"
@@ -1778,7 +1778,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           <div className="bg-gradient-to-br from-white via-blue-50 to-orange-50 dark:from-gray-800 dark:via-blue-900/30 dark:to-orange-900/30 border border-blue-200/50 dark:border-blue-700/50 rounded-2xl shadow-2xl backdrop-blur-sm">
             <div className="p-8">
               <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent mb-2">⭐ City Picks for {selectedCity}</h2>
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-orange-600 bg-clip-text text-transparent mb-2">⭐ City Plans for {selectedCity}</h2>
                 <p className="text-lg text-gray-600 dark:text-gray-300 font-medium">Pick to match faster in this city.</p>
               </div>
 

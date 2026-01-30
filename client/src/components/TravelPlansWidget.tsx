@@ -185,15 +185,15 @@ export default function TravelPlansWidget({ userId, isOwnProfile = false }: Trav
                   </div>
                 </div>
                 
-                {/* City Picks CTA for upcoming trips */}
+                {/* City Plans CTA for upcoming trips */}
                 <Button 
                   size="sm" 
                   variant="ghost"
                   onClick={() => handleCityPicks(plan.destinationCity || plan.destination)}
                   className="text-blue-600 dark:text-blue-400 mt-2 p-0 h-auto font-normal"
-                  data-testid={`button-city-picks-${(plan.destinationCity || plan.destination).toLowerCase().replace(/\s+/g, '-')}`}
+                  data-testid={`button-city-plans-${(plan.destinationCity || plan.destination).toLowerCase().replace(/\s+/g, '-')}`}
                 >
-                  Prepare with City Picks <ArrowRight className="w-3 h-3 ml-1" />
+                  Prepare with City Plans <ArrowRight className="w-3 h-3 ml-1" />
                 </Button>
               </div>
             ))}
@@ -293,7 +293,7 @@ export default function TravelPlansWidget({ userId, isOwnProfile = false }: Trav
               className="bg-gradient-to-r from-green-500 to-teal-500 text-white hover:from-green-600 hover:to-teal-600 border-0 flex-1"
             >
               <Sparkles className="w-4 h-4 mr-1" />
-              City Picks
+              City Plans
             </Button>
           </div>
         )}
