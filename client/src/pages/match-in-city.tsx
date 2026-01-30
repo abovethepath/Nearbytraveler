@@ -1631,13 +1631,13 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
               </Button>
             </div>
             
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">🎯 Match in City</h1>
-            <p className="text-xl text-white/80 mb-4">Select a city to start matching with people!</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">🎯 City Plans</h1>
+            <p className="text-xl text-white/80 mb-4">Pick a city, then choose plans to match with people who want to do the same things.</p>
             <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 max-w-2xl mx-auto">
               <p className="text-white/90 text-sm leading-relaxed">
-                🎯 <strong>Choose activities you want to do</strong> → Get matched with others who share your interests<br/>
-                ✏️ <strong>Add your own activities</strong> → Help others discover new experiences<br/>
-                💫 <strong>Connect with locals & travelers</strong> → Plan meetups and explore together
+                🎯 <strong>Pick your plans</strong> → Select what you'd actually do in that city<br/>
+                👥 <strong>Find your people</strong> → We'll show matches with the most shared plans<br/>
+                ➕ <strong>Add your own</strong> → Create a plan or event and invite others
               </p>
             </div>
           </div>
@@ -1799,7 +1799,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
             <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
               {/* Mobile: Stack vertically, Desktop: Side by side */}
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2 mb-2">
-                <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-200">🎯 City Plans</h3>
+                <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-200">🎯 How City Plans Works</h3>
                 <Button
                   variant="outline"
                   size="sm"
@@ -1811,11 +1811,11 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   Hide Instructions
                 </Button>
               </div>
-              <p className="text-sm text-blue-700 dark:text-blue-300 mb-3">Pick a city, then choose plans to match with people who want to do the same things.</p>
               <div className="text-sm text-blue-800 dark:text-blue-300 space-y-1">
-                <p>• <strong>Pick your plans</strong> → Select what you'd actually do in that city</p>
-                <p>• <strong>Find your people</strong> → We'll show matches with the most shared plans</p>
-                <p>• <strong>Add your own</strong> → Create a plan or event and invite others</p>
+                <p>• <strong>Choose activities you want to do</strong> → Get matched with others who share your interests</p>
+                <p>• <strong>Add your own activities</strong> → Help others discover new experiences</p>
+                <p>• <strong>Connect with locals & travelers</strong> → Plan meetups and explore together</p>
+                <p>• <strong>Edit or delete outdated activities</strong> → Keep your interests current and relevant</p>
               </div>
             </div>
           </div>
