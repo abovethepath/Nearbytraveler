@@ -146,19 +146,18 @@ export default function UserCard({
           <div className="text-xs text-white/80 truncate leading-tight">
             {displayCity}
           </div>
-          {/* Shared interests & mutual friends */}
-          <div className="flex flex-wrap gap-x-2 mt-1">
-            {compatibilityData?.sharedInterests?.length > 0 && (
-              <span className="text-[10px] text-orange-300">
-                {compatibilityData.sharedInterests.length} in common
-              </span>
-            )}
-            {connectionDegree && connectionDegree.mutualCount > 0 && (
-              <span className="text-[10px] text-cyan-300">
-                {connectionDegree.mutualCount} mutual
-              </span>
-            )}
-          </div>
+          {/* Things in common & match % */}
+          {compatibilityData?.sharedInterests?.length > 0 && (
+            <div className="text-[10px] text-orange-300 mt-0.5 truncate">
+              {compatibilityData.sharedInterests.length} things in common{compatibilityData?.score ? ` • ${compatibilityData.score}% match` : ''}
+            </div>
+          )}
+          {/* Mutual friends */}
+          {connectionDegree && connectionDegree.mutualCount > 0 && (
+            <div className="text-[10px] text-cyan-300 truncate">
+              {connectionDegree.mutualCount} mutual friends
+            </div>
+          )}
         </div>
       </div>
     </button>
