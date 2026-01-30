@@ -183,8 +183,16 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
       // Delete all activities for this city
       await Promise.all(cityActivities.map(a => apiRequest('DELETE', `/api/user-city-interests/${a.id}`)));
 
-      // Delete all events for this city
-      await Promise.all(cityEvents.map(e => apiRequest('DELETE', `/api/event-interests/${e.id}`)));
+      // Delete all events for this city - handle both event interests and joined events
+      await Promise.all(cityEvents.map(e => {
+        if (e.isEventInterest) {
+          // Event interest from city page selection
+          return apiRequest('DELETE', `/api/user-event-interests/${e.id}`);
+        } else {
+          // Joined event - use the leave endpoint
+          return apiRequest('DELETE', `/api/events/${e.id}/leave`, { userId });
+        }
+      }));
 
       // Refresh all caches - no local state updates needed
       queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
