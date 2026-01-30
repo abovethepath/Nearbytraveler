@@ -125,11 +125,6 @@ export const INTERESTS = [
 // Concrete activities users want to do together - specific "let's do this" actions
 
 export const ACTIVITIES = [
-  "Restaurant Hopping",
-  "Coffee Shop Crawling",
-  "Bar Hopping",
-  "Beach Hangouts",
-  "Photography Walks",
   "Shopping Adventures",
   "Day Trips & Excursions",
   "Group Workouts",
@@ -138,11 +133,8 @@ export const ACTIVITIES = [
   "Game Nights",
   "Movie Watching",
   "Concert Going",
-  "Festival Hopping",
-  "Museum & Gallery Tours",
   "Language Practice Meetups",
-  "Study & Coworking Sessions",
-  "Exploring Hidden Gems"
+  "Study & Coworking Sessions"
 ];
 
 // ========================================
