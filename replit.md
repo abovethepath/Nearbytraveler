@@ -58,7 +58,6 @@ AUTOMATIC CITY INFRASTRUCTURE: When a user selects a city for their trip destina
 ### Performance Optimizations
 - **Profile Bundle Endpoint**: Single `/api/users/:userId/profile-bundle` endpoint consolidates 18 separate API calls into 1 batched request for 5-10x faster profile page loading.
 - **Event Cache**: 5-minute cache for external event API calls.
-- **Database Indexes**: 14 optimized indexes on frequently queried columns.
 - **Redis API Caching**: Centralized caching system using Redis with in-memory fallback for frequently accessed data.
 - **Database Connection Pooling**: Neon serverless PostgreSQL with 100 connection pool, automatic health monitoring, and retry logic.
 - **Health Monitoring**: `/api/health` endpoint provides real-time database health, connection pool status, and latency metrics.
