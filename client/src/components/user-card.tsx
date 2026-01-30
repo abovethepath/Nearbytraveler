@@ -158,7 +158,7 @@ export default function UserCard({
       </div>
       
       {/* Info box below photo */}
-      <div className="p-2 bg-white dark:bg-gray-800">
+      <div className="p-2.5 bg-white dark:bg-gray-800">
         <div className="text-sm font-semibold text-gray-900 dark:text-white truncate">
           {displayName}
         </div>
@@ -166,16 +166,16 @@ export default function UserCard({
           {displayCity}
         </div>
         
-        {/* Stats box */}
-        <div className="mt-1.5 text-[11px] text-gray-600 dark:text-gray-300 space-y-0.5">
+        {/* Stats box - no truncation, wrap text */}
+        <div className="mt-2 text-xs text-gray-600 dark:text-gray-300 space-y-1">
           {thingsInCommon > 0 && (
-            <div className="truncate">
+            <div>
               <span className="text-orange-500 font-medium">{thingsInCommon} things in common</span>
-              {matchPercent && <span className="text-gray-400"> • {matchPercent}% match</span>}
+              {matchPercent && <span className="text-gray-400"> • {matchPercent}%</span>}
             </div>
           )}
           {mutualFriends > 0 && (
-            <div className="text-cyan-600 dark:text-cyan-400 truncate">
+            <div className="text-cyan-600 dark:text-cyan-400">
               {mutualFriends} mutual friends
             </div>
           )}
