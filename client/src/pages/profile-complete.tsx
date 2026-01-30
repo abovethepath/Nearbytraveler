@@ -4395,12 +4395,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </div>
                       )}
                       
-                      {/* Edit Profile Button - Dialog is at end of component */}
+                      {/* Edit Profile Button - uses setTimeout to avoid parent container closing issues */}
                       <Button
                         type="button"
                         size="sm"
                         variant="outline"
-                        onClick={() => setIsEditMode(true)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setTimeout(() => setIsEditMode(true), 0);
+                        }}
                         className={isProfileIncomplete() ? 'bg-red-100 hover:bg-red-200 border-red-400 text-red-700 animate-pulse' : 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800 dark:border-blue-700 dark:text-blue-100'}
                       >
                         <Edit2 className="w-4 h-4 sm:mr-2" />
