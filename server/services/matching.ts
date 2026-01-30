@@ -503,8 +503,8 @@ export class TravelMatchingService {
   }
 
   /**
-   * Calculate hostel compatibility - only matches if dates overlap
-   * Travelers at the same hostel with overlapping dates get bonus points
+   * Calculate hostel compatibility - only matches if SAME DESTINATION + dates overlap
+   * Travelers at the same hostel in the same city with overlapping dates get bonus points
    */
   private calculateHostelCompatibility(
     user1Plans: TravelPlan[], 
@@ -513,11 +513,15 @@ export class TravelMatchingService {
     let score = 0;
     const reasons: string[] = [];
 
-    // Check each combination of travel plans for hostel + date overlap
+    // Check each combination of travel plans for hostel + destination + date overlap
     for (const plan1 of user1Plans) {
       for (const plan2 of user2Plans) {
         // Both need to have a hostel name
         if (!plan1.hostelName || !plan2.hostelName) continue;
+
+        // CRITICAL: Both must be going to the SAME destination
+        // This prevents matching "Mosaic Prague" with "Mosaic Amsterdam"
+        if (!this.areLocationsSimilar(plan1.destination, plan2.destination)) continue;
 
         // Normalize hostel names for comparison (case-insensitive, trim whitespace)
         const hostel1 = plan1.hostelName.toLowerCase().trim();
@@ -532,9 +536,9 @@ export class TravelMatchingService {
           );
 
           if (dateOverlap.days > 0) {
-            // Strong match: same hostel + overlapping dates
+            // Strong match: same hostel + same city + overlapping dates
             score += 15;
-            reasons.push(`🏨 Both staying at ${plan1.hostelName} with ${dateOverlap.days} overlapping days!`);
+            reasons.push(`🏨 Both staying at ${plan1.hostelName} in ${plan1.destination} with ${dateOverlap.days} overlapping days!`);
           }
         }
       }
