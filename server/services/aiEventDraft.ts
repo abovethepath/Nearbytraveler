@@ -97,10 +97,12 @@ CRITICAL RULES:
 8. Be generous with what counts as a title - if they mention an event name, use it
 9. LOCATION PRIORITY: ALWAYS extract the location (city, street) from the user's description text. Only use the "default city hint" as an absolute last resort if NO location is mentioned at all
 10. COST vs REQUIREMENTS: "bring $X" or "should bring $X" or "bring at least $X" means it's a REQUIREMENT (add to restrictions array like "Bring at least $10"), NOT a cost. Only use costEstimate for actual event ticket prices or entry fees stated as "costs $X", "tickets are $X", or "$X entry"
-11. SPECIAL INSTRUCTIONS GO IN NOTES: Phrases like "ask the manager", "in the back room", "mention Nearby Traveler", "password is X", "look for the blue door" should ALL go in the "notes" field - these are important arrival/entry instructions
+11. SPECIAL INSTRUCTIONS GO IN NOTES: ALL of these go in "notes" field - "look for me", "I'll be wearing X", phone numbers, "text me at", "call me", "in front of X", "near X", "by the X", "ask for X", "in the back room", "password is X", meeting point descriptions, any contact info. These are arrival/finding instructions.
 12. ZIPCODE IS OPTIONAL: Never add zipcode to missing array - if we have street + city + state, that's sufficient
 13. DESCRIPTION FROM CONTEXT: If user doesn't explicitly provide a description, create a brief one from the event details (e.g., "Weekly party night at Jameson Pub. 21+ only.")
 14. OVERNIGHT EVENTS: If the end time is earlier than the start time (e.g., starts 8pm, ends 2am), the event ends the NEXT DAY. Set endDateTime to the following day. Example: starts Jan 30 8pm, ends 2am = endDateTime is Jan 31 2am (2026-01-31T02:00:00)
+15. LANDMARK vs VENUE: "in front of X", "near X", "outside X", "by the X" means X is a LANDMARK for finding the location, NOT the venue itself. Put the landmark reference in "notes" (e.g., "Meet in front of Whole Foods"). The venueName should be the actual event location if one exists (e.g., "taco stand" or leave blank if just a street meetup).
+16. RELATIVE DATES: Use the provided "Today's date" to calculate relative dates. "Next Tuesday" means the upcoming Tuesday AFTER today. "This Friday" means the Friday of the current week. Always calculate the exact date.
 
 Return ONLY a JSON object with these fields (all optional except where noted):
 {
@@ -127,14 +129,21 @@ Return ONLY a JSON object with these fields (all optional except where noted):
   "notes": "Special instructions like 'ask manager', 'back room', 'mention Nearby Traveler'"
 }`;
 
+      // Get current date info for relative date calculations
+      const now = new Date();
+      const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const todayDayName = dayNames[now.getDay()];
+      const todayDate = now.toISOString().split('T')[0]; // YYYY-MM-DD format
+      
       const userPrompt = `User timezone: ${userTimezone || "America/Los_Angeles"}
 Default city hint: ${defaultCity || "none provided"}
+Today's date: ${todayDate} (${todayDayName})
 Current year: 2026
 
 User's event description:
 "${text}"
 
-Extract the event details and return ONLY valid JSON.`;
+Extract the event details and return ONLY valid JSON. Use today's date to calculate any relative dates like "next Tuesday" or "this weekend".`;
 
       const response = await this.openai.chat.completions.create({
         model: "gpt-4o-mini",
