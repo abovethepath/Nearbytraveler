@@ -21,6 +21,8 @@ import { COUNTRIES, US_CITIES_BY_STATE } from "@shared/locationData";
 import { Badge } from "@/components/ui/badge";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { authStorage } from "@/lib/auth";
+import { AIQuickCreateEvent } from "@/components/AIQuickCreateEvent";
+import { Sparkles } from "lucide-react";
 
 // Categories removed - users can describe their event in the description field!
 
@@ -91,6 +93,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
   const [showPrivateSettings, setShowPrivateSettings] = useState(false);
   const [additionalCities, setAdditionalCities] = useState<string[]>([]);
   const [showAdditionalCities, setShowAdditionalCities] = useState(false);
+  const [showAiQuickCreate, setShowAiQuickCreate] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
@@ -300,6 +303,85 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
   const handleCityChange = (city: string) => {
     setValue("city", city);
     updateLocationString();
+  };
+
+  const handleAiDraftReady = (draft: any) => {
+    toast({
+      title: "Event details loaded!",
+      description: "Review the form below and make any edits before creating.",
+    });
+    
+    if (draft.title) setValue("title", draft.title, { shouldValidate: true, shouldDirty: true });
+    if (draft.description) setValue("description", draft.description, { shouldValidate: true, shouldDirty: true });
+    if (draft.venueName) setValue("venueName", draft.venueName, { shouldValidate: true, shouldDirty: true });
+    if (draft.street) setValue("street", draft.street, { shouldValidate: true, shouldDirty: true });
+    if (draft.city) {
+      setValue("city", draft.city, { shouldValidate: true, shouldDirty: true });
+    }
+    if (draft.state) {
+      setValue("state", draft.state, { shouldValidate: true, shouldDirty: true });
+      setSelectedState(draft.state);
+    }
+    if (draft.country) {
+      setValue("country", draft.country, { shouldValidate: true, shouldDirty: true });
+      setSelectedCountry(draft.country);
+      if (draft.country === "United States") {
+        setAvailableStates(Object.keys(US_CITIES_BY_STATE));
+        if (draft.state && US_CITIES_BY_STATE[draft.state]) {
+          setAvailableCities(US_CITIES_BY_STATE[draft.state]);
+        }
+      }
+    }
+    if (draft.zipcode) setValue("zipcode", draft.zipcode, { shouldValidate: true, shouldDirty: true });
+    
+    if (draft.startDateTime) {
+      try {
+        const startDate = new Date(draft.startDateTime);
+        if (!isNaN(startDate.getTime())) {
+          setValue("date", startDate.toISOString().split('T')[0], { shouldValidate: true, shouldDirty: true });
+          setValue("startTime", startDate.toTimeString().slice(0, 5), { shouldValidate: true, shouldDirty: true });
+        }
+      } catch (e) {
+        console.error('Error parsing start date:', e);
+      }
+    }
+    
+    if (draft.endDateTime) {
+      try {
+        const endDate = new Date(draft.endDateTime);
+        if (!isNaN(endDate.getTime())) {
+          setValue("endDate", endDate.toISOString().split('T')[0], { shouldValidate: true, shouldDirty: true });
+          setValue("endTime", endDate.toTimeString().slice(0, 5), { shouldValidate: true, shouldDirty: true });
+        }
+      } catch (e) {
+        console.error('Error parsing end date:', e);
+      }
+    }
+    
+    if (draft.maxParticipants) setValue("maxParticipants", draft.maxParticipants, { shouldValidate: true, shouldDirty: true });
+    if (draft.restrictions) setValue("requirements", draft.restrictions.join(", "), { shouldValidate: true, shouldDirty: true });
+    if (draft.tags && Array.isArray(draft.tags)) {
+      setValue("tags", draft.tags as any, { shouldValidate: true, shouldDirty: true });
+    }
+    if (draft.isRecurring) {
+      setIsRecurring(true);
+      setValue("isRecurring", true, { shouldValidate: true, shouldDirty: true });
+      if (draft.recurrenceType) {
+        setRecurrenceType(draft.recurrenceType);
+        setValue("recurrenceType", draft.recurrenceType, { shouldValidate: true, shouldDirty: true });
+      }
+    }
+    
+    // Build location string from components
+    const locationParts = [];
+    if (draft.street) locationParts.push(draft.street);
+    if (draft.city) locationParts.push(draft.city);
+    if (draft.state) locationParts.push(draft.state);
+    if (locationParts.length > 0) {
+      setValue("location", locationParts.join(", "), { shouldValidate: true, shouldDirty: true });
+    }
+    
+    setShowAiQuickCreate(false);
   };
 
   const updateLocationString = () => {
@@ -847,6 +929,40 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                 </CardContent>
               </Card>
             )}
+
+            {/* AI Quick Create - Describe your event in natural language */}
+            <Card className="border-2 border-orange-200 dark:border-orange-800 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg flex items-center gap-2 text-orange-800 dark:text-orange-200">
+                    <Sparkles className="w-5 h-5" />
+                    ✨ AI Quick Create
+                  </CardTitle>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowAiQuickCreate(!showAiQuickCreate)}
+                    className="text-orange-600 hover:text-orange-800 dark:text-orange-400"
+                  >
+                    {showAiQuickCreate ? "Hide" : "Try it"}
+                  </Button>
+                </div>
+                {!showAiQuickCreate && (
+                  <p className="text-sm text-orange-700 dark:text-orange-300">
+                    Describe your event in plain English and let AI fill out the form for you!
+                  </p>
+                )}
+              </CardHeader>
+              {showAiQuickCreate && (
+                <CardContent>
+                  <AIQuickCreateEvent
+                    onDraftReady={handleAiDraftReady}
+                    defaultCity={currentUser.hometownCity || currentUser.destinationCity}
+                  />
+                </CardContent>
+              )}
+            </Card>
 
             {/* Event Title */}
             <div className="space-y-2">

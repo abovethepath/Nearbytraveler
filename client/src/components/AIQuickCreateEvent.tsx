@@ -1,0 +1,413 @@
+import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Sparkles, Loader2, Calendar, MapPin, Users, AlertCircle, Check, Edit2, Tag } from "lucide-react";
+import { getApiBaseUrl } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+
+interface AiEventDraft {
+  title: string;
+  description?: string;
+  startDateTime?: string;
+  endDateTime?: string;
+  venueName?: string;
+  street?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  zipcode?: string;
+  category?: string;
+  theme?: string;
+  restrictions?: string[];
+  maxParticipants?: number;
+  isRecurring?: boolean;
+  recurrenceType?: string;
+  tags?: string[];
+  privacy?: "public" | "friends" | "invite_only";
+  costEstimate?: string;
+  missing?: string[];
+  notes?: string;
+  confidence?: number;
+}
+
+interface AIQuickCreateEventProps {
+  onDraftReady: (draft: AiEventDraft) => void;
+  defaultCity?: string;
+}
+
+export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateEventProps) {
+  const [inputText, setInputText] = useState("");
+  const [draft, setDraft] = useState<AiEventDraft | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const { toast } = useToast();
+
+  const generateDraftMutation = useMutation({
+    mutationFn: async (text: string) => {
+      const response = await fetch(`${getApiBaseUrl()}/api/ai/event-draft`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          text,
+          userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          defaultCity
+        })
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to process description");
+      }
+      
+      return response.json() as Promise<AiEventDraft>;
+    },
+    onSuccess: (data) => {
+      setDraft(data);
+      setIsEditing(false);
+      
+      if (data.missing && data.missing.length > 0) {
+        toast({
+          title: "Almost there!",
+          description: `Please fill in: ${data.missing.join(", ")}`,
+        });
+      }
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Couldn't understand that",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  });
+
+  const handleGenerate = () => {
+    if (inputText.trim().length < 10) {
+      toast({
+        title: "Need more details",
+        description: "Please describe your event with more detail (at least 10 characters)",
+        variant: "destructive"
+      });
+      return;
+    }
+    generateDraftMutation.mutate(inputText);
+  };
+
+  const handleUseDraft = () => {
+    if (draft) {
+      onDraftReady(draft);
+    }
+  };
+
+  const updateDraftField = (field: keyof AiEventDraft, value: any) => {
+    if (draft) {
+      setDraft({ ...draft, [field]: value });
+    }
+  };
+
+  const formatDateTime = (isoString?: string) => {
+    if (!isoString) return "Not set";
+    try {
+      const date = new Date(isoString);
+      return date.toLocaleString(undefined, {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+      });
+    } catch {
+      return isoString;
+    }
+  };
+
+  const examplePrompts = [
+    "Friday Feb 7, 8pm at my place 123 Main St. Rooftop Taco Night. 21+, BYOB.",
+    "Beach cleanup Saturday morning 9am at Venice Beach. Family friendly, bring water!",
+    "Weekly poker night every Thursday 7pm. $20 buy-in. Max 8 players."
+  ];
+
+  return (
+    <div className="space-y-4">
+      {!draft ? (
+        <>
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2 text-base font-medium">
+              <Sparkles className="w-4 h-4 text-orange-500" />
+              Describe your event in your own words
+            </Label>
+            <Textarea
+              placeholder="Tell us about your event: What is it? When? Where? Any restrictions or themes?"
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              className="min-h-[120px] resize-none"
+              disabled={generateDraftMutation.isPending}
+            />
+            <p className="text-xs text-gray-500">
+              Include: date, time, location/address, event name, and any special requirements
+            </p>
+          </div>
+
+          <Button
+            onClick={handleGenerate}
+            disabled={generateDraftMutation.isPending || inputText.length < 10}
+            className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
+          >
+            {generateDraftMutation.isPending ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4 mr-2" />
+                Generate Event Draft
+              </>
+            )}
+          </Button>
+
+          <div className="pt-2">
+            <p className="text-xs text-gray-400 mb-2">Try something like:</p>
+            <div className="space-y-1">
+              {examplePrompts.map((prompt, i) => (
+                <button
+                  key={i}
+                  onClick={() => setInputText(prompt)}
+                  className="block w-full text-left text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 truncate"
+                >
+                  "{prompt}"
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      ) : (
+        <Card className="border-2 border-orange-200 dark:border-orange-800 bg-orange-50/50 dark:bg-orange-950/20">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Check className="w-5 h-5 text-green-500" />
+                Event Preview
+              </CardTitle>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setIsEditing(!isEditing)}
+                >
+                  <Edit2 className="w-4 h-4 mr-1" />
+                  {isEditing ? "Done" : "Edit"}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => {
+                    setDraft(null);
+                    setInputText("");
+                  }}
+                >
+                  Start Over
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {isEditing ? (
+              <div className="space-y-3">
+                <div>
+                  <Label>Event Title</Label>
+                  <Input
+                    value={draft.title || ""}
+                    onChange={(e) => updateDraftField("title", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>Description</Label>
+                  <Textarea
+                    value={draft.description || ""}
+                    onChange={(e) => updateDraftField("description", e.target.value)}
+                    className="min-h-[60px]"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label>Date & Time</Label>
+                    <Input
+                      type="datetime-local"
+                      value={draft.startDateTime?.slice(0, 16) || ""}
+                      onChange={(e) => updateDraftField("startDateTime", e.target.value + ":00")}
+                    />
+                  </div>
+                  <div>
+                    <Label>End Time (optional)</Label>
+                    <Input
+                      type="datetime-local"
+                      value={draft.endDateTime?.slice(0, 16) || ""}
+                      onChange={(e) => updateDraftField("endDateTime", e.target.value + ":00")}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label>Venue Name</Label>
+                  <Input
+                    value={draft.venueName || ""}
+                    onChange={(e) => updateDraftField("venueName", e.target.value)}
+                    placeholder="e.g., Rooftop Bar, Central Park"
+                  />
+                </div>
+                <div>
+                  <Label>Street Address</Label>
+                  <Input
+                    value={draft.street || ""}
+                    onChange={(e) => updateDraftField("street", e.target.value)}
+                    placeholder="123 Main Street"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label>City</Label>
+                    <Input
+                      value={draft.city || ""}
+                      onChange={(e) => updateDraftField("city", e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label>State</Label>
+                    <Input
+                      value={draft.state || ""}
+                      onChange={(e) => updateDraftField("state", e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label>Max Participants</Label>
+                  <Input
+                    type="number"
+                    value={draft.maxParticipants || ""}
+                    onChange={(e) => updateDraftField("maxParticipants", parseInt(e.target.value) || undefined)}
+                    placeholder="Leave empty for unlimited"
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">{draft.title}</h3>
+                  {draft.description && (
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{draft.description}</p>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                  <div className="flex items-start gap-2">
+                    <Calendar className="w-4 h-4 text-orange-500 mt-0.5" />
+                    <div>
+                      <p className="font-medium">When</p>
+                      <p className="text-gray-600 dark:text-gray-400">
+                        {formatDateTime(draft.startDateTime)}
+                        {draft.endDateTime && ` - ${formatDateTime(draft.endDateTime)}`}
+                      </p>
+                      {draft.isRecurring && (
+                        <Badge variant="secondary" className="mt-1 text-xs">
+                          Repeats {draft.recurrenceType}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-2">
+                    <MapPin className="w-4 h-4 text-orange-500 mt-0.5" />
+                    <div>
+                      <p className="font-medium">Where</p>
+                      <p className="text-gray-600 dark:text-gray-400">
+                        {draft.venueName && <span className="block">{draft.venueName}</span>}
+                        {draft.street && <span className="block">{draft.street}</span>}
+                        {(draft.city || draft.state) && (
+                          <span className="block">
+                            {[draft.city, draft.state].filter(Boolean).join(", ")}
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+
+                  {draft.maxParticipants && (
+                    <div className="flex items-start gap-2">
+                      <Users className="w-4 h-4 text-orange-500 mt-0.5" />
+                      <div>
+                        <p className="font-medium">Capacity</p>
+                        <p className="text-gray-600 dark:text-gray-400">
+                          Max {draft.maxParticipants} people
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {draft.costEstimate && (
+                    <div className="flex items-start gap-2">
+                      <Tag className="w-4 h-4 text-orange-500 mt-0.5" />
+                      <div>
+                        <p className="font-medium">Cost</p>
+                        <p className="text-gray-600 dark:text-gray-400">{draft.costEstimate}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {draft.restrictions && draft.restrictions.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {draft.restrictions.map((r, i) => (
+                      <Badge key={i} variant="outline" className="text-xs">
+                        {r}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+
+                {draft.theme && (
+                  <div className="text-sm">
+                    <span className="font-medium">Theme:</span>{" "}
+                    <span className="text-gray-600 dark:text-gray-400">{draft.theme}</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {draft.missing && draft.missing.length > 0 && (
+              <div className="flex items-start gap-2 p-3 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
+                <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+                <div className="text-sm">
+                  <p className="font-medium text-amber-800 dark:text-amber-200">Missing information:</p>
+                  <p className="text-amber-700 dark:text-amber-300">{draft.missing.join(", ")}</p>
+                  <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
+                    Click "Edit" above or fill these in on the next screen
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {draft.notes && (
+              <div className="text-xs text-gray-500 italic">
+                Note: {draft.notes}
+              </div>
+            )}
+
+            <Button
+              onClick={handleUseDraft}
+              className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+              disabled={!draft.title}
+            >
+              <Check className="w-4 h-4 mr-2" />
+              Use This Draft & Continue
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}

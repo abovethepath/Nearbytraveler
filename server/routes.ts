@@ -17398,6 +17398,39 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // === AI EVENT DRAFT FROM NATURAL LANGUAGE ===
+  
+  // POST extract structured event data from natural language description
+  app.post("/api/ai/event-draft", async (req, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+
+      const { text, userTimezone, defaultCity } = req.body;
+      if (!text || typeof text !== 'string' || text.trim().length < 5) {
+        return res.status(400).json({ error: 'Please provide a description of your event (at least 5 characters).' });
+      }
+
+      const { aiEventDraftService } = await import('./services/aiEventDraft');
+      const result = await aiEventDraftService.extractEventFromText(
+        text.trim(),
+        userTimezone,
+        defaultCity
+      );
+
+      if (!result.success) {
+        return res.status(422).json({ error: result.error || 'Failed to parse event description' });
+      }
+
+      res.json(result.draft);
+    } catch (error: any) {
+      console.error('AI event draft error:', error);
+      res.status(500).json({ error: 'Failed to process event description' });
+    }
+  });
+
   // === AI CITY MATCH FEATURES ===
   
   // POST generate AI activity suggestions for a city based on user's interests
