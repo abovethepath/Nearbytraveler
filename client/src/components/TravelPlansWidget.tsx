@@ -321,6 +321,7 @@ export default function TravelPlansWidget({ userId, isOwnProfile = false }: Trav
           console.log('Share itinerary:', selectedTravelPlan);
         }}
         onClose={() => setSelectedTravelPlan(null)}
+        isOwnProfile={isOwnProfile}
       />
     )}
     </>

@@ -66,9 +66,10 @@ interface ComprehensiveItineraryProps {
   onShare?: () => void;
   isSharing?: boolean;
   onClose?: () => void;
+  isOwnProfile?: boolean;
 }
 
-export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing, onClose }: ComprehensiveItineraryProps) {
+export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing, onClose, isOwnProfile = false }: ComprehensiveItineraryProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [selectedDate, setSelectedDate] = useState<string>('');
@@ -296,10 +297,12 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
           <TabsContent value="schedule" className="space-y-4">
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-semibold">Daily Schedule</h3>
-              <Button onClick={() => setShowAddItem(true)} size="sm">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Item
-              </Button>
+              {isOwnProfile && (
+                <Button onClick={() => setShowAddItem(true)} size="sm">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Item
+                </Button>
+              )}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -352,22 +355,24 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
                                   )}
                                 </div>
                               </div>
-                              <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => setEditingItem(item)}
-                                >
-                                  <Edit className="w-3 h-3" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => item.id && deleteItem.mutate(item.id)}
-                                >
-                                  <Trash2 className="w-3 h-3" />
-                                </Button>
-                              </div>
+                              {isOwnProfile && (
+                                <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => setEditingItem(item)}
+                                  >
+                                    <Edit className="w-3 h-3" />
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => item.id && deleteItem.mutate(item.id)}
+                                  >
+                                    <Trash2 className="w-3 h-3" />
+                                  </Button>
+                                </div>
+                              )}
                             </div>
                           </div>
                         ))
@@ -375,18 +380,20 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
                       <div className="text-center py-8 text-gray-500">
                         <Calendar className="w-8 h-8 mx-auto mb-2 opacity-50" />
                         <p>No activities planned for this day</p>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="mt-2"
-                          onClick={() => {
-                            setNewItem({ date });
-                            setShowAddItem(true);
-                          }}
-                        >
-                          <Plus className="w-3 h-3 mr-1" />
-                          Add Activity
-                        </Button>
+                        {isOwnProfile && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="mt-2"
+                            onClick={() => {
+                              setNewItem({ date });
+                              setShowAddItem(true);
+                            }}
+                          >
+                            <Plus className="w-3 h-3 mr-1" />
+                            Add Activity
+                          </Button>
+                        )}
                       </div>
                     )}
                   </CardContent>
@@ -584,8 +591,8 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
           </TabsContent>
         </Tabs>
 
-        {/* Add Item Form - INLINE (no nested dialog) */}
-        {showAddItem && (
+        {/* Add Item Form - INLINE (no nested dialog) - Only show for own profile */}
+        {isOwnProfile && showAddItem && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-4">
