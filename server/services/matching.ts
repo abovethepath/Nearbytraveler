@@ -181,6 +181,11 @@ export class TravelMatchingService {
     totalScore += Math.min(languageScore.score * 0.5, 5);
     reasons.push(...languageScore.reasons);
 
+    // Hostel matching bonus (15 points max) - only if trip dates overlap
+    const hostelScore = this.calculateHostelCompatibility(user1Plans, user2Plans);
+    totalScore += Math.min(hostelScore.score, 15);
+    reasons.push(...hostelScore.reasons);
+
     const normalizedScore = Math.min(totalScore / maxScore, 1);
     
     return {
@@ -495,6 +500,79 @@ export class TravelMatchingService {
     }
 
     return { score: Math.min(score, 25), reasons, hasOverlap };
+  }
+
+  /**
+   * Calculate hostel compatibility - only matches if dates overlap
+   * Travelers at the same hostel with overlapping dates get bonus points
+   */
+  private calculateHostelCompatibility(
+    user1Plans: TravelPlan[], 
+    user2Plans: TravelPlan[]
+  ) {
+    let score = 0;
+    const reasons: string[] = [];
+
+    // Check each combination of travel plans for hostel + date overlap
+    for (const plan1 of user1Plans) {
+      for (const plan2 of user2Plans) {
+        // Both need to have a hostel name
+        if (!plan1.hostelName || !plan2.hostelName) continue;
+
+        // Normalize hostel names for comparison (case-insensitive, trim whitespace)
+        const hostel1 = plan1.hostelName.toLowerCase().trim();
+        const hostel2 = plan2.hostelName.toLowerCase().trim();
+
+        // Check if hostels are the same or very similar
+        if (hostel1 === hostel2 || this.areHostelsSimilar(hostel1, hostel2)) {
+          // Now check if dates overlap - REQUIRED for hostel matching
+          const dateOverlap = this.calculateDateOverlap(
+            plan1.startDate, plan1.endDate,
+            plan2.startDate, plan2.endDate
+          );
+
+          if (dateOverlap.days > 0) {
+            // Strong match: same hostel + overlapping dates
+            score += 15;
+            reasons.push(`🏨 Both staying at ${plan1.hostelName} with ${dateOverlap.days} overlapping days!`);
+          }
+        }
+      }
+    }
+
+    return { score: Math.min(score, 15), reasons };
+  }
+
+  /**
+   * Check if two hostel names are similar enough to be considered the same
+   * Handles common variations like "HI Los Angeles" vs "HI LA" or typos
+   */
+  private areHostelsSimilar(hostel1: string, hostel2: string): boolean {
+    // Exact match after normalization
+    if (hostel1 === hostel2) return true;
+
+    // One contains the other (handles abbreviations)
+    if (hostel1.includes(hostel2) || hostel2.includes(hostel1)) return true;
+
+    // Calculate similarity using Levenshtein-like approach for typo tolerance
+    // If difference is less than 20% of the longer string, consider similar
+    const maxLen = Math.max(hostel1.length, hostel2.length);
+    const minLen = Math.min(hostel1.length, hostel2.length);
+    
+    // If length difference is too large, not similar
+    if (maxLen - minLen > 5) return false;
+
+    // Count matching characters
+    let matches = 0;
+    const shorter = hostel1.length <= hostel2.length ? hostel1 : hostel2;
+    const longer = hostel1.length <= hostel2.length ? hostel2 : hostel1;
+    
+    for (let i = 0; i < shorter.length; i++) {
+      if (longer.includes(shorter[i])) matches++;
+    }
+
+    // If 80%+ of characters match, consider similar
+    return (matches / maxLen) >= 0.8;
   }
 
   /**
