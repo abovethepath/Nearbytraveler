@@ -1252,6 +1252,70 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // BUNDLE-DERIVED: Compatibility score from profile bundle
   const compatibilityData = profileBundle?.compatibility;
 
+  // Fetch CURRENT VIEWER's travel plans for hostel matching (only when viewing someone else's profile)
+  const { data: viewerTravelPlans = [] } = useQuery<any[]>({
+    queryKey: ['/api/users', currentUser?.id, 'travel-plans', 'viewer'],
+    queryFn: async () => {
+      if (!currentUser?.id) return [];
+      const response = await fetch(`${getApiBaseUrl()}/api/users/${currentUser.id}/travel-plans`);
+      if (!response.ok) return [];
+      const data = await response.json();
+      return Array.isArray(data) ? data : [];
+    },
+    enabled: !isOwnProfile && !!currentUser?.id,
+    staleTime: 60 * 1000, // 1 minute
+  });
+
+  // Calculate hostel match between viewer and profile user
+  const hostelMatch = React.useMemo(() => {
+    if (isOwnProfile || !viewerTravelPlans.length || !travelPlans.length) return null;
+    
+    const now = new Date();
+    
+    // Find active/upcoming trips for both users
+    const viewerActiveTrips = viewerTravelPlans.filter((plan: any) => {
+      if (!plan.startDate || !plan.endDate || !plan.hostelName) return false;
+      const end = new Date(plan.endDate);
+      return end >= now;
+    });
+    
+    const profileActiveTrips = travelPlans.filter((plan: any) => {
+      if (!plan.startDate || !plan.endDate || !plan.hostelName) return false;
+      const end = new Date(plan.endDate);
+      return end >= now;
+    });
+    
+    // Check for matching hostel + destination + overlapping dates
+    for (const viewerTrip of viewerActiveTrips) {
+      for (const profileTrip of profileActiveTrips) {
+        const viewerHostel = viewerTrip.hostelName?.toLowerCase().trim();
+        const profileHostel = profileTrip.hostelName?.toLowerCase().trim();
+        const viewerDest = viewerTrip.destination?.toLowerCase().split(',')[0].trim();
+        const profileDest = profileTrip.destination?.toLowerCase().split(',')[0].trim();
+        
+        // Check same hostel AND same destination
+        if (viewerHostel && profileHostel && viewerHostel === profileHostel && viewerDest === profileDest) {
+          // Check date overlap
+          const viewerStart = new Date(viewerTrip.startDate);
+          const viewerEnd = new Date(viewerTrip.endDate);
+          const profileStart = new Date(profileTrip.startDate);
+          const profileEnd = new Date(profileTrip.endDate);
+          
+          const hasOverlap = viewerStart <= profileEnd && profileStart <= viewerEnd;
+          
+          if (hasOverlap) {
+            return {
+              hostelName: profileTrip.hostelName,
+              destination: profileTrip.destination?.split(',')[0] || profileTrip.destination
+            };
+          }
+        }
+      }
+    }
+    
+    return null;
+  }, [isOwnProfile, viewerTravelPlans, travelPlans]);
+
   // BUNDLE-DERIVED: Connection degree from profile bundle
   const connectionDegreeData = profileBundle?.connectionDegree as {
     degree: number;
@@ -3999,6 +4063,26 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <Users className="w-3 h-3 inline mr-1" />
                         {connectionDegreeData.mutualCount} mutual {connectionDegreeData.mutualCount === 1 ? 'connection' : 'connections'}
                       </span>
+                    </div>
+                  )}
+
+                  {/* Hostel Match Banner - Prominent display when both users are at same hostel */}
+                  {!isOwnProfile && hostelMatch && (
+                    <div 
+                      className="flex items-center gap-2 mt-3 p-3 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/40 dark:to-amber-900/40 rounded-lg border-2 border-orange-300 dark:border-orange-600 shadow-sm animate-pulse"
+                      data-testid="hostel-match-banner"
+                    >
+                      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-800">
+                        <Building2 className="w-5 h-5 text-orange-600 dark:text-orange-300" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-bold text-orange-800 dark:text-orange-200">
+                          🏨 You're both staying at {hostelMatch.hostelName}!
+                        </p>
+                        <p className="text-xs text-orange-600 dark:text-orange-400">
+                          in {hostelMatch.destination} during overlapping dates
+                        </p>
+                      </div>
                     </div>
                   )}
                 </div>

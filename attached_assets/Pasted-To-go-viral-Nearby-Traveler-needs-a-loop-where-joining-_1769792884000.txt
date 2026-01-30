@@ -1,0 +1,74 @@
+To go viral, Nearby Traveler needs a loop where joining immediately helps you, and sharing helps you even more. Right now your “aha” is: “I found people to do stuff with in this city.” Make that happen in under 60 seconds, then give users a reason to invite.
+
+Make it a no-brainer in the first 60 seconds
+1) Instant payoff (no browsing)
+
+After signup → destination city → City Plans
+
+Force the “aha” fast: Pick 3 plans → instantly show “Top 10 matches”
+
+Put a big line at top: “You have 12 people who want to do the same things.”
+
+2) Make City Plans feel like a cheat code
+
+“Pick 3–8 to match faster” (you already have this)
+
+Show “Matches unlocked” after each pick (little animation/count rising)
+
+3) One-tap “Plan + Invite”
+
+Every trip should have:
+
+“Invite friends” button that creates a share link
+
+The share link lands people directly into that same city/trip context
+
+The viral loops that actually work for you
+Loop A: Trip link loop (best)
+
+“I’m going to LA Feb 2–6. Join my City Plans.”
+
+Share link auto-fills destination + dates
+
+Friends join to see your plans / join events / message
+
+Loop B: Event loop (second best)
+
+When a user creates an event (or adds one):
+
+It generates a share card: “3 people going • join us”
+
+Sharing brings new users who care about that specific event
+
+Loop C: “Match screenshot” loop (social proof)
+
+Let users share a clean graphic:
+
+“Found 9 matches for ‘Comedy + Street Food + Museums’ in LA”
+This is braggy and natural to post.
+
+Make invites feel worth it
+
+People won’t invite just to “help you grow.” Give them a selfish reason:
+
+Unlock features: “Invite 3 people → unlock ‘See who’s free tonight’”
+
+Better matching: “More people in your city = more matches”
+
+Status: “Founding Traveler / LA Founder badge” (limited)
+
+Your “viral CTA” should be everywhere
+
+Add a single button that appears after the first match:
+“Create a plan & invite someone”
+Not “share the app.” Share a specific plan.
+
+What I’d do this week (practical)
+
+Add “Share Trip” link with deep link to City Plans
+
+Add “Matches unlocked” counter after each pick
+
+Add shareable card (image) for Trip + Event + Match count
+
+Add simple referral reward: “Invite 3 → unlock premium filter for 7 days”
