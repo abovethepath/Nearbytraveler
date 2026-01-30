@@ -341,7 +341,7 @@ function Navbar() {
     // Traveler/local users get streamlined navigation
     return [
       { path: "/", label: "Home", icon: "🏠" },
-      { path: "/discover", label: "Cities", icon: "🌍" },
+      { path: "/plan-trip", label: "Trip Plan", icon: "✈️" },
       { path: "/events", label: "Events", icon: "📅" },
       { path: "/match-in-city", label: "City Plans", icon: "🎯" },
       { path: "/connect", label: "Connect", icon: "💝" },
