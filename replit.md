@@ -1,5 +1,5 @@
 ## Overview
-Nearby Traveler is a social networking platform that connects travelers, locals, and businesses through location-based meetups and cross-cultural interactions. It aims to enrich travel experiences and local engagement by facilitating real-time connections, offering AI-powered city content, robust photo management, mobile responsiveness, and a global map system for discovery. The platform’s vision is to foster authentic human connections and become the premier destination for genuine local experiences.
+Nearby Traveler is a social networking platform designed to connect travelers, locals, and businesses through location-based meetups and cross-cultural interactions. Its core purpose is to enrich travel experiences and foster local engagement by facilitating real-time connections, offering AI-powered city content, robust photo management, mobile responsiveness, and a global map system for discovery. The platform aims to be the premier destination for authentic human connections and genuine local experiences.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
@@ -31,7 +31,7 @@ AI BIO GENERATOR: Profile page includes "Generate bio for me" button that uses A
 CITY MATCH RENAMED TO CITY PLANS: "City Match" has been renamed to "City Plans" throughout the UI for cleaner branding. The feature at /match-in-city now displays 20 universal travel activities (intents like "Meet New People", "Restaurants & Local Eats", "Hiking & Nature") instead of the previous 40 items.
 PER-TRIP TRAVEL GROUP: The `travel_plans` table now has a nullable `travelGroup` field (solo/couple/friends/family) that allows per-trip override of the user's default profile travel group. The Plan Trip form includes a "Trip Vibe" selector pre-filled from the user's profile. Matching logic uses the trip's travelGroup if set, otherwise falls back to the profile's travelGroup. This ensures someone who usually travels solo can correctly match with family travelers when doing a family trip.
 SIMPLIFIED 2-STEP TRIP CREATION FLOW: Step 1 (Plan Trip page) collects minimal info: destination, dates, trip vibe (solo/couple/friends/family), and optional trip tags (Business Trip, Digital Nomad, First time here - max 3). Removed accommodation/transportation fields (not used for matching yet). After creating a trip, user is redirected to Step 2 (City Plans page) to pick 3-8 activities for matching. Edit mode still redirects to profile.
-HOSTEL CONNECT FEATURE: Optional hostel matching added to trip planning. Users can enter their hostel name and choose visibility: "private" (used only for matching with others at the same hostel) or "public" (shown on profile). Database fields: `hostel_name` and `hostel_visibility` in travel_plans table. Users can update hostel info anytime after trip creation when they know which hostel they're staying at. Matching logic requires: same destination + overlapping dates + matching hostel name. Advanced Search has "Hostel Connect" filter to find travelers at the same hostel. Profile page displays "🏨 Staying at [Hostel]" when visibility is public and trip is active. Search results show "🏨 Same hostel!" badge when hostel filter matches.
+HOSTEL CONNECT FEATURE: Optional hostel matching added to trip planning. Users can enter their hostel name and choose visibility: "private" (matchable in search but NOT shown on profile) or "public" (matchable AND shown on profile). Both private and public users appear in hostel searches - entering a hostel name means agreeing to be matched. Database fields: `hostel_name` and `hostel_visibility` in travel_plans table. Users can update hostel info anytime after trip creation when they know which hostel they're staying at. Matching logic requires: same destination + overlapping dates + matching hostel name. Advanced Search has "Hostel Connect" filter to find travelers at the same hostel. Profile page displays "🏨 Staying at [Hostel]" only when visibility is public and trip is active. Search results show "🏨 Same hostel!" badge when hostel filter matches.
 AUTOMATIC CITY INFRASTRUCTURE: When a user selects a city for their trip destination OR hometown during signup, the system automatically creates city infrastructure if it doesn't exist: city page, chatroom, and city activities. This ensures all cities with users have complete functionality without manual setup.
 
 ## System Architecture
@@ -39,30 +39,30 @@ AUTOMATIC CITY INFRASTRUCTURE: When a user selects a city for their trip destina
 ### Frontend
 - **Technology Stack**: React 18 with TypeScript, Vite, Tailwind CSS with shadcn/ui, Wouter, and TanStack Query.
 - **PWA**: Progressive Web App with mobile-first design and offline capabilities.
-- **UI/UX Decisions**: MBA-level design with clear value propositions, consistent branding (orange-blue theme, standardized hero sections), dynamic CSS, and comprehensive mobile optimization. Navigation includes a chat rooms tab. Streamlined signup and prominent display of user events. Intelligent metropolitan area consolidation for chatrooms. Improved readability through color accessibility. Custom text entry for interests/activities/events, diversity business ownership categories with privacy controls, repositioned languages widget, business geolocation mapping, enhanced business contact management, and support for email variants for managing multiple businesses.
+- **UI/UX Decisions**: MBA-level design principles, consistent branding with an orange-blue theme, standardized hero sections, dynamic CSS, comprehensive mobile optimization, and a chat rooms tab in navigation. Emphasizes streamlined signup, prominent display of user events, and intelligent metropolitan area consolidation for chatrooms. Includes custom text entry for interests/activities/events, diversity business ownership categories with privacy controls, repositioned languages widget, business geolocation mapping, and enhanced business contact management.
 
 ### Backend
 - **Technology Stack**: Node.js with Express and TypeScript for a type-safe RESTful API.
-- **Authentication**: Session-based authentication integrated with Replit Auth, utilizing JWT for API requests and session middleware. Supports user roles for locals, travelers, and business accounts.
+- **Authentication**: Session-based authentication integrated with Replit Auth, utilizing JWT for API requests and session middleware, supporting user roles (locals, travelers, business).
 - **Real-time**: WebSocket support for live messaging, notifications, event updates, and connection status.
 - **Structure**: Modular route organization.
-- **Feature Specifications**: Automatic city infrastructure creation (city pages, chatrooms, activities) during user signup for both hometown and destination cities. Secure URL import feature for events using web scraping with security measures (HTTPS-only, domain whitelist, timeouts, size limits). Chatroom backfill API for assigning chatrooms to legacy users.
+- **Feature Specifications**: Automatic city infrastructure creation during user signup for both hometown and destination cities. Secure URL import feature for events using web scraping with security measures. Chatroom backfill API for assigning chatrooms to legacy users.
 
 ### Database
 - **Primary Database**: PostgreSQL.
 - **ORM**: Drizzle ORM.
 - **Schema**: Comprehensive schema for users, travel plans, events, connections, messages, businesses, and sessions.
-- **Performance Indexes**: 14 optimized indexes for users, connections, events, travel_plans, and user_photos tables.
-- **Session Storage**: Redis-based session storage for persistent sessions across server restarts.
+- **Performance Indexes**: 14 optimized indexes for key tables.
+- **Session Storage**: Redis-based session storage.
 
 ### Performance Optimizations
-- **Profile Bundle Endpoint**: Single `/api/users/:userId/profile-bundle` endpoint consolidates 18 separate API calls into 1 batched request for 5-10x faster profile page loading.
+- **Profile Bundle Endpoint**: Consolidates 18 API calls into 1 batched request for faster profile page loading.
 - **Event Cache**: 5-minute cache for external event API calls.
-- **Redis API Caching**: Centralized caching system using Redis with in-memory fallback for frequently accessed data.
-- **Database Connection Pooling**: Neon serverless PostgreSQL with 100 connection pool, automatic health monitoring, and retry logic.
-- **Health Monitoring**: `/api/health` endpoint provides real-time database health, connection pool status, and latency metrics.
-- **Slow Request Logging**: Automatic logging of API requests taking >2 seconds.
-- **WebSocket Multi-Instance Scaling**: Redis pub/sub enables real-time chat messaging across multiple server instances.
+- **Redis API Caching**: Centralized caching system with in-memory fallback.
+- **Database Connection Pooling**: Neon serverless PostgreSQL with 100 connection pool, health monitoring, and retry logic.
+- **Health Monitoring**: `/api/health` endpoint for real-time database health and connection status.
+- **Slow Request Logging**: Automatic logging of API requests exceeding 2 seconds.
+- **WebSocket Multi-Instance Scaling**: Redis pub/sub for real-time chat across multiple server instances.
 
 ### AI Integration
 - **AI Model**: Anthropic Claude Sonnet.

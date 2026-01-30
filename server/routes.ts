@@ -5070,23 +5070,24 @@ Questions? Just reply to this message. Welcome aboard!
       }
 
       // Hostel filter - find users with matching hostel names in their travel plans
-      // Only matches PUBLIC visibility hostels with active/upcoming dates
+      // Both private and public visibility users can be matched - they've agreed to hostel matching
+      // Private = match only (not shown on profile), Public = match AND shown on profile
       if (hostelName && typeof hostelName === 'string' && hostelName.trim()) {
         const hostelPattern = `%${hostelName.trim().toLowerCase()}%`;
         // Subquery to find user IDs with matching hostel in travel_plans
-        // Requires: public visibility, matching hostel name, valid dates
+        // Requires: any visibility (private or public), matching hostel name, valid dates
         whereConditions.push(
           sql`${users.id} IN (
             SELECT DISTINCT user_id FROM travel_plans 
             WHERE LOWER(TRIM(hostel_name)) LIKE ${hostelPattern}
-            AND hostel_visibility = 'public'
+            AND hostel_visibility IS NOT NULL
             AND start_date IS NOT NULL 
             AND end_date IS NOT NULL
             AND end_date >= CURRENT_DATE
           )`
         );
         if (process.env.NODE_ENV === 'development') {
-          console.log('🏨 HOSTEL FILTER: Searching for users at hostel:', hostelName, '(public visibility only)');
+          console.log('🏨 HOSTEL FILTER: Searching for users at hostel:', hostelName, '(all visibility levels)');
         }
       }
 
