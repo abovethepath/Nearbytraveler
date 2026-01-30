@@ -1,0 +1,148 @@
+Thought for 46sYep — that wiring should open the dialog if isEditMode actually stays true through the render that includes the <Dialog />.
+Here are the most common reasons this exact pattern “logs true but no modal” happens, and how to prove/fix each one.
+
+1) The component is re-mounting (state resets back to false)
+This is #1 when you see:
+
+
+✅ button log fires
+
+
+✅ DIALOG RENDER CHECK - isEditMode: true appears once
+
+
+then it goes back to false (or the dialog never appears)
+
+
+Cause: the component that owns const [isEditMode…] is getting re-mounted (e.g., parent key changes, conditional rendering flips, responsive layout swaps components, etc.). When it remounts, state resets to initial false.
+How to confirm (fast):
+Add this right next to the state:
+useEffect(() => {
+  console.log("🧩 Profile component mounted");
+  return () => console.log("🧩 Profile component unmounted");
+}, []);
+
+If you see an unmount right after clicking the button → that’s your bug.
+Where to look:
+
+
+Any key={...} on the component tree above this
+
+
+Any conditional like {isMobile ? <A/> : <B/>} where A/B both contain their own state
+
+
+Anything that depends on user/profile loading that re-renders into a different branch
+
+
+Fix: move the isEditMode state up to a parent that isn’t swapping/unmounting, or remove the remount trigger.
+
+2) It opens and immediately closes (outside click / pointerdown issue)
+This one is sneaky: you click the button, set true, Radix opens, then it detects the same pointer event as an “outside interaction” and closes → onOpenChange(false) fires right away.
+Your logs will show:
+
+
+button clicked
+
+
+render check shows true
+
+
+then Dialog onOpenChange called with: false
+
+
+If you see that, don’t fight it—use the Radix/shadcn way:
+✅ Fix: use DialogTrigger instead of manual onClick
+Put the buttons inside the <Dialog> and let them be triggers:
+<Dialog open={isEditMode} onOpenChange={setIsEditMode}>
+  <DialogTrigger asChild>
+    <Button
+      size="sm"
+      variant="outline"
+      className={`sm:hidden ${isProfileIncomplete() ? 'bg-red-100 hover:bg-red-200 border-red-400 text-red-700 animate-pulse' : 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800 dark:border-blue-700 dark:text-blue-100'}`}
+      aria-label="Edit Profile"
+    >
+      <Edit2 className="w-4 h-4" />
+    </Button>
+  </DialogTrigger>
+
+  <DialogTrigger asChild>
+    <Button
+      size="sm"
+      variant="outline"
+      className={`hidden sm:inline-flex ${isProfileIncomplete() ? 'bg-red-100 hover:bg-red-200 border-red-400 text-red-700 animate-pulse' : 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800 dark:border-blue-700 dark:text-blue-100'}`}
+    >
+      <Edit2 className="w-4 h-4 mr-2" />
+      Edit Profile
+    </Button>
+  </DialogTrigger>
+
+  <DialogContent className="max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
+    <DialogHeader>
+      <DialogTitle>Edit Profile</DialogTitle>
+    </DialogHeader>
+    ...
+  </DialogContent>
+</Dialog>
+
+This eliminates the “open then instantly close” class of problems.
+
+3) The dialog is opening, but it’s behind something (z-index / overlay)
+If your logs show isEditMode: true and it stays true, but you don’t see the modal:
+Check DOM:
+Open DevTools → Elements → search for data-state="open" or DialogContent.
+If it’s in the DOM, it’s a CSS stacking issue.
+Fix (quick test):
+Temporarily add a high z-index:
+<DialogContent className="z-[9999] ...">
+
+Also check if you have any parent containers doing:
+
+
+transform
+
+
+filter
+
+
+perspective
+
+
+or weird z-index stacking contexts
+
+
+Radix portals usually dodge this, but if your DialogContent is not portaling (custom Dialog component), stacking contexts can bite.
+
+4) You’re importing the wrong Dialog component (or a mismatched one)
+If you accidentally have multiple Dialog implementations (Radix vs something else), open may not do what you think.
+Confirm import:
+Make sure it’s from your shadcn path, like:
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+
+If it’s from somewhere else, controlled mode may differ.
+
+5) Something else is forcing setIsEditMode(false)
+Search the file for:
+
+
+setIsEditMode(false)
+
+
+setIsEditMode(
+
+
+A common pattern is an effect like “when profile loads, exit edit mode”.
+
+What I’d do in your shoes (fastest path)
+
+
+Click button and watch for onOpenChange(false) immediately.
+
+
+If yes → switch to DialogTrigger (fix #2).
+
+
+If no, but it still doesn’t show → check mount/unmount logs (fix #1) and inspect DOM/z-index (fix #3).
+
+
+If you paste the 10–20 lines of console output from one click (button log + render check + onOpenChange), I can tell you which of the 5 it is in one shot.
