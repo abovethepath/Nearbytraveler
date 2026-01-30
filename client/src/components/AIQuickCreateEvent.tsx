@@ -48,9 +48,18 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
 
   const generateDraftMutation = useMutation({
     mutationFn: async (text: string) => {
+      // Get user ID from localStorage for authentication
+      const storedUser = localStorage.getItem('travelconnect_user');
+      const userId = storedUser ? JSON.parse(storedUser).id : null;
+      
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (userId) {
+        headers["X-User-Id"] = userId.toString();
+      }
+      
       const response = await fetch(`${getApiBaseUrl()}/api/ai/event-draft`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         credentials: "include",
         body: JSON.stringify({
           text,
