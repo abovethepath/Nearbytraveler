@@ -4395,8 +4395,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </div>
                       )}
                       
-                      {/* EXPERIMENT 3: Uncontrolled Dialog with DialogTrigger */}
-                      <Dialog>
+                      {/* Single Dialog with both mobile and desktop triggers */}
+                      <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
+                        {/* Mobile trigger */}
                         <DialogTrigger asChild>
                           <Button
                             type="button"
@@ -4408,16 +4409,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             <Edit2 className="w-4 h-4" />
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="z-[99999] max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900">
-                          <DialogHeader>
-                            <DialogTitle>TRIGGER TEST - Mobile</DialogTitle>
-                          </DialogHeader>
-                          <div className="p-4">If you see this, the Dialog system works! The issue was with controlled state.</div>
-                        </DialogContent>
-                      </Dialog>
-
-                      {/* Desktop version */}
-                      <Dialog>
+                        {/* Desktop trigger */}
                         <DialogTrigger asChild>
                           <Button
                             type="button"
@@ -4429,11 +4421,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             Edit Profile
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="z-[99999] max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900">
+                        <DialogContent 
+                          className="z-[100000] max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
+                          onPointerDownOutside={(e) => e.preventDefault()}
+                          onInteractOutside={(e) => e.preventDefault()}
+                        >
                           <DialogHeader>
-                            <DialogTitle>TRIGGER TEST - Desktop</DialogTitle>
+                            <DialogTitle>TEST DIALOG</DialogTitle>
                           </DialogHeader>
-                          <div className="p-4">If you see this, the Dialog system works! The issue was with controlled state.</div>
+                          <div className="p-4">If you see this on both mobile AND desktop, the combined approach works!</div>
                         </DialogContent>
                       </Dialog>
                     </div>
