@@ -4002,8 +4002,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                   <span className="break-words">Nearby Traveler • {currentTravelPlan}</span>
                                 </div>
                                 {activePlanWithHostel && (
-                                  <div className="flex items-start gap-1.5 text-sm font-medium text-orange-700 dark:text-orange-400 flex-wrap mt-1">
-                                    <Building2 className="w-4 h-4 text-orange-600 flex-shrink-0 mt-0.5" />
+                                  <div className="flex items-start gap-1.5 text-sm font-medium text-white/90 flex-wrap mt-1">
+                                    <Building2 className="w-4 h-4 text-white/80 flex-shrink-0 mt-0.5" />
                                     <span className="break-words">🏨 Staying at {activePlanWithHostel.hostelName}</span>
                                   </div>
                                 )}
