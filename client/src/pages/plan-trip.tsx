@@ -947,10 +947,10 @@ export default function PlanTrip() {
                 <div className="space-y-3">
                   <Input
                     type="text"
-                    placeholder="Enter hostel name (e.g., HI Los Angeles)"
+                    placeholder="Hostel name"
                     value={tripPlan.hostelName || ""}
                     onChange={(e) => setTripPlan(prev => ({ ...prev, hostelName: e.target.value }))}
-                    className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 text-sm sm:text-base"
+                    className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 text-sm sm:text-base w-full max-w-full"
                   />
                   
                   {tripPlan.hostelName && (
