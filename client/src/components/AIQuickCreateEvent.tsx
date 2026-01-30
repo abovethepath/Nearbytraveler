@@ -339,7 +339,7 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
             <p className="text-xs text-gray-500">
               {speechSupported 
                 ? "Type or tap Voice to speak your event details. Include: date, time, location, event name."
-                : "Include: date, time, location/address, event name, and any special requirements"
+                : "Include: date, time, location/address, event name, and any special requirements. Tip: Tap the 🎙️ on your keyboard for voice dictation!"
               }
             </p>
           </div>
