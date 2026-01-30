@@ -1,0 +1,87 @@
+You’ve got Trip Vibe (Solo/Couple/Friends/Family) and “Traveler Type” checkboxes repeating the same thing.
+
+What to do (clean fix)
+1) Delete these checkboxes entirely
+
+Solo Traveler
+
+Couple Traveler
+
+Group Traveler
+
+Family Traveler
+
+Because Trip Vibe already covers them.
+
+2) Either remove “Traveler Type” altogether OR shrink it to 3–5 optional tags
+
+If you keep any, keep only ones that add signal without stigma:
+
+Keep (optional):
+
+Business Trip
+
+Digital Nomad
+
+First time here
+
+Maybe (optional, but I’d skip for now):
+
+Backpacker
+
+Student Traveler
+
+Solo Parent Travel / Parent seeking parent friends (only if Linkids/parent angle matters in NT)
+
+Remove (I agree with you):
+
+Budget Traveler
+
+Luxury Traveler (people won’t select, and it’s awkward)
+
+3) Rename the section so it’s not “type”
+
+Replace “Traveler Type” with:
+Optional trip tags (optional)
+Helper text: “These help with recommendations. You can skip.”
+
+4) Order on the form
+
+Destination, dates
+
+Trip Vibe (required or optional)
+
+Optional trip tags (3 items max)
+
+Create Trip → redirect to City Plans
+
+What to tell Replit (copy/paste)
+
+“Remove redundant Traveler Type checkboxes (Solo/Couple/Group/Family) since Trip Vibe covers them. Remove Budget/Luxury. Replace Traveler Type with ‘Optional trip tags’ and keep only: Business Trip, Digital Nomad, First time here (max 3). Keep the form minimal and aligned with the new flow (Create Trip → redirect to City Plans).”
+
+i do ask if they ahve a hotel or a car on this page, not sure it is needed yet, we are not connecting anyone to sthese services
+
+You don’t need “hotel” or “car” right now unless you’re using it to improve matching in a way the user will feel immediately.
+
+Recommendation: remove from Phase 1
+
+Accommodation type
+
+Transportation method
+
+They add friction, and you’re not delivering value off them yet (no booking, no deals, no logistics features).
+
+If you want to keep something without friction
+
+Make it optional later (after trip is created), or tuck it behind “More details (optional)”.
+
+Best approach:
+
+Trip create page = Destination + dates + Trip vibe
+
+After redirect to City Plans, add a small “Trip details” link:
+“Add hotel/transport details (optional)”
+
+What to tell Replit (copy/paste)
+
+“Remove Accommodation and Transportation from the main trip creation form for now (not used for matching or services yet). Keep the trip create flow minimal: destination, dates, trip vibe (optional tags). Add accommodation/transport as optional ‘Trip details’ editable later in the trip plan page.”

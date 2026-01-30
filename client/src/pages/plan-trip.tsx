@@ -16,7 +16,6 @@ import { Calendar, MapPin, Users, Building2, Heart, MessageCircle, Star, ArrowLe
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { getAllInterests, getAllActivities, getTravelActivities, getAllLanguages, validateSelections, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS } from "@shared/base-options";
-import { BASE_TRAVELER_TYPES } from "@shared/base-options";
 import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/locationData";
 import { US_CITIES_BY_STATE } from "@shared/locationData";
 import UserCard from "@/components/user-card";
@@ -42,6 +41,8 @@ interface TripPlan {
   isActiveDuty?: boolean;
   travelStyle?: string[];
   travelGroup?: string; // Per-trip override: solo, couple, friends, family
+  lookingToMeet?: string; // locals, travelers, both
+  tripPace?: string; // chill, balanced, packed
 }
 
 interface User {
@@ -111,6 +112,8 @@ export default function PlanTrip() {
     isActiveDuty: false,
     travelStyle: [],
     travelGroup: user?.travelGroup || "", // Pre-fill from profile
+    lookingToMeet: "both", // Default to meeting both locals and travelers
+    tripPace: "balanced", // Default to balanced pace
   });
   const [hiddenGems, setHiddenGems] = useState<any[]>([]);
   const [isDiscoveringGems, setIsDiscoveringGems] = useState(false);
@@ -214,7 +217,20 @@ export default function PlanTrip() {
         accommodation: existingPlan?.accommodation || '',
         transportation: existingPlan?.transportation || '',
         notes: existingPlan?.notes || '',
-        travelGroup: existingPlan?.travelGroup || user?.travelGroup || '' // Trip override or profile default
+        travelGroup: existingPlan?.travelGroup || user?.travelGroup || '', // Trip override or profile default
+        // Parse lookingToMeet and tripPace from stored travelStyle if present
+        lookingToMeet: (() => {
+          const styles = Array.isArray(existingPlan?.travelStyle) ? existingPlan.travelStyle : [];
+          const meetEntry = styles.find((s: string) => s.startsWith('Looking to meet:'));
+          if (meetEntry) return meetEntry.replace('Looking to meet: ', '');
+          return 'both';
+        })(),
+        tripPace: (() => {
+          const styles = Array.isArray(existingPlan?.travelStyle) ? existingPlan.travelStyle : [];
+          const paceEntry = styles.find((s: string) => s.startsWith('Pace:'));
+          if (paceEntry) return paceEntry.replace('Pace: ', '');
+          return 'balanced';
+        })()
       };
       
       console.log('=== PARSED PLAN DATA FOR EDITING ===');
@@ -397,6 +413,11 @@ export default function PlanTrip() {
       destinationParts.push(plan.destinationCountry);
       const fullDestination = destinationParts.join(', ');
       
+      // Build travelStyle array from new simpler options
+      const travelStyleFromNewOptions: string[] = [];
+      if (plan.lookingToMeet) travelStyleFromNewOptions.push(`Looking to meet: ${plan.lookingToMeet}`);
+      if (plan.tripPace) travelStyleFromNewOptions.push(`Pace: ${plan.tripPace}`);
+      
       const travelPlanData = {
         userId: user?.id,
         destination: fullDestination,
@@ -407,7 +428,7 @@ export default function PlanTrip() {
         endDate: plan.endDate ? new Date(plan.endDate).toISOString() : null,
         interests: plan.interests || [],
         activities: plan.activities || [],
-        travelerTypes: plan.travelerTypes || [], // This gets mapped to travelStyle on server
+        travelerTypes: travelStyleFromNewOptions, // Store new options in travelStyle format
         accommodation: plan.accommodation || '',
         transportation: plan.transportation || '',
         notes: plan.notes || '',
@@ -439,36 +460,52 @@ export default function PlanTrip() {
       console.log('=== TRAVEL PLAN SUCCESS ===');
       console.log('Travel plan data:', data);
       
-      toast({
-        title: isEditMode ? "Trip Plan Updated!" : "Trip Plan Created!",
-        description: isEditMode ? "Your travel plan has been updated successfully." : "Your travel plan has been saved and you can now connect with locals and travelers.",
-      });
-      
-      // Reset form to completely clean state
-      setTripPlan({
-        destination: "",
-        destinationCity: "",
-        destinationState: "",
-        destinationCountry: "",
-        startDate: "",
-        endDate: "",
-        interests: [],
-        activities: [],
-        travelerTypes: [],
-        accommodation: "",
-        transportation: "",
-        notes: ""
-      });
-      
-      window.scrollTo(0, 0);
       // Invalidate all travel plan queries to ensure they update everywhere
       queryClient.invalidateQueries({ queryKey: ["/api/travel-plans"] });
       queryClient.invalidateQueries({ queryKey: [`/api/travel-plans/${user?.id || 1}`] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id || 1}/travel-plans`] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id || 1}`] });
       queryClient.invalidateQueries({ queryKey: ["/api/users"] });
-      // Invalidate location searches since travel plans affect matching
       queryClient.invalidateQueries({ queryKey: ["/api/users/search-by-location"] });
+      
+      if (isEditMode) {
+        // For edit mode, show toast and go to profile
+        toast({
+          title: "Trip Plan Updated!",
+          description: "Your travel plan has been updated successfully.",
+        });
+        setLocation('/profile');
+      } else {
+        // For new trips, redirect to City Plans with toast
+        const cityName = tripPlan.destinationCity || tripPlan.destination;
+        toast({
+          title: "Trip Created!",
+          description: "Next: pick 3-8 City Plans to match faster.",
+        });
+        
+        // Reset form to completely clean state
+        setTripPlan({
+          destination: "",
+          destinationCity: "",
+          destinationState: "",
+          destinationCountry: "",
+          startDate: "",
+          endDate: "",
+          interests: [],
+          activities: [],
+          travelerTypes: [],
+          accommodation: "",
+          transportation: "",
+          notes: "",
+          lookingToMeet: "both",
+          tripPace: "balanced"
+        });
+        
+        // Redirect to City Plans page for this city
+        setLocation(`/match-in-city?city=${encodeURIComponent(cityName)}`);
+      }
+      
+      window.scrollTo(0, 0);
     },
     onError: (error) => {
       console.error('Travel plan creation error:', error);
@@ -664,10 +701,10 @@ export default function PlanTrip() {
                 <Compass className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 break-words">
-                {isEditMode ? "Edit Your Trip" : "Plan Your Next Adventure"}
+                {isEditMode ? "Edit Your Trip" : "Create a Trip"}
               </h1>
               <p className="text-sm sm:text-lg opacity-95 break-words font-medium">
-                {isEditMode ? "Update your travel plan details" : "Connect with locals, fellow travelers, and businesses"}
+                {isEditMode ? "Update your travel plan details" : "Step 1 of 2: Destination + Dates"}
               </p>
             </div>
           </div>
@@ -704,17 +741,17 @@ export default function PlanTrip() {
                       </span>
                       <br />
                       <span className="text-orange-300 drop-shadow-lg">
-                        Adventure
+                        Trip
                       </span>
                     </>
                   ) : (
                     <>
                       <span className="text-white drop-shadow-lg">
-                        Plan Your Next
+                        Create a
                       </span>
                       <br />
                       <span className="text-orange-300 drop-shadow-lg">
-                        Adventure
+                        Trip
                       </span>
                     </>
                   )}
@@ -724,13 +761,13 @@ export default function PlanTrip() {
                   <p className="text-xl text-white leading-relaxed font-medium drop-shadow-md">
                     {isEditMode 
                       ? <>Perfect your journey — <em className="text-orange-200 font-semibold">every detail matters.</em></>
-                      : <>Adventures begin with a plan — <em className="text-orange-200 font-semibold">connections make them unforgettable.</em></>
+                      : <>Step 1 of 2: <em className="text-orange-200 font-semibold">Destination + dates get you into the right city.</em></>
                     }
                   </p>
                   <p className="text-base text-white/80 leading-relaxed">
                     {isEditMode
                       ? "Fine-tune your travel plan, update your interests, and enhance your adventure preferences to get even better matches and recommendations."
-                      : "Create detailed travel plans that connect you with locals, fellow travelers, and authentic experiences. Share your style, interests, and planned activities to discover perfect connections."
+                      : "Next, you'll pick City Plans (things you want to do) to match with the right people."
                     }
                   </p>
                 </div>
@@ -873,30 +910,40 @@ export default function PlanTrip() {
                 </div>
               </div>
 
-              {/* Traveler Types - Mobile Responsive */}
+              {/* Looking to Meet - Simple selector */}
               <div className="overflow-hidden break-words">
-                <Label className="text-sm sm:text-base font-medium mb-2 block text-black dark:text-white break-words">
-                  Traveler Type on This Trip
+                <Label htmlFor="lookingToMeet" className="text-sm sm:text-base font-medium text-black dark:text-white break-words">
+                  Who are you looking to meet?
                 </Label>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mb-3 break-words">Select all that apply to help us match you with the right people and experiences</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 border rounded-lg p-3 sm:p-4 border-gray-300 dark:border-gray-600 overflow-hidden break-words">
-                  {BASE_TRAVELER_TYPES.map((type) => (
-                    <div key={type} className="flex items-center space-x-2 overflow-hidden break-words">
-                      <Checkbox
-                        id={`traveler-type-${type}`}
-                        checked={tripPlan.travelerTypes.includes(type)}
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            setTripPlan(prev => ({ ...prev, travelerTypes: [...prev.travelerTypes, type] }));
-                          } else {
-                            setTripPlan(prev => ({ ...prev, travelerTypes: prev.travelerTypes.filter(t => t !== type) }));
-                          }
-                        }}
-                      />
-                      <Label htmlFor={`traveler-type-${type}`} className="text-xs sm:text-sm text-black dark:text-white break-words overflow-hidden cursor-pointer">{type}</Label>
-                    </div>
-                  ))}
-                </div>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mb-2 break-words">Helps us match you with the right people</p>
+                <Select value={tripPlan.lookingToMeet || "both"} onValueChange={(value) => setTripPlan(prev => ({ ...prev, lookingToMeet: value }))}>
+                  <SelectTrigger className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 text-sm sm:text-base h-9 sm:h-10 md:h-11">
+                    <SelectValue placeholder="Select preference" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-lg max-w-[90vw] w-full">
+                    <SelectItem value="locals" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Meet Locals</SelectItem>
+                    <SelectItem value="travelers" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Meet Fellow Travelers</SelectItem>
+                    <SelectItem value="both" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Both</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Trip Pace - Simple selector */}
+              <div className="overflow-hidden break-words">
+                <Label htmlFor="tripPace" className="text-sm sm:text-base font-medium text-black dark:text-white break-words">
+                  Trip Pace
+                </Label>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mb-2 break-words">How do you like to travel?</p>
+                <Select value={tripPlan.tripPace || "balanced"} onValueChange={(value) => setTripPlan(prev => ({ ...prev, tripPace: value }))}>
+                  <SelectTrigger className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 text-sm sm:text-base h-9 sm:h-10 md:h-11">
+                    <SelectValue placeholder="Select pace" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-lg max-w-[90vw] w-full">
+                    <SelectItem value="chill" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Chill - Take it easy</SelectItem>
+                    <SelectItem value="balanced" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Balanced - Mix of activities and relaxation</SelectItem>
+                    <SelectItem value="packed" className="bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Packed - See and do everything!</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
 
@@ -980,9 +1027,23 @@ export default function PlanTrip() {
                 >
                   <span className="break-words">{createTravelPlan.isPending ? 
                     (isEditMode ? "Updating Trip..." : "Creating Trip...") : 
-                    (isEditMode ? "Update My Trip Plan" : "Create My Trip Plan")
+                    (isEditMode ? "Update My Trip Plan" : "Create Trip & Continue")
                   }</span>
                 </Button>
+                
+                {/* Next Step Preview - only show for new trips */}
+                {!isEditMode && (
+                  <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
+                    <p className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
+                      Next: City Plans (2 minutes)
+                    </p>
+                    <ul className="text-xs text-blue-700 dark:text-blue-300 space-y-1">
+                      <li>• Pick 3-8 things you want to do in your destination</li>
+                      <li>• We'll use those to show your best matches</li>
+                      <li>• You can edit anytime</li>
+                    </ul>
+                  </div>
+                )}
                 
                 {isEditMode && (
                   <Button 

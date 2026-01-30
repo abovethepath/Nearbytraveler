@@ -1,0 +1,81 @@
+this Trip Planning page is talking like it’s the whole matching engine, but in your new flow it’s really just Step 1: set destination + dates, then Step 2: City Plans is where matching intent gets specific. So the page copy + fields need to match that reality.
+
+What to change (simple, high-impact)
+1) Fix the promise + redirect (most important)
+
+After “Create My Trip Plan” succeeds:
+
+Auto-redirect to: City Plans for {Destination}
+
+Show a toast/banner:
+“Trip created! Next: choose 3–8 City Plans to match faster.”
+Button: “Go to City Plans →”
+
+On the page itself (above the form):
+Replace the “fill out as detailed as possible…” with:
+
+Step 1 of 2: Create your trip
+Destination + dates get you into the right city.
+Next, you’ll pick City Plans (things you want to do) to match with the right people.
+
+2) Reduce “Traveler Type” clutter
+
+That big checklist is too much friction and includes stuff people won’t self-label (budget/luxury).
+
+Replace it with 2–4 lightweight inputs:
+
+Required
+
+Destination (city)
+
+Dates
+
+Optional (keep it simple)
+
+Who are you traveling with? (Solo / Couple / Friends / Family) (you already have this)
+
+What are you looking for? (Meet locals / Meet travelers / Both) (super helpful for matching)
+
+Trip pace (Chill / Balanced / Packed) (harmless + useful)
+
+Everything else can be moved to City Plans or Profile later.
+
+3) Reframe “budget/luxury” as non-judgmental
+
+If you still want that signal, don’t ask “Budget Traveler.”
+
+Use:
+
+Spending comfort: Value-focused / Mid-range / Treat-yourself
+or
+
+Typical plans: Free/cheap activities / A mix / Premium experiences
+
+Make it optional and don’t surface it loudly.
+
+4) Make City Plans the “matching” step
+
+Under the submit button (or in a right-side panel on desktop), add a preview:
+
+Next: City Plans (2 minutes)
+
+Pick 3–8 things you want to do in {City}
+
+We’ll use those to show your best matches
+
+You can edit anytime
+
+5) Rename the page/title for clarity
+
+Your header “Plan Your Next Adventure” is fine marketing, but the functional page title should be:
+
+Create a Trip
+Subheader:
+
+“Destination + dates. Then choose City Plans.”
+
+What to tell Replit (copy/paste)
+
+“Update Trip Planning to reflect the new flow: it’s Step 1 (destination+dates) and City Plans is Step 2 (activities for matching). Remove the ‘fill out as detailed as possible’ language. After successful trip creation, redirect to /city-plans/:city and show ‘Trip created! Next: pick 3–8 City Plans to match faster.’ Simplify Traveler Type checklist to: required destination+dates; optional ‘traveling with’ (solo/couple/friends/family), ‘looking to meet’ (locals/travelers/both), and ‘trip pace’ (chill/balanced/packed). Replace budget/luxury labels with optional neutral ‘Value-focused / Mid-range / Treat-yourself’.”
+
+If you want, I can also give you the exact replacement copy for the top paragraph + the submit button area so it reads clean and confident.
