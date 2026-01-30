@@ -7153,12 +7153,15 @@ Questions? Just reply to this message. Welcome aboard!
       // If user has no remaining travel plans, clear their travel status
       if (!remainingTravelPlans || remainingTravelPlans.length === 0) {
         if (process.env.NODE_ENV === 'development') console.log('=== CLEARING TRAVEL STATUS ===', 'User has no remaining travel plans');
-        await storage.updateUser(userId, {
-          isCurrentlyTraveling: false,
-          travelDestination: null,
-          currentCity: null
-        });
-        if (process.env.NODE_ENV === 'development') console.log('=== TRAVEL STATUS CLEARED ===');
+        try {
+          await storage.updateUser(userId, {
+            isCurrentlyTraveling: false
+          });
+          if (process.env.NODE_ENV === 'development') console.log('=== TRAVEL STATUS CLEARED ===');
+        } catch (err) {
+          console.error('Error updating user travel status:', err);
+          // Non-critical - continue with success response
+        }
       } else {
         // User still has travel plans - check if they should still be marked as currently traveling
         // Simple check for active travel plans (replicate core logic here)
@@ -7180,15 +7183,17 @@ Questions? Just reply to this message. Welcome aboard!
           }
         }
         
-        const currentDestination = hasActiveTravelPlan;
-        if (!currentDestination) {
+        if (!hasActiveTravelPlan) {
           // No current travel - clear current travel status but keep future plans
           if (process.env.NODE_ENV === 'development') console.log('=== CLEARING CURRENT TRAVEL STATUS ===', 'No active trips remaining');
-          await storage.updateUser(userId, {
-            isCurrentlyTraveling: false,
-            travelDestination: null,
-            currentCity: null
-          });
+          try {
+            await storage.updateUser(userId, {
+              isCurrentlyTraveling: false
+            });
+          } catch (err) {
+            console.error('Error updating user travel status:', err);
+            // Non-critical - continue with success response
+          }
         }
       }
       
