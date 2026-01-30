@@ -160,13 +160,13 @@ export default function UserCard({
       {/* Info box - fixed 4-row grid for perfect consistency */}
       <div className="p-2.5 lg:p-4 bg-white dark:bg-gray-800 min-h-[72px] lg:min-h-[96px]">
         <div className="grid grid-rows-4 gap-0 leading-tight">
-          {/* Row 1: Things in common */}
-          <div className={`text-xs lg:text-sm font-semibold truncate ${thingsInCommon > 0 ? 'text-orange-500' : 'text-gray-300 dark:text-gray-600'}`}>
-            {thingsInCommon > 0 ? `${thingsInCommon} things in common` : '0 shared interests'}
+          {/* Row 1: Things in common - show signal or quietly blank */}
+          <div className="text-xs lg:text-sm font-semibold truncate text-orange-500 min-h-[16px] lg:min-h-[20px]">
+            {thingsInCommon > 0 ? `${thingsInCommon} things in common` : '\u00A0'}
           </div>
-          {/* Row 2: Mutual friends */}
-          <div className={`text-xs lg:text-sm font-medium truncate ${mutualFriends > 0 ? 'text-cyan-600 dark:text-cyan-400' : 'text-gray-300 dark:text-gray-600'}`}>
-            {mutualFriends > 0 ? `${mutualFriends} mutual friends` : '0 mutual friends'}
+          {/* Row 2: Mutual friends - show signal or quietly blank */}
+          <div className="text-xs lg:text-sm font-medium truncate text-cyan-600 dark:text-cyan-400 min-h-[16px] lg:min-h-[20px]">
+            {mutualFriends > 0 ? `${mutualFriends} mutual friends` : '\u00A0'}
           </div>
           {/* Row 3: Username */}
           <div className="text-xs lg:text-sm font-semibold text-gray-900 dark:text-white truncate mt-1">
