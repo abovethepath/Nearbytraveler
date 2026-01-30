@@ -4395,7 +4395,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         </div>
                       )}
                       
-                      {/* Edit Profile Button - uses setTimeout to avoid parent container closing issues */}
+                      {/* Edit Profile Button */}
                       <Button
                         type="button"
                         size="sm"
@@ -4403,11 +4403,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          console.log('📝 Edit Profile button clicked');
-                          setTimeout(() => {
-                            console.log('⏰ setTimeout fired, setting isEditMode to true');
-                            setIsEditMode(true);
-                          }, 0);
+                          setTimeout(() => setIsEditMode(true), 0);
                         }}
                         className={isProfileIncomplete() ? 'bg-red-100 hover:bg-red-200 border-red-400 text-red-700 animate-pulse' : 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800 dark:border-blue-700 dark:text-blue-100'}
                       >
@@ -8220,27 +8216,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </Card>
       )}
 
-      {/* Profile Edit Modal - At root level with high z-index */}
-      <Dialog open={isEditMode} onOpenChange={(open) => {
-        console.log('🔔 Dialog onOpenChange called:', open, 'current isEditMode:', isEditMode);
-        setIsEditMode(open);
-      }}>
+      {/* Profile Edit Modal */}
+      <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
         <DialogContent 
-          className="z-[100000] max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border-4 border-red-500"
-          style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
-          onPointerDownOutside={(e) => {
-            console.log('🚫 PointerDownOutside - preventing');
-            e.preventDefault();
-          }}
-          onInteractOutside={(e) => {
-            console.log('🚫 InteractOutside - preventing');
-            e.preventDefault();
-          }}
-          ref={(node) => {
-            if (node && isEditMode) {
-              console.log('✅ DialogContent mounted and visible, node:', node);
-            }
-          }}
+          className="max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
         >
           <DialogHeader>
             <div className="flex items-center justify-between">
