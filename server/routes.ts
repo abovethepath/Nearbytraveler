@@ -6814,6 +6814,8 @@ Questions? Just reply to this message. Welcome aboard!
         accommodation: req.body.accommodation,
         transportation: req.body.transportation,
         notes: req.body.notes,
+        hostelName: req.body.hostelName || null, // Hostel name for matching
+        hostelVisibility: req.body.hostelVisibility || 'private', // 'private' or 'public'
       };
       
       // Validate required fields
@@ -7039,7 +7041,8 @@ Questions? Just reply to this message. Welcome aboard!
       const allowedFields = [
         'destination', 'destinationCity', 'destinationState', 'destinationCountry',
         'startDate', 'endDate', 'interests', 'activities', 'travelStyle', 'travelGroup',
-        'accommodation', 'transportation', 'notes', 'status'
+        'accommodation', 'transportation', 'notes', 'status',
+        'hostelName', 'hostelVisibility' // Hostel matching fields
       ];
       
       for (const field of allowedFields) {
