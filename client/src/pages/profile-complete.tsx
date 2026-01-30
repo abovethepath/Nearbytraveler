@@ -8217,8 +8217,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       )}
 
       {/* Profile Edit Modal */}
-      <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
+      {console.log('🔵 DIALOG RENDER CHECK - isEditMode:', isEditMode)}
+      <Dialog open={isEditMode} onOpenChange={(open) => {
+        console.log('🔵 Dialog onOpenChange called with:', open);
+        setIsEditMode(open);
+      }}>
         <DialogContent className="max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
+          {console.log('🟢 DIALOG CONTENT RENDERING')}
           <DialogHeader>
             <div className="flex items-center justify-between">
               <DialogTitle>Edit Profile</DialogTitle>
