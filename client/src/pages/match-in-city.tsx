@@ -139,7 +139,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [isCitiesLoading, setIsCitiesLoading] = useState(true);
   const [editingActivityName, setEditingActivityName] = useState('');
   const [activitySearchFilter, setActivitySearchFilter] = useState('');
-  const [activeMobileSection, setActiveMobileSection] = useState<'popular' | 'ai' | 'preferences' | 'selected' | 'all'>('all');
+  const [activeMobileSection, setActiveMobileSection] = useState<'popular' | 'ai' | 'preferences' | 'selected' | 'events' | 'all'>('all');
 
   // Add City Pick Modal State
   const [showAddPickModal, setShowAddPickModal] = useState(false);
@@ -154,6 +154,11 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [aiSuggestionsLoading, setAiSuggestionsLoading] = useState(false);
   const [matchingInsight, setMatchingInsight] = useState<{ [userId: number]: any }>({});
   const [matchingInsightLoading, setMatchingInsightLoading] = useState<{ [userId: number]: boolean }>({});
+  
+  // Real Events State (from Ticketmaster/external APIs)
+  const [realEvents, setRealEvents] = useState<any[]>([]);
+  const [realEventsLoading, setRealEventsLoading] = useState(false);
+  const [showAllEvents, setShowAllEvents] = useState(false);
   
   // Dismissed AI activities (persisted in localStorage per city)
   const [dismissedAIActivities, setDismissedAIActivities] = useState<Set<number>>(() => {
@@ -335,12 +340,50 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     }
   }, [allCities, user, userProfile, travelPlans]);
 
+  // Fetch real events from Ticketmaster API (function declaration for hoisting)
+  async function fetchRealEvents() {
+    if (!selectedCity) return;
+    
+    setRealEventsLoading(true);
+    try {
+      const apiBase = getApiBaseUrl();
+      const response = await fetch(`${apiBase}/api/external-events/ticketmaster?city=${encodeURIComponent(selectedCity)}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        // Filter to only events in the next 30 days with valid dates
+        const now = new Date();
+        const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+        
+        const upcomingEvents = (data.events || []).filter((event: any) => {
+          if (!event.date) return false;
+          const eventDate = new Date(event.date);
+          // Check for valid date
+          if (isNaN(eventDate.getTime())) return false;
+          return eventDate >= now && eventDate <= thirtyDaysFromNow;
+        });
+        
+        setRealEvents(upcomingEvents);
+        console.log(`📅 REAL EVENTS: Loaded ${upcomingEvents.length} events in next 30 days for ${selectedCity}`);
+      } else {
+        console.log('📅 REAL EVENTS: No events available');
+        setRealEvents([]);
+      }
+    } catch (error) {
+      console.error('Error fetching real events:', error);
+      setRealEvents([]);
+    } finally {
+      setRealEventsLoading(false);
+    }
+  }
+  
   // Fetch city activities when a city is selected
   useEffect(() => {
     if (selectedCity) {
       fetchCityActivities();
       fetchUserActivities();
       fetchMatchingUsers();
+      fetchRealEvents();
     }
   }, [selectedCity]);
 
@@ -1788,6 +1831,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   {[
                     { id: 'selected', label: `✓ Your Picks`, count: userActivities.filter(ua => ua.cityName === selectedCity).length },
                     { id: 'popular', label: '⭐ Popular', count: cityActivities.filter(a => (a as any).isFeatured || (a as any).source === 'featured').length },
+                    { id: 'events', label: '📅 Events', count: realEvents.length },
                     { id: 'ai', label: '✨ AI Ideas', count: cityActivities.filter(a => !((a as any).isFeatured || (a as any).source === 'featured') && a.category !== 'universal').length },
                     { id: 'preferences', label: '✈️ Preferences', count: 20 },
                   ].map((section) => (
@@ -2168,6 +2212,86 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           <span>✈️</span> Jump to Match Preferences
                         </button>
                       </div>
+                    </div>
+                  );
+                })()}
+
+                {/* SECTION 2: Events in Next 30 Days - Real Events from APIs */}
+                {(() => {
+                  // Mobile: only show if this section is active or showing all
+                  const isMobileVisible = activeMobileSection === 'events' || activeMobileSection === 'all';
+                  
+                  // Show section if we have events or are loading
+                  if (!realEventsLoading && realEvents.length === 0) return null;
+                  
+                  // Limit to first 6 events unless expanded
+                  const displayEvents = showAllEvents ? realEvents : realEvents.slice(0, 6);
+                  
+                  return (
+                    <div className={`md:block ${isMobileVisible ? 'block' : 'hidden'}`}>
+                      <div className="text-center mb-6">
+                        <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent mb-2">📅 Events in Next 30 Days</h3>
+                        <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm">Real upcoming events from Ticketmaster</p>
+                        <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto rounded-full mt-2"></div>
+                      </div>
+                      
+                      {realEventsLoading ? (
+                        <div className="text-center py-8">
+                          <div className="animate-spin w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-2"></div>
+                          <p className="text-gray-500 dark:text-gray-400">Loading events...</p>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {displayEvents.map((event: any, index: number) => (
+                              <a
+                                key={event.id || index}
+                                href={event.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 border border-purple-200 dark:border-purple-700 rounded-xl p-4 hover:shadow-lg transition-all"
+                              >
+                                <div className="flex items-start gap-3">
+                                  {event.image && (
+                                    <img 
+                                      src={event.image} 
+                                      alt={event.title} 
+                                      className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                                    />
+                                  )}
+                                  <div className="flex-1 min-w-0">
+                                    <h4 className="font-semibold text-gray-900 dark:text-white text-sm truncate">{event.title}</h4>
+                                    <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
+                                      📅 {new Date(event.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                                    </p>
+                                    {event.venue && (
+                                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">📍 {event.venue}</p>
+                                    )}
+                                    {event.category && (
+                                      <span className="inline-block mt-2 px-2 py-0.5 bg-purple-100 dark:bg-purple-800/50 text-purple-700 dark:text-purple-300 text-xs rounded-full">
+                                        {event.category}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              </a>
+                            ))}
+                          </div>
+                          
+                          {realEvents.length > 6 && (
+                            <div className="text-center mt-4">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setShowAllEvents(!showAllEvents)}
+                                className="bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 border-purple-300 dark:border-purple-600 text-purple-700 dark:text-purple-300 hover:from-purple-200 hover:to-pink-200"
+                              >
+                                {showAllEvents ? 'Show fewer events' : `Show ${realEvents.length - 6} more events`}
+                              </Button>
+                            </div>
+                          )}
+                        </>
+                      )}
                     </div>
                   );
                 })()}

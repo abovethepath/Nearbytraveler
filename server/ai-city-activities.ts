@@ -48,6 +48,19 @@ const AI_ACTIVITY_BAN_PHRASES = [
   'top spots', 'popular spots', 'museums & galleries', 'art galleries'
 ];
 
+// Plain street/road names to ban (unless formatted as an experience)
+// These are common street suffixes - activity must NOT be just "Street Name + suffix"
+const PLAIN_STREET_SUFFIXES = [
+  'avenue', 'ave', 'street', 'st', 'boulevard', 'blvd', 'road', 'rd',
+  'drive', 'dr', 'lane', 'ln', 'way', 'highway', 'hwy', 'place', 'pl'
+];
+
+// Famous streets that are OK ONLY if formatted as an experience
+const FAMOUS_STREETS_NEED_EXPERIENCE_FORMAT = [
+  'melrose', 'sunset', 'hollywood', 'broadway', 'rodeo', 'fifth', '5th',
+  'michigan', 'bourbon', 'beale', 'abbey road', 'champs', 'las ramblas'
+];
+
 // Words that when appearing ALONE (as the entire activity) indicate generic intent
 const AI_ACTIVITY_BAN_SINGLE_WORDS = [
   'nightlife', 'dating', 'brunch', 'hiking', 'yoga', 'fitness', 'workout', 'karaoke'
@@ -56,6 +69,45 @@ const AI_ACTIVITY_BAN_SINGLE_WORDS = [
 // Generic modifiers that don't make a museum/gallery name specific
 const GENERIC_MODIFIERS = ['art', 'local', 'city', 'downtown', 'popular', 'famous', 'best', 'top'];
 
+// Check if activity is just a plain street name (should be banned)
+function isPlainStreetName(name: string): boolean {
+  const normalized = name.toLowerCase().trim();
+  const words = normalized.split(/\s+/);
+  
+  // Check if activity ends with a street suffix (e.g., "Melrose Avenue", "Sunset Boulevard")
+  const lastWord = words[words.length - 1];
+  const isStreetSuffix = PLAIN_STREET_SUFFIXES.includes(lastWord);
+  
+  if (!isStreetSuffix) return false;
+  
+  // If it's just "[Name] [Street Suffix]" with 2-3 words, it's likely just a street name
+  if (words.length <= 3) {
+    // Check if it's a famous street that NEEDS experience formatting
+    const streetPart = words.slice(0, -1).join(' ');
+    const isFamousStreet = FAMOUS_STREETS_NEED_EXPERIENCE_FORMAT.some(s => 
+      streetPart.includes(s)
+    );
+    
+    if (isFamousStreet) {
+      // Famous street without experience verb - ban it
+      // Allow: "Sunset Strip nightlife", "Explore Rodeo Drive shopping"
+      // Ban: "Sunset Boulevard", "Rodeo Drive"
+      const experienceVerbs = ['tour', 'visit', 'explore', 'hike', 'watch', 'take', 'try', 'walk', 'shop', 'dine', 'eat', 'nightlife', 'shopping', 'dining'];
+      const hasExperienceContext = experienceVerbs.some(v => normalized.includes(v));
+      if (!hasExperienceContext) {
+        console.log(`🚫 BAN: Famous street without experience context: "${name}"`);
+        return true;
+      }
+    } else {
+      // Non-famous street - always ban plain street names
+      console.log(`🚫 BAN: Plain street name: "${name}"`);
+      return true;
+    }
+  }
+  
+  return false;
+}
+
 // Check if an activity name should be banned (too generic)
 function shouldBanActivity(name: string): boolean {
   const normalized = name.toLowerCase().trim();
@@ -63,6 +115,11 @@ function shouldBanActivity(name: string): boolean {
   // Check single-word bans (activity is ONLY this word)
   if (AI_ACTIVITY_BAN_SINGLE_WORDS.includes(normalized)) {
     console.log(`🚫 BAN: Filtered out single-word generic: "${name}"`);
+    return true;
+  }
+  
+  // Check for plain street names
+  if (isPlainStreetName(name)) {
     return true;
   }
   
@@ -168,67 +225,51 @@ export async function generateCityActivities(cityName: string): Promise<Generate
     // Only use AI-generated city-specific activities
     const allActivities: GeneratedActivity[] = [];
     
-    const prompt = `Generate a comprehensive list of 25-30 HIGHLY SPECIFIC and UNIQUE activities for ${cityName}. 
+    const prompt = `Generate exactly 6 HIGHLY SPECIFIC and UNIQUE activities for ${cityName}.
 
-CRITICAL REQUIREMENTS:
-1. Be extremely specific to ${cityName} - mention EXACT landmarks, museums, neighborhoods, restaurants, parks, and local attractions by NAME
-2. NO DUPLICATES - Each activity must be completely different and unique
-3. NO similar variations (e.g., don't include both "Hollywood Walk of Fame Tours" and "Hollywood Walk of Fame Photography")
-4. NO generic descriptions
-5. ONLY GENERATE CITY-SPECIFIC PLACES, LANDMARKS, AND VENUES - NOT generic social categories
+CRITICAL: Activities MUST fall into these 2 BUCKETS:
 
-DO NOT GENERATE these generic social/meeting activities (they're handled separately):
-❌ "Single" / "Open to Dating" / "Looking for Romance"
-❌ "Meet Locals Here" / "Meet Other Travelers" / "Meeting New People"
-❌ "Solo Traveler Meetups" / "Solo Travel"
-❌ "Family Friendly Activities" / "Family Activities" / "Traveling with Children"
-❌ "Business Networking" / "Coworking" / "Digital Nomad"
-❌ "Workout Buddy" / "Fitness Partner"
-❌ "Language Exchange" / "Language Practice"
-❌ "LGBTQ+ Events" / "LGBTQ+ Friendly"
-❌ Any other generic social matching categories
+=== BUCKET A: ICONIC PLACES (2-3 activities) ===
+Named landmarks, museums, venues, famous markets with PROPER NOUNS
+Examples:
+✅ "The Getty Center"
+✅ "Griffith Observatory" 
+✅ "Pike Place Market"
+✅ "The Broad Museum"
+✅ "Grand Central Market"
 
-Examples of GOOD specific activities (city landmarks/venues):
-✅ "Sagrada Familia Tours" (Barcelona)
-✅ "Picasso Museum Visit" (Barcelona) 
-✅ "Salt Lick BBQ" (Austin)
-✅ "Franklin Barbecue" (Austin)
-✅ "Hollywood Walk of Fame" (Los Angeles)
-✅ "Central Park Picnics" (New York)
-✅ "Tower Bridge Walking" (London)
+=== BUCKET B: VERB-LED EXPERIENCES (3-4 activities) ===
+Must START with an action verb: Tour / Visit / Hike / Watch / Explore / Take / Try / Walk / Taste / Discover
+Examples:
+✅ "Tour Warner Bros Studios"
+✅ "Hike to the Hollywood Sign"
+✅ "Watch a comedy show at The Laugh Factory"
+✅ "Explore Little Tokyo food scene"
+✅ "Take a bike ride along Venice Beach"
+✅ "Try authentic tacos at Guisados"
+✅ "Discover street art in the Arts District"
 
-Examples of BAD generic activities to AVOID:
-❌ "Visit Museums" (too generic)
-❌ "Food Tours" (too generic)
-❌ "Sightseeing" (too generic)
-❌ "Meet Locals" (generic social category)
-❌ "Single" (generic social category)
-❌ "Family Activities" (generic social category)
+=== STRICTLY BANNED ===
+❌ Plain street names (e.g., "Melrose Avenue", "Sunset Boulevard" - unless framed as experience like "Sunset Strip nightlife")
+❌ Generic categories ("Food Tours", "Museums", "Sightseeing")
+❌ Social matching ("Meet Locals", "Singles", "Family Activities")
+❌ Vague catchalls ("Hidden Gems", "Local Favorites", "Best Spots")
 
-For ${cityName}, include SPECIFIC and DIVERSE:
-- Named landmarks and monuments (exact names)
-- Specific museums and galleries (actual museum names)
-- Named neighborhoods and districts (real neighborhood names)
-- Specific restaurants, markets, and food experiences (actual places)
-- Named parks, beaches, and outdoor spots (exact locations)
-- Real festivals and events (actual event names and seasons)
-- Specific sports venues and teams (actual stadium/team names)
-- Named shopping streets and areas (real shopping district names)
-- Authentic local traditions and experiences unique to ${cityName}
-- Day trips to specific nearby destinations (actual place names)
-
-IMPORTANT: Make each activity completely different. Do not create variations of the same thing.
+=== FORMAT REQUIREMENTS ===
+- At least 3 of 6 activities MUST start with a verb (Tour/Visit/Hike/Explore/Take/Try/Watch/Walk/Taste/Discover)
+- Every activity must mention a SPECIFIC proper noun (venue, restaurant, landmark, neighborhood)
+- NO invented events or festivals (timely events come from APIs, not AI)
 
 For each activity, provide:
-1. A highly specific name mentioning exact places/landmarks
-2. A category (Tourism, Culture, Food, Nightlife, Outdoor, Shopping, Events, Sports, Local, Daytrips)
-3. A brief description with specific details
+1. A highly specific name (proper noun OR verb + proper noun)
+2. A category (Tourism, Culture, Food, Nightlife, Outdoor, Shopping, Sports, Local)
+3. A brief description with real details
 
 CRITICAL: Return ONLY valid JSON, no markdown formatting, no code blocks, no explanatory text. Just the raw JSON object:
 {
   "activities": [
     {
-      "name": "Highly Specific Activity Name with Exact Location",
+      "name": "Verb-led or Proper Noun Activity Name",
       "category": "Category",
       "description": "Specific description with real details"
     }
@@ -239,10 +280,16 @@ CRITICAL: Return ONLY valid JSON, no markdown formatting, no code blocks, no exp
       max_tokens: 2000,
       system: `You are a LOCAL EXPERT who lives in the city and knows EXACT landmark names, museum names, neighborhood names, restaurant names, and specific locations.
 
-CRITICAL RULES YOU MUST ALWAYS FOLLOW:
-1. NEVER use generic terms - always mention specific, real places by their actual names
-2. Generate completely unique activities - no duplicates or similar variations
-3. ABSOLUTELY NO GENERIC SOCIAL CATEGORIES - these are strictly forbidden:
+CRITICAL RULES FOR QUALITY OUTPUT:
+1. Generate exactly 6 activities following the 2-bucket structure:
+   - BUCKET A (2-3): Iconic places with proper nouns (The Getty Center, Pike Place Market)
+   - BUCKET B (3-4): Verb-led experiences starting with action verbs (Tour, Visit, Hike, Explore, Try, Watch, Take, Walk, Taste, Discover)
+
+2. At least 3 of 6 activities MUST start with a verb
+
+3. NEVER output plain street names like "Melrose Avenue" or "Sunset Boulevard" - ONLY frame streets as experiences like "Sunset Strip nightlife" or "Shop vintage on Melrose"
+
+4. ABSOLUTELY NO GENERIC SOCIAL CATEGORIES:
    - NO "Single", "Open to Dating", "Looking for Romance"
    - NO "Meet Locals", "Meet Travelers", "Meeting New People"
    - NO "Solo Traveler", "Solo Travel Meetups"
