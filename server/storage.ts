@@ -10207,6 +10207,10 @@ export class DatabaseStorage implements IStorage {
           content: chatroomMessages.content,
           messageType: chatroomMessages.messageType,
           createdAt: chatroomMessages.createdAt,
+          reactions: chatroomMessages.reactions,
+          replyToId: chatroomMessages.replyToId,
+          isEdited: chatroomMessages.isEdited,
+          editedAt: chatroomMessages.editedAt,
           user: {
             id: users.id,
             username: users.username,
@@ -10509,6 +10513,10 @@ export class DatabaseStorage implements IStorage {
           senderId: chatroomMessages.senderId,
           messageType: chatroomMessages.messageType,
           createdAt: chatroomMessages.createdAt,
+          reactions: chatroomMessages.reactions,
+          replyToId: chatroomMessages.replyToId,
+          isEdited: chatroomMessages.isEdited,
+          editedAt: chatroomMessages.editedAt,
           user: {
             id: users.id,
             username: users.username,
