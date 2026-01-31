@@ -1,0 +1,124 @@
+1) Instance Type
+
+Right now you have Starter highlighted (purple). That’s fine for a first deploy test.
+
+For testing the deploy today: keep Starter ($7/mo) ✅
+
+For launch with 500+ / chat-heavy: switch to Standard (2GB / 1 CPU) (the $25/mo box on the right). That’s the safer minimum.
+
+If you want the least risk of “it deploys but feels sluggish,” pick Standard now.
+
+2) Create the Web Service
+
+Scroll down (or to the bottom of the page) and click Create Web Service.
+
+Immediately after it creates (don’t skip)
+A) Add environment variables
+
+Service → Environment:
+Add your prod env vars (copy from Replit Secrets), especially:
+
+DATABASE_URL
+
+REDIS_URL
+
+SESSION_SECRET
+
+any email keys (Brevo)
+
+anything else your server expects
+
+If you don’t add these, it will boot-loop or 500.
+
+B) Confirm your server binds to Render’s port
+
+Your server must listen on:
+
+process.env.PORT
+
+C) Watch logs for the first boot
+
+Service → Logs
+If you see an error, paste the first error chunk here (no secrets).
+
+After it’s running: smoke test (2 minutes)
+
+Open the *.onrender.com URL and check:
+
+homepage loads
+
+login works
+
+events load
+
+chat connects and messages send/receive
+
+Once those pass, then we move nearbytraveler.org.
+
+If you want, send a screenshot of the top of the page that shows the Create Web Service button area and I’ll tell you exactly what to click next.
+
+Awesome — you’re at the last step before deploy. That big button bottom-left “Deploy Web Service” will deploy as soon as you click it, so do this first:
+
+Do this in this order
+1) Add the minimum env vars before you deploy
+
+In that “Environment Variables” box, add these at minimum (names on the left, values on the right):
+
+DATABASE_URL → (your Neon pooled URL)
+
+REDIS_URL → (your Redis URL)
+
+SESSION_SECRET → (same secret you used on Replit)
+
+NODE_ENV → production
+
+If you have email/password reset working, also add:
+
+BREVO_API_KEY
+
+BREVO_SENDER_EMAIL
+
+BREVO_SENDER_NAME (optional)
+
+✅ Tip: If you already have a .env file locally/in the repo (sometimes people do), you can click Add from .env and paste it.
+⚠️ Don’t paste secrets here in chat — paste them into Render.
+
+2) Fastest way to copy from Replit
+
+Open Replit → Secrets in another tab → copy each key/value into Render.
+
+3) After you add them, THEN click
+
+✅ Click Deploy Web Service
+
+What happens next (and what you do)
+
+Render will start the build
+
+Then it boots your server
+
+You’ll get a *.onrender.com URL
+
+Immediately after deploy:
+
+Go to Logs and check for errors
+
+Open the URL and test:
+
+homepage
+
+login
+
+events load
+
+chat connects (WS)
+
+One extra thing I want you to do (prevents a super common Render crash)
+
+Make sure your server listens like this (in code):
+
+app.listen(process.env.PORT || 3000)
+
+If it’s hardcoded to 3000 only, Render will fail to route traffic.
+
+If you tell me the names of the env vars you used on Replit (just the names, not values), I’ll tell you which ones to add first so you don’t miss something critical before you hit Deploy.
