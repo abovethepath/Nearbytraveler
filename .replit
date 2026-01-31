@@ -72,4 +72,4 @@ integrations = ["javascript_log_in_with_replit:1.0.0", "javascript_database:1.0.
 [userenv.shared]
 MAIL_FROM_NAME = "Nearby Traveler"
 MAIL_FROM_EMAIL = "aaron@thenearbytraveler.com"
-APP_URL = "https://nearbytraveler.org"
+APP_URL = "https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev"
