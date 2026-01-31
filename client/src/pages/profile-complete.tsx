@@ -4350,7 +4350,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   // Reset after scrolling completes
                   setTimeout(() => setTriggerQuickMeetup(false), 500);
                 }}
-                className="bg-gradient-to-r from-green-500 to-blue-500 text-white border-0 hover:from-green-600 hover:to-blue-600 
+                className="bg-gradient-to-r from-green-500 to-blue-500 text-black border-0 hover:from-green-600 hover:to-blue-600 
                            px-4 sm:px-6 py-2 sm:py-2 text-sm font-medium rounded-lg
                            w-full sm:w-auto flex items-center justify-center transition-all duration-200"
                 data-testid="button-lets-meet-now"
