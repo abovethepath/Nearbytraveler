@@ -5152,9 +5152,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 {userTopInterests.map((interest, index) => (
                                   <div 
                                     key={`top-interest-${index}`} 
-                                    className="h-8 px-4 rounded-full text-sm font-medium bg-gradient-to-r from-blue-500 to-orange-500 text-white"
+                                    className="h-8 px-4 rounded-full text-sm font-medium bg-gradient-to-r from-blue-500 to-orange-500 flex items-center"
+                                    style={{ color: 'black' }}
                                   >
-                                    {interest}
+                                    <span style={{ color: 'black' }}>{interest}</span>
                                   </div>
                                 ))}
                               </div>
@@ -5172,17 +5173,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 {userOtherInterests.map((interest, index) => (
                                   <div 
                                     key={`other-interest-${index}`} 
-                                    className="h-8 px-4 rounded-full text-sm font-medium bg-gradient-to-r from-blue-400 to-orange-400 text-white shadow-md"
+                                    className="h-8 px-4 rounded-full text-sm font-medium bg-gradient-to-r from-blue-400 to-orange-400 shadow-md flex items-center"
+                                    style={{ color: 'black' }}
                                   >
-                                    {interest}
+                                    <span style={{ color: 'black' }}>{interest}</span>
                                   </div>
                                 ))}
                                 {userCustomInterests.map((interest, index) => (
                                   <div 
                                     key={`custom-interest-${index}`} 
-                                    className="h-8 px-4 rounded-full text-sm font-medium bg-gradient-to-r from-blue-400 to-orange-400 text-white shadow-md"
+                                    className="h-8 px-4 rounded-full text-sm font-medium bg-gradient-to-r from-blue-400 to-orange-400 shadow-md flex items-center"
+                                    style={{ color: 'black' }}
                                   >
-                                    {interest}
+                                    <span style={{ color: 'black' }}>{interest}</span>
                                   </div>
                                 ))}
                               </div>
@@ -5222,9 +5225,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             {allActivities.map((activity, index) => (
                               <div 
                                 key={`activity-${index}`} 
-                                className="h-8 px-4 rounded-full text-sm font-medium bg-gradient-to-r from-blue-700 to-blue-400 text-white shadow-md"
+                                className="h-8 px-4 rounded-full text-sm font-medium bg-gradient-to-r from-blue-700 to-blue-400 shadow-md flex items-center"
+                                style={{ color: 'black' }}
                               >
-                                {activity}
+                                <span style={{ color: 'black' }}>{activity}</span>
                               </div>
                             ))}
                           </div>
