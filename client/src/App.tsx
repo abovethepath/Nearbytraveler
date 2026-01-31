@@ -618,9 +618,12 @@ function Router() {
 
     if (!isActuallyAuthenticated) {
       console.log('🏠 STREAMLINED LANDING - User not authenticated, showing streamlined landing page for:', location);
+      console.log('🔐 DEBUG: window.location.pathname =', window.location.pathname);
+      console.log('🔐 DEBUG: wouter location =', location);
+      console.log('🔐 DEBUG: checking reset-password match:', location.startsWith('/reset-password'));
 
       // CRITICAL: Handle password reset before other checks
-      if (location.startsWith('/reset-password')) {
+      if (location.startsWith('/reset-password') || window.location.pathname.startsWith('/reset-password')) {
         console.log('🔐 RESET PASSWORD: Allowing access to reset password page');
         return <ResetPassword />;
       }
