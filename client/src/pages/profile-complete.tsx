@@ -4052,7 +4052,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                 data-testid="button-connect-travel-plans"
                               >
                                 <Calendar className="w-4 h-4 mr-2" style={{ color: 'black' }} />
-                                {currentTravelPlan ? 'View Travel Plans' : 'View Upcoming Trips'}
+                                <span style={{ color: 'black' }}>{currentTravelPlan ? 'View Travel Plans' : 'View Upcoming Trips'}</span>
                               </Button>
                           );
                         })()}
@@ -4174,7 +4174,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     data-testid="button-chatrooms"
                   >
                     <MessageCircle className="w-4 h-4" style={{ color: 'black' }} />
-                    <span>Go to Chatrooms</span>
+                    <span style={{ color: 'black' }}>Go to Chatrooms</span>
                   </Button>
                 )}
                 <Button
@@ -4187,7 +4187,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   data-testid="button-share-qr"
                 >
                   <Share2 className="w-4 h-4" style={{ color: 'black' }} />
-                  <span>Invite Friends</span>
+                  <span style={{ color: 'black' }}>Invite Friends</span>
                 </Button>
               </div>
             )}
@@ -4360,7 +4360,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 data-testid="button-lets-meet-now"
               >
                 <Calendar className="w-4 h-4 mr-2" style={{ color: 'black' }} />
-                Let's Meet Now
+                <span style={{ color: 'black' }}>Let's Meet Now</span>
               </Button>
             )}
           </div>
