@@ -76,8 +76,8 @@ export default function ResponsiveUserGrid({
     if (!user.interests || user.interests.length === 0) return null;
     const count = user.interests.length;
     return (
-      <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-bold leading-none whitespace-nowrap bg-gradient-to-r from-blue-500 to-purple-500 text-white border-0 appearance-none select-none gap-1.5 shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200">
-        {count} interest{count !== 1 ? 's' : ''}
+      <div className="inline-flex items-center justify-center h-10 min-w-[8rem] rounded-full px-4 text-base font-bold leading-none whitespace-nowrap bg-gradient-to-r from-blue-500 to-purple-500 border-0 appearance-none select-none gap-1.5 shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200">
+        <span style={{ color: 'black' }}>{count} interest{count !== 1 ? 's' : ''}</span>
       </div>
     );
   };

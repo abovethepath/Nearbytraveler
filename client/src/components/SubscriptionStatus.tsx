@@ -269,13 +269,13 @@ export function SubscriptionStatus() {
                 createSubscriptionMutation.mutate();
               }}
               disabled={createSubscriptionMutation.isPending}
-              className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white"
-              style={{ transition: 'none' }}
+              className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700"
+              style={{ transition: 'none', color: 'black' }}
             >
-              {createSubscriptionMutation.isPending 
+              <span style={{ color: 'black' }}>{createSubscriptionMutation.isPending 
                 ? "Starting Subscription..." 
                 : "Start Subscription ($75/month + $100 Sign Up Fee)"
-              }
+              }</span>
             </Button>
           ) : (
             <div className="flex gap-2 w-full">
@@ -287,13 +287,13 @@ export function SubscriptionStatus() {
                     createSubscriptionMutation.mutate();
                   }}
                   disabled={createSubscriptionMutation.isPending}
-                  className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 text-white flex-1"
-                  style={{ transition: 'none' }}
+                  className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700 flex-1"
+                  style={{ transition: 'none', color: 'black' }}
                 >
-                  {createSubscriptionMutation.isPending 
+                  <span style={{ color: 'black' }}>{createSubscriptionMutation.isPending 
                     ? "Upgrading..." 
                     : "Upgrade to Paid Plan ($75/month + $100 Sign Up Fee)"
-                  }
+                  }</span>
                 </Button>
               )}
               

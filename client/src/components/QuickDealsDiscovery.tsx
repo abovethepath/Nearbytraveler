@@ -264,13 +264,14 @@ export function QuickDealsDiscovery({ userLocation }: QuickDealsDiscoveryProps) 
                 <div className="mt-3 pt-2 border-t border-orange-200 dark:border-orange-700">
                   <Button 
                     size="sm" 
-                    className="w-full h-6 text-xs bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white border-0"
+                    className="w-full h-6 text-xs bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 border-0"
+                    style={{ color: 'black' }}
                     onClick={(e) => {
                       e.stopPropagation();
                       setLocation(`/business/${deal.businessId}`);
                     }}
                   >
-                    Get Deal Now
+                    <span style={{ color: 'black' }}>Get Deal Now</span>
                   </Button>
                 </div>
               </CardContent>

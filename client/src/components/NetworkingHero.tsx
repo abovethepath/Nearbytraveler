@@ -68,9 +68,10 @@ export default function NetworkingHero({ isAirbnbStyle = true }: NetworkingHeroP
           <Button
             onClick={() => setLocation('/join')}
             size="lg"
-            className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 text-white dark:text-white font-medium px-8 py-3 rounded-lg transition-all duration-200"
+            className="bg-black hover:bg-gray-800 dark:bg-gradient-to-r dark:from-blue-600 dark:to-orange-500 font-medium px-8 py-3 rounded-lg transition-all duration-200"
+            style={{ color: 'black' }}
           >
-            Join Nearby Traveler
+            <span className="text-white dark:text-black">Join Nearby Traveler</span>
           </Button>
         </div>
       </div>

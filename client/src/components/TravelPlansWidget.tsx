@@ -293,19 +293,21 @@ export default function TravelPlansWidget({ userId, isOwnProfile = false }: Trav
               variant="outline"
               size="sm"
               onClick={() => setLocation("/plan-trip")}
-              className="bg-gradient-to-r from-blue-500 to-orange-500 text-white hover:from-blue-600 hover:to-orange-600 border-0 flex-1"
+              className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 border-0 flex-1"
+              style={{ color: 'black' }}
             >
-              <Plane className="w-4 h-4 mr-1" />
-              Add New Trip
+              <Plane className="w-4 h-4 mr-1" style={{ color: 'black' }} />
+              <span style={{ color: 'black' }}>Add New Trip</span>
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setLocation("/match-in-city")}
-              className="bg-gradient-to-r from-green-500 to-teal-500 text-white hover:from-green-600 hover:to-teal-600 border-0 flex-1"
+              className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 border-0 flex-1"
+              style={{ color: 'black' }}
             >
-              <Sparkles className="w-4 h-4 mr-1" />
-              City Plans
+              <Sparkles className="w-4 h-4 mr-1" style={{ color: 'black' }} />
+              <span style={{ color: 'black' }}>City Plans</span>
             </Button>
           </div>
         )}
