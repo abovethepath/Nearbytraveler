@@ -102,7 +102,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
               <>
                 <DropdownMenuItem
                   className="cursor-pointer p-3 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  onClick={() => setLocation("/profile")}
+                  onClick={() => setLocation("/requests")}
                 >
                   <div className="flex items-center gap-3 w-full">
                     <UserPlus className="w-4 h-4 text-blue-500 flex-shrink-0" />
