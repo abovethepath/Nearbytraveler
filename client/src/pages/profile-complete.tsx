@@ -4047,7 +4047,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                                     }
                                   }, 150);
                                 }}
-                                className="bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 text-white border-0 px-4 py-2 text-sm rounded-lg shadow-md transition-all"
+                                className="bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 text-black border-0 px-4 py-2 text-sm rounded-lg shadow-md transition-all"
                                 data-testid="button-connect-travel-plans"
                               >
                                 <Calendar className="w-4 h-4 mr-2" />
@@ -4166,7 +4166,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       setLocation(`/city-chatrooms?city=${encodeURIComponent(chatCity)}`);
                     }}
                     className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700
-                               text-white border-0 shadow-md rounded-lg
+                               text-black border-0 shadow-md rounded-lg
                                inline-flex items-center justify-center gap-2
                                px-6 py-2 transition-all"
                     data-testid="button-chatrooms"
@@ -4178,7 +4178,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <Button
                   onClick={() => setLocation('/share-qr')}
                   className="bg-gradient-to-r from-orange-600 to-blue-600 hover:from-orange-700 hover:to-blue-700
-                             text-white border-0 shadow-md rounded-lg
+                             text-black border-0 shadow-md rounded-lg
                              inline-flex items-center justify-center gap-2
                              px-6 py-2 transition-all"
                   data-testid="button-share-qr"
