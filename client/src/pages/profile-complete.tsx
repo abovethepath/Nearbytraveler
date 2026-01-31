@@ -4111,12 +4111,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {!isOwnProfile ? (
               <div className="flex items-center gap-3 flex-wrap min-w-0">
                 <Button 
-                  className="bg-orange-500 hover:bg-orange-600 text-white border-0 px-6 py-2 rounded-lg shadow-md transition-all"
+                  className="bg-orange-500 hover:bg-orange-600 border-0 px-6 py-2 rounded-lg shadow-md transition-all"
+                  style={{ color: 'black' }}
                   onClick={handleMessage}
                   data-testid="button-message"
                 >
-                  <MessageCircle className="w-4 h-4 mr-2" />
-                  Message
+                  <MessageCircle className="w-4 h-4 mr-2" style={{ color: 'black' }} />
+                  <span style={{ color: 'black' }}>Message</span>
                 </Button>
                 <ConnectButton
                   currentUserId={currentUser?.id || 0}
