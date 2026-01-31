@@ -7868,14 +7868,15 @@ Questions? Just reply to this message. Welcome aboard!
 
       if (process.env.NODE_ENV === 'development') console.log(`CONNECTION: Successfully created connection request from ${finalRequesterId} to ${finalTargetUserId}:`, newConnection);
       
-      // Send connection request email notification (background)
+      // Send connection request notifications (background)
       setImmediate(async () => {
+        const recipientIdNum = parseInt(finalTargetUserId || '0');
+        const requesterIdNum = parseInt(finalRequesterId || '0');
+        
+        // Send email notification
         try {
           const { sendConnectionRequestEmail } = await import('./email/notificationEmails');
-          const result = await sendConnectionRequestEmail(
-            parseInt(finalTargetUserId || '0'),
-            parseInt(finalRequesterId || '0')
-          );
+          const result = await sendConnectionRequestEmail(recipientIdNum, requesterIdNum);
           if (result.success && !result.skipped) {
             console.log(`✅ CONNECTION EMAIL: Sent to user ${finalTargetUserId}`);
           } else if (result.skipped) {
@@ -7883,6 +7884,19 @@ Questions? Just reply to this message. Welcome aboard!
           }
         } catch (error) {
           console.error('❌ CONNECTION EMAIL: Failed to send:', error);
+        }
+        
+        // Send push notification
+        try {
+          const requester = await db.select({ name: users.name, username: users.username }).from(users).where(eq(users.id, requesterIdNum)).then(r => r[0]);
+          const requesterName = requester?.name || requester?.username || 'Someone';
+          const { sendConnectionRequestPush } = await import('./services/pushNotificationService');
+          const pushResult = await sendConnectionRequestPush(recipientIdNum, requesterName, requesterIdNum);
+          if (pushResult.success) {
+            console.log(`✅ CONNECTION PUSH: Sent to user ${finalTargetUserId}`);
+          }
+        } catch (error) {
+          console.error('❌ CONNECTION PUSH: Failed:', error);
         }
       });
       
@@ -8212,15 +8226,16 @@ Questions? Just reply to this message. Welcome aboard!
       // Notify online users via WebSocket (if receiver is online)
       // This will be handled by the WebSocket service
       
-      // Send new message email notification (background, rate-limited per user)
+      // Send notifications (background, rate-limited per user)
       setImmediate(async () => {
+        const recipientIdNum = parseInt(receiverId || '0');
+        const senderIdNum = parseInt(senderId || '0');
+        const preview = content.substring(0, 100) + (content.length > 100 ? '...' : '');
+        
+        // Send email notification
         try {
           const { sendNewMessageEmail } = await import('./email/notificationEmails');
-          const result = await sendNewMessageEmail(
-            parseInt(receiverId || '0'),
-            parseInt(senderId || '0'),
-            content.substring(0, 100) + (content.length > 100 ? '...' : '')
-          );
+          const result = await sendNewMessageEmail(recipientIdNum, senderIdNum, preview);
           if (result.success && !result.skipped) {
             console.log(`✅ MESSAGE EMAIL: Sent notification to user ${receiverId}`);
           } else if (result.skipped) {
@@ -8228,6 +8243,19 @@ Questions? Just reply to this message. Welcome aboard!
           }
         } catch (error) {
           console.error('❌ MESSAGE EMAIL: Failed to send:', error);
+        }
+        
+        // Send push notification
+        try {
+          const sender = await db.select({ name: users.name, username: users.username }).from(users).where(eq(users.id, senderIdNum)).then(r => r[0]);
+          const senderName = sender?.name || sender?.username || 'Someone';
+          const { sendNewMessagePush } = await import('./services/pushNotificationService');
+          const pushResult = await sendNewMessagePush(recipientIdNum, senderName, preview);
+          if (pushResult.success) {
+            console.log(`✅ MESSAGE PUSH: Sent to user ${receiverId}`);
+          }
+        } catch (error) {
+          console.error('❌ MESSAGE PUSH: Failed:', error);
         }
       });
 
@@ -16954,6 +16982,64 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error updating status:", error);
       res.status(500).json({ message: "Failed to update status" });
+    }
+  });
+
+  // Register Expo push token for mobile app notifications
+  app.post("/api/users/push-token", async (req, res) => {
+    try {
+      const userId = (req.session as any)?.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const { expoPushToken } = req.body;
+
+      if (!expoPushToken) {
+        return res.status(400).json({ message: "expoPushToken is required" });
+      }
+
+      // Validate Expo push token format
+      if (!expoPushToken.startsWith("ExponentPushToken[") || !expoPushToken.endsWith("]")) {
+        return res.status(400).json({ message: "Invalid Expo push token format" });
+      }
+
+      // Update user's push token
+      const [updated] = await db
+        .update(users)
+        .set({ 
+          expoPushToken,
+          pushTokenUpdatedAt: new Date()
+        })
+        .where(eq(users.id, userId))
+        .returning({ id: users.id, expoPushToken: users.expoPushToken });
+
+      console.log(`📱 PUSH TOKEN: Registered for user ${userId}`);
+      res.json({ success: true, message: "Push token registered successfully" });
+    } catch (error: any) {
+      console.error("Error registering push token:", error);
+      res.status(500).json({ message: "Failed to register push token" });
+    }
+  });
+
+  // Remove Expo push token (logout/disable notifications)
+  app.delete("/api/users/push-token", async (req, res) => {
+    try {
+      const userId = (req.session as any)?.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      await db
+        .update(users)
+        .set({ expoPushToken: null, pushTokenUpdatedAt: new Date() })
+        .where(eq(users.id, userId));
+
+      console.log(`📱 PUSH TOKEN: Removed for user ${userId}`);
+      res.json({ success: true, message: "Push token removed successfully" });
+    } catch (error: any) {
+      console.error("Error removing push token:", error);
+      res.status(500).json({ message: "Failed to remove push token" });
     }
   });
 

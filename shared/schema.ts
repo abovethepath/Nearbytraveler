@@ -194,6 +194,10 @@ export const users = pgTable("users", {
   // Email tracking
   welcomeEmailSent: boolean("welcome_email_sent").default(false), // Track if welcome email was sent to prevent duplicates
   
+  // Push notifications
+  expoPushToken: text("expo_push_token"), // Expo push notification token for mobile app
+  pushTokenUpdatedAt: timestamp("push_token_updated_at"), // When push token was last updated
+  
   // Community Pledge
   pledgeAccepted: boolean("pledge_accepted").default(false), // Track if user accepted the NearbyTraveler Community Pledge
   pledgeAcceptedAt: timestamp("pledge_accepted_at"), // When the pledge was accepted
