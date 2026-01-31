@@ -16,6 +16,7 @@ import { db, checkDatabaseHealth, getDatabaseStatus } from "./db";
 import { users, events, businessOffers, quickMeetups, quickDeals } from "../shared/schema";
 import { TravelStatusService } from "./services/travel-status-service";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
+import passwordResetRouter from "./routes/passwordReset";
 
 // Load environment variables
 dotenv.config();
@@ -383,6 +384,9 @@ app.use(session({
 // CRITICAL FIX: Increase payload limits to prevent 431 "Request Header Fields Too Large" errors
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb', parameterLimit: 100000 }));
+
+// Password reset routes (Brevo email)
+app.use("/api/auth", passwordResetRouter);
 
 // Serve static files from public directory FIRST (for logo)
 app.use(express.static(path.join(process.cwd(), 'public')));

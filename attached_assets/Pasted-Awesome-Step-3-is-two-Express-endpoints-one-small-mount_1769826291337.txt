@@ -1,0 +1,212 @@
+Awesome — Step 3 is two Express endpoints + one small mount line.
+
+Below is paste-ready code that uses your Brevo helper (server/email/brevoSend.ts) and the password_reset_tokens table you created (with user_id INTEGER).
+
+Step 3A — Replit: install dependencies (only if you don’t already have them)
+
+In the Replit Shell:
+
+npm i pg bcryptjs
+
+
+(If these are already installed, skip.)
+
+Step 3B — Replit: create the password reset routes file
+
+Create this file:
+
+server/routes/passwordReset.ts
+
+Paste this:
+
+import { Router } from "express";
+import crypto from "crypto";
+import bcrypt from "bcryptjs";
+import { Pool } from "pg";
+import { sendBrevoEmail } from "../email/brevoSend";
+
+const router = Router();
+
+// Uses DATABASE_URL in Replit Secrets
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  // If you run into SSL errors in prod, uncomment:
+  // ssl: { rejectUnauthorized: false },
+});
+
+// If your users table stores the password hash in a different column,
+// set USER_PASSWORD_COLUMN in Secrets to: password OR password_hash OR passwordHash
+const PASSWORD_COL_RAW = process.env.USER_PASSWORD_COLUMN || "password";
+const PASSWORD_COL = PASSWORD_COL_RAW.toLowerCase();
+
+const ALLOWED_PASSWORD_COLS = new Set(["password", "password_hash", "passwordhash"]);
+if (!ALLOWED_PASSWORD_COLS.has(PASSWORD_COL)) {
+  throw new Error(
+    `USER_PASSWORD_COLUMN must be one of: password, password_hash, passwordHash. Got: ${PASSWORD_COL_RAW}`
+  );
+}
+
+function sha256(input: string) {
+  return crypto.createHash("sha256").update(input).digest("hex");
+}
+
+function minutesFromNow(mins: number) {
+  return new Date(Date.now() + mins * 60 * 1000);
+}
+
+/**
+ * POST /api/auth/forgot-password
+ * body: { email: string }
+ */
+router.post("/forgot-password", async (req, res) => {
+  const email = String(req.body?.email || "").trim().toLowerCase();
+
+  // Always return the same response (prevents email enumeration)
+  const generic = {
+    ok: true,
+    message: "If an account exists, a reset link has been sent.",
+  };
+
+  if (!email) return res.json(generic);
+
+  try {
+    const userResult = await pool.query(
+      `SELECT id, email FROM users WHERE lower(email) = $1 LIMIT 1`,
+      [email]
+    );
+
+    if (userResult.rowCount === 0) return res.json(generic);
+
+    const user = userResult.rows[0] as { id: number; email: string };
+
+    // Invalidate any previous tokens for this user (simple + safe)
+    await pool.query(`DELETE FROM password_reset_tokens WHERE user_id = $1`, [user.id]);
+
+    const rawToken = crypto.randomBytes(32).toString("hex");
+    const tokenHash = sha256(rawToken);
+    const expiresAt = minutesFromNow(60); // 1 hour
+
+    await pool.query(
+      `INSERT INTO password_reset_tokens (user_id, token_hash, expires_at)
+       VALUES ($1, $2, $3)`,
+      [user.id, tokenHash, expiresAt]
+    );
+
+    const resetUrl = `${process.env.APP_URL}/reset-password?token=${rawToken}`;
+
+    await sendBrevoEmail({
+      toEmail: user.email,
+      subject: "Reset your Nearby Traveler password",
+      textContent:
+        `Reset your password:\n\n${resetUrl}\n\n` +
+        `This link expires in 1 hour. If you didn’t request this, ignore this email.`,
+    });
+
+    return res.json(generic);
+  } catch (err) {
+    console.error("forgot-password error:", err);
+    // Still return generic to avoid leaking info
+    return res.json(generic);
+  }
+});
+
+/**
+ * POST /api/auth/reset-password
+ * body: { token: string, newPassword: string }
+ */
+router.post("/reset-password", async (req, res) => {
+  const token = String(req.body?.token || "").trim();
+  const newPassword = String(req.body?.newPassword || "");
+
+  if (!token || newPassword.length < 8) {
+    return res.status(400).json({ ok: false, message: "Invalid request." });
+  }
+
+  try {
+    const tokenHash = sha256(token);
+
+    // Find a valid, un-used token that hasn't expired
+    const tokenResult = await pool.query(
+      `SELECT id, user_id
+       FROM password_reset_tokens
+       WHERE token_hash = $1
+         AND used_at IS NULL
+         AND expires_at > NOW()
+       LIMIT 1`,
+      [tokenHash]
+    );
+
+    if (tokenResult.rowCount === 0) {
+      return res.status(400).json({ ok: false, message: "Token invalid or expired." });
+    }
+
+    const { id: resetTokenId, user_id: userId } = tokenResult.rows[0] as {
+      id: string;
+      user_id: number;
+    };
+
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+
+    // Update the user's password (column depends on your schema)
+    const updateSql =
+      PASSWORD_COL === "passwordhash"
+        ? `UPDATE users SET "passwordHash" = $1 WHERE id = $2`
+        : `UPDATE users SET ${PASSWORD_COL} = $1 WHERE id = $2`;
+
+    await pool.query(updateSql, [passwordHash, userId]);
+
+    // Mark token used (one-time)
+    await pool.query(`UPDATE password_reset_tokens SET used_at = NOW() WHERE id = $1`, [
+      resetTokenId,
+    ]);
+
+    return res.json({ ok: true, message: "Password updated. Please log in." });
+  } catch (err) {
+    console.error("reset-password error:", err);
+    return res.status(500).json({ ok: false, message: "Server error." });
+  }
+});
+
+export default router;
+
+Step 3C — Replit: mount the routes in your server
+
+Find where your Express app is created (commonly server/index.ts or server/app.ts).
+
+Add these lines:
+
+import passwordResetRouter from "./routes/passwordReset";
+
+// ...
+app.use("/api/auth", passwordResetRouter);
+
+
+✅ That’s it for backend endpoints.
+
+Step 3D — Quick test (before building the pages)
+1) Forgot password
+
+Send a POST request (Postman or curl):
+
+curl -X POST https://nearbytraveler.org/api/auth/forgot-password \
+  -H "Content-Type: application/json" \
+  -d '{"email":"YOUR_EMAIL_HERE"}'
+
+
+You should see: If an account exists... and receive an email.
+
+2) Reset password
+
+Use the token from the email link:
+
+curl -X POST https://nearbytraveler.org/api/auth/reset-password \
+  -H "Content-Type: application/json" \
+  -d '{"token":"PASTE_TOKEN_HERE","newPassword":"NewStrongPass123!"}'
+
+One tiny thing you may need to set
+
+If your hashed password column is not users.password, set this in Replit Secrets:
+
+USER_PASSWORD_COLUMN = password_hash (or passwordHash)
+
+Reply with “Step 3 mounted” once you’ve pasted the router + mount line, and I’ll give you Step 4: the two frontend pages (/forgot-password + /reset-password) and the “Forgot password?” link on your login screen.
