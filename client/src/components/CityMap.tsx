@@ -256,13 +256,14 @@ export function CityMap({ city, state, country }: CityMapProps) {
           </div>
         </div>
 
-        {/* ✅ Map needs an explicit height container */}
-        <div className="map-shell">
+        {/* ✅ Map needs an explicit height container - force minimum height for mobile */}
+        <div className="map-shell" style={{ minHeight: '350px', height: '350px' }}>
           <InteractiveMap
             key={`${city}-${state ?? ''}-${country}`} // force remount when city changes
             locations={locations}
             center={center}
             zoom={12}
+            height="350px"
           />
           {(!locations || locations.length === 0) && !hasError && (
             <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 bg-gray-50/60 dark:bg-gray-900/20">

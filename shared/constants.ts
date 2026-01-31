@@ -123,7 +123,8 @@ export function getMetroCities(metroOrCity: string): string[] {
   
   // Check if it's Los Angeles or any LA metro city
   if (normalized.includes('los angeles') || isLAMetroCity(metroOrCity)) {
-    return [...METRO_AREAS['Los Angeles'].cities];
+    // Include both individual cities AND "Los Angeles Metro" for chatrooms/entities stored with metro name
+    return [...METRO_AREAS['Los Angeles'].cities, 'Los Angeles Metro'];
   }
   
   return [];
