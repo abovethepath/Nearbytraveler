@@ -9876,21 +9876,23 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
                         size="sm"
                         variant="outline"
                         onClick={() => generateInstagramPost(event)}
-                        className="text-xs h-8 px-3 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white border-0"
+                        className="text-xs h-8 px-3 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 border-0"
+                        style={{ color: 'black' }}
                         title="Copy Instagram post"
                       >
-                        <Share2 className="w-3 h-3 mr-1" />
-                        Instagram
+                        <Share2 className="w-3 h-3 mr-1" style={{ color: 'black' }} />
+                        <span style={{ color: 'black' }}>Instagram</span>
                       </Button>
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => duplicateEvent(event)}
-                        className="text-xs h-8 px-3 bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-0"
+                        className="text-xs h-8 px-3 bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 border-0"
+                        style={{ color: 'black' }}
                         title="Duplicate this event"
                       >
-                        <Calendar className="w-3 h-3 mr-1" />
-                        Duplicate
+                        <Calendar className="w-3 h-3 mr-1" style={{ color: 'black' }} />
+                        <span style={{ color: 'black' }}>Duplicate</span>
                       </Button>
                       <Button
                         size="sm"

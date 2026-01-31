@@ -47,14 +47,15 @@ function MessagesWidget({ userId }: MessagesWidgetProps) {
           <Button 
             variant="outline" 
             size="sm" 
-            className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0 transition-all duration-300 shadow-lg hover:shadow-xl font-semibold rounded-full px-4"
+            className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 border-0 transition-all duration-300 shadow-lg hover:shadow-xl font-semibold rounded-full px-4"
+            style={{ color: 'black' }}
             onClick={(e) => {
               e.stopPropagation();
               setLocation("/requests");
             }}
             data-testid="button-view-requests"
           >
-            View Connection Requests
+            <span style={{ color: 'black' }}>View Connection Requests</span>
           </Button>
         </div>
         <div className="space-y-3 max-h-64 overflow-y-auto">

@@ -84,11 +84,12 @@ export function VouchButton({ currentUserId, targetUserId, targetUsername }: Vou
     <Button
       onClick={() => vouchMutation.mutate()}
       disabled={vouchMutation.isPending}
-      className="bg-purple-600 hover:bg-purple-700 text-white border-0 px-6 py-2 rounded-lg shadow-md transition-all"
+      className="bg-purple-600 hover:bg-purple-700 border-0 px-6 py-2 rounded-lg shadow-md transition-all"
+      style={{ color: 'black' }}
       data-testid="button-vouch"
     >
-      <ThumbsUp className="w-4 h-4 mr-2" />
-      {vouchMutation.isPending ? "Vouching..." : "Vouch"}
+      <ThumbsUp className="w-4 h-4 mr-2" style={{ color: 'black' }} />
+      <span style={{ color: 'black' }}>{vouchMutation.isPending ? "Vouching..." : "Vouch"}</span>
     </Button>
   );
 }
