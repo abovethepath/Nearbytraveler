@@ -1,0 +1,84 @@
+Yep — run the quick test. Do it in this order so you catch the “silent failure” cases fast.
+
+5-minute password reset test
+1) Generate a token
+
+Go to /signin → Forgot password?
+
+Enter an email you know exists
+
+Submit
+
+Check 3 things:
+
+Brevo Transactional logs show the send attempt (Sent/Delivered/Bounced)
+
+Your DB has a fresh token row (expires in the future, used_at is null)
+
+The email link points to the correct domain (https://nearbytraveler.org/reset-password?token=...)
+
+2) Verify endpoint works (no DB writes)
+
+Open the reset link → your page calls /api/auth/verify-reset-token.
+
+Expected:
+
+Valid token → “token valid” UI state
+
+DB row should still have used_at = NULL (verify must not mark it used)
+
+3) Reset password + confirm it sticks
+
+Submit a new password.
+
+Expected:
+
+/api/auth/reset-password returns ok
+
+DB token row now has used_at set
+
+Log in with:
+
+New password ✅
+
+Old password ❌
+
+4) One-time token enforcement
+
+Try to reuse the same reset link again after it’s used.
+
+Expected: invalid/expired (should fail 100% of the time)
+
+3 edge cases worth testing right now
+
+Request reset twice
+
+Submit forgot-password twice for the same email.
+
+First token should become unusable if you’re deleting old tokens (good).
+
+Expired token
+
+Temporarily set expires_at in DB to the past for one token and confirm verify/reset fails.
+
+Non-existent email
+
+Forgot-password should still show the same “If an account exists…” message and not error.
+
+Background task note (important)
+
+Since you’re sending welcome email in “background tasks after response,” make sure it’s wrapped so it can’t crash the request process:
+
+Always try/catch the send
+
+Log failures, but never throw
+
+Avoid unhandled promise rejections (e.g., void sendWelcome().catch(console.error))
+
+That prevents a random email failure from taking down your server.
+
+Welcome email: deliverability reality check
+
+A “nice HTML email with gradient button + features list” can be more likely to hit spam while your sending reputation is new (especially for tougher inboxes like Outlook/Hotmail). If you notice issues, the quickest fix is making Welcome short + 1 link + mostly text.
+
+When you run the test, tell me what happens at the first failure point (Brevo log status + any server console error). If everything passes, you’re fully live for welcome + password reset.
