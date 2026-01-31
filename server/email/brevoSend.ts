@@ -13,6 +13,8 @@ export async function sendBrevoEmail(args: SendEmailArgs) {
   const fromName = process.env.MAIL_FROM_NAME || "Nearby Traveler";
   const fromEmail = process.env.MAIL_FROM_EMAIL || "aaron@nearbytraveler.org";
 
+  console.log(`📧 Brevo: Sending email to ${args.toEmail}, subject: ${args.subject}`);
+
   const res = await fetch("https://api.brevo.com/v3/smtp/email", {
     method: "POST",
     headers: {
@@ -31,8 +33,11 @@ export async function sendBrevoEmail(args: SendEmailArgs) {
 
   if (!res.ok) {
     const text = await res.text();
+    console.error(`❌ Brevo: Failed ${res.status}: ${text}`);
     throw new Error(`Brevo send failed ${res.status}: ${text}`);
   }
 
-  return res.json();
+  const result = await res.json();
+  console.log(`✅ Brevo: Email sent successfully, messageId: ${result.messageId}`);
+  return result;
 }
