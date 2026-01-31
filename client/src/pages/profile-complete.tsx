@@ -3972,8 +3972,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                           <span className="break-words">Nearby Local • {hometown}</span>
                           {user.newToTownUntil && new Date(user.newToTownUntil) > new Date() && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 border border-green-300 flex-shrink-0" style={{ color: 'black' }}>
-                              New to Town
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 border border-green-300 flex-shrink-0">
+                              <span style={{ color: 'black' }}>New to Town</span>
                             </span>
                           )}
                         </div>
