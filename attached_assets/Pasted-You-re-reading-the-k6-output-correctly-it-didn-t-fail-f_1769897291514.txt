@@ -1,0 +1,197 @@
+You’re reading the k6 output correctly: it didn’t “fail” from errors (0.62% is fine), it failed your latency threshold (p95 ~4s, some 7s). That’s exactly the kind of thing that will feel broken with 500–700 people hammering chat + events.
+
+Below is the clean way to migrate without losing your Replit workflow and without breaking your wrapped app.
+
+The key idea (so your app wrapper doesn’t break)
+
+Keep your public URL the same: nearbytraveler.org
+
+If your web app + the “wrapped app” both point at https://nearbytraveler.org, then migrating hosting from Replit → Railway/Render is mostly invisible to users. You just repoint DNS / custom domain to the new host.
+
+That means:
+
+✅ Your Replit “wrapped app” (WebView-style) keeps working
+
+✅ Any mobile client calling https://nearbytraveler.org/api keeps working
+
+✅ Cookie sessions are easiest (same domain)
+
+What you should not do
+
+Don’t rely on:
+
+in-memory sessions (express-session MemoryStore)
+
+single-instance chat forever
+
+Because the moment you scale to >1 replica, users will randomly “lose login” or chat will behave inconsistently unless sessions + chat are centralized.
+
+Recommended target: Railway (fastest path)
+
+Railway makes GitHub deploy + env vars + scaling straightforward, and has good Node/Express deployment docs.
+Also: Railway load balancing currently does not support sticky sessions. So you must use a shared session store (Redis) if you scale horizontally.
+
+Pricing reality check
+
+Railway’s Pro plan is a $20 minimum usage with included usage credits, then usage-based beyond that.
+
+Your workflow can stay: Replit → GitHub → Railway
+
+This is the best setup if you want to keep coding in Replit:
+
+You code in Replit (dev)
+
+Push to GitHub (source of truth)
+
+Railway auto-deploys from GitHub (prod)
+
+So you keep Replit as your editor/dev environment, but Railway runs production.
+
+Migration plan (do this in order)
+1) Make sure your app can run “real production”
+
+A. Confirm package.json has a real start command
+Railway uses start commands and can auto-detect, but you want it explicit.
+
+Typical:
+
+{
+  "scripts": {
+    "build": "…",
+    "start": "node dist/server.js"
+  }
+}
+
+
+B. Turn on proper session storage (Redis)
+If you’re using express-session, you must move sessions into Redis before scaling.
+
+Example:
+
+import session from "express-session";
+import RedisStore from "connect-redis";
+import { createClient } from "redis";
+
+const redisClient = createClient({ url: process.env.REDIS_URL });
+await redisClient.connect();
+
+app.set("trust proxy", 1);
+
+app.use(
+  session({
+    store: new RedisStore({ client: redisClient }),
+    secret: process.env.SESSION_SECRET!,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax", // if everything is on nearbytraveler.org
+      maxAge: 1000 * 60 * 60 * 24 * 30
+    }
+  })
+);
+
+
+If you ever split frontend and backend onto different domains, you’ll likely need sameSite: "none" + secure: true, plus careful CORS. Keeping one domain avoids that pain.
+
+C. Database pooling
+Most “works at 1 user, dies at 100 users” apps are DB-connection bound. Ensure you use a Pool and not a new client per request. Also consider a pooled DB connection string if your provider supports it.
+
+2) Create Railway project + deploy from GitHub
+
+Create Railway project
+
+“Deploy from GitHub repo”
+
+Set Variables (Railway can even suggest/import from .env patterns)
+
+Add a Redis service (there are Railway-friendly Redis options/templates)
+
+Add Postgres only if you’re not already using Neon (if you’re on Neon, just keep it and set DATABASE_URL)
+
+3) Fix chat scaling (WebSockets)
+
+If you’re using Socket.IO and you plan to run >1 instance, add a Redis adapter so messages/users work across replicas (and don’t rely on sticky sessions).
+
+Example:
+
+import { Server } from "socket.io";
+import { createAdapter } from "@socket.io/redis-adapter";
+import { createClient } from "redis";
+
+const io = new Server(httpServer, {
+  cors: { origin: process.env.CORS_ORIGIN?.split(",") ?? [], credentials: true }
+});
+
+const pubClient = createClient({ url: process.env.REDIS_URL });
+const subClient = pubClient.duplicate();
+await Promise.all([pubClient.connect(), subClient.connect()]);
+
+io.adapter(createAdapter(pubClient, subClient));
+
+
+Also consider forcing websocket transport (reduces load-balancer weirdness with long-polling):
+
+io("https://nearbytraveler.org", { transports: ["websocket"] })
+
+4) Cut over your domain so web + wrapped app stay stable
+
+In Railway, add your custom domain (nearbytraveler.org)
+
+Update your DNS records to point from Replit → Railway
+
+Keep the same URL structure: /api/*, websockets path, etc.
+
+Result: your “Replit-wrapped app” keeps loading the same site.
+
+5) Re-run load tests in a way that matches launch reality
+
+Your current test was 100 VUs. With your launch group, you should test:
+
+200–300 VUs ramping up
+
+then a short spike
+
+plus separate websocket testing (chat is a different beast than HTTP)
+
+Target:
+
+p95 for key endpoints under ~2s (or at least much better than 4s)
+
+error rate under 1%
+
+What about Render instead?
+
+Render supports inbound WebSockets on web services.
+It also supports horizontal scaling (multiple instances).
+Pricing model is different (team/user + compute costs), so it can be attractive, but Railway is usually the most frictionless Replit→GitHub→Prod pipeline for Node apps.
+
+The straight answer to your two questions
+“What about the app I’m wrapping via Replit?”
+
+If it’s a wrapper that loads nearbytraveler.org, you’re good.
+Just keep nearbytraveler.org as the URL and repoint hosting behind it. No app update needed.
+
+If your wrapper is hardcoded to a *.replit.app URL, change it once to nearbytraveler.org and you’re done.
+
+“What about continuing to make changes on Replit?”
+
+Totally fine:
+
+Replit = dev environment
+
+GitHub = source control
+
+Railway = production
+
+Push changes when ready → Railway deploys automatically.
+
+The one “gotcha” that will bite you if you ignore it
+
+If you scale beyond 1 server instance without Redis sessions, users will get random auth issues.
+If you scale chat beyond 1 instance without a Redis adapter / pubsub, chat will get flaky.
+
+Railway explicitly notes no sticky sessions, so shared state matters.
+
+If you tell me (1) whether your chat is Socket.IO or native ws, and (2) whether you’re using Neon or another Postgres, I’ll give you an exact “copy/paste” checklist of the env vars + the specific files to edit in your current stack (Replit/Vite/Express/Drizzle).
