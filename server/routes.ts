@@ -19,6 +19,7 @@ import express from "express";
 import path from "path";
 import { storage } from "./storage";
 import { db, withRetry } from "./db";
+import { sendBrevoEmail } from "./email/brevoSend";
 import { cache, cachedQuery, CACHE_TTL } from "./cache";
 import { eventReminderService } from "./services/eventReminderService";
 import { TravelMatchingService } from "./services/matching";
@@ -4319,6 +4320,36 @@ Questions? Just reply to this message!
       setImmediate(async () => {
         console.log(`🔄 BACKGROUND TASKS: Starting post-registration tasks for ${user.username}...`);
         
+        // 0. Send welcome email
+        try {
+          if (user.email) {
+            await sendBrevoEmail({
+              toEmail: user.email,
+              subject: "Welcome to Nearby Traveler!",
+              textContent: `Hi ${user.name || user.username}!\n\nWelcome to Nearby Traveler - your new way to connect with locals and travelers around the world.\n\nHere's what you can do:\n- Find locals and travelers in your area\n- Join city chatrooms to meet new people\n- Create and join events and quick meetups\n- Share your travel plans and connect with others\n\nStart exploring: ${process.env.APP_URL || 'https://nearbytraveler.org'}\n\nHappy connecting!\nThe Nearby Traveler Team`,
+              htmlContent: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                  <h1 style="color: #2563eb;">Welcome to Nearby Traveler!</h1>
+                  <p>Hi ${user.name || user.username}!</p>
+                  <p>Welcome to Nearby Traveler - your new way to connect with locals and travelers around the world.</p>
+                  <h3>Here's what you can do:</h3>
+                  <ul>
+                    <li>Find locals and travelers in your area</li>
+                    <li>Join city chatrooms to meet new people</li>
+                    <li>Create and join events and quick meetups</li>
+                    <li>Share your travel plans and connect with others</li>
+                  </ul>
+                  <p><a href="${process.env.APP_URL || 'https://nearbytraveler.org'}" style="display: inline-block; background: linear-gradient(to right, #2563eb, #f97316); color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">Start Exploring</a></p>
+                  <p>Happy connecting!<br>The Nearby Traveler Team</p>
+                </div>
+              `,
+            });
+            console.log(`✅ BACKGROUND: Sent welcome email to ${user.email}`);
+          }
+        } catch (error) {
+          console.error('❌ BACKGROUND: Failed to send welcome email:', error);
+        }
+
         // 1. Create city infrastructure for HOMETOWN
         try {
           if (user.hometownCity && user.hometownCountry) {

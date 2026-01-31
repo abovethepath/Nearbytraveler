@@ -1,0 +1,91 @@
+Nice — if you’ve already got Forgot + Reset pages wired and you added /api/auth/verify-reset-token, you’re basically at the finish line. Here’s the fastest way to test (and the 3 places it usually breaks).
+
+Test checklist (end-to-end)
+1) Request reset
+
+Go to /signin → Forgot password
+
+Enter an email that definitely exists in your users table
+
+What should happen
+
+The UI shows the generic “If an account exists…” message
+
+In Brevo transactional logs: status should show the send attempt (queued/sent/delivered)
+
+In your DB:
+
+SELECT * FROM password_reset_tokens ORDER BY created_at DESC LIMIT 5;
+
+
+You should see a new row for that user with expires_at in the future, used_at = null.
+
+2) Click the email link → token verify
+
+When you click the link and land on /reset-password?token=..., your page calls:
+
+/api/auth/verify-reset-token
+
+Expected response behavior
+
+Valid token → { ok: true } (or similar)
+
+Invalid/expired token → { ok: false }
+
+DB sanity
+Verify endpoint should NOT set used_at. It should only check validity.
+
+3) Submit new password
+
+On submit, the page calls:
+
+POST /api/auth/reset-password with { token, newPassword }
+
+What should happen
+
+Response { ok: true }
+
+DB:
+
+SELECT used_at, expires_at FROM password_reset_tokens
+ORDER BY created_at DESC LIMIT 1;
+
+
+Latest token should now have used_at set.
+
+Then try logging in:
+
+New password ✅ works
+
+Old password ❌ fails
+
+The 3 most common breakpoints
+A) Reset succeeds but login still fails
+
+That means your login code is comparing against a different password column than the one you updated in Step 3.
+
+Quick fix: confirm which field login uses (often passwordHash vs password_hash vs password) and make sure USER_PASSWORD_COLUMN matches that exactly.
+
+B) Email link opens but token is “invalid”
+
+Usually caused by one of these:
+
+Frontend sends token with extra whitespace / URL parsing issue
+
+Backend hashes token differently than how it was created
+
+You generated token and stored raw token (should store hash only) or vice versa
+
+C) /api/* calls work locally but fail on prod
+
+Usually a proxy/baseURL issue (especially if Vite dev proxy differs from production). If you see 404 on /api/auth/reset-password, it’s routing/mounting.
+
+If you want, paste your /api/auth/verify-reset-token code here
+
+I’ll quickly sanity-check it (the “right” behavior is: hash token → lookup used_at IS NULL AND expires_at > NOW() → return ok true/false, no DB writes).
+
+One more thing (you originally wanted this too): Welcome email
+
+Once password reset is confirmed, the last step is simply: after successful signup, call your sendBrevoEmail() helper and send a short welcome message. If you tell me where your signup route lives (file path), I’ll give you the exact 6-line snippet to paste in.
+
+When you run the test, what happens at the first failure point (email not sent, token invalid, reset ok but login fails, etc.)?
