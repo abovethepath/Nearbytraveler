@@ -7866,6 +7866,25 @@ Questions? Just reply to this message. Welcome aboard!
       });
 
       if (process.env.NODE_ENV === 'development') console.log(`CONNECTION: Successfully created connection request from ${finalRequesterId} to ${finalTargetUserId}:`, newConnection);
+      
+      // Send connection request email notification (background)
+      setImmediate(async () => {
+        try {
+          const { sendConnectionRequestEmail } = await import('./email/notificationEmails');
+          const result = await sendConnectionRequestEmail(
+            parseInt(finalTargetUserId || '0'),
+            parseInt(finalRequesterId || '0')
+          );
+          if (result.success && !result.skipped) {
+            console.log(`✅ CONNECTION EMAIL: Sent to user ${finalTargetUserId}`);
+          } else if (result.skipped) {
+            console.log(`ℹ️ CONNECTION EMAIL: Skipped - ${result.reason}`);
+          }
+        } catch (error) {
+          console.error('❌ CONNECTION EMAIL: Failed to send:', error);
+        }
+      });
+      
       return res.json({ success: true, connection: newConnection });
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("CONNECTION ERROR:", error);
@@ -8191,6 +8210,25 @@ Questions? Just reply to this message. Welcome aboard!
 
       // Notify online users via WebSocket (if receiver is online)
       // This will be handled by the WebSocket service
+      
+      // Send new message email notification (background, rate-limited per user)
+      setImmediate(async () => {
+        try {
+          const { sendNewMessageEmail } = await import('./email/notificationEmails');
+          const result = await sendNewMessageEmail(
+            parseInt(receiverId || '0'),
+            parseInt(senderId || '0'),
+            content.substring(0, 100) + (content.length > 100 ? '...' : '')
+          );
+          if (result.success && !result.skipped) {
+            console.log(`✅ MESSAGE EMAIL: Sent notification to user ${receiverId}`);
+          } else if (result.skipped) {
+            console.log(`ℹ️ MESSAGE EMAIL: Skipped - ${result.reason}`);
+          }
+        } catch (error) {
+          console.error('❌ MESSAGE EMAIL: Failed to send:', error);
+        }
+      });
 
       return res.json({ 
         success: true, 

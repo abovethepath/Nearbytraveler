@@ -188,19 +188,37 @@ export async function sendConnectionRequestEmail(recipientId: number, senderName
   }
 }
 
-export async function sendNewMessageEmail(recipientId: number, senderName: string, senderUsername: string, messagePreview: string): Promise<EmailResult> {
+// Rate limit tracking - don't send more than 1 email per user per 15 minutes
+const messageEmailRateLimit = new Map<number, number>();
+
+export async function sendNewMessageEmail(recipientId: number, senderId: number, messagePreview: string): Promise<EmailResult> {
   try {
+    // Rate limit check - max 1 email per 15 minutes per recipient
+    const lastSent = messageEmailRateLimit.get(recipientId);
+    const now = Date.now();
+    if (lastSent && now - lastSent < 15 * 60 * 1000) {
+      return { success: true, skipped: true, reason: "Rate limited - email sent recently" };
+    }
+    
     const prefs = await getUserEmailPreferences(recipientId);
     if (!prefs.emailNotifications || !prefs.messageNotifications) {
       return { success: true, skipped: true, reason: "User disabled message notifications" };
     }
 
-    const recipient = await db.select().from(users).where(eq(users.id, recipientId)).then(rows => rows[0]);
+    const [recipient, sender] = await Promise.all([
+      db.select().from(users).where(eq(users.id, recipientId)).then(rows => rows[0]),
+      db.select().from(users).where(eq(users.id, senderId)).then(rows => rows[0])
+    ]);
+    
     if (!recipient || !recipient.email) {
       return { success: false, reason: "Recipient not found or no email" };
     }
+    if (!sender) {
+      return { success: false, reason: "Sender not found" };
+    }
 
     const displayName = recipient.name?.split(" ")[0] || recipient.username;
+    const senderName = sender.name || sender.username;
     const truncatedMessage = messagePreview.length > 100 ? messagePreview.substring(0, 100) + "..." : messagePreview;
 
     const htmlContent = `
@@ -254,6 +272,9 @@ export async function sendNewMessageEmail(recipientId: number, senderName: strin
       textContent: `Hi ${displayName}! You have a new message from ${senderName}: "${truncatedMessage}" View it at ${APP_URL}/messages`,
       htmlContent,
     });
+    
+    // Update rate limit tracker
+    messageEmailRateLimit.set(recipientId, Date.now());
 
     return { success: true, messageId: result.messageId };
   } catch (error: any) {
