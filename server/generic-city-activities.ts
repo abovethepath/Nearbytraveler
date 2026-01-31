@@ -70,10 +70,5 @@ export const GENERIC_CITY_ACTIVITIES = [
     name: "Local Brewery Tours",
     description: "Visit craft breweries and taste local beers",
     category: "nightlife"
-  },
-  {
-    name: "Food Hall Tastings",
-    description: "Sample multiple vendors at curated food halls",
-    category: "food"
   }
 ];
