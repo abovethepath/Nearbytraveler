@@ -926,10 +926,10 @@ export default function Messages() {
             onClick={() => setSelectedMessage(null)}
             style={{ touchAction: 'auto' }}
           />
-          {/* Bottom Sheet Menu - higher on desktop to avoid cut-off */}
+          {/* Bottom Sheet Menu - centered on mobile, right side on desktop */}
           <div 
-            className="fixed left-2 right-2 sm:left-auto sm:right-4 sm:w-64 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl z-[99999] border border-gray-200 dark:border-gray-700"
-            style={{ touchAction: 'auto', bottom: 'max(90px, 15vh)' }}
+            className="fixed left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-4 w-64 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl z-[99999] border border-gray-200 dark:border-gray-700"
+            style={{ touchAction: 'auto', bottom: 'max(120px, 20vh)' }}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="px-2 py-3 space-y-1">
