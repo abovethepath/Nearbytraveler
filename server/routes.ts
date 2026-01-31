@@ -843,6 +843,14 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   await setupAuth(app);
   console.log("✅ Replit Auth setup complete");
 
+  // Loader.io verification for load testing
+  app.get("/loaderio-15c7c050ef251dcf711cfbdec3d0eb28.txt", (req, res) => {
+    res.type('text/plain').send('loaderio-15c7c050ef251dcf711cfbdec3d0eb28');
+  });
+  app.get("/loaderio-15c7c050ef251dcf711cfbdec3d0eb28", (req, res) => {
+    res.type('text/plain').send('loaderio-15c7c050ef251dcf711cfbdec3d0eb28');
+  });
+
   // Real login endpoint with credentials
   app.post("/api/auth/login", async (req, res) => {
     try {
