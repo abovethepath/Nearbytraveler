@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BlockedUsersList } from "@/components/blocked-users-list";
-import { Settings, Shield, Users, Bell, Eye, MapPin, MessageSquare, Camera, Mail, Loader2, X, User, Sun, Moon, Monitor } from "lucide-react";
+import { Settings, Shield, Users, Bell, Eye, MapPin, MessageSquare, Camera, Mail, Loader2, X, User, Sun, Moon, Monitor, Smartphone } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/App";
 import { useToast } from "@/hooks/use-toast";
@@ -333,106 +334,228 @@ export default function SettingsPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Bell className="w-5 h-5" />
-                    Notification Settings
+                    Notification Preferences
                   </CardTitle>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    Choose how you want to receive notifications for each category
+                  </p>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   
-                  {/* Email Notifications */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium flex items-center gap-2">
-                      <Mail className="h-4 w-4" />
-                      Email Notifications
-                    </h3>
-                    
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-base">General Email Notifications</Label>
-                        <Switch
-                          checked={notificationSettings?.emailNotifications !== false}
-                          onCheckedChange={(value) => handlePrivacyToggle("emailNotifications", value)}
-                        />
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <Label className="text-base">Event Reminders</Label>
-                        <Switch
-                          checked={notificationSettings?.eventReminders !== false}
-                          onCheckedChange={(value) => handlePrivacyToggle("eventReminders", value)}
-                        />
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <Label className="text-base">Connection Alerts</Label>
-                        <Switch
-                          checked={notificationSettings?.connectionAlerts !== false}
-                          onCheckedChange={(value) => handlePrivacyToggle("connectionAlerts", value)}
-                        />
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <Label className="text-base">New Message Notifications</Label>
-                        <Switch
+                  {/* Header row showing channels */}
+                  <div className="hidden sm:grid sm:grid-cols-[1fr,80px,80px,80px] gap-2 items-center pb-2 border-b border-gray-200 dark:border-gray-700">
+                    <div></div>
+                    <div className="flex flex-col items-center gap-1">
+                      <Mail className="h-4 w-4 text-gray-500" />
+                      <span className="text-xs font-medium text-gray-500">Email</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1">
+                      <Bell className="h-4 w-4 text-gray-500" />
+                      <span className="text-xs font-medium text-gray-500">Push</span>
+                    </div>
+                    <div className="flex flex-col items-center gap-1">
+                      <Smartphone className="h-4 w-4 text-gray-500" />
+                      <span className="text-xs font-medium text-gray-500">SMS</span>
+                    </div>
+                  </div>
+
+                  {/* Messages Category */}
+                  <div className="space-y-3">
+                    <h3 className="text-base font-semibold text-orange-500">Messages</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">New messages from other members</p>
+                    <div className="grid grid-cols-3 sm:grid-cols-[1fr,80px,80px,80px] gap-2 items-center">
+                      <div className="col-span-3 sm:col-span-1 hidden sm:block"></div>
+                      <div className="flex items-center gap-2 justify-center">
+                        <Checkbox
                           checked={notificationSettings?.messageNotifications !== false}
-                          onCheckedChange={(value) => handlePrivacyToggle("messageNotifications", value)}
+                          onCheckedChange={(checked) => handlePrivacyToggle("messageNotifications", !!checked)}
                         />
+                        <span className="text-sm sm:hidden">Email</span>
                       </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <Label className="text-base">Weekly Travel Digest</Label>
-                        <Switch
-                          checked={notificationSettings?.weeklyDigest !== false}
-                          onCheckedChange={(value) => handlePrivacyToggle("weeklyDigest", value)}
+                      <div className="flex items-center gap-2 justify-center">
+                        <Checkbox
+                          checked={notificationSettings?.pushNotifications !== false}
+                          onCheckedChange={(checked) => handlePrivacyToggle("pushNotifications", !!checked)}
                         />
+                        <span className="text-sm sm:hidden">Push</span>
                       </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <Label className="text-base">Trip Approaching Reminders</Label>
-                        <Switch
-                          checked={notificationSettings?.tripApproachingReminders !== false}
-                          onCheckedChange={(value) => handlePrivacyToggle("tripApproachingReminders", value)}
+                      <div className="flex items-center gap-2 justify-center">
+                        <Checkbox
+                          checked={notificationSettings?.mobileAlerts !== false}
+                          onCheckedChange={(checked) => handlePrivacyToggle("mobileAlerts", !!checked)}
+                          disabled
                         />
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <Label className="text-base">City Activity Alerts</Label>
-                        <Switch
-                          checked={notificationSettings?.cityActivityAlerts !== false}
-                          onCheckedChange={(value) => handlePrivacyToggle("cityActivityAlerts", value)}
-                        />
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <Label className="text-base">Marketing & Promotional Emails</Label>
-                        <Switch
-                          checked={notificationSettings?.marketingEmails !== false}
-                          onCheckedChange={(value) => handlePrivacyToggle("marketingEmails", value)}
-                        />
+                        <span className="text-sm sm:hidden text-gray-400">SMS</span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Mobile & Push Notifications */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Mobile & Push Notifications</h3>
-                    
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-base">Push Notifications</Label>
-                        <Switch
-                          checked={notificationSettings?.pushNotifications !== false}
-                          onCheckedChange={(value) => handlePrivacyToggle("pushNotifications", value)}
+                  {/* Connections Category */}
+                  <div className="space-y-3 pt-3 border-t border-gray-100 dark:border-gray-800">
+                    <h3 className="text-base font-semibold text-orange-500">Connections</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Connection requests and friend recommendations</p>
+                    <div className="grid grid-cols-3 sm:grid-cols-[1fr,80px,80px,80px] gap-2 items-center">
+                      <div className="col-span-3 sm:col-span-1 hidden sm:block"></div>
+                      <div className="flex items-center gap-2 justify-center">
+                        <Checkbox
+                          checked={notificationSettings?.connectionAlerts !== false}
+                          onCheckedChange={(checked) => handlePrivacyToggle("connectionAlerts", !!checked)}
                         />
+                        <span className="text-sm sm:hidden">Email</span>
                       </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <Label className="text-base">Mobile Alerts</Label>
-                        <Switch
-                          checked={notificationSettings?.mobileAlerts !== false}
-                          onCheckedChange={(value) => handlePrivacyToggle("mobileAlerts", value)}
+                      <div className="flex items-center gap-2 justify-center">
+                        <Checkbox
+                          checked={notificationSettings?.pushNotifications !== false}
+                          onCheckedChange={(checked) => handlePrivacyToggle("pushNotifications", !!checked)}
                         />
+                        <span className="text-sm sm:hidden">Push</span>
+                      </div>
+                      <div className="flex items-center gap-2 justify-center">
+                        <Checkbox
+                          checked={false}
+                          disabled
+                        />
+                        <span className="text-sm sm:hidden text-gray-400">SMS</span>
                       </div>
                     </div>
+                  </div>
+
+                  {/* Events Category */}
+                  <div className="space-y-3 pt-3 border-t border-gray-100 dark:border-gray-800">
+                    <h3 className="text-base font-semibold text-orange-500">Events</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Event reminders and invitations</p>
+                    <div className="grid grid-cols-3 sm:grid-cols-[1fr,80px,80px,80px] gap-2 items-center">
+                      <div className="col-span-3 sm:col-span-1 hidden sm:block"></div>
+                      <div className="flex items-center gap-2 justify-center">
+                        <Checkbox
+                          checked={notificationSettings?.eventReminders !== false}
+                          onCheckedChange={(checked) => handlePrivacyToggle("eventReminders", !!checked)}
+                        />
+                        <span className="text-sm sm:hidden">Email</span>
+                      </div>
+                      <div className="flex items-center gap-2 justify-center">
+                        <Checkbox
+                          checked={notificationSettings?.pushNotifications !== false}
+                          onCheckedChange={(checked) => handlePrivacyToggle("pushNotifications", !!checked)}
+                        />
+                        <span className="text-sm sm:hidden">Push</span>
+                      </div>
+                      <div className="flex items-center gap-2 justify-center">
+                        <Checkbox
+                          checked={false}
+                          disabled
+                        />
+                        <span className="text-sm sm:hidden text-gray-400">SMS</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Travel Category */}
+                  <div className="space-y-3 pt-3 border-t border-gray-100 dark:border-gray-800">
+                    <h3 className="text-base font-semibold text-orange-500">Travel</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Trip reminders and city activity alerts</p>
+                    <div className="grid grid-cols-3 sm:grid-cols-[1fr,80px,80px,80px] gap-2 items-center">
+                      <div className="col-span-3 sm:col-span-1 hidden sm:block"></div>
+                      <div className="flex items-center gap-2 justify-center">
+                        <Checkbox
+                          checked={notificationSettings?.tripApproachingReminders !== false}
+                          onCheckedChange={(checked) => handlePrivacyToggle("tripApproachingReminders", !!checked)}
+                        />
+                        <span className="text-sm sm:hidden">Email</span>
+                      </div>
+                      <div className="flex items-center gap-2 justify-center">
+                        <Checkbox
+                          checked={notificationSettings?.pushNotifications !== false}
+                          onCheckedChange={(checked) => handlePrivacyToggle("pushNotifications", !!checked)}
+                        />
+                        <span className="text-sm sm:hidden">Push</span>
+                      </div>
+                      <div className="flex items-center gap-2 justify-center">
+                        <Checkbox
+                          checked={false}
+                          disabled
+                        />
+                        <span className="text-sm sm:hidden text-gray-400">SMS</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Nearby Alerts Category */}
+                  <div className="space-y-3 pt-3 border-t border-gray-100 dark:border-gray-800">
+                    <h3 className="text-base font-semibold text-orange-500">Nearby Alerts</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Nearby travelers, business deals, and city activity</p>
+                    <div className="grid grid-cols-3 sm:grid-cols-[1fr,80px,80px,80px] gap-2 items-center">
+                      <div className="col-span-3 sm:col-span-1 hidden sm:block"></div>
+                      <div className="flex items-center gap-2 justify-center">
+                        <Checkbox
+                          checked={notificationSettings?.cityActivityAlerts !== false}
+                          onCheckedChange={(checked) => handlePrivacyToggle("cityActivityAlerts", !!checked)}
+                        />
+                        <span className="text-sm sm:hidden">Email</span>
+                      </div>
+                      <div className="flex items-center gap-2 justify-center">
+                        <Checkbox
+                          checked={notificationSettings?.pushNotifications !== false}
+                          onCheckedChange={(checked) => handlePrivacyToggle("pushNotifications", !!checked)}
+                        />
+                        <span className="text-sm sm:hidden">Push</span>
+                      </div>
+                      <div className="flex items-center gap-2 justify-center">
+                        <Checkbox
+                          checked={false}
+                          disabled
+                        />
+                        <span className="text-sm sm:hidden text-gray-400">SMS</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Digest & Marketing Category */}
+                  <div className="space-y-3 pt-3 border-t border-gray-100 dark:border-gray-800">
+                    <h3 className="text-base font-semibold text-orange-500">Digest & Updates</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Weekly digest and promotional content</p>
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-3 sm:grid-cols-[1fr,80px,80px,80px] gap-2 items-center">
+                        <div className="col-span-3 sm:col-span-1 text-sm text-gray-600 dark:text-gray-300">Weekly Travel Digest</div>
+                        <div className="flex items-center gap-2 justify-center">
+                          <Checkbox
+                            checked={notificationSettings?.weeklyDigest !== false}
+                            onCheckedChange={(checked) => handlePrivacyToggle("weeklyDigest", !!checked)}
+                          />
+                          <span className="text-sm sm:hidden">Email</span>
+                        </div>
+                        <div className="flex items-center gap-2 justify-center">
+                          <Checkbox checked={false} disabled />
+                          <span className="text-sm sm:hidden text-gray-400">Push</span>
+                        </div>
+                        <div className="flex items-center gap-2 justify-center">
+                          <Checkbox checked={false} disabled />
+                          <span className="text-sm sm:hidden text-gray-400">SMS</span>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 sm:grid-cols-[1fr,80px,80px,80px] gap-2 items-center">
+                        <div className="col-span-3 sm:col-span-1 text-sm text-gray-600 dark:text-gray-300">Marketing & Promotions</div>
+                        <div className="flex items-center gap-2 justify-center">
+                          <Checkbox
+                            checked={notificationSettings?.marketingEmails === true}
+                            onCheckedChange={(checked) => handlePrivacyToggle("marketingEmails", !!checked)}
+                          />
+                          <span className="text-sm sm:hidden">Email</span>
+                        </div>
+                        <div className="flex items-center gap-2 justify-center">
+                          <Checkbox checked={false} disabled />
+                          <span className="text-sm sm:hidden text-gray-400">Push</span>
+                        </div>
+                        <div className="flex items-center gap-2 justify-center">
+                          <Checkbox checked={false} disabled />
+                          <span className="text-sm sm:hidden text-gray-400">SMS</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 text-xs text-gray-500 dark:text-gray-400 text-center">
+                    SMS notifications coming soon
                   </div>
 
                   <Button 
