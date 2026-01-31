@@ -9579,7 +9579,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     setShowChatroomList(false);
                     setLocation('/city-chatrooms');
                   }}
-                  className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white"
+                  className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-black"
                 >
                   Browse All Chatrooms
                 </Button>
@@ -9920,7 +9920,7 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
               </p>
               <Button 
                 onClick={() => window.location.href = '/create-event'}
-                className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white"
+                className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-black"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Create Your First Event
