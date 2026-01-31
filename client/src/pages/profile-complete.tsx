@@ -6878,8 +6878,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     {user.languagesSpoken && user.languagesSpoken.length > 0 ? (
                       <div className="flex flex-wrap gap-2">
                         {user.languagesSpoken.map((language: string) => (
-                          <div key={language} className="inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium leading-none whitespace-nowrap bg-gradient-to-r from-orange-400 to-pink-500 text-white border-0 appearance-none select-none gap-1.5 shadow-md">
-                            {language}
+                          <div key={language} className="inline-flex items-center justify-center h-8 rounded-full px-4 text-xs font-medium leading-none whitespace-nowrap bg-gradient-to-r from-orange-400 to-pink-500 border-0 appearance-none select-none gap-1.5 shadow-md">
+                            <span style={{ color: 'black' }}>{language}</span>
                           </div>
                         ))}
                       </div>
@@ -7535,7 +7535,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <CardHeader className="pb-3">
                   <div className="flex items-center space-x-2 mb-2">
                     <TrendingUp className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                    <div className="inline-flex items-center justify-center h-6 min-w-[4rem] rounded-full px-2 text-xs font-medium leading-none whitespace-nowrap bg-orange-600 text-white border-0 appearance-none select-none gap-1">Success Tips</div>
+                    <div className="inline-flex items-center justify-center h-6 min-w-[4rem] rounded-full px-2 text-xs font-medium leading-none whitespace-nowrap bg-orange-600 border-0 appearance-none select-none gap-1"><span style={{ color: 'black' }}>Success Tips</span></div>
                   </div>
                   <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white">
                     Boost Your Connections
@@ -7547,10 +7547,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 <CardContent className="pt-0">
                   <Button 
                     onClick={() => setLocation('/getting-started')}
-                    className="w-full bg-gradient-to-r from-blue-500 via-orange-500 to-violet-500 hover:from-blue-600 hover:via-orange-600 hover:to-violet-600 text-white border-0"
+                    className="w-full bg-gradient-to-r from-blue-500 via-orange-500 to-violet-500 hover:from-blue-600 hover:via-orange-600 hover:to-violet-600 border-0"
+                    style={{ color: 'black' }}
                   >
-                    <Star className="w-4 h-4 mr-2" />
-                    Optimize Profile
+                    <Star className="w-4 h-4 mr-2" style={{ color: 'black' }} />
+                    <span style={{ color: 'black' }}>Optimize Profile</span>
                   </Button>
                 </CardContent>
               </Card>
