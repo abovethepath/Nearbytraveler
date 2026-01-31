@@ -387,6 +387,22 @@ export default function SettingsPage() {
                       </div>
                       
                       <div className="flex items-center justify-between">
+                        <Label className="text-base">Trip Approaching Reminders</Label>
+                        <Switch
+                          checked={notificationSettings?.tripApproachingReminders !== false}
+                          onCheckedChange={(value) => handlePrivacyToggle("tripApproachingReminders", value)}
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <Label className="text-base">City Activity Alerts</Label>
+                        <Switch
+                          checked={notificationSettings?.cityActivityAlerts !== false}
+                          onCheckedChange={(value) => handlePrivacyToggle("cityActivityAlerts", value)}
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
                         <Label className="text-base">Marketing & Promotional Emails</Label>
                         <Switch
                           checked={notificationSettings?.marketingEmails !== false}

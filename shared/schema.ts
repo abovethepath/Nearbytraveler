@@ -2400,6 +2400,8 @@ export const userNotificationSettings = pgTable("user_notification_settings", {
   messageNotifications: boolean("message_notifications").default(true),
   weeklyDigest: boolean("weekly_digest").default(true),
   marketingEmails: boolean("marketing_emails").default(false),
+  tripApproachingReminders: boolean("trip_approaching_reminders").default(true),
+  cityActivityAlerts: boolean("city_activity_alerts").default(true),
   
   // Mobile & Push Notifications
   pushNotifications: boolean("push_notifications").default(true),

@@ -4320,31 +4320,14 @@ Questions? Just reply to this message!
       setImmediate(async () => {
         console.log(`🔄 BACKGROUND TASKS: Starting post-registration tasks for ${user.username}...`);
         
-        // 0. Send welcome email
+        // 0. Send welcome email using notification email system
         try {
-          if (user.email) {
-            await sendBrevoEmail({
-              toEmail: user.email,
-              subject: "Welcome to Nearby Traveler!",
-              textContent: `Hi ${user.name || user.username}!\n\nWelcome to Nearby Traveler - your new way to connect with locals and travelers around the world.\n\nHere's what you can do:\n- Find locals and travelers in your area\n- Join city chatrooms to meet new people\n- Create and join events and quick meetups\n- Share your travel plans and connect with others\n\nStart exploring: ${process.env.APP_URL || 'https://nearbytraveler.org'}\n\nHappy connecting!\nThe Nearby Traveler Team`,
-              htmlContent: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                  <h1 style="color: #2563eb;">Welcome to Nearby Traveler!</h1>
-                  <p>Hi ${user.name || user.username}!</p>
-                  <p>Welcome to Nearby Traveler - your new way to connect with locals and travelers around the world.</p>
-                  <h3>Here's what you can do:</h3>
-                  <ul>
-                    <li>Find locals and travelers in your area</li>
-                    <li>Join city chatrooms to meet new people</li>
-                    <li>Create and join events and quick meetups</li>
-                    <li>Share your travel plans and connect with others</li>
-                  </ul>
-                  <p><a href="${process.env.APP_URL || 'https://nearbytraveler.org'}" style="display: inline-block; background: linear-gradient(to right, #2563eb, #f97316); color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">Start Exploring</a></p>
-                  <p>Happy connecting!<br>The Nearby Traveler Team</p>
-                </div>
-              `,
-            });
+          const { sendWelcomeEmail } = await import('./email/notificationEmails');
+          const result = await sendWelcomeEmail(user.id);
+          if (result.success && !result.skipped) {
             console.log(`✅ BACKGROUND: Sent welcome email to ${user.email}`);
+          } else if (result.skipped) {
+            console.log(`ℹ️ BACKGROUND: Welcome email skipped - ${result.reason}`);
           }
         } catch (error) {
           console.error('❌ BACKGROUND: Failed to send welcome email:', error);
@@ -16797,15 +16780,128 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // User status and notification settings endpoints
+  // User notification settings endpoints - GET and PUT by user ID
+  app.get("/api/users/:id/notification-settings", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+
+      // Get existing settings or return defaults
+      const [settings] = await db
+        .select()
+        .from(userNotificationSettings)
+        .where(eq(userNotificationSettings.userId, userId));
+
+      if (settings) {
+        return res.json(settings);
+      }
+
+      // Return defaults if no settings exist yet
+      return res.json({
+        userId,
+        emailNotifications: true,
+        eventReminders: true,
+        connectionAlerts: true,
+        messageNotifications: true,
+        weeklyDigest: true,
+        marketingEmails: false,
+        tripApproachingReminders: true,
+        cityActivityAlerts: true,
+        pushNotifications: true,
+        mobileAlerts: true,
+        profileVisibility: "public",
+        locationSharing: true,
+        photoPermissions: "friends",
+        messageRequests: true,
+        eventInvitations: true,
+        connectionRequests: true,
+      });
+    } catch (error: any) {
+      console.error("Error fetching notification settings:", error);
+      res.status(500).json({ message: "Failed to fetch notification settings" });
+    }
+  });
+
+  app.put("/api/users/:id/notification-settings", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const sessionUserId = (req.session as any)?.user?.id;
+
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+
+      // Verify user is updating their own settings
+      if (sessionUserId !== userId) {
+        return res.status(403).json({ message: "Cannot update other user's settings" });
+      }
+
+      const updates = req.body;
+
+      // Check if settings exist
+      const [existing] = await db
+        .select()
+        .from(userNotificationSettings)
+        .where(eq(userNotificationSettings.userId, userId));
+
+      let result;
+      if (existing) {
+        // Update existing settings
+        [result] = await db
+          .update(userNotificationSettings)
+          .set({ ...updates, updatedAt: new Date() })
+          .where(eq(userNotificationSettings.userId, userId))
+          .returning();
+      } else {
+        // Create new settings
+        [result] = await db
+          .insert(userNotificationSettings)
+          .values({ userId, ...updates })
+          .returning();
+      }
+
+      res.json(result);
+    } catch (error: any) {
+      console.error("Error updating notification settings:", error);
+      res.status(500).json({ message: "Failed to update notification settings" });
+    }
+  });
+
+  // Legacy notification settings endpoint (for backward compatibility)
   app.put("/api/users/notification-settings", async (req, res) => {
     try {
-      const userId = (req.session as any)?.user?.id || 1; // Default to nearbytraveler
+      const userId = (req.session as any)?.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
 
-      // For now, just return success (can be enhanced with actual settings storage)
-      res.json({ success: true, message: "Notification settings updated" });
+      const updates = req.body;
+
+      // Check if settings exist
+      const [existing] = await db
+        .select()
+        .from(userNotificationSettings)
+        .where(eq(userNotificationSettings.userId, userId));
+
+      let result;
+      if (existing) {
+        [result] = await db
+          .update(userNotificationSettings)
+          .set({ ...updates, updatedAt: new Date() })
+          .where(eq(userNotificationSettings.userId, userId))
+          .returning();
+      } else {
+        [result] = await db
+          .insert(userNotificationSettings)
+          .values({ userId, ...updates })
+          .returning();
+      }
+
+      res.json(result);
     } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("Error updating notification settings:", error);
+      console.error("Error updating notification settings:", error);
       res.status(500).json({ message: "Failed to update notification settings" });
     }
   });
