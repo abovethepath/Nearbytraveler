@@ -150,13 +150,13 @@ export function MobileBottomNav() {
             );
           })}
 
-          {/* Center create button */}
+          {/* Center create button - responsive sizing for all mobile screens */}
           <button
             onClick={() => setShowActionMenu(true)}
             aria-label="Create"
-            className="absolute left-1/2 -translate-x-1/2 -top-4 w-14 h-14 md:w-16 md:h-16 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl flex items-center justify-center hover:scale-105 transition-transform"
+            className="absolute left-1/2 -translate-x-1/2 -top-3 w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-white dark:bg-gray-800 border-2 border-orange-400 dark:border-orange-500 shadow-xl flex items-center justify-center hover:scale-105 transition-transform"
           >
-            <Plus className="w-7 h-7 md:w-8 md:h-8 text-orange-500" />
+            <Plus className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-orange-500" />
           </button>
 
           {/* Right two items */}

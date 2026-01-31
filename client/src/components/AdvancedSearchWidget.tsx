@@ -225,8 +225,20 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
         onClick={(e) => e.stopPropagation()}
         style={{ touchAction: 'auto' }}
       >
-        {/* Header - Sticky */}
-        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+        {/* Sticky X Button - Always visible floating in top-right corner */}
+        <Button 
+          onClick={() => onOpenChange(false)}
+          variant="ghost"
+          size="sm"
+          className="absolute top-2 right-2 z-50 w-10 h-10 p-0 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full shadow-lg border border-gray-200 dark:border-gray-600"
+          data-testid="button-close-search-sticky"
+          aria-label="Close search"
+        >
+          <X className="h-5 w-5" />
+        </Button>
+
+        {/* Header */}
+        <div className="flex items-center p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0 pr-14">
           <div className="flex-1 min-w-0">
             <h2 className="text-lg font-semibold text-black dark:text-white flex items-center gap-2">
               <Search className="h-5 w-5" />
@@ -236,16 +248,6 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
               Find people using detailed filters and preferences
             </p>
           </div>
-          <Button 
-            onClick={() => onOpenChange(false)}
-            variant="ghost"
-            size="sm"
-            className="flex-shrink-0 ml-4 p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
-            data-testid="button-close-search"
-          >
-            <X className="h-6 w-6" />
-            <span className="sr-only">Close search</span>
-          </Button>
         </div>
 
         {/* Content - Scrollable */}
