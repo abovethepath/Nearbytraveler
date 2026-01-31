@@ -1,0 +1,93 @@
+You don’t have to use Railway. For your stack (Node/Express + native ws + Redis + Neon) the “best” host mostly comes down to how much ops you’re willing to do vs how much headroom you want.
+
+Here are the top options that actually fit WebSockets + scaling (and the ones to avoid).
+
+My top recommendation for you: Render
+
+Why: it’s the best “production-grade but still simple” choice for a realtime app.
+
+Inbound WebSockets supported on normal web services.
+
+Built-in scaling options.
+
+Predictable-ish pricing model (plan + compute).
+
+If you want “best” with minimal complexity: pick Render.
+
+What you do next (Render):
+
+Create Render account → “New Web Service” → connect your GitHub repo
+
+Set build/start commands + env vars
+
+Add custom domain nearbytraveler.org + update DNS
+
+Best performance/control for realtime: Fly.io
+
+Why: excellent for long-lived WebSocket connections and scaling geographically.
+
+Fly explicitly supports WebSockets.
+
+Usage-based pricing model.
+
+Tradeoff: you’ll do a bit more “infra-ish” work (CLI, regions, machine sizing).
+
+What you do next (Fly.io):
+
+Create Fly account + install CLI
+
+fly launch from your repo, set secrets/env
+
+Add Redis (or point to existing), scale machines, point domain
+
+“Big cloud, most scalable” option: Amazon Web Services (ECS/Fargate) + Application Load Balancer
+
+Why: maximum control, maximum headroom. Great if you expect to become huge.
+
+ALB has native WebSocket support.
+
+Tradeoff: most setup (VPC, ECS service, task defs, logging, autoscaling). It’s the “best” technically, but not the best if you want to move fast.
+
+Strong serverless contender: Google Cloud Run
+
+Official docs cover running WebSockets and best practices.
+
+Tradeoff: WebSockets + serverless can get tricky/expensive if you have tons of long-lived connections unless you configure concurrency/min instances carefully (still doable, just more “cloud tuning”).
+
+“Okay, but not my first pick”: DigitalOcean App Platform
+
+WebSockets can work (commonly via wss:// on 443).
+I’d put it behind Render/Fly for your specific “chat-heavy day-one spike” scenario.
+
+Avoid for your current architecture: Vercel (for the backend)
+
+Vercel’s serverless model generally doesn’t support persistent WebSocket connections for your kind of backend.
+(You can still host the frontend there, but keep chat/API elsewhere.)
+
+What I would do in your shoes (fast + “best” outcome)
+
+Pick Render if you want the best blend of:
+
+“deploy today”
+
+WebSockets supported
+
+scalable enough for your launch
+
+not a DevOps project
+
+Pick Fly.io if you want:
+
+the best realtime performance/control
+
+and you don’t mind a bit more setup
+
+Since you already pushed to GitHub: your next 3 moves
+
+Choose host (Render or Fly are my top 2)
+
+Create account + connect GitHub repo
+
+Add env vars + deploy, then point nearbytraveler.org to it
+
+If you tell me which one you want (Render or Fly), I’ll give you the exact click-by-click + the exact build/start settings to use for a typical Vite+Express monorepo (and the common gotchas that cause first deploys to fail).
