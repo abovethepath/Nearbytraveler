@@ -1,0 +1,224 @@
+Great — Step 4 is 2 pages + 1 link. I’m going to assume you’re on React + Vite with a router (likely react-router-dom) since that’s how your NT web app has been built.
+
+Below is paste-ready code you can drop in.
+
+Step 4A — Add “Forgot password?” link on your Login page
+
+Find your login component (often client/src/pages/Login.tsx or similar) and add a link:
+
+import { Link } from "react-router-dom";
+
+// somewhere under the password field:
+<Link
+  to="/forgot-password"
+  className="text-sm text-muted-foreground hover:underline"
+>
+  Forgot password?
+</Link>
+
+Step 4B — Create /forgot-password page
+
+Create: client/src/pages/ForgotPassword.tsx
+
+Paste:
+
+import { useState } from "react";
+
+export default function ForgotPassword() {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "done">("idle");
+  const [msg, setMsg] = useState<string>("");
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setStatus("loading");
+    setMsg("");
+
+    try {
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email }),
+      });
+
+      // Always show the same success message regardless of res
+      await res.json().catch(() => null);
+
+      setMsg("If an account exists, a reset link has been sent. Check your inbox and spam folder.");
+      setStatus("done");
+    } catch (err) {
+      setMsg("Something went wrong. Please try again.");
+      setStatus("idle");
+    }
+  }
+
+  return (
+    <div className="mx-auto max-w-md p-6">
+      <h1 className="text-2xl font-semibold">Forgot password</h1>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Enter your email and we’ll send you a reset link.
+      </p>
+
+      <form onSubmit={onSubmit} className="mt-6 space-y-4">
+        <div>
+          <label className="text-sm font-medium">Email</label>
+          <input
+            className="mt-1 w-full rounded-md border p-2"
+            type="email"
+            value={email}
+            autoComplete="email"
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+
+        <button
+          className="w-full rounded-md border px-4 py-2"
+          disabled={status === "loading"}
+          type="submit"
+        >
+          {status === "loading" ? "Sending..." : "Send reset link"}
+        </button>
+
+        {msg ? <p className="text-sm">{msg}</p> : null}
+      </form>
+    </div>
+  );
+}
+
+Step 4C — Create /reset-password page
+
+Create: client/src/pages/ResetPassword.tsx
+
+Paste:
+
+import { useMemo, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+
+export default function ResetPassword() {
+  const [params] = useSearchParams();
+  const navigate = useNavigate();
+
+  const token = useMemo(() => params.get("token") || "", [params]);
+
+  const [newPassword, setNewPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "done">("idle");
+  const [msg, setMsg] = useState("");
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setMsg("");
+
+    if (!token) {
+      setMsg("Missing reset token. Please request a new reset email.");
+      return;
+    }
+    if (newPassword.length < 8) {
+      setMsg("Password must be at least 8 characters.");
+      return;
+    }
+    if (newPassword !== confirm) {
+      setMsg("Passwords do not match.");
+      return;
+    }
+
+    setStatus("loading");
+
+    try {
+      const res = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ token, newPassword }),
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        setMsg(data?.message || "Reset link is invalid or expired. Request a new one.");
+        setStatus("idle");
+        return;
+      }
+
+      setMsg("Password updated. Redirecting to login...");
+      setStatus("done");
+
+      setTimeout(() => navigate("/login"), 1000);
+    } catch (err) {
+      setMsg("Something went wrong. Please try again.");
+      setStatus("idle");
+    }
+  }
+
+  return (
+    <div className="mx-auto max-w-md p-6">
+      <h1 className="text-2xl font-semibold">Reset password</h1>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Enter a new password for your account.
+      </p>
+
+      <form onSubmit={onSubmit} className="mt-6 space-y-4">
+        <div>
+          <label className="text-sm font-medium">New password</label>
+          <input
+            className="mt-1 w-full rounded-md border p-2"
+            type="password"
+            value={newPassword}
+            autoComplete="new-password"
+            onChange={(e) => setNewPassword(e.target.value)}
+            required
+          />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium">Confirm password</label>
+          <input
+            className="mt-1 w-full rounded-md border p-2"
+            type="password"
+            value={confirm}
+            autoComplete="new-password"
+            onChange={(e) => setConfirm(e.target.value)}
+            required
+          />
+        </div>
+
+        <button
+          className="w-full rounded-md border px-4 py-2"
+          disabled={status === "loading"}
+          type="submit"
+        >
+          {status === "loading" ? "Updating..." : "Update password"}
+        </button>
+
+        {msg ? <p className="text-sm">{msg}</p> : null}
+      </form>
+    </div>
+  );
+}
+
+Step 4D — Add the routes to your router
+
+Wherever your routes are defined (often client/src/App.tsx or client/src/main.tsx), add:
+
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+
+// inside <Routes>
+<Route path="/forgot-password" element={<ForgotPassword />} />
+<Route path="/reset-password" element={<ResetPassword />} />
+
+Quick test
+
+Go to /login → click Forgot password?
+
+Enter your email → you get a reset email
+
+Click link → it opens /reset-password?token=...
+
+Set new password → redirected to login → log in
+
+One important note (so login actually works after reset)
+
+Your login endpoint must be checking passwords with bcrypt compare against the same column you updated (Step 3). If login currently uses a different column name or hashing method, tell me what it is and I’ll align them.

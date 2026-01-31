@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { useMutation } from "@tanstack/react-query";
+import { Lock, CheckCircle, ArrowLeft, Loader2 } from "lucide-react";
 
 const resetPasswordSchema = z.object({
   newPassword: z.string().min(8, "Password must be 8 characters or more"),
@@ -29,67 +30,49 @@ export default function ResetPassword() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // EMERGENCY FIX: Multiple methods to get the reset token
     let tokenParam: string | null = null;
     
-    // Method 1: PRIORITY - Check if token was stored from server-side redirect
     const storedToken = localStorage.getItem('reset_token');
     if (storedToken) {
-      console.log('🔐 EMERGENCY SUCCESS: Found stored token from server redirect:', storedToken);
       tokenParam = storedToken;
-      // Clear it after use for security
       localStorage.removeItem('reset_token');
     }
     
-    // Method 2: Extract from current URL
     if (!tokenParam) {
       const currentURL = window.location.href;
-      console.log('🔐 RESET: Checking current URL:', currentURL);
       
-      // Check search params
       if (window.location.search) {
         const params = new URLSearchParams(window.location.search);
         tokenParam = params.get('token');
-        console.log('🔐 RESET: Found token in search:', tokenParam);
       }
       
-      // Parse full URL if search is empty
       if (!tokenParam) {
         try {
           const url = new URL(currentURL);
           tokenParam = url.searchParams.get('token');
-          console.log('🔐 RESET: Found token in full URL:', tokenParam);
         } catch (e) {
-          console.log('🔐 RESET: URL parsing failed:', e);
+          console.log('URL parsing failed:', e);
         }
       }
       
-      // Regex as final fallback
       if (!tokenParam) {
         const tokenMatch = currentURL.match(/[?&]token=([^&]+)/);
         tokenParam = tokenMatch ? tokenMatch[1] : null;
-        console.log('🔐 RESET: Found token via regex:', tokenParam);
       }
     }
     
     setToken(tokenParam);
     
-    // Verify token if it exists
     if (tokenParam) {
-      console.log('🔐 RESET: Verifying token:', tokenParam);
       fetch(`${getApiBaseUrl()}/api/auth/verify-reset-token?token=${tokenParam}`)
         .then(async (response) => {
-          console.log('🔐 RESET: Verification response status:', response.status);
           const data = await response.json();
-          console.log('🔐 RESET: Verification data:', data);
           setIsValidToken(data.valid || false);
         })
-        .catch((error) => {
-          console.log('🔐 RESET: Verification error:', error);
+        .catch(() => {
           setIsValidToken(false);
         });
     } else {
-      console.log('🔐 RESET: No token in URL');
       setIsValidToken(false);
     }
   }, [location]);
@@ -132,14 +115,28 @@ export default function ResetPassword() {
     resetPasswordMutation.mutate(data);
   };
 
-  // Show loading while verifying token
   if (isValidToken === null) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-orange-50 px-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Verifying Reset Link...</CardTitle>
-            <CardDescription>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4">
+        <Card className="w-full max-w-md border-0 shadow-2xl bg-white dark:bg-gray-800">
+          <CardHeader className="text-center pb-2">
+            <div className="flex justify-center mb-6">
+              <img 
+                src="/logo.png" 
+                alt="Nearby Traveler" 
+                className="h-16 w-auto"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            </div>
+            <div className="flex justify-center mb-4">
+              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                <Loader2 className="w-8 h-8 text-blue-600 dark:text-blue-400 animate-spin" />
+              </div>
+            </div>
+            <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white">Verifying Reset Link...</CardTitle>
+            <CardDescription className="text-gray-600 dark:text-gray-300 mt-2">
               Please wait while we verify your password reset link.
             </CardDescription>
           </CardHeader>
@@ -149,29 +146,42 @@ export default function ResetPassword() {
   }
 
   if (!token || isValidToken === false) {
-    // Auto-redirect to home page instead of showing error
-    console.log('🔄 AUTO-REDIRECT: No valid reset token, redirecting to home page');
     window.location.href = '/';
     return null;
   }
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-orange-50 px-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl text-green-600">Password Reset Complete</CardTitle>
-            <CardDescription>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4">
+        <Card className="w-full max-w-md border-0 shadow-2xl bg-white dark:bg-gray-800">
+          <CardHeader className="text-center pb-2">
+            <div className="flex justify-center mb-6">
+              <img 
+                src="/logo.png" 
+                alt="Nearby Traveler" 
+                className="h-16 w-auto"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            </div>
+            <div className="flex justify-center mb-4">
+              <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
+              </div>
+            </div>
+            <CardTitle className="text-2xl font-bold text-green-600 dark:text-green-400">Password Reset Complete</CardTitle>
+            <CardDescription className="text-gray-600 dark:text-gray-300 mt-2">
               Your password has been successfully updated.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-4">
             <div className="text-center space-y-4">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 You can now sign in with your new password.
               </p>
-              <Link href="/">
-                <Button className="w-full">
+              <Link href="/signin">
+                <Button className="w-full bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-semibold py-3 h-12 shadow-lg">
                   Sign In Now
                 </Button>
               </Link>
@@ -183,27 +193,43 @@ export default function ResetPassword() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-orange-50 px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Reset Your Password</CardTitle>
-          <CardDescription>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4">
+      <Card className="w-full max-w-md border-0 shadow-2xl bg-white dark:bg-gray-800">
+        <CardHeader className="text-center pb-2">
+          <div className="flex justify-center mb-6">
+            <img 
+              src="/logo.png" 
+              alt="Nearby Traveler" 
+              className="h-16 w-auto"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+          </div>
+          <div className="flex justify-center mb-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-orange-500 rounded-full flex items-center justify-center">
+              <Lock className="w-8 h-8 text-white" />
+            </div>
+          </div>
+          <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white">Reset Your Password</CardTitle>
+          <CardDescription className="text-gray-600 dark:text-gray-300 mt-2">
             Enter your new password below.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-4">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               <FormField
                 control={form.control}
                 name="newPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>New Password</FormLabel>
+                    <FormLabel className="text-gray-700 dark:text-gray-200">New Password</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
                         placeholder="Enter new password"
+                        className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                         {...field}
                       />
                     </FormControl>
@@ -217,11 +243,12 @@ export default function ResetPassword() {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Confirm New Password</FormLabel>
+                    <FormLabel className="text-gray-700 dark:text-gray-200">Confirm New Password</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
                         placeholder="Confirm new password"
+                        className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                         {...field}
                       />
                     </FormControl>
@@ -232,7 +259,7 @@ export default function ResetPassword() {
               
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-semibold py-3 h-12 shadow-lg"
                 disabled={resetPasswordMutation.isPending}
               >
                 {resetPasswordMutation.isPending ? "Updating..." : "Reset Password"}
@@ -241,8 +268,12 @@ export default function ResetPassword() {
           </Form>
           
           <div className="mt-6 text-center">
-            <Link href="/">
-              <Button variant="ghost" className="text-sm">
+            <Link href="/signin">
+              <Button 
+                variant="ghost" 
+                className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Sign In
               </Button>
             </Link>

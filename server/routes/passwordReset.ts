@@ -28,6 +28,32 @@ function minutesFromNow(mins: number) {
   return new Date(Date.now() + mins * 60 * 1000);
 }
 
+router.get("/verify-reset-token", async (req, res) => {
+  const token = String(req.query?.token || "").trim();
+
+  if (!token) {
+    return res.json({ valid: false });
+  }
+
+  try {
+    const tokenHash = sha256(token);
+
+    const tokenResult = await pool.query(
+      `SELECT id FROM password_reset_tokens
+       WHERE token_hash = $1
+         AND used_at IS NULL
+         AND expires_at > NOW()
+       LIMIT 1`,
+      [tokenHash]
+    );
+
+    return res.json({ valid: (tokenResult.rowCount || 0) > 0 });
+  } catch (err) {
+    console.error("verify-reset-token error:", err);
+    return res.json({ valid: false });
+  }
+});
+
 router.post("/forgot-password", async (req, res) => {
   const emailOrUsername = String(req.body?.emailOrUsername || req.body?.email || "").trim().toLowerCase();
 
