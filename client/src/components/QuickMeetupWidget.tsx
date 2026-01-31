@@ -466,11 +466,12 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                     setShowCreateForm(true);
                     console.log('🔥 FORM STATE CHANGED TO TRUE');
                   }}
-                  className="w-full text-xl font-black py-6 h-16 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0 rounded-xl shadow-2xl hover:shadow-orange-300 dark:hover:shadow-orange-900/50 transform hover:scale-105 transition-all duration-300 relative overflow-hidden"
+                  className="w-full text-xl font-black py-6 h-16 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 border-0 rounded-xl shadow-2xl hover:shadow-orange-300 dark:hover:shadow-orange-900/50 transform hover:scale-105 transition-all duration-300 relative overflow-hidden"
+                  style={{ color: 'black' }}
                 >
-                  <span className="relative z-10 flex items-center justify-center gap-2">
+                  <span className="relative z-10 flex items-center justify-center gap-2" style={{ color: 'black' }}>
                     🎯 LETS MEET NOW!
-                    <Clock className="h-6 w-6 animate-spin" />
+                    <Clock className="h-6 w-6 animate-spin" style={{ color: 'black' }} />
                   </span>
                   {/* Animated shine effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] animate-shine"></div>
@@ -478,7 +479,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                 
                 {/* Quick action buttons */}
                 <div className="mt-3 flex gap-2 justify-center">
-                  <Badge className="bg-orange-500 text-white px-3 py-1 text-xs font-bold animate-pulse">TODAY</Badge>
+                  <Badge className="bg-orange-500 px-3 py-1 text-xs font-bold animate-pulse"><span style={{ color: 'black' }}>TODAY</span></Badge>
                 </div>
               </div>
             </div>
