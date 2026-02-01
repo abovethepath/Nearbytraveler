@@ -8,9 +8,9 @@ import { trackEvent } from "@/lib/analytics";
 import { useTheme } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
 // Import images as URLs - using JPG/PNG for iPhone compatibility
-const localsHeaderImage = "/assets/locals_1756777112458.png";
-const travelersHeaderImage = "/assets/travelers_1756778615408.jpg";
-const travelersHomeImage = "/assets/locals_1756777112458.png";
+const localsHeaderImage = "/landing-images/locals_1756777112458.png";
+const travelersHeaderImage = "/landing-images/travelers_1756778615408.jpg";
+const travelersHomeImage = "/landing-images/locals_1756777112458.png";
 
 export default function LandingStreamlined() {
   const [, setLocation] = useLocation();

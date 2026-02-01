@@ -5,7 +5,7 @@ import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import Footer from "@/components/footer";
 import { useTheme } from "@/components/theme-provider";
 import { trackEvent } from "@/lib/analytics";
-const travelersHeaderImage = "/assets/travelers_1756778615408.jpg";
+const travelersHeaderImage = "/landing-images/travelers_1756778615408.jpg";
 
 export default function TravelersLanding() {
   const [, setLocation] = useLocation();

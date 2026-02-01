@@ -404,7 +404,8 @@ app.use(express.static(path.join(process.cwd(), 'public')));
 app.use(express.static(path.join(process.cwd(), 'client', 'public')));
 
 // Serve attached assets with aggressive no-cache headers
-app.use('/assets', (req, res, next) => {
+// NOTE: Using /user-assets instead of /assets to avoid conflict with Vite's /assets path
+app.use('/user-assets', (req, res, next) => {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('Expires', '0');
