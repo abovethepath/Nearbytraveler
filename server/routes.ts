@@ -948,25 +948,33 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   
   // POST logout for client-side calls - BULLETPROOF VERSION
   app.post("/api/auth/logout", (req, res) => {
-    console.log("🔐 Logout POST");
+    console.log("🔐 Logout POST - session:", (req as any).sessionID);
+    
+    // Clear cookie with EXACT same settings as session middleware
     const cookieOpts = { 
       path: "/", 
       sameSite: "lax" as const, 
       secure: false, 
-      httpOnly: true 
+      httpOnly: true,
+      maxAge: 0 // Force expiration
     };
     
+    // Always clear the cookie first
+    res.clearCookie("nt.sid", cookieOpts);
+    
     if (!(req as any).session) {
-      res.clearCookie("nt.sid", cookieOpts); // Clear cookie even if no session
-      return res.status(200).json({ ok: true });
+      console.log("✅ No session to destroy, cookie cleared");
+      return res.status(200).json({ ok: true, message: "Logged out (no session)" });
     }
     
     (req as any).session.destroy((err: any) => {
       if (err) {
-        console.error("Session destroy error:", err);
+        console.error("❌ Session destroy error:", err);
+        // Still return success since we've cleared the cookie
+        return res.status(200).json({ ok: true, message: "Logged out (session error ignored)" });
       }
-      res.clearCookie("nt.sid", cookieOpts); // Use correct cookie name
-      return res.status(200).json({ ok: true });
+      console.log("✅ Session destroyed successfully");
+      return res.status(200).json({ ok: true, message: "Logged out successfully" });
     });
   });
 
@@ -19148,40 +19156,36 @@ Questions? Just reply to this message. Welcome aboard!
   // ========================================
 
 
-  // Logout route - properly destroy server session
+  // Logout route - properly destroy server session (alias for /api/auth/logout)
   app.post("/api/logout", (req, res) => {
-    try {
-      console.log('🚪 Server logout called for session:', req.sessionID);
-      const cookieOpts = { 
-        path: "/", 
-        sameSite: "lax" as const, 
-        secure: false, 
-        httpOnly: true 
-      };
-      
-      // Destroy the session
-      req.session.destroy((err) => {
-        if (err) {
-          console.error('❌ Error destroying session:', err);
-          return res.status(500).json({ message: "Failed to logout" });
-        }
-        
-        console.log('✅ Session destroyed successfully');
-        
-        // Clear the session cookie with correct name
-        res.clearCookie('nt.sid', cookieOpts);
-        res.clearCookie('connect.sid', { 
-          path: '/',
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production'
-        });
-        
-        res.json({ message: "Logged out successfully" });
-      });
-    } catch (error) {
-      console.error('❌ Server logout error:', error);
-      res.status(500).json({ message: "Failed to logout" });
+    console.log('🚪 Server /api/logout called for session:', req.sessionID);
+    
+    // Clear cookie with EXACT same settings as session middleware
+    const cookieOpts = { 
+      path: "/", 
+      sameSite: "lax" as const, 
+      secure: false, 
+      httpOnly: true,
+      maxAge: 0 // Force expiration
+    };
+    
+    // Always clear the cookie first
+    res.clearCookie('nt.sid', cookieOpts);
+    
+    if (!req.session) {
+      console.log('✅ No session to destroy, cookie cleared');
+      return res.json({ ok: true, message: "Logged out (no session)" });
     }
+    
+    req.session.destroy((err) => {
+      if (err) {
+        console.error('❌ Session destroy error:', err);
+        // Still return success since we've cleared the cookie
+        return res.json({ ok: true, message: "Logged out (session error ignored)" });
+      }
+      console.log('✅ Session destroyed successfully');
+      res.json({ ok: true, message: "Logged out successfully" });
+    });
   });
 
   // Return the configured HTTP server with WebSocket support  
