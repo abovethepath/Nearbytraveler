@@ -72,14 +72,16 @@ interface AIQuickCreateMeetupProps {
   onDraftReady: (draft: AiMeetupDraft) => void;
   defaultCity?: string;
   onCancel?: () => void;
+  autoStartListening?: boolean;
 }
 
-export function AIQuickCreateMeetup({ onDraftReady, defaultCity, onCancel }: AIQuickCreateMeetupProps) {
+export function AIQuickCreateMeetup({ onDraftReady, defaultCity, onCancel, autoStartListening = false }: AIQuickCreateMeetupProps) {
   const [inputText, setInputText] = useState("");
   const [draft, setDraft] = useState<AiMeetupDraft | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(false);
+  const [autoStartTriggered, setAutoStartTriggered] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const { toast } = useToast();
 
@@ -87,6 +89,18 @@ export function AIQuickCreateMeetup({ onDraftReady, defaultCity, onCancel }: AIQ
     const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
     setSpeechSupported(!!SpeechRecognitionAPI);
   }, []);
+
+  // Auto-start listening when component mounts if autoStartListening is true
+  useEffect(() => {
+    if (autoStartListening && speechSupported && !autoStartTriggered && !isListening && !draft) {
+      setAutoStartTriggered(true);
+      // Small delay to ensure component is fully mounted
+      const timer = setTimeout(() => {
+        startListening();
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [autoStartListening, speechSupported, autoStartTriggered, isListening, draft]);
 
   // Cleanup speech recognition on unmount
   useEffect(() => {

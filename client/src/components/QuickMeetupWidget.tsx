@@ -531,6 +531,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
               {useAiVoice ? (
                 <AIQuickCreateMeetup
                   defaultCity={actualUser?.hometownCity || city?.split(',')[0] || ''}
+                  autoStartListening={true}
                   onDraftReady={(draft) => {
                     setNewMeetup({
                       title: draft.title || '',
