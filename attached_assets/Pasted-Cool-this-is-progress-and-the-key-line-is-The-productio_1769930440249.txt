@@ -1,0 +1,62 @@
+Cool — this is progress, and the key line is:
+
+“The production bundle has no vite imports.”
+
+If that’s true, Fly will stop crashing as soon as it deploys this new image. The earlier loop was 100% because dist/index.js referenced @vitejs/plugin-react.
+
+But I want you to keep Replit from drifting into Dockerfile hacks again. Here’s exactly what to tell them so it lands cleanly.
+
+What to reply to Replit (copy/paste)
+
+Replit — good. Two requirements before I redeploy on Fly:
+
+✅ 1) Confirm the deployed artifact is actually clean
+
+Please run these checks after the build that Fly will run:
+
+grep -R "@vitejs/plugin-react" dist/index.js → no matches
+
+grep -R "vite.config" dist/index.js → no matches
+
+grep -R "from \"vite\"" dist/index.js → no matches
+
+grep -R "import\\(\\\"\\.\\/vite\\\"\\)" dist/index.js is OK only if it’s inside the dev branch and the build does not include the vite packages.
+
+✅ 2) Don’t rely on Dockerfile-only fixes unless necessary
+
+Prefer Option A (separate entrypoints) or the esbuild exclude command in the build script, not only in Dockerfile.
+Reason: Fly’s GitHub deploy may not use our Dockerfile exactly the way Replit expects unless it’s committed + referenced properly.
+
+If you must use Dockerfile, ensure it’s committed to GitHub and Fly is actually using it (i.e., build logs show Dockerfile build, not buildpacks).
+
+✅ 3) Push to GitHub and tell me the commit SHA
+
+Once pushed, I’ll redeploy on Fly from the latest commit.
+
+What you should do on Fly once Replit pushes
+
+Because your current machines are exhausted again:
+
+Go to Machines
+
+🗑️ Destroy the exhausted machines
+
+Go to Activity
+
+Deploy from latest commit (main)
+
+Open Logs & Errors
+
+Verify the startup no longer throws @vitejs/plugin-react missing
+
+If it boots, the timeout will disappear and the hostname will respond.
+
+One more “gotcha” to watch for
+
+Your logs earlier showed Fly running commit 6f59af0a (older), even when you thought you were deploying the newer fix. So after redeploy:
+
+In Fly → Activity → open the release details
+
+Make sure the release is built from the new commit SHA
+
+If you tell me the new GitHub commit SHA when Replit pushes, I’ll tell you exactly which Fly button to click and what you should see in logs on first boot.
