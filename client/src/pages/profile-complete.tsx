@@ -9920,9 +9920,10 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
               </p>
               <Button 
                 onClick={() => window.location.href = '/create-event'}
-                className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-black"
+                className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600"
+                style={{ color: 'black' }}
               >
-                <Plus className="w-4 h-4 mr-2" />
+                <Plus className="w-4 h-4 mr-2" style={{ color: 'black' }} />
                 Create Your First Event
               </Button>
             </div>
