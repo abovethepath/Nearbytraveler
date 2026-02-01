@@ -372,8 +372,9 @@ app.use(express.urlencoded({ extended: true, limit: '50mb', parameterLimit: 1000
 // Password reset routes (Brevo email)
 app.use("/api/auth", passwordResetRouter);
 
-// Serve static files from public directory FIRST (for logo)
+// Serve static files from public directories FIRST (for logo)
 app.use(express.static(path.join(process.cwd(), 'public')));
+app.use(express.static(path.join(process.cwd(), 'client', 'public')));
 
 // Serve attached assets with aggressive no-cache headers
 app.use('/assets', (req, res, next) => {
