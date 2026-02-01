@@ -124,7 +124,7 @@ app.use((req, _res, next) => {
 });
 
 app.use(cors({
-  origin: true, // Allow all origins for now to fix blank page issue
+  origin: ['https://nearbytraveler.onrender.com', 'http://localhost:5000'],
   credentials: true,
   methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
   allowedHeaders: ["Content-Type","Authorization"],
@@ -377,7 +377,7 @@ app.use(session({
   saveUninitialized: false,
   rolling: true,
   cookie: {
-    secure: false, // TEMP TEST - was: isProduction
+    secure: isProduction,
     httpOnly: true,
     sameSite: "lax" as const,
     maxAge: 365 * 24 * 60 * 60 * 1000,
