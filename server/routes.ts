@@ -919,7 +919,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         console.log("✅ Login successful:", {
           email,
           userId: user.id,
-          sessionID: (req as any).sessionID?.substring(0, 10) + '...'
+          sessionID: (req as any).sessionID?.substring(0, 10) + '...',
+          setCookieHeader: res.getHeader('Set-Cookie')
         });
         return res.status(200).json({ ok: true, user: { id: user.id, username: user.username } });
       } catch (saveError: any) {

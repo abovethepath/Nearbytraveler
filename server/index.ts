@@ -350,17 +350,26 @@ if (process.env.REDIS_URL) {
 // Detect if we're in production
 const isProduction = process.env.NODE_ENV === 'production';
 
+// Debug session config
+console.log('🍪 Session config:', {
+  isProduction,
+  nodeEnv: process.env.NODE_ENV,
+  hasRedis: !!redis,
+  cookieSecure: isProduction
+});
+
 app.use(session({
-  store: redis ? new RedisStore({ client: redis, ttl: 365 * 24 * 60 * 60 }) : undefined, // Use Redis with 1-year TTL if available
+  store: redis ? new RedisStore({ client: redis, ttl: 365 * 24 * 60 * 60 }) : undefined,
   secret: process.env.SESSION_SECRET || 'nearby-traveler-secret-key-dev',
   resave: false,
   saveUninitialized: false,
-  rolling: true, // CRITICAL: Renews session on every request - provides sliding window for indefinite login
+  rolling: true,
   cookie: {
-    secure: isProduction, // Secure cookies in production with HTTPS, allow insecure for dev/mobile testing
+    secure: isProduction,
     httpOnly: true,
-    sameSite: "lax",
-    maxAge: 365 * 24 * 60 * 60 * 1000 // 365 days - rolling renewal means this resets on every activity
+    sameSite: isProduction ? "none" as const : "lax" as const, // "none" for cross-site in production
+    maxAge: 365 * 24 * 60 * 60 * 1000,
+    path: "/" // Explicit path
   },
   name: "nt.sid"
 }));
