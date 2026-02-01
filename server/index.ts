@@ -377,7 +377,7 @@ app.use(session({
   saveUninitialized: false,
   rolling: true,
   cookie: {
-    secure: isProduction,
+    secure: false, // TEMP TEST - was: isProduction
     httpOnly: true,
     sameSite: "lax" as const,
     maxAge: 365 * 24 * 60 * 60 * 1000,
