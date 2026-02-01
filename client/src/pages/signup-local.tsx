@@ -309,25 +309,32 @@ export default function SignupLocal() {
   const { min: minDate, max: maxDate } = getDateInputConstraints();
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-2xl mx-auto">
-        <Card className="shadow-2xl border-2 border-gray-200 bg-white backdrop-blur-md">
-          <CardHeader className="text-center bg-gray-50 rounded-t-lg pb-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
+      {/* Vibrant header banner */}
+      <div className="fixed top-0 left-0 right-0 bg-gradient-to-r from-blue-600 to-purple-600 py-3 px-4 text-center z-40">
+        <p className="text-white font-bold text-sm sm:text-base">
+          🏠 Almost there! Connect with travelers visiting your city!
+        </p>
+      </div>
+      
+      <div className="max-w-2xl mx-auto pt-16">
+        <Card className="shadow-2xl border-2 border-blue-200 dark:border-blue-800 bg-white dark:bg-gray-900 overflow-hidden">
+          <CardHeader className="text-center bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-600 dark:to-purple-600 pb-8 pt-6">
             <div className="flex justify-start mb-4">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setLocation('/join')}
-                className="text-blue-600 hover:text-blue-800 border-blue-300 hover:border-blue-500 font-medium"
+                className="bg-white/20 hover:bg-white/30 text-white border-white/50 hover:border-white font-medium backdrop-blur-sm"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
               </Button>
             </div>
-            <CardTitle className="text-4xl font-bold text-gray-900 mb-3">
+            <CardTitle className="text-4xl font-bold text-white mb-3">
               Complete Your Local Profile 🏠
             </CardTitle>
-            <CardDescription className="text-xl text-gray-700 font-medium">
+            <CardDescription className="text-xl text-white/90 font-medium">
               Just a few quick details to get you started. You can add more to your profile after joining!
             </CardDescription>
           </CardHeader>

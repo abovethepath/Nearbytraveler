@@ -48,15 +48,22 @@ function JoinPageWithSignIn() {
   const [, setLocation] = useLocation();
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4 relative">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col relative">
+      {/* Vibrant header banner */}
+      <div className="bg-gradient-to-r from-orange-600 to-blue-600 py-4 px-4 text-center">
+        <p className="text-white font-bold text-base sm:text-lg">
+          🌍 Join thousands of travelers and locals connecting worldwide!
+        </p>
+      </div>
+
       {/* Back Button */}
       <button
         onClick={() => setLocation('/')}
-        className="absolute top-4 left-4 p-2 rounded-full bg-white/10 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/20 dark:border-gray-700/50 hover:bg-white/20 dark:hover:bg-gray-700/50 transition-all group"
+        className="absolute top-16 left-4 p-2 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-orange-200 dark:border-gray-700 hover:bg-white dark:hover:bg-gray-700 transition-all group shadow-md z-10"
         data-testid="button-back"
       >
         <svg 
-          className="w-6 h-6 text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white transition-colors" 
+          className="w-6 h-6 text-orange-600 dark:text-orange-400 group-hover:text-orange-700 dark:group-hover:text-orange-300 transition-colors" 
           fill="none" 
           stroke="currentColor" 
           viewBox="0 0 24 24"
@@ -65,31 +72,33 @@ function JoinPageWithSignIn() {
         </svg>
       </button>
 
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-6">
-            <Logo variant="header" className="w-full max-w-sm" />
+      <div className="flex-1 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8">
+            <div className="flex justify-center mb-6">
+              <Logo variant="header" className="w-full max-w-sm" />
+            </div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-blue-600 bg-clip-text text-transparent mb-2">
+              Join Nearby Traveler
+            </h1>
+            <p className="text-lg text-gray-700 dark:text-gray-300">
+              Start Connecting with Nearby Locals and Nearby Travelers Today Based on Common Interests and Demographics
+            </p>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Join Nearby Traveler
-          </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400">
-            Start Connecting with Nearby Locals and Nearby Travelers Today Based on Common Interests and Demographics
-          </p>
-        </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-          <JoinNowWidgetNew />
-        </div>
-        <div className="text-center mt-4">
-          <p className="text-gray-600 dark:text-gray-400">
-            Already have an account?{" "}
-            <button 
-              onClick={() => setLocation('/signin')}
-              className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium underline"
-            >
-              Sign In
-            </button>
-          </p>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 border-2 border-orange-200 dark:border-orange-800">
+            <JoinNowWidgetNew />
+          </div>
+          <div className="text-center mt-6">
+            <p className="text-gray-700 dark:text-gray-300">
+              Already have an account?{" "}
+              <button 
+                onClick={() => setLocation('/signin')}
+                className="text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300 font-bold underline"
+              >
+                Sign In
+              </button>
+            </p>
+          </div>
         </div>
       </div>
     </div>

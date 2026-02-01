@@ -367,13 +367,20 @@ export default function SignupBusinessSimple() {
   const businessTypes = BUSINESS_TYPES;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-2 sm:py-4 lg:py-8 px-2 sm:px-4 lg:px-8 overflow-hidden break-words">
-      <div className="max-w-4xl mx-auto overflow-hidden break-words">
-        <Card className="border border-gray-200 shadow-lg bg-white overflow-hidden break-words">
-          <CardHeader className="text-center px-3 sm:px-6 py-4 sm:py-6 overflow-hidden break-words">
-            <Building className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 mx-auto text-blue-600 mb-2 sm:mb-4" />
-            <CardTitle className="text-lg sm:text-xl md:text-2xl lg:text-3xl break-words overflow-hidden">Register Your Business</CardTitle>
-            <CardDescription className="text-xs sm:text-sm md:text-base lg:text-lg break-words overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-2 sm:py-4 lg:py-8 px-2 sm:px-4 lg:px-8 overflow-hidden break-words">
+      {/* Vibrant header banner */}
+      <div className="fixed top-0 left-0 right-0 bg-gradient-to-r from-green-600 to-blue-600 py-3 px-4 text-center z-40">
+        <p className="text-white font-bold text-sm sm:text-base">
+          🏢 Join local businesses connecting with travelers!
+        </p>
+      </div>
+      
+      <div className="max-w-4xl mx-auto overflow-hidden break-words pt-12">
+        <Card className="border-2 border-green-200 dark:border-green-800 shadow-2xl bg-white dark:bg-gray-900 overflow-hidden break-words">
+          <CardHeader className="text-center px-3 sm:px-6 py-4 sm:py-6 overflow-hidden break-words bg-gradient-to-r from-green-500 to-blue-500 dark:from-green-600 dark:to-blue-600">
+            <Building className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 mx-auto text-white mb-2 sm:mb-4" />
+            <CardTitle className="text-lg sm:text-xl md:text-2xl lg:text-3xl break-words overflow-hidden text-white">Register Your Business</CardTitle>
+            <CardDescription className="text-xs sm:text-sm md:text-base lg:text-lg break-words overflow-hidden text-white/90">
               Quick signup - Complete your detailed business profile after registration
             </CardDescription>
           </CardHeader>

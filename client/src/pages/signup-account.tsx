@@ -224,25 +224,32 @@ export default function SignupAccount() {
     usernameAvailable === true;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
-      <div className="max-w-md mx-auto">
-        <Card className="shadow-2xl border-2 border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md">
-          <CardHeader className="text-center bg-gray-50 dark:bg-gray-800 rounded-t-lg pb-8">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
+      {/* Vibrant header banner */}
+      <div className="fixed top-0 left-0 right-0 bg-gradient-to-r from-orange-600 to-blue-600 py-3 px-4 text-center z-40">
+        <p className="text-white font-bold text-sm sm:text-base">
+          🌍 Join thousands of travelers and locals connecting worldwide!
+        </p>
+      </div>
+      
+      <div className="max-w-md mx-auto pt-16">
+        <Card className="shadow-2xl border-2 border-orange-200 dark:border-orange-800 bg-white dark:bg-gray-900 overflow-hidden">
+          <CardHeader className="text-center bg-gradient-to-r from-orange-500 to-blue-500 dark:from-orange-600 dark:to-blue-600 pb-8 pt-6">
             <div className="flex justify-start mb-4">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setLocation('/join')}
-                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 border-blue-300 hover:border-blue-500 font-medium"
+                className="bg-white/20 hover:bg-white/30 text-white border-white/50 hover:border-white font-medium backdrop-blur-sm"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
               </Button>
             </div>
-            <CardTitle className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
+            <CardTitle className="text-3xl font-bold text-white mb-3">
               Create Your Account
             </CardTitle>
-            <CardDescription className="text-lg text-gray-700 dark:text-gray-300 font-medium">
+            <CardDescription className="text-lg text-white/90 font-medium">
               {getUserTypeDisplayName()} • Step 2 of 3
             </CardDescription>
           </CardHeader>
