@@ -4393,25 +4393,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </CardTitle>
 
                   {isOwnProfile && (
-                    <div className="flex-shrink-0 relative">
-                      {/* Blinking Arrow - Only show when profile is incomplete */}
-                      {isProfileIncomplete() && (
-                        <div className="absolute -top-12 -right-2 flex flex-col items-center z-10 pointer-events-none">
-                          <div className="animate-bounce">
-                            <ChevronDown className="w-8 h-8 text-red-500" style={{
-                              animation: 'blink 1s ease-in-out infinite'
-                            }} />
-                          </div>
-                          <style>{`
-                            @keyframes blink {
-                              0%, 100% { opacity: 1; }
-                              50% { opacity: 0.3; }
-                            }
-                          `}</style>
-                        </div>
-                      )}
-                      
-                      {/* Edit Profile Button */}
+                    <div className="flex-shrink-0 relative z-50">
+                      {/* Edit Profile Button - MUST be clickable */}
                       <Button
                         type="button"
                         size="sm"
@@ -4420,7 +4403,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           console.log("EDIT CLICK - Desktop/Mobile button pressed");
                           setIsEditMode(true);
                         }}
-                        className={`relative z-20 ${isProfileIncomplete() ? 'bg-red-100 hover:bg-red-200 border-red-400 text-red-700 animate-pulse' : 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800 dark:border-blue-700 dark:text-blue-100'}`}
+                        className={`relative z-50 pointer-events-auto cursor-pointer ${isProfileIncomplete() ? 'bg-red-100 hover:bg-red-200 border-red-400 text-red-700' : 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800 dark:border-blue-700 dark:text-blue-100'}`}
+                        style={{ position: 'relative', zIndex: 50 }}
                         data-testid="button-edit-profile"
                       >
                         <Edit2 className="w-4 h-4 sm:mr-2" />
