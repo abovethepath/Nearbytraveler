@@ -379,7 +379,7 @@ app.use(session({
   cookie: {
     secure: isProduction,
     httpOnly: true,
-    sameSite: isProduction ? "none" as const : "lax" as const, // "none" for cross-site in production
+    sameSite: "lax" as const,
     maxAge: 365 * 24 * 60 * 60 * 1000,
     path: "/" // Explicit path
   },
