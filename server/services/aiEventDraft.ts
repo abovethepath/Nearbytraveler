@@ -91,7 +91,7 @@ CRITICAL RULES:
 2. ONLY add to "missing" array if these ESSENTIAL fields are missing: title, date/time, or city. Do NOT add optional fields like zipcode, theme, maxParticipants, privacy, costEstimate, or description to missing array
 3. Use ISO 8601 format for dates/times (YYYY-MM-DDTHH:mm:ss)
 4. For recurring events, set isRecurring=true and recurrenceType to one of: "daily", "weekly", "biweekly", "monthly"
-5. Parse restrictions like "21+", "BYOB", "RSVP required", "No kids" into the restrictions array
+5. RESTRICTIONS - ONLY add restrictions the user EXPLICITLY states like "21+", "BYOB", "RSVP required", "No kids". NEVER assume or invent restrictions. A "party" does NOT automatically mean 21+ or no kids unless the user says so. Leave restrictions empty if none are mentioned.
 6. Infer category from context. Valid categories: ${EVENT_CATEGORIES.join(", ")}
 7. If user says something like "at my place", that's a venue hint but you need the actual address
 8. Be generous with what counts as a title - if they mention an event name, use it
