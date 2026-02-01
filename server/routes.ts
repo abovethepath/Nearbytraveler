@@ -908,7 +908,12 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           console.error("❌ Full error:", JSON.stringify(err, null, 2));
           return res.status(500).json({ message: "Session error", detail: err?.message || "Unknown" });
         }
-        console.log("✅ Login successful for:", email, "- Session saved");
+        console.log("✅ Login successful:", {
+          email,
+          userId: user.id,
+          sessionID: (req as any).sessionID?.substring(0, 10) + '...',
+          sessionUser: !!(req as any).session?.user
+        });
         return res.status(200).json({ ok: true, user: { id: user.id, username: user.username } });
       });
     } catch (error) {
@@ -960,7 +965,17 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
   // Auth check route
   app.get("/api/auth/user", async (req, res) => {
-    const sessionUser = (req as any).session.user;
+    // Debug session state
+    console.log("🔍 Auth check debug:", {
+      hasSession: !!(req as any).session,
+      sessionID: (req as any).sessionID?.substring(0, 10) + '...',
+      hasCookie: !!req.headers.cookie,
+      cookiePreview: req.headers.cookie?.substring(0, 50) + '...',
+      hasUser: !!(req as any).session?.user,
+      userId: (req as any).session?.user?.id
+    });
+    
+    const sessionUser = (req as any).session?.user;
     if (sessionUser) {
       // Return real user data from database
       try {
@@ -976,7 +991,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         res.status(500).json({ message: "Auth check failed" });
       }
     } else {
-      console.log("❌ Auth check: No session");
+      console.log("❌ Auth check: No session user");
       res.status(401).json({ message: "Not authenticated" });
     }
   });
