@@ -1,0 +1,93 @@
+Got it. This screenshot is the smoking gun — and it has nothing to do with Starter vs Standard.
+
+✅ Your backend is connected to a database that does not match your code’s schema
+
+Render logs:
+
+Error updating travel statuses: column "destination_city" does not exist
+code: 42703
+
+That means: your code is running a query that expects a destination_city column, but the database your Render DATABASE_URL points to doesn’t have it.
+
+When your app boots, it’s trying to run TravelStatusService.updateAllUserTravelStatuses(...) and it’s hitting that DB error. That alone can make the app feel “broken/slow,” and login can fail too if auth hits other missing columns.
+
+Where you go from here (slow + exact steps)
+Step 1 — Decide which database Render should use (fastest fix)
+
+Fastest fix is usually: Render must point to the SAME Neon DB/branch you used on Replit.
+
+Do this now:
+
+In Replit → Secrets → copy the exact DATABASE_URL you’ve been developing with.
+
+In Render → Environment → replace DATABASE_URL with that exact value.
+
+Redeploy (Manual Deploy → Clear build cache & deploy)
+
+If your Replit DB already has the right schema, this fixes it immediately.
+
+Step 2 — If you want Render to use this current DB, you must apply migrations
+
+If you intentionally pointed Render at a different Neon DB/branch, then you need to push your schema to it.
+
+The quickest way to do that without guessing:
+
+Open your repo package.json → look at "scripts" for something like:
+
+db:push
+
+db:migrate
+
+migrate
+
+drizzle:push
+
+drizzle:migrate
+
+Then run it once on Render:
+Render → Shell, run one of these (whichever exists):
+
+npm run db:push
+
+
+or
+
+npm run db:migrate
+
+
+Then redeploy.
+
+If you don’t have any migration script, we’ll add one—because that’s exactly why a new environment breaks.
+
+Step 3 — Stop the travel-status monitor from hammering the broken query (temporary relief)
+
+Your log literally says “travel status monitoring enabled” and then it crashes trying to read destination_city.
+
+Even before you fix schema, you can prevent the app from thrashing by gating that feature:
+
+In the code where it starts travel status monitoring / initial travel status check, wrap it like:
+
+if (process.env.ENABLE_TRAVEL_STATUS_MONITOR === "true") {
+  // start monitoring
+}
+
+
+Then on Render set:
+
+ENABLE_TRAVEL_STATUS_MONITOR=false (or just don’t set it)
+
+This isn’t the real fix — it just stops the repeated error spam while we fix the DB.
+
+What I need from you (one simple choice)
+
+Which of these is true?
+
+A) “I want Render using the exact same Neon DB as Replit”
+
+→ Then do Step 1 and we’re probably done.
+
+B) “I want Render using a different Neon DB/branch”
+
+→ Then tell me what DB scripts you have in package.json (paste the scripts block), and I’ll tell you the exact one to run + where to put it (Shell vs Pre-Deploy Command).
+
+Also: your screenshot earlier showed secrets exposed. After this is stable, rotate REDIS_URL and SESSION_SECRET (because they were visible).
