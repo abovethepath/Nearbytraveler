@@ -9,7 +9,19 @@ import cors from "cors";
 import rateLimit from "express-rate-limit";
 import { RedisStore } from "connect-redis";
 import { Redis } from "ioredis";
-import { setupVite, serveStatic, log } from "./vite";
+// Vite imports are dynamic - only loaded in development to avoid production crash
+// See: setupVite and serveStatic are dynamically imported below
+
+// Simple log function (replaces vite.ts export for production compatibility)
+function log(message: string, source = "express") {
+  const formattedTime = new Date().toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  });
+  console.log(`${formattedTime} [${source}] ${message}`);
+}
 import path from "path";
 import dotenv from "dotenv";
 import { db, checkDatabaseHealth, getDatabaseStatus } from "./db";
@@ -575,10 +587,13 @@ app.use((req, res, next) => {
       });
     });
     try {
+      // Dynamic import of Vite - only loaded in development
+      const { setupVite, serveStatic } = await import("./vite");
       await setupVite(app, server);
       console.log("✅ Vite development setup successful");
     } catch (viteError) {
       console.error("⚠️ Vite setup failed, falling back to static serving:", viteError);
+      const { serveStatic } = await import("./vite");
       serveStatic(app);
     }
   }

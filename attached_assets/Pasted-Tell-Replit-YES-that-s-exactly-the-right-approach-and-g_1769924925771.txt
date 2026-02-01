@@ -1,0 +1,63 @@
+Tell Replit YES — that’s exactly the right approach — and give them this exact acceptance criteria + code shape so they don’t “almost” fix it.
+
+Copy/paste this back to Replit:
+
+✅ Yes — this is the correct fix. Please do it in server/index.ts (or whichever file compiles into dist/index.js):
+
+Goal / acceptance criteria
+
+In production (NODE_ENV=production), dist/index.js must NOT import ./vite at module top-level.
+
+npm run start (which runs node dist/index.js) must start without requiring vite or @vitejs/plugin-react.
+
+Fly logs should no longer show Cannot find package '@vitejs/plugin-react'.
+
+Required changes
+
+Remove top-level import
+Remove anything like:
+
+import { setupVite, serveStatic, log } from "./vite";
+
+
+Replace with dynamic import only in development
+Use this pattern (top-level await is fine in modern TS/Node builds, but if not, wrap in an async main()):
+
+if (process.env.NODE_ENV !== "production") {
+  const viteMod = await import("./vite");
+  await viteMod.setupVite(app, server);
+} else {
+  // production static serving — do NOT import "./vite"
+  // use the same static serving you already had (serveStatic logic),
+  // but move it here or reimplement it inline.
+}
+
+
+Production static serving
+If serveStatic() currently lives in vite.ts, we can’t call it in prod (it would import Vite).
+So in prod, serve the built client directly with express static:
+
+import path from "path";
+import express from "express";
+
+const staticPath = path.resolve(process.cwd(), "dist/public"); // adjust to actual output
+app.use(express.static(staticPath));
+app.get("*", (_req, res) => res.sendFile(path.join(staticPath, "index.html")));
+
+
+(Adjust dist/public to wherever the frontend build output actually goes.)
+
+Do not change Dockerfile to keep devDependencies
+Not needed once the top-level import is gone.
+
+Verify
+
+Grep the compiled output: dist/index.js should not contain from "./vite" or reference @vitejs/plugin-react in production path.
+
+Redeploy on Fly.
+
+If they ask where the frontend build output is, tell them:
+
+“Use the folder we currently serve in production on Render. Keep the same folder path and just serve it via express.static inside the production branch.”
+
+That’s it. Once they do this, Fly stops crashing.

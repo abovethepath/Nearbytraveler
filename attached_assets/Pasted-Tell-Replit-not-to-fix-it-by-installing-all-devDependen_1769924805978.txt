@@ -1,0 +1,52 @@
+Tell Replit not to “fix it by installing all devDependencies in production via Dockerfile” (that’s a band-aid and bloats/weakens your prod image). The real issue is:
+
+✅ Your production server (dist/index.js) is importing Vite/plugin-react at runtime because it imports server/vite.ts at top-level.
+
+Even if vite.ts has dev-only code, a top-level import means Node must resolve @vitejs/plugin-react before it can even evaluate your NODE_ENV checks — so it crashes.
+
+What to tell Replit (copy/paste)
+
+Replit: Please do NOT change the Dockerfile to install dev deps. Fix the root cause: remove the top-level import of ./vite from the production server entry.
+
+Fly error:
+Cannot find package '@vitejs/plugin-react' imported from /app/dist/index.js
+
+Cause:
+server/index.ts (or your server entry) imports server/vite.ts at top level, so production tries to resolve Vite packages even when NODE_ENV=production.
+
+Fix (does not require editing vite.ts):
+
+Remove any top-level import like:
+
+import { setupVite, serveStatic } from "./vite";
+
+
+Only dynamically import ./vite in development:
+
+if (process.env.NODE_ENV !== "production") {
+  const { setupVite } = await import("./vite");
+  await setupVite(app, server);
+} else {
+  // Production: serve built frontend WITHOUT importing ./vite
+  const path = await import("path");
+  const express = await import("express");
+  const distPath = path.resolve(process.cwd(), "dist/public"); // adjust if your build output differs
+  app.use(express.default.static(distPath));
+  app.get("*", (_req, res) => res.sendFile(path.join(distPath, "index.html")));
+}
+
+
+Redeploy to Fly.
+
+Optional quick workaround (if you absolutely must ship immediately):
+Move @vitejs/plugin-react (and possibly vite) from devDependencies → dependencies. But preferred is the dynamic-import fix above so prod doesn’t depend on Vite at runtime.
+
+Why this is the correct fix
+
+Your app is running node dist/index.js
+
+Node is crashing before any runtime branching because module resolution happens at import time
+
+Dynamic import prevents Node from resolving Vite packages in production at all
+
+If you paste the top ~40 lines of your server/index.ts (or whatever file becomes dist/index.js), I’ll rewrite it exactly in your project’s structure (with the correct static build folder path).

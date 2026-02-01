@@ -4,13 +4,16 @@ WORKDIR /app
 
 COPY package*.json ./
 
-# Install ALL dependencies (including dev) - needed because dist/index.js imports vite
+# Install all deps for build, then prune for production
 RUN npm ci
 
 COPY . .
 
-# Build the app
+# Build the app (needs dev deps)
 RUN npm run build
+
+# Remove dev dependencies for smaller production image
+RUN npm prune --production
 
 EXPOSE 8080
 ENV PORT=8080
