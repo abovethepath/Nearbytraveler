@@ -17810,6 +17810,37 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // POST extract structured meetup data from natural language description (AI voice input)
+  app.post("/api/ai/meetup-draft", async (req, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+
+      const { text, userTimezone, defaultCity } = req.body;
+      if (!text || typeof text !== 'string' || text.trim().length < 5) {
+        return res.status(400).json({ error: 'Please provide a description of your meetup (at least 5 characters).' });
+      }
+
+      const { aiMeetupDraftService } = await import('./services/aiMeetupDraft');
+      const result = await aiMeetupDraftService.extractMeetupFromText(
+        text.trim(),
+        userTimezone,
+        defaultCity
+      );
+
+      if (!result.success) {
+        return res.status(422).json({ error: result.error || 'Failed to parse meetup description' });
+      }
+
+      res.json(result.draft);
+    } catch (error: any) {
+      console.error('AI meetup draft error:', error);
+      res.status(500).json({ error: 'Failed to process meetup description' });
+    }
+  });
+
   // === AI CITY MATCH FEATURES ===
   
   // POST generate AI activity suggestions for a city based on user's interests

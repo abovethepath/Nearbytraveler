@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Zap, Clock, MapPin, Users, Coffee, Plus, MessageCircle, Edit3, Trash2, MessageSquare } from 'lucide-react';
+import { Zap, Clock, MapPin, Users, Coffee, Plus, MessageCircle, Edit3, Trash2, MessageSquare, Mic, Sparkles } from 'lucide-react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
@@ -15,6 +15,7 @@ import { authStorage } from '@/lib/auth';
 import SmartLocationInput from '@/components/SmartLocationInput';
 import { isStateOptionalForCountry } from '@/lib/locationHelpers';
 import { useLocation } from 'wouter';
+import { AIQuickCreateMeetup } from '@/components/AIQuickCreateMeetup';
 
 interface NewMeetup {
   title: string;
@@ -36,6 +37,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
   const [expandedMeetup, setExpandedMeetup] = useState<number | null>(null);
   const [isCustomActivity, setIsCustomActivity] = useState(false);
   const [editingMeetupId, setEditingMeetupId] = useState<number | null>(null);
+  const [useAiVoice, setUseAiVoice] = useState(false);
 
   // CRITICAL FIX: Get user data like navbar does (authStorage is more reliable)
   const actualUser = user || authStorage.getUser();
@@ -491,7 +493,10 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                   <h4 className="font-bold text-lg bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">🚀 LET'S DO THIS!</h4>
                 </div>
                 <Button
-                  onClick={() => setShowCreateForm(false)}
+                  onClick={() => {
+                    setShowCreateForm(false);
+                    setUseAiVoice(false);
+                  }}
                   size="sm"
                   variant="ghost"
                   className="text-sm px-3 py-2 h-8 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-full"
@@ -499,7 +504,54 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                   ✕
                 </Button>
               </div>
-              
+
+              {/* AI Voice Toggle */}
+              <div className="flex gap-2">
+                <Button
+                  variant={!useAiVoice ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setUseAiVoice(false)}
+                  className={!useAiVoice ? "flex-1 bg-orange-500 hover:bg-orange-600 text-white" : "flex-1"}
+                >
+                  <Edit3 className="mr-2 h-4 w-4" />
+                  Quick Form
+                </Button>
+                <Button
+                  variant={useAiVoice ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setUseAiVoice(true)}
+                  className={useAiVoice ? "flex-1 bg-gradient-to-r from-purple-500 to-orange-500 hover:from-purple-600 hover:to-orange-600 text-white" : "flex-1"}
+                >
+                  <Mic className="mr-2 h-4 w-4" />
+                  <Sparkles className="mr-1 h-3 w-3" />
+                  AI Voice
+                </Button>
+              </div>
+
+              {useAiVoice ? (
+                <AIQuickCreateMeetup
+                  defaultCity={actualUser?.hometownCity || city?.split(',')[0] || ''}
+                  onDraftReady={(draft) => {
+                    setNewMeetup({
+                      title: draft.title || '',
+                      description: draft.description || '',
+                      meetingPoint: draft.meetingPoint || '',
+                      streetAddress: draft.streetAddress || '',
+                      city: draft.city || actualUser?.hometownCity || '',
+                      state: draft.state || actualUser?.hometownState || '',
+                      country: draft.country || actualUser?.hometownCountry || 'United States',
+                      zipcode: draft.zipcode || '',
+                      responseTime: draft.responseTime || '2hours',
+                      organizerNotes: draft.organizerNotes || ''
+                    });
+                    setUseAiVoice(false);
+                    if (draft.title && !['Coffee Chat', 'Quick Walk', 'Lunch', 'Drinks', 'Bike Ride', 'Go out and Party', 'Beach Day', 'Food Tour', 'Sunset Viewing', 'Local Sightseeing', 'Workout', 'Explore Area'].includes(draft.title)) {
+                      setIsCustomActivity(true);
+                    }
+                  }}
+                  onCancel={() => setUseAiVoice(false)}
+                />
+              ) : (
               <div className="space-y-2 flex-1">
                 {/* HOUR DROPDOWN - MOVED TO TOP FOR VISIBILITY */}
                 <div className="space-y-1.5">
@@ -623,7 +675,6 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                     city: "City"
                   }}
                 />
-              </div>
               
               <Button
                 onClick={handleCreateMeetup}
@@ -637,6 +688,8 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                 {/* Animated shine effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] animate-shine"></div>
               </Button>
+              </div>
+              )}
             </div>
           )}
         </CardContent>
