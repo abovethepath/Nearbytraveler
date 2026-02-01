@@ -1,16 +1,12 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
 // Helper function to get API base URL for wrapped app compatibility
-// When running in iOS WebView, we need absolute URLs to reach the backend
+// Use relative URLs (same-origin) by default so requests go to the current host
 export const getApiBaseUrl = () => {
   if (typeof window === 'undefined') return '';
-  const hostname = window.location.hostname;
-  // Use absolute URL when running in wrapped app (not localhost, not replit, not 127.0.0.1)
-  if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.includes('replit')) {
-    return '';
-  }
-  // Wrapped app WebView - use production domain
-  return 'https://nearbytraveler.org';
+  // Always use relative URLs - requests go to the same origin
+  // This works for localhost, Replit, Render, and any other host
+  return '';
 };
 
 async function throwIfResNotOk(res: Response) {
