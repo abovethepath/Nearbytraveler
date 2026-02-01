@@ -236,6 +236,22 @@ export default function SignupTraveling() {
       }
       if (!registrationData.travelReturnDate) {
         errors.push("Travel return date is required.");
+      } else {
+        // CRITICAL: Validate return date is today or in the future
+        const returnDate = new Date(registrationData.travelReturnDate);
+        const todayDate = new Date();
+        todayDate.setHours(0, 0, 0, 0);
+        returnDate.setHours(0, 0, 0, 0);
+        
+        if (returnDate < todayDate) {
+          errors.push("Return date must be today or in the future. You cannot sign up as currently traveling with an expired trip.");
+        }
+        
+        // Also enforce year is at least 2026 to prevent typos like 2023
+        const returnYear = returnDate.getFullYear();
+        if (returnYear < 2026) {
+          errors.push(`Return date year (${returnYear}) seems incorrect. Please check you entered the correct year (should be 2026 or later).`);
+        }
       }
 
       // Count standard interests + custom interests
