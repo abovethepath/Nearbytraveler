@@ -370,6 +370,12 @@ console.log('🍪 Session config:', {
   cookieSecure: isProduction
 });
 
+// Trust proxy for secure cookies behind Render's reverse proxy / load balancer
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+  console.log('🔒 Trust proxy enabled for production');
+}
+
 app.use(session({
   store: redis ? new RedisStore({ client: redis, ttl: 365 * 24 * 60 * 60 }) : undefined,
   secret: process.env.SESSION_SECRET || 'nearby-traveler-secret-key-dev',
