@@ -1,0 +1,94 @@
+Good — now we have hard proof:
+
+Your app is requesting GET https://nearbytraveler.onrender.com/api/auth/user
+
+Render is returning 404 Not Found for that route
+
+That alone will break auth checks and can make the app feel “frozen” because the frontend keeps retrying / redirecting / re-checking session state.
+
+Now we fix this slowly and in the smallest possible steps.
+
+Step 1 — Make /api/auth/user exist (fastest unblocker)
+What this means
+
+Either:
+
+Your backend is not mounting the auth router at /api/auth, or
+
+Your backend mounted it, but it doesn’t have a GET /user handler (maybe it’s /me, /current, etc.)
+
+The fastest way to solve it (without guessing endpoint names)
+
+Add a tiny route in your Express server so /api/auth/user returns something.
+
+In your server where you define routes (often server/index.ts or server/routes.ts), add this exact route:
+
+app.get("/api/auth/user", (req, res) => {
+  // If you already store userId in session:
+  const userId = (req as any).session?.userId;
+
+  // If you store the full user object:
+  const user = (req as any).session?.user;
+
+  if (!userId && !user) {
+    return res.status(401).json({ user: null });
+  }
+
+  return res.json({ user: user ?? { id: userId } });
+});
+
+
+✅ This doesn’t require DB. It just proves the route exists and unblocks your frontend’s “who am I?” check.
+
+Then push to GitHub → Render redeploy.
+
+After redeploy, refresh and confirm:
+
+GET /api/auth/user is NOT 404 anymore.
+
+Step 2 — Fix the “Session error” on login (the real login blocker)
+
+Once /api/auth/user exists, we tackle why /api/auth/login is throwing “Session error”.
+
+This is almost always Redis session store not working or your app is creating Redis clients repeatedly.
+
+The “fail-fast” check (so we stop guessing)
+
+Right after your Redis client is created (at app startup), add:
+
+redisClient.on("error", (err) => console.error("REDIS ERROR:", err));
+await redisClient.connect();
+console.log("REDIS CONNECTED");
+console.log("REDIS PING:", await redisClient.ping());
+
+
+If Redis is broken, Render logs will immediately show why (wrongpass, timeout, DNS, etc.). If Redis is fine, we move on.
+
+✅ Important: Redis client must be created once at startup — not per request.
+
+Step 3 — Re-test with ONE request (no more “it feels slow”)
+
+After Step 1 redeploys:
+
+Open DevTools → Network → Fetch/XHR
+
+Refresh login page
+
+Click the user request again
+You should see:
+
+Status: 401 (logged out) or 200 (logged in)
+
+NOT 404
+
+Then click login again and open the login request:
+
+if it’s still 500, we look at Render Logs and the Redis error line will tell us exactly what to change.
+
+Tell me this one result after Step 1
+
+After you add the route and redeploy:
+
+What status does GET /api/auth/user return now — 200 or 401?
+
+Once that’s not 404, we’ll nail the session error next without wandering.

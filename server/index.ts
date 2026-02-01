@@ -17,6 +17,7 @@ import { users, events, businessOffers, quickMeetups, quickDeals } from "../shar
 import { TravelStatusService } from "./services/travel-status-service";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
 import passwordResetRouter from "./routes/passwordReset";
+import { registerRoutes } from "./routes";
 
 // Load environment variables
 dotenv.config();
@@ -465,10 +466,9 @@ app.use((req, res, next) => {
   
   console.log("Minimal routes registered successfully");
 
-  // CRITICAL: Import and register all main API routes BEFORE Vite setup
+  // CRITICAL: Register all main API routes BEFORE Vite setup
   try {
-    console.log("Loading main API routes from routes.ts...");
-    const { registerRoutes } = await import('./routes.js');
+    console.log("Registering main API routes from routes.ts...");
     const registeredServer = await registerRoutes(app, httpServerWithWebSocket);
     console.log("✅ Main API routes registered successfully");
     
