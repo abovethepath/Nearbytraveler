@@ -317,6 +317,13 @@ app.use("/api/", rateLimit({
 // CRITICAL: Sessions persist indefinitely with rolling renewal - users stay logged in forever unless they logout
 let redis: Redis | null = null;
 
+// Debug Redis URL configuration
+console.log('🔴 Redis URL check:', {
+  hasRedisUrl: !!process.env.REDIS_URL,
+  urlPrefix: process.env.REDIS_URL?.substring(0, 10) + '...',
+  nodeEnv: process.env.NODE_ENV
+});
+
 if (process.env.REDIS_URL) {
   try {
     // Upstash Redis requires TLS - ioredis handles rediss:// URLs automatically

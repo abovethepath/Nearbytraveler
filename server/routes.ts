@@ -892,13 +892,23 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         profileImageUrl: user.profileImage
       };
 
-      // Save session
+      // Save session with detailed error logging
+      console.log("🔐 About to save session, session exists:", !!(req as any).session);
+      
+      if (!(req as any).session) {
+        console.error("❌ Session object is undefined - session middleware may not be working");
+        return res.status(500).json({ message: "Session error - no session object" });
+      }
+      
       (req as any).session.save((err: any) => {
         if (err) {
-          console.error("Session save error:", err);
-          return res.status(500).json({ message: "Session error" });
+          console.error("❌ Session save error:", err);
+          console.error("❌ Session save error message:", err?.message);
+          console.error("❌ Session save error code:", err?.code);
+          console.error("❌ Full error:", JSON.stringify(err, null, 2));
+          return res.status(500).json({ message: "Session error", detail: err?.message || "Unknown" });
         }
-        console.log("✅ Login successful for:", email);
+        console.log("✅ Login successful for:", email, "- Session saved");
         return res.status(200).json({ ok: true, user: { id: user.id, username: user.username } });
       });
     } catch (error) {
