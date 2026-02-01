@@ -2608,7 +2608,31 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       }
       
       if (process.env.NODE_ENV === 'development') console.log(`CONNECTIONS FIXED: Found ${users.length} users for location: ${finalSearchLocation}, type: ${userType}`);
-      return res.json(users);
+      
+      // Enrich users with travel status for airplane badge display
+      const now = new Date();
+      const enrichedUsers = await Promise.all(users.map(async (user) => {
+        const userTravelPlans = await db.select().from(travelPlans).where(eq(travelPlans.userId, user.id));
+        
+        // Find active travel plan (currently traveling)
+        const activePlan = userTravelPlans.find(plan => {
+          const start = new Date(plan.startDate);
+          const end = new Date(plan.endDate);
+          return now >= start && now <= end;
+        });
+        
+        return {
+          ...user,
+          travelPlans: userTravelPlans.map(plan => ({
+            ...plan,
+            destination: `${plan.destinationCity}${plan.destinationState ? `, ${plan.destinationState}` : ''}, ${plan.destinationCountry}`
+          })),
+          isCurrentlyTraveling: !!activePlan,
+          travelDestination: activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : null
+        };
+      }));
+      
+      return res.json(enrichedUsers);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Failed to search users by location:", error);
       res.status(500).json({ message: "Failed to search users by location", error });
@@ -6354,6 +6378,7 @@ Questions? Just reply to this message. Welcome aboard!
       }
       
       // Enrich filtered users with their travel plans for frontend travel detection
+      const now = new Date();
       const enrichedUsers = await Promise.all(filteredUsers.map(async (user) => {
         const userTravelPlans = await db.select().from(travelPlans).where(eq(travelPlans.userId, user.id));
         
@@ -6363,14 +6388,24 @@ Questions? Just reply to this message. Welcome aboard!
           destination: `${plan.destinationCity}${plan.destinationState ? `, ${plan.destinationState}` : ''}, ${plan.destinationCountry}`
         }));
         
-        // Remove password and add travel plans
+        // Find active travel plan (currently traveling)
+        const activePlan = userTravelPlans.find(plan => {
+          const start = new Date(plan.startDate);
+          const end = new Date(plan.endDate);
+          return now >= start && now <= end;
+        });
+        
+        // Remove password and add travel plans + travel status
         const { password: _, ...userWithoutPassword } = user;
         
         return {
           ...userWithoutPassword,
           hometownCity: user.hometownCity || '',
           location: user.location,
-          travelPlans: formattedTravelPlans
+          travelPlans: formattedTravelPlans,
+          // CRITICAL: Include travel status for airplane badge display
+          isCurrentlyTraveling: !!activePlan,
+          travelDestination: activePlan ? `${activePlan.destinationCity}${activePlan.destinationState ? `, ${activePlan.destinationState}` : ''}, ${activePlan.destinationCountry}` : null
         };
       }));
       
