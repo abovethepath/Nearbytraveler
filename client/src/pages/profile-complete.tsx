@@ -9534,7 +9534,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           
           <div className="space-y-3">
             {userChatrooms.length > 0 ? (
-              userChatrooms.map((chatroom: any) => (
+              userChatrooms.filter((chatroom: any) => chatroom && chatroom.id).map((chatroom: any) => (
                 <div 
                   key={chatroom.id}
                   className="flex items-start gap-4 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors"
@@ -9544,14 +9544,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   }}
                 >
                   <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                    {chatroom.name.charAt(0).toUpperCase()}
+                    {(chatroom.name || 'C').charAt(0).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="font-semibold text-gray-900 dark:text-white text-base leading-tight">
-                      {chatroom.name}
+                      {chatroom.name || 'Chatroom'}
                     </h4>
                     <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                      {chatroom.city}, {chatroom.country}
+                      {chatroom.city || 'Unknown'}, {chatroom.country || ''}
                     </p>
                     {chatroom.description && (
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 line-clamp-2">
