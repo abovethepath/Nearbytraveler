@@ -23,8 +23,18 @@ export default function FriendReferralWidget() {
   const username = currentUser.username || '';
   const userFirstName = currentUser.name?.split(' ')[0] || username;
 
-  // Use working custom domain for public launch
-  const signupUrl = 'https://nearbytraveler.org';
+  // Fetch user's referral code
+  const { data: qrData } = useQuery<{ referralCode?: string; signupUrl?: string }>({
+    queryKey: ['/api/user/qr-code'],
+    enabled: !!currentUser?.id,
+    staleTime: 1000 * 60 * 60, // Cache for 1 hour
+  });
+
+  // Build referral URL with user's unique code
+  const referralCode = qrData?.referralCode || '';
+  const signupUrl = referralCode 
+    ? `https://nearbytraveler.org/qr-signup?code=${referralCode}`
+    : 'https://nearbytraveler.org';
   
   const generatePersonalMessage = () => {
     return `Hey ${emailForm.friendName || 'there'}!
