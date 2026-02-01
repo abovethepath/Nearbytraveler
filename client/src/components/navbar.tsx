@@ -637,6 +637,17 @@ function Navbar() {
               {directUser?.userType !== 'business' && (
                 <>
                   <Link
+                    href="/discover"
+                    className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
+                      location === '/discover'
+                        ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                        : "text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    }`}
+                    onClick={() => { setIsMobileMenuOpen(false); setLocation('/discover'); }}
+                  >
+                    <span className="mr-3">🌍</span>Discover Cities
+                  </Link>
+                  <Link
                     href="/quick-meetups"
                     className={`block py-3 px-4 rounded-lg text-lg font-medium transition-colors ${
                       location === '/quick-meetups'

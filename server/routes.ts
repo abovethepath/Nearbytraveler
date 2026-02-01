@@ -4417,8 +4417,18 @@ Questions? Just reply to this message!
 
         // 4. Create travel plan for currently traveling users
         try {
-          if (user.isCurrentlyTraveling && user.destinationCity && user.destinationCountry) {
-            const destination = `${user.destinationCity}, ${user.destinationState || ''}, ${user.destinationCountry}`.replace(', ,', ',');
+          // Check if user is traveling - use either destinationCity/Country OR travelDestination
+          const hasDestinationFields = user.destinationCity && user.destinationCountry;
+          const hasTravelDestination = user.travelDestination && user.travelDestination.trim().length > 0;
+          
+          if (user.isCurrentlyTraveling && (hasDestinationFields || hasTravelDestination)) {
+            // Build destination string - prefer separate fields, fallback to travelDestination
+            let destination: string;
+            if (hasDestinationFields) {
+              destination = `${user.destinationCity}, ${user.destinationState || ''}, ${user.destinationCountry}`.replace(', ,', ',');
+            } else {
+              destination = user.travelDestination!;
+            }
             
             const travelPlanData = {
               userId: user.id,
@@ -4434,6 +4444,12 @@ Questions? Just reply to this message!
             
             await storage.createTravelPlan(travelPlanData);
             console.log(`✅ BACKGROUND: Created travel plan for ${user.username} to ${destination}`);
+          } else if (user.isCurrentlyTraveling) {
+            console.log(`⚠️ BACKGROUND: User ${user.username} marked as traveling but missing destination fields:`, {
+              destinationCity: user.destinationCity,
+              destinationCountry: user.destinationCountry,
+              travelDestination: user.travelDestination
+            });
           }
         } catch (error) {
           console.error('❌ BACKGROUND: Failed to create travel plan:', error);
@@ -8418,20 +8434,32 @@ Questions? Just reply to this message. Welcome aboard!
   app.get("/api/chatrooms/my-locations", async (req, res) => {
     try {
       console.log(`🚀🚀🚀 MY-LOCATIONS ROUTE CALLED - FIRST ROUTE WORKING!!! 🚀🚀🚀`);
-      // Get user ID from headers - FIXED USER ID EXTRACTION
-      let userId = 39; // Default to current user if not specified (your user ID)
+      // Get user ID from session first, then headers
+      let userId: number | undefined;
       
-      // First try x-user-id header (what frontend sends)
-      if (req.headers['x-user-id']) {
-        userId = parseInt(req.headers['x-user-id'] as string);
+      // First try session (most reliable)
+      if ((req as any).session?.user?.id) {
+        userId = (req as any).session.user.id;
+        console.log(`🏠 MY-LOCATIONS: Got userId from session: ${userId}`);
       }
-      // Fallback to x-user-data header  
+      // Fallback: x-user-id header
+      else if (req.headers['x-user-id']) {
+        userId = parseInt(req.headers['x-user-id'] as string);
+        console.log(`🏠 MY-LOCATIONS: Got userId from x-user-id header: ${userId}`);
+      }
+      // Fallback: x-user-data header  
       else if (req.headers['x-user-data']) {
         try {
           userId = JSON.parse(req.headers['x-user-data'] as string).id;
+          console.log(`🏠 MY-LOCATIONS: Got userId from x-user-data header: ${userId}`);
         } catch (e) {
-          // Use default user ID
+          console.log(`🏠 MY-LOCATIONS: Failed to parse x-user-data header`);
         }
+      }
+      
+      if (!userId) {
+        console.log(`🏠 MY-LOCATIONS: No userId found - returning empty array`);
+        return res.json([]);
       }
 
       if (process.env.NODE_ENV === 'development') console.log(`🏠 MY-LOCATIONS: User ${userId} requesting chatrooms`);
