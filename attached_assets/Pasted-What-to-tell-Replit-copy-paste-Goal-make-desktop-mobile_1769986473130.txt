@@ -1,0 +1,57 @@
+What to tell Replit (copy/paste)
+
+Goal: make desktop + mobile use the same Dialog + Trigger, not two separate versions.
+
+The “Edit Profile” dialog works only on mobile width. On desktop, clicking does nothing. This likely means there are two different Edit buttons rendered by responsive classes (e.g., md:hidden / hidden md:flex) and the desktop one isn’t connected to the Dialog or its click is blocked.
+
+Please do this:
+
+Search the codebase for “Edit Profile” (and also md:hidden, hidden md: near it).
+If there are two Edit buttons (mobile + desktop), delete one and keep ONE trigger shared across all sizes.
+
+Implement the Edit button like this (single trigger; text changes by breakpoint):
+
+<Dialog>
+  <DialogTrigger asChild>
+    <Button type="button" className="...">
+      <Pencil className="h-4 w-4" />
+      <span className="hidden md:inline">Edit Profile</span>
+    </Button>
+  </DialogTrigger>
+  <DialogContent className="z-[9999]">
+    ...
+  </DialogContent>
+</Dialog>
+
+
+Ensure the dialog content is portaled (shadcn default). Don’t render DialogContent inside a container that has transform or overflow:hidden without a portal.
+
+Add a temporary debug to confirm desktop click fires:
+
+<Button type="button" onClick={() => console.log("EDIT CLICK")} ... />
+
+
+If desktop logs don’t show, something is blocking clicks (overlay/div/pointer-events).
+
+If the overlay opens (scrollbar disappears) but the dialog is invisible on desktop, raise z-index:
+
+DialogOverlay: z-[9998]
+
+DialogContent: z-[9999]
+
+After this, desktop must open the same dialog as mobile.
+
+Quick self-check (30 seconds)
+
+On desktop, open DevTools → Elements → press Ctrl+F and search for:
+
+data-radix-portal right after clicking Edit
+
+or look for a new node like .DialogOverlay / .DialogContent
+
+If you see a portal appear: the dialog is opening but is hidden/behind something (z-index/CSS).
+If you see nothing new: the desktop button click isn’t firing (two-button breakpoint issue or click blocked).
+
+If you paste one snippet, I’ll pinpoint it
+
+Paste the ~40 lines where the Edit button + Dialog is defined (the part that contains Edit Profile), and I’ll tell you exactly which line is breaking desktop (it’s usually a hidden md:* duplicate trigger or a mixed controlled/uncontrolled Dialog setup).

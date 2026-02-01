@@ -4408,12 +4408,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         type="button"
                         size="sm"
                         variant="outline"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setTimeout(() => setIsEditMode(true), 0);
+                        onClick={() => {
+                          console.log("EDIT CLICK - Desktop/Mobile button pressed");
+                          setIsEditMode(true);
                         }}
-                        className={isProfileIncomplete() ? 'bg-red-100 hover:bg-red-200 border-red-400 text-red-700 animate-pulse' : 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800 dark:border-blue-700 dark:text-blue-100'}
+                        className={`relative z-20 ${isProfileIncomplete() ? 'bg-red-100 hover:bg-red-200 border-red-400 text-red-700 animate-pulse' : 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800 dark:border-blue-700 dark:text-blue-100'}`}
+                        data-testid="button-edit-profile"
                       >
                         <Edit2 className="w-4 h-4 sm:mr-2" />
                         <span className="hidden sm:inline">Edit Profile</span>
@@ -8232,7 +8232,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       {/* Profile Edit Modal */}
       <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
         <DialogContent 
-          className="max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
+          className="max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 z-[9999]"
         >
           <DialogHeader>
             <div className="flex items-center justify-between">
