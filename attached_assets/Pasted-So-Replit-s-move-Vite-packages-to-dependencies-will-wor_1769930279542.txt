@@ -1,0 +1,75 @@
+So Replit’s “move Vite packages to dependencies” will work as a temporary band-aid, but the correct fix is: don’t bundle Vite code into the production server build.
+
+What to tell Replit (copy/paste)
+
+Replit — yes, moving Vite packages to dependencies will unblock as a temporary fix, but please also implement the real fix so production doesn’t require Vite.
+
+✅ Temporary unblock (so Fly stops crashing today)
+
+Move these from devDependencies → dependencies in the deployed package.json:
+
+@vitejs/plugin-react
+
+vite
+
+Then push + redeploy to Fly. This will stop the ERR_MODULE_NOT_FOUND crash immediately.
+
+✅ Real fix (required)
+
+Because esbuild is bundling server/vite.ts into dist/index.js, we must prevent that file (and anything importing vite.config.ts) from being included in the production bundle.
+
+Option A (best): two server entrypoints
+
+Create:
+
+server/index.prod.ts (NO vite import, only express.static)
+
+server/index.dev.ts (uses vite middleware)
+
+Build prod using server/index.prod.ts.
+
+Option B: esbuild exclude / externalize
+
+Update the esbuild build command to exclude the vite file(s), e.g.:
+
+mark ./vite (and/or vite, @vitejs/plugin-react) as external
+
+or configure esbuild to not follow that import in production
+
+Goal: dist/index.js must not reference:
+
+@vitejs/plugin-react
+
+vite
+
+vite.config.*
+
+server/vite.*
+
+Verification step (non-negotiable)
+
+After building, search dist/index.js for:
+
+@vitejs/plugin-react
+
+vite.config
+
+createServer(
+
+It must return no matches for production.
+
+What you do on Fly after the temp fix lands
+
+Destroy any exhausted machines (they’re dead).
+
+Redeploy from latest commit.
+
+Confirm logs no longer show @vitejs/plugin-react missing.
+
+Quick guidance: which fix should we choose?
+
+If you need it live right now → do the temporary dependencies move.
+
+If you want it correct and cheaper/safer long-term → implement Option A (prod/dev entrypoints). That’s the cleanest and avoids shipping Vite in production forever.
+
+If you paste your current esbuild build command (the exact line) I’ll tell you the precise flags to use for Option B, but Option A is usually faster and less fragile.
