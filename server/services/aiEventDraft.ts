@@ -168,6 +168,20 @@ Extract the event details and return ONLY valid JSON. Use today's date to calcul
 
       const parsed = JSON.parse(content) as AiEventDraft;
 
+      // FIX OVERNIGHT EVENTS: If end time is earlier than start time on same day, add 1 day to end date
+      if (parsed.startDateTime && parsed.endDateTime) {
+        const startDate = new Date(parsed.startDateTime);
+        const endDate = new Date(parsed.endDateTime);
+        
+        // Check if same date but end time is earlier (overnight event)
+        if (startDate.toDateString() === endDate.toDateString() && endDate <= startDate) {
+          // Add 1 day to end date
+          endDate.setDate(endDate.getDate() + 1);
+          parsed.endDateTime = endDate.toISOString().slice(0, 19); // Format: YYYY-MM-DDTHH:MM:SS
+          console.log(`🌙 Overnight event detected: Adjusted end date to ${parsed.endDateTime}`);
+        }
+      }
+
       // Validate we got at least a title
       if (!parsed.title) {
         return {
