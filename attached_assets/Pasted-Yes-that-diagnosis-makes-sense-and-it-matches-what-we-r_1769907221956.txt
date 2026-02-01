@@ -1,0 +1,94 @@
+Yes — that diagnosis makes sense, and it matches what we’re seeing:
+
+Your browser is hitting GET /api/auth/user
+
+Render returns 404
+
+If /api/auth/user exists in source, then routes aren’t being registered in the running build
+
+The most common way that happens with an esbuild “single file bundle” is exactly what you described: dynamic import of ./routes.js at runtime, but there is no separate routes.js file in dist/.
+
+So the fix is: stop dynamically importing routes at runtime (or change the build so routes exist as a separate file). Here’s the simplest, safest fix.
+
+Fix (recommended): replace the dynamic import with a normal import
+1) In your server entry file (where Express app starts)
+
+Find the code that looks like one of these:
+
+await import("./routes.js")
+
+
+or
+
+const routes = await import("./routes.js");
+routes.registerRoutes(app);
+
+Replace it with a static import at the top
+import { registerRoutes } from "./routes"; // no .js extension
+
+
+Then call it normally:
+
+registerRoutes(app);
+
+
+✅ Why this works: with esbuild bundling, static imports are resolved at build time and included in the bundle, so the routes code is guaranteed to be present.
+
+2) In routes.ts, export a function the server can call
+
+Make sure routes.ts has something like:
+
+import type { Express } from "express";
+
+export function registerRoutes(app: Express) {
+  // your existing route setup
+  // app.use("/api/auth", authRouter)
+  // etc.
+  console.log("✅ routes registered");
+}
+
+
+If you currently export default, that’s fine too—just match the import:
+
+Default export version
+
+export default function registerRoutes(app: Express) { ... }
+
+
+Then in server:
+
+import registerRoutes from "./routes";
+registerRoutes(app);
+
+3) Add ONE debug log so we can prove it’s fixed on Render
+
+Inside registerRoutes (right at the top):
+
+console.log("✅ routes registered");
+
+
+Deploy and then check Render Logs. If you see that line, you’ve confirmed the root cause is fixed.
+
+4) Redeploy
+
+Commit + push to GitHub
+
+Render → Manual Deploy (or auto deploy)
+
+What should happen after the fix
+
+Reload in Chrome:
+
+GET https://nearbytraveler.onrender.com/api/auth/user should become 401 (if not logged in) or 200 (if you have a session)
+
+It should not be 404 anymore.
+
+Once that’s true, we move to the next blocker (the “Session error” on login), which will be much easier to diagnose because the routes are actually loaded.
+
+Alternative fix (only if you insist on keeping dynamic import)
+
+If you really want await import("./routes.js"), then your build must output a real dist/routes.js file (multi-file build), not a single bundle. That means switching from “bundle everything into dist/index.js” to compiling all server files (tsc or esbuild outdir without bundling). But the static import approach is faster and less fragile.
+
+Quick check question (one line)
+
+In your server entry file, do you currently have await import("./routes.js") (exact string) or something slightly different? If you paste just that one snippet (no secrets), I’ll tell you the exact replacement lines for your file.
