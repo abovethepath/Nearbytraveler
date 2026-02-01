@@ -315,13 +315,27 @@ app.use("/api/", rateLimit({
 
 // Configure session middleware with Redis for production
 // CRITICAL: Sessions persist indefinitely with rolling renewal - users stay logged in forever unless they logout
-const redis = process.env.REDIS_URL ? new Redis(process.env.REDIS_URL) : null;
+let redis: Redis | null = null;
 
-// Log Redis connection status
-if (redis) {
-  console.log('🔴 Redis: Connecting to Redis for session storage...');
-  redis.on('connect', () => console.log('✅ Redis: Connected successfully - sessions will persist across restarts'));
-  redis.on('error', (err) => console.error('❌ Redis connection error:', err.message));
+if (process.env.REDIS_URL) {
+  try {
+    // Upstash Redis requires TLS - ioredis handles rediss:// URLs automatically
+    redis = new Redis(process.env.REDIS_URL, {
+      maxRetriesPerRequest: 3,
+      lazyConnect: false,
+      enableReadyCheck: true,
+      connectTimeout: 10000,
+    });
+    
+    console.log('🔴 Redis: Connecting to Redis for session storage...');
+    redis.on('connect', () => console.log('✅ Redis: Connected successfully - sessions will persist across restarts'));
+    redis.on('ready', () => console.log('✅ Redis: Ready to accept commands'));
+    redis.on('error', (err) => console.error('❌ Redis connection error:', err.message));
+    redis.on('close', () => console.log('🔴 Redis: Connection closed'));
+  } catch (err: any) {
+    console.error('❌ Redis: Failed to initialize:', err.message);
+    redis = null;
+  }
 } else {
   console.log('⚠️ Redis: No REDIS_URL configured - using in-memory session store');
 }
