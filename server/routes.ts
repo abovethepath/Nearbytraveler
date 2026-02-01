@@ -2936,8 +2936,12 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       // Save session
       (req as any).session.save((err: any) => {
         if (err) {
-          console.error("Session save error:", err);
-          return res.status(500).json({ message: "Session error" });
+          console.error("🔥 LOGIN SESSION SAVE ERROR:", err);
+          console.error("message:", err?.message);
+          console.error("stack:", err?.stack);
+          console.error("sessionID:", (req as any).sessionID);
+          console.error("hasSession:", !!(req as any).session);
+          return res.status(500).json({ message: "Session error", detail: err?.message });
         }
         console.log("✅ Quick login successful for user:", user.username);
         return res.json({ ok: true, user: { id: user.id, username: user.username } });
