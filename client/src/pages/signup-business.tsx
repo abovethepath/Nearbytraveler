@@ -219,6 +219,7 @@ export default function SignupBusinessSimple() {
           ...processedData,
           userType: "business",
           websiteUrl: (processedData as any).websiteUrl, // Ensure websiteUrl is included
+          keepLoggedIn: accountData?.keepLoggedIn !== false,
           // Include referral information if available
           ...(referralCode && { referralCode }),
           ...(connectionNote && { connectionNote })
@@ -324,6 +325,7 @@ export default function SignupBusinessSimple() {
             ...data,
             userType: "business",
             businessName: accountData?.name || "",
+            keepLoggedIn: accountData?.keepLoggedIn !== false,
           })
         });
 

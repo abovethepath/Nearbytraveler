@@ -131,7 +131,8 @@ export default function SignupLocal() {
         confirmPassword: accountData.password || formData.confirmPassword,
         username: accountData.username || formData.username,
         name: accountData.name || formData.name,
-        phoneNumber: accountData.phoneNumber || ''
+        phoneNumber: accountData.phoneNumber || '',
+        keepLoggedIn: accountData.keepLoggedIn !== false
       };
 
       // Helper functions for clean data
@@ -162,6 +163,7 @@ export default function SignupLocal() {
         username: (finalFormData.username || "").toLowerCase().trim(),
         name: (finalFormData.name || "").trim(),
         phoneNumber: (finalFormData.phoneNumber || "").trim(),
+        keepLoggedIn: finalFormData.keepLoggedIn !== false,
 
         // profile
         dateOfBirth: formData.dateOfBirth,

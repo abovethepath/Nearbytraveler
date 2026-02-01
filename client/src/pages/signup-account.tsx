@@ -30,6 +30,7 @@ export default function SignupAccount() {
   const [currentError, setCurrentError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [keepLoggedIn, setKeepLoggedIn] = useState(true);
 
   useEffect(() => {
     // Check for QR code flow first (intendedUserType), then regular flow (selectedUserType)
@@ -177,7 +178,8 @@ export default function SignupAccount() {
       phoneNumber: formData.phoneNumber,
       password: formData.password,
       userType: userType,
-      isNewToTown: isNewToTown
+      isNewToTown: isNewToTown,
+      keepLoggedIn: keepLoggedIn
     };
 
     sessionStorage.setItem('accountData', JSON.stringify(accountData));
@@ -408,6 +410,19 @@ export default function SignupAccount() {
                 {formData.confirmPassword && formData.password && formData.password === formData.confirmPassword && (
                   <p className="text-green-500 text-sm mt-1">Passwords match ✓</p>
                 )}
+              </div>
+
+              <div className="flex items-center space-x-2 mt-4">
+                <input
+                  type="checkbox"
+                  id="keepLoggedIn"
+                  checked={keepLoggedIn}
+                  onChange={(e) => setKeepLoggedIn(e.target.checked)}
+                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                />
+                <Label htmlFor="keepLoggedIn" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+                  Keep me logged in
+                </Label>
               </div>
 
               <Button

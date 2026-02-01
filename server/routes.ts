@@ -4381,6 +4381,13 @@ Questions? Just reply to this message!
         email: user.email,
         userType: user.userType
       };
+      
+      // Handle "Keep me logged in" - extend session to 30 days
+      if (req.body.keepLoggedIn) {
+        const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+        (req as any).session.cookie.maxAge = thirtyDays;
+        console.log("🔐 Extended session to 30 days for keepLoggedIn");
+      }
 
       // ========== FAST RESPONSE: Return success immediately ==========
       // User account is created - send success response NOW
