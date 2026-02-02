@@ -1,0 +1,1363 @@
+📄 Serving frontend for: /
+🔧 ROUTE HIT: /api/quick-meets called at 2026-02-02T05:10:24.381Z
+🔧 NODE_ENV: production
+Menu
+🔧 QUICK MEETS DEBUG: Building filtered query with user join to get organizer info
+🔧 ROUTE HIT: /api/quick-meets called at 2026-02-02T05:10:24.390Z
+🔧 NODE_ENV: production
+🔧 QUICK MEETS DEBUG: Building filtered query with user join to get organizer info
+🏢 DIRECT API: Fetching businesses
+🟢 EVENTS ENDPOINT HIT! Query: { city: 'Culver City', userId: '99' } URL: /api/events?city=Culver%20City&userId=99
+📅 EVENTS DEBUG: Full query parameters: { city: 'Culver City', userId: '99' }
+📅 EVENTS DEBUG: Extracted city="Culver City" state="undefined" country="undefined"
+📅 EVENTS DEBUG: City type: string, truthy: true, trimmed: "Culver City"
+📅 EVENTS DEBUG: City parameter received: "Culver City", type: string
+🎪 EVENTS: Getting events for city: Culver City
+🌍 METRO EVENTS: City "Culver City" → Metro "Los Angeles Metro" → Searching 78 cities: Los Angeles, Playa del Rey, Santa Monica, Venice, Venice Beach ...
+🔍 Auth check debug: {
+  hasSession: true,
+  sessionID: 'iHUhdYwjOu...',
+  hasCookie: true,
+  cookiePreview: '_ga=GA1.1.664675618.1762112670; _ga_SNM2SGWP9K=GS2...',
+  hasUser: false,
+  userId: undefined
+}
+❌ Auth check: No session user
+5:10:24 AM [express] GET /api/auth/user 401 in 2ms :: {"message":"Not authenticated"}
+🟢 EVENTS ENDPOINT HIT! Query: { city: 'Culver City' } URL: /api/events?city=Culver%20City
+📅 EVENTS DEBUG: Full query parameters: { city: 'Culver City' }
+📅 EVENTS DEBUG: Extracted city="Culver City" state="undefined" country="undefined"
+📅 EVENTS DEBUG: City type: string, truthy: true, trimmed: "Culver City"
+📅 EVENTS DEBUG: City parameter received: "Culver City", type: string
+🎪 EVENTS: Getting events for city: Culver City
+🌍 METRO EVENTS: City "Culver City" → Metro "Los Angeles Metro" → Searching 78 cities: Los Angeles, Playa del Rey, Santa Monica, Venice, Venice Beach ...
+⏱️ MATCHING: Starting findMatches for user 99
+5:10:24 AM [express] GET /api/weather 500 in 1ms :: {"message":"Weather service not configured"}
+📄 Serving frontend for: /new-logo_1753994063802.png
+5:10:24 AM [express] GET /api/users/99 500 in 345ms :: {"message":"Failed to fetch user"}
+5:10:24 AM [express] GET /api/users 200 in 381ms :: []
+5:10:24 AM [express] GET /api/users/99 500 in 83ms :: {"message":"Failed to fetch user"}
+5:10:24 AM [express] GET /api/messages/99/unread-count 200 in 368ms :: {"unreadCount":"2"}
+5:10:24 AM [express] GET /api/travel-plans/99 304 in 560ms :: [{"id":63,"userId":99,"destination":"B…
+5:10:24 AM [express] GET /api/weather 500 in 1ms :: {"message":"Weather service not configured"}
+5:10:25 AM [express] GET /api/quick-meets 304 in 625ms :: [{"id":18,"organizerId":103,"title":"Bike …
+5:10:25 AM [express] GET /api/users/99 500 in 5ms :: {"message":"Failed to fetch user"}
+🤖 AI TRIGGER: Culver City has only 1 events - generating AI events with OpenAI
+5:10:25 AM [express] GET /api/connections/99/requests 304 in 222ms :: [{"id":89,"status":"pending","…
+⚠️ AI EVENT GENERATION DISABLED for safety - no fake events created for Culver City
+🟢 EVENTS ENDPOINT HIT! Query: { city: 'Culver City', userId: '99' } URL: /api/events?city=Culver%20City&userId=99
+📅 EVENTS DEBUG: Full query parameters: { city: 'Culver City', userId: '99' }
+📅 EVENTS DEBUG: Extracted city="Culver City" state="undefined" country="undefined"
+📅 EVENTS DEBUG: City type: string, truthy: true, trimmed: "Culver City"
+📅 EVENTS DEBUG: City parameter received: "Culver City", type: string
+🎪 EVENTS: Getting events for city: Culver City
+🌍 METRO EVENTS: City "Culver City" → Metro "Los Angeles Metro" → Searching 78 cities: Los Angeles, Playa del Rey, Santa Monica, Venice, Venice Beach ...
+🔧 ROUTE HIT: /api/quick-meets called at 2026-02-02T05:10:25.334Z
+🔧 NODE_ENV: production
+🔧 QUICK MEETS DEBUG: Building filtered query with user join to get organizer info
+5:10:25 AM [express] GET /api/users/99/matches 500 in 786ms :: {"message":"Failed to fetch matches"}
+5:10:25 AM [express] GET /api/events 500 in 849ms :: {"message":"Failed to fetch events"}
+5:10:25 AM [express] GET /api/quick-meets 304 in 16ms :: []
+🤖 AI TRIGGER: Culver City has only 1 events - generating AI events with OpenAI
+⚠️ AI EVENT GENERATION DISABLED for safety - no fake events created for Culver City
+🟢 EVENTS ENDPOINT HIT! Query: { city: 'Culver City' } URL: /api/events?city=Culver%20City
+📅 EVENTS DEBUG: Full query parameters: { city: 'Culver City' }
+📅 EVENTS DEBUG: Extracted city="Culver City" state="undefined" country="undefined"
+📅 EVENTS DEBUG: City type: string, truthy: true, trimmed: "Culver City"
+📅 EVENTS DEBUG: City parameter received: "Culver City", type: string
+🎪 EVENTS: Getting events for city: Culver City
+🌍 METRO EVENTS: City "Culver City" → Metro "Los Angeles Metro" → Searching 78 cities: Los Angeles, Playa del Rey, Santa Monica, Venice, Venice Beach ...
+🔧 ROUTE HIT: /api/quick-meets called at 2026-02-02T05:10:25.541Z
+🔧 NODE_ENV: production
+🔧 QUICK MEETS DEBUG: Building filtered query with user join to get organizer info
+🟢 EVENTS ENDPOINT HIT! Query: { city: 'Breda' } URL: /api/events?city=Breda
+📅 EVENTS DEBUG: Full query parameters: { city: 'Breda' }
+📅 EVENTS DEBUG: Extracted city="Breda" state="undefined" country="undefined"
+📅 EVENTS DEBUG: City type: string, truthy: true, trimmed: "Breda"
+📅 EVENTS DEBUG: City parameter received: "Breda", type: string
+🎪 EVENTS: Getting events for city: Breda
+🎯 EVENTS EXACT: "Breda" not in metro area, searching exact city only
+🤖 AI TRIGGER: Culver City has only 1 events - generating AI events with OpenAI
+5:10:25 AM [express] GET /api/users/99 500 in 1264ms :: {"message":"Failed to fetch user"}
+5:10:25 AM [express] GET /api/users 200 in 1120ms :: []
+5:10:25 AM [express] GET /api/messages/99 500 in 1118ms :: {"message":"Failed to fetch messages"}
+⚠️ AI EVENT GENERATION DISABLED for safety - no fake events created for Culver City
+5:10:25 AM [express] GET /api/events 500 in 1084ms :: {"message":"Failed to fetch events"}
+5:10:25 AM [express] GET /api/quick-meets 304 in 1346ms :: [{"id":18,"organizerId":103,"title":"Bike…
+🏢 DIRECT API: Found 1 businesses
+5:10:25 AM [express] GET /api/events 500 in 510ms :: {"message":"Failed to fetch events"}
+5:10:25 AM [express] GET /api/quick-meets 304 in 394ms :: [{"id":18,"organizerId":103,"title":"Bike …
+🤖 AI TRIGGER: Breda has only 0 events - generating AI events with OpenAI
+🔒 PRIVATE EVENTS: No user provided - filtered 0 events down to 0 public events
+5:10:25 AM [express] GET /api/events 304 in 398ms :: []
+⚠️ AI EVENT GENERATION DISABLED for safety - no fake events created for Breda
+🤖 AI TRIGGER: Culver City has only 1 events - generating AI events with OpenAI
+⚠️ AI EVENT GENERATION DISABLED for safety - no fake events created for Culver City
+5:10:25 AM [express] GET /api/events 500 in 431ms :: {"message":"Failed to fetch events"}
+5:10:26 AM [express] GET /api/users/99 500 in 5ms :: {"message":"Failed to fetch user"}
+5:10:26 AM [express] GET /api/weather 500 in 0ms :: {"message":"Weather service not configured"}
+⏱️ MATCHING: Starting findMatches for user 99
+5:10:26 AM [express] GET /api/users/99/matches 500 in 66ms :: {"message":"Failed to fetch matches"}
+5:10:26 AM [express] GET /api/messages/99 500 in 8ms :: {"message":"Failed to fetch messages"}
+5:10:28 AM [express] GET /api/users/99 500 in 5ms :: {"message":"Failed to fetch user"}
+📦 PROFILE-BUNDLE: Fetching all data for user 99 (viewer: 99)
+Profile bundle error: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async Promise.all (index 0)
+    at async file:///opt/render/project/src/dist/index.js:24746:11 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:10:28 AM [express] GET /api/users/99/profile-bundle 500 in 85ms :: {"message":"Failed to fetch pro…
+5:10:28 AM [express] GET /api/connections/99 200 in 126ms :: [{"id":76,"status":"accepted","createdA…
+5:10:28 AM [express] GET /api/users/99/chatroom-participation 200 in 156ms :: [{"id":138,"name":"Wel…
+5:10:29 AM [express] GET /api/messages/99 500 in 9ms :: {"message":"Failed to fetch messages"}
+📦 PROFILE-BUNDLE: Fetching all data for user 99 (viewer: 99)
+Profile bundle error: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async Promise.all (index 0)
+    at async file:///opt/render/project/src/dist/index.js:24746:11 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:10:29 AM [express] GET /api/users/99/profile-bundle 500 in 20ms :: {"message":"Failed to fetch pro…
+🔧 ROUTE HIT: /api/quick-meets called at 2026-02-02T05:10:29.841Z
+🔧 NODE_ENV: production
+🔧 QUICK MEETS DEBUG: Building filtered query with user join to get organizer info
+5:10:29 AM [express] GET /api/users/99 500 in 6ms :: {"message":"Failed to fetch user"}
+Error generating QR code: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async file:///opt/render/project/src/dist/index.js:34631:18 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:10:29 AM [express] GET /api/user/qr-code 500 in 12ms :: {"error":"Failed to generate QR code"}
+5:10:29 AM [express] GET /api/users/99/travel-plans 200 in 10ms :: [{"id":63,"userId":99,"destinatio…
+5:10:29 AM [express] GET /api/quick-meets 200 in 25ms :: [{"id":16,"organizerId":99,"title":"Quick W…
+5:10:29 AM [express] GET /api/user-event-interests/99 304 in 25ms :: []
+5:10:29 AM [express] GET /api/user-city-interests/99 304 in 23ms :: []
+🎪 PROFILE EVENTS: Getting all events for organizer 99
+🎪 PROFILE EVENTS: Found 1 events for organizer 99
+🎪 PROFILE EVENTS: Event details: [
+  { id: 295, title: 'Party in Playa ', date: 2026-01-25T17:58:00.000Z }
+]
+5:10:30 AM [express] GET /api/events/organizer/99 304 in 160ms :: [{"id":295,"title":"Party in Playa…
+5:10:30 AM [express] GET /api/users/99/all-events 200 in 305ms :: [{"id":295,"title":"Party in Playa…
+5:10:31 AM [express] GET /api/users/99 500 in 5ms :: {"message":"Failed to fetch user"}
+Error generating QR code: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async file:///opt/render/project/src/dist/index.js:34631:18 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:10:31 AM [express] GET /api/user/qr-code 500 in 5ms :: {"error":"Failed to generate QR code"}
+5:10:33 AM [express] GET /api/users/99 500 in 5ms :: {"message":"Failed to fetch user"}
+Error generating QR code: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async file:///opt/render/project/src/dist/index.js:34631:18 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:10:33 AM [express] GET /api/user/qr-code 500 in 4ms :: {"error":"Failed to generate QR code"}
+5:10:55 AM [express] GET /api/messages/99/unread-count 304 in 6ms :: {"unreadCount":"2"}
+5:11:25 AM [express] GET /api/messages/99/unread-count 304 in 29ms :: {"unreadCount":"2"}
+==> Detected service running on port 10000
+==> Docs on specifying a port: https://render.com/docs/web-services#port-binding
+Help chatbot error: OpenAIError: Missing credentials. Please pass an `apiKey`, or set the `OPENAI_API_KEY` environment variable.
+    at new OpenAI (file:///opt/render/project/src/node_modules/openai/client.mjs:87:19)
+    at server/services/aiHelpChatbot.ts (file:///opt/render/project/src/dist/index.js:19671:15)
+    at __init (file:///opt/render/project/src/dist/index.js:12:56)
+    at file:///opt/render/project/src/dist/index.js:34108:89
+    at async file:///opt/render/project/src/dist/index.js:34108:53
+5:13:58 AM [express] POST /api/ai/help-chat 500 in 2ms :: {"error":"Failed to process your question"}
+📄 Serving frontend for: /
+📄 Serving frontend for: /
+📄 Serving frontend for: /
+📄 Serving frontend for: /
+📄 Serving frontend for: /
+📄 Serving frontend for: /https%3A/fonts.googleapis.com/css2%3Ffamily%3DInter%3Awght%40300%3B400%3B500%3B600%26display%3Dswap
+📄 Serving frontend for: /
+📄 Serving frontend for: /wp-login.php
+5:34:12 AM [express] GET /api/users 200 in 44ms :: []
+5:34:12 AM [express] GET /api/messages/99 500 in 73ms :: {"message":"Failed to fetch messages"}
+5:34:13 AM [express] GET /api/connections/99 304 in 164ms :: [{"id":76,"status":"accepted","createdA…
+5:34:14 AM [express] GET /api/messages/99 500 in 12ms :: {"message":"Failed to fetch messages"}
+5:34:16 AM [express] GET /api/messages/99 500 in 46ms :: {"message":"Failed to fetch messages"}
+🔧 ROUTE HIT: /api/quick-meets called at 2026-02-02T05:34:16.943Z
+🔧 NODE_ENV: production
+🔧 QUICK MEETS DEBUG: Building filtered query with user join to get organizer info
+🔧 ROUTE HIT: /api/quick-meets called at 2026-02-02T05:34:16.955Z
+🔧 NODE_ENV: production
+🔧 QUICK MEETS DEBUG: Building filtered query with user join to get organizer info
+5:34:16 AM [express] GET /api/users 200 in 35ms :: []
+⏱️ MATCHING: Starting findMatches for user 99
+5:34:16 AM [express] GET /api/travel-plans/99 304 in 63ms :: [{"id":63,"userId":99,"destination":"Br…
+🟢 EVENTS ENDPOINT HIT! Query: { city: 'Breda' } URL: /api/events?city=Breda
+📅 EVENTS DEBUG: Full query parameters: { city: 'Breda' }
+📅 EVENTS DEBUG: Extracted city="Breda" state="undefined" country="undefined"
+📅 EVENTS DEBUG: City type: string, truthy: true, trimmed: "Breda"
+📅 EVENTS DEBUG: City parameter received: "Breda", type: string
+🎪 EVENTS: Getting events for city: Breda
+🎯 EVENTS EXACT: "Breda" not in metro area, searching exact city only
+5:34:17 AM [express] GET /api/users/99/matches 500 in 87ms :: {"message":"Failed to fetch matches"}
+5:34:17 AM [express] GET /api/quick-meets 304 in 86ms :: [{"id":18,"organizerId":103,"title":"Bike R…
+🤖 AI TRIGGER: Breda has only 0 events - generating AI events with OpenAI
+🔒 PRIVATE EVENTS: No user provided - filtered 0 events down to 0 public events
+5:34:17 AM [express] GET /api/events 304 in 54ms :: []
+5:34:17 AM [express] GET /api/quick-meets 304 in 108ms :: [{"id":18,"organizerId":103,"title":"Bike …
+⚠️ AI EVENT GENERATION DISABLED for safety - no fake events created for Breda
+🏢 DIRECT API: Fetching businesses
+🟢 EVENTS ENDPOINT HIT! Query: { city: 'Culver City' } URL: /api/events?city=Culver%20City
+📅 EVENTS DEBUG: Full query parameters: { city: 'Culver City' }
+📅 EVENTS DEBUG: Extracted city="Culver City" state="undefined" country="undefined"
+📅 EVENTS DEBUG: City type: string, truthy: true, trimmed: "Culver City"
+📅 EVENTS DEBUG: City parameter received: "Culver City", type: string
+🎪 EVENTS: Getting events for city: Culver City
+🌍 METRO EVENTS: City "Culver City" → Metro "Los Angeles Metro" → Searching 78 cities: Los Angeles, Playa del Rey, Santa Monica, Venice, Venice Beach ...
+🔧 ROUTE HIT: /api/quick-meets called at 2026-02-02T05:34:17.230Z
+🔧 NODE_ENV: production
+🔧 QUICK MEETS DEBUG: Building filtered query with user join to get organizer info
+5:34:17 AM [express] GET /api/users 304 in 107ms :: []
+5:34:17 AM [express] GET /api/users/99 500 in 107ms :: {"message":"Failed to fetch user"}
+🏢 DIRECT API: Found 1 businesses
+5:34:17 AM [express] GET /api/users/99 500 in 134ms :: {"message":"Failed to fetch user"}
+5:34:17 AM [express] GET /api/quick-meets 304 in 136ms :: []
+🤖 AI TRIGGER: Culver City has only 1 events - generating AI events with OpenAI
+⚠️ AI EVENT GENERATION DISABLED for safety - no fake events created for Culver City
+5:34:17 AM [express] GET /api/events 500 in 291ms :: {"message":"Failed to fetch events"}
+🟢 EVENTS ENDPOINT HIT! Query: { city: 'Culver City', userId: '99' } URL: /api/events?city=Culver%20City&userId=99
+📅 EVENTS DEBUG: Full query parameters: { city: 'Culver City', userId: '99' }
+📅 EVENTS DEBUG: Extracted city="Culver City" state="undefined" country="undefined"
+📅 EVENTS DEBUG: City type: string, truthy: true, trimmed: "Culver City"
+📅 EVENTS DEBUG: City parameter received: "Culver City", type: string
+🎪 EVENTS: Getting events for city: Culver City
+🌍 METRO EVENTS: City "Culver City" → Metro "Los Angeles Metro" → Searching 78 cities: Los Angeles, Playa del Rey, Santa Monica, Venice, Venice Beach ...
+5:34:17 AM [express] GET /api/messages/99 500 in 8ms :: {"message":"Failed to fetch messages"}
+🤖 AI TRIGGER: Culver City has only 1 events - generating AI events with OpenAI
+⚠️ AI EVENT GENERATION DISABLED for safety - no fake events created for Culver City
+5:34:17 AM [express] GET /api/weather 500 in 0ms :: {"message":"Weather service not configured"}
+5:34:17 AM [express] GET /api/events 500 in 69ms :: {"message":"Failed to fetch events"}
+5:34:19 AM [express] GET /api/messages/99 500 in 30ms :: {"message":"Failed to fetch messages"}
+5:34:21 AM [express] GET /api/messages/99 500 in 34ms :: {"message":"Failed to fetch messages"}
+5:34:23 AM [express] POST /api/messages/99/mark-read 200 in 43ms :: {"success":true,"markedCount":1}
+5:34:23 AM [express] GET /api/messages/99 500 in 9ms :: {"message":"Failed to fetch messages"}
+5:34:23 AM [express] GET /api/messages/99/unread-count 200 in 26ms :: {"unreadCount":"1"}
+5:34:23 AM [express] GET /api/messages/99/unread-count 200 in 24ms :: {"unreadCount":"1"}
+5:34:24 AM [express] GET /api/messages/99 500 in 8ms :: {"message":"Failed to fetch messages"}
+5:34:27 AM [express] GET /api/messages/99 500 in 8ms :: {"message":"Failed to fetch messages"}
+5:34:28 AM [express] POST /api/messages/99/mark-read 200 in 27ms :: {"success":true,"markedCount":0}
+5:34:28 AM [express] POST /api/messages 200 in 36ms :: {"success":true,"message":{"id":153,"senderId…
+❌ Failed to send new message email: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async Promise.all (index 0)
+    at async sendNewMessageEmail (file:///opt/render/project/src/dist/index.js:16462:33)
+    at async Immediate.<anonymous> (file:///opt/render/project/src/dist/index.js:26920:26) {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:34:28 AM [express] GET /api/messages/99 500 in 6ms :: {"message":"Failed to fetch messages"}
+5:34:28 AM [express] GET /api/messages/99/unread-count 304 in 22ms :: {"unreadCount":"1"}
+5:34:28 AM [express] GET /api/messages/99/unread-count 304 in 26ms :: {"unreadCount":"1"}
+5:34:28 AM [express] GET /api/connections/99 304 in 16ms :: [{"id":76,"status":"accepted","createdAt…
+5:34:29 AM [express] GET /api/messages/99 500 in 8ms :: {"message":"Failed to fetch messages"}
+5:34:32 AM [express] GET /api/messages/99 500 in 9ms :: {"message":"Failed to fetch messages"}
+5:34:42 AM [express] GET /api/messages/99 500 in 30ms :: {"message":"Failed to fetch messages"}
+5:34:43 AM [express] GET /api/messages/99 500 in 28ms :: {"message":"Failed to fetch messages"}
+5:34:45 AM [express] POST /api/messages/99/mark-read 200 in 28ms :: {"success":true,"markedCount":0}
+5:34:45 AM [express] POST /api/messages 200 in 28ms :: {"success":true,"message":{"id":154,"senderId…
+❌ Failed to send new message email: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async Promise.all (index 0)
+    at async sendNewMessageEmail (file:///opt/render/project/src/dist/index.js:16462:33)
+    at async Immediate.<anonymous> (file:///opt/render/project/src/dist/index.js:26920:26) {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:34:45 AM [express] GET /api/messages/99/unread-count 304 in 4ms :: {"unreadCount":"1"}
+5:34:45 AM [express] GET /api/messages/99/unread-count 304 in 29ms :: {"unreadCount":"1"}
+5:34:45 AM [express] GET /api/messages/99 500 in 7ms :: {"message":"Failed to fetch messages"}
+5:34:45 AM [express] GET /api/connections/99 304 in 14ms :: [{"id":76,"status":"accepted","createdAt…
+5:34:47 AM [express] POST /api/messages/99/mark-read 200 in 4ms :: {"success":true,"markedCount":0}
+5:34:47 AM [express] GET /api/messages/99/unread-count 304 in 5ms :: {"unreadCount":"1"}
+5:34:47 AM [express] GET /api/messages/99 500 in 7ms :: {"message":"Failed to fetch messages"}
+5:34:47 AM [express] GET /api/messages/99/unread-count 304 in 30ms :: {"unreadCount":"1"}
+5:34:49 AM [express] GET /api/messages/99 500 in 6ms :: {"message":"Failed to fetch messages"}
+5:34:51 AM [express] GET /api/messages/99 500 in 29ms :: {"message":"Failed to fetch messages"}
+5:34:52 AM [express] POST /api/messages/99/mark-read 200 in 25ms :: {"success":true,"markedCount":0}
+5:34:52 AM [express] GET /api/messages/99 500 in 8ms :: {"message":"Failed to fetch messages"}
+5:34:52 AM [express] GET /api/messages/99/unread-count 304 in 29ms :: {"unreadCount":"1"}
+5:34:53 AM [express] GET /api/messages/99/unread-count 304 in 152ms :: {"unreadCount":"1"}
+5:34:54 AM [express] GET /api/messages/99 500 in 9ms :: {"message":"Failed to fetch messages"}
+5:34:56 AM [express] GET /api/messages/99 500 in 9ms :: {"message":"Failed to fetch messages"}
+5:34:57 AM [express] POST /api/messages/99/mark-read 200 in 28ms :: {"success":true,"markedCount":1}
+5:34:57 AM [express] GET /api/messages/99/unread-count 200 in 3ms :: {"unreadCount":"0"}
+5:34:57 AM [express] GET /api/messages/99/unread-count 200 in 5ms :: {"unreadCount":"0"}
+5:34:57 AM [express] GET /api/messages/99 500 in 27ms :: {"message":"Failed to fetch messages"}
+5:34:59 AM [express] GET /api/messages/99 500 in 9ms :: {"message":"Failed to fetch messages"}
+5:35:00 AM [express] POST /api/messages 200 in 27ms :: {"success":true,"message":{"id":155,"senderId…
+❌ Failed to send new message email: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async Promise.all (index 0)
+    at async sendNewMessageEmail (file:///opt/render/project/src/dist/index.js:16462:33)
+    at async Immediate.<anonymous> (file:///opt/render/project/src/dist/index.js:26920:26) {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:35:00 AM [express] POST /api/messages/99/mark-read 200 in 25ms :: {"success":true,"markedCount":0}
+5:35:00 AM [express] GET /api/messages/99/unread-count 304 in 3ms :: {"unreadCount":"0"}
+5:35:00 AM [express] GET /api/messages/99/unread-count 304 in 4ms :: {"unreadCount":"0"}
+5:35:00 AM [express] GET /api/connections/99 304 in 15ms :: [{"id":76,"status":"accepted","createdAt…
+5:35:01 AM [express] GET /api/messages/99 500 in 8ms :: {"message":"Failed to fetch messages"}
+📦 PROFILE-BUNDLE: Fetching all data for user 99 (viewer: 99)
+5:35:03 AM [express] GET /api/users/99/chatroom-participation 304 in 46ms :: [{"id":138,"name":"Welc…
+Profile bundle error: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async Promise.all (index 0)
+    at async file:///opt/render/project/src/dist/index.js:24746:11 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:35:03 AM [express] GET /api/users/99/profile-bundle 500 in 55ms :: {"message":"Failed to fetch pro…
+5:35:03 AM [express] GET /api/connections/99 304 in 105ms :: [{"id":76,"status":"accepted","createdA…
+🏢 DIRECT API: Fetching businesses
+🏢 DIRECT API: Found 1 businesses
+🟢 EVENTS ENDPOINT HIT! Query: { city: 'Culver City', userId: '99' } URL: /api/events?city=Culver%20City&userId=99
+📅 EVENTS DEBUG: Full query parameters: { city: 'Culver City', userId: '99' }
+📅 EVENTS DEBUG: Extracted city="Culver City" state="undefined" country="undefined"
+📅 EVENTS DEBUG: City type: string, truthy: true, trimmed: "Culver City"
+📅 EVENTS DEBUG: City parameter received: "Culver City", type: string
+🎪 EVENTS: Getting events for city: Culver City
+🌍 METRO EVENTS: City "Culver City" → Metro "Los Angeles Metro" → Searching 78 cities: Los Angeles, Playa del Rey, Santa Monica, Venice, Venice Beach ...
+🔧 ROUTE HIT: /api/quick-meets called at 2026-02-02T05:35:04.549Z
+🔧 NODE_ENV: production
+🔧 QUICK MEETS DEBUG: Building filtered query with user join to get organizer info
+5:35:04 AM [express] GET /api/travel-plans/99 304 in 5ms :: [{"id":63,"userId":99,"destination":"Bre…
+5:35:04 AM [express] GET /api/users/99 500 in 10ms :: {"message":"Failed to fetch user"}
+🔧 ROUTE HIT: /api/quick-meets called at 2026-02-02T05:35:04.562Z
+🔧 NODE_ENV: production
+🔧 QUICK MEETS DEBUG: Building filtered query with user join to get organizer info
+5:35:04 AM [express] GET /api/quick-meets 304 in 21ms :: [{"id":18,"organizerId":103,"title":"Bike R…
+5:35:04 AM [express] GET /api/users/99 500 in 19ms :: {"message":"Failed to fetch user"}
+🔧 ROUTE HIT: /api/quick-meets called at 2026-02-02T05:35:04.638Z
+🔧 NODE_ENV: production
+🔧 QUICK MEETS DEBUG: Building filtered query with user join to get organizer info
+🤖 AI TRIGGER: Culver City has only 1 events - generating AI events with OpenAI
+⏱️ MATCHING: Starting findMatches for user 99
+⚠️ AI EVENT GENERATION DISABLED for safety - no fake events created for Culver City
+5:35:04 AM [express] GET /api/weather 500 in 2ms :: {"message":"Weather service not configured"}
+5:35:04 AM [express] GET /api/quick-meets 304 in 285ms :: [{"id":18,"organizerId":103,"title":"Bike …
+5:35:04 AM [express] GET /api/quick-meets 304 in 276ms :: []
+5:35:04 AM [express] GET /api/users/99/matches 500 in 304ms :: {"message":"Failed to fetch matches"}
+5:35:04 AM [express] GET /api/messages/99 500 in 214ms :: {"message":"Failed to fetch messages"}
+5:35:04 AM [express] GET /api/users 304 in 214ms :: []
+5:35:04 AM [express] GET /api/events 500 in 308ms :: {"message":"Failed to fetch events"}
+5:35:05 AM [express] GET /api/users/99 500 in 5ms :: {"message":"Failed to fetch user"}
+5:35:06 AM [express] GET /api/messages/99 500 in 9ms :: {"message":"Failed to fetch messages"}
+5:35:06 AM [express] GET /api/weather 500 in 1ms :: {"message":"Weather service not configured"}
+⏱️ MATCHING: Starting findMatches for user 99
+5:35:06 AM [express] GET /api/users/99/matches 500 in 65ms :: {"message":"Failed to fetch matches"}
+5:35:07 AM [express] GET /api/users/99 500 in 6ms :: {"message":"Failed to fetch user"}
+5:35:08 AM [express] GET /api/messages/99 500 in 9ms :: {"message":"Failed to fetch messages"}
+5:35:08 AM [express] GET /api/weather 500 in 1ms :: {"message":"Weather service not configured"}
+⏱️ MATCHING: Starting findMatches for user 99
+5:35:08 AM [express] GET /api/users/99/matches 500 in 65ms :: {"message":"Failed to fetch matches"}
+📦 PROFILE-BUNDLE: Fetching all data for user 99 (viewer: 99)
+Profile bundle error: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async Promise.all (index 0)
+    at async file:///opt/render/project/src/dist/index.js:24746:11 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:35:09 AM [express] GET /api/users/99/profile-bundle 500 in 14ms :: {"message":"Failed to fetch pro…
+5:35:09 AM [express] GET /api/connections/99 304 in 18ms :: [{"id":76,"status":"accepted","createdAt…
+📦 PROFILE-BUNDLE: Fetching all data for user 99 (viewer: 99)
+Profile bundle error: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async Promise.all (index 0)
+    at async file:///opt/render/project/src/dist/index.js:24746:11 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:35:10 AM [express] GET /api/users/99/profile-bundle 500 in 7ms :: {"message":"Failed to fetch prof…
+🔧 ROUTE HIT: /api/quick-meets called at 2026-02-02T05:35:11.097Z
+🔧 NODE_ENV: production
+🔧 QUICK MEETS DEBUG: Building filtered query with user join to get organizer info
+Error generating QR code: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async file:///opt/render/project/src/dist/index.js:34631:18 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:35:11 AM [express] GET /api/user/qr-code 500 in 5ms :: {"error":"Failed to generate QR code"}
+🎪 PROFILE EVENTS: Getting all events for organizer 99
+5:35:11 AM [express] GET /api/users/99/travel-plans 304 in 8ms :: [{"id":63,"userId":99,"destination…
+5:35:11 AM [express] GET /api/users/99 500 in 9ms :: {"message":"Failed to fetch user"}
+5:35:11 AM [express] GET /api/user-city-interests/99 304 in 36ms :: []
+5:35:11 AM [express] GET /api/user-event-interests/99 304 in 34ms :: []
+5:35:11 AM [express] GET /api/quick-meets 304 in 38ms :: [{"id":16,"organizerId":99,"title":"Quick W…
+5:35:11 AM [express] GET /api/users/99/all-events 304 in 61ms :: [{"id":295,"title":"Party in Playa …
+🎪 PROFILE EVENTS: Found 1 events for organizer 99
+🎪 PROFILE EVENTS: Event details: [
+  { id: 295, title: 'Party in Playa ', date: 2026-01-25T17:58:00.000Z }
+]
+5:35:11 AM [express] GET /api/events/organizer/99 304 in 130ms :: [{"id":295,"title":"Party in Playa…
+Error generating QR code: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async file:///opt/render/project/src/dist/index.js:34631:18 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:35:12 AM [express] GET /api/user/qr-code 500 in 4ms :: {"error":"Failed to generate QR code"}
+5:35:12 AM [express] GET /api/users/99 500 in 6ms :: {"message":"Failed to fetch user"}
+🔧 ROUTE HIT: /api/quick-meets called at 2026-02-02T05:35:13.624Z
+🔧 NODE_ENV: production
+🔧 QUICK MEETS DEBUG: Building filtered query with user join to get organizer info
+5:35:13 AM [express] GET /api/messages/99 500 in 8ms :: {"message":"Failed to fetch messages"}
+5:35:13 AM [express] GET /api/users/99 500 in 5ms :: {"message":"Failed to fetch user"}
+5:35:13 AM [express] GET /api/quick-meets 304 in 13ms :: [{"id":18,"organizerId":103,"title":"Bike R…
+🔧 ROUTE HIT: /api/quick-meets called at 2026-02-02T05:35:13.641Z
+🔧 NODE_ENV: production
+🔧 QUICK MEETS DEBUG: Building filtered query with user join to get organizer info
+5:35:13 AM [express] GET /api/weather 500 in 1ms :: {"message":"Weather service not configured"}
+5:35:13 AM [express] GET /api/quick-meets 304 in 6ms :: []
+⏱️ MATCHING: Starting findMatches for user 99
+5:35:13 AM [express] GET /api/users/99/matches 500 in 64ms :: {"message":"Failed to fetch matches"}
+5:35:14 AM [express] GET /api/users/99 500 in 5ms :: {"message":"Failed to fetch user"}
+5:35:14 AM [express] GET /api/weather 500 in 0ms :: {"message":"Weather service not configured"}
+5:35:14 AM [express] GET /api/messages/99 500 in 7ms :: {"message":"Failed to fetch messages"}
+⏱️ MATCHING: Starting findMatches for user 99
+5:35:14 AM [express] GET /api/users/99/matches 500 in 65ms :: {"message":"Failed to fetch matches"}
+5:35:16 AM [express] GET /api/weather 500 in 1ms :: {"message":"Weather service not configured"}
+5:35:17 AM [express] GET /api/messages/99 500 in 8ms :: {"message":"Failed to fetch messages"}
+⏱️ MATCHING: Starting findMatches for user 99
+5:35:17 AM [express] GET /api/users/99/matches 500 in 99ms :: {"message":"Failed to fetch matches"}
+5:35:30 AM [express] GET /api/messages/99/unread-count 304 in 30ms :: {"unreadCount":"0"}
+5:35:31 AM [express] GET /api/search-users 304 in 30ms :: {"users":[{"id":104,"username":"playaguy",…
+🔍 EVENTS SEARCH: Searching for "Poker" in city "undefined"
+🔍 EVENTS SEARCH: Found 0 events matching "Poker"
+5:35:31 AM [express] GET /api/search-events 304 in 6ms :: []
+5:35:32 AM [express] GET /api/search-users 304 in 14ms :: {"users":[{"id":104,"username":"playaguy",…
+🔍 EVENTS SEARCH: Searching for "Poker" in city "undefined"
+🔍 EVENTS SEARCH: Found 0 events matching "Poker"
+5:35:33 AM [express] GET /api/search-events 304 in 5ms :: []
+📄 Serving frontend for: /profile/99
+🏢 DIRECT API: Fetching businesses
+🏢 DIRECT API: Found 1 businesses
+🔧 ROUTE HIT: /api/quick-meets called at 2026-02-02T05:35:42.109Z
+🔧 NODE_ENV: production
+🔧 QUICK MEETS DEBUG: Building filtered query with user join to get organizer info
+🔍 Auth check debug: {
+  hasSession: true,
+  sessionID: 'lZUJNf36-n...',
+  hasCookie: true,
+  cookiePreview: '_ga=GA1.1.664675618.1762112670; _ga_SNM2SGWP9K=GS2...',
+  hasUser: false,
+  userId: undefined
+}
+❌ Auth check: No session user
+5:35:42 AM [express] GET /api/auth/user 401 in 1ms :: {"message":"Not authenticated"}
+🟢 EVENTS ENDPOINT HIT! Query: { city: 'Culver City' } URL: /api/events?city=Culver%20City
+📅 EVENTS DEBUG: Full query parameters: { city: 'Culver City' }
+📅 EVENTS DEBUG: Extracted city="Culver City" state="undefined" country="undefined"
+📅 EVENTS DEBUG: City type: string, truthy: true, trimmed: "Culver City"
+📅 EVENTS DEBUG: City parameter received: "Culver City", type: string
+🎪 EVENTS: Getting events for city: Culver City
+🌍 METRO EVENTS: City "Culver City" → Metro "Los Angeles Metro" → Searching 78 cities: Los Angeles, Playa del Rey, Santa Monica, Venice, Venice Beach ...
+5:35:42 AM [express] GET /api/quick-meets 304 in 25ms :: [{"id":18,"organizerId":103,"title":"Bike R…
+⏱️ MATCHING: Starting findMatches for user 99
+🟢 EVENTS ENDPOINT HIT! Query: { city: 'Culver City', userId: '99' } URL: /api/events?city=Culver%20City&userId=99
+📅 EVENTS DEBUG: Full query parameters: { city: 'Culver City', userId: '99' }
+📅 EVENTS DEBUG: Extracted city="Culver City" state="undefined" country="undefined"
+📅 EVENTS DEBUG: City type: string, truthy: true, trimmed: "Culver City"
+📅 EVENTS DEBUG: City parameter received: "Culver City", type: string
+🎪 EVENTS: Getting events for city: Culver City
+🌍 METRO EVENTS: City "Culver City" → Metro "Los Angeles Metro" → Searching 78 cities: Los Angeles, Playa del Rey, Santa Monica, Venice, Venice Beach ...
+🔧 ROUTE HIT: /api/quick-meets called at 2026-02-02T05:35:42.361Z
+🔧 NODE_ENV: production
+🔧 QUICK MEETS DEBUG: Building filtered query with user join to get organizer info
+5:35:42 AM [express] GET /api/weather 500 in 17ms :: {"message":"Weather service not configured"}
+🤖 AI TRIGGER: Culver City has only 1 events - generating AI events with OpenAI
+⚠️ AI EVENT GENERATION DISABLED for safety - no fake events created for Culver City
+📦 PROFILE-BUNDLE: Fetching all data for user 99 (viewer: 99)
+📄 Serving frontend for: /new-logo_1753994063802.png
+5:35:42 AM [express] GET /api/travel-plans/99 304 in 422ms :: [{"id":63,"userId":99,"destination":"B…
+5:35:42 AM [express] GET /api/messages/99 500 in 422ms :: {"message":"Failed to fetch messages"}
+5:35:42 AM [express] GET /api/events 500 in 418ms :: {"message":"Failed to fetch events"}
+5:35:42 AM [express] GET /api/users/99 500 in 439ms :: {"message":"Failed to fetch user"}
+5:35:42 AM [express] GET /api/users/99/matches 500 in 439ms :: {"message":"Failed to fetch matches"}
+5:35:42 AM [express] GET /api/users/99 500 in 328ms :: {"message":"Failed to fetch user"}
+5:35:42 AM [express] GET /api/users/99 500 in 21ms :: {"message":"Failed to fetch user"}
+5:35:42 AM [express] GET /api/messages/99/unread-count 304 in 302ms :: {"unreadCount":"0"}
+5:35:42 AM [express] GET /api/users 304 in 386ms :: []
+5:35:42 AM [express] GET /api/users 304 in 387ms :: []
+Profile bundle error: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async Promise.all (index 0)
+    at async file:///opt/render/project/src/dist/index.js:24746:11 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:35:42 AM [express] GET /api/users/99/profile-bundle 500 in 217ms :: {"message":"Failed to fetch pr…
+5:35:42 AM [express] GET /api/quick-meets 304 in 343ms :: [{"id":18,"organizerId":103,"title":"Bike …
+🤖 AI TRIGGER: Culver City has only 1 events - generating AI events with OpenAI
+5:35:42 AM [express] GET /api/connections/99 304 in 289ms :: [{"id":76,"status":"accepted","createdA…
+⚠️ AI EVENT GENERATION DISABLED for safety - no fake events created for Culver City
+5:35:42 AM [express] GET /api/users/99/chatroom-participation 304 in 493ms :: [{"id":138,"name":"Wel…
+5:35:42 AM [express] GET /api/connections/99/requests 304 in 402ms :: [{"id":89,"status":"pending","…
+5:35:42 AM [express] GET /api/events 500 in 696ms :: {"message":"Failed to fetch events"}
+5:35:43 AM [express] GET /api/messages/99 500 in 7ms :: {"message":"Failed to fetch messages"}
+📦 PROFILE-BUNDLE: Fetching all data for user 99 (viewer: 99)
+Profile bundle error: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async Promise.all (index 0)
+    at async file:///opt/render/project/src/dist/index.js:24746:11 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:35:43 AM [express] GET /api/users/99/profile-bundle 500 in 16ms :: {"message":"Failed to fetch pro…
+🔧 ROUTE HIT: /api/quick-meets called at 2026-02-02T05:35:44.093Z
+🔧 NODE_ENV: production
+🔧 QUICK MEETS DEBUG: Building filtered query with user join to get organizer info
+🎪 PROFILE EVENTS: Getting all events for organizer 99
+5:35:44 AM [express] GET /api/users/99 500 in 7ms :: {"message":"Failed to fetch user"}
+5:35:44 AM [express] GET /api/user-city-interests/99 304 in 8ms :: []
+5:35:44 AM [express] GET /api/users/99/travel-plans 304 in 9ms :: [{"id":63,"userId":99,"destination…
+5:35:44 AM [express] GET /api/user-event-interests/99 304 in 17ms :: []
+Error generating QR code: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async file:///opt/render/project/src/dist/index.js:34631:18 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:35:44 AM [express] GET /api/user/qr-code 500 in 33ms :: {"error":"Failed to generate QR code"}
+5:35:44 AM [express] GET /api/quick-meets 304 in 54ms :: [{"id":16,"organizerId":99,"title":"Quick W…
+5:35:44 AM [express] GET /api/users/99/all-events 304 in 232ms :: [{"id":295,"title":"Party in Playa…
+🎪 PROFILE EVENTS: Found 1 events for organizer 99
+🎪 PROFILE EVENTS: Event details: [
+  { id: 295, title: 'Party in Playa ', date: 2026-01-25T17:58:00.000Z }
+]
+5:35:44 AM [express] GET /api/events/organizer/99 304 in 252ms :: [{"id":295,"title":"Party in Playa…
+5:35:45 AM [express] GET /api/users/99 500 in 5ms :: {"message":"Failed to fetch user"}
+Error generating QR code: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async file:///opt/render/project/src/dist/index.js:34631:18 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:35:45 AM [express] GET /api/user/qr-code 500 in 6ms :: {"error":"Failed to generate QR code"}
+5:35:45 AM [express] GET /api/messages/99 500 in 8ms :: {"message":"Failed to fetch messages"}
+Error generating QR code: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async file:///opt/render/project/src/dist/index.js:34631:18 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:35:47 AM [express] GET /api/user/qr-code 500 in 6ms :: {"error":"Failed to generate QR code"}
+5:35:47 AM [express] GET /api/users/99 500 in 6ms :: {"message":"Failed to fetch user"}
+🟢 EVENTS ENDPOINT HIT! Query: { city: 'Culver City', userId: '99' } URL: /api/events?city=Culver%20City&userId=99
+📅 EVENTS DEBUG: Full query parameters: { city: 'Culver City', userId: '99' }
+📅 EVENTS DEBUG: Extracted city="Culver City" state="undefined" country="undefined"
+📅 EVENTS DEBUG: City type: string, truthy: true, trimmed: "Culver City"
+📅 EVENTS DEBUG: City parameter received: "Culver City", type: string
+🎪 EVENTS: Getting events for city: Culver City
+🌍 METRO EVENTS: City "Culver City" → Metro "Los Angeles Metro" → Searching 78 cities: Los Angeles, Playa del Rey, Santa Monica, Venice, Venice Beach ...
+5:35:51 AM [express] GET /api/messages/99 500 in 7ms :: {"message":"Failed to fetch messages"}
+5:35:51 AM [express] GET /api/users/99 500 in 5ms :: {"message":"Failed to fetch user"}
+🔧 ROUTE HIT: /api/quick-meets called at 2026-02-02T05:35:51.061Z
+🔧 NODE_ENV: production
+🔧 QUICK MEETS DEBUG: Building filtered query with user join to get organizer info
+🟢 EVENTS ENDPOINT HIT! Query: { city: 'Culver City' } URL: /api/events?city=Culver%20City
+📅 EVENTS DEBUG: Full query parameters: { city: 'Culver City' }
+📅 EVENTS DEBUG: Extracted city="Culver City" state="undefined" country="undefined"
+📅 EVENTS DEBUG: City type: string, truthy: true, trimmed: "Culver City"
+📅 EVENTS DEBUG: City parameter received: "Culver City", type: string
+🎪 EVENTS: Getting events for city: Culver City
+🌍 METRO EVENTS: City "Culver City" → Metro "Los Angeles Metro" → Searching 78 cities: Los Angeles, Playa del Rey, Santa Monica, Venice, Venice Beach ...
+🟢 EVENTS ENDPOINT HIT! Query: { city: 'Breda' } URL: /api/events?city=Breda
+📅 EVENTS DEBUG: Full query parameters: { city: 'Breda' }
+📅 EVENTS DEBUG: Extracted city="Breda" state="undefined" country="undefined"
+📅 EVENTS DEBUG: City type: string, truthy: true, trimmed: "Breda"
+📅 EVENTS DEBUG: City parameter received: "Breda", type: string
+🎪 EVENTS: Getting events for city: Breda
+🎯 EVENTS EXACT: "Breda" not in metro area, searching exact city only
+5:35:51 AM [express] GET /api/quick-meets 304 in 5ms :: []
+5:35:51 AM [express] GET /api/users/99 500 in 75ms :: {"message":"Failed to fetch user"}
+⏱️ MATCHING: Starting findMatches for user 99
+🤖 AI TRIGGER: Culver City has only 1 events - generating AI events with OpenAI
+⚠️ AI EVENT GENERATION DISABLED for safety - no fake events created for Culver City
+🤖 AI TRIGGER: Breda has only 0 events - generating AI events with OpenAI
+🔒 PRIVATE EVENTS: No user provided - filtered 0 events down to 0 public events
+5:35:51 AM [express] GET /api/events 304 in 83ms :: []
+🔧 ROUTE HIT: /api/quick-meets called at 2026-02-02T05:35:51.148Z
+🔧 NODE_ENV: production
+🔧 QUICK MEETS DEBUG: Building filtered query with user join to get organizer info
+5:35:51 AM [express] GET /api/weather 500 in 2ms :: {"message":"Weather service not configured"}
+⚠️ AI EVENT GENERATION DISABLED for safety - no fake events created for Breda
+5:35:51 AM [express] GET /api/events 500 in 108ms :: {"message":"Failed to fetch events"}
+5:35:51 AM [express] GET /api/quick-meets 304 in 85ms :: [{"id":18,"organizerId":103,"title":"Bike R…
+🤖 AI TRIGGER: Culver City has only 1 events - generating AI events with OpenAI
+⚠️ AI EVENT GENERATION DISABLED for safety - no fake events created for Culver City
+5:35:51 AM [express] GET /api/users/99/matches 500 in 298ms :: {"message":"Failed to fetch matches"}
+5:35:51 AM [express] GET /api/events 500 in 281ms :: {"message":"Failed to fetch events"}
+5:35:52 AM [express] GET /api/messages/99 500 in 8ms :: {"message":"Failed to fetch messages"}
+5:35:52 AM [express] GET /api/users/99 500 in 27ms :: {"message":"Failed to fetch user"}
+5:35:52 AM [express] GET /api/weather 500 in 1ms :: {"message":"Weather service not configured"}
+⏱️ MATCHING: Starting findMatches for user 99
+5:35:52 AM [express] GET /api/users/99/matches 500 in 89ms :: {"message":"Failed to fetch matches"}
+5:35:54 AM [express] GET /api/weather 500 in 1ms :: {"message":"Weather service not configured"}
+5:35:54 AM [express] GET /api/users/99 500 in 29ms :: {"message":"Failed to fetch user"}
+5:35:54 AM [express] GET /api/messages/99 500 in 35ms :: {"message":"Failed to fetch messages"}
+⏱️ MATCHING: Starting findMatches for user 99
+5:35:55 AM [express] GET /api/users/99/matches 500 in 90ms :: {"message":"Failed to fetch matches"}
+5:36:02 AM [express] GET /api/messages/99 500 in 30ms :: {"message":"Failed to fetch messages"}
+5:36:03 AM [express] GET /api/messages/99 500 in 30ms :: {"message":"Failed to fetch messages"}
+5:36:05 AM [express] GET /api/messages/99 500 in 30ms :: {"message":"Failed to fetch messages"}
+5:36:12 AM [express] GET /api/messages/99/unread-count 304 in 29ms :: {"unreadCount":"0"}
+5:36:12 AM [express] GET /api/users 304 in 8ms :: []
+5:36:12 AM [express] GET /api/messages/99 500 in 39ms :: {"message":"Failed to fetch messages"}
+5:36:12 AM [express] GET /api/connections/99 304 in 45ms :: [{"id":76,"status":"accepted","createdAt…
+5:36:14 AM [express] GET /api/messages/99 500 in 9ms :: {"message":"Failed to fetch messages"}
+5:36:16 AM [express] GET /api/messages/99 500 in 30ms :: {"message":"Failed to fetch messages"}
+5:36:17 AM [express] POST /api/messages/99/mark-read 200 in 29ms :: {"success":true,"markedCount":0}
+5:36:17 AM [express] GET /api/messages/99/unread-count 304 in 5ms :: {"unreadCount":"0"}
+5:36:17 AM [express] GET /api/messages/99/unread-count 304 in 9ms :: {"unreadCount":"0"}
+5:36:17 AM [express] GET /api/messages/99 500 in 31ms :: {"message":"Failed to fetch messages"}
+5:36:19 AM [express] GET /api/messages/99 500 in 9ms :: {"message":"Failed to fetch messages"}
+📦 PROFILE-BUNDLE: Fetching all data for user 99 (viewer: 99)
+⚠️ SLOW REQUEST: GET /api/messages/99 took 2591ms
+5:38:24 AM [express] GET /api/messages/99 500 in 2531ms :: {"message":"Failed to fetch messages"}
+Profile bundle error: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async Promise.all (index 0)
+    at async file:///opt/render/project/src/dist/index.js:24746:11 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+⚠️ SLOW REQUEST: GET /api/users/99/profile-bundle took 2222ms
+5:38:24 AM [express] GET /api/users/99/profile-bundle 500 in 2162ms :: {"message":"Failed to fetch p…
+⚠️ SLOW REQUEST: GET /api/connections/99 took 2291ms
+5:38:25 AM [express] GET /api/connections/99 304 in 2219ms :: [{"id":76,"status":"accepted","created…
+⚠️ SLOW REQUEST: GET /api/users/99/chatroom-participation took 2142ms
+5:38:25 AM [express] GET /api/users/99/chatroom-participation 304 in 2082ms :: [{"id":138,"name":"We…
+📦 PROFILE-BUNDLE: Fetching all data for user 99 (viewer: 99)
+Profile bundle error: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async Promise.all (index 0)
+    at async file:///opt/render/project/src/dist/index.js:24746:11 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:38:26 AM [express] GET /api/users/99/profile-bundle 500 in 12ms :: {"message":"Failed to fetch pro…
+Error generating QR code: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async file:///opt/render/project/src/dist/index.js:34631:18 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:38:26 AM [express] GET /api/user/qr-code 500 in 6ms :: {"error":"Failed to generate QR code"}
+🔧 ROUTE HIT: /api/quick-meets called at 2026-02-02T05:38:26.477Z
+🔧 NODE_ENV: production
+🔧 QUICK MEETS DEBUG: Building filtered query with user join to get organizer info
+5:38:26 AM [express] GET /api/user-city-interests/99 304 in 13ms :: []
+5:38:26 AM [express] GET /api/users/99/all-events 304 in 32ms :: [{"id":295,"title":"Party in Playa …
+5:38:26 AM [express] GET /api/quick-meets 304 in 58ms :: [{"id":16,"organizerId":99,"title":"Quick W…
+🎪 PROFILE EVENTS: Getting all events for organizer 99
+🎪 PROFILE EVENTS: Found 1 events for organizer 99
+🎪 PROFILE EVENTS: Event details: [
+  { id: 295, title: 'Party in Playa ', date: 2026-01-25T17:58:00.000Z }
+]
+5:38:26 AM [express] GET /api/events/organizer/99 304 in 26ms :: [{"id":295,"title":"Party in Playa …
+5:38:26 AM [express] GET /api/users/99 500 in 4ms :: {"message":"Failed to fetch user"}
+Error generating QR code: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async file:///opt/render/project/src/dist/index.js:34631:18 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:38:27 AM [express] GET /api/user/qr-code 500 in 4ms :: {"error":"Failed to generate QR code"}
+5:38:27 AM [express] GET /api/users/99 500 in 5ms :: {"message":"Failed to fetch user"}
+📦 PROFILE-BUNDLE: Fetching all data for user 99 (viewer: 99)
+Profile bundle error: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async Promise.all (index 0)
+    at async file:///opt/render/project/src/dist/index.js:24746:11 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:38:29 AM [express] GET /api/users/99/profile-bundle 500 in 19ms :: {"message":"Failed to fetch pro…
+📦 PROFILE-BUNDLE: Fetching all data for user 99 (viewer: 99)
+Profile bundle error: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async Promise.all (index 0)
+    at async file:///opt/render/project/src/dist/index.js:24746:11 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:38:30 AM [express] GET /api/users/99/profile-bundle 500 in 15ms :: {"message":"Failed to fetch pro…
+Error generating QR code: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async file:///opt/render/project/src/dist/index.js:34631:18 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:38:30 AM [express] GET /api/user/qr-code 500 in 5ms :: {"error":"Failed to generate QR code"}
+5:38:30 AM [express] GET /api/users/99 500 in 6ms :: {"message":"Failed to fetch user"}
+5:38:31 AM [express] GET /api/user-city-interests/99 304 in 7ms :: []
+5:38:31 AM [express] GET /api/users/99/all-events 304 in 49ms :: [{"id":295,"title":"Party in Playa …
+5:39:28 AM [express] GET /api/users/99 500 in 40ms :: {"message":"Failed to fetch user"}
+📦 PROFILE-BUNDLE: Fetching all data for user 99 (viewer: 99)
+Error generating QR code: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async file:///opt/render/project/src/dist/index.js:34631:18 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:39:28 AM [express] GET /api/user/qr-code 500 in 125ms :: {"error":"Failed to generate QR code"}
+Profile bundle error: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async Promise.all (index 0)
+    at async file:///opt/render/project/src/dist/index.js:24746:11 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:39:28 AM [express] GET /api/users/99/profile-bundle 500 in 138ms :: {"message":"Failed to fetch pr…
+📦 PROFILE-BUNDLE: Fetching all data for user 99 (viewer: 99)
+Profile bundle error: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async Promise.all (index 0)
+    at async file:///opt/render/project/src/dist/index.js:24746:11 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:39:29 AM [express] GET /api/users/99/profile-bundle 500 in 11ms :: {"message":"Failed to fetch pro…
+Error generating QR code: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async file:///opt/render/project/src/dist/index.js:34631:18 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:39:29 AM [express] GET /api/user/qr-code 500 in 5ms :: {"error":"Failed to generate QR code"}
+🎪 PROFILE EVENTS: Getting all events for organizer 99
+5:39:29 AM [express] GET /api/users/99 500 in 6ms :: {"message":"Failed to fetch user"}
+🔧 ROUTE HIT: /api/quick-meets called at 2026-02-02T05:39:29.769Z
+🔧 NODE_ENV: production
+🔧 QUICK MEETS DEBUG: Building filtered query with user join to get organizer info
+5:39:29 AM [express] GET /api/users/99/all-events 304 in 32ms :: [{"id":295,"title":"Party in Playa …
+5:39:29 AM [express] GET /api/quick-meets 304 in 80ms :: [{"id":16,"organizerId":99,"title":"Quick W…
+🎪 PROFILE EVENTS: Found 1 events for organizer 99
+🎪 PROFILE EVENTS: Event details: [
+  { id: 295, title: 'Party in Playa ', date: 2026-01-25T17:58:00.000Z }
+]
+5:39:29 AM [express] GET /api/events/organizer/99 304 in 94ms :: [{"id":295,"title":"Party in Playa …
+5:39:29 AM [express] GET /api/user-city-interests/99 304 in 5ms :: []
+5:39:30 AM [express] GET /api/users/99 500 in 5ms :: {"message":"Failed to fetch user"}
+Error generating QR code: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUser (file:///opt/render/project/src/dist/index.js:5403:24)
+    at async file:///opt/render/project/src/dist/index.js:34631:18 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+5:39:30 AM [express] GET /api/user/qr-code 500 in 6ms :: {"error":"Failed to generate QR code"}
+📄 Serving frontend for: /
+📄 Serving frontend for: /
+📄 Serving frontend for: /
+🔄 Running scheduled travel status check...
+Checking travel status for 0 users with travel data
+Travel status update completed for 0 unique users
+✅ Scheduled travel status check completed
+==> Setting WEB_CONCURRENCY=1 by default, based on available CPUs in the instance
+==> Deploying...
+📄 Serving frontend for: /
+==> Running 'npm start'
+> rest-express@1.0.0 start
+> node dist/index.js
+The `fetchConnectionCache` option is deprecated (now always `true`)
+📱 SMS Service: Twilio credentials not configured - SMS notifications disabled
+Environment check: { BREVO_API_KEY: 'LOADED', NODE_ENV: 'production' }
+🚀 REGISTERING CRITICAL API ROUTES FIRST TO BYPASS VITE INTERCEPTION
+✅ CRITICAL API ROUTES REGISTERED BEFORE OTHER MIDDLEWARE
+🔴 Redis URL check: {
+  hasRedisUrl: true,
+  urlPrefix: 'rediss://d...',
+  nodeEnv: 'production'
+}
+🔴 Redis: Connecting to Redis for session storage...
+🍪 Session config: {
+  isProduction: true,
+  nodeEnv: 'production',
+  hasRedis: true,
+  cookieSecure: true
+}
+🔒 Trust proxy enabled for production
+Starting server initialization...
+Basic routes added, starting lazy route registration...
+Loading minimal routes for startup...
+Quick login fix temporarily disabled for deployment stability
+Minimal routes registered successfully
+Registering main API routes from routes.ts...
+⚠️ Replit Auth: Skipping - not running on Replit (using password auth instead)
+✅ Replit Auth setup complete
+⚠️ WebSocket: Running in single-instance mode (no Redis)
+✅ Main API routes registered successfully
+🚀 REGISTERING CRITICAL API ROUTES TO BYPASS VITE INTERCEPTION
+🚀 DEPLOYMENT FIX v3: Custom deployment setup preserving API routes...
+📦 Static path: /opt/render/project/src/dist/public
+✅ DEPLOYMENT FIX v3: Custom setup complete - API routes preserved
+6:07:40 AM [express] serving on port 10000
+🚀 Server successfully started on http://0.0.0.0:10000
+🔄 Running initial travel status check...
+✅ Cache: Redis connected for API caching
+✅ Redis: Connected successfully - sessions will persist across restarts
+✅ Redis PubSub: Subscriber connected (instance 1770012460334-88dzwoc6k)
+✅ Redis PubSub: Publisher connected (instance 1770012460334-88dzwoc6k)
+Checking travel status for 0 users with travel data
+Travel status update completed for 0 unique users
+✅ Initial travel status check completed
+✅ Server started successfully with travel status monitoring enabled
+✅ Redis: Ready to accept commands
+==> Your service is live 🎉
+==> 
+==> ///////////////////////////////////////////////////////////
+==> 
+==> Available at your primary URL https://nearbytraveler.org + 2 more domains
+==> 
+==> ///////////////////////////////////////////////////////////
+📄 Serving frontend for: /
