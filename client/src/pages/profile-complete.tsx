@@ -4412,24 +4412,24 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </CardTitle>
 
                   {isOwnProfile && (
-                    <div className="flex-shrink-0 relative z-50">
-                      {/* Edit Profile Button - MUST be clickable */}
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        onClick={() => {
-                          console.log("EDIT CLICK - Desktop/Mobile button pressed");
-                          setIsEditMode(true);
-                        }}
-                        className={`relative z-50 pointer-events-auto cursor-pointer ${isProfileIncomplete() ? 'bg-red-100 hover:bg-red-200 border-red-400 text-red-700' : 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800 dark:border-blue-700 dark:text-blue-100'}`}
-                        style={{ position: 'relative', zIndex: 50 }}
-                        data-testid="button-edit-profile"
-                      >
-                        <Edit2 className="w-4 h-4 sm:mr-2" />
-                        <span className="hidden sm:inline">Edit Profile</span>
-                      </Button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log("EDIT CLICK - Button pressed");
+                        setIsEditMode(true);
+                      }}
+                      onMouseDown={(e) => {
+                        console.log("EDIT MOUSEDOWN - Button mousedown");
+                      }}
+                      className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md border ${isProfileIncomplete() ? 'bg-red-100 hover:bg-red-200 border-red-400 text-red-700' : 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800 dark:border-blue-700 dark:text-blue-100'}`}
+                      style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto', cursor: 'pointer' }}
+                      data-testid="button-edit-profile"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                      <span className="hidden sm:inline">Edit Profile</span>
+                    </button>
                   )}
                 </div>
               </CardHeader>
