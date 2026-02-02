@@ -260,7 +260,7 @@ export default function AmbassadorProgram() {
             }
           </p>
           {user ? (
-            <a href={`mailto:ambassador@nearbytraveler.org?subject=Ambassador Program Application&body=Hi,%0D%0A%0D%0AI would like to apply to become a Nearby Traveler Ambassador.%0D%0A%0D%0AUsername: ${user.username}%0D%0AName: ${user.name || 'N/A'}%0D%0AEmail: ${user.email}%0D%0A%0D%0AWhy I want to be an Ambassador:%0D%0A%0D%0A`}>
+            <a href={`mailto:ambassadors@thenearbytraveler.com?subject=Ambassador Program Application&body=Hi,%0D%0A%0D%0AI would like to apply to become a Nearby Traveler Ambassador.%0D%0A%0D%0AUsername: ${user.username}%0D%0AName: ${user.name || 'N/A'}%0D%0AEmail: ${user.email}%0D%0A%0D%0AWhy I want to be an Ambassador:%0D%0A%0D%0A`}>
               <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 font-semibold flex items-center gap-2">
                 <Mail className="w-5 h-5" />
                 Apply to Become an Ambassador
