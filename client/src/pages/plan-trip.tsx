@@ -114,6 +114,18 @@ export default function PlanTrip() {
   const [hiddenGems, setHiddenGems] = useState<any[]>([]);
   const [isDiscoveringGems, setIsDiscoveringGems] = useState(false);
   
+  // Travel Crew state for companions
+  const [selectedCompanions, setSelectedCompanions] = useState<number[]>([]);
+  const [showAddCompanion, setShowAddCompanion] = useState(false);
+  const [newCompanionLabel, setNewCompanionLabel] = useState("");
+  const [newCompanionAge, setNewCompanionAge] = useState<string>("");
+
+  // Fetch user's companions
+  const { data: companions = [], refetch: refetchCompanions } = useQuery<any[]>({
+    queryKey: ['/api/companions'],
+    enabled: !!user?.id,
+  });
+  
 
   const [searchResults, setSearchResults] = useState<{
     locals: User[];
@@ -454,11 +466,25 @@ export default function PlanTrip() {
         });
         setLocation('/profile');
       } else {
-        // For new trips, redirect to City Plans with toast
+        // For new trips, link selected companions then redirect
+        const newTripId = (data as any)?.id;
+        
+        // Link selected companions to the new trip (fire and forget)
+        if (newTripId && selectedCompanions.length > 0) {
+          Promise.all(
+            selectedCompanions.map(companionId =>
+              apiRequest("POST", `/api/travel-plans/${newTripId}/companions`, { companionId })
+            )
+          ).catch(err => console.error("Error linking companions to trip:", err));
+        }
+        
         const cityName = tripPlan.destinationCity || tripPlan.destination;
+        const companionCount = selectedCompanions.length;
         toast({
           title: "Trip Created!",
-          description: "Next: pick your City Plans to match faster.",
+          description: companionCount > 0 
+            ? `Trip created with ${companionCount} companion${companionCount > 1 ? 's' : ''}. Next: pick your City Plans!`
+            : "Next: pick your City Plans to match faster.",
         });
         
         // Reset form to completely clean state
@@ -474,6 +500,7 @@ export default function PlanTrip() {
           travelerTypes: [],
           notes: ""
         });
+        setSelectedCompanions([]);
         
         // Redirect to City Plans page for this city
         setLocation(`/match-in-city?city=${encodeURIComponent(cityName)}`);
@@ -486,6 +513,35 @@ export default function PlanTrip() {
       toast({
         title: "Error",
         description: `Failed to create trip plan: ${error.message}. Please try again.`,
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Add companion mutation
+  const addCompanion = useMutation({
+    mutationFn: async (data: { label: string; ageBracket: string }) => {
+      const response = await apiRequest("POST", "/api/companions", data);
+      return response;
+    },
+    onSuccess: (newCompanion: any) => {
+      refetchCompanions();
+      setShowAddCompanion(false);
+      setNewCompanionLabel("");
+      setNewCompanionAge("");
+      // Auto-select the new companion for this trip
+      if (newCompanion?.id) {
+        setSelectedCompanions(prev => [...prev, newCompanion.id]);
+      }
+      toast({
+        title: "Companion Added!",
+        description: "They've been added to your travel crew for this trip.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to add companion.",
         variant: "destructive",
       });
     }
@@ -993,25 +1049,138 @@ export default function PlanTrip() {
                 </div>
               </div>
 
-              {/* Travel Crew Section - Only show when editing an existing trip */}
-              {isEditMode && editingPlanId && (
-                <div className="overflow-hidden break-words border border-purple-200 dark:border-purple-700 rounded-lg p-4 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/30 dark:to-blue-900/30">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Users className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                    <Label className="text-sm sm:text-base font-medium text-black dark:text-white break-words">
-                      Travel Crew
-                    </Label>
-                    {tripPlan.travelGroup === 'family' && (
-                      <Badge variant="secondary" className="bg-purple-100 dark:bg-purple-800 text-purple-700 dark:text-purple-200 text-xs">
-                        Family Trip
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="mt-3">
-                    <TravelCrew travelPlanId={editingPlanId} userId={user?.id} isOwner={true} />
-                  </div>
+              {/* Travel Crew Section - Works during creation and editing */}
+              <div className="overflow-hidden break-words border border-purple-200 dark:border-purple-700 rounded-lg p-4 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/30 dark:to-blue-900/30">
+                <div className="flex items-center gap-2 mb-3">
+                  <Users className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                  <Label className="text-sm sm:text-base font-medium text-black dark:text-white break-words">
+                    Travel Crew
+                  </Label>
+                  {tripPlan.travelGroup === 'family' && (
+                    <Badge variant="secondary" className="bg-purple-100 dark:bg-purple-800 text-purple-700 dark:text-purple-200 text-xs">
+                      Family Trip
+                    </Badge>
+                  )}
                 </div>
-              )}
+
+                {isEditMode && editingPlanId ? (
+                  /* Full Travel Crew component for existing trips */
+                  <TravelCrew travelPlanId={editingPlanId} userId={user?.id} isOwner={true} />
+                ) : (
+                  /* Companion selection for new trips */
+                  <div className="space-y-4">
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                      Who's coming with you? Add kids or family members traveling with you.
+                    </p>
+
+                    {/* Existing companions to select */}
+                    {companions.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-xs font-medium text-gray-700 dark:text-gray-300">Your companions:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {companions.map((companion: any) => (
+                            <button
+                              key={companion.id}
+                              type="button"
+                              onClick={() => {
+                                setSelectedCompanions(prev => 
+                                  prev.includes(companion.id) 
+                                    ? prev.filter(id => id !== companion.id)
+                                    : [...prev, companion.id]
+                                );
+                              }}
+                              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all ${
+                                selectedCompanions.includes(companion.id)
+                                  ? 'bg-purple-600 text-white border-2 border-purple-600'
+                                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-2 border-gray-200 dark:border-gray-600 hover:border-purple-400'
+                              }`}
+                            >
+                              <Baby className="w-4 h-4" />
+                              <span>{companion.label}</span>
+                              {companion.ageBracket && (
+                                <span className="text-xs opacity-75">({companion.ageBracket})</span>
+                              )}
+                              {selectedCompanions.includes(companion.id) && (
+                                <span className="ml-1">✓</span>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Add new companion form */}
+                    {showAddCompanion ? (
+                      <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-purple-200 dark:border-purple-700 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm font-medium text-gray-800 dark:text-gray-200">Add a companion</p>
+                          <button
+                            type="button"
+                            onClick={() => setShowAddCompanion(false)}
+                            className="text-gray-400 hover:text-gray-600"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <Input
+                            placeholder="Name or label (e.g., My Son)"
+                            value={newCompanionLabel}
+                            onChange={(e) => setNewCompanionLabel(e.target.value)}
+                            className="text-sm"
+                          />
+                          <Select value={newCompanionAge} onValueChange={setNewCompanionAge}>
+                            <SelectTrigger className="text-sm">
+                              <SelectValue placeholder="Age group" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="infant">Infant (0-2)</SelectItem>
+                              <SelectItem value="toddler">Toddler (2-5)</SelectItem>
+                              <SelectItem value="child">Child (6-12)</SelectItem>
+                              <SelectItem value="teen">Teen (13-17)</SelectItem>
+                              <SelectItem value="adult">Adult (18+)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => {
+                            if (newCompanionLabel.trim() && newCompanionAge) {
+                              addCompanion.mutate({ label: newCompanionLabel.trim(), ageBracket: newCompanionAge });
+                            }
+                          }}
+                          disabled={!newCompanionLabel.trim() || !newCompanionAge || addCompanion.isPending}
+                          className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                        >
+                          {addCompanion.isPending ? "Adding..." : "Add to Trip"}
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowAddCompanion(true)}
+                        className="border-purple-300 dark:border-purple-600 text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/30"
+                      >
+                        <Plus className="w-4 h-4 mr-1" />
+                        Add Companion (Kid/Family Member)
+                      </Button>
+                    )}
+
+                    {selectedCompanions.length > 0 && (
+                      <p className="text-xs text-purple-600 dark:text-purple-400 font-medium">
+                        ✓ {selectedCompanions.length} companion{selectedCompanions.length > 1 ? 's' : ''} will be added to this trip
+                      </p>
+                    )}
+
+                    <p className="text-[10px] text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-2">
+                      💡 After creating the trip, you can also invite friends/family with accounts via invite link
+                    </p>
+                  </div>
+                )}
+              </div>
 
               {/* Action Buttons - Mobile Responsive */}
               <div className="space-y-2 sm:space-y-3 overflow-hidden break-words">
