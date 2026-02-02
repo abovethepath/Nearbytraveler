@@ -128,7 +128,6 @@ export function SmartLocationInput({
   ];
 
   const selectStyles = {
-    backgroundColor: "white",
     backgroundImage: "url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQgNkw4IDEwTDEyIDYiIHN0cm9rZT0iIzk5OTk5OSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+Cg==')",
     backgroundRepeat: "no-repeat",
     backgroundPosition: "right 12px center",
@@ -136,21 +135,27 @@ export function SmartLocationInput({
     appearance: "none" as const
   };
 
+  const selectClassName = `mt-1 block w-full rounded-xl border-2 border-orange-200 dark:border-orange-600 
+    bg-gradient-to-r from-white to-orange-50 dark:from-gray-800 dark:to-gray-700
+    text-gray-900 dark:text-white px-4 py-3.5 pr-10 text-base
+    shadow-sm hover:border-orange-400 dark:hover:border-orange-500
+    focus:ring-2 focus:ring-orange-500 focus:border-orange-500 focus:outline-none
+    transition-all duration-200 cursor-pointer font-medium`;
+
   return (
     <div className={`space-y-3 sm:space-y-4 ${className}`} data-testid={dataTestId}>
       {label && <h3 className="text-lg font-semibold">{label}</h3>}
 
       {/* Country (native select) */}
       <div>
-        <Label htmlFor="country-native" className="text-left text-gray-900 dark:text-white">
-          Country {required ? "*" : ""}
+        <Label htmlFor="country-native" className="text-left text-gray-900 dark:text-white font-semibold mb-1 flex items-center gap-2">
+          <span className="text-orange-500">🌍</span> Country {required ? "*" : ""}
         </Label>
         <select
           id="country-native"
           value={country}
           onChange={handleCountryChange}
-          className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700
-                     text-gray-900 dark:text-white px-3 py-3 pr-10 text-base sm:text-sm"
+          className={selectClassName}
           style={selectStyles}
         >
           <option value="" disabled>
@@ -167,8 +172,8 @@ export function SmartLocationInput({
       {/* City (native select when we have data; otherwise free text) */}
       {country && (
         <div>
-          <Label htmlFor="city-native" className="text-left text-gray-900 dark:text-white">
-            City {required ? "*" : ""}
+          <Label htmlFor="city-native" className="text-left text-gray-900 dark:text-white font-semibold mb-1 flex items-center gap-2">
+            <span className="text-orange-500">📍</span> City {required ? "*" : ""}
           </Label>
 
           {citiesForCountry.length > 0 ? (
@@ -176,8 +181,7 @@ export function SmartLocationInput({
               id="city-native"
               value={city}
               onChange={handleCityChange}
-              className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700
-                         text-gray-900 dark:text-white px-3 py-3 pr-10 text-base sm:text-sm"
+              className={selectClassName}
               style={selectStyles}
             >
               <option value="" disabled>
@@ -195,7 +199,11 @@ export function SmartLocationInput({
               value={city}
               onChange={handleCityChange}
               placeholder="Type your city"
-              className="text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600 mt-1 py-3 text-base sm:text-sm"
+              className="mt-1 rounded-xl border-2 border-orange-200 dark:border-orange-600 
+                bg-gradient-to-r from-white to-orange-50 dark:from-gray-800 dark:to-gray-700
+                text-gray-900 dark:text-white px-4 py-3.5 text-base
+                shadow-sm hover:border-orange-400 dark:hover:border-orange-500
+                focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 font-medium"
               autoCapitalize="words"
               autoComplete="address-level2"
               inputMode="text"
@@ -207,8 +215,8 @@ export function SmartLocationInput({
       {/* State/Region (native select for US/CA; otherwise free text) */}
       {country && city && (
         <div>
-          <Label htmlFor="state-native" className="text-left text-gray-900 dark:text-white">
-            {stateLabel}
+          <Label htmlFor="state-native" className="text-left text-gray-900 dark:text-white font-semibold mb-1 flex items-center gap-2">
+            <span className="text-orange-500">🗺️</span> {stateLabel}
           </Label>
 
           {country === "United States" ? (
@@ -216,8 +224,7 @@ export function SmartLocationInput({
               id="state-native"
               value={state}
               onChange={handleStateChange}
-              className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700
-                         text-gray-900 dark:text-white px-3 py-3 pr-10 text-base sm:text-sm"
+              className={selectClassName}
               style={selectStyles}
             >
               <option value="" disabled>
@@ -234,8 +241,7 @@ export function SmartLocationInput({
               id="state-native"
               value={state}
               onChange={handleStateChange}
-              className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700
-                         text-gray-900 dark:text-white px-3 py-3 pr-10 text-base sm:text-sm"
+              className={selectClassName}
               style={selectStyles}
             >
               <option value="" disabled>
@@ -253,7 +259,11 @@ export function SmartLocationInput({
               value={state}
               onChange={handleStateChange}
               placeholder={isStateOptional ? "Region (optional)" : "Region"}
-              className="text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600 mt-1 py-3 text-base sm:text-sm"
+              className="mt-1 rounded-xl border-2 border-orange-200 dark:border-orange-600 
+                bg-gradient-to-r from-white to-orange-50 dark:from-gray-800 dark:to-gray-700
+                text-gray-900 dark:text-white px-4 py-3.5 text-base
+                shadow-sm hover:border-orange-400 dark:hover:border-orange-500
+                focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 font-medium"
               autoCapitalize="words"
               autoComplete="address-level1"
               inputMode="text"
