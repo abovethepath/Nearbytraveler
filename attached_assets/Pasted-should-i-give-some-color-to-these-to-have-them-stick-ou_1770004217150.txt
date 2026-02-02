@@ -1,0 +1,100 @@
+should i give some color to these to have them stick out, some of these arent see n unless clicked on
+
+Yeah — but you don’t need to “paint” every tab. The real issue in your screenshot is low contrast + weak state differences, so inactive tabs blend into the bar and only feel “real” once clicked.
+
+Here are 3 good approaches (pick one). They all keep it clean and make tabs readable before interaction.
+
+Option 1: Subtle but clear (my default recommendation)
+
+Make inactive tabs slightly brighter + add a stronger hover, and make the active tab look like a “pill button”.
+
+Inactive tabs
+
+slightly lighter background than the bar
+
+readable text
+
+border visible
+
+Active tab
+
+solid/gradient background
+
+darker text (or white) + shadow
+
+stronger border
+
+Badges
+
+always visible (high contrast)
+
+active badge matches tab
+
+This gives you clarity without looking childish.
+
+Option 2: Color only for badges (cleanest)
+
+If you’re worried about it looking too colorful: keep the tab pills mostly neutral, but make the count badge pop.
+
+Example:
+
+Tab: neutral pill
+
+Badge: colored (blue/purple) with strong contrast
+
+This instantly solves “not seen unless clicked” because your eye catches the badge + label.
+
+Option 3: Category colors (only if you want “fun”)
+
+Assign each tab a faint tint (5–10% opacity) by category:
+
+Contacts = blue tint
+
+Photos = green tint
+
+Travel = purple tint
+
+Countries = orange tint
+
+Keep it subtle so it doesn’t look like a rainbow toolbar.
+
+Quick Tailwind drop-in (works well with your dark gradient header)
+Tab base
+const base =
+  "px-4 py-2 rounded-lg text-sm font-semibold transition-all border " +
+  "focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40";
+
+Inactive
+const inactive =
+  "bg-white/5 text-white/80 border-white/10 hover:bg-white/10 hover:text-white";
+
+Active
+const active =
+  "bg-white/15 text-white border-white/25 shadow-sm";
+
+Badge (always visible)
+const badge =
+  "ml-2 inline-flex items-center justify-center min-w-5 h-5 px-1.5 " +
+  "rounded-full text-xs font-bold bg-white/15 text-white border border-white/15";
+
+
+Then:
+
+<button className={`${base} ${isActive ? active : inactive}`}>
+  Contacts <span className={badge}>1</span>
+</button>
+
+
+If you want the active tab to “pop” more, replace bg-white/15 with your brand gradient for the active tab only.
+
+Tiny UX upgrades that help a lot
+
+Add an underline indicator under the active tab (even subtle).
+
+Increase inactive text from white/70 → white/80-90.
+
+Make the tab bar background a touch darker so pills contrast more.
+
+Add icons only if tabs are still hard to scan (👤 📷 ✈️ 🌍).
+
+If you paste the component (or tell me if you’re using shadcn Tabs or your own buttons), I’ll give you the exact classnames matching your current style so it’s a copy/paste fix.

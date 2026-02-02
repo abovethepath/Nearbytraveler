@@ -4245,16 +4245,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 aria-selected={activeTab === 'contacts'}
                 aria-controls="panel-contacts"
                 onClick={() => openTab('contacts')}
-                className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
+                className={`text-sm sm:text-base font-semibold px-3 py-2 rounded-lg transition-all ${
                   activeTab === 'contacts'
-                    ? 'bg-blue-600 text-white border border-blue-600'
-                    : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
+                    ? 'bg-blue-600 text-white border border-blue-600 shadow-md'
+                    : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:border-gray-400'
                 }`}
                 data-testid="tab-contacts"
               >
                 Contacts
                 {!!(userConnections?.length) && (
-                  <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
+                  <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
+                    activeTab === 'contacts' 
+                      ? 'bg-white/20 text-white' 
+                      : 'bg-blue-500 text-white'
+                  }`}>
                     {userConnections.length}
                   </span>
                 )}
@@ -4265,19 +4269,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 aria-selected={activeTab === 'photos'}
                 aria-controls="panel-photos"
                 onClick={() => openTab('photos')}
-                className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
+                className={`text-sm sm:text-base font-semibold px-3 py-2 rounded-lg transition-all ${
                   activeTab === 'photos'
-                    ? 'bg-blue-600 text-white border border-blue-600'
-                    : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
+                    ? 'bg-blue-600 text-white border border-blue-600 shadow-md'
+                    : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:border-gray-400'
                 }`}
                 data-testid="tab-photos"
               >
                 Photos
-                {!!(userPhotos?.length) && (
-                  <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
-                    {userPhotos.length}
-                  </span>
-                )}
               </button>
 
               <button
@@ -4285,19 +4284,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 aria-selected={activeTab === 'references'}
                 aria-controls="panel-references"
                 onClick={() => openTab('references')}
-                className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
+                className={`text-sm sm:text-base font-semibold px-3 py-2 rounded-lg transition-all ${
                   activeTab === 'references'
-                    ? 'bg-blue-600 text-white border border-blue-600'
-                    : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
+                    ? 'bg-blue-600 text-white border border-blue-600 shadow-md'
+                    : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:border-gray-400'
                 }`}
                 data-testid="tab-references"
               >
                 References
-                {!!(userReferences?.length) && (
-                  <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
-                    {userReferences?.length || 0}
-                  </span>
-                )}
               </button>
 
               {user?.userType !== 'business' && (
@@ -4306,16 +4300,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   aria-selected={activeTab === 'travel'}
                   aria-controls="panel-travel"
                   onClick={() => openTab('travel')}
-                  className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
+                  className={`text-sm sm:text-base font-semibold px-3 py-2 rounded-lg transition-all ${
                     activeTab === 'travel'
-                      ? 'bg-blue-600 text-white border border-blue-600'
-                      : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
+                      ? 'bg-blue-600 text-white border border-blue-600 shadow-md'
+                      : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:border-gray-400'
                   }`}
                   data-testid="tab-travel"
                 >
                   Travel
                   {!!(travelPlans?.length) && (
-                    <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
+                    <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
+                      activeTab === 'travel' 
+                        ? 'bg-white/20 text-white' 
+                        : 'bg-orange-500 text-white'
+                    }`}>
                       {travelPlans.length}
                     </span>
                   )}
@@ -4328,16 +4326,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   aria-selected={activeTab === 'countries'}
                   aria-controls="panel-countries"
                   onClick={() => openTab('countries')}
-                  className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
+                  className={`text-sm sm:text-base font-semibold px-3 py-2 rounded-lg transition-all ${
                     activeTab === 'countries'
-                      ? 'bg-blue-600 text-white border border-blue-600'
-                      : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
+                      ? 'bg-blue-600 text-white border border-blue-600 shadow-md'
+                      : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:border-gray-400'
                   }`}
                   data-testid="tab-countries"
                 >
                   Countries
                   {!!(countriesVisited?.length) && (
-                    <span className="ml-2 px-2 py-1 text-xs bg-gray-500 text-white rounded-full">
+                    <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
+                      activeTab === 'countries' 
+                        ? 'bg-white/20 text-white' 
+                        : 'bg-green-500 text-white'
+                    }`}>
                       {countriesVisited.length}
                     </span>
                   )}
@@ -4351,15 +4353,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   aria-selected={activeTab === 'vouches'}
                   aria-controls="panel-vouches"
                   onClick={() => openTab('vouches')}
-                  className={`text-sm sm:text-base font-medium px-3 py-2 rounded-lg transition-colors ${
+                  className={`text-sm sm:text-base font-semibold px-3 py-2 rounded-lg transition-all ${
                     activeTab === 'vouches'
-                      ? 'bg-purple-600 text-white border border-purple-600'
-                      : 'bg-white border border-black text-black hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:hover:bg-gray-700'
+                      ? 'bg-purple-600 text-white border border-purple-600 shadow-md'
+                      : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 dark:bg-gray-700 dark:border-gray-500 dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:border-gray-400'
                   }`}
                   data-testid="tab-vouches"
                 >
                   Vouches
-                  <span className="ml-2 px-2 py-1 text-xs bg-purple-500 text-white rounded-full">
+                  <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
+                    activeTab === 'vouches' 
+                      ? 'bg-white/20 text-white' 
+                      : 'bg-purple-500 text-white'
+                  }`}>
                     {userVouches?.length || 0}
                   </span>
                 </button>
