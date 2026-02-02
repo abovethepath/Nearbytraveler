@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { X, Trash2 } from "lucide-react";
+import { X, Trash2, Plane, MapPin, Plus } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -32,10 +32,29 @@ interface UserEvent {
   eventData?: any;
 }
 
+interface TravelPlan {
+  id: number;
+  userId: number;
+  destination: string;
+  destinationCity?: string;
+  destinationState?: string;
+  destinationCountry?: string;
+  startDate: string;
+  endDate: string;
+  status: string;
+}
+
 export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDoSectionProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
+
+  // Fetch user's travel plans to get trip destinations
+  const { data: travelPlans = [], isLoading: loadingTravelPlans } = useQuery<TravelPlan[]>({
+    queryKey: [`/api/users/${userId}/travel-plans`],
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    gcTime: 1000 * 60 * 10, // 10 minutes
+  });
 
   // Fetch city-specific activities
   const { data: cityActivities = [], isLoading: loadingCityActivities } = useQuery({
@@ -64,6 +83,24 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 10, // 10 minutes
   });
+
+  // Get destination cities from travel plans (active/planned trips)
+  const travelDestinations = useMemo(() => {
+    if (!Array.isArray(travelPlans)) return [];
+    
+    return travelPlans
+      .filter((plan: TravelPlan) => plan.status === 'planned' || plan.status === 'active')
+      .map((plan: TravelPlan) => ({
+        cityName: plan.destinationCity || plan.destination,
+        tripId: plan.id,
+        startDate: plan.startDate,
+        endDate: plan.endDate,
+        fullDestination: plan.destination
+      }))
+      .filter((dest, index, self) => 
+        index === self.findIndex(d => d.cityName === dest.cityName)
+      );
+  }, [travelPlans]);
 
   // Only use city-specific activities (no general profile interests)
   const allActivities = useMemo(() => {
@@ -238,7 +275,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
 
   // Group by city with metro consolidation - memoized to prevent infinite re-renders
   const citiesByName = useMemo(() => {
-    const cities: Record<string, { activities: UserActivity[], events: UserEvent[] }> = {};
+    const cities: Record<string, { activities: UserActivity[], events: UserEvent[], travelPlan?: { cityName: string; tripId: number; startDate: string; endDate: string; fullDestination: string } }> = {};
 
     allActivities.forEach(activity => {
       const consolidatedCity = consolidateCity(activity.cityName);
@@ -286,12 +323,23 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
       cities[consolidatedCity].events.push(event);
     });
 
+    // Also add cities from travel destinations (even if no activities/events yet)
+    travelDestinations.forEach(dest => {
+      const consolidatedCity = consolidateCity(dest.cityName);
+      if (!cities[consolidatedCity]) {
+        cities[consolidatedCity] = { activities: [], events: [], travelPlan: dest };
+      } else {
+        // Add travel plan info to existing city
+        cities[consolidatedCity].travelPlan = dest;
+      }
+    });
+
     return cities;
-  }, [allActivities, allEvents]);
+  }, [allActivities, allEvents, travelDestinations]);
 
   const cities = useMemo(() => Object.keys(citiesByName), [citiesByName]);
 
-  if (loadingCityActivities || loadingJoinedEvents || loadingEventInterests) {
+  if (loadingCityActivities || loadingJoinedEvents || loadingEventInterests || loadingTravelPlans) {
     return (
       <div className="bg-slate-100 dark:bg-gray-800 rounded-lg p-6">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">⭐ Things I Want to Do in...</h2>
@@ -300,7 +348,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     );
   }
 
-  // If viewing another user's profile and they have no activities/events, hide the entire widget
+  // If viewing another user's profile and they have no activities/events/trips, hide the entire widget
   if (!isOwnProfile && cities.length === 0) {
     return null;
   }
@@ -323,75 +371,116 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
               <div key={cityName}>
                 {/* City Header */}
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-semibold text-blue-600 dark:text-blue-400 text-xl">
-                    {cityName}
-                  </h3>
-                  {isOwnProfile && (
-                    <Button
-                      variant="ghost"
-                      size={isMobile ? "sm" : "sm"}
-                      onClick={() => deleteCity(cityName)}
-                      className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
-                      title={`Remove all from ${cityName}`}
-                    >
-                      <Trash2 className="w-4 h-4 mr-1" />
-                      <span className="text-sm">Remove City</span>
-                    </Button>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {cityData.travelPlan && (
+                      <Plane className="w-5 h-5 text-orange-500" />
+                    )}
+                    <h3 className="font-semibold text-blue-600 dark:text-blue-400 text-xl">
+                      {cityName}
+                    </h3>
+                    {cityData.travelPlan && (
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        (Trip planned)
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {isOwnProfile && (
+                      <Link href={`/match-in-city?city=${encodeURIComponent(cityName)}`}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-orange-600 border-orange-300 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                          title={`Add activities in ${cityName}`}
+                        >
+                          <Plus className="w-4 h-4 mr-1" />
+                          <span className="text-sm">Add Plans</span>
+                        </Button>
+                      </Link>
+                    )}
+                    {isOwnProfile && (cityData.activities.length > 0 || cityData.events.length > 0) && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => deleteCity(cityName)}
+                        className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                        title={`Remove all from ${cityName}`}
+                      >
+                        <Trash2 className="w-4 h-4 mr-1" />
+                        <span className="text-sm">Remove</span>
+                      </Button>
+                    )}
+                  </div>
                 </div>
 
-                {/* Pills */}
-                <div className={`flex flex-wrap ${isMobile ? 'gap-2' : 'gap-2'}`}>
+                {/* Pills or empty state for this destination */}
+                {(cityData.activities.length > 0 || cityData.events.length > 0) ? (
+                  <div className={`flex flex-wrap ${isMobile ? 'gap-2' : 'gap-2'}`}>
 
-                  {/* Activity Pills */}
-                  {cityData.activities.map((activity) => (
-                    <div key={`act-${activity.id}`} className="relative group">
-                      <div className="inline-flex items-center justify-center rounded-full px-4 py-1.5 text-xs font-medium bg-gradient-to-r from-blue-600 to-blue-500 border-0 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm">
-                        <span style={{ color: 'black' }}>{activity.activityName}</span>
-                      </div>
-                      {isOwnProfile && (
-                        <button
-                          onClick={() => deleteActivity.mutate(activity.id)}
-                          className="absolute bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center transition-opacity -top-1 -right-1 w-5 h-5 opacity-0 group-hover:opacity-100"
-                          title="Remove activity"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      )}
-                    </div>
-                  ))}
-
-                  {/* Event Pills - Clickable to go to event page */}
-                  {cityData.events.map((event) => {
-                    // Determine the event URL based on available IDs
-                    const eventId = (event as any).eventId || event.id;
-                    const eventUrl = `/events/${eventId}`;
-                    
-                    return (
-                      <div key={`evt-${event.id}`} className="relative group">
-                        <Link href={eventUrl}>
-                          <div className="inline-flex items-center justify-center rounded-full px-4 py-1.5 text-xs font-medium bg-gradient-to-r from-blue-600 to-cyan-500 border-0 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm cursor-pointer hover:from-blue-700 hover:to-cyan-600 transition-all hover:scale-105">
-                            <span style={{ color: 'black' }}>📅 {event.eventTitle || (event as any).title}</span>
-                          </div>
-                        </Link>
+                    {/* Activity Pills */}
+                    {cityData.activities.map((activity) => (
+                      <div key={`act-${activity.id}`} className="relative group">
+                        <div className="inline-flex items-center justify-center rounded-full px-4 py-1.5 text-xs font-medium bg-gradient-to-r from-blue-600 to-blue-500 border-0 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm">
+                          <span style={{ color: 'black' }}>{activity.activityName}</span>
+                        </div>
                         {isOwnProfile && (
                           <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              deleteEvent.mutate(event);
-                            }}
+                            onClick={() => deleteActivity.mutate(activity.id)}
                             className="absolute bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center transition-opacity -top-1 -right-1 w-5 h-5 opacity-0 group-hover:opacity-100"
-                            title="Remove event"
+                            title="Remove activity"
                           >
                             <X className="w-3 h-3" />
                           </button>
                         )}
                       </div>
-                    );
-                  })}
+                    ))}
 
-                </div>
+                    {/* Event Pills - Clickable to go to event page */}
+                    {cityData.events.map((event) => {
+                      // Determine the event URL based on available IDs
+                      const eventId = (event as any).eventId || event.id;
+                      const eventUrl = `/events/${eventId}`;
+                      
+                      return (
+                        <div key={`evt-${event.id}`} className="relative group">
+                          <Link href={eventUrl}>
+                            <div className="inline-flex items-center justify-center rounded-full px-4 py-1.5 text-xs font-medium bg-gradient-to-r from-blue-600 to-cyan-500 border-0 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm cursor-pointer hover:from-blue-700 hover:to-cyan-600 transition-all hover:scale-105">
+                              <span style={{ color: 'black' }}>📅 {event.eventTitle || (event as any).title}</span>
+                            </div>
+                          </Link>
+                          {isOwnProfile && (
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                deleteEvent.mutate(event);
+                              }}
+                              className="absolute bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center transition-opacity -top-1 -right-1 w-5 h-5 opacity-0 group-hover:opacity-100"
+                              title="Remove event"
+                            >
+                              <X className="w-3 h-3" />
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+
+                  </div>
+                ) : (
+                  <div className="py-3 px-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
+                    <p className="text-sm text-orange-700 dark:text-orange-300">
+                      <MapPin className="w-4 h-4 inline mr-1" />
+                      No activities or events selected yet for your trip to {cityName}.
+                    </p>
+                    {isOwnProfile && (
+                      <Link href={`/match-in-city?city=${encodeURIComponent(cityName)}`}>
+                        <span className="text-sm text-orange-600 dark:text-orange-400 underline hover:text-orange-700 cursor-pointer">
+                          Click here to plan what you want to do!
+                        </span>
+                      </Link>
+                    )}
+                  </div>
+                )}
               </div>
             );
           })}
