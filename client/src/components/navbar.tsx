@@ -342,6 +342,7 @@ function Navbar() {
     return [
       { path: "/", label: "Home", icon: "🏠" },
       { path: "/plan-trip", label: "Trip Plan", icon: "✈️" },
+      { path: "/discover", label: "Cities", icon: "🌍" },
       { path: "/events", label: "Events", icon: "📅" },
       { path: "/match-in-city", label: "City Plans", icon: "🎯" },
       { path: "/connect", label: "Connect", icon: "💝" },
