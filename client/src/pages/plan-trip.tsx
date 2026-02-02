@@ -13,7 +13,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Calendar, MapPin, Users, Building2, Heart, MessageCircle, Star, ArrowLeft, Home, User, Plus, X, Compass, Sparkles, Camera, Coffee, Utensils, Palette, Music, TreePine, ChevronDown } from "lucide-react";
+import { Calendar, MapPin, Users, Building2, Heart, MessageCircle, Star, ArrowLeft, Home, User, Plus, X, Compass, Sparkles, Camera, Coffee, Utensils, Palette, Music, TreePine, ChevronDown, UserPlus, Link2, Baby } from "lucide-react";
+import { TravelCrew } from "@/components/TravelCrew";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { getAllInterests, getAllActivities, getTravelActivities, getAllLanguages, validateSelections, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS } from "@shared/base-options";
@@ -990,6 +991,73 @@ export default function PlanTrip() {
                     </p>
                   )}
                 </div>
+              </div>
+
+              {/* Travel Crew Section - Who's traveling with you */}
+              <div className="overflow-hidden break-words border border-purple-200 dark:border-purple-700 rounded-lg p-4 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/30 dark:to-blue-900/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <Users className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                  <Label className="text-sm sm:text-base font-medium text-black dark:text-white break-words">
+                    Travel Crew
+                  </Label>
+                  {tripPlan.travelGroup === 'family' && (
+                    <Badge variant="secondary" className="bg-purple-100 dark:bg-purple-800 text-purple-700 dark:text-purple-200 text-xs">
+                      Family Trip
+                    </Badge>
+                  )}
+                </div>
+                
+                {isEditMode && editingPlanId ? (
+                  /* Show full Travel Crew component for existing trips */
+                  <div className="mt-3">
+                    <TravelCrew travelPlanId={editingPlanId} userId={user?.id} isOwner={true} />
+                  </div>
+                ) : (
+                  /* Preview for new trips - explain the feature */
+                  <div className="space-y-3">
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 break-words">
+                      Traveling with family or friends? After creating your trip, you can:
+                    </p>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="flex items-start gap-2 p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-purple-100 dark:border-purple-800">
+                        <UserPlus className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="text-xs font-medium text-gray-800 dark:text-gray-200">Invite Adults</p>
+                          <p className="text-[10px] text-gray-500 dark:text-gray-400">Share an invite link so friends/family with accounts can join your trip</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start gap-2 p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-purple-100 dark:border-purple-800">
+                        <Baby className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="text-xs font-medium text-gray-800 dark:text-gray-200">Add Kids/Companions</p>
+                          <p className="text-[10px] text-gray-500 dark:text-gray-400">Track children or family members who don't need their own accounts</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start gap-2 p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-purple-100 dark:border-purple-800">
+                        <MessageCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="text-xs font-medium text-gray-800 dark:text-gray-200">Crew Chat</p>
+                          <p className="text-[10px] text-gray-500 dark:text-gray-400">Private chat just for your travel crew to coordinate plans</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start gap-2 p-3 bg-white dark:bg-gray-800/50 rounded-lg border border-purple-100 dark:border-purple-800">
+                        <Link2 className="w-4 h-4 text-orange-500 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="text-xs font-medium text-gray-800 dark:text-gray-200">Share Itinerary</p>
+                          <p className="text-[10px] text-gray-500 dark:text-gray-400">Let crew members see and contribute to trip plans</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <p className="text-[10px] text-center text-gray-500 dark:text-gray-400 pt-2">
+                      ✨ Available after you create your trip
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Action Buttons - Mobile Responsive */}
