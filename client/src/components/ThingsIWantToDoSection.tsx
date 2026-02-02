@@ -13,6 +13,12 @@ interface ThingsIWantToDoSectionProps {
   isOwnProfile: boolean;
 }
 
+interface UserProfile {
+  id: number;
+  subInterests?: string[] | null;
+  [key: string]: any;
+}
+
 interface UserActivity {
   id: number;
   userId: number;
@@ -63,12 +69,20 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     gcTime: 1000 * 60 * 10, // 10 minutes
   });
 
-  // Fetch user profile with general interests/activities/events
-  const { data: userProfile, isLoading: loadingProfile } = useQuery({
+  // Fetch user profile with general interests/activities/events and sub-interests
+  const { data: userProfile, isLoading: loadingProfile } = useQuery<UserProfile>({
     queryKey: [`/api/users/${userId}`],
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 10, // 10 minutes
   });
+  
+  // Get user's sub-interests (specific interests like Pickleball, Yoga, etc.)
+  const userSubInterests = useMemo(() => {
+    if (!userProfile?.subInterests || !Array.isArray(userProfile.subInterests)) {
+      return [];
+    }
+    return userProfile.subInterests;
+  }, [userProfile?.subInterests]);
 
   // Fetch events that the user is attending  
   const { data: joinedEvents = [], isLoading: loadingJoinedEvents } = useQuery({
@@ -414,8 +428,17 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                 </div>
 
                 {/* Pills or empty state for this destination */}
-                {(cityData.activities.length > 0 || cityData.events.length > 0) ? (
+                {(cityData.activities.length > 0 || cityData.events.length > 0 || (cityData.travelPlan && userSubInterests.length > 0)) ? (
                   <div className={`flex flex-wrap ${isMobile ? 'gap-2' : 'gap-2'}`}>
+
+                    {/* Sub-Interest Pills - Show for travel destinations */}
+                    {cityData.travelPlan && userSubInterests.map((subInterest, idx) => (
+                      <div key={`sub-${idx}-${subInterest}`} className="relative group">
+                        <div className="inline-flex items-center justify-center rounded-full px-4 py-1.5 text-xs font-medium bg-gradient-to-r from-orange-500 to-yellow-500 border-0 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm">
+                          <span style={{ color: 'white' }}>✨ {subInterest}</span>
+                        </div>
+                      </div>
+                    ))}
 
                     {/* Activity Pills */}
                     {cityData.activities.map((activity) => (
