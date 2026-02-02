@@ -145,6 +145,7 @@ export const users = pgTable("users", {
   // AI Generation fields
   isAIGenerated: boolean("is_ai_generated").default(false),
   aura: integer("aura").default(1), // Travel karma points from signup
+  ambassadorPoints: integer("ambassador_points").default(0), // Ambassador program points
   
   // Enhanced Status & Presence System
   onlineStatus: text("online_status").default("offline"), // 'online', 'away', 'busy', 'invisible', 'offline'
