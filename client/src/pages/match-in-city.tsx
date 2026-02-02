@@ -340,32 +340,88 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     fetchAllCities();
   }, []);
   
+  // Build user's cities from profile and travel plans - always include these
+  const getUserCitiesWithData = () => {
+    const cities: any[] = [];
+    const addedCityNames = new Set<string>();
+    const profile: any = userProfile || user;
+    
+    const gradientOptions = [
+      "from-orange-400/20 to-blue-600/20",
+      "from-blue-400/20 to-orange-600/20",
+      "from-blue-300/20 to-orange-500/20",
+    ];
+    
+    // Add hometown
+    if (profile?.hometownCity) {
+      const cityName = profile.hometownCity;
+      const cityLower = cityName.toLowerCase();
+      if (!addedCityNames.has(cityLower)) {
+        addedCityNames.add(cityLower);
+        // Check if exists in allCities
+        const existingCity = allCities.find(c => c.city.toLowerCase() === cityLower);
+        if (existingCity) {
+          cities.push({ ...existingCity, isHometown: true });
+        } else {
+          // Create placeholder for hometown
+          cities.push({
+            city: cityName,
+            country: profile.hometownCountry || '',
+            state: profile.hometownState || '',
+            gradient: gradientOptions[0],
+            isHometown: true,
+            isPlaceholder: true
+          });
+        }
+      }
+    }
+    
+    // Add all travel plan destinations
+    if (travelPlans && Array.isArray(travelPlans)) {
+      travelPlans.forEach((plan: any, index: number) => {
+        if (plan.destinationCity && plan.userId === user?.id) {
+          const cityName = plan.destinationCity;
+          const cityLower = cityName.toLowerCase();
+          if (!addedCityNames.has(cityLower)) {
+            addedCityNames.add(cityLower);
+            // Check if exists in allCities
+            const existingCity = allCities.find(c => c.city.toLowerCase() === cityLower);
+            if (existingCity) {
+              cities.push({ ...existingCity, isTravelDestination: true });
+            } else {
+              // Create placeholder for travel destination
+              cities.push({
+                city: cityName,
+                country: plan.destinationCountry || '',
+                state: plan.destinationState || '',
+                gradient: gradientOptions[(index + 1) % gradientOptions.length],
+                isTravelDestination: true,
+                isPlaceholder: true
+              });
+            }
+          }
+        }
+      });
+    }
+    
+    return cities;
+  };
+  
   // Default to showing only user's hometown and travel destinations, with fallback to all cities
   useEffect(() => {
-    if (allCities.length > 0) {
-      const relevantCityNames = getUserRelevantCities();
-      console.log('🏙️ MATCH: User relevant cities:', relevantCityNames);
-      console.log('🏙️ MATCH: All cities available:', allCities.map(c => c.city));
-      
-      if (relevantCityNames.length > 0) {
-        const userCities = allCities.filter(city => 
-          relevantCityNames.includes(city.city.toLowerCase())
-        );
-        console.log('🏙️ MATCH: Matched cities:', userCities.map(c => c.city));
-        
-        // If user has relevant cities but none matched, show all cities as fallback
-        if (userCities.length === 0) {
-          console.log('🏙️ MATCH: No cities matched user locations, showing ALL cities as fallback');
-          setFilteredCities(allCities);
-        } else {
-          console.log('🏙️ MATCH: Showing', userCities.length, 'user-relevant cities');
-          setFilteredCities(userCities);
-        }
-      } else {
-        // FALLBACK: Show all cities if user has no hometown or travel plans
-        console.log('🏙️ MATCH: No relevant cities found, showing all', allCities.length, 'cities');
-        setFilteredCities(allCities);
-      }
+    // Build list of user's cities (hometown + travel destinations)
+    const userCities = getUserCitiesWithData();
+    console.log('🏙️ MATCH: User cities built:', userCities.map(c => c.city));
+    console.log('🏙️ MATCH: All cities from DB:', allCities.length);
+    
+    if (userCities.length > 0) {
+      // Always show user's own cities (hometown + travel destinations)
+      console.log('🏙️ MATCH: Showing', userCities.length, 'user cities (hometown + travel destinations)');
+      setFilteredCities(userCities);
+    } else if (allCities.length > 0) {
+      // FALLBACK: Show all cities if user has no hometown or travel plans
+      console.log('🏙️ MATCH: No user cities found, showing all', allCities.length, 'cities');
+      setFilteredCities(allCities);
     }
   }, [allCities, user, userProfile, travelPlans]);
 
@@ -422,19 +478,27 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   // Filter cities based on search - search ALL cities when typing
   useEffect(() => {
     if (citySearchTerm) {
-      const filtered = allCities.filter(city => 
+      // When searching, search across ALL cities (both user's cities and database cities)
+      const userCities = getUserCitiesWithData();
+      const combinedCities = [...userCities];
+      
+      // Add any database cities not already in user's list
+      allCities.forEach(city => {
+        if (!combinedCities.find(c => c.city.toLowerCase() === city.city.toLowerCase())) {
+          combinedCities.push(city);
+        }
+      });
+      
+      const filtered = combinedCities.filter(city => 
         city.city.toLowerCase().includes(citySearchTerm.toLowerCase()) ||
-        city.state.toLowerCase().includes(citySearchTerm.toLowerCase()) ||
-        city.country.toLowerCase().includes(citySearchTerm.toLowerCase())
+        (city.state && city.state.toLowerCase().includes(citySearchTerm.toLowerCase())) ||
+        (city.country && city.country.toLowerCase().includes(citySearchTerm.toLowerCase()))
       );
       setFilteredCities(filtered);
     } else {
-      // When search is cleared, go back to showing user's relevant cities or all cities as fallback
-      const relevantCityNames = getUserRelevantCities();
-      if (relevantCityNames.length > 0) {
-        const userCities = allCities.filter(city => 
-          relevantCityNames.includes(city.city.toLowerCase())
-        );
+      // When search is cleared, go back to showing user's cities (hometown + travel destinations)
+      const userCities = getUserCitiesWithData();
+      if (userCities.length > 0) {
         setFilteredCities(userCities);
       } else {
         // FALLBACK: Show all cities if user has no hometown or travel plans
