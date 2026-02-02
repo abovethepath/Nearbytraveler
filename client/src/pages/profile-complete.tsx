@@ -6294,13 +6294,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </span>
                     <span className="font-semibold text-orange-600 dark:text-orange-400">{user?.aura || 0}</span>
                   </div>
-                  <div className="flex items-center justify-between">
+                  <button
+                    type="button"
+                    className="flex items-center justify-between cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg p-2 -m-2 transition-colors w-full text-left"
+                    onClick={() => setLocation('/ambassador-program')}
+                  >
                     <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
                       <Award className="w-4 h-4 text-blue-500" />
                       Ambassador Points
                     </span>
-                    <span className="font-semibold text-blue-600 dark:text-blue-400">{user?.ambassadorPoints || 0}</span>
-                  </div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-blue-600 dark:text-blue-400">{user?.ambassadorPoints || 0}</span>
+                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                    </div>
+                  </button>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600 dark:text-gray-300">Connections</span>
                     <span className="font-semibold dark:text-white">{userConnections.length}</span>
