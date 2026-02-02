@@ -752,6 +752,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   };
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(-1);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isFormReady, setIsFormReady] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [editingTravelPlan, setEditingTravelPlan] = useState<TravelPlan | null>(null);
   const [deletingTravelPlan, setDeletingTravelPlan] = useState<TravelPlan | null>(null);
@@ -1754,89 +1755,107 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   }, [user, userLoading, profileForm]);
 
   // Re-populate form when dialog opens to ensure latest data is shown
+  // Using deferred initialization to prevent page freeze
   React.useEffect(() => {
     if (isEditMode && user && !userLoading) {
-      console.log('🔥 Re-syncing form with updated user data');
+      // Reset form ready state first
+      setIsFormReady(false);
       
-      // Migrate legacy combined options before using
-      const reSyncMigratedInterests = migrateLegacyOptions(user.interests || []);
-      const reSyncMigratedActivities = migrateLegacyOptions(user.activities || []);
-      
-      // Initialize editFormData with user's current data
-      setEditFormData({
-        interests: reSyncMigratedInterests,
-        activities: reSyncMigratedActivities
-      });
-      
-      // For business users, extract and set custom fields
-      if (user.userType === 'business') {
-        const allPredefinedInterests = [...getHometownInterests(), ...getTravelInterests(), ...getProfileInterests()];
-        const customInterests = reSyncMigratedInterests
-          .filter((item: string) => !allPredefinedInterests.includes(item))
-          .join(', ');
-        const customActivities = reSyncMigratedActivities
-          .filter((item: string) => !safeGetAllActivities().includes(item))
-          .join(', ');
+      // Use requestAnimationFrame to defer heavy form initialization
+      const initForm = () => {
+        console.log('🔥 Re-syncing form with updated user data');
         
-        const predefinedInterests = reSyncMigratedInterests
-          .filter((item: string) => allPredefinedInterests.includes(item));
-        const predefinedActivities = reSyncMigratedActivities
-          .filter((item: string) => safeGetAllActivities().includes(item));
+        // Migrate legacy combined options before using
+        const reSyncMigratedInterests = migrateLegacyOptions(user.interests || []);
+        const reSyncMigratedActivities = migrateLegacyOptions(user.activities || []);
         
-        profileForm.reset({
-          bio: user.bio || "",
-          businessName: (user as any).business_name || (user as any).businessName || "",
-          businessDescription: (user as any).business_description || (user as any).businessDescription || "",
-          businessType: (user as any).business_type || (user as any).businessType || "",
-          hometownCity: user.hometownCity || "",
-          hometownState: user.hometownState || "",
-          hometownCountry: user.hometownCountry || "",
-          dateOfBirth: user.dateOfBirth ? 
-            (typeof user.dateOfBirth === 'string' ? user.dateOfBirth : new Date(user.dateOfBirth).toISOString().split('T')[0]) : "",
-          travelStyle: user.travelStyle || [],
-          city: user.city || "",
-          state: user.state || "",
-          country: user.country || "",
-          location: user.location || "",
-          streetAddress: (user as any).street_address || (user as any).streetAddress || "",
-          zipCode: (user as any).zip_code || (user as any).zipCode || "",
-          phoneNumber: (user as any).phone_number || (user as any).phoneNumber || "",
-          websiteUrl: (user as any).website_url || (user as any).websiteUrl || (user as any).website || "",
+        // Initialize editFormData with user's current data
+        setEditFormData({
+          interests: reSyncMigratedInterests,
+          activities: reSyncMigratedActivities
+        });
+        
+        // For business users, extract and set custom fields
+        if (user.userType === 'business') {
+          const allPredefinedInterests = [...getHometownInterests(), ...getTravelInterests(), ...getProfileInterests()];
+          const customInterests = reSyncMigratedInterests
+            .filter((item: string) => !allPredefinedInterests.includes(item))
+            .join(', ');
+          const customActivities = reSyncMigratedActivities
+            .filter((item: string) => !safeGetAllActivities().includes(item))
+            .join(', ');
+          
+          const predefinedInterests = reSyncMigratedInterests
+            .filter((item: string) => allPredefinedInterests.includes(item));
+          const predefinedActivities = reSyncMigratedActivities
+            .filter((item: string) => safeGetAllActivities().includes(item));
+          
+          profileForm.reset({
+            bio: user.bio || "",
+            businessName: (user as any).business_name || (user as any).businessName || "",
+            businessDescription: (user as any).business_description || (user as any).businessDescription || "",
+            businessType: (user as any).business_type || (user as any).businessType || "",
+            hometownCity: user.hometownCity || "",
+            hometownState: user.hometownState || "",
+            hometownCountry: user.hometownCountry || "",
+            dateOfBirth: user.dateOfBirth ? 
+              (typeof user.dateOfBirth === 'string' ? user.dateOfBirth : new Date(user.dateOfBirth).toISOString().split('T')[0]) : "",
+            travelStyle: user.travelStyle || [],
+            city: user.city || "",
+            state: user.state || "",
+            country: user.country || "",
+            location: user.location || "",
+            streetAddress: (user as any).street_address || (user as any).streetAddress || "",
+            zipCode: (user as any).zip_code || (user as any).zipCode || "",
+            phoneNumber: (user as any).phone_number || (user as any).phoneNumber || "",
+            websiteUrl: (user as any).website_url || (user as any).websiteUrl || (user as any).website || "",
 
-          interests: predefinedInterests,
-          activities: predefinedActivities,
-          customInterests: customInterests || user.customInterests || "",
-          customActivities: customActivities || user.customActivities || "",
-          isVeteran: !!user.isVeteran || !!((user as any).is_veteran),
-          isActiveDuty: !!user.isActiveDuty || !!((user as any).is_active_duty),
-          isMinorityOwned: !!user.isMinorityOwned,
-          isFemaleOwned: !!user.isFemaleOwned,
-          isLGBTQIAOwned: !!user.isLGBTQIAOwned,
-          showMinorityOwned: user.showMinorityOwned !== false,
-          showFemaleOwned: user.showFemaleOwned !== false,
-          showLGBTQIAOwned: user.showLGBTQIAOwned !== false,
-        });
-      } else {
-        // For non-business users, reset with their data
-        profileForm.reset({
-          bio: user.bio || "",
-          secretActivities: user.secretActivities || "",
-          hometownCity: user.hometownCity || "",
-          hometownState: user.hometownState || "",
-          hometownCountry: user.hometownCountry || "",
-          dateOfBirth: user.dateOfBirth ? 
-            (typeof user.dateOfBirth === 'string' ? user.dateOfBirth : new Date(user.dateOfBirth).toISOString().split('T')[0]) : "",
-          ageVisible: !!user.ageVisible,
-          gender: user.gender || "",
-          sexualPreference: user.sexualPreference || [],
-          sexualPreferenceVisible: !!user.sexualPreferenceVisible,
-          travelStyle: user.travelStyle || [],
-          travelingWithChildren: !!user.travelingWithChildren,
-          childrenAges: user.childrenAges || (user as any).children_ages || "",
-          isVeteran: !!user.isVeteran || !!((user as any).is_veteran),
-          isActiveDuty: !!user.isActiveDuty || !!((user as any).is_active_duty),
-        });
-      }
+            interests: predefinedInterests,
+            activities: predefinedActivities,
+            customInterests: customInterests || user.customInterests || "",
+            customActivities: customActivities || user.customActivities || "",
+            isVeteran: !!user.isVeteran || !!((user as any).is_veteran),
+            isActiveDuty: !!user.isActiveDuty || !!((user as any).is_active_duty),
+            isMinorityOwned: !!user.isMinorityOwned,
+            isFemaleOwned: !!user.isFemaleOwned,
+            isLGBTQIAOwned: !!user.isLGBTQIAOwned,
+            showMinorityOwned: user.showMinorityOwned !== false,
+            showFemaleOwned: user.showFemaleOwned !== false,
+            showLGBTQIAOwned: user.showLGBTQIAOwned !== false,
+          });
+        } else {
+          // For non-business users, reset with their data
+          profileForm.reset({
+            bio: user.bio || "",
+            secretActivities: user.secretActivities || "",
+            hometownCity: user.hometownCity || "",
+            hometownState: user.hometownState || "",
+            hometownCountry: user.hometownCountry || "",
+            dateOfBirth: user.dateOfBirth ? 
+              (typeof user.dateOfBirth === 'string' ? user.dateOfBirth : new Date(user.dateOfBirth).toISOString().split('T')[0]) : "",
+            ageVisible: !!user.ageVisible,
+            gender: user.gender || "",
+            sexualPreference: user.sexualPreference || [],
+            sexualPreferenceVisible: !!user.sexualPreferenceVisible,
+            travelStyle: user.travelStyle || [],
+            travelingWithChildren: !!user.travelingWithChildren,
+            childrenAges: user.childrenAges || (user as any).children_ages || "",
+            isVeteran: !!user.isVeteran || !!((user as any).is_veteran),
+            isActiveDuty: !!user.isActiveDuty || !!((user as any).is_active_duty),
+          });
+        }
+        
+        // Mark form as ready after initialization
+        setIsFormReady(true);
+      };
+      
+      // Defer form initialization to next animation frame to prevent freeze
+      requestAnimationFrame(() => {
+        setTimeout(initForm, 50);
+      });
+    } else if (!isEditMode) {
+      // Reset form ready state when dialog closes
+      setIsFormReady(false);
     }
   }, [isEditMode, user, userLoading, profileForm]);
 
@@ -8251,6 +8270,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           
           {/* REMOVED: Moving section moved to bottom of form */}
           
+          {/* Show loading state while form initializes to prevent freeze */}
+          {!isFormReady ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+              <p className="text-gray-600 dark:text-gray-300">Loading profile editor...</p>
+            </div>
+          ) : (
           <Form {...profileForm}>
             <form onSubmit={profileForm.handleSubmit(onSubmitProfile)} className="space-y-6">
               
@@ -8985,6 +9011,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </div>
             </form>
           </Form>
+          )}
         </DialogContent>
       </Dialog>
 
