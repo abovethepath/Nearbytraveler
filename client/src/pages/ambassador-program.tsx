@@ -30,7 +30,7 @@ export default function AmbassadorProgram() {
         <div className="max-w-full mx-auto">
           <div className="flex justify-between items-center h-24 px-4 sm:px-6 lg:px-8">
             <Logo variant="navbar" />
-            <Link href="/">
+            <Link href={user ? `/profile/${user.username}` : "/"}>
               <Button 
                 variant="outline" 
                 className="flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-800"
