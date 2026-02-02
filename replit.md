@@ -51,6 +51,7 @@ AUTOMATIC HOSTEL MATCH DETECTION: When viewing another user's profile, if both u
 - **AI Model**: Anthropic Claude Sonnet.
 - **Capabilities**: AI-powered travel recommendations, photo analysis, user compatibility scoring, smart content generation, AI-powered city activities enhancement, AI bio generation, AI Quick Create for events, and AI Quick Create for meetups with voice input.
 - **AI Quick Meetup**: Voice/text input for creating quick meetups - users can speak or type descriptions like "coffee at the pier in 2 hours" and AI parses it into structured meetup data (title, meeting point, city, response time, organizer notes). Uses OpenAI GPT-4o-mini via `/api/ai/meetup-draft` endpoint with `AIQuickCreateMeetup` component.
+- **AI Help Chatbot**: Floating help assistant (bottom-right corner) that answers questions about platform features. Uses OpenAI GPT-4o-mini with comprehensive platform knowledge including voice-powered meetups, events, chatrooms, ambassador program, travel plans, and more. Features suggested questions, conversation history, and highlights under-discovered features like voice input. Component: `client/src/components/HelpChatbot.tsx`, API: `/api/ai/help-chat`.
 
 ## External Dependencies
 
