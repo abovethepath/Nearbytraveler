@@ -10505,6 +10505,95 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
       
+      // AUTO-ADD EVENT TO ITINERARY when user marks as "going"
+      if (status === 'going') {
+        try {
+          const [event] = await db.select().from(events).where(eq(events.id, eventId)).limit(1);
+          if (event) {
+            // Find a travel plan that covers this event's date and location
+            const eventDate = new Date(event.date);
+            const userTravelPlans = await db
+              .select()
+              .from(travelPlans)
+              .where(
+                and(
+                  eq(travelPlans.userId, userId),
+                  lte(travelPlans.startDate, eventDate),
+                  gte(travelPlans.endDate, eventDate)
+                )
+              );
+            
+            // Find matching travel plan by destination
+            const matchingPlan = userTravelPlans.find(plan => {
+              const planCity = plan.destinationCity?.toLowerCase() || plan.destination?.split(',')[0]?.toLowerCase();
+              const eventCity = event.city?.toLowerCase();
+              return planCity && eventCity && (planCity.includes(eventCity) || eventCity.includes(planCity));
+            });
+            
+            if (matchingPlan) {
+              // Get or create itinerary for this travel plan
+              let [itinerary] = await db
+                .select()
+                .from(tripItineraries)
+                .where(eq(tripItineraries.travelPlanId, matchingPlan.id))
+                .limit(1);
+              
+              if (!itinerary) {
+                [itinerary] = await db
+                  .insert(tripItineraries)
+                  .values({
+                    travelPlanId: matchingPlan.id,
+                    userId: userId,
+                    title: `${matchingPlan.destination} Itinerary`,
+                    description: 'Main travel itinerary'
+                  })
+                  .returning();
+              }
+              
+              if (itinerary) {
+                // Check if event already in itinerary
+                const existingItem = await db
+                  .select()
+                  .from(itineraryItems)
+                  .where(
+                    and(
+                      eq(itineraryItems.itineraryId, itinerary.id),
+                      eq(itineraryItems.title, event.title)
+                    )
+                  )
+                  .limit(1);
+                
+                if (existingItem.length === 0) {
+                  // Get next order index
+                  const maxOrderResult = await db
+                    .select({ maxOrder: sql<number>`COALESCE(MAX(order_index), -1)` })
+                    .from(itineraryItems)
+                    .where(eq(itineraryItems.itineraryId, itinerary.id));
+                  const nextOrderIndex = (maxOrderResult[0]?.maxOrder ?? -1) + 1;
+                  
+                  // Add event to itinerary
+                  await db.insert(itineraryItems).values({
+                    itineraryId: itinerary.id,
+                    date: eventDate,
+                    title: event.title,
+                    description: event.description,
+                    location: event.location,
+                    address: `${event.city}, ${event.state}`,
+                    category: 'event',
+                    orderIndex: nextOrderIndex,
+                    notes: `Added automatically when you marked "Going"`
+                  });
+                  if (process.env.NODE_ENV === 'development') console.log(`📅 AUTO-ITINERARY: Added event "${event.title}" to itinerary for ${matchingPlan.destination}`);
+                }
+              }
+            }
+          }
+        } catch (itineraryError: any) {
+          // Don't fail the event join if auto-itinerary fails
+          if (process.env.NODE_ENV === 'development') console.error(`📅 AUTO-ITINERARY: Failed to add event to itinerary:`, itineraryError.message);
+        }
+      }
+      
       return res.json({ success: true, participant });
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error joining event:", error);
