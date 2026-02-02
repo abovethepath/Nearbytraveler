@@ -4809,12 +4809,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           activities: allActivities
                         });
                       }}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm"
+                      className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 border-0 text-black px-4 py-2 text-sm"
                       size="sm"
                       data-testid="button-edit-interests"
                     >
-                      <Edit2 className="w-4 h-4 mr-1" />
-                      Edit
+                      <Edit2 className="w-4 h-4 mr-1 text-black" />
+                      <span className="text-black">Edit</span>
                     </Button>
                   )}
                 </div>
