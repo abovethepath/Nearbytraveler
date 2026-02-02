@@ -5322,11 +5322,11 @@ export class DatabaseStorage implements IStorage {
             .limit(2);
 
           if (existingChatrooms.length < 1) {
-            // Create single Welcome Newcomers chatroom
-            if (!existingChatrooms.some(room => room.name.includes("Welcome Newcomers"))) {
+            // Create single Welcome to [City] chatroom
+            if (!existingChatrooms.some(room => room.name.includes("Welcome to"))) {
               await db.insert(citychatrooms).values({
-                name: `Welcome Newcomers ${city}`,
-                description: `Welcome new visitors and locals to ${city}`,
+                name: `Welcome to ${city}`,
+                description: `Connect with locals and travelers in ${city}`,
                 city,
                 state: state || '',
                 country,
@@ -5334,10 +5334,10 @@ export class DatabaseStorage implements IStorage {
                 isActive: true,
                 isPublic: true,
                 maxMembers: 500,
-                tags: ['welcome', 'newcomers', 'locals', 'travelers'],
+                tags: ['welcome', 'locals', 'travelers'],
                 rules: 'Be respectful and helpful to fellow travelers and locals'
               });
-              console.log(`✅ CITY SETUP: Created Welcome Newcomers chatroom for ${city}`);
+              console.log(`✅ CITY SETUP: Created Welcome to ${city} chatroom`);
             }
           }
         }
@@ -8208,17 +8208,12 @@ export class DatabaseStorage implements IStorage {
         // Use the consolidated city name (either same city or metro area) for chatroom creation
         const chatroomCity = consolidatedCity;
 
-        // Create simplified chatroom set for each metropolitan city (only 2 chatrooms)
+        // Create simplified chatroom set for each metropolitan city (only 1 chatroom - Welcome to [City])
         const chatroomTypes = [
           {
-            name: `Welcome Newcomers ${chatroomCity}`,
-            description: `Welcome travelers and newcomers to ${chatroomCity}! Get oriented, ask questions, and connect with the community.`,
-            tags: ['welcome', 'newcomers', 'travelers', 'orientation']
-          },
-          {
-            name: `Let's Meet Up ${chatroomCity}`,
-            description: `Organize meetups and social events in ${chatroomCity}! Plan activities, find companions, and make new friends.`,
-            tags: ['meetup', 'social', 'events', 'planning']
+            name: `Welcome to ${chatroomCity}`,
+            description: `Connect with locals and travelers in ${chatroomCity}`,
+            tags: ['welcome', 'locals', 'travelers']
           }
         ];
 
@@ -8416,13 +8411,13 @@ export class DatabaseStorage implements IStorage {
       const consolidatedCity = this.consolidateToMetropolitanArea(city, null, country);
       console.log(`🎯 AUTO-JOIN: ${city} consolidated to ${consolidatedCity} for chatroom lookup`);
       
-      // Find Welcome Newcomers chatroom for the consolidated city
+      // Find Welcome to [City] chatroom for the consolidated city
       const cityChatrooms = await db
         .select()
         .from(citychatrooms)
         .where(and(
           eq(citychatrooms.city, consolidatedCity),
-          ilike(citychatrooms.name, `Welcome Newcomers ${consolidatedCity}`)
+          ilike(citychatrooms.name, `Welcome to ${consolidatedCity}`)
         ));
 
       console.log(`🎯 AUTO-JOIN: Found ${cityChatrooms.length} chatrooms for ${consolidatedCity}`);
