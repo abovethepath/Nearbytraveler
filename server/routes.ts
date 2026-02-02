@@ -19900,12 +19900,19 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // Create a new itinerary
-  app.post("/api/itineraries", isAuthenticated, async (req: any, res) => {
+  app.post("/api/itineraries", async (req: any, res) => {
     try {
-      console.log("Creating itinerary:", req.body);
+      // Support both session-based auth and header-based auth for wrapped app compatibility
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      console.log("Creating itinerary:", req.body, "for user:", userId);
       const itinerary = await storage.createItinerary({
         ...req.body,
-        userId: req.user.id
+        userId
       });
       res.json(itinerary);
     } catch (error: any) {
