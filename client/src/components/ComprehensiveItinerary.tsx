@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { getApiBaseUrl } from '@/lib/queryClient';
+import { getApiBaseUrl, apiRequest } from '@/lib/queryClient';
 import {
   Calendar,
   Clock,
@@ -261,27 +261,17 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
       let itineraryId = itineraries[0]?.id;
       if (!itineraryId) {
         // Create a default itinerary if none exists
-        const itineraryResponse = await fetch(`${getApiBaseUrl()}/api/itineraries`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({
-            travelPlanId: travelPlan.id,
-            title: `${travelPlan.destination} Itinerary`,
-            description: 'Main travel itinerary'
-          }),
+        const itineraryResponse = await apiRequest('POST', '/api/itineraries', {
+          travelPlanId: travelPlan.id,
+          title: `${travelPlan.destination} Itinerary`,
+          description: 'Main travel itinerary'
         });
         if (!itineraryResponse.ok) throw new Error('Failed to create itinerary');
         const newItinerary = await itineraryResponse.json();
         itineraryId = newItinerary.id;
       }
 
-      const response = await fetch(`${getApiBaseUrl()}/api/itineraries/${itineraryId}/items`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify(item),
-      });
+      const response = await apiRequest('POST', `/api/itineraries/${itineraryId}/items`, item);
       if (!response.ok) throw new Error('Failed to add item');
       return response.json();
     },
@@ -303,11 +293,7 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
   // Update itinerary item mutation
   const updateItem = useMutation({
     mutationFn: async (item: ItineraryItem) => {
-      const response = await fetch(`${getApiBaseUrl()}/api/itinerary-items/${item.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(item),
-      });
+      const response = await apiRequest('PUT', `/api/itinerary-items/${item.id}`, item);
       if (!response.ok) throw new Error('Failed to update item');
       return response.json();
     },
@@ -321,9 +307,7 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
   // Delete itinerary item mutation
   const deleteItem = useMutation({
     mutationFn: async (itemId: number) => {
-      const response = await fetch(`${getApiBaseUrl()}/api/itinerary-items/${itemId}`, {
-        method: 'DELETE',
-      });
+      const response = await apiRequest('DELETE', `/api/itinerary-items/${itemId}`);
       if (!response.ok) throw new Error('Failed to delete item');
     },
     onSuccess: () => {
@@ -335,11 +319,7 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
   // Share itinerary mutation
   const shareItinerary = useMutation({
     mutationFn: async (contactIds: number[]) => {
-      const response = await fetch(`${getApiBaseUrl()}/api/itinerary/${travelPlan.id}/share`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contactIds }),
-      });
+      const response = await apiRequest('POST', `/api/itinerary/${travelPlan.id}/share`, { contactIds });
       if (!response.ok) throw new Error('Failed to share itinerary');
       return response.json();
     },
