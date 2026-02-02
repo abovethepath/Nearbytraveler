@@ -9840,11 +9840,10 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
             <div className="flex flex-col sm:flex-row gap-2">
               <Button 
                 onClick={() => window.location.href = '/create-event'}
-                className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600"
-                style={{ color: 'black' }}
+                className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 [&]:text-black [&>*]:text-black"
               >
-                <Plus className="w-4 h-4 mr-2" style={{ color: 'black' }} />
-                Create New Event
+                <Plus className="w-4 h-4 mr-2 text-black" />
+                <span className="text-black">Create New Event</span>
               </Button>
             </div>
           </div>
@@ -9953,10 +9952,10 @@ function EventOrganizerHubSection({ userId }: { userId: number }) {
               </p>
               <Button 
                 onClick={() => window.location.href = '/create-event'}
-                className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 !text-black"
+                className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 [&]:text-black [&>*]:text-black"
               >
-                <Plus className="w-4 h-4 mr-2 !text-black" />
-                Create Your First Event
+                <Plus className="w-4 h-4 mr-2 text-black" />
+                <span className="text-black">Create Your First Event</span>
               </Button>
             </div>
           )}
