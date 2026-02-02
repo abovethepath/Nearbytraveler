@@ -4277,6 +4277,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 data-testid="tab-photos"
               >
                 Photos
+                {!!(photos.length + (userTravelMemories?.length || 0)) && (
+                  <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
+                    activeTab === 'photos' 
+                      ? 'bg-white/20 text-white' 
+                      : 'bg-purple-500 text-white'
+                  }`}>
+                    {photos.length + (userTravelMemories?.length || 0)}
+                  </span>
+                )}
               </button>
 
               <button
