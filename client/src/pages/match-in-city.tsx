@@ -299,15 +299,29 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       }
     }
     
-    // Add all travel plan destinations (filtered by userId for safety)
+    // Add all travel plan destinations (show trips until a few days after they end)
     if (travelPlans && Array.isArray(travelPlans)) {
+      const now = new Date();
+      const gracePeriodDays = 3; // Show trips for 3 days after they end
+      
       travelPlans.forEach((plan: any) => {
-        // Only include plans that belong to current user
-        if (plan.destinationCity && plan.userId === user?.id) {
-          const planCityLower = plan.destinationCity.toLowerCase();
+        // Skip trips that ended more than gracePeriodDays ago
+        if (plan.endDate) {
+          const endDate = new Date(plan.endDate);
+          const gracePeriodEnd = new Date(endDate);
+          gracePeriodEnd.setDate(gracePeriodEnd.getDate() + gracePeriodDays);
+          if (now > gracePeriodEnd) {
+            return; // Skip this past trip
+          }
+        }
+        
+        // Use destinationCity if available, fall back to destination field
+        const cityName = plan.destinationCity || plan.destination;
+        if (cityName && plan.userId === user?.id) {
+          const planCityLower = cityName.toLowerCase();
           relevantCityNames.push(planCityLower);
           // Also add metro area name if applicable
-          const metroName = getMetroName(plan.destinationCity);
+          const metroName = getMetroName(cityName);
           if (metroName) {
             relevantCityNames.push(metroName.toLowerCase());
           }
@@ -376,11 +390,25 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       }
     }
     
-    // Add all travel plan destinations
+    // Add all travel plan destinations (show trips until a few days after they end)
     if (travelPlans && Array.isArray(travelPlans)) {
+      const now = new Date();
+      const gracePeriodDays = 3; // Show trips for 3 days after they end
+      
       travelPlans.forEach((plan: any, index: number) => {
-        if (plan.destinationCity && plan.userId === user?.id) {
-          const cityName = plan.destinationCity;
+        // Skip trips that ended more than gracePeriodDays ago
+        if (plan.endDate) {
+          const endDate = new Date(plan.endDate);
+          const gracePeriodEnd = new Date(endDate);
+          gracePeriodEnd.setDate(gracePeriodEnd.getDate() + gracePeriodDays);
+          if (now > gracePeriodEnd) {
+            return; // Skip this past trip
+          }
+        }
+        
+        // Use destinationCity if available, fall back to destination field
+        const cityName = plan.destinationCity || plan.destination;
+        if (cityName && plan.userId === user?.id) {
           const cityLower = cityName.toLowerCase();
           if (!addedCityNames.has(cityLower)) {
             addedCityNames.add(cityLower);
