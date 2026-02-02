@@ -9601,7 +9601,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
       {/* Chatroom List Modal */}
       <Dialog open={showChatroomList} onOpenChange={setShowChatroomList}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-white dark:bg-gray-900">
+        <DialogContent 
+          className="max-w-2xl max-h-[80vh] overflow-y-auto bg-white dark:bg-gray-900"
+          style={{
+            position: 'fixed',
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 100001,
+            display: 'grid',
+            visibility: 'visible',
+            opacity: 1
+          }}
+        >
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <MessageCircle className="w-5 h-5 text-blue-600" />
