@@ -688,7 +688,7 @@ export default function Messages() {
                         const isOwnMessage = msg.senderId === user?.id;
                         const hasReactions = msg.reactions && msg.reactions.length > 0;
                         return (
-                          <div key={msg.id} className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'} ${hasReactions ? 'mb-4' : ''}`}>
+                          <div key={msg.id} className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'} ${hasReactions ? 'mb-6 pb-1' : ''}`}>
                             <div 
                               className="relative max-w-[70%] overflow-visible" 
                               style={{ 
