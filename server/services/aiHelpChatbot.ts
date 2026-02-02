@@ -143,6 +143,15 @@ export async function getHelpResponse(
     return { success: true, response: assistantMessage };
   } catch (error: any) {
     console.error('Help chatbot error:', error);
+    
+    // Handle rate limit / quota exceeded errors with friendly message
+    if (error.status === 429 || error.message?.includes('429') || error.message?.includes('quota')) {
+      return { 
+        success: true, 
+        response: "I'm taking a quick break right now! In the meantime, here are some tips:\n\n• **Voice Meetups**: Tap the mic icon on your profile to create quick meetups by speaking\n• **City Chatrooms**: Chat with locals and travelers in real-time\n• **Travel Plans**: Add your upcoming trips to connect with others\n• **Ambassador Program**: Earn points for being active!\n\nTry again in a few minutes and I'll be happy to help! 😊"
+      };
+    }
+    
     return { success: false, error: error.message || 'Failed to get response' };
   }
 }
