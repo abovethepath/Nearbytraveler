@@ -1,0 +1,90 @@
+sion: true,
+  sessionID: 'RIni1Hsy5v...',
+  hasCookie: false,
+  cookiePreview: 'undefined...',
+  hasUser: false,
+  userId: undefined
+}
+❌ Auth check: No session user
+6:21:24 AM [express] GET /api/auth/user 401 in 1ms :: {"message":"Not authenticated"}
+📄 Serving frontend for: /hero-image-7.webp
+🔐 Login attempt for: playaguy
+Login error: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUserByEmail (file:///opt/render/project/src/dist/index.js:5425:24)
+    at async file:///opt/render/project/src/dist/index.js:21184:18 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+⚠️ SLOW REQUEST: POST /api/auth/login took 2048ms
+6:21:49 AM [express] POST /api/auth/login 500 in 2040ms :: {"message":"Server error"}
+🔐 Login attempt for: tripdad54
+Login error: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUserByEmail (file:///opt/render/project/src/dist/index.js:5425:24)
+    at async file:///opt/render/project/src/dist/index.js:21184:18 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+6:22:40 AM [express] POST /api/auth/login 500 in 31ms :: {"message":"Server error"}
+🔐 Login attempt for: tripdad54
+Login error: error: column "ambassador_points" does not exist
+    at file:///opt/render/project/src/node_modules/@neondatabase/serverless/index.mjs:1087:33
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (file:///opt/render/project/src/node_modules/drizzle-orm/neon-serverless/session.js:76:20)
+    at async DatabaseStorage.getUserByEmail (file:///opt/render/project/src/dist/index.js:5425:24)
+    at async file:///opt/render/project/src/dist/index.js:21184:18 {
+  length: 119,
+  severity: 'ERROR',
+  code: '42703',
+  detail: undefined,
+  hint: undefined,
+  position: '1993',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+Menu
+  constraint: undefined,
+  file: 'parse_relation.c',
+  line: '3722',
+  routine: 'errorMissingColumn'
+}
+6:22:53 AM [express] POST /api/auth/login 500 in 34ms :: {"message":"Server error"}
