@@ -7237,8 +7237,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <span className="text-black dark:text-white">Countries I've Visited ({countriesVisited.length})</span>
                     </CardTitle>
                     {isOwnProfile && !editingCountries && (
-                      <Button size="sm" variant="outline" onClick={handleEditCountries}>
-                        <Edit className="w-3 h-3" />
+                      <Button size="sm" onClick={handleEditCountries} className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 border-0 text-black">
+                        <Edit className="w-3 h-3 text-black" />
                       </Button>
                     )}
                   </div>
