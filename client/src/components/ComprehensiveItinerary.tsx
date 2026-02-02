@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -30,8 +30,52 @@ import {
   Navigation,
   MessageCircle,
   Download,
-  Mail
+  Mail,
+  Mic,
+  MicOff
 } from 'lucide-react';
+
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList;
+  resultIndex: number;
+}
+
+interface SpeechRecognitionResultList {
+  length: number;
+  item(index: number): SpeechRecognitionResult;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  isFinal: boolean;
+  length: number;
+  item(index: number): SpeechRecognitionAlternative;
+  [index: number]: SpeechRecognitionAlternative;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onerror: ((event: Event) => void) | null;
+  onend: (() => void) | null;
+  start(): void;
+  stop(): void;
+  abort(): void;
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition: new () => SpeechRecognition;
+    webkitSpeechRecognition: new () => SpeechRecognition;
+  }
+}
 
 interface TravelPlan {
   id: number;
@@ -76,6 +120,84 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
   const [newItem, setNewItem] = useState<Partial<ItineraryItem>>({});
   const [showAddItem, setShowAddItem] = useState(false);
   const [editingItem, setEditingItem] = useState<ItineraryItem | null>(null);
+  const [isListening, setIsListening] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(false);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+
+  useEffect(() => {
+    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+    setSpeechSupported(!!SpeechRecognitionAPI);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
+      }
+    };
+  }, []);
+
+  const startVoiceInput = () => {
+    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognitionAPI) {
+      toast({
+        title: "Voice not available",
+        description: "Voice input isn't supported in this browser.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognitionAPI();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = "en-US";
+
+      recognition.onresult = (event: SpeechRecognitionEvent) => {
+        let finalTranscript = "";
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript + " ";
+          }
+        }
+        if (finalTranscript) {
+          setNewItem(prev => ({ ...prev, description: (prev.description || '') + finalTranscript }));
+        }
+      };
+
+      recognition.onerror = () => {
+        setIsListening(false);
+        toast({
+          title: "Voice error",
+          description: "Please try again or type your notes.",
+          variant: "destructive"
+        });
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+      setIsListening(true);
+    } catch (error) {
+      toast({
+        title: "Voice error",
+        description: "Could not start voice input.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const stopVoiceInput = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+    }
+    setIsListening(false);
+  };
 
   // Generate date range for the trip
   const dateRange = useMemo(() => {
@@ -723,11 +845,36 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Description</label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-sm font-medium">Notes</label>
+                    {speechSupported && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={isListening ? stopVoiceInput : startVoiceInput}
+                        className={`h-7 px-2 ${isListening ? 'text-red-500 animate-pulse' : 'text-gray-500 hover:text-orange-500'}`}
+                      >
+                        {isListening ? (
+                          <>
+                            <MicOff className="w-4 h-4 mr-1" />
+                            Stop
+                          </>
+                        ) : (
+                          <>
+                            <Mic className="w-4 h-4 mr-1" />
+                            Voice
+                          </>
+                        )}
+                      </Button>
+                    )}
+                  </div>
                   <Textarea
                     value={newItem.description || ''}
                     onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
-                    placeholder="Enter description"
+                    placeholder={isListening ? "Listening... speak your notes" : "Add notes or tap voice to speak"}
+                    rows={3}
+                    className={isListening ? 'border-red-300 focus:border-red-500' : ''}
                   />
                 </div>
                 <div>
@@ -736,15 +883,6 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
                     value={newItem.location || ''}
                     onChange={(e) => setNewItem({ ...newItem, location: e.target.value })}
                     placeholder="Enter location"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Cost ($)</label>
-                  <Input
-                    type="number"
-                    value={newItem.cost || ''}
-                    onChange={(e) => setNewItem({ ...newItem, cost: parseFloat(e.target.value) || 0 })}
-                    placeholder="0.00"
                   />
                 </div>
                 <div className="flex justify-end gap-2">
