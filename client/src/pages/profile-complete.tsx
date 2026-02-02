@@ -17,6 +17,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -6287,13 +6288,43 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <CardTitle className="dark:text-white">Travel Stats</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4 break-words overflow-hidden">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-orange-500" />
-                      Travel Aura
-                    </span>
-                    <span className="font-semibold text-orange-600 dark:text-orange-400">{user?.aura || 0}</span>
-                  </div>
+                  {isOwnProfile ? (
+                    <HoverCard>
+                      <HoverCardTrigger asChild>
+                        <div className="flex items-center justify-between cursor-help hover:bg-orange-50 dark:hover:bg-orange-900/30 rounded-lg p-2 -m-2 transition-colors">
+                          <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                            <Sparkles className="w-4 h-4 text-orange-500" />
+                            Travel Aura
+                          </span>
+                          <span className="font-semibold text-orange-600 dark:text-orange-400">{user?.aura || 0}</span>
+                        </div>
+                      </HoverCardTrigger>
+                      <HoverCardContent className="w-72 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
+                        <div className="space-y-2">
+                          <h4 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                            <Sparkles className="w-4 h-4 text-orange-500" />
+                            How to Earn Travel Aura
+                          </h4>
+                          <div className="text-xs space-y-1">
+                            <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Completing profile</span><span className="font-medium text-orange-600">1 pt</span></div>
+                            <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Creating a trip</span><span className="font-medium text-orange-600">1 pt</span></div>
+                            <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Creating an event</span><span className="font-medium text-orange-600">4 pts</span></div>
+                            <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Creating a quick meetup</span><span className="font-medium text-orange-600">2 pts</span></div>
+                            <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Uploading a photo</span><span className="font-medium text-orange-600">1 pt</span></div>
+                            <div className="flex justify-between"><span className="text-gray-600 dark:text-gray-300">Creating a chatroom</span><span className="font-medium text-orange-600">2 pts</span></div>
+                          </div>
+                        </div>
+                      </HoverCardContent>
+                    </HoverCard>
+                  ) : (
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-orange-500" />
+                        Travel Aura
+                      </span>
+                      <span className="font-semibold text-orange-600 dark:text-orange-400">{user?.aura || 0}</span>
+                    </div>
+                  )}
                   <button
                     type="button"
                     className="flex items-center justify-between cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg p-2 -m-2 transition-colors w-full text-left"
