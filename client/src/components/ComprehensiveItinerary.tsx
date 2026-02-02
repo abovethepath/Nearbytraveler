@@ -261,7 +261,19 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
 
   return (
     <Dialog open={true} onOpenChange={(open) => !open && onClose?.()}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900">
+      <DialogContent 
+        className="max-w-6xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900"
+        style={{
+          position: 'fixed',
+          left: '50%',
+          top: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 100001,
+          display: 'grid',
+          visibility: 'visible',
+          opacity: 1
+        }}
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
             <div className="flex items-center gap-3">
