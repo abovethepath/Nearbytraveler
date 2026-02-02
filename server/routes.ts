@@ -19900,12 +19900,8 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // Create a new itinerary
-  app.post("/api/itineraries", async (req, res) => {
+  app.post("/api/itineraries", isAuthenticated, async (req: any, res) => {
     try {
-      if (!req.user?.id) {
-        return res.status(401).json({ message: "User not authenticated" });
-      }
-      
       console.log("Creating itinerary:", req.body);
       const itinerary = await storage.createItinerary({
         ...req.body,
