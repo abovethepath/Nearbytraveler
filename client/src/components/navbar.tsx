@@ -567,10 +567,10 @@ function Navbar() {
                         <span>Settings</span>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link href="/ambassador-program" className="flex items-center cursor-pointer">
+                        <a href="/ambassador-program" className="flex items-center cursor-pointer w-full">
                           <Star className="mr-2 h-4 w-4 text-orange-500" />
                           <span>Ambassador Program</span>
-                        </Link>
+                        </a>
                       </DropdownMenuItem>
                     </>
                   )}
