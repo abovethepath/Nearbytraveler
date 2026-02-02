@@ -1,11 +1,14 @@
+import { useContext } from "react";
 import Logo from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Star, Building2, Calendar, Trophy, Shield, AlertTriangle, ArrowLeft, Gift, TrendingUp, Award, UserPlus } from "lucide-react";
+import { Users, Star, Building2, Calendar, Trophy, Shield, AlertTriangle, ArrowLeft, Gift, TrendingUp, Award, UserPlus, Mail } from "lucide-react";
 import { Link } from "wouter";
 import Footer from "@/components/footer";
+import { AuthContext } from "@/App";
 
 export default function AmbassadorProgram() {
+  const { user } = useContext(AuthContext);
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -251,13 +254,25 @@ export default function AmbassadorProgram() {
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-bold text-white mb-4">Ready to Become an Ambassador?</h2>
           <p className="text-blue-100 mb-8 max-w-2xl mx-auto">
-            Start earning points by inviting friends, referring local businesses, and hosting community events.
+            {user 
+              ? "Apply now to join our Ambassador Program and start earning points for helping grow the community."
+              : "Start earning points by inviting friends, referring local businesses, and hosting community events."
+            }
           </p>
-          <Link href="/signup">
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 font-semibold">
-              Join Nearby Traveler
-            </Button>
-          </Link>
+          {user ? (
+            <a href={`mailto:ambassador@nearbytraveler.org?subject=Ambassador Program Application&body=Hi,%0D%0A%0D%0AI would like to apply to become a Nearby Traveler Ambassador.%0D%0A%0D%0AUsername: ${user.username}%0D%0AName: ${user.name || 'N/A'}%0D%0AEmail: ${user.email}%0D%0A%0D%0AWhy I want to be an Ambassador:%0D%0A%0D%0A`}>
+              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 font-semibold flex items-center gap-2">
+                <Mail className="w-5 h-5" />
+                Apply to Become an Ambassador
+              </Button>
+            </a>
+          ) : (
+            <Link href="/signup">
+              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 font-semibold">
+                Join Nearby Traveler
+              </Button>
+            </Link>
+          )}
         </div>
       </section>
 
