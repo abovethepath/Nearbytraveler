@@ -1,0 +1,130 @@
+only issue is having kids on the app, they can not be users
+Thought for 12s
+
+Totally workable — you just model kids as companions, not users. Adults have accounts; kids never do.
+
+Here’s a clean way to make “traveling with family” feel easy in Nearby Traveler without kids becoming users:
+
+The pattern: “Travel Crew” + “Companions”
+Adults = real users
+
+Can connect, message, RSVP, join chats, etc.
+
+Kids = companions (no account, no login)
+
+They’re attached to a parent/guardian’s trip as “+1 / child”
+
+They’re not searchable, not messageable, and never appear as profiles
+
+UX: how it works in the app
+1) Trip setup: “Traveling with anyone?”
+
+Buttons:
+
+Add friends (Nearby Traveler users)
+
+Add companions (no account)
+
+2) Add companions (kid-safe)
+
+When parent taps “Add companions,” you collect only minimal info:
+
+Label: “Kid 1”, “Sophie” (optional nickname)
+
+Age bracket (recommended instead of exact age): 0–4, 5–9, 10–13, 14–17
+
+Optional notes private to parent/crew: allergies, stroller-friendly, bedtime, etc.
+
+Default setting: Companions are private (only visible to the parent + optionally the adult crew).
+
+3) Events: “Invite crew” still works
+
+When RSVP’ing, the parent chooses:
+
+Adults going (actual users)
+
+Companions going (Kid 1, Kid 2)
+
+Event card can show something like:
+
+“Going: 3 adults + 2 kids”
+…but never identifies kids publicly.
+
+4) Chat: adults only
+
+The “Trip Crew Chat” includes only adult users.
+Parents can still coordinate everything; kids never enter messaging.
+
+“Friends traveling” still works (without exposing kids)
+
+You can still show:
+
+“Your friends are in LA this week”
+
+“2 friends are going to this event”
+
+But never: “X is traveling with 2 kids” publicly (that’s a safety risk). At most, inside the private crew: “Aaron added 2 companions.”
+
+Safety defaults that make this defensible
+
+No child accounts
+
+No child photos
+
+No child profile fields (email, phone, socials = never)
+
+No public display of kids
+
+No location sharing for companions (ever)
+
+If you ever add location sharing for adults, keep it crew-only and opt-in
+
+(Also: keep child-related notes private and minimal—avoid storing sensitive details you don’t truly need.)
+
+Implementation (small + clean)
+
+You can do this with two small tables:
+
+companions
+
+id
+
+owner_user_id
+
+label (e.g., “Kid 1”)
+
+age_bracket (enum)
+
+notes_private (optional)
+
+created_at
+
+travel_plan_members
+
+travel_plan_id
+
+user_id (nullable)
+
+companion_id (nullable)
+
+role (owner/admin/member)
+
+constraint: exactly one of user_id or companion_id is set
+
+Messages stay the same (adults only).
+
+The “easy connect” part for families
+
+On the trip page:
+
+Invite adult partner (link/QR)
+
+Add companions (kids)
+
+Share itinerary/events to crew
+
+One-tap RSVP for “me + companions”
+
+This gives families the frictionless experience you want, without ever making children users.
+
+If you tell me where you want this to appear first (trip creation flow vs profile vs event RSVP), I’ll write the exact UI copy and the minimal screens/components to build next.
