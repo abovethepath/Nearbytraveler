@@ -144,6 +144,7 @@ import CommunityGuidelines from "@/pages/community-guidelines";
 import ProfilePageResponsive from "@/pages/ProfilePageResponsive";
 import EventsListResponsive from "@/pages/EventsListResponsive";
 import About from "@/pages/about";
+import AmbassadorProgram from "@/pages/ambassador-program";
 import GettingStarted from "@/pages/getting-started";
 
 
@@ -232,7 +233,7 @@ function Router() {
 
   const landingPageRoutes = [
     '/', '/landing', '/landing-new', '/auth', '/auth/signup', '/join', '/signup', '/signup/local', '/signup/traveler', '/signup/business', '/signup/account', '/signup/traveling', '/account-success',
-    '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', /* '/networking-landing', */ '/couchsurfing', '/cs', '/b', '/privacy', '/terms', '/cookies', '/about', '/getting-started',
+    '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', /* '/networking-landing', */ '/couchsurfing', '/cs', '/b', '/privacy', '/terms', '/cookies', '/about', '/ambassador-program', '/getting-started',
     '/forgot-password', '/reset-password', '/welcome', '/welcome-business', '/quick-login', '/preview-landing', '/preview-first-landing',
     '/travel-quiz', '/TravelIntentQuiz', '/business-card', '/qr-code'
   ];
@@ -784,6 +785,9 @@ function Router() {
       }
       if (location === '/about') {
         return <About />;
+      }
+      if (location === '/ambassador-program') {
+        return <AmbassadorProgram />;
       }
       if (location === '/getting-started') {
         return <GettingStarted />;

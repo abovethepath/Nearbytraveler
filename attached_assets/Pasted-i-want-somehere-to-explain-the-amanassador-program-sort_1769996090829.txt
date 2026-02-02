@@ -1,0 +1,222 @@
+i want somehere to explain the amanassador program, sort of like ho there is a creator fund for tik tok nd others, i want some way that users earn points for helping build nearby traveler, refering freinds, referring businesses, adding usres, creating and running events, they will get points that go into a cumulative point pool that will be with 4% equity split between ALL ambssadors based on their points, 
+Thought for 24s
+
+Here’s a clean, “creator fund” style way to explain it on your site/app, plus copy you can paste directly.
+
+Where this should live in Nearby Traveler
+
+Best places (use 2–3 of these):
+
+Footer link: “Ambassador Program”
+
+Onboarding step / post-signup card: “Earn points. Help build your city.”
+
+Profile / Settings: “Become an Ambassador”
+
+Ambassador Dashboard: points, leaderboard, and “Your estimated share”
+
+FAQ / Trust page: short explanation + link to full terms
+
+The “Creator Fund” framing (what you’re trying to communicate)
+
+Reference vibe: TikTok Creator Fund → “Creators help the platform grow → creators share in a pool.”
+
+Your version:
+Members help grow Nearby Traveler → members earn points → points determine share of a 4% ambassador equity pool.
+
+Paste-ready page copy (simple, non-jargony)
+Header
+
+Nearby Traveler Ambassador Program
+Help grow the community. Earn points. Share in the Ambassador Equity Pool.
+
+The short explanation (above the fold)
+
+Ambassadors are members who help build Nearby Traveler in the real world—by inviting friends, bringing in local businesses, and creating great events.
+When you do these things, you earn points. Those points go into a shared point pool. A total of 4% equity is reserved for Ambassadors, and your share is based on the points you earn compared to all Ambassador points.
+
+How points turn into equity
+
+At each distribution period (example: monthly or quarterly):
+
+We total all Ambassador points earned in that period.
+
+Your share = your points ÷ total points
+
+Your equity share comes from the 4% Ambassador Equity Pool, based on that ratio.
+
+Example: If you earn 1,000 points and the community earns 100,000 points total, you earned 1% of the points → you receive 1% of the 4% pool (i.e., 0.04% equity), subject to the program terms.
+
+Points you can earn (example menu)
+
+You can show this as cards or a list:
+
+Refer a friend who signs up: +X points
+
+Refer a friend who becomes active (joins an event/messages): +X points
+
+Refer a business lead: +X points
+
+Business becomes a paying partner: +X points
+
+Create an event: +X points
+
+Host/run an event (verified): +X points
+
+Event hits attendance goal (verified): +X points
+
+Community “quality” bonus: +X points (great feedback, low cancellations, etc.)
+
+Tip: You can keep the actual numbers hidden at first and say “Points vary by impact” so you can adjust later without drama.
+
+Ambassador Dashboard text (super clear)
+
+Your Points: 2,450
+City Rank: #7
+This Period’s Pool: 4% Ambassador Equity Pool
+Your Share of This Period (estimate): 2.45%
+
+Buttons:
+
+Earn More Points
+
+Invite Friends
+
+Invite a Business
+
+Create an Event
+
+View Program Terms
+
+Safety/quality rules (important so people trust it)
+
+Add a small section like:
+
+To keep things fair:
+
+Points may require verification (e.g., event hosted, business activated).
+
+We remove points for fake accounts, spam invites, or low-quality events.
+
+Some actions may have limits (to prevent gaming).
+
+Ambassadors must stay in good standing to qualify.
+
+The “legal-friendly” disclaimer (keep it simple)
+
+You should include something like this (and link to full Terms):
+
+Important: The Ambassador Equity Pool is offered only under the program’s official terms and eligibility rules. Points don’t guarantee equity and may be adjusted for fraud prevention, verification, and quality standards. Equity details (timing, form, vesting, and eligibility) are defined in the program documents.
+
+(Also: talk to counsel before publicly offering “equity” broadly—there are securities/eligibility considerations. You can still market the idea, but you’ll want the exact structure and terms to be compliant.)
+
+If you want an even cleaner “creator fund” message
+
+If you’d rather avoid the word “equity” in your public marketing until the legal structure is locked:
+
+“Ambassador Ownership Pool (4%)”
+or
+“Ambassador Rewards Pool (4% ownership reserved)”
+
+And then the detailed Terms page explains what that actually means (options/RSUs/grants/etc., depending on your setup).
+
+If you tell me where you want this first (landing page, onboarding, or inside the app), I’ll rewrite the copy to match that exact UI (short hero + 3 cards + FAQ) and keep it in your brand voice.
+
+landing page, footer, and a drop down in the hamburger menu, it also has to say ,only upon an exit or somethng like that, not for income and points may never be worth anything
+Thought for 12s
+
+Cool — here’s landing-page + footer + hamburger-menu copy that hits:
+
+“creator fund” vibe
+
+points → share of a 4% Ambassador Ownership Pool
+
+only pays out on an exit/liquidity event (not income)
+
+points may never be worth anything
+
+simple, non-jargony
+
+Landing page section (recommended)
+Option A — clean + confident (best default)
+
+Ambassador Program
+Help build Nearby Traveler. Earn points. Share in a 4% ownership pool.
+
+Ambassadors are members who grow the community—by inviting friends, bringing in local businesses, and creating real events.
+
+How it works
+
+Do helpful actions → earn points
+
+Points stack over time
+
+Your share is based on your points vs. total Ambassador points
+
+A total 4% Ambassador Ownership Pool is reserved for Ambassadors
+
+Important (read this)
+Points are not cash, not a salary, and not guaranteed to ever be worth anything. Any potential value is only if there’s a future exit (like an acquisition or IPO) and only under the program terms.
+
+CTA button: Learn about the Ambassador Program
+Secondary link: See how points work
+
+Option B — softer language (if you want less “equity-forward”)
+
+Ambassador Program
+Earn points for growing the community. Share in the Ambassador Ownership Pool (4%).
+
+Invite friends. Refer businesses. Host events. Help launch your city.
+
+Note: Points are a tracking system — not income — and may never have value. If there’s ever value, it’s only tied to a future exit and only under the official terms.
+
+CTA button: Become an Ambassador
+
+Hamburger menu dropdown (short + clear)
+
+Menu item: Ambassador Program
+Subtext (one line): Earn points for referrals + events. Share in a 4% ownership pool (exit-only).
+
+Dropdown body (optional 2–3 lines):
+Help build your city on Nearby Traveler by inviting friends, referring local businesses, and hosting events. You earn points that determine your share of the Ambassador pool.
+Not income. Points may be worth $0. Exit-only.
+
+Link: See details
+
+Footer link + microcopy
+
+Footer link label options:
+
+Ambassador Program
+
+Ambassadors
+
+Earn Points (Ambassadors)
+
+Footer microcopy (small text under the link, optional):
+Exit-only program. Not income. Points may be worth nothing.
+
+Mini “terms” snippet you can place under the section (or on the Ambassador page)
+
+Fine Print (plain English):
+
+Points are not money, wages, or guaranteed rewards.
+
+Points may have no value now or ever.
+
+Any potential payout/value is only upon a liquidity event (for example, acquisition or IPO) and only if the program terms are met.
+
+We may change, pause, or end the program to prevent fraud or keep it fair.
+
+3-item FAQ (quick trust builder)
+
+Is this paid work?
+No. This is not a job and points are not income.
+
+Can points be converted to cash?
+No. Points are for tracking contribution. They may never be worth anything.
+
+When could points matter?
+Only if there’s a future exit (like an acquisition/IPO), and only under the official terms.
+
+If you tell me your landing page vibe (more hype vs. more trust/serious), I’ll tighten this into the exact length that fits your layout (e.g., 1 headline + 2 sentences + 4 bullets + 1 disclaimer line).
