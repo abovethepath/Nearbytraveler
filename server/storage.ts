@@ -2536,10 +2536,11 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  // Get detailed itinerary data for completed trips
+  // Get detailed itinerary data for completed trips with items included
   async getCompletedTripItineraries(travelPlanId: number): Promise<any[]> {
     try {
-      const itineraries = await db
+      // First get the itineraries with summary stats
+      const itinerariesData = await db
         .select({
           id: tripItineraries.id,
           title: tripItineraries.title,
@@ -2547,17 +2548,31 @@ export class DatabaseStorage implements IStorage {
           totalCost: tripItineraries.totalCost,
           currency: tripItineraries.currency,
           tags: tripItineraries.tags,
-          totalItems: sql<number>`COUNT(itinerary_items.id)`,
-          completedItems: sql<number>`COUNT(itinerary_items.id) FILTER (WHERE itinerary_items.is_completed = true)`,
-          totalSpent: sql<number>`SUM(COALESCE(itinerary_items.cost, 0))`
+          travelPlanId: tripItineraries.travelPlanId
         })
         .from(tripItineraries)
-        .leftJoin(itineraryItems, eq(tripItineraries.id, itineraryItems.itineraryId))
-        .where(eq(tripItineraries.travelPlanId, travelPlanId))
-        .groupBy(tripItineraries.id, tripItineraries.title, tripItineraries.description, 
-                tripItineraries.totalCost, tripItineraries.currency, tripItineraries.tags);
+        .where(eq(tripItineraries.travelPlanId, travelPlanId));
 
-      return itineraries;
+      // Then fetch items for each itinerary
+      const itinerariesWithItems = await Promise.all(
+        itinerariesData.map(async (itinerary) => {
+          const items = await db
+            .select()
+            .from(itineraryItems)
+            .where(eq(itineraryItems.itineraryId, itinerary.id))
+            .orderBy(asc(itineraryItems.date), asc(itineraryItems.orderIndex));
+          
+          return {
+            ...itinerary,
+            items,
+            totalItems: items.length,
+            completedItems: items.filter(item => item.isCompleted).length,
+            totalSpent: items.reduce((sum, item) => sum + (item.cost || 0), 0)
+          };
+        })
+      );
+
+      return itinerariesWithItems;
     } catch (error) {
       console.error('Error fetching completed trip itineraries:', error);
       return [];
