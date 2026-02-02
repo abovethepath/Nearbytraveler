@@ -596,6 +596,70 @@ export const sharedItineraries = pgTable("shared_itineraries", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Companions - Kids/family members who don't have accounts
+export const companions = pgTable("companions", {
+  id: serial("id").primaryKey(),
+  ownerUserId: integer("owner_user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  label: text("label").notNull(), // "Sophie", "Kid 1", "Dad"
+  ageBracket: text("age_bracket"), // "0-4", "5-9", "10-13", "14-17", "adult"
+  notesPrivate: text("notes_private"), // Allergies, special needs, etc. - only visible to owner
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertCompanionSchema = createInsertSchema(companions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type InsertCompanion = z.infer<typeof insertCompanionSchema>;
+export type Companion = typeof companions.$inferSelect;
+
+// Travel Crew Members - Adults (users) linked to a travel plan
+export const travelCrewMembers = pgTable("travel_crew_members", {
+  id: serial("id").primaryKey(),
+  travelPlanId: integer("travel_plan_id").notNull().references(() => travelPlans.id, { onDelete: "cascade" }),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  role: text("role").default("member"), // "owner", "admin", "member"
+  joinedAt: timestamp("joined_at").defaultNow(),
+}, (table) => [
+  unique().on(table.travelPlanId, table.userId),
+  index("idx_crew_members_travel_plan").on(table.travelPlanId),
+]);
+
+export const insertTravelCrewMemberSchema = createInsertSchema(travelCrewMembers).omit({
+  id: true,
+  joinedAt: true,
+});
+
+export type InsertTravelCrewMember = z.infer<typeof insertTravelCrewMemberSchema>;
+export type TravelCrewMember = typeof travelCrewMembers.$inferSelect;
+
+// Travel Crew Companions - Companions (non-users) linked to a travel plan
+export const travelCrewCompanions = pgTable("travel_crew_companions", {
+  id: serial("id").primaryKey(),
+  travelPlanId: integer("travel_plan_id").notNull().references(() => travelPlans.id, { onDelete: "cascade" }),
+  companionId: integer("companion_id").notNull().references(() => companions.id, { onDelete: "cascade" }),
+  addedAt: timestamp("added_at").defaultNow(),
+}, (table) => [
+  unique().on(table.travelPlanId, table.companionId),
+]);
+
+export type TravelCrewCompanion = typeof travelCrewCompanions.$inferSelect;
+
+// Travel Crew Invites - Invite links to join a trip
+export const travelCrewInvites = pgTable("travel_crew_invites", {
+  id: serial("id").primaryKey(),
+  travelPlanId: integer("travel_plan_id").notNull().references(() => travelPlans.id, { onDelete: "cascade" }),
+  invitedByUserId: integer("invited_by_user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  inviteToken: text("invite_token").notNull().unique(),
+  invitedContact: text("invited_contact"), // Email or phone if known
+  status: text("status").default("pending"), // "pending", "accepted", "expired"
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type TravelCrewInvite = typeof travelCrewInvites.$inferSelect;
+
 export const userPhotos = pgTable("user_photos", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull(),
