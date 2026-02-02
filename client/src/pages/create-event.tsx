@@ -1252,13 +1252,92 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                     <Label htmlFor="startTime" className="text-sm font-medium dark:text-white">
                       Time *
                     </Label>
-                    <Input
-                      id="startTime"
-                      type="time"
-                      {...register("startTime", { required: "Start time is required" })}
-                      className="w-full bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600"
-                      style={{ colorScheme: 'light dark' }}
-                    />
+                    <div className="flex gap-1 items-center">
+                      <select
+                        className="flex-1 h-10 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-2 text-sm text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                        value={watch("startTime") ? (parseInt(watch("startTime").split(':')[0]) > 12 ? (parseInt(watch("startTime").split(':')[0]) - 12).toString() : (parseInt(watch("startTime").split(':')[0]) === 0 ? '12' : parseInt(watch("startTime").split(':')[0]).toString())) : ''}
+                        onChange={(e) => {
+                          const hour = parseInt(e.target.value);
+                          const currentTime = watch("startTime") || '09:00';
+                          const currentMinute = currentTime.split(':')[1] || '00';
+                          const currentHour = parseInt(currentTime.split(':')[0]) || 0;
+                          const isPM = currentHour >= 12;
+                          let newHour = hour;
+                          if (isPM && hour !== 12) newHour = hour + 12;
+                          if (!isPM && hour === 12) newHour = 0;
+                          setValue("startTime", `${newHour.toString().padStart(2, '0')}:${currentMinute}`);
+                        }}
+                      >
+                        <option value="">Hr</option>
+                        {[12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(h => (
+                          <option key={h} value={h}>{h}</option>
+                        ))}
+                      </select>
+                      <span className="text-lg font-bold dark:text-white">:</span>
+                      <select
+                        className="flex-1 h-10 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-2 text-sm text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                        value={watch("startTime") ? watch("startTime").split(':')[1] : ''}
+                        onChange={(e) => {
+                          const currentTime = watch("startTime") || '09:00';
+                          const currentHour = currentTime.split(':')[0] || '09';
+                          setValue("startTime", `${currentHour}:${e.target.value}`);
+                        }}
+                      >
+                        <option value="">Min</option>
+                        {['00', '15', '30', '45'].map(m => (
+                          <option key={m} value={m}>{m}</option>
+                        ))}
+                      </select>
+                      <div className="flex rounded-md border border-gray-300 dark:border-gray-600 overflow-hidden">
+                        <button
+                          type="button"
+                          className={`px-2 py-2 text-sm font-medium transition-colors ${
+                            !watch("startTime") || parseInt(watch("startTime").split(':')[0]) < 12
+                              ? 'bg-orange-500 text-white'
+                              : 'bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
+                          }`}
+                          onClick={() => {
+                            const currentTime = watch("startTime");
+                            if (!currentTime) {
+                              setValue("startTime", '09:00');
+                            } else {
+                              const hour = parseInt(currentTime.split(':')[0]);
+                              const minute = currentTime.split(':')[1];
+                              if (hour >= 12) {
+                                const newHour = hour === 12 ? 0 : hour - 12;
+                                setValue("startTime", `${newHour.toString().padStart(2, '0')}:${minute}`);
+                              }
+                            }
+                          }}
+                        >
+                          AM
+                        </button>
+                        <button
+                          type="button"
+                          className={`px-2 py-2 text-sm font-medium transition-colors ${
+                            watch("startTime") && parseInt(watch("startTime").split(':')[0]) >= 12
+                              ? 'bg-orange-500 text-white'
+                              : 'bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
+                          }`}
+                          onClick={() => {
+                            const currentTime = watch("startTime");
+                            if (!currentTime) {
+                              setValue("startTime", '12:00');
+                            } else {
+                              const hour = parseInt(currentTime.split(':')[0]);
+                              const minute = currentTime.split(':')[1];
+                              if (hour < 12) {
+                                const newHour = hour === 0 ? 12 : hour + 12;
+                                setValue("startTime", `${newHour.toString().padStart(2, '0')}:${minute}`);
+                              }
+                            }
+                          }}
+                        >
+                          PM
+                        </button>
+                      </div>
+                    </div>
+                    <input type="hidden" {...register("startTime", { required: "Start time is required" })} />
                   </div>
                 </div>
                 {(errors.date || errors.startTime) && (
@@ -1322,13 +1401,97 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                     <Label htmlFor="endTime" className="text-sm font-medium dark:text-white">
                       {watch("isSameDay") ? "End Time *" : "Time *"}
                     </Label>
-                    <Input
-                      id="endTime"
-                      type="time"
-                      {...register("endTime", { required: "End time is required" })}
-                      className="w-full bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600"
-                      style={{ colorScheme: 'light dark' }}
-                    />
+                    <div className="flex gap-1 items-center">
+                      <select
+                        className="flex-1 h-10 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-2 text-sm text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                        value={(() => {
+                          const t = watch("endTime");
+                          if (!t) return '';
+                          const h = parseInt(t.split(':')[0]);
+                          return h > 12 ? (h - 12).toString() : (h === 0 ? '12' : h.toString());
+                        })()}
+                        onChange={(e) => {
+                          const hour = parseInt(e.target.value);
+                          const currentTime = watch("endTime") || '17:00';
+                          const currentMinute = currentTime.split(':')[1] || '00';
+                          const currentHour = parseInt(currentTime.split(':')[0]) || 12;
+                          const isPM = currentHour >= 12;
+                          let newHour = hour;
+                          if (isPM && hour !== 12) newHour = hour + 12;
+                          if (!isPM && hour === 12) newHour = 0;
+                          setValue("endTime", `${newHour.toString().padStart(2, '0')}:${currentMinute}`);
+                        }}
+                      >
+                        <option value="">Hr</option>
+                        {[12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(h => (
+                          <option key={h} value={h}>{h}</option>
+                        ))}
+                      </select>
+                      <span className="text-lg font-bold dark:text-white">:</span>
+                      <select
+                        className="flex-1 h-10 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-2 text-sm text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                        value={watch("endTime")?.split(':')[1] || ''}
+                        onChange={(e) => {
+                          const currentTime = watch("endTime") || '17:00';
+                          const currentHour = currentTime.split(':')[0] || '17';
+                          setValue("endTime", `${currentHour}:${e.target.value}`);
+                        }}
+                      >
+                        <option value="">Min</option>
+                        {['00', '15', '30', '45'].map(m => (
+                          <option key={m} value={m}>{m}</option>
+                        ))}
+                      </select>
+                      <div className="flex rounded-md border border-gray-300 dark:border-gray-600 overflow-hidden">
+                        <button
+                          type="button"
+                          className={`px-2 py-2 text-sm font-medium transition-colors ${
+                            !watch("endTime") || parseInt(watch("endTime")?.split(':')[0] || '0') < 12
+                              ? 'bg-orange-500 text-white'
+                              : 'bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
+                          }`}
+                          onClick={() => {
+                            const currentTime = watch("endTime");
+                            if (!currentTime) {
+                              setValue("endTime", '09:00');
+                            } else {
+                              const hour = parseInt(currentTime.split(':')[0]);
+                              const minute = currentTime.split(':')[1];
+                              if (hour >= 12) {
+                                const newHour = hour === 12 ? 0 : hour - 12;
+                                setValue("endTime", `${newHour.toString().padStart(2, '0')}:${minute}`);
+                              }
+                            }
+                          }}
+                        >
+                          AM
+                        </button>
+                        <button
+                          type="button"
+                          className={`px-2 py-2 text-sm font-medium transition-colors ${
+                            watch("endTime") && parseInt(watch("endTime")?.split(':')[0] || '0') >= 12
+                              ? 'bg-orange-500 text-white'
+                              : 'bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
+                          }`}
+                          onClick={() => {
+                            const currentTime = watch("endTime");
+                            if (!currentTime) {
+                              setValue("endTime", '12:00');
+                            } else {
+                              const hour = parseInt(currentTime.split(':')[0]);
+                              const minute = currentTime.split(':')[1];
+                              if (hour < 12) {
+                                const newHour = hour === 0 ? 12 : hour + 12;
+                                setValue("endTime", `${newHour.toString().padStart(2, '0')}:${minute}`);
+                              }
+                            }
+                          }}
+                        >
+                          PM
+                        </button>
+                      </div>
+                    </div>
+                    <input type="hidden" {...register("endTime", { required: "End time is required" })} />
                   </div>
                 </div>
                 {(errors.endDate || errors.endTime) && (

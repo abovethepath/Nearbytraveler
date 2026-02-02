@@ -839,11 +839,87 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
                 </div>
                 <div>
                   <label className="text-sm font-medium">Time</label>
-                  <Input
-                    type="time"
-                    value={newItem.time || ''}
-                    onChange={(e) => setNewItem({ ...newItem, time: e.target.value })}
-                  />
+                  <div className="flex gap-1 items-center">
+                    <select
+                      className="flex-1 h-10 rounded-md border border-input bg-background px-2 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                      value={newItem.time ? (parseInt(newItem.time.split(':')[0]) > 12 ? (parseInt(newItem.time.split(':')[0]) - 12).toString() : (parseInt(newItem.time.split(':')[0]) === 0 ? '12' : parseInt(newItem.time.split(':')[0]).toString())) : ''}
+                      onChange={(e) => {
+                        const hour = parseInt(e.target.value);
+                        const currentMinute = newItem.time ? newItem.time.split(':')[1] : '00';
+                        const currentHour = newItem.time ? parseInt(newItem.time.split(':')[0]) : 0;
+                        const isPM = currentHour >= 12;
+                        let newHour = hour;
+                        if (isPM && hour !== 12) newHour = hour + 12;
+                        if (!isPM && hour === 12) newHour = 0;
+                        setNewItem({ ...newItem, time: `${newHour.toString().padStart(2, '0')}:${currentMinute}` });
+                      }}
+                    >
+                      <option value="">Hr</option>
+                      {[12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(h => (
+                        <option key={h} value={h}>{h}</option>
+                      ))}
+                    </select>
+                    <span className="text-lg font-bold">:</span>
+                    <select
+                      className="flex-1 h-10 rounded-md border border-input bg-background px-2 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                      value={newItem.time ? newItem.time.split(':')[1] : ''}
+                      onChange={(e) => {
+                        const currentHour = newItem.time ? newItem.time.split(':')[0] : '09';
+                        setNewItem({ ...newItem, time: `${currentHour}:${e.target.value}` });
+                      }}
+                    >
+                      <option value="">Min</option>
+                      {['00', '15', '30', '45'].map(m => (
+                        <option key={m} value={m}>{m}</option>
+                      ))}
+                    </select>
+                    <div className="flex rounded-md border border-input overflow-hidden">
+                      <button
+                        type="button"
+                        className={`px-2 py-2 text-sm font-medium transition-colors ${
+                          !newItem.time || parseInt(newItem.time.split(':')[0]) < 12
+                            ? 'bg-orange-500 text-white'
+                            : 'bg-background hover:bg-muted'
+                        }`}
+                        onClick={() => {
+                          if (!newItem.time) {
+                            setNewItem({ ...newItem, time: '09:00' });
+                          } else {
+                            const hour = parseInt(newItem.time.split(':')[0]);
+                            const minute = newItem.time.split(':')[1];
+                            if (hour >= 12) {
+                              const newHour = hour === 12 ? 0 : hour - 12;
+                              setNewItem({ ...newItem, time: `${newHour.toString().padStart(2, '0')}:${minute}` });
+                            }
+                          }
+                        }}
+                      >
+                        AM
+                      </button>
+                      <button
+                        type="button"
+                        className={`px-2 py-2 text-sm font-medium transition-colors ${
+                          newItem.time && parseInt(newItem.time.split(':')[0]) >= 12
+                            ? 'bg-orange-500 text-white'
+                            : 'bg-background hover:bg-muted'
+                        }`}
+                        onClick={() => {
+                          if (!newItem.time) {
+                            setNewItem({ ...newItem, time: '12:00' });
+                          } else {
+                            const hour = parseInt(newItem.time.split(':')[0]);
+                            const minute = newItem.time.split(':')[1];
+                            if (hour < 12) {
+                              const newHour = hour === 0 ? 12 : hour + 12;
+                              setNewItem({ ...newItem, time: `${newHour.toString().padStart(2, '0')}:${minute}` });
+                            }
+                          }
+                        }}
+                      >
+                        PM
+                      </button>
+                    </div>
+                  </div>
                 </div>
                 <div>
                   <label className="text-sm font-medium">Title</label>
