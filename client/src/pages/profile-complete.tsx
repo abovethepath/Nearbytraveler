@@ -1696,8 +1696,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           hometownCity: user.hometownCity || "",
           hometownState: user.hometownState || "",
           hometownCountry: user.hometownCountry || "",
-          dateOfBirth: user.dateOfBirth ? 
-            (typeof user.dateOfBirth === 'string' ? user.dateOfBirth : new Date(user.dateOfBirth).toISOString().split('T')[0]) : "",
+          dateOfBirth: user.dateOfBirth ? formatDateOfBirthForInput(user.dateOfBirth) : "",
           travelStyle: user.travelStyle || [],
           businessDescription: (user as any).business_description || (user as any).businessDescription || "",
           businessType: (user as any).business_type || (user as any).businessType || "",
@@ -1725,8 +1724,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           hometownCity: user.hometownCity || "",
           hometownState: user.hometownState || "",
           hometownCountry: user.hometownCountry || "",
-          dateOfBirth: user.dateOfBirth ? 
-            (typeof user.dateOfBirth === 'string' ? user.dateOfBirth : new Date(user.dateOfBirth).toISOString().split('T')[0]) : "",
+          dateOfBirth: user.dateOfBirth ? formatDateOfBirthForInput(user.dateOfBirth) : "",
           ageVisible: Boolean(user.ageVisible),
           gender: user.gender || "",
           sexualPreference: user.sexualPreference || [],
@@ -1798,8 +1796,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             hometownCity: user.hometownCity || "",
             hometownState: user.hometownState || "",
             hometownCountry: user.hometownCountry || "",
-            dateOfBirth: user.dateOfBirth ? 
-              (typeof user.dateOfBirth === 'string' ? user.dateOfBirth : new Date(user.dateOfBirth).toISOString().split('T')[0]) : "",
+            dateOfBirth: user.dateOfBirth ? formatDateOfBirthForInput(user.dateOfBirth) : "",
             travelStyle: user.travelStyle || [],
             city: user.city || "",
             state: user.state || "",
@@ -1831,8 +1828,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             hometownCity: user.hometownCity || "",
             hometownState: user.hometownState || "",
             hometownCountry: user.hometownCountry || "",
-            dateOfBirth: user.dateOfBirth ? 
-              (typeof user.dateOfBirth === 'string' ? user.dateOfBirth : new Date(user.dateOfBirth).toISOString().split('T')[0]) : "",
+            dateOfBirth: user.dateOfBirth ? formatDateOfBirthForInput(user.dateOfBirth) : "",
             ageVisible: !!user.ageVisible,
             gender: user.gender || "",
             sexualPreference: user.sexualPreference || [],
@@ -4429,8 +4425,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto', cursor: 'pointer' }}
                       data-testid="button-edit-profile"
                     >
-                      <Edit2 className="w-4 h-4 text-black" />
-                      <span className="hidden sm:inline text-black">Edit Profile</span>
+                      <Edit2 className={`w-4 h-4 ${isProfileIncomplete() ? 'text-red-700' : 'text-black'}`} />
+                      <span className={`hidden sm:inline ${isProfileIncomplete() ? 'text-red-700' : 'text-black'}`}>Edit Profile</span>
                     </button>
                   )}
                 </div>
