@@ -1110,6 +1110,8 @@ function Router() {
         return <WelcomeBusiness />;
       case '/getting-started':
         return <GettingStarted />;
+      case '/ambassador-program':
+        return <AmbassadorProgram />;
       case '/quick-login':
         return <QuickLogin />;
 

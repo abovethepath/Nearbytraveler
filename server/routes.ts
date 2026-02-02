@@ -7113,11 +7113,38 @@ Questions? Just reply to this message. Welcome aboard!
       
       // JOIN USER TO DESTINATION CHATROOM: Always add user to destination chatroom when planning a trip
       // This allows them to connect with locals and other travelers before their trip starts
+      // CRITICAL FIX: Directly join destination chatroom regardless of isCurrentlyTraveling status
       try {
         const updatedUser = await storage.getUserById(travelPlanData.userId);
         if (updatedUser) {
+          // First, run normal chatroom assignment (for hometown, global, etc.)
           await storage.assignUserToChatrooms(updatedUser);
-          console.log(`✅ CHATROOM ASSIGNMENT: User ${travelPlanData.userId} joined ${travelPlanData.destinationCity} chatroom`);
+          
+          // THEN, directly join the destination chatroom for this specific trip
+          // This works even for future trips where isCurrentlyTraveling is false
+          const { METRO_AREAS } = await import('@shared/constants');
+          const LA_METRO_AREAS = METRO_AREAS['Los Angeles']?.cities || [];
+          
+          let destCity = travelPlanData.destinationCity;
+          let destState = travelPlanData.destinationState || '';
+          let destCountry = travelPlanData.destinationCountry;
+          
+          // Handle LA Metro consolidation
+          if (destCountry === 'United States' && destCity && LA_METRO_AREAS.includes(destCity)) {
+            destCity = 'Los Angeles Metro';
+            destState = 'California';
+          }
+          
+          // Directly join destination chatroom
+          await storage.ensureAndJoinChatroom(updatedUser, {
+            name: `Welcome to ${destCity}`,
+            city: destCity,
+            state: destState,
+            country: destCountry || 'United States',
+            description: `Connect with locals and travelers in ${destCity}`
+          });
+          
+          console.log(`✅ CHATROOM ASSIGNMENT: User ${travelPlanData.userId} joined ${destCity} chatroom via direct trip creation`);
         }
       } catch (chatroomError) {
         console.error('❌ CHATROOM ASSIGNMENT: Failed to join user to chatroom:', chatroomError);
