@@ -520,11 +520,19 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                   variant={useAiVoice ? "default" : "outline"}
                   size="sm"
                   onClick={() => setUseAiVoice(true)}
-                  className={useAiVoice ? "flex-1 bg-gradient-to-r from-purple-500 to-orange-500 hover:from-purple-600 hover:to-orange-600 text-white" : "flex-1"}
+                  className={useAiVoice 
+                    ? "flex-1 bg-gradient-to-r from-purple-500 to-orange-500 hover:from-purple-600 hover:to-orange-600 text-white" 
+                    : "flex-1 relative bg-gradient-to-r from-purple-500/20 to-orange-500/20 border-2 border-purple-400 dark:border-purple-500 text-purple-700 dark:text-purple-300 hover:from-purple-500/30 hover:to-orange-500/30"
+                  }
                 >
-                  <Mic className="mr-2 h-4 w-4" />
-                  <Sparkles className="mr-1 h-3 w-3" />
+                  <Mic className="mr-1 h-4 w-4" />
+                  <Sparkles className="mr-1 h-3 w-3 text-orange-500" />
                   AI Voice
+                  {!useAiVoice && (
+                    <span className="absolute -top-2 -right-2 bg-gradient-to-r from-purple-500 to-orange-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">
+                      TRY
+                    </span>
+                  )}
                 </Button>
               </div>
 
