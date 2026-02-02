@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useLocation } from 'wouter';
 import { MessageCircleQuestion, X, Send, Loader2, Sparkles, Mic, Volume2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,6 +31,7 @@ const PREBUILT_ANSWERS: Record<string, string> = {
 };
 
 export function HelpChatbot() {
+  const [location] = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -37,6 +39,10 @@ export function HelpChatbot() {
   const [showSuggestions, setShowSuggestions] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Hide on message/chat pages to avoid blocking input
+  const isMessagePage = location.startsWith('/messages') || location.startsWith('/chatroom');
+  if (isMessagePage) return null;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
