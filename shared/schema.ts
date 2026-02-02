@@ -660,6 +660,32 @@ export const travelCrewInvites = pgTable("travel_crew_invites", {
 
 export type TravelCrewInvite = typeof travelCrewInvites.$inferSelect;
 
+// Travel Crew Messages - Chat for trip crew members
+export const travelCrewMessages = pgTable("travel_crew_messages", {
+  id: serial("id").primaryKey(),
+  travelPlanId: integer("travel_plan_id").notNull().references(() => travelPlans.id, { onDelete: "cascade" }),
+  senderId: integer("sender_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("idx_crew_messages_travel_plan").on(table.travelPlanId),
+]);
+
+export type TravelCrewMessage = typeof travelCrewMessages.$inferSelect;
+
+// Event Companion Participants - Companions attending an event with their owner
+export const eventCompanionParticipants = pgTable("event_companion_participants", {
+  id: serial("id").primaryKey(),
+  eventId: integer("event_id").notNull().references(() => events.id, { onDelete: "cascade" }),
+  companionId: integer("companion_id").notNull().references(() => companions.id, { onDelete: "cascade" }),
+  addedByUserId: integer("added_by_user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  unique().on(table.eventId, table.companionId),
+]);
+
+export type EventCompanionParticipant = typeof eventCompanionParticipants.$inferSelect;
+
 export const userPhotos = pgTable("user_photos", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull(),

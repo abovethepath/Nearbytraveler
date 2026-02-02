@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest, getApiBaseUrl } from '@/lib/queryClient';
+import { TravelCrew } from './TravelCrew';
 import {
   Calendar,
   Clock,
@@ -506,6 +507,14 @@ export default function TripItineraryView({
             </Dialog>
           )}
         </div>
+      </div>
+
+      <div className="mb-6">
+        <TravelCrew 
+          travelPlanId={travelPlan.id} 
+          userId={userId} 
+          isOwner={isOwnProfile} 
+        />
       </div>
 
       <div className="space-y-3">

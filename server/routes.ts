@@ -32,6 +32,7 @@ import { setupAuth } from "./replitAuth";
 import axios from "axios";
 import * as cheerio from "cheerio";
 
+import crypto from "crypto";
 import { 
   secretLocalExperienceLikes, 
   connections, 
@@ -65,7 +66,15 @@ import {
   insertWaitlistLeadSchema,
   userPhotos,
   passportStamps,
-  userNotificationSettings
+  userNotificationSettings,
+  companions,
+  travelCrewMembers,
+  travelCrewCompanions,
+  travelCrewInvites,
+  tripItineraries,
+  itineraryItems,
+  travelCrewMessages,
+  eventCompanionParticipants
 } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
 import { waitlistLeads } from "../shared/schema";
@@ -7325,6 +7334,689 @@ Questions? Just reply to this message. Welcome aboard!
       return res.status(500).json({ error: "Failed to update privacy setting" });
     }
   });
+
+  // ===== TRAVEL CREW ENDPOINTS =====
+
+  // Get companions for current user
+  app.get("/api/companions", async (req, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const userCompanions = await db.select()
+        .from(companions)
+        .where(eq(companions.ownerUserId, userId))
+        .orderBy(companions.createdAt);
+
+      return res.json(userCompanions);
+    } catch (error: any) {
+      console.error("Error fetching companions:", error);
+      return res.status(500).json({ error: "Failed to fetch companions" });
+    }
+  });
+
+  // Create a new companion
+  app.post("/api/companions", async (req, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const { label, ageBracket, notesPrivate } = req.body;
+      if (!label || typeof label !== 'string') {
+        return res.status(400).json({ error: "Label is required" });
+      }
+
+      const [newCompanion] = await db.insert(companions)
+        .values({
+          ownerUserId: userId,
+          label: label.trim(),
+          ageBracket: ageBracket || null,
+          notesPrivate: notesPrivate || null,
+        })
+        .returning();
+
+      return res.json(newCompanion);
+    } catch (error: any) {
+      console.error("Error creating companion:", error);
+      return res.status(500).json({ error: "Failed to create companion" });
+    }
+  });
+
+  // Delete a companion
+  app.delete("/api/companions/:id", async (req, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const companionId = parseInt(req.params.id || '0');
+      
+      // Verify ownership
+      const companion = await db.select()
+        .from(companions)
+        .where(and(eq(companions.id, companionId), eq(companions.ownerUserId, userId)))
+        .limit(1)
+        .then(r => r[0]);
+
+      if (!companion) {
+        return res.status(404).json({ error: "Companion not found" });
+      }
+
+      await db.delete(companions).where(eq(companions.id, companionId));
+      return res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error deleting companion:", error);
+      return res.status(500).json({ error: "Failed to delete companion" });
+    }
+  });
+
+  // Get travel crew for a travel plan
+  app.get("/api/travel-plans/:id/crew", async (req, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const planId = parseInt(req.params.id || '0');
+
+      // Check if user can view crew (owner or crew member)
+      const plan = await storage.getTravelPlan(planId);
+      const isOwner = plan?.userId === userId;
+      
+      const isMember = userId ? await db.select()
+        .from(travelCrewMembers)
+        .where(and(eq(travelCrewMembers.travelPlanId, planId), eq(travelCrewMembers.userId, userId)))
+        .limit(1)
+        .then(r => r.length > 0) : false;
+
+      // For unauthenticated or non-crew users, return limited info
+      if (!isOwner && !isMember) {
+        // Only return count, not full details
+        const memberCount = await db.select({ count: count() })
+          .from(travelCrewMembers)
+          .where(eq(travelCrewMembers.travelPlanId, planId))
+          .then(r => r[0]?.count || 0);
+        
+        return res.json({ 
+          members: [], 
+          companions: [], 
+          memberCount: Number(memberCount),
+          limitedAccess: true 
+        });
+      }
+
+      // Get crew members (users)
+      const members = await db.select({
+        id: travelCrewMembers.id,
+        userId: travelCrewMembers.userId,
+        role: travelCrewMembers.role,
+        joinedAt: travelCrewMembers.joinedAt,
+        username: users.username,
+        name: users.name,
+        profileImage: users.profileImage,
+      })
+        .from(travelCrewMembers)
+        .leftJoin(users, eq(travelCrewMembers.userId, users.id))
+        .where(eq(travelCrewMembers.travelPlanId, planId));
+
+      // Get crew companions
+      const crewCompanions = await db.select({
+        id: travelCrewCompanions.id,
+        companionId: travelCrewCompanions.companionId,
+        addedAt: travelCrewCompanions.addedAt,
+        label: companions.label,
+        ageBracket: companions.ageBracket,
+      })
+        .from(travelCrewCompanions)
+        .leftJoin(companions, eq(travelCrewCompanions.companionId, companions.id))
+        .where(eq(travelCrewCompanions.travelPlanId, planId));
+
+      return res.json({ members, companions: crewCompanions });
+    } catch (error: any) {
+      console.error("Error fetching travel crew:", error);
+      return res.status(500).json({ error: "Failed to fetch travel crew" });
+    }
+  });
+
+  // Add a user to travel crew
+  app.post("/api/travel-plans/:id/crew/members", async (req, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const planId = parseInt(req.params.id || '0');
+      const { memberUserId, role = 'member' } = req.body;
+
+      // Verify the requester owns the travel plan
+      const plan = await storage.getTravelPlan(planId);
+      if (!plan || plan.userId !== userId) {
+        return res.status(403).json({ error: "You can only add crew to your own trips" });
+      }
+
+      const [newMember] = await db.insert(travelCrewMembers)
+        .values({
+          travelPlanId: planId,
+          userId: memberUserId,
+          role: role,
+        })
+        .onConflictDoNothing()
+        .returning();
+
+      return res.json(newMember || { alreadyExists: true });
+    } catch (error: any) {
+      console.error("Error adding crew member:", error);
+      return res.status(500).json({ error: "Failed to add crew member" });
+    }
+  });
+
+  // Remove a user from travel crew
+  app.delete("/api/travel-plans/:planId/crew/members/:memberId", async (req, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const planId = parseInt(req.params.planId || '0');
+      const memberId = parseInt(req.params.memberId || '0');
+
+      // Verify the requester owns the travel plan
+      const plan = await storage.getTravelPlan(planId);
+      if (!plan || plan.userId !== userId) {
+        return res.status(403).json({ error: "You can only manage crew for your own trips" });
+      }
+
+      await db.delete(travelCrewMembers)
+        .where(and(
+          eq(travelCrewMembers.travelPlanId, planId),
+          eq(travelCrewMembers.userId, memberId)
+        ));
+
+      return res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error removing crew member:", error);
+      return res.status(500).json({ error: "Failed to remove crew member" });
+    }
+  });
+
+  // Add a companion to travel crew
+  app.post("/api/travel-plans/:id/crew/companions", async (req, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const planId = parseInt(req.params.id || '0');
+      const { companionId } = req.body;
+
+      // Verify the requester owns the travel plan
+      const plan = await storage.getTravelPlan(planId);
+      if (!plan || plan.userId !== userId) {
+        return res.status(403).json({ error: "You can only add companions to your own trips" });
+      }
+
+      // Verify the companion belongs to this user
+      const companion = await db.select()
+        .from(companions)
+        .where(and(eq(companions.id, companionId), eq(companions.ownerUserId, userId)))
+        .limit(1)
+        .then(r => r[0]);
+
+      if (!companion) {
+        return res.status(404).json({ error: "Companion not found" });
+      }
+
+      const [newCrewCompanion] = await db.insert(travelCrewCompanions)
+        .values({
+          travelPlanId: planId,
+          companionId: companionId,
+        })
+        .onConflictDoNothing()
+        .returning();
+
+      return res.json(newCrewCompanion || { alreadyExists: true });
+    } catch (error: any) {
+      console.error("Error adding companion to crew:", error);
+      return res.status(500).json({ error: "Failed to add companion to crew" });
+    }
+  });
+
+  // Remove a companion from travel crew
+  app.delete("/api/travel-plans/:planId/crew/companions/:companionId", async (req, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const planId = parseInt(req.params.planId || '0');
+      const companionId = parseInt(req.params.companionId || '0');
+
+      // Verify the requester owns the travel plan
+      const plan = await storage.getTravelPlan(planId);
+      if (!plan || plan.userId !== userId) {
+        return res.status(403).json({ error: "You can only manage crew for your own trips" });
+      }
+
+      await db.delete(travelCrewCompanions)
+        .where(and(
+          eq(travelCrewCompanions.travelPlanId, planId),
+          eq(travelCrewCompanions.companionId, companionId)
+        ));
+
+      return res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error removing companion from crew:", error);
+      return res.status(500).json({ error: "Failed to remove companion from crew" });
+    }
+  });
+
+  // Generate invite link for travel crew
+  app.post("/api/travel-plans/:id/crew/invite", async (req, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const planId = parseInt(req.params.id || '0');
+
+      // Verify the requester owns the travel plan
+      const plan = await storage.getTravelPlan(planId);
+      if (!plan || plan.userId !== userId) {
+        return res.status(403).json({ error: "You can only create invites for your own trips" });
+      }
+
+      // Generate unique token
+      const token = crypto.randomBytes(16).toString('hex');
+      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+
+      const [invite] = await db.insert(travelCrewInvites)
+        .values({
+          travelPlanId: planId,
+          invitedByUserId: userId,
+          inviteToken: token,
+          expiresAt: expiresAt,
+        })
+        .returning();
+
+      return res.json({
+        inviteToken: token,
+        inviteUrl: `${process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : 'https://nearbytraveler.org'}/join-trip/${token}`,
+        expiresAt: expiresAt,
+      });
+    } catch (error: any) {
+      console.error("Error creating crew invite:", error);
+      return res.status(500).json({ error: "Failed to create invite" });
+    }
+  });
+
+  // Join travel crew via invite token
+  app.post("/api/join-trip/:token", async (req, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const token = req.params.token;
+
+      // Find the invite
+      const invite = await db.select()
+        .from(travelCrewInvites)
+        .where(and(
+          eq(travelCrewInvites.inviteToken, token),
+          eq(travelCrewInvites.status, 'pending')
+        ))
+        .limit(1)
+        .then(r => r[0]);
+
+      if (!invite) {
+        return res.status(404).json({ error: "Invalid or expired invite" });
+      }
+
+      if (invite.expiresAt && new Date(invite.expiresAt) < new Date()) {
+        await db.update(travelCrewInvites)
+          .set({ status: 'expired' })
+          .where(eq(travelCrewInvites.id, invite.id));
+        return res.status(400).json({ error: "Invite has expired" });
+      }
+
+      // Add user to crew
+      await db.insert(travelCrewMembers)
+        .values({
+          travelPlanId: invite.travelPlanId,
+          userId: userId,
+          role: 'member',
+        })
+        .onConflictDoNothing();
+
+      // Mark invite as accepted
+      await db.update(travelCrewInvites)
+        .set({ status: 'accepted' })
+        .where(eq(travelCrewInvites.id, invite.id));
+
+      // Get trip details
+      const plan = await storage.getTravelPlan(invite.travelPlanId);
+
+      return res.json({
+        success: true,
+        travelPlan: plan,
+        message: "You've joined the travel crew!",
+      });
+    } catch (error: any) {
+      console.error("Error joining trip:", error);
+      return res.status(500).json({ error: "Failed to join trip" });
+    }
+  });
+
+  // Get invite info (public - for displaying join page)
+  app.get("/api/invite/:token", async (req, res) => {
+    try {
+      const token = req.params.token;
+
+      const invite = await db.select({
+        id: travelCrewInvites.id,
+        status: travelCrewInvites.status,
+        expiresAt: travelCrewInvites.expiresAt,
+        travelPlanId: travelCrewInvites.travelPlanId,
+      })
+        .from(travelCrewInvites)
+        .where(eq(travelCrewInvites.inviteToken, token))
+        .limit(1)
+        .then(r => r[0]);
+
+      if (!invite) {
+        return res.status(404).json({ error: "Invite not found" });
+      }
+
+      // Get trip details
+      const plan = await storage.getTravelPlan(invite.travelPlanId);
+      if (!plan) {
+        return res.status(404).json({ error: "Trip not found" });
+      }
+
+      // Get inviter info
+      const inviterInfo = await db.select({
+        username: users.username,
+        name: users.name,
+        profileImage: users.profileImage,
+      })
+        .from(users)
+        .where(eq(users.id, plan.userId))
+        .limit(1)
+        .then(r => r[0]);
+
+      const isExpired = invite.expiresAt && new Date(invite.expiresAt) < new Date();
+
+      return res.json({
+        valid: invite.status === 'pending' && !isExpired,
+        trip: {
+          destination: plan.destination,
+          destinationCity: plan.destinationCity,
+          startDate: plan.startDate,
+          endDate: plan.endDate,
+        },
+        invitedBy: inviterInfo,
+        expiresAt: invite.expiresAt,
+      });
+    } catch (error: any) {
+      console.error("Error fetching invite:", error);
+      return res.status(500).json({ error: "Failed to fetch invite" });
+    }
+  });
+
+  // Get crew chat messages
+  app.get("/api/travel-plans/:id/crew/messages", async (req, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const planId = parseInt(req.params.id || '0');
+
+      // Verify user is part of the crew
+      const isMember = await db.select()
+        .from(travelCrewMembers)
+        .where(and(
+          eq(travelCrewMembers.travelPlanId, planId),
+          eq(travelCrewMembers.userId, userId)
+        ))
+        .limit(1)
+        .then(r => r.length > 0);
+
+      // Also check if user is the owner
+      const plan = await storage.getTravelPlan(planId);
+      const isOwner = plan?.userId === userId;
+
+      if (!isMember && !isOwner) {
+        return res.status(403).json({ error: "You're not part of this travel crew" });
+      }
+
+      const crewMessages = await db.select({
+        id: travelCrewMessages.id,
+        content: travelCrewMessages.content,
+        createdAt: travelCrewMessages.createdAt,
+        senderId: travelCrewMessages.senderId,
+        senderUsername: users.username,
+        senderName: users.name,
+        senderImage: users.profileImage,
+      })
+        .from(travelCrewMessages)
+        .leftJoin(users, eq(travelCrewMessages.senderId, users.id))
+        .where(eq(travelCrewMessages.travelPlanId, planId))
+        .orderBy(asc(travelCrewMessages.createdAt))
+        .limit(100);
+
+      return res.json(crewMessages);
+    } catch (error: any) {
+      console.error("Error fetching crew messages:", error);
+      return res.status(500).json({ error: "Failed to fetch messages" });
+    }
+  });
+
+  // Send crew chat message
+  app.post("/api/travel-plans/:id/crew/messages", async (req, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const planId = parseInt(req.params.id || '0');
+      const { content } = req.body;
+
+      if (!content || typeof content !== 'string' || content.trim().length === 0) {
+        return res.status(400).json({ error: "Message content is required" });
+      }
+
+      // Verify user is part of the crew
+      const isMember = await db.select()
+        .from(travelCrewMembers)
+        .where(and(
+          eq(travelCrewMembers.travelPlanId, planId),
+          eq(travelCrewMembers.userId, userId)
+        ))
+        .limit(1)
+        .then(r => r.length > 0);
+
+      // Also check if user is the owner
+      const plan = await storage.getTravelPlan(planId);
+      const isOwner = plan?.userId === userId;
+
+      if (!isMember && !isOwner) {
+        return res.status(403).json({ error: "You're not part of this travel crew" });
+      }
+
+      const [newMessage] = await db.insert(travelCrewMessages)
+        .values({
+          travelPlanId: planId,
+          senderId: userId,
+          content: content.trim(),
+        })
+        .returning();
+
+      // Get sender info
+      const sender = await db.select({
+        username: users.username,
+        name: users.name,
+        profileImage: users.profileImage,
+      })
+        .from(users)
+        .where(eq(users.id, userId))
+        .limit(1)
+        .then(r => r[0]);
+
+      return res.json({
+        ...newMessage,
+        senderUsername: sender?.username,
+        senderName: sender?.name,
+        senderImage: sender?.profileImage,
+      });
+    } catch (error: any) {
+      console.error("Error sending crew message:", error);
+      return res.status(500).json({ error: "Failed to send message" });
+    }
+  });
+
+  // ===== END TRAVEL CREW ENDPOINTS =====
+
+  // ===== EVENT COMPANION PARTICIPATION ENDPOINTS =====
+
+  // Get companions attending an event
+  app.get("/api/events/:id/companions", async (req, res) => {
+    try {
+      const eventId = parseInt(req.params.id || '0');
+
+      const eventCompanions = await db.select({
+        id: eventCompanionParticipants.id,
+        companionId: eventCompanionParticipants.companionId,
+        addedByUserId: eventCompanionParticipants.addedByUserId,
+        label: companions.label,
+        ageBracket: companions.ageBracket,
+      })
+        .from(eventCompanionParticipants)
+        .leftJoin(companions, eq(eventCompanionParticipants.companionId, companions.id))
+        .where(eq(eventCompanionParticipants.eventId, eventId));
+
+      return res.json(eventCompanions);
+    } catch (error: any) {
+      console.error("Error fetching event companions:", error);
+      return res.status(500).json({ error: "Failed to fetch event companions" });
+    }
+  });
+
+  // Add companion to event
+  app.post("/api/events/:id/companions", async (req, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const eventId = parseInt(req.params.id || '0');
+      const { companionId } = req.body;
+
+      // Verify companion belongs to user
+      const companion = await db.select()
+        .from(companions)
+        .where(and(eq(companions.id, companionId), eq(companions.ownerUserId, userId)))
+        .limit(1)
+        .then(r => r[0]);
+
+      if (!companion) {
+        return res.status(404).json({ error: "Companion not found" });
+      }
+
+      const [newParticipant] = await db.insert(eventCompanionParticipants)
+        .values({
+          eventId: eventId,
+          companionId: companionId,
+          addedByUserId: userId,
+        })
+        .onConflictDoNothing()
+        .returning();
+
+      return res.json(newParticipant || { alreadyExists: true });
+    } catch (error: any) {
+      console.error("Error adding companion to event:", error);
+      return res.status(500).json({ error: "Failed to add companion to event" });
+    }
+  });
+
+  // Remove companion from event
+  app.delete("/api/events/:eventId/companions/:companionId", async (req, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const eventId = parseInt(req.params.eventId || '0');
+      const companionId = parseInt(req.params.companionId || '0');
+
+      // Verify companion belongs to user
+      const companion = await db.select()
+        .from(companions)
+        .where(and(eq(companions.id, companionId), eq(companions.ownerUserId, userId)))
+        .limit(1)
+        .then(r => r[0]);
+
+      if (!companion) {
+        return res.status(404).json({ error: "Companion not found" });
+      }
+
+      await db.delete(eventCompanionParticipants)
+        .where(and(
+          eq(eventCompanionParticipants.eventId, eventId),
+          eq(eventCompanionParticipants.companionId, companionId)
+        ));
+
+      return res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error removing companion from event:", error);
+      return res.status(500).json({ error: "Failed to remove companion from event" });
+    }
+  });
+
+  // Get event attendance count including companions
+  app.get("/api/events/:id/attendance-count", async (req, res) => {
+    try {
+      const eventId = parseInt(req.params.id || '0');
+
+      // Count adult participants
+      const adultCount = await db.select({ count: count() })
+        .from(eventParticipants)
+        .where(eq(eventParticipants.eventId, eventId))
+        .then(r => r[0]?.count || 0);
+
+      // Count companion participants
+      const companionCount = await db.select({ count: count() })
+        .from(eventCompanionParticipants)
+        .where(eq(eventCompanionParticipants.eventId, eventId))
+        .then(r => r[0]?.count || 0);
+
+      return res.json({
+        adults: Number(adultCount),
+        companions: Number(companionCount),
+        total: Number(adultCount) + Number(companionCount),
+        display: Number(companionCount) > 0 
+          ? `${adultCount} ${Number(adultCount) === 1 ? 'adult' : 'adults'} + ${companionCount} ${Number(companionCount) === 1 ? 'companion' : 'companions'}`
+          : `${adultCount} ${Number(adultCount) === 1 ? 'person' : 'people'}`
+      });
+    } catch (error: any) {
+      console.error("Error fetching attendance count:", error);
+      return res.status(500).json({ error: "Failed to fetch attendance count" });
+    }
+  });
+
+  // ===== END EVENT COMPANION PARTICIPATION ENDPOINTS =====
 
   // CRITICAL: Update existing travel plan
   app.put("/api/travel-plans/:id", async (req, res) => {

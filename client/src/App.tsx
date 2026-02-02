@@ -160,6 +160,7 @@ import Donate from "@/pages/donate";
 import NotFound from "@/pages/not-found";
 import Itinerary from "@/pages/itinerary";
 import SharedTrip from "@/pages/shared-trip";
+import JoinTrip from "@/pages/join-trip";
 import TravelBlog from "@/pages/travel-blog";
 import QuickLogin from "@/pages/quick-login";
 import MatchInCity from "@/pages/match-in-city";
@@ -991,6 +992,10 @@ function Router() {
 
     if (location.startsWith('/trip/')) {
       return <SharedTrip />;
+    }
+
+    if (location.startsWith('/join-trip/')) {
+      return <JoinTrip />;
     }
 
     if (location.startsWith('/deals/')) {
