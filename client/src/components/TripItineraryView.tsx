@@ -572,7 +572,7 @@ export default function TripItineraryView({
                       <Label className="text-gray-700 dark:text-gray-300">Time</Label>
                       <div className="flex gap-1 items-center">
                         <select
-                          className="flex-1 h-10 rounded-md border border-input bg-background px-2 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                          className="flex-1 h-10 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-black dark:text-white px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                           value={newItem.startTime ? (parseInt(newItem.startTime.split(':')[0]) > 12 ? (parseInt(newItem.startTime.split(':')[0]) - 12).toString() : (parseInt(newItem.startTime.split(':')[0]) === 0 ? '12' : parseInt(newItem.startTime.split(':')[0]).toString())) : ''}
                           onChange={(e) => {
                             const hour = parseInt(e.target.value);
@@ -590,9 +590,9 @@ export default function TripItineraryView({
                             <option key={h} value={h}>{h}</option>
                           ))}
                         </select>
-                        <span className="text-lg font-bold">:</span>
+                        <span className="text-lg font-bold text-gray-700 dark:text-gray-300">:</span>
                         <select
-                          className="flex-1 h-10 rounded-md border border-input bg-background px-2 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                          className="flex-1 h-10 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-black dark:text-white px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                           value={newItem.startTime ? newItem.startTime.split(':')[1] : ''}
                           onChange={(e) => {
                             const currentHour = newItem.startTime ? newItem.startTime.split(':')[0] : '09';
@@ -604,13 +604,13 @@ export default function TripItineraryView({
                             <option key={m} value={m}>{m}</option>
                           ))}
                         </select>
-                        <div className="flex rounded-md border border-input overflow-hidden">
+                        <div className="flex rounded-md border border-gray-300 dark:border-gray-600 overflow-hidden">
                           <button
                             type="button"
                             className={`px-2 py-2 text-sm font-medium transition-colors ${
                               !newItem.startTime || parseInt(newItem.startTime.split(':')[0]) < 12
                                 ? 'bg-orange-500 text-white'
-                                : 'bg-background hover:bg-muted'
+                                : 'bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
                             }`}
                             onClick={() => {
                               if (!newItem.startTime) {
@@ -632,7 +632,7 @@ export default function TripItineraryView({
                             className={`px-2 py-2 text-sm font-medium transition-colors ${
                               newItem.startTime && parseInt(newItem.startTime.split(':')[0]) >= 12
                                 ? 'bg-orange-500 text-white'
-                                : 'bg-background hover:bg-muted'
+                                : 'bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
                             }`}
                             onClick={() => {
                               if (!newItem.startTime) {
