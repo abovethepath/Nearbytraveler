@@ -18076,6 +18076,49 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // POST AI Help Chatbot - answers questions about platform features
+  app.post("/api/ai/help-chat", async (req, res) => {
+    try {
+      const { message, conversationHistory } = req.body;
+      
+      // Validate message
+      if (!message || typeof message !== 'string' || message.trim().length < 2) {
+        return res.status(400).json({ error: 'Please provide a message' });
+      }
+      
+      // Limit message length to prevent abuse (max 500 chars)
+      const trimmedMessage = message.trim().slice(0, 500);
+      
+      // Validate and limit conversation history (max 10 messages to control costs)
+      let validHistory: Array<{role: 'user' | 'assistant', content: string}> = [];
+      if (Array.isArray(conversationHistory)) {
+        validHistory = conversationHistory
+          .filter((msg: any) => 
+            msg && 
+            typeof msg.content === 'string' && 
+            (msg.role === 'user' || msg.role === 'assistant')
+          )
+          .slice(-10) // Keep only last 10 messages
+          .map((msg: any) => ({
+            role: msg.role as 'user' | 'assistant',
+            content: msg.content.slice(0, 500) // Limit each message length
+          }));
+      }
+
+      const { getHelpResponse } = await import('./services/aiHelpChatbot');
+      const result = await getHelpResponse(trimmedMessage, validHistory);
+
+      if (!result.success) {
+        return res.status(500).json({ error: result.error || 'Failed to get response' });
+      }
+
+      res.json({ response: result.response });
+    } catch (error: any) {
+      console.error('Help chatbot error:', error);
+      res.status(500).json({ error: 'Failed to process your question' });
+    }
+  });
+
   // GET all user city interests for a specific user (across all cities)
   app.get("/api/user-city-interests/:userId", async (req, res) => {
     try {

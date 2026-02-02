@@ -42,6 +42,7 @@ import Passport from "@/pages/passport";
 import Auth from "@/pages/auth";
 import JoinNowWidgetNew from "@/components/join-now-widget-new";
 import Logo from "@/components/logo";
+import { HelpChatbot } from "@/components/HelpChatbot";
 
 // Join page component with sign in option
 function JoinPageWithSignIn() {
@@ -1305,7 +1306,7 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <Router />
-          {/* REMOVED: Global Floating Chat Manager - obsolete functionality */}
+          <HelpChatbot />
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>
