@@ -100,6 +100,7 @@ export function AIQuickCreateMeetup({ onDraftReady, defaultCity, onCancel, autoS
       }, 300);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [autoStartListening, speechSupported, autoStartTriggered, isListening, draft]);
 
   // Cleanup speech recognition on unmount
@@ -287,25 +288,25 @@ export function AIQuickCreateMeetup({ onDraftReady, defaultCity, onCancel, autoS
   };
 
   return (
-    <Card className="border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-white dark:from-gray-800 dark:to-gray-900 dark:border-orange-800">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Sparkles className="h-5 w-5 text-orange-500" />
-          <span className="text-gray-900 dark:text-gray-100">Let's Meet Now - AI Voice</span>
+    <Card className="border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-white dark:from-gray-800 dark:to-gray-900 dark:border-orange-800 w-full max-w-full overflow-hidden">
+      <CardHeader className="pb-3 px-3 sm:px-6">
+        <CardTitle className="flex items-center gap-2 text-base sm:text-lg flex-wrap">
+          <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500 flex-shrink-0" />
+          <span className="text-gray-900 dark:text-gray-100">AI Voice Meetup</span>
         </CardTitle>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          Tap the mic and describe your meetup idea - AI will fill in the details!
+        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+          Tap the mic and describe your meetup idea!
         </p>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-6">
         {!draft ? (
           <>
             <div className="relative">
               <Textarea
-                placeholder='Try: "Coffee at the Starbucks on Main Street, looking for someone in the next hour" or "Beach volleyball in Santa Monica this afternoon, call me if interested"'
+                placeholder='Try: "Coffee at Starbucks in 1 hour" or "Beach volleyball this afternoon"'
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
-                className="min-h-[100px] pr-12 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                className="min-h-[80px] sm:min-h-[100px] pr-14 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm sm:text-base"
                 disabled={parseMutation.isPending}
               />
               {speechSupported && (
@@ -313,24 +314,24 @@ export function AIQuickCreateMeetup({ onDraftReady, defaultCity, onCancel, autoS
                   type="button"
                   size="icon"
                   variant={isListening ? "destructive" : "outline"}
-                  className="absolute right-2 bottom-2"
+                  className="absolute right-2 bottom-2 h-10 w-10 sm:h-9 sm:w-9"
                   onClick={toggleListening}
                   disabled={parseMutation.isPending}
                 >
                   {isListening ? (
-                    <MicOff className="h-4 w-4 animate-pulse" />
+                    <MicOff className="h-5 w-5 sm:h-4 sm:w-4 animate-pulse" />
                   ) : (
-                    <Mic className="h-4 w-4" />
+                    <Mic className="h-5 w-5 sm:h-4 sm:w-4" />
                   )}
                 </Button>
               )}
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <Button
                 onClick={handleSubmit}
                 disabled={!inputText.trim() || parseMutation.isPending}
-                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
+                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white text-sm sm:text-base py-2 h-auto min-h-[44px]"
               >
                 {parseMutation.isPending ? (
                   <>
@@ -345,128 +346,129 @@ export function AIQuickCreateMeetup({ onDraftReady, defaultCity, onCancel, autoS
                 )}
               </Button>
               {onCancel && (
-                <Button variant="outline" onClick={onCancel}>
+                <Button variant="outline" onClick={onCancel} className="min-h-[44px]">
                   Cancel
                 </Button>
               )}
             </div>
           </>
         ) : (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Badge className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <Badge className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 text-xs">
                 <Check className="mr-1 h-3 w-3" /> Draft Ready
               </Badge>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsEditing(!isEditing)}
+                className="text-xs sm:text-sm min-h-[36px]"
               >
                 <Edit2 className="mr-1 h-3 w-3" />
-                {isEditing ? "Done Editing" : "Edit"}
+                {isEditing ? "Done" : "Edit"}
               </Button>
             </div>
 
             {draft.missing && draft.missing.length > 0 && (
-              <div className="flex items-start gap-2 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                <AlertCircle className="h-4 w-4 text-yellow-600 mt-0.5" />
-                <div className="text-sm text-yellow-700 dark:text-yellow-300">
-                  <p className="font-medium">Missing details:</p>
+              <div className="flex items-start gap-2 p-2 sm:p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                <AlertCircle className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                <div className="text-xs sm:text-sm text-yellow-700 dark:text-yellow-300">
+                  <p className="font-medium">Missing:</p>
                   <p>{draft.missing.join(", ")}</p>
                 </div>
               </div>
             )}
 
-            <div className="grid gap-3">
+            <div className="grid gap-2 sm:gap-3">
               <div className="space-y-1">
-                <Label className="text-sm font-medium flex items-center gap-2 text-gray-900 dark:text-gray-100">
-                  <Zap className="h-4 w-4 text-orange-500" />
+                <Label className="text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-2 text-gray-900 dark:text-gray-100">
+                  <Zap className="h-3 w-3 sm:h-4 sm:w-4 text-orange-500" />
                   Title
                 </Label>
                 {isEditing ? (
                   <Input
                     value={draft.title || ""}
                     onChange={(e) => updateDraftField("title", e.target.value)}
-                    className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                    className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm"
                   />
                 ) : (
-                  <p className="text-gray-800 dark:text-gray-200 font-medium">{draft.title}</p>
+                  <p className="text-gray-800 dark:text-gray-200 font-medium text-sm sm:text-base">{draft.title}</p>
                 )}
               </div>
 
               {(draft.description || isEditing) && (
                 <div className="space-y-1">
-                  <Label className="text-sm font-medium text-gray-900 dark:text-gray-100">Description</Label>
+                  <Label className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">Description</Label>
                   {isEditing ? (
                     <Textarea
                       value={draft.description || ""}
                       onChange={(e) => updateDraftField("description", e.target.value)}
-                      className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                      className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm min-h-[60px]"
                     />
                   ) : (
-                    <p className="text-gray-700 dark:text-gray-300">{draft.description}</p>
+                    <p className="text-gray-700 dark:text-gray-300 text-sm">{draft.description}</p>
                   )}
                 </div>
               )}
 
               <div className="space-y-1">
-                <Label className="text-sm font-medium flex items-center gap-2 text-gray-900 dark:text-gray-100">
-                  <MapPin className="h-4 w-4 text-blue-500" />
+                <Label className="text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-2 text-gray-900 dark:text-gray-100">
+                  <MapPin className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500" />
                   Meeting Point
                 </Label>
                 {isEditing ? (
                   <Input
                     value={draft.meetingPoint || ""}
                     onChange={(e) => updateDraftField("meetingPoint", e.target.value)}
-                    className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                    className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm"
                     placeholder="Where to meet"
                   />
                 ) : (
-                  <p className="text-gray-700 dark:text-gray-300">{draft.meetingPoint || "Not specified"}</p>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">{draft.meetingPoint || "Not specified"}</p>
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <Label className="text-sm font-medium text-gray-900 dark:text-gray-100">City</Label>
+                  <Label className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">City</Label>
                   {isEditing ? (
                     <Input
                       value={draft.city || ""}
                       onChange={(e) => updateDraftField("city", e.target.value)}
-                      className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                      className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm"
                     />
                   ) : (
-                    <p className="text-gray-700 dark:text-gray-300">{draft.city || "Not specified"}</p>
+                    <p className="text-gray-700 dark:text-gray-300 text-sm">{draft.city || "Not specified"}</p>
                   )}
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-sm font-medium text-gray-900 dark:text-gray-100">State</Label>
+                  <Label className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">State</Label>
                   {isEditing ? (
                     <Input
                       value={draft.state || ""}
                       onChange={(e) => updateDraftField("state", e.target.value)}
-                      className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                      className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm"
                     />
                   ) : (
-                    <p className="text-gray-700 dark:text-gray-300">{draft.state || ""}</p>
+                    <p className="text-gray-700 dark:text-gray-300 text-sm">{draft.state || ""}</p>
                   )}
                 </div>
               </div>
 
               <div className="space-y-1">
-                <Label className="text-sm font-medium flex items-center gap-2 text-gray-900 dark:text-gray-100">
-                  <Clock className="h-4 w-4 text-purple-500" />
-                  Response Window
+                <Label className="text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-2 text-gray-900 dark:text-gray-100">
+                  <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-purple-500" />
+                  Response Time
                 </Label>
                 {isEditing ? (
                   <Select
                     value={draft.responseTime || "2hours"}
                     onValueChange={(value) => updateDraftField("responseTime", value)}
                   >
-                    <SelectTrigger className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+                    <SelectTrigger className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white dark:bg-gray-800">
                       <SelectItem value="1hour">1 hour</SelectItem>
                       <SelectItem value="2hours">2 hours</SelectItem>
                       <SelectItem value="3hours">3 hours</SelectItem>
@@ -476,7 +478,7 @@ export function AIQuickCreateMeetup({ onDraftReady, defaultCity, onCancel, autoS
                     </SelectContent>
                   </Select>
                 ) : (
-                  <p className="text-gray-700 dark:text-gray-300">
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">
                     {RESPONSE_TIME_LABELS[draft.responseTime || "2hours"]}
                   </p>
                 )}
@@ -484,28 +486,28 @@ export function AIQuickCreateMeetup({ onDraftReady, defaultCity, onCancel, autoS
 
               {(draft.organizerNotes || isEditing) && (
                 <div className="space-y-1">
-                  <Label className="text-sm font-medium text-gray-900 dark:text-gray-100">Notes (contact info, how to find you)</Label>
+                  <Label className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100">Notes</Label>
                   {isEditing ? (
                     <Textarea
                       value={draft.organizerNotes || ""}
                       onChange={(e) => updateDraftField("organizerNotes", e.target.value)}
-                      className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                      placeholder="Call me at... / I'll be wearing... / Look for me near..."
+                      className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm min-h-[60px]"
+                      placeholder="Call me at... / I'll be wearing..."
                     />
                   ) : (
-                    <p className="text-gray-700 dark:text-gray-300">{draft.organizerNotes}</p>
+                    <p className="text-gray-700 dark:text-gray-300 text-sm">{draft.organizerNotes}</p>
                   )}
                 </div>
               )}
             </div>
 
-            <div className="flex gap-2 pt-2">
+            <div className="flex flex-col sm:flex-row gap-2 pt-2">
               <Button
                 onClick={handleUseDraft}
-                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
+                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white text-sm sm:text-base min-h-[44px]"
               >
                 <Check className="mr-2 h-4 w-4" />
-                Use This Draft
+                Use This
               </Button>
               <Button
                 variant="outline"
@@ -513,6 +515,7 @@ export function AIQuickCreateMeetup({ onDraftReady, defaultCity, onCancel, autoS
                   setDraft(null);
                   setInputText("");
                 }}
+                className="min-h-[44px] text-sm sm:text-base"
               >
                 Start Over
               </Button>
