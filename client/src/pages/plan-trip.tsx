@@ -1070,7 +1070,7 @@ export default function PlanTrip() {
                   /* Companion selection for new trips */
                   <div className="space-y-4">
                     <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-                      Who's coming with you? Add kids or family members traveling with you.
+                      Who's coming with you? Add friends, family, or kids traveling with you.
                     </p>
 
                     {/* Existing companions to select */}
@@ -1124,21 +1124,22 @@ export default function PlanTrip() {
                         </div>
                         <div className="grid grid-cols-2 gap-2">
                           <Input
-                            placeholder="Name or label (e.g., My Son)"
+                            placeholder="Name (e.g., Sarah, My Son)"
                             value={newCompanionLabel}
                             onChange={(e) => setNewCompanionLabel(e.target.value)}
                             className="text-sm"
                           />
                           <Select value={newCompanionAge} onValueChange={setNewCompanionAge}>
                             <SelectTrigger className="text-sm">
-                              <SelectValue placeholder="Age group" />
+                              <SelectValue placeholder="Type" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="infant">Infant (0-2)</SelectItem>
-                              <SelectItem value="toddler">Toddler (2-5)</SelectItem>
-                              <SelectItem value="child">Child (6-12)</SelectItem>
+                              <SelectItem value="friend">Friend</SelectItem>
+                              <SelectItem value="adult">Adult Family</SelectItem>
                               <SelectItem value="teen">Teen (13-17)</SelectItem>
-                              <SelectItem value="adult">Adult (18+)</SelectItem>
+                              <SelectItem value="child">Child (6-12)</SelectItem>
+                              <SelectItem value="toddler">Toddler (2-5)</SelectItem>
+                              <SelectItem value="infant">Infant (0-2)</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -1165,7 +1166,7 @@ export default function PlanTrip() {
                         className="border-purple-300 dark:border-purple-600 text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/30"
                       >
                         <Plus className="w-4 h-4 mr-1" />
-                        Add Companion (Kid/Family Member)
+                        Add Travel Companion
                       </Button>
                     )}
 
