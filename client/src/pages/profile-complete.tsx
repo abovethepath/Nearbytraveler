@@ -4425,12 +4425,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       onMouseDown={(e) => {
                         console.log("EDIT MOUSEDOWN - Button mousedown");
                       }}
-                      className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md border ${isProfileIncomplete() ? 'bg-red-100 hover:bg-red-200 border-red-400 text-red-700' : 'bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800 dark:border-blue-700 dark:text-blue-100'}`}
+                      className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md border-0 ${isProfileIncomplete() ? 'bg-red-100 hover:bg-red-200 border-red-400 text-red-700' : 'bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-black'}`}
                       style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto', cursor: 'pointer' }}
                       data-testid="button-edit-profile"
                     >
-                      <Edit2 className="w-4 h-4" />
-                      <span className="hidden sm:inline">Edit Profile</span>
+                      <Edit2 className="w-4 h-4 text-black" />
+                      <span className="hidden sm:inline text-black">Edit Profile</span>
                     </button>
                   )}
                 </div>
@@ -6766,8 +6766,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     Languages I Speak
                   </CardTitle>
                   {isOwnProfile && !editingLanguages && (
-                    <Button size="sm" variant="outline" onClick={handleEditLanguages} className="border-blue-300 text-blue-700 hover:bg-blue-100 dark:border-blue-600 dark:text-blue-300">
-                      <Edit className="w-3 h-3" />
+                    <Button size="sm" onClick={handleEditLanguages} className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 border-0 [&]:text-black [&>*]:text-black">
+                      <Edit className="w-3 h-3 text-black" />
                     </Button>
                   )}
                 </div>
@@ -7008,10 +7008,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       <Button
                         size="sm"
                         onClick={() => setLocation('/travel-quiz')}
-                        className="ml-auto bg-purple-600 hover:bg-purple-700 text-white border-0"
+                        className="ml-auto bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 border-0 [&]:text-black [&>*]:text-black"
                       >
-                        <Edit className="w-3 h-3 mr-1" />
-                        Update
+                        <Edit className="w-3 h-3 mr-1 text-black" />
+                        <span className="text-black">Update</span>
                       </Button>
                     )}
                   </CardTitle>
