@@ -6322,7 +6322,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
                   <button 
                     type="button"
-                    className="flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 -m-2 transition-colors w-full text-left"
+                    className="flex items-center justify-between cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-900/30 rounded-lg p-2 -m-2 transition-colors w-full text-left"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -6330,9 +6330,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     }}
                     style={{ position: 'relative', zIndex: 50, pointerEvents: 'auto' }}
                   >
-                    <span className="text-gray-600 dark:text-gray-300">City Chatrooms</span>
+                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                      <MessageCircle className="w-4 h-4 text-orange-500" />
+                      City Chatrooms
+                    </span>
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold dark:text-white">{userChatrooms.length}</span>
+                      <span className="font-semibold text-orange-600 dark:text-orange-400">{userChatrooms.length}</span>
                       <ChevronRight className="w-4 h-4 text-gray-400" />
                     </div>
                   </button>
