@@ -801,8 +801,8 @@ export default function PlanTrip() {
               
               <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[200px] sm:h-[250px] md:h-[350px] rounded-2xl">
                 <img
-                  src="/travelers_1756778615408.jpg"
-                  alt="Travelers planning their next adventure together"
+                  src="/trip-planning.webp"
+                  alt="People planning vacation trip with map and laptop"
                   className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl shadow-lg"
                 />
               </div>
