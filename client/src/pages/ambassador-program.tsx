@@ -128,9 +128,63 @@ export default function AmbassadorProgram() {
         </div>
       </section>
 
+      <section className="py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          <Card className="bg-gradient-to-br from-orange-50 to-blue-50 dark:from-gray-800 dark:to-gray-700 border-2 border-orange-200 dark:border-orange-800">
+            <CardHeader>
+              <CardTitle className="text-xl text-gray-900 dark:text-white flex items-center gap-2">
+                <Star className="w-5 h-5 text-orange-600" />
+                How Travel Aura is Currently Earned
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600 dark:text-gray-300 mb-4">
+                Travel Aura is separate from Ambassador Points. It tracks your general engagement with the platform.
+              </p>
+              <div className="bg-white dark:bg-gray-900 rounded-lg overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-gray-100 dark:bg-gray-800">
+                    <tr>
+                      <th className="text-left px-4 py-3 text-gray-700 dark:text-gray-300 font-semibold">Action</th>
+                      <th className="text-right px-4 py-3 text-gray-700 dark:text-gray-300 font-semibold">Points</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                    <tr>
+                      <td className="px-4 py-3 text-gray-700 dark:text-gray-300">Completing profile</td>
+                      <td className="px-4 py-3 text-right text-gray-700 dark:text-gray-300">1</td>
+                    </tr>
+                    <tr>
+                      <td className="px-4 py-3 text-gray-700 dark:text-gray-300">Creating a trip</td>
+                      <td className="px-4 py-3 text-right text-gray-700 dark:text-gray-300">1</td>
+                    </tr>
+                    <tr>
+                      <td className="px-4 py-3 text-gray-700 dark:text-gray-300">Creating an event</td>
+                      <td className="px-4 py-3 text-right text-gray-700 dark:text-gray-300">4</td>
+                    </tr>
+                    <tr>
+                      <td className="px-4 py-3 text-gray-700 dark:text-gray-300">Creating a quick meetup</td>
+                      <td className="px-4 py-3 text-right text-gray-700 dark:text-gray-300">2</td>
+                    </tr>
+                    <tr>
+                      <td className="px-4 py-3 text-gray-700 dark:text-gray-300">Uploading a photo</td>
+                      <td className="px-4 py-3 text-right text-gray-700 dark:text-gray-300">1</td>
+                    </tr>
+                    <tr>
+                      <td className="px-4 py-3 text-gray-700 dark:text-gray-300">Creating a chatroom</td>
+                      <td className="px-4 py-3 text-right text-gray-700 dark:text-gray-300">2</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
       <section className="py-12 bg-white dark:bg-gray-800 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">Ways to Earn Points</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">Ways to Earn Ambassador Points</h2>
           <div className="grid sm:grid-cols-2 gap-4">
             {pointActions.map((item, index) => (
               <Card key={index} className="bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700">
