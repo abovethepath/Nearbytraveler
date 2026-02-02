@@ -99,16 +99,16 @@ export function HelpChatbot() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-[9999] w-14 h-14 rounded-full bg-gradient-to-r from-blue-500 to-orange-500 text-white shadow-lg hover:shadow-xl transition-all hover:scale-105 flex items-center justify-center"
+          className="fixed bottom-24 md:bottom-6 right-4 md:right-6 z-[9999] w-12 h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-r from-blue-500 to-orange-500 text-white shadow-lg hover:shadow-xl transition-all hover:scale-105 flex items-center justify-center"
           aria-label="Open help chat"
         >
-          <MessageCircleQuestion className="w-7 h-7" />
+          <MessageCircleQuestion className="w-6 h-6 md:w-7 md:h-7" />
         </button>
       )}
 
       {isOpen && (
         <div 
-          className="fixed bottom-6 right-6 z-[9999] w-[360px] max-w-[calc(100vw-48px)] h-[500px] max-h-[calc(100vh-120px)] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden"
+          className="fixed bottom-24 md:bottom-6 right-4 md:right-6 z-[9999] w-[360px] max-w-[calc(100vw-32px)] h-[450px] md:h-[500px] max-h-[calc(100vh-140px)] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden"
           style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}
         >
           <div className="bg-gradient-to-r from-blue-500 to-orange-500 px-4 py-3 flex items-center justify-between">
