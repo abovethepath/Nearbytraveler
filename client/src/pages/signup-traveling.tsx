@@ -392,6 +392,20 @@ export default function SignupTraveling() {
 
   const { min: minDate, max: maxDate } = getDateInputConstraints();
   const today = new Date().toISOString().split('T')[0];
+  
+  // Default travel return date to 3 days from now in 2026
+  const defaultReturnDate = (() => {
+    const date = new Date();
+    date.setDate(date.getDate() + 3);
+    return date.toISOString().split('T')[0];
+  })();
+  
+  // Set default travel return date if not already set
+  useEffect(() => {
+    if (!formData.travelReturnDate) {
+      setFormData(prev => ({ ...prev, travelReturnDate: defaultReturnDate }));
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">

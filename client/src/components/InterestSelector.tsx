@@ -100,23 +100,6 @@ export function InterestSelector({
         )}
       </div>
 
-      {selected.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-          {selected.map(interest => (
-            <button
-              key={interest}
-              type="button"
-              onClick={() => handleClick(interest)}
-              onTouchEnd={(e) => handleTouch(e, interest)}
-              className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-gradient-to-r from-blue-600 to-orange-500 text-white rounded-full"
-              style={{ touchAction: 'manipulation' }}
-            >
-              {interest}
-              <X className="w-3 h-3" />
-            </button>
-          ))}
-        </div>
-      )}
 
       <div className="max-h-[400px] overflow-y-auto pr-1" style={{ touchAction: 'pan-y' }}>
         <div className="flex flex-wrap gap-1.5 p-2">
