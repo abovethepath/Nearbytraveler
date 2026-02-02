@@ -566,10 +566,13 @@ function Navbar() {
                         <Settings className="mr-2 h-4 w-4" />
                         <span>Settings</span>
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => {
-                        setLocation('/ambassador-program');
-                        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
-                      }}>
+                      <DropdownMenuItem 
+                        onSelect={(e) => {
+                          e.preventDefault();
+                          setLocation('/ambassador-program');
+                          setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+                        }}
+                      >
                         <Star className="mr-2 h-4 w-4 text-orange-500" />
                         <span>Ambassador Program</span>
                       </DropdownMenuItem>
