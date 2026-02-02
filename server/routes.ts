@@ -5980,6 +5980,15 @@ Questions? Just reply to this message. Welcome aboard!
       // MAP USER FIELDS: Convert camelCase to snake_case for database
       const mappedUpdates = { ...updates };
 
+      // MAP SUB-INTERESTS FIELD (camelCase to snake_case)
+      if (updates.subInterests !== undefined) {
+        mappedUpdates.sub_interests = updates.subInterests;
+        delete mappedUpdates.subInterests;
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`💡 SUB-INTERESTS: Mapping subInterests for user ${userId}:`, updates.subInterests);
+        }
+      }
+
       // MAP HOMETOWN FIELDS FIRST
       if (updates.hometownCity !== undefined) {
         mappedUpdates.hometown_city = updates.hometownCity;
