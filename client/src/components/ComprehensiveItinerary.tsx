@@ -264,6 +264,7 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
         const itineraryResponse = await fetch(`${getApiBaseUrl()}/api/itineraries`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify({
             travelPlanId: travelPlan.id,
             title: `${travelPlan.destination} Itinerary`,
@@ -278,6 +279,7 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
       const response = await fetch(`${getApiBaseUrl()}/api/itineraries/${itineraryId}/items`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(item),
       });
       if (!response.ok) throw new Error('Failed to add item');
@@ -288,6 +290,13 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
       setNewItem({});
       setShowAddItem(false);
       toast({ title: 'Success', description: 'Item added to itinerary' });
+    },
+    onError: (error: Error) => {
+      toast({ 
+        title: 'Error', 
+        description: error.message || 'Failed to add item',
+        variant: 'destructive'
+      });
     },
   });
 
@@ -891,11 +900,16 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
                   </Button>
                   <Button
                     onClick={() => addItem.mutate(newItem)}
-                    disabled={!newItem.type || !newItem.title || !newItem.date}
+                    disabled={!newItem.type || !newItem.title || !newItem.date || addItem.isPending}
                   >
-                    Add Item
+                    {addItem.isPending ? 'Adding...' : 'Add Item'}
                   </Button>
                 </div>
+                {(!newItem.type || !newItem.title || !newItem.date) && (
+                  <p className="text-sm text-gray-500 text-center mt-2">
+                    Fill in type, date, and title to add item
+                  </p>
+                )}
               </div>
             </div>
           </div>
