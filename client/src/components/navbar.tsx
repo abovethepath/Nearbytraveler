@@ -567,8 +567,8 @@ function Navbar() {
                         <span>Settings</span>
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => {
-                        console.log('Ambassador Program clicked - navigating');
-                        window.location.href = '/ambassador-program';
+                        setLocation('/ambassador-program');
+                        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
                       }}>
                         <Star className="mr-2 h-4 w-4 text-orange-500" />
                         <span>Ambassador Program</span>
