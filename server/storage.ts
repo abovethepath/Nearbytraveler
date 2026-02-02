@@ -11866,61 +11866,6 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async createItinerary(itineraryData: any): Promise<any> {
-    try {
-      const [itinerary] = await db
-        .insert(tripItineraries)
-        .values({
-          ...itineraryData,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        })
-        .returning();
-      return itinerary;
-    } catch (error) {
-      console.error('Error creating itinerary:', error);
-      throw error;
-    }
-  }
-
-  async createItineraryItem(itemData: any): Promise<any> {
-    try {
-      const [item] = await db
-        .insert(itineraryItems)
-        .values(itemData)
-        .returning();
-      return item;
-    } catch (error) {
-      console.error('Error creating itinerary item:', error);
-      throw error;
-    }
-  }
-
-  async updateItineraryItem(itemId: number, updates: any): Promise<any> {
-    try {
-      const [item] = await db
-        .update(itineraryItems)
-        .set(updates)
-        .where(eq(itineraryItems.id, itemId))
-        .returning();
-      return item;
-    } catch (error) {
-      console.error('Error updating itinerary item:', error);
-      throw error;
-    }
-  }
-
-  async deleteItineraryItem(itemId: number): Promise<void> {
-    try {
-      await db
-        .delete(itineraryItems)
-        .where(eq(itineraryItems.id, itemId));
-    } catch (error) {
-      console.error('Error deleting itinerary item:', error);
-      throw error;
-    }
-  }
-
   // Aura reward system
   async awardAura(userId: number, points: number, reason: string): Promise<void> {
     try {
