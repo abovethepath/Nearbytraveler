@@ -17,6 +17,18 @@ const SUGGESTED_QUESTIONS = [
   "How do I earn Ambassador Points?"
 ];
 
+const PREBUILT_ANSWERS: Record<string, string> = {
+  "How do I create a quick meetup?": "Creating a quick meetup is easy! Go to the Quick Meetups section from your home page or navigation menu. Tap the '+' button, then either type a description like 'coffee at the pier in 2 hours' or use the voice input feature to speak your meetup idea. The AI will automatically fill in the details for you - just review and post!",
+  
+  "What's the voice input feature?": "The voice input feature lets you create meetups by speaking naturally! Just tap the microphone icon when creating a quick meetup, then say something like 'Let's grab tacos at the food truck near the beach at 6pm.' The AI understands natural language and converts your words into a structured meetup with title, location, time, and notes.",
+  
+  "How do I find travelers in my city?": "To find travelers visiting your city, go to the Discover page and select your city. You'll see a list of travelers who are currently visiting or planning to visit. You can also use the Advanced Search to filter by interests, age, and more. Travelers with matching interests will appear at the top!",
+  
+  "Tell me about city chatrooms": "City chatrooms are group chats for everyone in a specific city! Each city has its own chatroom where locals and travelers can connect, share tips, and plan meetups. Find chatrooms in the Chatrooms tab - you'll automatically be added to your hometown chatroom and any city you're traveling to.",
+  
+  "How do I earn Ambassador Points?": "You earn Ambassador Points by being active on the platform! Create events and meetups (+10 points), invite friends who sign up (+25 points), get connections (+5 points), and participate in chatrooms (+2 points per message, up to 20/day). Check your points on your profile - top ambassadors get special recognition!"
+};
+
 export function HelpChatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -86,7 +98,15 @@ export function HelpChatbot() {
   };
 
   const handleSuggestionClick = (question: string) => {
-    sendMessage(question);
+    const prebuiltAnswer = PREBUILT_ANSWERS[question];
+    if (prebuiltAnswer) {
+      const userMessage: ChatMessage = { role: 'user', content: question };
+      const assistantMessage: ChatMessage = { role: 'assistant', content: prebuiltAnswer };
+      setMessages(prev => [...prev, userMessage, assistantMessage]);
+      setShowSuggestions(false);
+    } else {
+      sendMessage(question);
+    }
   };
 
   const clearChat = () => {
