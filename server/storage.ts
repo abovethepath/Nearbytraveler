@@ -7067,10 +7067,24 @@ export class DatabaseStorage implements IStorage {
   async createItineraryItem(item: InsertItineraryItem): Promise<ItineraryItem> {
     try {
       console.log('Creating itinerary item with data:', item);
+      
+      // Calculate order_index by getting max existing order_index for this itinerary
+      const existingItems = await db
+        .select({ orderIndex: itineraryItems.orderIndex })
+        .from(itineraryItems)
+        .where(eq(itineraryItems.itineraryId, item.itineraryId))
+        .orderBy(desc(itineraryItems.orderIndex))
+        .limit(1);
+      
+      const nextOrderIndex = existingItems.length > 0 && existingItems[0].orderIndex != null
+        ? existingItems[0].orderIndex + 1
+        : 0;
+      
       // Ensure date is properly converted to Date object and not null
       const processedItem = {
         ...item,
-        date: item.date ? (typeof item.date === 'string' ? new Date(item.date) : item.date) : new Date()
+        date: item.date ? (typeof item.date === 'string' ? new Date(item.date) : item.date) : new Date(),
+        orderIndex: item.orderIndex ?? nextOrderIndex
       };
       console.log('Processed item for database:', processedItem);
       
