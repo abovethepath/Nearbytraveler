@@ -922,7 +922,7 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Title</label>
+                  <label className="text-sm font-medium">Title <span className="text-red-500">*</span></label>
                   <Input
                     value={newItem.title || ''}
                     onChange={(e) => setNewItem({ ...newItem, title: e.target.value })}
@@ -959,7 +959,7 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
                     onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
                     placeholder={isListening ? "Listening... speak your notes" : "Add notes or tap voice to speak"}
                     rows={3}
-                    className={isListening ? 'border-red-300 focus:border-red-500' : ''}
+                    className={`border border-gray-300 dark:border-gray-600 rounded-md ${isListening ? 'border-red-300 focus:border-red-500' : ''}`}
                   />
                 </div>
                 <div>
