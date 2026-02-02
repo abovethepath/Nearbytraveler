@@ -569,8 +569,9 @@ function Navbar() {
                       <DropdownMenuItem 
                         onSelect={(e) => {
                           e.preventDefault();
-                          setLocation('/ambassador-program');
-                          setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
+                          e.stopPropagation();
+                          console.log('Ambassador Program clicked');
+                          window.location.href = '/ambassador-program';
                         }}
                       >
                         <Star className="mr-2 h-4 w-4 text-orange-500" />
