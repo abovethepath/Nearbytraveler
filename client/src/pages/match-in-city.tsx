@@ -319,18 +319,22 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     return [...new Set(relevantCityNames)]; // Remove duplicates
   };
 
-  // Fetch all cities on component mount
+  // Fetch all cities on component mount and handle URL city parameter
   useEffect(() => {
-    // FORCE RESET - ensure we start with no city selected
-    console.log('🔧 FORCE RESETTING selectedCity to empty string');
-    setSelectedCity('');
-    
-    // Clear any URL params that might be setting city
+    // Check for city in URL params - this is used when coming from trip planning
     const urlParams = new URLSearchParams(window.location.search);
     const cityFromUrl = urlParams.get('city');
+    
     if (cityFromUrl) {
-      console.log('🔧 Found city in URL, clearing it:', cityFromUrl);
+      // IMPORTANT: Use the city from URL - this is how trip planning links work
+      console.log('🔧 Found city in URL, setting selectedCity to:', cityFromUrl);
+      setSelectedCity(cityFromUrl);
+      // Clear URL params after using them (clean URL)
       window.history.replaceState({}, document.title, window.location.pathname);
+    } else {
+      // No city in URL - start fresh
+      console.log('🔧 No city in URL, starting with empty selection');
+      setSelectedCity('');
     }
     
     fetchAllCities();
