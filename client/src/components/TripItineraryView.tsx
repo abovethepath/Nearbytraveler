@@ -373,9 +373,9 @@ export default function TripItineraryView({
 
         <div className="flex items-center gap-3">
           {isOwnProfile && (
-            <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-2">
+            <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-2" title={isPublic ? 'Discoverable in searches' : 'Only accessible via link'}>
               {isPublic ? <Globe className="w-4 h-4 text-green-500" /> : <Lock className="w-4 h-4 text-gray-500" />}
-              <span className="text-sm text-gray-700 dark:text-gray-300">{isPublic ? 'Public' : 'Private'}</span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">{isPublic ? 'Discoverable' : 'Link only'}</span>
               <Switch 
                 checked={isPublic} 
                 onCheckedChange={(newValue) => updatePrivacyMutation.mutate(newValue)}

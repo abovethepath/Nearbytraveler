@@ -7205,6 +7205,7 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // PUBLIC: Get travel plan for sharing (no auth required)
+  // Anyone with the link can view - isPublic controls discoverability, not link access
   app.get("/api/travel-plans/:id/public", async (req, res) => {
     try {
       const planId = parseInt(req.params.id || '0');
@@ -7212,19 +7213,6 @@ Questions? Just reply to this message. Welcome aboard!
       
       if (!travelPlan) {
         return res.status(404).json({ message: "Trip not found" });
-      }
-      
-      // Check if any itinerary for this plan is public
-      const publicItineraries = await db.select()
-        .from(tripItineraries)
-        .where(and(
-          eq(tripItineraries.travelPlanId, planId),
-          eq(tripItineraries.isPublic, true)
-        ))
-        .limit(1);
-      
-      if (publicItineraries.length === 0) {
-        return res.status(403).json({ message: "This itinerary is private" });
       }
       
       // Get user info for display
@@ -7253,21 +7241,19 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // PUBLIC: Get itineraries for a travel plan (for sharing) - only returns public itineraries
+  // PUBLIC: Get itineraries for a travel plan (for sharing)
+  // Anyone with the link can view - isPublic controls discoverability, not link access
   app.get("/api/travel-plans/:id/itineraries/public", async (req, res) => {
     try {
       const planId = parseInt(req.params.id || '0');
       
-      // Only get public itineraries
+      // Get all itineraries for sharing (link access always works)
       const planItineraries = await db.select()
         .from(tripItineraries)
-        .where(and(
-          eq(tripItineraries.travelPlanId, planId),
-          eq(tripItineraries.isPublic, true)
-        ));
+        .where(eq(tripItineraries.travelPlanId, planId));
       
       if (planItineraries.length === 0) {
-        return res.status(403).json({ message: "This itinerary is private" });
+        return res.status(404).json({ message: "No itinerary found for this trip" });
       }
       
       const result = await Promise.all(planItineraries.map(async (itinerary) => {
