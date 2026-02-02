@@ -6867,6 +6867,27 @@ Questions? Just reply to this message. Welcome aboard!
 
       console.log(`🚨 REPORT: User ${reporterId} reported user ${reportedUserId} for ${reason}`);
 
+      // Send admin email notification
+      try {
+        const [reporter, reportedUser] = await Promise.all([
+          db.select({ username: users.username }).from(users).where(eq(users.id, reporterId)).then(r => r[0]),
+          db.select({ username: users.username }).from(users).where(eq(users.id, reportedUserId)).then(r => r[0])
+        ]);
+        
+        if (reporter && reportedUser) {
+          const { sendAdminReportNotification } = await import('./email/notificationEmails');
+          await sendAdminReportNotification(
+            reporter.username,
+            reportedUser.username,
+            reason,
+            details || null
+          );
+        }
+      } catch (emailError) {
+        console.error("⚠️ Failed to send admin notification email:", emailError);
+        // Don't fail the report submission if email fails
+      }
+
       res.json({ 
         success: true, 
         message: "Report submitted successfully. Our team will review it." 

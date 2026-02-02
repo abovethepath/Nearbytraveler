@@ -509,3 +509,82 @@ export async function sendCityActivityEmail(userId: number, cityName: string, ac
     return { success: false, reason: error.message };
   }
 }
+
+const ADMIN_EMAIL = "aaron@thenearbytraveler.com";
+
+export async function sendAdminReportNotification(
+  reporterUsername: string, 
+  reportedUsername: string, 
+  reason: string, 
+  details: string | null
+): Promise<EmailResult> {
+  try {
+    const reasonLabels: Record<string, string> = {
+      harassment: "Harassment",
+      spam: "Spam",
+      inappropriate: "Inappropriate Content",
+      fake_profile: "Fake Profile",
+      scam: "Scam/Fraud",
+      other: "Other"
+    };
+
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f5f5f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+          <tr>
+            <td style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); padding: 30px; text-align: center;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 24px;">🚨 New User Report</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 40px;">
+              <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 20px;">
+                A new user report has been submitted and requires your review.
+              </p>
+              <div style="background-color: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ef4444;">
+                <p style="font-size: 15px; color: #333333; margin: 0 0 10px;"><strong>Reporter:</strong> @${reporterUsername}</p>
+                <p style="font-size: 15px; color: #333333; margin: 0 0 10px;"><strong>Reported User:</strong> @${reportedUsername}</p>
+                <p style="font-size: 15px; color: #333333; margin: 0 0 10px;"><strong>Reason:</strong> ${reasonLabels[reason] || reason}</p>
+                ${details ? `<p style="font-size: 15px; color: #333333; margin: 0;"><strong>Details:</strong> ${details}</p>` : ''}
+              </div>
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${APP_URL}/profile/${reportedUsername}" style="display: inline-block; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">View Reported Profile</a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8f9fa; padding: 20px; text-align: center;">
+              <p style="font-size: 12px; color: #888888; margin: 0;">
+                Nearby Traveler Admin Notification
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+    const result = await sendBrevoEmail({
+      toEmail: ADMIN_EMAIL,
+      subject: `🚨 User Report: @${reportedUsername} reported for ${reasonLabels[reason] || reason}`,
+      textContent: `New user report submitted. Reporter: @${reporterUsername}. Reported User: @${reportedUsername}. Reason: ${reasonLabels[reason] || reason}. ${details ? `Details: ${details}` : ''} View profile at ${APP_URL}/profile/${reportedUsername}`,
+      htmlContent,
+    });
+
+    return { success: true, messageId: result.messageId };
+  } catch (error: any) {
+    console.error("❌ Failed to send admin report notification:", error);
+    return { success: false, reason: error.message };
+  }
+}
