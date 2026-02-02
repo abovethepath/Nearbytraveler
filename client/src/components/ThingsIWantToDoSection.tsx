@@ -77,12 +77,16 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   });
   
   // Get user's sub-interests (specific interests like Pickleball, Yoga, etc.)
-  const userSubInterests = useMemo(() => {
+  // Sub-interests are stored as "CityName: SubInterest" format - extract by city
+  const getSubInterestsForCity = (cityName: string): string[] => {
     if (!userProfile?.subInterests || !Array.isArray(userProfile.subInterests)) {
       return [];
     }
-    return userProfile.subInterests;
-  }, [userProfile?.subInterests]);
+    const cityPrefix = `${cityName}: `;
+    return userProfile.subInterests
+      .filter((si: string) => si.startsWith(cityPrefix))
+      .map((si: string) => si.replace(cityPrefix, ''));
+  };
 
   // Fetch events that the user is attending  
   const { data: joinedEvents = [], isLoading: loadingJoinedEvents } = useQuery({
@@ -428,11 +432,13 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                 </div>
 
                 {/* Pills or empty state for this destination */}
-                {(cityData.activities.length > 0 || cityData.events.length > 0 || (cityData.travelPlan && userSubInterests.length > 0)) ? (
+                {(() => {
+                  const citySubInterests = getSubInterestsForCity(cityName);
+                  return (cityData.activities.length > 0 || cityData.events.length > 0 || (cityData.travelPlan && citySubInterests.length > 0)) ? (
                   <div className={`flex flex-wrap ${isMobile ? 'gap-2' : 'gap-2'}`}>
 
-                    {/* Sub-Interest Pills - Show for travel destinations */}
-                    {cityData.travelPlan && userSubInterests.map((subInterest, idx) => (
+                    {/* Sub-Interest Pills - Show for travel destinations (city-specific) */}
+                    {cityData.travelPlan && citySubInterests.map((subInterest, idx) => (
                       <div key={`sub-${idx}-${subInterest}`} className="relative group">
                         <div className="inline-flex items-center justify-center rounded-full px-4 py-1.5 text-xs font-medium bg-gradient-to-r from-orange-500 to-yellow-500 border-0 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm">
                           <span style={{ color: 'white' }}>✨ {subInterest}</span>
@@ -503,7 +509,8 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                       </Link>
                     )}
                   </div>
-                )}
+                );
+                })()}
               </div>
             );
           })}

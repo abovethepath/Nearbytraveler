@@ -540,23 +540,46 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     }
   }, [citySearchTerm, allCities, user, userProfile, travelPlans]);
 
-  // Load user's sub-interests from profile
+  // Load user's sub-interests from profile - CITY-SPECIFIC
+  // Sub-interests are stored as "CityName: SubInterest" format
   useEffect(() => {
-    if (user?.id && userProfile?.subInterests) {
-      setUserSubInterests(userProfile.subInterests);
+    if (user?.id && userProfile?.subInterests && selectedCity) {
+      // Extract only sub-interests for the current city
+      const cityPrefix = `${selectedCity}: `;
+      const citySpecificSubInterests = userProfile.subInterests
+        .filter((si: string) => si.startsWith(cityPrefix))
+        .map((si: string) => si.replace(cityPrefix, ''));
+      setUserSubInterests(citySpecificSubInterests);
+    } else {
+      setUserSubInterests([]);
     }
-  }, [user?.id, userProfile?.subInterests]);
+  }, [user?.id, userProfile?.subInterests, selectedCity]);
   
-  // Handler to save sub-interests when they change
+  // Handler to save sub-interests when they change - CITY-SPECIFIC
   const handleSubInterestsChange = async (newSubInterests: string[]) => {
     setUserSubInterests(newSubInterests);
     
-    if (!user?.id) return;
+    if (!user?.id || !selectedCity) return;
     
     setSubInterestsLoading(true);
     try {
+      // Get current sub-interests from all cities
+      const currentAllSubInterests = userProfile?.subInterests || [];
+      const cityPrefix = `${selectedCity}: `;
+      
+      // Remove old sub-interests for this city
+      const otherCitySubInterests = currentAllSubInterests.filter(
+        (si: string) => !si.startsWith(cityPrefix)
+      );
+      
+      // Add new sub-interests for this city with city prefix
+      const newCitySubInterests = newSubInterests.map(si => `${selectedCity}: ${si}`);
+      
+      // Combine: other cities + new selections for current city
+      const updatedAllSubInterests = [...otherCitySubInterests, ...newCitySubInterests];
+      
       await apiRequest("PATCH", `/api/users/${user.id}`, { 
-        subInterests: newSubInterests 
+        subInterests: updatedAllSubInterests 
       });
       // Invalidate user profile cache
       queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}`] });
