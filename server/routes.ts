@@ -7204,6 +7204,142 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // PUBLIC: Get travel plan for sharing (no auth required)
+  app.get("/api/travel-plans/:id/public", async (req, res) => {
+    try {
+      const planId = parseInt(req.params.id || '0');
+      const travelPlan = await storage.getTravelPlan(planId);
+      
+      if (!travelPlan) {
+        return res.status(404).json({ message: "Trip not found" });
+      }
+      
+      // Check if any itinerary for this plan is public
+      const publicItineraries = await db.select()
+        .from(tripItineraries)
+        .where(and(
+          eq(tripItineraries.travelPlanId, planId),
+          eq(tripItineraries.isPublic, true)
+        ))
+        .limit(1);
+      
+      if (publicItineraries.length === 0) {
+        return res.status(403).json({ message: "This itinerary is private" });
+      }
+      
+      // Get user info for display
+      const planUser = await db.select({
+        username: users.username,
+        name: users.name,
+        profileImage: users.profileImage
+      }).from(users).where(eq(users.id, travelPlan.userId)).then(r => r[0]);
+      
+      return res.json({
+        id: travelPlan.id,
+        destination: travelPlan.destination,
+        destinationCity: travelPlan.destinationCity,
+        destinationCountry: travelPlan.destinationCountry,
+        startDate: travelPlan.startDate,
+        endDate: travelPlan.endDate,
+        user: planUser ? {
+          username: planUser.username,
+          name: planUser.name,
+          profileImage: planUser.profileImage
+        } : null
+      });
+    } catch (error: any) {
+      console.error("Error fetching public travel plan:", error);
+      return res.status(500).json({ message: "Failed to fetch trip" });
+    }
+  });
+
+  // PUBLIC: Get itineraries for a travel plan (for sharing) - only returns public itineraries
+  app.get("/api/travel-plans/:id/itineraries/public", async (req, res) => {
+    try {
+      const planId = parseInt(req.params.id || '0');
+      
+      // Only get public itineraries
+      const planItineraries = await db.select()
+        .from(tripItineraries)
+        .where(and(
+          eq(tripItineraries.travelPlanId, planId),
+          eq(tripItineraries.isPublic, true)
+        ));
+      
+      if (planItineraries.length === 0) {
+        return res.status(403).json({ message: "This itinerary is private" });
+      }
+      
+      const result = await Promise.all(planItineraries.map(async (itinerary) => {
+        const items = await db.select()
+          .from(itineraryItems)
+          .where(eq(itineraryItems.itineraryId, itinerary.id))
+          .orderBy(itineraryItems.date, itineraryItems.orderIndex);
+        
+        return {
+          id: itinerary.id,
+          title: itinerary.title,
+          items: items.map(item => ({
+            id: item.id,
+            date: item.date,
+            startTime: item.startTime,
+            title: item.title,
+            description: item.description,
+            location: item.location,
+            category: item.category
+          }))
+        };
+      }));
+      
+      return res.json(result);
+    } catch (error: any) {
+      console.error("Error fetching public itineraries:", error);
+      return res.status(500).json({ message: "Failed to fetch itinerary" });
+    }
+  });
+
+  // Update itinerary privacy setting
+  app.patch("/api/itineraries/:id/privacy", async (req, res) => {
+    try {
+      const itineraryId = parseInt(req.params.id || '0');
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      const { isPublic } = req.body;
+      
+      // Validate isPublic is a boolean
+      if (typeof isPublic !== 'boolean') {
+        return res.status(400).json({ error: "isPublic must be a boolean" });
+      }
+      
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+      
+      // Verify ownership
+      const itinerary = await db.select()
+        .from(tripItineraries)
+        .where(eq(tripItineraries.id, itineraryId))
+        .limit(1)
+        .then(r => r[0]);
+      
+      if (!itinerary) {
+        return res.status(404).json({ error: "Itinerary not found" });
+      }
+      
+      if (itinerary.userId !== userId) {
+        return res.status(403).json({ error: "You don't have permission to update this itinerary" });
+      }
+      
+      await db.update(tripItineraries)
+        .set({ isPublic: isPublic === true })
+        .where(eq(tripItineraries.id, itineraryId));
+      
+      return res.json({ success: true, isPublic: isPublic === true });
+    } catch (error: any) {
+      console.error("Error updating itinerary privacy:", error);
+      return res.status(500).json({ error: "Failed to update privacy setting" });
+    }
+  });
+
   // CRITICAL: Update existing travel plan
   app.put("/api/travel-plans/:id", async (req, res) => {
     try {

@@ -159,6 +159,7 @@ import ResetPassword from "@/pages/reset-password";
 import Donate from "@/pages/donate";
 import NotFound from "@/pages/not-found";
 import Itinerary from "@/pages/itinerary";
+import SharedTrip from "@/pages/shared-trip";
 import TravelBlog from "@/pages/travel-blog";
 import QuickLogin from "@/pages/quick-login";
 import MatchInCity from "@/pages/match-in-city";
@@ -986,6 +987,10 @@ function Router() {
     if (location.startsWith('/itinerary/')) {
       const travelPlanId = location.split('/')[2];
       return <Itinerary travelPlanId={travelPlanId} />;
+    }
+
+    if (location.startsWith('/trip/')) {
+      return <SharedTrip />;
     }
 
     if (location.startsWith('/deals/')) {
