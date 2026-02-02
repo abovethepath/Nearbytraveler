@@ -259,6 +259,64 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
     });
   };
 
+  // Generate shareable/exportable itinerary text
+  const generateItineraryText = () => {
+    let text = `🗺️ Trip to ${travelPlan.destination}\n`;
+    text += `📅 ${formatDate(travelPlan.startDate)} - ${formatDate(travelPlan.endDate)}\n`;
+    if (travelPlan.accommodation) text += `🏨 Staying at: ${travelPlan.accommodation}\n`;
+    if (travelPlan.budget) text += `💰 Budget: $${travelPlan.budget}\n`;
+    text += `\n--- ITINERARY ---\n\n`;
+
+    dateRange.forEach((date, index) => {
+      const dayItems = itemsByDate[date] || [];
+      text += `📆 Day ${index + 1} - ${formatDate(date)}\n`;
+      if (dayItems.length > 0) {
+        dayItems
+          .sort((a, b) => (a.time || '00:00').localeCompare(b.time || '00:00'))
+          .forEach(item => {
+            const time = item.time ? formatTime(item.time) : '';
+            text += `  • ${time ? time + ' - ' : ''}${item.title}`;
+            if (item.location) text += ` @ ${item.location}`;
+            if (item.cost) text += ` ($${item.cost})`;
+            text += '\n';
+            if (item.description) text += `    ${item.description}\n`;
+          });
+      } else {
+        text += `  No activities planned\n`;
+      }
+      text += '\n';
+    });
+
+    if (totalBudget > 0) {
+      text += `\n💵 Total Estimated Cost: $${totalBudget.toFixed(2)}\n`;
+    }
+
+    return text;
+  };
+
+  // Handle share - copy text to clipboard
+  const handleShare = () => {
+    const text = generateItineraryText();
+    navigator.clipboard.writeText(text);
+    toast({ title: 'Itinerary copied to clipboard!' });
+    onShare?.();
+  };
+
+  // Handle export - download as text file
+  const handleExport = () => {
+    const text = generateItineraryText();
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${travelPlan.destination.replace(/[^a-z0-9]/gi, '_')}_itinerary.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast({ title: 'Itinerary downloaded!' });
+  };
+
   return (
     <Dialog open={true} onOpenChange={(open) => !open && onClose?.()}>
       <DialogContent 
@@ -286,11 +344,11 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
               </div>
             </div>
             <div className="flex gap-2">
-              <Button onClick={onShare} variant="outline" size="sm" disabled={isSharing}>
+              <Button onClick={handleShare} variant="outline" size="sm" disabled={isSharing}>
                 <Share className="w-4 h-4 mr-2" />
                 Share
               </Button>
-              <Button variant="outline" size="sm">
+              <Button onClick={handleExport} variant="outline" size="sm">
                 <Download className="w-4 h-4 mr-2" />
                 Export
               </Button>
