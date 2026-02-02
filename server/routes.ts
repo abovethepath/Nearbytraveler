@@ -5040,6 +5040,8 @@ Questions? Just reply to this message. Welcome aboard!
               sql`LOWER(COALESCE(array_to_string(${users.defaultTravelEvents}, ' '), '')) LIKE ${pattern}`,
               sql`LOWER(COALESCE(array_to_string(${users.tags}, ' '), '')) LIKE ${pattern}`,
               sql`LOWER(COALESCE(array_to_string(${users.sexualPreference}, ' '), '')) LIKE ${pattern}`,
+              // Sub-interests (monetizable specific interests like Pickleball, Yoga, etc.)
+              sql`LOWER(COALESCE(array_to_string(${users.subInterests}, ' '), '')) LIKE ${pattern}`,
               // Also search user_city_interests and user_event_interests tables
               sql`EXISTS (
                 SELECT 1 FROM user_city_interests 
@@ -19531,7 +19533,8 @@ Questions? Just reply to this message. Welcome aboard!
           hometownState: users.hometownState,
           hometownCountry: users.hometownCountry,
           profileImage: users.profileImage,
-          interests: users.interests
+          interests: users.interests,
+          subInterests: users.subInterests
         })
         .from(users)
         .where(and(
@@ -19589,13 +19592,14 @@ Questions? Just reply to this message. Welcome aboard!
       // Current user's picks (activity IDs for comparison)
       const currentUserPickIds = new Set(userInterests.map(i => i.activityId));
       
-      // Get current user's profile interests (universal preferences)
+      // Get current user's profile interests and sub-interests
       const currentUserProfile = userId ? await db
-        .select({ interests: users.interests })
+        .select({ interests: users.interests, subInterests: users.subInterests })
         .from(users)
         .where(eq(users.id, parseInt(userId as string)))
         .limit(1) : [];
       const currentUserProfileInterests = (currentUserProfile[0]?.interests || []).map((i: string) => i.toLowerCase());
+      const currentUserSubInterests = (currentUserProfile[0]?.subInterests || []).map((i: string) => i.toLowerCase());
       
       // Enhance compatible users with shared picks info and sort by best fit
       const enhancedUsers = compatibleUsers.map(user => {
@@ -19611,22 +19615,38 @@ Questions? Just reply to this message. Welcome aboard!
         const sharedPreferences = theirProfileInterests.filter((i: string) => currentUserProfileInterests.includes(i));
         const sharedPreferencesCount = sharedPreferences.length;
         
+        // Calculate shared sub-interests (specific interests like Pickleball, Yoga, etc.)
+        const theirSubInterests = (user.subInterests || []).map((i: string) => i.toLowerCase());
+        const sharedSubInterests = theirSubInterests.filter((i: string) => currentUserSubInterests.includes(i));
+        const sharedSubInterestsCount = sharedSubInterests.length;
+        const sharedSubInterestsList = sharedSubInterests.map((i: string) => 
+          // Capitalize first letter for display
+          i.charAt(0).toUpperCase() + i.slice(1)
+        );
+        
         return {
           ...user,
           sharedActivities,
           sharedCityPicksCount,
           sharedPreferencesCount,
-          totalMatchScore: sharedCityPicksCount * 2 + sharedPreferencesCount // Weight city picks more
+          sharedSubInterestsCount,
+          sharedSubInterests: sharedSubInterestsList,
+          // Weight: city picks (2x) > sub-interests (1.5x) > general preferences (1x)
+          totalMatchScore: sharedCityPicksCount * 2 + sharedSubInterestsCount * 1.5 + sharedPreferencesCount
         };
       });
       
-      // Sort by best fit: city picks first, then preferences
+      // Sort by best fit: city picks first, then sub-interests, then preferences
       enhancedUsers.sort((a, b) => {
         // Primary: shared city picks count (most important)
         if (b.sharedCityPicksCount !== a.sharedCityPicksCount) {
           return b.sharedCityPicksCount - a.sharedCityPicksCount;
         }
-        // Secondary: shared preferences count
+        // Secondary: shared sub-interests count (specific interests like Pickleball, Yoga)
+        if (b.sharedSubInterestsCount !== a.sharedSubInterestsCount) {
+          return b.sharedSubInterestsCount - a.sharedSubInterestsCount;
+        }
+        // Tertiary: shared preferences count
         return b.sharedPreferencesCount - a.sharedPreferencesCount;
       });
       
