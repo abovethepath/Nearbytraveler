@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronUp, Check, X, Sparkles } from "lucide-react";
 import { SUB_INTEREST_CATEGORIES, type SubInterestCategory } from "@shared/base-options";
@@ -7,16 +6,12 @@ import { SUB_INTEREST_CATEGORIES, type SubInterestCategory } from "@shared/base-
 interface SubInterestSelectorProps {
   selectedSubInterests: string[];
   onSubInterestsChange: (subInterests: string[]) => void;
-  maxPerCategory?: number;
-  maxTotal?: number;
   showOptionalLabel?: boolean;
 }
 
 export default function SubInterestSelector({
   selectedSubInterests,
   onSubInterestsChange,
-  maxPerCategory = 3,
-  maxTotal = 10,
   showOptionalLabel = true
 }: SubInterestSelectorProps) {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
@@ -39,17 +34,6 @@ export default function SubInterestSelector({
     if (isSelected) {
       onSubInterestsChange(selectedSubInterests.filter(s => s !== subInterest));
     } else {
-      const categorySubInterests = SUB_INTEREST_CATEGORIES.find(c => c.id === categoryId)?.subInterests || [];
-      const selectedInCategory = selectedSubInterests.filter(s => categorySubInterests.includes(s));
-      
-      if (selectedInCategory.length >= maxPerCategory) {
-        return;
-      }
-      
-      if (selectedSubInterests.length >= maxTotal) {
-        return;
-      }
-      
       onSubInterestsChange([...selectedSubInterests, subInterest]);
     }
   };
@@ -76,7 +60,7 @@ export default function SubInterestSelector({
         </div>
         {selectedSubInterests.length > 0 && (
           <Badge variant="secondary" className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">
-            {selectedSubInterests.length}/{maxTotal} selected
+            {selectedSubInterests.length} selected
           </Badge>
         )}
       </div>
@@ -136,32 +120,20 @@ export default function SubInterestSelector({
               
               {isExpanded && (
                 <div className="p-3 bg-gray-50 dark:bg-gray-850 border-t border-gray-200 dark:border-gray-700">
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                    Pick up to {maxPerCategory} (optional)
-                  </p>
                   <div className="flex flex-wrap gap-2">
                     {category.subInterests.map(subInterest => {
                       const isSelected = selectedSubInterests.includes(subInterest);
-                      const categorySubInterests = category.subInterests;
-                      const selectedInCategory = selectedSubInterests.filter(s => categorySubInterests.includes(s));
-                      const isDisabled = !isSelected && (
-                        selectedInCategory.length >= maxPerCategory ||
-                        selectedSubInterests.length >= maxTotal
-                      );
                       
                       return (
                         <button
                           key={subInterest}
                           type="button"
                           onClick={() => toggleSubInterest(subInterest, category.id)}
-                          disabled={isDisabled}
                           className={`
                             px-3 py-1.5 rounded-full text-xs font-medium transition-all
                             ${isSelected 
                               ? "bg-orange-500 text-white shadow-sm" 
-                              : isDisabled
-                                ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                                : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:border-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                              : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:border-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20"
                             }
                           `}
                         >

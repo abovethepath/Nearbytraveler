@@ -1200,8 +1200,6 @@ export default function PlanTrip() {
                 <SubInterestSelector
                   selectedSubInterests={tripSubInterests}
                   onSubInterestsChange={setTripSubInterests}
-                  maxPerCategory={3}
-                  maxTotal={10}
                   showOptionalLabel={true}
                 />
               </div>
