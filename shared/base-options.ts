@@ -424,6 +424,219 @@ export const SEXUAL_PREFERENCE_OPTIONS = [
 export const getSexualPreferenceOptions = () => SEXUAL_PREFERENCE_OPTIONS;
 
 // ========================================
+// MONETIZABLE SUB-INTERESTS (Drill-Down Categories)
+// ========================================
+// Broad categories with specific, monetizable sub-interests
+// Businesses can target specific sub-interests (e.g., "Pickleball players in LA this weekend")
+// Users select broad categories first, then optionally drill down to specifics
+
+export interface SubInterestCategory {
+  id: string;
+  label: string;
+  emoji: string;
+  subInterests: string[];
+}
+
+export const SUB_INTEREST_CATEGORIES: SubInterestCategory[] = [
+  {
+    id: "fitness",
+    label: "Fitness & Exercise",
+    emoji: "💪",
+    subInterests: [
+      "Gym / Weight Training",
+      "CrossFit",
+      "F45 / HIIT Classes",
+      "Yoga",
+      "Pilates",
+      "Running / Jogging",
+      "Cycling / Spin Classes",
+      "Swimming",
+      "Pickleball",
+      "Tennis",
+      "Basketball",
+      "Boxing / Martial Arts",
+      "Dance Fitness / Zumba"
+    ]
+  },
+  {
+    id: "outdoor",
+    label: "Outdoor Activities",
+    emoji: "🏔️",
+    subInterests: [
+      "Hiking / Trail Walking",
+      "Beach / Swimming",
+      "Surfing",
+      "Kayaking / Paddleboarding",
+      "Rock Climbing",
+      "Golf",
+      "Biking / Mountain Biking",
+      "Camping",
+      "Fishing",
+      "Skiing / Snowboarding",
+      "Sailing / Boating"
+    ]
+  },
+  {
+    id: "food",
+    label: "Food & Dining",
+    emoji: "🍽️",
+    subInterests: [
+      "Fine Dining",
+      "Casual Dining",
+      "Brunch Spots",
+      "Food Trucks / Street Food",
+      "Seafood",
+      "Italian",
+      "Mexican / Latin",
+      "Asian Cuisine",
+      "Sushi / Japanese",
+      "Thai / Vietnamese",
+      "Indian",
+      "Mediterranean",
+      "BBQ / Steakhouse",
+      "Vegan / Vegetarian",
+      "Farm-to-Table",
+      "Food Tours"
+    ]
+  },
+  {
+    id: "nightlife",
+    label: "Nightlife & Drinks",
+    emoji: "🍸",
+    subInterests: [
+      "Cocktail Bars / Speakeasies",
+      "Wine Bars",
+      "Craft Beer / Breweries",
+      "Rooftop Bars",
+      "Sports Bars",
+      "Dance Clubs",
+      "Lounges",
+      "Live Music Venues",
+      "Karaoke Bars",
+      "Comedy Clubs",
+      "LGBTQIA+ Bars / Clubs",
+      "Late Night Eats"
+    ]
+  },
+  {
+    id: "wellness",
+    label: "Wellness & Self-Care",
+    emoji: "🧘",
+    subInterests: [
+      "Spa / Massage",
+      "Meditation / Mindfulness",
+      "Hot Yoga / Bikram",
+      "Sound Baths",
+      "Float Tanks",
+      "Cryotherapy",
+      "Acupuncture",
+      "Juice Bars / Smoothies",
+      "Health Food Stores"
+    ]
+  },
+  {
+    id: "culture",
+    label: "Arts & Culture",
+    emoji: "🎭",
+    subInterests: [
+      "Art Museums",
+      "History Museums",
+      "Theater / Broadway Shows",
+      "Ballet / Dance Performances",
+      "Classical Music / Symphony",
+      "Art Galleries",
+      "Street Art / Murals",
+      "Film Festivals",
+      "Photography Exhibitions",
+      "Cultural Festivals"
+    ]
+  },
+  {
+    id: "entertainment",
+    label: "Entertainment",
+    emoji: "🎬",
+    subInterests: [
+      "Movies / Cinemas",
+      "Live Music Concerts",
+      "Comedy Shows",
+      "Trivia Nights",
+      "Escape Rooms",
+      "Bowling",
+      "Arcade / Gaming",
+      "Mini Golf",
+      "Go-Karting",
+      "Amusement Parks"
+    ]
+  },
+  {
+    id: "shopping",
+    label: "Shopping",
+    emoji: "🛍️",
+    subInterests: [
+      "Fashion / Boutiques",
+      "Vintage / Thrift Stores",
+      "Local Markets / Farmers Markets",
+      "Artisan / Handmade Goods",
+      "Outlet Malls",
+      "Antique Shops",
+      "Bookstores"
+    ]
+  },
+  {
+    id: "family",
+    label: "Family-Friendly",
+    emoji: "👨‍👩‍👧‍👦",
+    subInterests: [
+      "Kid-Friendly Restaurants",
+      "Playgrounds / Parks",
+      "Children's Museums",
+      "Zoos / Aquariums",
+      "Theme Parks",
+      "Beaches (Family-Safe)",
+      "Mini Golf",
+      "Bowling Alleys",
+      "Ice Cream / Dessert Spots"
+    ]
+  },
+  {
+    id: "tours",
+    label: "Tours & Experiences",
+    emoji: "🗺️",
+    subInterests: [
+      "Walking Tours",
+      "Food Tours",
+      "Wine / Beer Tasting Tours",
+      "Historical Tours",
+      "Ghost Tours",
+      "Architecture Tours",
+      "Boat Tours / Cruises",
+      "Helicopter / Scenic Tours",
+      "Cooking Classes",
+      "Photography Tours"
+    ]
+  }
+];
+
+// Helper function to get all sub-interest categories
+export const getSubInterestCategories = () => SUB_INTEREST_CATEGORIES;
+
+// Helper function to get sub-interests for a specific category
+export const getSubInterestsForCategory = (categoryId: string): string[] => {
+  const category = SUB_INTEREST_CATEGORIES.find(c => c.id === categoryId);
+  return category?.subInterests || [];
+};
+
+// Helper function to get category by sub-interest
+export const getCategoryBySubInterest = (subInterest: string): SubInterestCategory | undefined => {
+  return SUB_INTEREST_CATEGORIES.find(c => c.subInterests.includes(subInterest));
+};
+
+// Helper function to get all sub-interests (flat list)
+export const getAllSubInterests = (): string[] => {
+  return SUB_INTEREST_CATEGORIES.flatMap(c => c.subInterests);
+};
+
+// ========================================
 // SUMMARY
 // ========================================
 // Total taxonomy: 162 items (updated January 2025)
