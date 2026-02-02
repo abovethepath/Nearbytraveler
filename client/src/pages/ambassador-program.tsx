@@ -233,7 +233,7 @@ export default function AmbassadorProgram() {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-red-600">•</span>
-                  Any potential payout/value is <span className="font-semibold">only upon a liquidity event</span> (for example, acquisition or IPO) and only if the program terms are met
+                  <span>Any potential payout/value is <span className="font-semibold">only upon a liquidity event</span> (for example, acquisition or IPO) and only if the program terms are met</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-red-600">•</span>
