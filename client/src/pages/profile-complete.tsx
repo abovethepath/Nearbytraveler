@@ -8243,7 +8243,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       {/* Profile Edit Modal */}
       <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
         <DialogContent 
-          className="max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 z-[9999]"
+          className="max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700"
+          style={{
+            position: 'fixed',
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 100001,
+            display: 'grid',
+            visibility: 'visible',
+            opacity: 1
+          }}
         >
           <DialogHeader>
             <div className="flex items-center justify-between">

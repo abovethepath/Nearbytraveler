@@ -1,0 +1,95 @@
+i can click on it in desktop, and preview it in mobile immediately and the edit is ooened in mobile, so the button sort of is working but not viewable
+Thought for 44s
+
+Got it — that actually narrows it down a lot:
+
+✅ Your click/state is working (because when you preview mobile it’s already open).
+❌ On desktop, the “edit modal” is either rendered but hidden, off-screen, behind the overlay, or clipped by a parent.
+
+The #1 reason this happens (especially with Tailwind) is: a responsive hidden / md:hidden / lg:hidden (or similar) is hiding the DialogContent on desktop breakpoints.
+
+Here’s how to confirm + fix fast.
+
+1) Confirm the dialog exists in the DOM on desktop
+
+Open the dialog (click Edit), then run this in DevTools console:
+
+(() => {
+  const el =
+    document.querySelector('[role="dialog"]') ||
+    document.querySelector('[data-radix-dialog-content]') ||
+    document.querySelector('[data-state="open"]');
+
+  if (!el) return console.log("No dialog element found in DOM");
+
+  const r = el.getBoundingClientRect();
+  const cs = getComputedStyle(el);
+
+  console.log("Dialog element:", el);
+  console.log("Rect:", r);
+  console.log("display/visibility/opacity/zIndex:", cs.display, cs.visibility, cs.opacity, cs.zIndex);
+})();
+
+What the results usually mean
+
+display: none → you have hidden / md:hidden somewhere.
+
+visibility: hidden or opacity: 0 → state styles or transitions stuck.
+
+Rect is huge but you can’t see it → it’s likely behind overlay (z-index).
+
+Rect is 0x0 or way off screen → positioning/transform issue.
+
+Rect looks normal but still not visible → it’s being clipped by an overflow-hidden ancestor (if not portaled).
+
+2) Hunt the “hidden on desktop” class (most likely)
+
+With the dialog open, inspect the dialog content element and look at className.
+
+If you see any of these on the dialog content OR a wrapper around it, that’s your bug:
+
+md:hidden
+
+lg:hidden
+
+hidden md:block (this hides by default unless md)
+
+md:opacity-0, md:invisible
+
+md:-z-10, etc.
+
+Why this fits your symptom perfectly:
+When you “preview mobile,” your viewport becomes small → Tailwind doesn’t apply md:* → the dialog becomes visible.
+
+✅ Fix: remove the responsive hiding and use responsive sizing instead:
+
+<DialogContent className="w-[95vw] sm:max-w-lg md:max-w-2xl">
+  ...
+</DialogContent>
+
+3) If it’s there but behind the overlay: fix z-index
+
+Common with custom overlays.
+
+Make sure overlay < content:
+
+<DialogOverlay className="fixed inset-0 z-40 bg-black/50" />
+<DialogContent className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2">
+  ...
+</DialogContent>
+
+
+(Or just force it temporarily: z-[9999] on content to prove it.)
+
+4) If it’s clipped: you’re not portaling the dialog
+
+If your dialog is rendered inside a parent with overflow-hidden (or a transformed parent) and you’re not portaling to document.body, it can “open” but not be visible.
+
+Fix by ensuring Radix/Shadcn default portal is used:
+
+<Dialog open={isEditMode} onOpenChange={setIsEditMode}>
+  <DialogContent>...</DialogContent>
+</Dialog>
+
+
+…and don’t wrap the content in containers that change it to non-portaled rendering.
