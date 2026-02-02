@@ -238,13 +238,14 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
     },
   });
 
-  // Group items by date
+  // Group items by date (normalize ISO timestamps to YYYY-MM-DD)
   const itemsByDate = useMemo(() => {
     return itineraryItems.reduce((acc, item) => {
-      if (!acc[item.date]) {
-        acc[item.date] = [];
+      const dateKey = item.date?.split('T')[0] || item.date;
+      if (!acc[dateKey]) {
+        acc[dateKey] = [];
       }
-      acc[item.date].push(item);
+      acc[dateKey].push(item);
       return acc;
     }, {} as Record<string, ItineraryItem[]>);
   }, [itineraryItems]);
