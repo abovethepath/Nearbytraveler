@@ -15,6 +15,7 @@ import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
 import { useQuery } from "@tanstack/react-query";
 import { getTravelActivities } from "@shared/base-options";
 import { METRO_AREAS } from "@shared/constants";
+import SubInterestSelector from "@/components/SubInterestSelector";
 
 // City Plan categories for user-created plans
 const CITY_PICK_CATEGORIES = [
@@ -182,6 +183,10 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   const [realEventsLoading, setRealEventsLoading] = useState(false);
   const [showAllEvents, setShowAllEvents] = useState(false);
   const [selectedEventIds, setSelectedEventIds] = useState<Set<string>>(new Set());
+  
+  // Sub-Interests State (monetizable specific interests like Pickleball, Yoga, etc.)
+  const [userSubInterests, setUserSubInterests] = useState<string[]>([]);
+  const [subInterestsLoading, setSubInterestsLoading] = useState(false);
   
   // Dismissed AI activities (persisted in localStorage per city)
   const [dismissedAIActivities, setDismissedAIActivities] = useState<Set<number>>(() => {
@@ -534,6 +539,38 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       }
     }
   }, [citySearchTerm, allCities, user, userProfile, travelPlans]);
+
+  // Load user's sub-interests from profile
+  useEffect(() => {
+    if (user?.id && userProfile?.subInterests) {
+      setUserSubInterests(userProfile.subInterests);
+    }
+  }, [user?.id, userProfile?.subInterests]);
+  
+  // Handler to save sub-interests when they change
+  const handleSubInterestsChange = async (newSubInterests: string[]) => {
+    setUserSubInterests(newSubInterests);
+    
+    if (!user?.id) return;
+    
+    setSubInterestsLoading(true);
+    try {
+      await apiRequest("PATCH", `/api/users/${user.id}`, { 
+        subInterests: newSubInterests 
+      });
+      // Invalidate user profile cache
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}`] });
+    } catch (error) {
+      console.error('Error saving sub-interests:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save your interests. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setSubInterestsLoading(false);
+    }
+  };
 
   // Hydrate initial selections from user profile
   useEffect(() => {
@@ -2240,6 +2277,23 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   </div>
                 );
               })()}
+
+              {/* SECTION: Specific Interests - Sub-interests for better matching */}
+              <div className="mb-8">
+                <div className="border border-orange-200 dark:border-orange-700 rounded-lg p-4 bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20">
+                  <SubInterestSelector
+                    selectedSubInterests={userSubInterests}
+                    onSubInterestsChange={handleSubInterestsChange}
+                    showOptionalLabel={false}
+                  />
+                  {subInterestsLoading && (
+                    <div className="flex items-center gap-2 mt-2 text-sm text-orange-600">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Saving...
+                    </div>
+                  )}
+                </div>
+              </div>
 
               {/* Clear All Plans Confirmation Dialog */}
               <AlertDialog open={showClearAllDialog} onOpenChange={setShowClearAllDialog}>

@@ -15,7 +15,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Calendar, MapPin, Users, Building2, Heart, MessageCircle, Star, ArrowLeft, Home, User, Plus, X, Compass, Sparkles, Camera, Coffee, Utensils, Palette, Music, TreePine, ChevronDown, UserPlus, Link2, Baby } from "lucide-react";
 import { TravelCrew } from "@/components/TravelCrew";
-import SubInterestSelector from "@/components/SubInterestSelector";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { getAllInterests, getAllActivities, getTravelActivities, getAllLanguages, validateSelections, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS } from "@shared/base-options";
@@ -121,9 +120,6 @@ export default function PlanTrip() {
   const [newCompanionLabel, setNewCompanionLabel] = useState("");
   const [newCompanionAge, setNewCompanionAge] = useState<string>("");
   
-  // Sub-interests for monetization (specific interests like Pickleball, Yoga, etc.)
-  const [tripSubInterests, setTripSubInterests] = useState<string[]>([]);
-
   // Fetch user's companions
   const { data: companions = [], refetch: refetchCompanions } = useQuery<any[]>({
     queryKey: ['/api/companions'],
@@ -482,13 +478,6 @@ export default function PlanTrip() {
           ).catch(err => console.error("Error linking companions to trip:", err));
         }
         
-        // Update user's subInterests if any were selected (merge with existing)
-        if (tripSubInterests.length > 0 && user?.id) {
-          apiRequest("PATCH", `/api/users/${user.id}`, { 
-            subInterests: tripSubInterests 
-          }).catch(err => console.error("Error saving sub-interests:", err));
-        }
-        
         const cityName = tripPlan.destinationCity || tripPlan.destination;
         const companionCount = selectedCompanions.length;
         toast({
@@ -512,7 +501,6 @@ export default function PlanTrip() {
           notes: ""
         });
         setSelectedCompanions([]);
-        setTripSubInterests([]);
         
         // Redirect to City Plans page for this city
         setLocation(`/match-in-city?city=${encodeURIComponent(cityName)}`);
@@ -1193,15 +1181,6 @@ export default function PlanTrip() {
                     </p>
                   </div>
                 )}
-              </div>
-
-              {/* Trip Preferences - Specific Sub-Interests for better matching & deals */}
-              <div className="overflow-hidden break-words border border-orange-200 dark:border-orange-700 rounded-lg p-4 bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20">
-                <SubInterestSelector
-                  selectedSubInterests={tripSubInterests}
-                  onSubInterestsChange={setTripSubInterests}
-                  showOptionalLabel={true}
-                />
               </div>
 
               {/* Action Buttons - Mobile Responsive */}
