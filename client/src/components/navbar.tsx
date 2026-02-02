@@ -566,11 +566,12 @@ function Navbar() {
                         <Settings className="mr-2 h-4 w-4" />
                         <span>Settings</span>
                       </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <a href="/ambassador-program" className="flex items-center cursor-pointer w-full">
-                          <Star className="mr-2 h-4 w-4 text-orange-500" />
-                          <span>Ambassador Program</span>
-                        </a>
+                      <DropdownMenuItem onClick={() => {
+                        console.log('Ambassador Program clicked - navigating');
+                        window.location.href = '/ambassador-program';
+                      }}>
+                        <Star className="mr-2 h-4 w-4 text-orange-500" />
+                        <span>Ambassador Program</span>
                       </DropdownMenuItem>
                     </>
                   )}
