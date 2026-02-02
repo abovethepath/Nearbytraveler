@@ -5817,21 +5817,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               </Card>
             )}
 
-
-            {/* Photo Albums Widget - Separate from Travel Memories */}
-            {user?.userType !== 'business' && (
-              <Card>
-                <CardContent className="p-6">
-                  <PhotoAlbumWidget 
-                    userId={effectiveUserId || 0}
-                    isOwnProfile={isOwnProfile}
-                  />
-                </CardContent>
-              </Card>
-            )}
-
-
-
             {/* Photo Gallery Preview */}
             {/* Photos Panel - Optimized Preview */}
             {activeTab === 'photos' && loadedTabs.has('photos') && (
