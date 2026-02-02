@@ -199,15 +199,27 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
     setIsListening(false);
   };
 
-  // Generate date range for the trip
+  // Generate date range for the trip (timezone-safe parsing)
   const dateRange = useMemo(() => {
-    const start = new Date(travelPlan.startDate);
-    const end = new Date(travelPlan.endDate);
+    // Parse dates without timezone conversion by extracting just the date part
+    const startStr = String(travelPlan.startDate).split('T')[0];
+    const endStr = String(travelPlan.endDate).split('T')[0];
+    
+    // Parse as local date (not UTC) to avoid timezone shifts
+    const [startYear, startMonth, startDay] = startStr.split('-').map(Number);
+    const [endYear, endMonth, endDay] = endStr.split('-').map(Number);
+    
+    const start = new Date(startYear, startMonth - 1, startDay);
+    const end = new Date(endYear, endMonth - 1, endDay);
+    
     const dates = [];
     const current = new Date(start);
     
     while (current <= end) {
-      dates.push(new Date(current).toISOString().split('T')[0]);
+      const year = current.getFullYear();
+      const month = String(current.getMonth() + 1).padStart(2, '0');
+      const day = String(current.getDate()).padStart(2, '0');
+      dates.push(`${year}-${month}-${day}`);
       current.setDate(current.getDate() + 1);
     }
     return dates;
@@ -355,7 +367,12 @@ export default function ComprehensiveItinerary({ travelPlan, onShare, isSharing,
   };
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('en-US', {
+    // Parse date string without timezone conversion
+    const datePart = String(dateStr).split('T')[0];
+    const [year, month, day] = datePart.split('-').map(Number);
+    // Create date in local timezone to avoid UTC conversion shifts
+    const localDate = new Date(year, month - 1, day);
+    return localDate.toLocaleDateString('en-US', {
       weekday: 'long',
       month: 'long',
       day: 'numeric'
