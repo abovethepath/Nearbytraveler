@@ -1976,6 +1976,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Update form when user data loads
   React.useEffect(() => {
     if (user) {
+      console.log('📅 FORM INIT - user.dateOfBirth raw:', user.dateOfBirth);
+      console.log('📅 FORM INIT - formatted:', user.dateOfBirth ? formatDateOfBirthForInput(user.dateOfBirth) : "empty");
       profileForm.reset({
         bio: user.bio || "",
         ...(user?.userType === 'business' ? { 
@@ -8256,13 +8258,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           }}
         >
           <DialogHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between pr-10">
               <DialogTitle>Edit Profile</DialogTitle>
               <Button
                 type="button"
                 size="sm"
                 onClick={() => {
                   console.log('🔥 SAVE BUTTON CLICKED - Header');
+                  console.log('🔥 User dateOfBirth value:', user?.dateOfBirth);
                   console.log('🔥 Form errors:', profileForm.formState.errors);
                   console.log('🔥 Form values:', profileForm.getValues());
                   console.log('🔥 Form valid:', profileForm.formState.isValid);
