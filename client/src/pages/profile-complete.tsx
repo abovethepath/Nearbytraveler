@@ -6306,16 +6306,22 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     <span className="text-gray-600 dark:text-gray-300">Cumulative Trips Taken</span>
                     <span className="font-semibold dark:text-white">{(travelPlans || []).filter(plan => plan.status === 'completed').length}</span>
                   </div>
-                  <div 
-                    className="flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 -m-2 transition-colors"
-                    onClick={() => setShowChatroomList(true)}
+                  <button 
+                    type="button"
+                    className="flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-2 -m-2 transition-colors w-full text-left"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setShowChatroomList(true);
+                    }}
+                    style={{ position: 'relative', zIndex: 50, pointerEvents: 'auto' }}
                   >
                     <span className="text-gray-600 dark:text-gray-300">City Chatrooms</span>
                     <div className="flex items-center gap-2">
                       <span className="font-semibold dark:text-white">{userChatrooms.length}</span>
                       <ChevronRight className="w-4 h-4 text-gray-400" />
                     </div>
-                  </div>
+                  </button>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
                       <Shield className="w-4 h-4 text-blue-500" />
