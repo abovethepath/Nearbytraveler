@@ -9375,108 +9375,130 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </div>
       )}
 
-      {/* Write Reference Modal */}
-      <Dialog open={showWriteReferenceModal} onOpenChange={setShowWriteReferenceModal}>
-        <DialogContent className="max-w-2xl bg-white dark:bg-gray-900">
-          <DialogHeader>
-            <DialogTitle>Write a Reference for {user?.username}</DialogTitle>
-            <DialogDescription>
-              Share your experience with this traveler to help others in the community
-            </DialogDescription>
-          </DialogHeader>
+      {/* Write Reference Modal - Custom Implementation */}
+      {showWriteReferenceModal && (
+        <div 
+          className="fixed inset-0 z-[100000] flex items-center justify-center"
+          onClick={() => {
+            referenceForm.reset();
+            setShowWriteReferenceModal(false);
+          }}
+        >
+          <div className="fixed inset-0 bg-black/80" />
+          <div 
+            className="relative z-[100001] w-full max-w-2xl mx-4 bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6 max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => {
+                referenceForm.reset();
+                setShowWriteReferenceModal(false);
+              }}
+              className="absolute right-4 top-4 rounded-sm opacity-70 hover:opacity-100 transition-opacity"
+            >
+              <X className="h-4 w-4" />
+            </button>
+
+            <div className="mb-4">
+              <h2 className="text-lg font-semibold">Write a Reference for {user?.username}</h2>
+              <p className="text-sm text-gray-500 mt-1">
+                Share your experience with this traveler to help others in the community
+              </p>
+            </div>
           
-          <Form {...referenceForm}>
-            <form onSubmit={referenceForm.handleSubmit((data) => {
-              console.log('🚀🚀🚀 FORM SUBMITTED - DATA:', data);
-              createReference.mutate(data);
-            })} className="space-y-4">
-              <FormField
-                control={referenceForm.control}
-                name="content"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Your Reference</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        placeholder="Share your experience with this person..."
-                        className="min-h-[100px] text-black dark:text-white"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <Form {...referenceForm}>
+              <form onSubmit={referenceForm.handleSubmit((data) => {
+                console.log('🚀🚀🚀 FORM SUBMITTED - DATA:', data);
+                createReference.mutate(data);
+              })} className="space-y-4">
+                <FormField
+                  control={referenceForm.control}
+                  name="content"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Your Reference</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          {...field}
+                          placeholder="Share your experience with this person..."
+                          className="min-h-[100px] text-black dark:text-white"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={referenceForm.control}
-                name="experience"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Experience</FormLabel>
-                    <FormControl>
-                      <div className="flex gap-4">
-                        <label className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            value="positive"
-                            checked={String(field.value) === "positive"}
-                            onChange={() => field.onChange("positive")}
-                            className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500"
-                          />
-                          <span className="text-sm text-green-700">Positive</span>
-                        </label>
-                        <label className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            value="neutral"
-                            checked={String(field.value) === "neutral"}
-                            onChange={() => field.onChange("neutral")}
-                            className="w-4 h-4 text-yellow-600 border-gray-300 focus:ring-yellow-500"
-                          />
-                          <span className="text-sm text-yellow-700">Neutral</span>
-                        </label>
-                        <label className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            value="negative"
-                            checked={String(field.value) === "negative"}
-                            onChange={() => field.onChange("negative")}
-                            className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
-                          />
-                          <span className="text-sm text-red-700">Negative</span>
-                        </label>
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={referenceForm.control}
+                  name="experience"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Experience</FormLabel>
+                      <FormControl>
+                        <div className="flex gap-4">
+                          <label className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              value="positive"
+                              checked={String(field.value) === "positive"}
+                              onChange={() => field.onChange("positive")}
+                              className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500"
+                            />
+                            <span className="text-sm text-green-700">Positive</span>
+                          </label>
+                          <label className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              value="neutral"
+                              checked={String(field.value) === "neutral"}
+                              onChange={() => field.onChange("neutral")}
+                              className="w-4 h-4 text-yellow-600 border-gray-300 focus:ring-yellow-500"
+                            />
+                            <span className="text-sm text-yellow-700">Neutral</span>
+                          </label>
+                          <label className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              value="negative"
+                              checked={String(field.value) === "negative"}
+                              onChange={() => field.onChange("negative")}
+                              className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
+                            />
+                            <span className="text-sm text-red-700">Negative</span>
+                          </label>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <div className="flex justify-end gap-2 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    referenceForm.reset();
-                    setShowWriteReferenceModal(false);
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button 
-                  type="submit" 
-                  disabled={createReference.isPending}
-                  className="border-2 border-black dark:border-white"
-                  data-testid="button-submit-reference"
-                >
-                  {createReference.isPending ? "Submitting..." : "Submit Reference"}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
+                <div className="flex justify-end gap-2 pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      referenceForm.reset();
+                      setShowWriteReferenceModal(false);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    type="submit" 
+                    disabled={createReference.isPending}
+                    className="border-2 border-black dark:border-white"
+                    data-testid="button-submit-reference"
+                  >
+                    {createReference.isPending ? "Submitting..." : "Submit Reference"}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </div>
+        </div>
+      )}
 
       {/* Edit Reference Modal */}
       <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
