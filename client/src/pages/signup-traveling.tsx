@@ -446,7 +446,8 @@ export default function SignupTraveling() {
                     max={maxDate}
                     required
                     data-testid="input-dateOfBirth"
-                    className="w-full max-w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
+                    className="w-full max-w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-500"
+                    style={{ colorScheme: 'dark' }}
                   />
                 </div>
               </div>
@@ -623,54 +624,7 @@ export default function SignupTraveling() {
                 </div>
               </div>
 
-              {/* Debug Panel - Shows form status */}
-              <div className="p-4 bg-yellow-50 border-2 border-yellow-300 rounded-lg text-sm">
-                <h4 className="font-bold text-yellow-800 mb-2">Form Status (Debug - will be removed)</h4>
-                
-                {/* Error Display - Most Important */}
-                {debugError && (
-                  <div className="mb-3 p-3 bg-red-100 border-2 border-red-500 rounded text-red-800 font-bold">
-                    ERROR: {debugError}
-                  </div>
-                )}
-                
-                {/* Status Display */}
-                <div className="mb-3 p-2 bg-blue-100 border border-blue-300 rounded">
-                  <span className="font-bold">Status:</span> {debugStatus}
-                </div>
-                
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className={formData.hometownCity ? "text-green-600" : "text-red-600"}>
-                    Hometown City: {formData.hometownCity || "MISSING"}
-                  </div>
-                  <div className={formData.hometownCountry ? "text-green-600" : "text-red-600"}>
-                    Hometown Country: {formData.hometownCountry || "MISSING"}
-                  </div>
-                  <div className={formData.destinationCity ? "text-green-600" : "text-red-600"}>
-                    Destination City: {formData.destinationCity || "MISSING"}
-                  </div>
-                  <div className={formData.destinationCountry ? "text-green-600" : "text-red-600"}>
-                    Destination Country: {formData.destinationCountry || "MISSING"}
-                  </div>
-                  <div className={formData.dateOfBirth ? "text-green-600" : "text-red-600"}>
-                    Date of Birth: {formData.dateOfBirth || "MISSING"}
-                  </div>
-                  <div className={formData.travelReturnDate ? "text-green-600" : "text-red-600"}>
-                    Travel Return Date: {formData.travelReturnDate || "MISSING"}
-                  </div>
-                  <div className={getTotalInterestsCount() >= 7 ? "text-green-600" : "text-red-600"}>
-                    Interests: {getTotalInterestsCount()}/7 {getTotalInterestsCount() >= 7 ? "OK" : "NEED MORE"}
-                  </div>
-                  <div className={formData.pledgeAccepted ? "text-green-600" : "text-red-600"}>
-                    Pledge: {formData.pledgeAccepted ? "ACCEPTED" : "NOT ACCEPTED"}
-                  </div>
-                </div>
-                <div className="mt-2 pt-2 border-t border-yellow-300">
-                  <div className={!isLoading && getTotalInterestsCount() >= 7 && formData.pledgeAccepted ? "text-green-700 font-bold" : "text-red-700 font-bold"}>
-                    Button Enabled: {!isLoading && getTotalInterestsCount() >= 7 && formData.pledgeAccepted ? "YES - READY TO SUBMIT" : "NO - Check items above"}
-                  </div>
-                </div>
-              </div>
+              {/* Debug info logged to console only */}
 
               {/* Submit Button */}
               <div className="pt-6">
