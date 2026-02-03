@@ -4156,8 +4156,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 {/* Write Reference Button - visible to all logged in users viewing other profiles */}
                 {currentUser ? (
                   <Button
-                    onClick={() => setShowWriteReferenceModal(true)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setShowWriteReferenceModal(true);
+                    }}
                     className="bg-green-600 hover:bg-green-700 text-white border-0 px-6 py-2 rounded-lg shadow-md transition-all"
+                    style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto', cursor: 'pointer' }}
                     data-testid="button-write-reference"
                   >
                     <MessageSquare className="w-4 h-4 mr-2" />
@@ -4165,8 +4170,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </Button>
                 ) : (
                   <Button
-                    onClick={() => setLocation('/auth')}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setLocation('/auth');
+                    }}
                     className="bg-green-600 hover:bg-green-700 text-white border-0 px-6 py-2 rounded-lg shadow-md transition-all"
+                    style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto', cursor: 'pointer' }}
                     data-testid="button-write-reference"
                   >
                     <MessageSquare className="w-4 h-4 mr-2" />
@@ -4176,19 +4186,26 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 {/* Report User Button - always visible, prompts login if needed */}
                 {user && (
                   currentUser ? (
-                    <ReportUserButton
-                      userId={currentUser.id}
-                      targetUserId={user.id}
-                      targetUsername={user.username}
-                      variant="ghost"
-                      size="sm"
-                    />
+                    <div style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto' }}>
+                      <ReportUserButton
+                        userId={currentUser.id}
+                        targetUserId={user.id}
+                        targetUsername={user.username}
+                        variant="ghost"
+                        size="sm"
+                      />
+                    </div>
                   ) : (
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => setLocation('/auth')}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setLocation('/auth');
+                      }}
                       className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                      style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto', cursor: 'pointer' }}
                     >
                       Report
                     </Button>
