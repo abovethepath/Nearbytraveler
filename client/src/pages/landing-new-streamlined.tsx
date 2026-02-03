@@ -466,13 +466,13 @@ export default function LandingStreamlined() {
         {/* From the Founder */}
         <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 to-orange-500">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-8 sm:mb-12">From the Founder</h2>
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 sm:p-8 lg:p-10 text-white">
-              <p className="text-lg sm:text-xl lg:text-2xl leading-relaxed mb-6 sm:mb-8 italic">
+            <h2 className="text-3xl sm:text-4xl font-bold text-black mb-8 sm:mb-12">From the Founder</h2>
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 sm:p-8 lg:p-10">
+              <p className="text-lg sm:text-xl lg:text-2xl leading-relaxed mb-6 sm:mb-8 italic text-black">
                 "After hosting 400+ travelers from 50 countries, I learned that one connection can change everything… I built the solution I wished existed."
               </p>
-              <p className="text-lg sm:text-xl font-bold mb-6">— Aaron Lefkowitz, Founder</p>
-              <p className="text-base sm:text-lg leading-relaxed">
+              <p className="text-lg sm:text-xl font-bold mb-6 text-black">— Aaron Lefkowitz, Founder</p>
+              <p className="text-base sm:text-lg leading-relaxed text-black">
                 🌍 Nearby Traveler grew out of real travel communities—from Couchsurfing bonfires to LA meetups. Our mission is to keep that spirit alive for a new generation.
               </p>
             </div>
