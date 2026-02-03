@@ -208,80 +208,80 @@ export async function generateCityActivities(cityName: string): Promise<Generate
     // Only use AI-generated city-specific activities
     const allActivities: GeneratedActivity[] = [];
     
-    const prompt = `Generate exactly 6 HIGHLY SPECIFIC and UNIQUE activities for ${cityName}.
+    const prompt = `Generate exactly 6 activities that are UNIQUE AND FAMOUS specifically in ${cityName} - things this city is KNOWN FOR worldwide.
 
-CRITICAL: Activities MUST fall into these 2 BUCKETS:
+CRITICAL: Think about what ${cityName} is FAMOUS FOR. What do tourists specifically come to ${cityName} to see and do?
 
-=== BUCKET A: ICONIC PLACES (2-3 activities) ===
-Named landmarks, museums, venues, famous markets with PROPER NOUNS
-Examples:
-✅ "The Getty Center"
-✅ "Griffith Observatory" 
-✅ "Pike Place Market"
-✅ "The Broad Museum"
-✅ "Grand Central Market"
+=== WHAT MAKES ${cityName.toUpperCase()} UNIQUE? ===
+Consider: Famous landmarks, iconic venues, world-renowned attractions, nearby natural wonders, signature entertainment, unique local culture, famous neighborhoods, legendary restaurants/bars
 
-=== BUCKET B: VERB-LED EXPERIENCES (3-4 activities) ===
-Must START with an action verb: Tour / Visit / Hike / Watch / Explore / Take / Try / Walk / Taste / Discover
-Examples:
-✅ "Tour Warner Bros Studios"
-✅ "Hike to the Hollywood Sign"
-✅ "Watch a comedy show at The Laugh Factory"
-✅ "Explore Little Tokyo food scene"
-✅ "Take a bike ride along Venice Beach"
-✅ "Try authentic tacos at Guisados"
-✅ "Discover street art in the Arts District"
+=== BUCKET A: ICONIC ${cityName.toUpperCase()} LANDMARKS (2-3 activities) ===
+The MUST-SEE places this city is FAMOUS for worldwide:
+- World-famous landmarks and attractions
+- Iconic venues, casinos, theaters, stadiums
+- Famous neighborhoods and districts
+- Legendary local spots tourists specifically seek out
+
+=== BUCKET B: ${cityName.toUpperCase()}-SPECIFIC EXPERIENCES (3-4 activities) ===
+VERB-LED activities featuring what THIS CITY is known for:
+- "Tour [famous landmark/studio/venue]"
+- "Watch [signature show/event this city is famous for]"
+- "Visit [iconic nearby attraction/day trip destination]"
+- "Explore [famous district/neighborhood]"
+- "Experience [signature local activity]"
+
+=== CITY-SPECIFIC EXAMPLES ===
+Las Vegas examples: Bellagio Fountains, Fremont Street Experience, Hoover Dam Tour, Grand Canyon Helicopter Tour, Cirque du Soleil show, High Roller Observation Wheel
+New York examples: Statue of Liberty, Empire State Building, Broadway show, Central Park bike tour
+Los Angeles examples: Hollywood Sign hike, Universal Studios tour, Santa Monica Pier, Griffith Observatory
+Paris examples: Eiffel Tower, Louvre Museum, Seine River cruise, Montmartre walking tour
 
 === STRICTLY BANNED ===
-❌ Plain street names (e.g., "Melrose Avenue", "Sunset Boulevard" - unless framed as experience like "Sunset Strip nightlife")
-❌ Generic categories ("Food Tours", "Museums", "Sightseeing")
-❌ Social matching ("Meet Locals", "Singles", "Family Activities")
-❌ Vague catchalls ("Hidden Gems", "Local Favorites", "Best Spots")
+❌ Generic activities that could be in ANY city: "Local Brewery Tours", "Street Food Tours", "Rooftop Bars", "Night Markets", "Ghost Tours", "Farmers Markets", "Bar Crawls"
+❌ Social matching categories: "Meet Locals", "Singles", "Family Activities"
+❌ Vague catchalls: "Hidden Gems", "Local Favorites", "Best Spots"
 
-=== FORMAT REQUIREMENTS ===
-- At least 3 of 6 activities MUST start with a verb (Tour/Visit/Hike/Explore/Take/Try/Watch/Walk/Taste/Discover)
-- Every activity must mention a SPECIFIC proper noun (venue, restaurant, landmark, neighborhood)
-- NO invented events or festivals (timely events come from APIs, not AI)
+=== FORMAT ===
+For each activity provide:
+1. A highly specific name with PROPER NOUNS (landmarks, venues, attractions unique to ${cityName})
+2. Category: Tourism, Culture, Food, Nightlife, Outdoor, Shopping, Entertainment, Local
+3. Brief description with real details about why it's special
 
-For each activity, provide:
-1. A highly specific name (proper noun OR verb + proper noun)
-2. A category (Tourism, Culture, Food, Nightlife, Outdoor, Shopping, Sports, Local)
-3. A brief description with real details
-
-CRITICAL: Return ONLY valid JSON, no markdown formatting, no code blocks, no explanatory text. Just the raw JSON object:
+Return ONLY valid JSON:
 {
   "activities": [
     {
-      "name": "Verb-led or Proper Noun Activity Name",
+      "name": "Specific ${cityName} Activity Name",
       "category": "Category",
-      "description": "Specific description with real details"
+      "description": "What makes this special in ${cityName}"
     }
   ]
 }`;
 
-    const systemPrompt = `You are a LOCAL EXPERT who lives in the city and knows EXACT landmark names, museum names, neighborhood names, restaurant names, and specific locations.
+    const systemPrompt = `You are a TRAVEL EXPERT who knows what makes each city FAMOUS and UNIQUE worldwide.
 
-CRITICAL RULES FOR QUALITY OUTPUT:
-1. Generate exactly 6 activities following the 2-bucket structure:
-   - BUCKET A (2-3): Iconic places with proper nouns (The Getty Center, Pike Place Market)
-   - BUCKET B (3-4): Verb-led experiences starting with action verbs (Tour, Visit, Hike, Explore, Try, Watch, Take, Walk, Taste, Discover)
+YOUR TASK: Generate activities that are SPECIFIC to this city - things that tourists specifically come HERE to see.
 
-2. At least 3 of 6 activities MUST start with a verb
+CRITICAL RULES:
+1. Every activity must be something THIS CITY is FAMOUS for or UNIQUE to this city
+2. Include the city's most ICONIC attractions that appear in travel guides
+3. Include nearby world-famous attractions (day trips to natural wonders, etc.)
+4. Include the city's SIGNATURE entertainment/experiences
+5. NEVER generate generic activities that could be in any city (brewery tours, rooftop bars, food tours, etc.)
 
-3. NEVER output plain street names like "Melrose Avenue" or "Sunset Boulevard" - ONLY frame streets as experiences like "Sunset Strip nightlife" or "Shop vintage on Melrose"
+EXAMPLES BY CITY:
+- Las Vegas: Bellagio Fountains, Fremont Street, Hoover Dam, Grand Canyon tour, casino resorts, Cirque du Soleil
+- New York: Statue of Liberty, Broadway, Empire State Building, Central Park, Times Square
+- Los Angeles: Hollywood Sign, Universal Studios, Santa Monica Pier, Beverly Hills, Griffith Observatory
+- San Francisco: Golden Gate Bridge, Alcatraz, cable cars, Fisherman's Wharf, Chinatown
 
-4. ABSOLUTELY NO GENERIC SOCIAL CATEGORIES:
-   - NO "Single", "Open to Dating", "Looking for Romance"
-   - NO "Meet Locals", "Meet Travelers", "Meeting New People"
-   - NO "Solo Traveler", "Solo Travel Meetups"
-   - NO "Family Activities", "Family Friendly", "Traveling with Children"
-   - NO "Business Networking", "Coworking", "Digital Nomad"
-   - NO "Workout Buddy", "Fitness Partner", "Looking for Workout Buddy"
-   - NO "Language Exchange", "Language Practice"
-   - NO "LGBTQ+ Events", "LGBTQ+ Friendly"
-   - NO any other generic social matching categories
-4. ONLY generate actual city-specific PLACES, LANDMARKS, RESTAURANTS, VENUES, MUSEUMS, PARKS with real names
-5. Return valid JSON only`;
+BANNED - Never generate these generic activities:
+❌ "Local Brewery Tours", "Street Food Tours", "Rooftop Bars", "Night Markets"
+❌ "Ghost Tours", "Farmers Markets", "Bar Crawls", "Neighborhood Bar Crawls"
+❌ "Hidden Speakeasies", "Trivia Nights", "River/Harbor Cruises" (unless city-famous like Seine)
+❌ Any social matching (Meet Locals, Singles events, etc.)
+
+Return valid JSON only.`;
 
     const response = await fetch(process.env.AI_INTEGRATIONS_OPENAI_BASE_URL + '/chat/completions', {
       method: 'POST',
