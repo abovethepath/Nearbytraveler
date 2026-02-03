@@ -700,6 +700,13 @@ p, span, div, button, input, textarea, select {
   color: rgb(243 244 246); /* gray-100 */
 }
 
+/* Override for navbar CTA buttons that need black text on light backgrounds */
+.dark .navbar-btn-black-text,
+.navbar-btn-black-text {
+  color: rgb(0 0 0) !important;
+  -webkit-text-fill-color: rgb(0 0 0) !important;
+}
+
 /* Removed wildcard dark mode rules that were causing input visibility issues */
 
 .dark select:not([class*="bg-"]):not([class*="text-"]) {

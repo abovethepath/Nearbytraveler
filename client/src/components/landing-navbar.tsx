@@ -53,15 +53,17 @@ export default function LandingNavbar() {
             </span>
             <button 
               onClick={() => setLocation('/signin')}
-              className="bg-gray-100 dark:bg-gray-100 hover:bg-gray-200 dark:hover:bg-gray-200 border-2 border-gray-300 dark:border-gray-300 px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap"
+              className="navbar-btn-black-text px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap border-2"
+              style={{ backgroundColor: '#f3f4f6', borderColor: '#d1d5db' }}
             >
-              <span style={{ color: '#000000' }}>Sign In</span>
+              Sign In
             </button>
             <button 
               onClick={() => setLocation('/signup/account')}
-              className="bg-orange-400 dark:bg-orange-400 hover:bg-orange-500 dark:hover:bg-orange-500 border-2 border-orange-400 dark:border-orange-400 px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap"
+              className="navbar-btn-black-text px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap border-2"
+              style={{ backgroundColor: '#fb923c', borderColor: '#fb923c' }}
             >
-              <span style={{ color: '#000000' }}>Sign Up Free</span>
+              Sign Up Free
             </button>
           </div>
 
@@ -150,18 +152,20 @@ export default function LandingNavbar() {
                   setMobileMenuOpen(false);
                   setLocation('/signup/account');
                 }}
-                className="bg-orange-400 dark:bg-orange-400 hover:bg-orange-500 dark:hover:bg-orange-500 border-2 border-orange-400 dark:border-orange-400 text-center px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 active:scale-95 shadow-lg touch-manipulation mb-2"
+                className="navbar-btn-black-text text-center px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 active:scale-95 shadow-lg touch-manipulation mb-2 border-2"
+                style={{ backgroundColor: '#fb923c', borderColor: '#fb923c' }}
               >
-                <span style={{ color: '#000000' }}>Sign Up Free</span>
+                Sign Up Free
               </button>
               <button 
                 onClick={() => {
                   setMobileMenuOpen(false);
                   setLocation('/signin');
                 }}
-                className="bg-gray-100 dark:bg-gray-100 hover:bg-gray-200 dark:hover:bg-gray-200 border-2 border-gray-300 dark:border-gray-300 text-center px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 active:scale-95 shadow-lg touch-manipulation"
+                className="navbar-btn-black-text text-center px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 active:scale-95 shadow-lg touch-manipulation border-2"
+                style={{ backgroundColor: '#f3f4f6', borderColor: '#d1d5db' }}
               >
-                <span style={{ color: '#000000' }}>Sign In</span>
+                Sign In
               </button>
             </div>
           </div>
