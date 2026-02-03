@@ -553,8 +553,8 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
             );
           })()}
           
-          {/* Join This Event Card - Also on left sidebar */}
-          {currentUser && !isOrganizer && (
+          {/* Join This Event Card - Also on left sidebar - only show if logged in and not organizer */}
+          {currentUser?.id && !isOrganizer && (
             <Card className="border-0 shadow-lg bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-gray-800 dark:to-gray-700">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">Join this event</CardTitle>
@@ -588,6 +588,21 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                     </Button>
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          )}
+          
+          {/* Login prompt for non-logged in users */}
+          {!currentUser?.id && (
+            <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700">
+              <CardContent className="p-4 text-center">
+                <p className="font-medium mb-2">Want to join this event?</p>
+                <Button 
+                  className="w-full bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white"
+                  onClick={() => setLocation('/auth')}
+                >
+                  Log in to RSVP
+                </Button>
               </CardContent>
             </Card>
           )}
