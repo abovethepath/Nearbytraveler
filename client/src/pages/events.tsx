@@ -23,7 +23,7 @@ import { ParticipantAvatars } from "@/components/ParticipantAvatars";
 import { formatDateForDisplay } from "@/lib/dateUtils";
 import { PublicationSchedule } from "@/components/PublicationSchedule";
 import { InterestButton } from "@/components/InterestButton";
-const eventsBgImage = "/event%20page%20bbq%20party_1753299541268.png";
+import eventsBgImage from "@assets/event-photo.png";
 // MobileNav removed - using global mobile navigation
 
 // Helper function to format event location properly
