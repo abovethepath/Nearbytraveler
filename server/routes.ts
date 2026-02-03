@@ -911,7 +911,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const description = `${baseDescription} | 🌍 Nearby Traveler`;
       
       // Get event image - ensure it's an absolute URL (not base64)
-      let imageUrl = 'https://nearbytraveler.org/new-logo.png';
+      let imageUrl = 'https://nearbytraveler.org/og-logo-dark.png';
       if (event.imageUrl && !event.imageUrl.startsWith('data:')) {
         // Only use if it's a real URL, not a base64 data URI
         if (event.imageUrl.startsWith('http')) {
