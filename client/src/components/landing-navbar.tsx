@@ -24,22 +24,22 @@ export default function LandingNavbar() {
           {/* Navigation Links - Flexible Width with Smart Sizing */}
           <div className="hidden lg:flex items-center justify-center flex-1 max-w-2xl">
             <div className="flex space-x-1 xl:space-x-2 2xl:space-x-4">
-              <Link href="/" className="border-transparent text-gray-700 dark:text-gray-300 hover:border-gray-300 hover:text-gray-900 dark:hover:text-white inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
+              <Link href="/" className="border-transparent text-gray-700 dark:text-white hover:border-gray-300 hover:text-gray-900 dark:hover:text-gray-200 inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
                 Home
               </Link>
-              <Link href="/locals-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
+              <Link href="/locals-landing" className="border-transparent text-gray-500 dark:text-gray-200 hover:border-gray-300 hover:text-gray-700 dark:hover:text-white inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
                 Locals
               </Link>
-              <Link href="/travelers-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
+              <Link href="/travelers-landing" className="border-transparent text-gray-500 dark:text-gray-200 hover:border-gray-300 hover:text-gray-700 dark:hover:text-white inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
                 Travelers
               </Link>
-              <Link href="/events-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
+              <Link href="/events-landing" className="border-transparent text-gray-500 dark:text-gray-200 hover:border-gray-300 hover:text-gray-700 dark:hover:text-white inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
                 Events
               </Link>
-              <Link href="/business-landing" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
+              <Link href="/business-landing" className="border-transparent text-gray-500 dark:text-gray-200 hover:border-gray-300 hover:text-gray-700 dark:hover:text-white inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
                 Business
               </Link>
-              <Link href="/cs" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:hover:text-gray-300 inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
+              <Link href="/cs" className="border-transparent text-gray-500 dark:text-gray-200 hover:border-gray-300 hover:text-gray-700 dark:hover:text-white inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
                 Couchsurfer
               </Link>
             </div>
@@ -53,13 +53,15 @@ export default function LandingNavbar() {
             </span>
             <button 
               onClick={() => setLocation('/signin')}
-              className="bg-gray-100 dark:bg-blue-600 hover:bg-gray-200 dark:hover:bg-blue-700 text-black dark:text-white border-2 border-gray-300 dark:border-transparent px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap"
+              className="bg-gray-100 dark:bg-gray-100 hover:bg-gray-200 dark:hover:bg-gray-200 border-2 border-gray-300 dark:border-gray-300 px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap"
+              style={{ color: '#000000' }}
             >
               Sign In
             </button>
             <button 
               onClick={() => setLocation('/signup/account')}
-              className="bg-orange-500 dark:bg-orange-500 hover:bg-orange-600 dark:hover:bg-orange-600 text-white dark:text-white border-2 border-orange-500 dark:border-orange-500 px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap"
+              className="bg-orange-400 dark:bg-orange-400 hover:bg-orange-500 dark:hover:bg-orange-500 border-2 border-orange-400 dark:border-orange-400 px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap"
+              style={{ color: '#000000' }}
             >
               Sign Up Free
             </button>
@@ -150,7 +152,8 @@ export default function LandingNavbar() {
                   setMobileMenuOpen(false);
                   setLocation('/signup/account');
                 }}
-                className="bg-orange-500 dark:bg-orange-500 hover:bg-orange-600 dark:hover:bg-orange-600 text-white dark:text-white border-2 border-orange-500 dark:border-orange-500 text-center px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 active:scale-95 shadow-lg touch-manipulation mb-2"
+                className="bg-orange-400 dark:bg-orange-400 hover:bg-orange-500 dark:hover:bg-orange-500 border-2 border-orange-400 dark:border-orange-400 text-center px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 active:scale-95 shadow-lg touch-manipulation mb-2"
+                style={{ color: '#000000' }}
               >
                 Sign Up Free
               </button>
@@ -159,7 +162,8 @@ export default function LandingNavbar() {
                   setMobileMenuOpen(false);
                   setLocation('/signin');
                 }}
-                className="bg-gray-100 dark:bg-blue-600 hover:bg-gray-200 dark:hover:bg-blue-700 text-black dark:text-white border-2 border-gray-300 dark:border-transparent text-center px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 active:scale-95 shadow-lg touch-manipulation"
+                className="bg-gray-100 dark:bg-gray-100 hover:bg-gray-200 dark:hover:bg-gray-200 border-2 border-gray-300 dark:border-gray-300 text-center px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 active:scale-95 shadow-lg touch-manipulation"
+                style={{ color: '#000000' }}
               >
                 Sign In
               </button>
