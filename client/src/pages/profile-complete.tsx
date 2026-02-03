@@ -4657,11 +4657,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {user?.userType !== 'business' && user?.secretActivities && (
               <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm w-full overflow-hidden">
                 <CardContent className="p-4">
-                  <div className="p-3 bg-gradient-to-br from-orange-50 to-blue-50 border-l-4 border-orange-200 rounded-r-lg">
-                    <h5 className="font-medium text-black mb-2">
+                  <div className="p-3 bg-gradient-to-br from-orange-50 to-blue-50 dark:from-gray-700 dark:to-gray-800 border-l-4 border-orange-200 dark:border-orange-500 rounded-r-lg">
+                    <h5 className="font-medium text-black dark:text-white mb-2">
                       Secret things I would do if my closest friends came to town
                     </h5>
-                    <p className="text-black text-sm italic whitespace-pre-wrap break-words">
+                    <p className="text-black dark:text-gray-200 text-sm italic whitespace-pre-wrap break-words">
                       {user?.secretActivities}
                     </p>
                   </div>
