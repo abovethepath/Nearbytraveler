@@ -910,16 +910,14 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         : `Join ${organizerName} for this event in ${event.city || 'a great location'}!`;
       const description = `${baseDescription} | 🌍 Nearby Traveler`;
       
-      // Get event image - ensure it's an absolute URL
+      // Get event image - ensure it's an absolute URL (not base64)
       let imageUrl = 'https://nearbytraveler.org/new-logo.png';
-      if (event.imageUrl) {
-        // Make sure image URL is absolute
+      if (event.imageUrl && !event.imageUrl.startsWith('data:')) {
+        // Only use if it's a real URL, not a base64 data URI
         if (event.imageUrl.startsWith('http')) {
           imageUrl = event.imageUrl;
         } else if (event.imageUrl.startsWith('/')) {
           imageUrl = `https://nearbytraveler.org${event.imageUrl}`;
-        } else {
-          imageUrl = `https://nearbytraveler.org/${event.imageUrl}`;
         }
       }
       
