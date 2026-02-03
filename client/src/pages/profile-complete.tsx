@@ -323,7 +323,6 @@ import BusinessEventsWidget from "@/components/business-events-widget";
 import ReferralWidget from "@/components/referral-widget";
 import { BlockUserButton } from "@/components/block-user-button";
 import { ReportUserButton } from "@/components/report-user-button";
-import { SimpleModal } from "@/components/SimpleModal";
 
 
 
@@ -4166,55 +4165,39 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 {/* VouchButton moved to References section below for cleaner header */}
                 {/* Write Reference Button - visible to all logged in users viewing other profiles */}
                 {currentUser ? (
-                  <button
+                  <Button
                     type="button"
-                    onPointerDown={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      console.log('🔘 Write Reference button pointerdown - opening modal');
+                    onClick={() => {
+                      console.log('🔘 Write Reference button clicked - setting modal true');
                       setShowWriteReferenceModal(true);
                     }}
-                    onPointerDownCapture={(e) => e.stopPropagation()}
-                    onClickCapture={(e) => e.stopPropagation()}
-                    className="inline-flex items-center bg-green-600 hover:bg-green-700 text-white border-0 px-6 py-2 rounded-lg shadow-md transition-all font-medium cursor-pointer"
+                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-2"
                     data-testid="button-write-reference"
                   >
                     <MessageSquare className="w-4 h-4 mr-2" />
                     Write Reference
-                  </button>
+                  </Button>
                 ) : (
-                  <button
+                  <Button
                     type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      console.log('🔘 Write Reference (login) button clicked!');
-                      setLocation('/auth');
-                    }}
-                    onPointerDown={(e) => {
-                      e.stopPropagation();
-                      console.log('🔘 Write Reference (login) button pointerdown!');
-                    }}
-                    className="inline-flex items-center bg-green-600 hover:bg-green-700 text-white border-0 px-6 py-2 rounded-lg shadow-md transition-all font-medium cursor-pointer"
+                    onClick={() => setLocation('/auth')}
+                    className="bg-green-600 hover:bg-green-700 text-white px-6 py-2"
                     data-testid="button-write-reference"
-                    data-radix-dismissable-layer-ignore=""
                   >
                     <MessageSquare className="w-4 h-4 mr-2" />
                     Write Reference
-                  </button>
+                  </Button>
                 )}
                 {/* Report User Button - always visible, prompts login if needed */}
                 {user && (
                   currentUser ? (
-                    <div style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto' }}>
-                      <ReportUserButton
-                        userId={currentUser.id}
-                        targetUserId={user.id}
-                        targetUsername={user.username}
-                        variant="ghost"
-                        size="sm"
-                      />
-                    </div>
+                    <ReportUserButton
+                      userId={currentUser.id}
+                      targetUserId={user.id}
+                      targetUsername={user.username}
+                      variant="ghost"
+                      size="sm"
+                    />
                   ) : (
                     <button
                       type="button"
@@ -9391,104 +9374,108 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </div>
       )}
 
-      {/* Write Reference Modal - Using SimpleModal to avoid Radix dismiss issues */}
-      <SimpleModal
-        isOpen={showWriteReferenceModal}
-        onClose={() => setShowWriteReferenceModal(false)}
-        title={`Write a Reference for ${user?.username}`}
-        description="Share your experience with this traveler to help others in the community"
-      >
-        <Form {...referenceForm}>
-          <form onSubmit={referenceForm.handleSubmit((data) => {
-            console.log('🚀🚀🚀 FORM SUBMITTED - DATA:', data);
-            createReference.mutate(data);
-          })} className="space-y-4">
-            <FormField
-              control={referenceForm.control}
-              name="content"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-gray-900 dark:text-white">Your Reference</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder="Share your experience with this person..."
-                      className="min-h-[100px] text-black dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+      {/* Write Reference Modal */}
+      <Dialog open={showWriteReferenceModal} onOpenChange={setShowWriteReferenceModal}>
+        <DialogContent className="max-w-2xl bg-white dark:bg-gray-900">
+          <DialogHeader>
+            <DialogTitle>Write a Reference for {user?.username}</DialogTitle>
+            <DialogDescription>
+              Share your experience with this traveler to help others in the community
+            </DialogDescription>
+          </DialogHeader>
+          
+          <Form {...referenceForm}>
+            <form onSubmit={referenceForm.handleSubmit((data) => {
+              console.log('🚀🚀🚀 FORM SUBMITTED - DATA:', data);
+              createReference.mutate(data);
+            })} className="space-y-4">
+              <FormField
+                control={referenceForm.control}
+                name="content"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Your Reference</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        placeholder="Share your experience with this person..."
+                        className="min-h-[100px] text-black dark:text-white"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={referenceForm.control}
-              name="experience"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-gray-900 dark:text-white">Experience</FormLabel>
-                  <FormControl>
-                    <div className="flex gap-4">
-                      <label className="flex items-center space-x-2 cursor-pointer">
-                        <input
-                          type="radio"
-                          value="positive"
-                          checked={String(field.value) === "positive"}
-                          onChange={() => field.onChange("positive")}
-                          className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500"
-                        />
-                        <span className="text-sm text-green-700">Positive</span>
-                      </label>
-                      <label className="flex items-center space-x-2 cursor-pointer">
-                        <input
-                          type="radio"
-                          value="neutral"
-                          checked={String(field.value) === "neutral"}
-                          onChange={() => field.onChange("neutral")}
-                          className="w-4 h-4 text-yellow-600 border-gray-300 focus:ring-yellow-500"
-                        />
-                        <span className="text-sm text-yellow-700">Neutral</span>
-                      </label>
-                      <label className="flex items-center space-x-2 cursor-pointer">
-                        <input
-                          type="radio"
-                          value="negative"
-                          checked={String(field.value) === "negative"}
-                          onChange={() => field.onChange("negative")}
-                          className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
-                        />
-                        <span className="text-sm text-red-700">Negative</span>
-                      </label>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={referenceForm.control}
+                name="experience"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Experience</FormLabel>
+                    <FormControl>
+                      <div className="flex gap-4">
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            value="positive"
+                            checked={String(field.value) === "positive"}
+                            onChange={() => field.onChange("positive")}
+                            className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500"
+                          />
+                          <span className="text-sm text-green-700">Positive</span>
+                        </label>
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            value="neutral"
+                            checked={String(field.value) === "neutral"}
+                            onChange={() => field.onChange("neutral")}
+                            className="w-4 h-4 text-yellow-600 border-gray-300 focus:ring-yellow-500"
+                          />
+                          <span className="text-sm text-yellow-700">Neutral</span>
+                        </label>
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            value="negative"
+                            checked={String(field.value) === "negative"}
+                            onChange={() => field.onChange("negative")}
+                            className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
+                          />
+                          <span className="text-sm text-red-700">Negative</span>
+                        </label>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <div className="flex justify-end gap-2 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  referenceForm.reset();
-                  setShowWriteReferenceModal(false);
-                }}
-              >
-                Cancel
-              </Button>
-              <Button 
-                type="submit" 
-                disabled={createReference.isPending}
-                className="border-2 border-black dark:border-white"
-                data-testid="button-submit-reference"
-              >
-                {createReference.isPending ? "Submitting..." : "Submit Reference"}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </SimpleModal>
+              <div className="flex justify-end gap-2 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    referenceForm.reset();
+                    setShowWriteReferenceModal(false);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  disabled={createReference.isPending}
+                  className="border-2 border-black dark:border-white"
+                  data-testid="button-submit-reference"
+                >
+                  {createReference.isPending ? "Submitting..." : "Submit Reference"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Reference Modal */}
       <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
