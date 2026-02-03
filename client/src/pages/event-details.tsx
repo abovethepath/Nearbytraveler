@@ -231,7 +231,12 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
   // Separate participants by status
   const goingParticipants = participants.filter(p => p.status === 'going');
   const interestedParticipants = participants.filter(p => p.status === 'interested');
-  const goingCount = goingParticipants.length;
+  
+  // Check if organizer is already counted in going participants
+  const organizerIsInGoingList = goingParticipants.some(p => p.userId === event.organizerId);
+  
+  // Organizer is ALWAYS going - add 1 if they're not already in the going list
+  const goingCount = goingParticipants.length + (organizerIsInGoingList ? 0 : 1);
   const interestedCount = interestedParticipants.length;
 
   // Get event URL for sharing
@@ -458,10 +463,8 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
         {/* Sidebar - Going List on LEFT like Couchsurfing */}
         <div className="order-2 lg:order-1 space-y-6">
           {/* Participants - Couchsurfing Style */}
-          {participants.length > 0 && (() => {
-            const goingCount = participants.filter(p => p.status === 'going').length;
-            const interestedCount = participants.filter(p => p.status === 'interested').length;
-            
+          {(() => {
+            // Use the already-calculated counts that include organizer
             return (
               <Card className="border-0 shadow-lg sticky top-4">
                 <CardHeader className="pb-2 border-b border-gray-100 dark:border-gray-700">
