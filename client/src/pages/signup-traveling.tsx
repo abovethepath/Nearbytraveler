@@ -434,7 +434,7 @@ export default function SignupTraveling() {
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Personal Information</h3>
 
                 <div className="w-full max-w-full overflow-hidden">
-                  <Label className="text-gray-900 dark:text-white font-semibold">Date of Birth *</Label>
+                  <Label className="text-gray-900 dark:text-orange-400 font-semibold">Date of Birth *</Label>
                   <div className="text-sm text-blue-600 dark:text-blue-400 mb-2">
                     Can be hidden from public view later while still being used for matching
                   </div>
