@@ -1,0 +1,97 @@
+Most likely a higher‑z, full‑width overlay (often an absolutely positioned div in the hero) is sitting on top of this CTA container and capturing pointer events, so z-index on the buttons alone does nothing.
+
+What to check in the layout
+Inspect in devtools
+
+In Chrome devtools, hover the CTAs in the Elements panel and look for any parent or sibling element that visually overlays that area when highlighted (often a ::before gradient, a cover image, or a full-width div).
+
+In the “Event Listeners” / “Computed” panel, verify which element is actually receiving click events (you can temporarily set pointer-events: none on suspect elements in devtools to see when buttons become clickable).
+
+Common culprits in hero sections
+Look for something like:
+
+A gradient overlay:
+
+tsx
+<div className="absolute inset-0 bg-gradient-to-b ... pointer-events-none" />
+If it exists but is missing pointer-events-none, it will block clicks.
+
+A large cover image or background wrapper with position: absolute and a high z-index.
+
+An invisible modal/backdrop that remained mounted with pointer-events: auto and high z-index.
+
+Why z-index on the buttons doesn’t fix it
+z-index only works within the same stacking context.
+
+If an ancestor of the overlay (e.g. the hero wrapper) has position plus a z-index, that can create a stacking context above the CTA container, even if the buttons themselves have zIndex: 9999.
+
+So if you have something like:
+
+tsx
+<div className="relative z-50">   // overlay container
+  <div className="absolute inset-0 ..."></div> // overlay
+</div>
+
+<div className="relative z-20">   // profile hero content
+  {/* your CTA wrapper here */}
+</div>
+The overlay container (z-50) will still sit above your z-20 CTA wrapper, regardless of zIndex on the inner buttons.
+
+Concrete fixes to try
+Pick the one that matches what you find in devtools:
+
+Make the overlay ignore pointer events
+If there is a gradient or image overlay sitting on top, give it:
+
+tsx
+<div className="absolute inset-0 bg-gradient-to-b from-black/60 to-transparent pointer-events-none" />
+or inline:
+
+tsx
+style={{ pointerEvents: 'none' }}
+This is often the cleanest fix for background-only layers.
+
+Lower or remove its z-index
+If the overlay must stay interactive in some places but not over the CTAs, reduce its z-index below the CTA wrapper or move it earlier in the DOM with a lower z-index, e.g.:
+
+tsx
+<div className="absolute inset-0 z-0 ..."></div>
+
+<div className="relative z-10">
+  {/* hero content + CTAs */}
+</div>
+Raise the CTA container’s stacking context above the overlay
+Instead of putting huge z-index on individual buttons, move it to the wrapper and ensure that wrapper’s ancestor is not in a lower stacking context:
+
+tsx
+{/* Hero content container */}
+<section className="relative z-30">
+  {/* CTAs — wrap on mobile */}
+  {!isOwnProfile && (
+    <div className="flex items-center gap-3 flex-wrap min-w-0 relative z-40">
+      {/* buttons as you have them now, but you can remove inline zIndex */}
+    </div>
+  )}
+</section>
+Then make sure any overlay container uses a lower z-index (e.g. z-10 or z-20).
+
+Remove stray invisible overlays
+Check for things like leftover modal backdrops:
+
+tsx
+<div className="fixed inset-0 bg-black/50 z-50" />  // maybe still mounted
+If present, confirm their mount/unmount conditions or explicitly hide them when the profile page is active.
+
+Minimal debugging snippet
+As a quick test, temporarily add this to your CTA wrapper:
+
+tsx
+<div
+  className="flex items-center gap-3 flex-wrap min-w-0 relative"
+  style={{ zIndex: 999999, position: 'relative' }}
+>
+  ...
+</div>
+If the buttons are still not clickable, you almost certainly have a separate stacking context above this entire hero section (e.g., a fixed or absolute overlay at the app root). Track that down and either set pointer-events: none on it or lower its z-index relative to the hero.
+
+If you paste the JSX for the hero wrapper and any gradient/overlay elements around this section, I can point to the exact line to change.
