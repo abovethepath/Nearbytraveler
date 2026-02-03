@@ -408,18 +408,18 @@ export default function EventsLanding() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
             <div className="bg-orange-500 dark:bg-orange-600 p-6 rounded-xl shadow-lg">
               <div className="text-3xl mb-4">🎉</div>
-              <h3 className="text-xl font-bold mb-3 text-white">From $1 Taco Tours to Free Beach Parties</h3>
-              <p className="text-white/90 text-sm leading-relaxed">Join unforgettable events created by passionate locals who know the best spots. Every experience is authentic and affordable.</p>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">From $1 Taco Tours to Free Beach Parties</h3>
+              <p className="text-gray-800 text-sm leading-relaxed">Join unforgettable events created by passionate locals who know the best spots. Every experience is authentic and affordable.</p>
             </div>
             <div className="bg-blue-500 dark:bg-blue-600 p-6 rounded-xl shadow-lg">
               <div className="text-3xl mb-4">🤝</div>
-              <h3 className="text-xl font-bold mb-3 text-white">Meet 5-20 People Per Event</h3>
-              <p className="text-white/90 text-sm leading-relaxed">Every event is a chance to make lifelong friendships. Small groups mean real connections, not anonymous crowds.</p>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Meet 5-20 People Per Event</h3>
+              <p className="text-gray-800 text-sm leading-relaxed">Every event is a chance to make lifelong friendships. Small groups mean real connections, not anonymous crowds.</p>
             </div>
             <div className="bg-teal-500 dark:bg-teal-600 p-6 rounded-xl shadow-lg">
               <div className="text-3xl mb-4">🗺️</div>
-              <h3 className="text-xl font-bold mb-3 text-white">Hidden Spots Locals Actually Go To</h3>
-              <p className="text-white/90 text-sm leading-relaxed">Discover experiences that tourists never find. Access the real side of every city through insider knowledge.</p>
+              <h3 className="text-xl font-bold mb-3 text-gray-900">Hidden Spots Locals Actually Go To</h3>
+              <p className="text-gray-800 text-sm leading-relaxed">Discover experiences that tourists never find. Access the real side of every city through insider knowledge.</p>
             </div>
           </div>
         </div>
