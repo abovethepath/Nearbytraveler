@@ -4138,10 +4138,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               <div className="flex items-center gap-3 flex-wrap min-w-0 relative z-50 pointer-events-auto" style={{ position: 'relative', zIndex: 9999 }}>
                 <button 
                   type="button"
-                  className="inline-flex items-center bg-orange-500 hover:bg-orange-600 border-0 px-6 py-2 rounded-lg shadow-md transition-all text-black font-medium"
-                  onClick={handleMessage}
-                  onPointerDown={(e) => e.stopPropagation()}
+                  className="inline-flex items-center bg-orange-500 hover:bg-orange-600 border-0 px-6 py-2 rounded-lg shadow-md transition-all text-black font-medium cursor-pointer"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('🔘 Message button clicked!');
+                    handleMessage();
+                  }}
+                  onPointerDown={(e) => {
+                    e.stopPropagation();
+                    console.log('🔘 Message button pointerdown!');
+                  }}
                   data-testid="button-message"
+                  data-radix-dismissable-layer-ignore=""
                 >
                   <MessageCircle className="w-4 h-4 mr-2 text-black" />
                   <span className="text-black">Message</span>
@@ -4158,10 +4167,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 {currentUser ? (
                   <button
                     type="button"
-                    onClick={() => setShowWriteReferenceModal(true)}
-                    onPointerDown={(e) => e.stopPropagation()}
-                    className="inline-flex items-center bg-green-600 hover:bg-green-700 text-white border-0 px-6 py-2 rounded-lg shadow-md transition-all font-medium"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      console.log('🔘 Write Reference button clicked!');
+                      setShowWriteReferenceModal(true);
+                    }}
+                    onPointerDown={(e) => {
+                      e.stopPropagation();
+                      console.log('🔘 Write Reference button pointerdown!');
+                    }}
+                    className="inline-flex items-center bg-green-600 hover:bg-green-700 text-white border-0 px-6 py-2 rounded-lg shadow-md transition-all font-medium cursor-pointer"
                     data-testid="button-write-reference"
+                    data-radix-dismissable-layer-ignore=""
                   >
                     <MessageSquare className="w-4 h-4 mr-2" />
                     Write Reference
@@ -4169,10 +4187,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 ) : (
                   <button
                     type="button"
-                    onClick={() => setLocation('/auth')}
-                    onPointerDown={(e) => e.stopPropagation()}
-                    className="inline-flex items-center bg-green-600 hover:bg-green-700 text-white border-0 px-6 py-2 rounded-lg shadow-md transition-all font-medium"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      console.log('🔘 Write Reference (login) button clicked!');
+                      setLocation('/auth');
+                    }}
+                    onPointerDown={(e) => {
+                      e.stopPropagation();
+                      console.log('🔘 Write Reference (login) button pointerdown!');
+                    }}
+                    className="inline-flex items-center bg-green-600 hover:bg-green-700 text-white border-0 px-6 py-2 rounded-lg shadow-md transition-all font-medium cursor-pointer"
                     data-testid="button-write-reference"
+                    data-radix-dismissable-layer-ignore=""
                   >
                     <MessageSquare className="w-4 h-4 mr-2" />
                     Write Reference
@@ -4193,9 +4220,18 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   ) : (
                     <button
                       type="button"
-                      onClick={() => setLocation('/auth')}
-                      onPointerDown={(e) => e.stopPropagation()}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-1.5 text-sm rounded font-medium"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('🔘 Report (login) button clicked!');
+                        setLocation('/auth');
+                      }}
+                      onPointerDown={(e) => {
+                        e.stopPropagation();
+                        console.log('🔘 Report (login) button pointerdown!');
+                      }}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-1.5 text-sm rounded font-medium cursor-pointer"
+                      data-radix-dismissable-layer-ignore=""
                     >
                       Report
                     </button>

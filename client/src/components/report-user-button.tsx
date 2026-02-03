@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"; // Still used for dialog buttons
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -85,15 +85,26 @@ export function ReportUserButton({
 
   return (
     <>
-      <Button
-        variant={variant}
-        size={size}
-        onClick={() => setShowDialog(true)}
-        className="gap-2 text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
+      <button
+        type="button"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('🔘 Report User button clicked!');
+          setShowDialog(true);
+        }}
+        onPointerDown={(e) => {
+          e.stopPropagation();
+          console.log('🔘 Report User button pointerdown!');
+        }}
+        className={`inline-flex items-center justify-center gap-2 text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 cursor-pointer ${
+          size === 'sm' ? 'px-3 py-1.5 text-sm' : size === 'lg' ? 'px-6 py-3 text-base' : 'px-4 py-2 text-sm'
+        } ${variant === 'ghost' ? 'hover:bg-gray-100 dark:hover:bg-gray-800 rounded' : ''}`}
+        data-radix-dismissable-layer-ignore=""
       >
         {showIcon && <Flag className="h-4 w-4" />}
         {showText && "Report"}
-      </Button>
+      </button>
 
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent className="sm:max-w-md bg-white dark:bg-gray-900">
