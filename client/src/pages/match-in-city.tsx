@@ -555,44 +555,12 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     }
   }, [user?.id, userProfile?.subInterests, selectedCity]);
   
-  // Handler to save sub-interests when they change - CITY-SPECIFIC
+  // Handler to update sub-interests state - selections work locally for filtering
+  // Note: subInterests field was removed from production database
   const handleSubInterestsChange = async (newSubInterests: string[]) => {
     setUserSubInterests(newSubInterests);
-    
-    if (!user?.id || !selectedCity) return;
-    
-    setSubInterestsLoading(true);
-    try {
-      // Get current sub-interests from all cities
-      const currentAllSubInterests = userProfile?.subInterests || [];
-      const cityPrefix = `${selectedCity}: `;
-      
-      // Remove old sub-interests for this city
-      const otherCitySubInterests = currentAllSubInterests.filter(
-        (si: string) => !si.startsWith(cityPrefix)
-      );
-      
-      // Add new sub-interests for this city with city prefix
-      const newCitySubInterests = newSubInterests.map(si => `${selectedCity}: ${si}`);
-      
-      // Combine: other cities + new selections for current city
-      const updatedAllSubInterests = [...otherCitySubInterests, ...newCitySubInterests];
-      
-      await apiRequest("PATCH", `/api/users/${user.id}`, { 
-        subInterests: updatedAllSubInterests 
-      });
-      // Invalidate user profile cache
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}`] });
-    } catch (error) {
-      console.error('Error saving sub-interests:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save your interests. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setSubInterestsLoading(false);
-    }
+    // Local state only - no database persistence for city-specific sub-interests
+    console.log('City sub-interests updated locally:', newSubInterests);
   };
 
   // Hydrate initial selections from user profile
