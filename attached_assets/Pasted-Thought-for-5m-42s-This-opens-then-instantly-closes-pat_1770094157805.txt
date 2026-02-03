@@ -1,0 +1,150 @@
+Thought for 5m 42s
+
+This “opens then instantly closes” pattern is almost always one of these:
+
+A click-away / dismiss handler is running in the capture phase (Radix DismissableLayer, or your own “close on outside click” listener), so your stopPropagation() in bubbling doesn’t stop it.
+
+The component unmounts right after the click (parent re-renders with a different key, conditional render flips, route change, etc.) → state resets → dialog disappears.
+
+A trigger button inside a <form> is submitting (default type="submit"), causing a re-render/unmount. (Shadcn <Button> can be submit if you didn’t set type="button" and you’re inside a form.)
+
+Below are fixes that cover all 3 quickly.
+
+A) First: confirm whether the component is unmounting
+
+Drop this into ReportUserButton temporarily:
+
+useEffect(() => {
+  console.log("✅ ReportUserButton mounted");
+  return () => console.log("🧨 ReportUserButton UNMOUNTED");
+}, []);
+
+
+If you see UNMOUNTED immediately after clicking, the dialog isn’t “closing” — it’s being unmounted. Jump to section D (hoist the dialog to a stable parent).
+
+B) Stop capture-phase “click-away” closers (most common with Radix + nested layers)
+1) Open on pointerdown (not click) and preventDefault()
+
+This avoids the “open then outside-pointerdown closes it” race.
+
+Replace your trigger handlers with this:
+
+const openDialog = (e: React.PointerEvent<HTMLButtonElement>) => {
+  e.preventDefault();      // important
+  e.stopPropagation();
+  setShowDialog(true);
+};
+
+<button
+  type="button"
+  onPointerDown={openDialog}
+  onClick={(e) => { e.preventDefault(); e.stopPropagation(); }} // keep, but pointerdown is primary
+  onPointerDownCapture={(e) => e.stopPropagation()}             // stops capture-phase closers
+  onClickCapture={(e) => e.stopPropagation()}                   // stops capture-phase closers
+  ...
+>
+  ...
+</button>
+
+2) Also stop propagation on the portal root (capture phase)
+
+Add this to your portal wrapper so any global “click outside” listener doesn’t see the interaction:
+
+<div
+  className="fixed inset-0 z-[100000] flex items-center justify-center"
+  onPointerDownCapture={(e) => e.stopPropagation()}
+  onClickCapture={(e) => e.stopPropagation()}
+>
+
+C) Fix your overlay click-close logic (yours currently won’t close correctly)
+
+Right now you close only if e.target === e.currentTarget, but your overlay is a child covering the whole screen, so clicks hit the overlay child (never the wrapper). If you want outside click to close and avoid weird bubbling, do it like this:
+
+{showDialog && createPortal(
+  <div
+    className="fixed inset-0 z-[100000] flex items-center justify-center"
+    onPointerDownCapture={(e) => e.stopPropagation()}
+    onClickCapture={(e) => e.stopPropagation()}
+  >
+    {/* overlay closes on pointerdown */}
+    <div
+      aria-hidden="true"
+      className="fixed inset-0 bg-black/80"
+      onPointerDown={(e) => {
+        e.stopPropagation();
+        setShowDialog(false);
+      }}
+    />
+
+    {/* content stops events */}
+    <div
+      className="relative z-[100001] w-full max-w-md mx-4 bg-white dark:bg-gray-900 rounded-lg shadow-lg p-6"
+      onPointerDownCapture={(e) => e.stopPropagation()}
+      onClickCapture={(e) => e.stopPropagation()}
+    >
+      ...
+    </div>
+  </div>,
+  document.body
+)}
+
+
+Even if you don’t care about outside-click closing, this structure prevents accidental “outside” detection and capture-phase handlers from nuking your open state.
+
+D) If it’s unmounting: hoist the modal out of the CTA component
+
+If your log shows the button component unmounts after the click, the fix is architectural: render the dialog once at the page level (stable), and only use the CTA button to toggle state.
+
+In profile-complete.tsx:
+
+const [reportOpen, setReportOpen] = useState(false);
+
+<ReportUserButton
+  ...
+  onOpen={() => setReportOpen(true)}
+/>
+
+<ReportUserDialog
+  open={reportOpen}
+  onOpenChange={setReportOpen}
+  ...
+/>
+
+
+Then ReportUserButton becomes a simple trigger (no portal/state inside). This completely eliminates “opens then disappears because parent unmounted.”
+
+E) For “Write Reference” (Radix Dialog) specifically
+
+Two big gotchas:
+
+Don’t mix DialogTrigger with manual setOpen(true) (double-toggling can cause immediate close in some setups).
+
+Ensure the trigger is type="button" if there’s any chance you’re inside a <form>.
+
+Recommended pattern:
+
+<Dialog open={showWriteReferenceModal} onOpenChange={setShowWriteReferenceModal}>
+  <DialogTrigger asChild>
+    <Button type="button">Write Reference</Button>
+  </DialogTrigger>
+
+  <DialogContent
+    onPointerDownOutside={(e) => e.preventDefault()} // optional: disables outside-close
+    onInteractOutside={(e) => e.preventDefault()}    // optional: disables outside-close
+  >
+    ...
+  </DialogContent>
+</Dialog>
+
+
+If you still want outside-click close, remove those two preventDefault() lines after you’ve confirmed it stays open.
+
+Fastest path to resolution
+
+Add the mount/unmount log (A).
+
+Change trigger to onPointerDown + preventDefault + capture stop (B) and add capture stops on portal root.
+
+If you see unmounting → hoist the dialog (D).
+
+If you paste the Write Reference Dialog code (the actual <Dialog ...> section), I’ll tell you exactly where it’s double-toggling or being dismissed.

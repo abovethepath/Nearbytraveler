@@ -42,6 +42,15 @@ export function ReportUserButton({
   const [details, setDetails] = useState("");
   const { toast } = useToast();
 
+  useEffect(() => {
+    console.log("✅ ReportUserButton mounted");
+    return () => console.log("🧨 ReportUserButton UNMOUNTED");
+  }, []);
+
+  useEffect(() => {
+    console.log("📋 showDialog state changed to:", showDialog);
+  }, [showDialog]);
+
   const reportUserMutation = useMutation({
     mutationFn: async () => {
       const response = await apiRequest("POST", `/api/users/report`, {
@@ -108,14 +117,20 @@ export function ReportUserButton({
           className="fixed inset-0 z-[100000] flex items-center justify-center"
           onPointerDownCapture={(e) => e.stopPropagation()}
           onClickCapture={(e) => e.stopPropagation()}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              setShowDialog(false);
-            }
-          }}
         >
-          <div className="fixed inset-0 bg-black/80" />
-          <div className="relative z-[100001] w-full max-w-md mx-4 bg-white dark:bg-gray-900 rounded-lg shadow-lg p-6">
+          <div 
+            aria-hidden="true"
+            className="fixed inset-0 bg-black/80" 
+            onPointerDown={(e) => {
+              e.stopPropagation();
+              setShowDialog(false);
+            }}
+          />
+          <div 
+            className="relative z-[100001] w-full max-w-md mx-4 bg-white dark:bg-gray-900 rounded-lg shadow-lg p-6"
+            onPointerDownCapture={(e) => e.stopPropagation()}
+            onClickCapture={(e) => e.stopPropagation()}
+          >
             <button
               type="button"
               onClick={() => setShowDialog(false)}
