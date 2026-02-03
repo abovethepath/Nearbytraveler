@@ -865,7 +865,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     try {
       const { readFile } = await import('fs/promises');
       const { join } = await import('path');
-      const imagePath = join(process.cwd(), 'client', 'public', 'og-logo-landscape.png');
+      const imagePath = join(process.cwd(), 'client', 'public', 'og-social.png');
       
       const imageBuffer = await readFile(imagePath);
       res.set({
