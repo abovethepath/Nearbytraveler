@@ -54,16 +54,14 @@ export default function LandingNavbar() {
             <button 
               onClick={() => setLocation('/signin')}
               className="bg-gray-100 dark:bg-gray-100 hover:bg-gray-200 dark:hover:bg-gray-200 border-2 border-gray-300 dark:border-gray-300 px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap"
-              style={{ color: '#000000' }}
             >
-              Sign In
+              <span style={{ color: '#000000' }}>Sign In</span>
             </button>
             <button 
               onClick={() => setLocation('/signup/account')}
               className="bg-orange-400 dark:bg-orange-400 hover:bg-orange-500 dark:hover:bg-orange-500 border-2 border-orange-400 dark:border-orange-400 px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap"
-              style={{ color: '#000000' }}
             >
-              Sign Up Free
+              <span style={{ color: '#000000' }}>Sign Up Free</span>
             </button>
           </div>
 
@@ -153,9 +151,8 @@ export default function LandingNavbar() {
                   setLocation('/signup/account');
                 }}
                 className="bg-orange-400 dark:bg-orange-400 hover:bg-orange-500 dark:hover:bg-orange-500 border-2 border-orange-400 dark:border-orange-400 text-center px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 active:scale-95 shadow-lg touch-manipulation mb-2"
-                style={{ color: '#000000' }}
               >
-                Sign Up Free
+                <span style={{ color: '#000000' }}>Sign Up Free</span>
               </button>
               <button 
                 onClick={() => {
@@ -163,9 +160,8 @@ export default function LandingNavbar() {
                   setLocation('/signin');
                 }}
                 className="bg-gray-100 dark:bg-gray-100 hover:bg-gray-200 dark:hover:bg-gray-200 border-2 border-gray-300 dark:border-gray-300 text-center px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 active:scale-95 shadow-lg touch-manipulation"
-                style={{ color: '#000000' }}
               >
-                Sign In
+                <span style={{ color: '#000000' }}>Sign In</span>
               </button>
             </div>
           </div>
