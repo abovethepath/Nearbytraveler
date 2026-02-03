@@ -259,20 +259,22 @@ export default function AmbassadorProgram() {
               : "Start earning points by inviting friends, referring local businesses, and hosting community events."
             }
           </p>
-          {user ? (
-            <a href={`mailto:ambassadors@thenearbytraveler.com?subject=Ambassador Program Application&body=Hi,%0D%0A%0D%0AI would like to apply to become a Nearby Traveler Ambassador.%0D%0A%0D%0AUsername: ${user.username}%0D%0AName: ${user.name || 'N/A'}%0D%0AEmail: ${user.email}%0D%0A%0D%0AWhy I want to be an Ambassador:%0D%0A%0D%0A`}>
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 font-semibold flex items-center gap-2">
-                <Mail className="w-5 h-5" />
-                Apply to Become an Ambassador
-              </Button>
-            </a>
-          ) : (
-            <Link href="/signup">
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 font-semibold">
-                Join Nearby Traveler
-              </Button>
-            </Link>
-          )}
+          <div className="flex justify-center">
+            {user ? (
+              <a href={`mailto:aaron@thenearbytraveler.com?subject=Ambassador Program Application - ${user.username}&body=Hi Aaron,%0D%0A%0D%0AI would like to apply to become a Nearby Traveler Ambassador.%0D%0A%0D%0AUsername: ${user.username}%0D%0AName: ${user.name || 'N/A'}%0D%0AEmail: ${user.email}%0D%0A%0D%0AWhy I want to be an Ambassador:%0D%0A%0D%0A%0D%0AHow I plan to help grow the community:%0D%0A%0D%0A`}>
+                <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 font-semibold inline-flex items-center gap-2">
+                  <Mail className="w-5 h-5" />
+                  Apply to Become an Ambassador
+                </Button>
+              </a>
+            ) : (
+              <Link href="/signup">
+                <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 font-semibold">
+                  Join Nearby Traveler
+                </Button>
+              </Link>
+            )}
+          </div>
         </div>
       </section>
 
