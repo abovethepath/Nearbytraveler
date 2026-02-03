@@ -4340,6 +4340,15 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 data-testid="tab-references"
               >
                 References
+                {userReferences.length > 0 && (
+                  <span className={`ml-2 px-2 py-0.5 text-xs font-bold rounded-full ${
+                    activeTab === 'references' 
+                      ? 'bg-white/20 text-white' 
+                      : 'bg-orange-500 text-white'
+                  }`}>
+                    {userReferences.length}
+                  </span>
+                )}
               </button>
 
               {user?.userType !== 'business' && (
