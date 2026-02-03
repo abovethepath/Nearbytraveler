@@ -916,7 +916,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const baseUrl = `${protocol}://${host}`;
       
       // Get event image - ensure it's an absolute URL (not base64)
-      let imageUrl = `${baseUrl}/og-logo-dark.png`;
+      // Using landscape logo (16:9) for better social sharing on mobile
+      let imageUrl = `${baseUrl}/og-logo-landscape.png`;
       if (event.imageUrl && !event.imageUrl.startsWith('data:')) {
         // Only use if it's a real URL, not a base64 data URI
         if (event.imageUrl.startsWith('http')) {
