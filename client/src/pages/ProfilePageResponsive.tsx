@@ -217,20 +217,20 @@ export default function ProfilePageResponsive() {
         {/* Additional Info Section */}
         {(user.secretActivities || (user.events && user.events.length > 0)) && (
           <section className="mt-8">
-            <div className="rounded-2xl border p-4 md:p-6 bg-white">
-              <h2 className="text-lg font-semibold mb-3">More Info</h2>
+            <div className="rounded-2xl border border-gray-200 dark:border-gray-700 p-4 md:p-6 bg-white dark:bg-gray-800">
+              <h2 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">More Info</h2>
               {user.secretActivities && (
                 <div className="mb-4">
-                  <h3 className="font-medium text-sm mb-1">Secret things I would do if my closest friends came to town:</h3>
-                  <p className="text-sm text-gray-700" data-testid="text-secret-activities">{user.secretActivities}</p>
+                  <h3 className="font-medium text-sm mb-1 text-gray-900 dark:text-gray-100">Secret things I would do if my closest friends came to town:</h3>
+                  <p className="text-sm text-gray-700 dark:text-gray-300" data-testid="text-secret-activities">{user.secretActivities}</p>
                 </div>
               )}
               {user.events && user.events.length > 0 && (
                 <div>
-                  <h3 className="font-medium text-sm mb-2">Interested Events:</h3>
+                  <h3 className="font-medium text-sm mb-2 text-gray-900 dark:text-gray-100">Interested Events:</h3>
                   <div className="flex flex-wrap gap-2">
                     {user.events.slice(0, 4).map((event, index) => (
-                      <span key={index} className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                      <span key={index} className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full">
                         {event}
                       </span>
                     ))}
