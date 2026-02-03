@@ -78,16 +78,16 @@ export default function LocalsLanding() {
       <div className="w-full">
         
         {/* HERO SECTION */}
-        <div className="pt-4 pb-8 sm:pt-8 sm:pb-12 bg-white">
+        <div className="pt-4 pb-8 sm:pt-8 sm:pb-12 bg-white dark:bg-gray-900">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid gap-6 md:gap-8 lg:gap-12 lg:grid-cols-2 items-center">
               
               {/* Left text side */}
               <div className="order-2 lg:order-1 text-center lg:text-left">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 mb-6 sm:mb-8">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 dark:text-white mb-6 sm:mb-8">
                   Turn Your City Knowledge Into Global Friendships
                 </h1>
-                <p className="text-base sm:text-lg text-gray-600 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
                   Connect with curious travelers and like-minded locals while sharing what makes your city special. Build real friendships that last a lifetime.
                 </p>
                 
@@ -111,7 +111,7 @@ export default function LocalsLanding() {
                     }}
                     variant="outline"
                     size="lg"
-                    className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-4 rounded-xl text-lg font-medium transition-all duration-200"
+                    className="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 px-8 py-4 rounded-xl text-lg font-medium transition-all duration-200"
                     data-testid="button-learn-more"
                   >
                     See How It Works
@@ -122,7 +122,7 @@ export default function LocalsLanding() {
               {/* Right image side */}
               <div className="order-1 lg:order-2 flex flex-col items-center">
                 <div className="mb-4 sm:mb-6 text-center w-full">
-                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 italic px-2">
+                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-200 italic px-2">
                     Travel doesn't change you.<br />
                     The people you meet do.
                   </p>

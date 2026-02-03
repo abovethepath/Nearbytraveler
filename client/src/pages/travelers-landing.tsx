@@ -30,7 +30,7 @@ export default function TravelersLanding() {
   }, [currentWisdom, wisdomSayings.length]);
 
   return (
-    <div className="bg-white font-sans">
+    <div className="bg-white dark:bg-gray-900 font-sans">
       {/* Fixed CTA Button */}
       <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
         <Button 
@@ -51,16 +51,16 @@ export default function TravelersLanding() {
       <div className="w-full">
         
         {/* HERO SECTION */}
-        <div className="pt-4 pb-8 sm:pt-8 sm:pb-12 bg-white">
+        <div className="pt-4 pb-8 sm:pt-8 sm:pb-12 bg-white dark:bg-gray-900">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid gap-6 md:gap-8 lg:gap-12 lg:grid-cols-2 items-center">
               
               {/* Left text side */}
               <div className="order-2 lg:order-1 text-center lg:text-left">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 mb-6 sm:mb-8">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900 dark:text-white mb-6 sm:mb-8">
                   Travel Like a Local
                 </h1>
-                <p className="text-base sm:text-lg text-gray-600 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
                   Connect with locals and travelers for authentic experiences. Build real friendships that last a lifetime.
                 </p>
                 
@@ -84,7 +84,7 @@ export default function TravelersLanding() {
                     }}
                     variant="outline"
                     size="lg"
-                    className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-4 rounded-xl text-lg font-medium transition-all duration-200"
+                    className="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 px-8 py-4 rounded-xl text-lg font-medium transition-all duration-200"
                     data-testid="button-learn-more"
                   >
                     See How It Works
@@ -95,7 +95,7 @@ export default function TravelersLanding() {
               {/* Right image side */}
               <div className="order-1 lg:order-2 flex flex-col items-center">
                 <div className="mb-4 sm:mb-6 text-center w-full">
-                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 italic px-2">
+                  <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-200 italic px-2">
                     Travel doesn't change you.<br />
                     The people you meet do.
                   </p>
@@ -126,31 +126,31 @@ export default function TravelersLanding() {
             What Makes Us Different
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl shadow-lg">
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 p-6 rounded-xl shadow-lg">
               <div className="text-4xl mb-4">⚡</div>
-              <h3 className="text-xl font-bold mb-3 text-black">Instant Meetups</h3>
-              <p className="text-black mb-3">Create "meet now" events for instant connections.</p>
-              <ul className="text-sm text-gray-700 space-y-1">
+              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Instant Meetups</h3>
+              <p className="text-black dark:text-gray-200 mb-3">Create "meet now" events for instant connections.</p>
+              <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
                 <li>• Spontaneous adventures</li>
                 <li>• Skip the planning stress</li>
                 <li>• Connect in real-time</li>
               </ul>
             </div>
-            <div className="bg-gradient-to-br from-pink-50 to-pink-100 p-6 rounded-xl shadow-lg">
+            <div className="bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/30 dark:to-pink-800/30 p-6 rounded-xl shadow-lg">
               <div className="text-4xl mb-4">🌍</div>
-              <h3 className="text-xl font-bold mb-3 text-black">Local Connections</h3>
-              <p className="text-black mb-3">Connect with locals for authentic experiences.</p>
-              <ul className="text-sm text-gray-700 space-y-1">
+              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Local Connections</h3>
+              <p className="text-black dark:text-gray-200 mb-3">Connect with locals for authentic experiences.</p>
+              <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
                 <li>• Skip tourist traps</li>
                 <li>• Insider knowledge</li>
                 <li>• Authentic cultural exchange</li>
               </ul>
             </div>
-            <div className="bg-gradient-to-br from-teal-50 to-teal-100 p-6 rounded-xl shadow-lg">
+            <div className="bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-900/30 dark:to-teal-800/30 p-6 rounded-xl shadow-lg">
               <div className="text-4xl mb-4">💬</div>
-              <h3 className="text-xl font-bold mb-3 text-black">Real-Time Chat</h3>
-              <p className="text-black mb-3">Instant messaging with full features.</p>
-              <ul className="text-sm text-gray-700 space-y-1">
+              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Real-Time Chat</h3>
+              <p className="text-black dark:text-gray-200 mb-3">Instant messaging with full features.</p>
+              <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
                 <li>• Group conversations</li>
                 <li>• Photo & location sharing</li>
                 <li>• Coordinated meetups</li>
@@ -166,22 +166,22 @@ export default function TravelersLanding() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-orange-600">1</span>
+              <div className="bg-orange-100 dark:bg-orange-900/50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-orange-600 dark:text-orange-400">1</span>
               </div>
               <h3 className="font-bold mb-2 text-gray-900 dark:text-white text-lg">Share Your Plans</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">Add travel dates, interests, and what you want to explore</p>
             </div>
             <div>
-              <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-blue-600">2</span>
+              <div className="bg-blue-100 dark:bg-blue-900/50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">2</span>
               </div>
               <h3 className="font-bold mb-2 text-gray-900 dark:text-white text-lg">Get Matched</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">Find compatible travelers and locals based on your interests</p>
             </div>
             <div>
-              <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-green-600">3</span>
+              <div className="bg-green-100 dark:bg-green-900/50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl font-bold text-green-600 dark:text-green-400">3</span>
               </div>
               <h3 className="font-bold mb-2 text-gray-900 dark:text-white text-lg">Connect & Explore</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">Join events, create meetups, and make lasting friendships</p>
