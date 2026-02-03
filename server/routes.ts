@@ -882,6 +882,58 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
+  // Dynamic Open Graph meta tags for homepage (for social media sharing)
+  app.get("/", (req, res, next) => {
+    const userAgent = req.headers['user-agent'] || '';
+    
+    // Check if this is a social media crawler/bot
+    const isCrawler = /facebookexternalhit|Facebot|Twitterbot|WhatsApp|LinkedInBot|Slackbot|TelegramBot|Discordbot|PinterestBot|RedditBot/i.test(userAgent);
+    
+    if (!isCrawler) {
+      return next();
+    }
+    
+    const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+    const host = req.headers.host || 'nearbytraveler.org';
+    const baseUrl = `${protocol}://${host}`;
+    const imageUrl = `${baseUrl}/api/og-image?v=12`;
+    
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nearby Traveler - Social Travel Networking</title>
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="${baseUrl}" />
+  <meta property="og:title" content="Nearby Traveler - Social Travel Networking" />
+  <meta property="og:description" content="Connect with travelers and locals worldwide. Find travel companions and authentic experiences." />
+  <meta property="og:image" content="${imageUrl}" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name" content="Nearby Traveler" />
+  
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="${baseUrl}" />
+  <meta name="twitter:title" content="Nearby Traveler - Social Travel Networking" />
+  <meta name="twitter:description" content="Connect with travelers and locals worldwide. Find travel companions and authentic experiences." />
+  <meta name="twitter:image" content="${imageUrl}" />
+  
+  <!-- Redirect to actual page for browsers -->
+  <meta http-equiv="refresh" content="0;url=${baseUrl}" />
+</head>
+<body>
+  <p>Redirecting to <a href="${baseUrl}">Nearby Traveler</a>...</p>
+</body>
+</html>`;
+    
+    res.set('Content-Type', 'text/html');
+    res.send(html);
+  });
+
   // Dynamic Open Graph meta tags for event pages (for social media sharing)
   app.get("/events/:id", async (req, res, next) => {
     const userAgent = req.headers['user-agent'] || '';
