@@ -572,7 +572,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                       disabled={joinEventMutation.isPending}
                       data-testid="button-going"
                     >
-                      {joinEventMutation.isPending ? "..." : "Going"}
+                      {joinEventMutation.isPending ? "..." : "Join?"}
                     </Button>
                     <Button 
                       variant="outline"
@@ -894,7 +894,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                           disabled={joinEventMutation.isPending}
                           data-testid="button-going"
                         >
-                          {joinEventMutation.isPending ? "..." : "Going"}
+                          {joinEventMutation.isPending ? "..." : "Join?"}
                         </Button>
                         <Button 
                           variant="outline"

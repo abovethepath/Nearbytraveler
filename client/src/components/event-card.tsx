@@ -294,7 +294,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
                   }}
                   data-testid="button-going"
                 >
-                  {joinEventMutation.isPending ? "..." : "Going"}
+                  {joinEventMutation.isPending ? "..." : "Join?"}
                 </Button>
                 <Button 
                   size="sm" 
