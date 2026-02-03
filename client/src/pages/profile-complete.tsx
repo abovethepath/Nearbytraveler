@@ -966,6 +966,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     notes: z.string().optional(),
     isVeteran: z.boolean().default(false),
     isActiveDuty: z.boolean().default(false),
+    customInterests: z.string().optional(),
+    customActivities: z.string().optional(),
   });
 
   const form = useForm<z.infer<typeof travelPlanSchema>>({
@@ -985,6 +987,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       notes: "",
       isVeteran: false,
       isActiveDuty: false,
+      customInterests: "",
+      customActivities: "",
     },
   });
 
