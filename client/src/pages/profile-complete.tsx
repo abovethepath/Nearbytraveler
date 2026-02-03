@@ -4167,9 +4167,13 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 {currentUser ? (
                   <Button
                     type="button"
-                    onClick={() => {
-                      console.log('🔘 Write Reference button clicked - setting modal true');
-                      setShowWriteReferenceModal(true);
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      console.log('🔘 Write Reference button clicked - setting modal true after delay');
+                      setTimeout(() => {
+                        setShowWriteReferenceModal(true);
+                      }, 50);
                     }}
                     className="bg-green-600 hover:bg-green-700 text-white px-6 py-2"
                     data-testid="button-write-reference"

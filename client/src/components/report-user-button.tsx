@@ -89,9 +89,13 @@ export function ReportUserButton({
         type="button"
         variant={variant}
         size={size}
-        onClick={() => {
-          console.log('🔘 Report button clicked - opening dialog');
-          setShowDialog(true);
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('🔘 Report button clicked - opening dialog after delay');
+          setTimeout(() => {
+            setShowDialog(true);
+          }, 50);
         }}
         className="text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
       >
