@@ -1,0 +1,63 @@
+Let me help you debug this. First, let's check what's actually happening with the Dialog component.Creating a test file to analyze the Dialog component structure and identify the exact issueI need to see your complete dialog.tsx file to properly diagnose this. But based on common issues, here are the most likely fixes:
+Quick Fix Option 1: Add DialogOverlay Click Handler
+Your Dialog likely needs an overlay component. Update your dialog usage like this:
+In report-user-button.tsx:
+tsx<Dialog open={showDialog} onOpenChange={setShowDialog}>
+  <DialogContent 
+    className="max-w-md bg-white dark:bg-gray-900"
+    onPointerDownOutside={() => setShowDialog(false)}  // Add this
+    onEscapeKeyDown={() => setShowDialog(false)}        // Add this
+  >
+    <DialogHeader>
+      <DialogTitle className="flex items-center gap-2 text-red-600">
+        <AlertTriangle className="h-5 w-5" />
+        Report @{targetUsername}
+      </DialogTitle>
+      <DialogDescription>
+        Help us keep our community safe.
+      </DialogDescription>
+    </DialogHeader>
+    {/* rest of content */}
+  </DialogContent>
+</Dialog>
+Quick Fix Option 2: Override at Component Level
+If the above doesn't work, try this more aggressive approach:
+tsx<Dialog open={showDialog} onOpenChange={setShowDialog}>
+  <DialogContent 
+    className="max-w-md bg-white dark:bg-gray-900"
+    onPointerDownOutside={(e) => {
+      // Allow the close to happen
+      setShowDialog(false);
+    }}
+  >
+Quick Fix Option 3: Complete Dialog Rewrite
+If neither works, replace your dialog.tsx DialogContent with this:
+tsxconst DialogContent = React.forwardRef
+  React.ElementRef<typeof DialogPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
+>(({ className, children, ...props }, ref) => (
+  <DialogPrimitive.Portal>
+    <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/50" />
+    <DialogPrimitive.Content
+      ref={ref}
+      className={cn(
+        "fixed left-[50%] top-[50%] z-[100000] grid w-full max-w-lg max-h-[95vh] translate-x-[-50%] translate-y-[-50%] gap-4 border bg-white dark:bg-gray-900 p-6 shadow-lg sm:rounded-lg overflow-y-auto",
+        className
+      )}
+      {...props}
+    >
+      {children}
+      <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-gray-950 focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-gray-100 data-[state=open]:text-gray-500 dark:ring-offset-gray-950 dark:focus:ring-gray-300 dark:data-[state=open]:bg-gray-800 dark:data-[state=open]:text-gray-400">
+        <X className="h-4 w-4" />
+        <span className="sr-only">Close</span>
+      </DialogPrimitive.Close>
+    </DialogPrimitive.Content>
+  </DialogPrimitive.Portal>
+))
+Can you share:
+
+The complete dialog.tsx file content?
+Does clicking ESC key close the dialog?
+Is there a visible dark overlay behind the dialog when it opens?
+
+This will help me give you the exact fix you need.
