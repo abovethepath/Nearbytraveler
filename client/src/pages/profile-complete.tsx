@@ -9386,7 +9386,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         >
           <div className="fixed inset-0 bg-black/80" />
           <div 
-            className="relative z-[100001] w-full max-w-lg bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6"
+            className="relative z-[100001] w-full max-w-md bg-white dark:bg-gray-900 rounded-lg shadow-xl p-5"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -9399,10 +9399,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               <X className="h-4 w-4" />
             </button>
 
-            <div className="mb-4">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Write a Reference for {user?.username}</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                Share your experience with this traveler to help others in the community
+            <div className="mb-3">
+              <h2 className="text-base font-semibold text-gray-900 dark:text-white">Write a Reference for {user?.username}</h2>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                Share your experience to help others in the community
               </p>
             </div>
           
@@ -9410,7 +9410,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               <form onSubmit={referenceForm.handleSubmit((data) => {
                 console.log('🚀🚀🚀 FORM SUBMITTED - DATA:', data);
                 createReference.mutate(data);
-              })} className="space-y-4">
+              })} className="space-y-3">
                 <FormField
                   control={referenceForm.control}
                   name="content"
@@ -9421,7 +9421,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <Textarea
                           {...field}
                           placeholder="Share your experience with this person..."
-                          className="min-h-[80px] resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
+                          className="min-h-[60px] resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
+                          rows={2}
                         />
                       </FormControl>
                       <FormMessage />
@@ -9474,7 +9475,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   )}
                 />
 
-                <div className="flex justify-end gap-2 pt-4">
+                <div className="flex justify-end gap-2 pt-3">
                   <Button
                     type="button"
                     variant="outline"
