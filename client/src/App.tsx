@@ -437,14 +437,13 @@ function Router() {
           console.log('🔄 Forcing complete refresh to clear all cached data');
 
           // Force complete page refresh to clear all cached authentication
+          // Only use href assignment - reload() after href causes race condition
           window.location.href = '/';
-          window.location.reload();
 
         } catch (error) {
           console.error('❌ Error during logout:', error);
           // Fallback - force complete refresh anyway
           window.location.href = '/';
-          window.location.reload();
         }
       },
       login: (userData: User, token?: string) => {

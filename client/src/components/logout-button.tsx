@@ -9,11 +9,11 @@ interface LogoutButtonProps {
 export function LogoutButton({ onLogout }: LogoutButtonProps) {
   const { logout } = useContext(AuthContext);
   
-  const handleLogout = () => {
+  const handleLogout = async () => {
     if (onLogout) {
       onLogout();
     }
-    logout();
+    await logout();
   };
 
   return (

@@ -83,7 +83,7 @@ export function MobileTopNav() {
     setLocation(path);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setIsOpen(false);
     if (!authContext.user && currentUser) {
       localStorage.clear();
@@ -91,7 +91,7 @@ export function MobileTopNav() {
       authStorage.clearUser();
       window.location.href = '/';
     } else {
-      logout();
+      await logout();
     }
   };
 
