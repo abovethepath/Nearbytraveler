@@ -9482,13 +9482,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       referenceForm.reset();
                       setShowWriteReferenceModal(false);
                     }}
+                    className="border-gray-300 dark:border-gray-600"
                   >
                     Cancel
                   </Button>
                   <Button 
                     type="submit" 
                     disabled={createReference.isPending}
-                    className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100"
+                    className="bg-green-600 hover:bg-green-700 text-white"
                     data-testid="button-submit-reference"
                   >
                     {createReference.isPending ? "Submitting..." : "Submit Reference"}
