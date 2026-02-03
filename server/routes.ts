@@ -882,6 +882,28 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
+  // Serve square OG image for WhatsApp (avoids cropping)
+  app.get("/api/og-image-square", async (req, res) => {
+    try {
+      const { readFile } = await import('fs/promises');
+      const { join } = await import('path');
+      const imagePath = join(process.cwd(), 'client', 'public', 'og-social-square.png');
+      
+      const imageBuffer = await readFile(imagePath);
+      res.set({
+        'Content-Type': 'image/png',
+        'Content-Length': imageBuffer.length,
+        'Cross-Origin-Resource-Policy': 'cross-origin',
+        'Access-Control-Allow-Origin': '*',
+        'Cache-Control': 'public, max-age=86400'
+      });
+      res.send(imageBuffer);
+    } catch (error) {
+      console.error('OG square image error:', error);
+      res.status(500).send('Error serving image');
+    }
+  });
+
   // Dynamic Open Graph meta tags for homepage (for social media sharing)
   app.get("/", (req, res, next) => {
     const userAgent = req.headers['user-agent'] || '';
@@ -893,44 +915,46 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       return next();
     }
     
+    const isWhatsApp = /WhatsApp/i.test(userAgent);
+    
     const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
     const host = req.headers.host || 'nearbytraveler.org';
     const baseUrl = `${protocol}://${host}`;
-    const imageUrl = `${baseUrl}/api/og-image?v=12`;
+    
+    // WhatsApp gets square image to avoid cropping
+    const imageUrl = isWhatsApp
+      ? `${baseUrl}/api/og-image-square?v=13`
+      : `${baseUrl}/api/og-image?v=13`;
+    const width = isWhatsApp ? 800 : 1200;
+    const height = isWhatsApp ? 800 : 630;
     
     const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nearby Traveler - Social Travel Networking</title>
-  
-  <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="${baseUrl}" />
   <meta property="og:title" content="Nearby Traveler - Social Travel Networking" />
   <meta property="og:description" content="Connect with travelers and locals worldwide. Find travel companions and authentic experiences." />
   <meta property="og:image" content="${imageUrl}" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
+  <meta property="og:image:secure_url" content="${imageUrl}" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="${width}" />
+  <meta property="og:image:height" content="${height}" />
+  <meta property="og:image:alt" content="Nearby Traveler logo" />
   <meta property="og:site_name" content="Nearby Traveler" />
-  
-  <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:url" content="${baseUrl}" />
-  <meta name="twitter:title" content="Nearby Traveler - Social Travel Networking" />
-  <meta name="twitter:description" content="Connect with travelers and locals worldwide. Find travel companions and authentic experiences." />
   <meta name="twitter:image" content="${imageUrl}" />
-  
-  <!-- Redirect to actual page for browsers -->
   <meta http-equiv="refresh" content="0;url=${baseUrl}" />
 </head>
-<body>
-  <p>Redirecting to <a href="${baseUrl}">Nearby Traveler</a>...</p>
-</body>
+<body></body>
 </html>`;
     
-    res.set('Content-Type', 'text/html');
+    res.set({
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Vary': 'User-Agent'
+    });
     res.send(html);
   });
 
