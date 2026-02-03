@@ -4153,8 +4153,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   className="px-6 py-2 rounded-lg shadow-md transition-all"
                 />
                 {/* VouchButton moved to References section below for cleaner header */}
-                {/* Write Reference Button - visible at top for mobile accessibility */}
-                {userConnections.some((conn: any) => conn.status === 'accepted') ? (
+                {/* Write Reference Button - visible to all logged in users viewing other profiles */}
+                {currentUser ? (
                   <Button
                     onClick={() => setShowWriteReferenceModal(true)}
                     className="bg-green-600 hover:bg-green-700 text-white border-0 px-6 py-2 rounded-lg shadow-md transition-all"
@@ -4165,10 +4165,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </Button>
                 ) : (
                   <Button
-                    disabled
-                    className="bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 border-0 px-6 py-2 rounded-lg cursor-not-allowed"
-                    title="Connect with this user to write a reference"
-                    data-testid="button-write-reference-disabled"
+                    onClick={() => setLocation('/auth')}
+                    className="bg-green-600 hover:bg-green-700 text-white border-0 px-6 py-2 rounded-lg shadow-md transition-all"
+                    data-testid="button-write-reference"
                   >
                     <MessageSquare className="w-4 h-4 mr-2" />
                     Write Reference
@@ -6698,8 +6697,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </div>
             )}
 
-            {/* Reference Widget - Only show for other users' profiles */}
-            {!isOwnProfile && userConnections.some((conn: any) => conn.status === 'accepted') && (
+            {/* Reference Widget - Show for other users' profiles (no connection required) */}
+            {!isOwnProfile && currentUser && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
