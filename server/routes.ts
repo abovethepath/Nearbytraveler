@@ -910,20 +910,21 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         : `Join ${organizerName} for this event in ${event.city || 'a great location'}!`;
       const description = `${baseDescription} | 🌍 Nearby Traveler`;
       
+      // Build the full URL for canonical
+      const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+      const host = req.headers.host || 'nearbytraveler.org';
+      const baseUrl = `${protocol}://${host}`;
+      
       // Get event image - ensure it's an absolute URL (not base64)
-      let imageUrl = 'https://nearbytraveler.org/og-logo-dark.png';
+      let imageUrl = `${baseUrl}/og-logo-dark.png`;
       if (event.imageUrl && !event.imageUrl.startsWith('data:')) {
         // Only use if it's a real URL, not a base64 data URI
         if (event.imageUrl.startsWith('http')) {
           imageUrl = event.imageUrl;
         } else if (event.imageUrl.startsWith('/')) {
-          imageUrl = `https://nearbytraveler.org${event.imageUrl}`;
+          imageUrl = `${baseUrl}${event.imageUrl}`;
         }
       }
-      
-      // Build the full URL for canonical
-      const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
-      const host = req.headers.host || 'nearbytraveler.org';
       const fullUrl = `${protocol}://${host}/events/${eventId}`;
       
       // Serve HTML with dynamic OG tags
