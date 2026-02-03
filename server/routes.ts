@@ -860,6 +860,28 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     res.type('text/plain').send('loaderio-15c7c050ef251dcf711cfbdec3d0eb28');
   });
 
+  // Serve OG logo with proper CORS headers for social media crawlers
+  app.get("/api/og-image", async (req, res) => {
+    try {
+      const { readFile } = await import('fs/promises');
+      const { join } = await import('path');
+      const imagePath = join(process.cwd(), 'client', 'public', 'og-logo-landscape.png');
+      
+      const imageBuffer = await readFile(imagePath);
+      res.set({
+        'Content-Type': 'image/png',
+        'Content-Length': imageBuffer.length,
+        'Cross-Origin-Resource-Policy': 'cross-origin',
+        'Access-Control-Allow-Origin': '*',
+        'Cache-Control': 'public, max-age=86400'
+      });
+      res.send(imageBuffer);
+    } catch (error) {
+      console.error('OG image error:', error);
+      res.status(500).send('Error serving image');
+    }
+  });
+
   // Dynamic Open Graph meta tags for event pages (for social media sharing)
   app.get("/events/:id", async (req, res, next) => {
     const userAgent = req.headers['user-agent'] || '';
@@ -917,7 +939,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       
       // Get event image - ensure it's an absolute URL (not base64)
       // Using landscape logo (16:9) for better social sharing on mobile
-      let imageUrl = `${baseUrl}/og-logo-landscape.png`;
+      // Using /api/og-image to bypass CORS restrictions on static files
+      let imageUrl = `${baseUrl}/api/og-image`;
       if (event.imageUrl && !event.imageUrl.startsWith('data:')) {
         // Only use if it's a real URL, not a base64 data URI
         if (event.imageUrl.startsWith('http')) {
