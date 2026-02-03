@@ -4135,7 +4135,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* CTAs — wrap on mobile */}
             {!isOwnProfile ? (
-              <div className="flex items-center gap-3 flex-wrap min-w-0">
+              <div className="flex items-center gap-3 flex-wrap min-w-0 relative z-20">
                 <Button 
                   className="bg-orange-500 hover:bg-orange-600 border-0 px-6 py-2 rounded-lg shadow-md transition-all"
                   style={{ color: 'black' }}
