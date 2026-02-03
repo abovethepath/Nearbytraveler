@@ -4167,23 +4167,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 {currentUser ? (
                   <button
                     type="button"
-                    onClick={(e) => {
+                    onPointerDown={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      console.log('🔘 Write Reference button clicked!');
-                      // Use setTimeout to open dialog after current event cycle completes
-                      setTimeout(() => {
-                        console.log('🔘 Opening Write Reference modal...');
-                        setShowWriteReferenceModal(true);
-                      }, 10);
+                      console.log('🔘 Write Reference button pointerdown - opening modal');
+                      setShowWriteReferenceModal(true);
                     }}
-                    onPointerDown={(e) => {
-                      e.stopPropagation();
-                      console.log('🔘 Write Reference button pointerdown!');
-                    }}
+                    onPointerDownCapture={(e) => e.stopPropagation()}
+                    onClickCapture={(e) => e.stopPropagation()}
                     className="inline-flex items-center bg-green-600 hover:bg-green-700 text-white border-0 px-6 py-2 rounded-lg shadow-md transition-all font-medium cursor-pointer"
                     data-testid="button-write-reference"
-                    data-radix-dismissable-layer-ignore=""
                   >
                     <MessageSquare className="w-4 h-4 mr-2" />
                     Write Reference
@@ -9399,7 +9392,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
       {/* Write Reference Modal */}
       <Dialog open={showWriteReferenceModal} onOpenChange={setShowWriteReferenceModal}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent 
+          className="max-w-2xl"
+          onPointerDownOutside={(e) => e.preventDefault()}
+          onInteractOutside={(e) => e.preventDefault()}
+        >
           <DialogHeader>
             <DialogTitle>Write a Reference for {user?.username}</DialogTitle>
             <DialogDescription>
