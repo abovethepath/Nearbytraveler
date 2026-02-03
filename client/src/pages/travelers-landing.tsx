@@ -302,11 +302,11 @@ export default function TravelersLanding() {
         </div>
         
         {/* Get Started */}
-        <div className="bg-gradient-to-r from-orange-500 to-blue-600 text-white py-12 rounded-2xl shadow-lg mb-8">
+        <div className="bg-gradient-to-r from-orange-500 to-blue-600 py-12 rounded-2xl shadow-lg mb-8">
           <div className="max-w-4xl mx-auto text-center px-6">
-            <h2 className="text-3xl font-bold mb-4">Ready to Travel Like a Local?</h2>
-            <p className="text-lg mb-6 text-white/90">Join thousands of travelers who've turned solo trips into lifelong friendships. Your next adventure starts with the people you'll meet.</p>
-            <p className="text-xl mb-6 text-white/90">✈️ Free to join • 🌍 Global community</p>
+            <h2 className="text-3xl font-bold mb-4 text-black">Ready to Travel Like a Local?</h2>
+            <p className="text-lg mb-6 text-black">Join thousands of travelers who've turned solo trips into lifelong friendships. Your next adventure starts with the people you'll meet.</p>
+            <p className="text-xl mb-6 text-black">✈️ Free to join • 🌍 Global community</p>
             <Button
               onClick={() => setLocation('/launching-soon')}
               size="lg"

@@ -446,8 +446,8 @@ export default function EventsLanding() {
         {/* Get Started Section - Clean Airbnb Style */}
         <div className="bg-gradient-to-r from-orange-500 to-blue-600 py-12 rounded-2xl shadow-lg mb-6 sm:mb-8">
           <div className="max-w-4xl mx-auto text-center px-6">
-            <h2 className="text-3xl font-bold mb-6 text-white">Ready to Join Events Only The Nearby Traveler Community Knows About?</h2>
-            <p className="text-lg mb-8 text-white/90">Join others already creating unforgettable experiences together.</p>
+            <h2 className="text-3xl font-bold mb-6 text-black">Ready to Join Events Only The Nearby Traveler Community Knows About?</h2>
+            <p className="text-lg mb-8 text-black">Join others already creating unforgettable experiences together.</p>
             
             <Button
               onClick={() => setLocation('/launching-soon')}

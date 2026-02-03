@@ -291,14 +291,14 @@ export default function CouchsurfingLanding() {
         {/* THE BEST OF BOTH WORLDS SECTION */}
         <section className="py-8 sm:py-16 mb-8">
           <div className="max-w-4xl mx-auto">
-            <div className="bg-gradient-to-r from-orange-500 to-blue-600 rounded-2xl p-8 text-center text-white">
-              <h2 className="text-3xl sm:text-4xl font-bold mb-6">
+            <div className="bg-gradient-to-r from-orange-500 to-blue-600 rounded-2xl p-8 text-center">
+              <h2 className="text-3xl sm:text-4xl font-bold mb-6 text-black">
                 The Best of Both Worlds
               </h2>
-              <p className="text-lg sm:text-xl mb-6 leading-relaxed">
+              <p className="text-lg sm:text-xl mb-6 leading-relaxed text-black">
                 Host when your schedule allows. Meet travelers when hosting isn't possible.
               </p>
-              <p className="text-xl sm:text-2xl font-semibold">
+              <p className="text-xl sm:text-2xl font-semibold text-black">
                 Your generosity and love for authentic connections never has to stop.
               </p>
             </div>

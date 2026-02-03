@@ -405,10 +405,10 @@ BECOME A NEARBY LOCAL NOW
       {/* Final Power CTA Section */}
       <div className="py-20 bg-gray-100 dark:bg-gradient-to-r dark:from-blue-600 dark:via-purple-600 dark:to-orange-600">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-5xl font-black text-gray-900 dark:text-white mb-6">
+          <h2 className="text-5xl font-black text-black mb-6">
             Ready to Share Your City?
           </h2>
-          <p className="text-2xl text-gray-700 dark:text-white mb-12 leading-relaxed">
+          <p className="text-2xl text-black mb-12 leading-relaxed">
             Be part of a new way for locals to build global friendships while sharing what they love about their city.
           </p>
           

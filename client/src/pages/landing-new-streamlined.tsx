@@ -432,30 +432,30 @@ export default function LandingStreamlined() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
               <div className="bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl p-6 sm:p-8">
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Beach Bonfire & BBQ</h3>
+                  <h3 className="text-lg sm:text-xl font-bold text-black">Beach Bonfire & BBQ</h3>
                   <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold self-start">Free</span>
                 </div>
-                <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300">
+                <p className="text-sm sm:text-base text-black">
                   Sunset gathering with locals — authentic LA beach culture, music, and new friends.
                 </p>
               </div>
 
               <div className="bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl p-6 sm:p-8">
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Taco Tuesday</h3>
+                  <h3 className="text-lg sm:text-xl font-bold text-black">Taco Tuesday</h3>
                   <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold self-start">$1.50</span>
                 </div>
-                <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300">
+                <p className="text-sm sm:text-base text-black">
                   Weekly street taco adventure with fellow food lovers at the city's best Mexican spots.
                 </p>
               </div>
 
               <div className="bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl p-6 sm:p-8">
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Hollywood Sign Hike</h3>
+                  <h3 className="text-lg sm:text-xl font-bold text-black">Hollywood Sign Hike</h3>
                   <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold self-start">Free</span>
                 </div>
-                <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300">
+                <p className="text-sm sm:text-base text-black">
                   Saturday morning hikes with locals and travelers — amazing views, great photos, real LA.
                 </p>
               </div>
