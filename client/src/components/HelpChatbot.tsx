@@ -42,7 +42,6 @@ export function HelpChatbot() {
 
   // Hide on message/chat pages to avoid blocking input
   const isMessagePage = location.startsWith('/messages') || location.startsWith('/chatroom');
-  if (isMessagePage) return null;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -57,6 +56,9 @@ export function HelpChatbot() {
       inputRef.current.focus();
     }
   }, [isOpen]);
+
+  // Early return AFTER all hooks
+  if (isMessagePage) return null;
 
   const sendMessage = async (messageText: string) => {
     if (!messageText.trim() || isLoading) return;
