@@ -432,30 +432,30 @@ export default function LandingStreamlined() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
               <div className="bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl p-6 sm:p-8">
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
-                  <h3 className="text-lg sm:text-xl font-bold text-black">Beach Bonfire & BBQ</h3>
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Beach Bonfire & BBQ</h3>
                   <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold self-start">Free</span>
                 </div>
-                <p className="text-sm sm:text-base text-black">
+                <p className="text-sm sm:text-base text-gray-700 dark:text-gray-200">
                   Sunset gathering with locals — authentic LA beach culture, music, and new friends.
                 </p>
               </div>
 
               <div className="bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl p-6 sm:p-8">
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
-                  <h3 className="text-lg sm:text-xl font-bold text-black">Taco Tuesday</h3>
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Taco Tuesday</h3>
                   <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold self-start">$1.50</span>
                 </div>
-                <p className="text-sm sm:text-base text-black">
+                <p className="text-sm sm:text-base text-gray-700 dark:text-gray-200">
                   Weekly street taco adventure with fellow food lovers at the city's best Mexican spots.
                 </p>
               </div>
 
               <div className="bg-gradient-to-br from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-xl p-6 sm:p-8">
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
-                  <h3 className="text-lg sm:text-xl font-bold text-black">Hollywood Sign Hike</h3>
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Hollywood Sign Hike</h3>
                   <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold self-start">Free</span>
                 </div>
-                <p className="text-sm sm:text-base text-black">
+                <p className="text-sm sm:text-base text-gray-700 dark:text-gray-200">
                   Saturday morning hikes with locals and travelers — amazing views, great photos, real LA.
                 </p>
               </div>
@@ -466,13 +466,13 @@ export default function LandingStreamlined() {
         {/* From the Founder */}
         <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 to-orange-500">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold text-black mb-8 sm:mb-12">From the Founder</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-8 sm:mb-12">From the Founder</h2>
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 sm:p-8 lg:p-10">
-              <p className="text-lg sm:text-xl lg:text-2xl leading-relaxed mb-6 sm:mb-8 italic text-black">
+              <p className="text-lg sm:text-xl lg:text-2xl leading-relaxed mb-6 sm:mb-8 italic text-white">
                 "After hosting 400+ travelers from 50 countries, I learned that one connection can change everything… I built the solution I wished existed."
               </p>
-              <p className="text-lg sm:text-xl font-bold mb-6 text-black">— Aaron Lefkowitz, Founder</p>
-              <p className="text-base sm:text-lg leading-relaxed text-black">
+              <p className="text-lg sm:text-xl font-bold mb-6 text-white">— Aaron Lefkowitz, Founder</p>
+              <p className="text-base sm:text-lg leading-relaxed text-white/90">
                 🌍 Nearby Traveler grew out of real travel communities—from Couchsurfing bonfires to LA meetups. Our mission is to keep that spirit alive for a new generation.
               </p>
             </div>
