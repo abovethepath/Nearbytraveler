@@ -50,8 +50,20 @@ function ReferencesWidgetNew({ userId, currentUserId }: ReferencesWidgetProps) {
   const [editHowWeMet, setEditHowWeMet] = useState('');
   const { toast } = useToast();
   
-  const { data: referencesData = { references: [], counts: { total: 0, positive: 0, negative: 0, neutral: 0 } } } = useQuery({
+  const { data: referencesData = { references: [], counts: { total: 0, positive: 0, negative: 0, neutral: 0 } }, isLoading, error } = useQuery({
     queryKey: [`/api/users/${userId}/references`],
+    staleTime: 0, // Always fetch fresh data
+    refetchOnMount: true,
+  });
+
+  // Debug logging for production troubleshooting
+  console.log('🔍 REFERENCES WIDGET DEBUG:', {
+    userId,
+    isLoading,
+    error: error?.message,
+    rawData: referencesData,
+    hasReferences: !!referencesData?.references,
+    referencesLength: referencesData?.references?.length
   });
 
   const references = referencesData.references || [];
