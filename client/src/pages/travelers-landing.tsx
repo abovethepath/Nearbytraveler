@@ -204,40 +204,40 @@ export default function TravelersLanding() {
             Why Choose Nearby Traveler?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-emerald-200 dark:bg-emerald-600 p-6 rounded-xl shadow-lg flex flex-col h-full">
+            <div className="bg-emerald-500 dark:bg-emerald-600 p-6 rounded-xl shadow-lg flex flex-col h-full">
               <div className="text-3xl mb-4">🎯</div>
-              <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-white">Quality Over Quantity</h3>
-              <p className="text-gray-700 dark:text-white flex-grow">We focus on meaningful connections, not endless swiping. Every match is based on genuine compatibility and shared interests.</p>
+              <h3 className="text-xl font-bold mb-3 text-white">Quality Over Quantity</h3>
+              <p className="text-white/90 flex-grow">We focus on meaningful connections, not endless swiping. Every match is based on genuine compatibility and shared interests.</p>
             </div>
-            <div className="bg-teal-200 dark:bg-teal-600 p-6 rounded-xl shadow-lg flex flex-col h-full">
+            <div className="bg-teal-500 dark:bg-teal-600 p-6 rounded-xl shadow-lg flex flex-col h-full">
               <div className="text-3xl mb-4">🛡️</div>
-              <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-white">Safe & Verified</h3>
-              <p className="text-gray-700 dark:text-white flex-grow">All users are verified for safety. Meet in public places and trust your instincts - we provide the tools for safe connections.</p>
+              <h3 className="text-xl font-bold mb-3 text-white">Safe & Verified</h3>
+              <p className="text-white/90 flex-grow">All users are verified for safety. Meet in public places and trust your instincts - we provide the tools for safe connections.</p>
             </div>
-            <div className="bg-blue-200 dark:bg-blue-600 p-6 rounded-xl shadow-lg flex flex-col h-full">
+            <div className="bg-blue-500 dark:bg-blue-600 p-6 rounded-xl shadow-lg flex flex-col h-full">
               <div className="text-3xl mb-4">🌍</div>
-              <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-white">Connect Before You Arrive</h3>
-              <p className="text-gray-700 dark:text-white flex-grow">Meet locals and travelers before your trip starts. Plan meetups, get insider tips, and hit the ground running.</p>
+              <h3 className="text-xl font-bold mb-3 text-white">Connect Before You Arrive</h3>
+              <p className="text-white/90 flex-grow">Meet locals and travelers before your trip starts. Plan meetups, get insider tips, and hit the ground running.</p>
             </div>
-            <div className="bg-purple-200 dark:bg-purple-600 p-6 rounded-xl shadow-lg flex flex-col h-full">
+            <div className="bg-purple-500 dark:bg-purple-600 p-6 rounded-xl shadow-lg flex flex-col h-full">
               <div className="text-3xl mb-4">📅</div>
-              <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-white">Know When Friends Are Nearby</h3>
-              <p className="text-gray-700 dark:text-white flex-grow">Reconnect when paths cross again. See when someone you met in Barcelona shows up in Tokyo.</p>
+              <h3 className="text-xl font-bold mb-3 text-white">Know When Friends Are Nearby</h3>
+              <p className="text-white/90 flex-grow">Reconnect when paths cross again. See when someone you met in Barcelona shows up in Tokyo.</p>
             </div>
-            <div className="bg-orange-200 dark:bg-orange-600 p-6 rounded-xl shadow-lg flex flex-col h-full">
+            <div className="bg-orange-500 dark:bg-orange-600 p-6 rounded-xl shadow-lg flex flex-col h-full">
               <div className="text-3xl mb-4">🎉</div>
-              <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-white">Join Weekly Sponsored Events</h3>
-              <p className="text-gray-700 dark:text-white flex-grow">Free and low-cost events every week. From beach bonfires to taco tours—authentic experiences hosted by passionate locals.</p>
+              <h3 className="text-xl font-bold mb-3 text-white">Join Weekly Sponsored Events</h3>
+              <p className="text-white/90 flex-grow">Free and low-cost events every week. From beach bonfires to taco tours—authentic experiences hosted by passionate locals.</p>
             </div>
-            <div className="bg-pink-200 dark:bg-pink-600 p-6 rounded-xl shadow-lg flex flex-col h-full">
+            <div className="bg-pink-500 dark:bg-pink-600 p-6 rounded-xl shadow-lg flex flex-col h-full">
               <div className="text-3xl mb-4">💬</div>
-              <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-white">Real-Time Coordination</h3>
-              <p className="text-gray-700 dark:text-white flex-grow">Full-featured chat with photos, location sharing, and group conversations. No more juggling apps.</p>
+              <h3 className="text-xl font-bold mb-3 text-white">Real-Time Coordination</h3>
+              <p className="text-white/90 flex-grow">Full-featured chat with photos, location sharing, and group conversations. No more juggling apps.</p>
             </div>
-            <div className="bg-rose-200 dark:bg-rose-600 p-6 rounded-xl shadow-lg flex flex-col h-full">
+            <div className="bg-rose-500 dark:bg-rose-600 p-6 rounded-xl shadow-lg flex flex-col h-full">
               <div className="text-3xl mb-4">❤️</div>
-              <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-white">Friendships That Last</h3>
-              <p className="text-gray-700 dark:text-white flex-grow">Build a global network of real connections. These aren't just travel buddies—they're lifelong friends.</p>
+              <h3 className="text-xl font-bold mb-3 text-white">Friendships That Last</h3>
+              <p className="text-white/90 flex-grow">Build a global network of real connections. These aren't just travel buddies—they're lifelong friends.</p>
             </div>
           </div>
         </div>
