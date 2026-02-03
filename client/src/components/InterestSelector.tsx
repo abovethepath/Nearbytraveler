@@ -103,8 +103,22 @@ export function InterestSelector({
 
       <div className="max-h-[400px] overflow-y-auto pr-1" style={{ touchAction: 'pan-y' }}>
         <div className="flex flex-wrap gap-1.5 p-2">
-          {filteredOptions.map(interest => {
+          {filteredOptions.map((interest, index) => {
             const isSelected = selected.includes(interest);
+            // Colorful backgrounds for unselected pills - rotating through vibrant colors
+            const colorVariants = [
+              'bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-200 border-rose-300 dark:border-rose-700 hover:bg-rose-200 dark:hover:bg-rose-800/50',
+              'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-200 border-orange-300 dark:border-orange-700 hover:bg-orange-200 dark:hover:bg-orange-800/50',
+              'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-200 border-amber-300 dark:border-amber-700 hover:bg-amber-200 dark:hover:bg-amber-800/50',
+              'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-200 border-emerald-300 dark:border-emerald-700 hover:bg-emerald-200 dark:hover:bg-emerald-800/50',
+              'bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-200 border-teal-300 dark:border-teal-700 hover:bg-teal-200 dark:hover:bg-teal-800/50',
+              'bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-200 border-cyan-300 dark:border-cyan-700 hover:bg-cyan-200 dark:hover:bg-cyan-800/50',
+              'bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-200 border-sky-300 dark:border-sky-700 hover:bg-sky-200 dark:hover:bg-sky-800/50',
+              'bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-200 border-violet-300 dark:border-violet-700 hover:bg-violet-200 dark:hover:bg-violet-800/50',
+              'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-200 border-purple-300 dark:border-purple-700 hover:bg-purple-200 dark:hover:bg-purple-800/50',
+              'bg-pink-100 dark:bg-pink-900/40 text-pink-700 dark:text-pink-200 border-pink-300 dark:border-pink-700 hover:bg-pink-200 dark:hover:bg-pink-800/50',
+            ];
+            const colorClass = colorVariants[index % colorVariants.length];
             return (
               <button
                 key={interest}
@@ -112,10 +126,10 @@ export function InterestSelector({
                 onClick={() => handleClick(interest)}
                 onTouchEnd={(e) => handleTouch(e, interest)}
                 disabled={!isSelected && selected.length >= maxAllowed}
-                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all border ${
                   isSelected
-                    ? 'bg-gradient-to-r from-blue-600 to-orange-500 text-white shadow-sm'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    ? 'bg-gradient-to-r from-blue-600 to-orange-500 text-white shadow-md border-transparent'
+                    : colorClass
                 } ${!isSelected && selected.length >= maxAllowed ? 'opacity-50 cursor-not-allowed' : ''}`}
                 style={{ touchAction: 'manipulation' }}
               >
