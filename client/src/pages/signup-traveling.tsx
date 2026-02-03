@@ -458,17 +458,17 @@ export default function SignupTraveling() {
                     max={maxDate}
                     required
                     data-testid="input-dateOfBirth"
-                    className="w-full max-w-full bg-white text-gray-900 border-gray-300"
+                    className="w-full max-w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
                   />
                 </div>
               </div>
 
               {/* Hometown Information */}
               <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-gray-900">Hometown Information</h3>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Hometown Information</h3>
 
                 <div>
-                  <Label className="text-gray-900">Hometown (Where you're from) *</Label>
+                  <Label className="text-gray-900 dark:text-gray-100">Hometown (Where you're from) *</Label>
                   <SmartLocationInput
                     country={formData.hometownCountry}
                     city={formData.hometownCity}
@@ -486,8 +486,8 @@ export default function SignupTraveling() {
                     data-testid="hometown-input"
                   />
                   {formData.hometownCity && (
-                    <div className="mt-2 p-3 bg-green-50 rounded-lg border border-green-200">
-                      <p className="text-sm text-green-800">
+                    <div className="mt-2 p-3 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-200 dark:border-green-700">
+                      <p className="text-sm text-green-800 dark:text-green-200">
                         <strong>Hometown:</strong> {formData.hometownCity}
                         {formData.hometownState && `, ${formData.hometownState}`}
                         {formData.hometownCountry && `, ${formData.hometownCountry}`}
@@ -498,18 +498,18 @@ export default function SignupTraveling() {
 
                 {/* NEW TO HOMETOWN QUESTION */}
                 {formData.hometownCity && (
-                  <div className="flex items-start space-x-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="flex items-start space-x-3 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
                     <input
                       type="checkbox"
                       id="isNewToTown"
                       checked={formData.isNewToTown}
                       onChange={(e) => setFormData(prev => ({ ...prev, isNewToTown: e.target.checked }))}
-                      className="mt-1 h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
+                      className="mt-1 h-5 w-5 text-blue-600 rounded focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
                       data-testid="checkbox-new-to-town"
                     />
-                    <label htmlFor="isNewToTown" className="text-sm text-gray-900 cursor-pointer">
+                    <label htmlFor="isNewToTown" className="text-sm text-gray-900 dark:text-gray-100 cursor-pointer">
                       <strong>Are you new to {formData.hometownCity}?</strong>
-                      <p className="text-gray-600 mt-1">
+                      <p className="text-gray-600 dark:text-gray-400 mt-1">
                         Check this if you recently moved here and want to connect with other newcomers
                       </p>
                     </label>
@@ -518,11 +518,11 @@ export default function SignupTraveling() {
               </div>
 
               {/* TRAVEL DESTINATION - NEW SECTION */}
-              <div className="space-y-4 bg-orange-50 p-6 rounded-lg border-2 border-orange-200">
-                <h3 className="text-2xl font-bold text-gray-900">✈️ Current Travel Destination</h3>
+              <div className="space-y-4 bg-orange-50 dark:bg-gray-800 p-6 rounded-lg border-2 border-orange-200 dark:border-orange-800">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">✈️ Current Travel Destination</h3>
 
                 <div>
-                  <Label className="text-gray-900">Where are you traveling right now? *</Label>
+                  <Label className="text-gray-900 dark:text-gray-100">Where are you traveling right now? *</Label>
                   <SmartLocationInput
                     country={formData.destinationCountry}
                     city={formData.destinationCity}
@@ -540,8 +540,8 @@ export default function SignupTraveling() {
                     data-testid="destination-input"
                   />
                   {formData.destinationCity && (
-                    <div className="mt-2 p-3 bg-orange-100 rounded-lg border border-orange-300">
-                      <p className="text-sm text-orange-900">
+                    <div className="mt-2 p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg border border-orange-300 dark:border-orange-700">
+                      <p className="text-sm text-orange-900 dark:text-orange-200">
                         <strong>Traveling to:</strong> {formData.destinationCity}
                         {formData.destinationState && `, ${formData.destinationState}`}
                         {formData.destinationCountry && `, ${formData.destinationCountry}`}
@@ -551,8 +551,8 @@ export default function SignupTraveling() {
                 </div>
 
                 <div className="w-full max-w-full overflow-hidden">
-                  <Label className="text-gray-900">When does your trip end? *</Label>
-                  <div className="text-sm text-gray-600 mb-2">
+                  <Label className="text-gray-900 dark:text-gray-100">When does your trip end? *</Label>
+                  <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                     This helps locals know when you'll be in their area
                   </div>
                   <Input
@@ -562,19 +562,19 @@ export default function SignupTraveling() {
                     min={today}
                     required
                     data-testid="input-travelReturnDate"
-                    className="w-full max-w-full bg-white text-gray-900 border-gray-300"
+                    className="w-full max-w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
                   />
                 </div>
               </div>
 
               {/* Top Choices */}
               <div className="space-y-4">
-                <h3 className="text-xl font-bold text-gray-900">Top Choices to Meet Travelers and Locals *</h3>
-                <p className="text-gray-700 text-sm">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Top Choices to Meet Travelers and Locals *</h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
                   What are you interested in? Select at least 7 choices to help us match you with like-minded travelers and locals.
                 </p>
 
-                <div className="bg-gray-50 p-4 rounded-lg space-y-4">
+                <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg space-y-4">
                   <InterestSelector
                     options={getHometownInterests()}
                     selected={formData.interests}
@@ -585,9 +585,9 @@ export default function SignupTraveling() {
                   />
 
                   {/* Custom Interests Input */}
-                  <div className="pt-4 border-t border-gray-200">
-                    <Label className="text-gray-900 font-medium">✨ Add Your Own Interests (Optional)</Label>
-                    <p className="text-sm text-gray-600 mb-2">
+                  <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <Label className="text-gray-900 dark:text-gray-100 font-medium">✨ Add Your Own Interests (Optional)</Label>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                       Don't see what you're looking for? Add your own interests, separated by commas.
                     </p>
                     <Input
@@ -608,12 +608,12 @@ export default function SignupTraveling() {
               </div>
 
               {/* Community Pledge */}
-              <div className="bg-gradient-to-r from-blue-50 to-orange-50 p-6 rounded-lg border-2 border-blue-200 space-y-4">
+              <div className="bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 p-6 rounded-lg border-2 border-blue-200 dark:border-blue-800 space-y-4">
                 <div className="flex items-start space-x-3">
                   <div className="text-2xl">🌍</div>
                   <div className="flex-1">
-                    <h3 className="text-lg font-bold text-gray-900 mb-3">The NearbyTraveler Pledge</h3>
-                    <div className="space-y-2 text-gray-800 mb-4">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">The NearbyTraveler Pledge</h3>
+                    <div className="space-y-2 text-gray-800 dark:text-gray-200 mb-4">
                       <p className="font-medium">I believe in real human connection.</p>
                       <p className="font-medium">I will show up with kindness, respect, and openness.</p>
                       <p className="font-medium">I will help make this a safe, welcoming community for travelers and locals everywhere.</p>
@@ -624,10 +624,10 @@ export default function SignupTraveling() {
                         id="pledge-checkbox"
                         checked={formData.pledgeAccepted}
                         onChange={(e) => setFormData(prev => ({ ...prev, pledgeAccepted: e.target.checked }))}
-                        className="mt-1 w-5 h-5 text-blue-600 border-2 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                        className="mt-1 w-5 h-5 text-blue-600 border-2 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 focus:ring-2 dark:bg-gray-700"
                         data-testid="checkbox-pledge"
                       />
-                      <label htmlFor="pledge-checkbox" className="text-sm font-medium text-gray-900 cursor-pointer">
+                      <label htmlFor="pledge-checkbox" className="text-sm font-medium text-gray-900 dark:text-gray-100 cursor-pointer">
                         I agree to the NearbyTraveler Pledge and commit to building authentic connections with kindness and respect.
                       </label>
                     </div>
