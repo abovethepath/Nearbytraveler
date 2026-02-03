@@ -11,23 +11,23 @@ interface ChatMessage {
 }
 
 const SUGGESTED_QUESTIONS = [
+  "How do I create an event?",
+  "Can I share a Meetup or Couchsurfing event?",
+  "What should I do after planning a trip?",
   "How do I create a Let's Meet Now?",
-  "What's the voice input feature?",
-  "How do I find travelers in my city?",
-  "Tell me about city chatrooms",
-  "What is the Ambassador Program?"
+  "How do I find travelers in my city?"
 ];
 
 const PREBUILT_ANSWERS: Record<string, string> = {
-  "How do I create a Let's Meet Now?": "Go to the 'Let's Meet Now' tab in the navigation. Tap the '+' button to create a spontaneous meetup. You can type or use voice input - be VERY SPECIFIC about where you'll be! Say something like 'I'm at Blue Bottle Coffee on Abbot Kinney for the next 2 hours, come say hi!' The expiration time means how long YOU'LL be there - it's not when to meet, it's your availability window.",
+  "How do I create an event?": "Go to the Events tab and tap the '+' button. You can create events two ways: 1) Type in the details manually, or 2) Use AI Quick Create with voice input - just speak your event idea like 'hiking at Runyon Canyon Saturday at 9am'. Fill in title, description, date, time, and meeting point. Pro tip: Be specific about the meeting point so people can find you!",
   
-  "What's the voice input feature?": "The voice input feature lets you create meetups by speaking naturally! Tap the microphone icon and describe EXACTLY where you are. Be super specific - include the venue name, street, or landmark. Example: 'I'm sitting at the patio of Urth Caffe on Melrose, I'll be here for the next hour, wearing a blue jacket.' The AI converts this into a meetup post.",
+  "Can I share a Meetup or Couchsurfing event?": "Yes! We made this super easy. When creating an event, look for the 'Import from URL' option. Just paste the link from Meetup.com, Couchsurfing, Eventbrite, or any event page - we'll automatically pull in the title, description, date, time, and location. Review the details and post!",
   
-  "How do I find travelers in my city?": "To find travelers visiting your city, go to the Discover page and select your city. You'll see a list of travelers who are currently visiting or planning to visit. You can also use the Advanced Search to filter by interests, age, and more. Travelers with matching interests will appear at the top!",
+  "What should I do after planning a trip?": "Great question! After adding your trip dates and destination: 1) Go to the Match in City page for your destination, 2) Check off city-specific interests and activities you want to do there, 3) Use the 'Add Your Own' tab to add custom activities, 4) Browse who else will be there during your dates, 5) Send connection requests to people with matching interests!",
   
-  "Tell me about city chatrooms": "City chatrooms are group chats for everyone in a specific city! Each city has its own chatroom where locals and travelers can connect, share tips, and plan meetups. Find chatrooms in the Chatrooms tab - you'll automatically be added to your hometown chatroom and any city you're traveling to.",
+  "How do I create a Let's Meet Now?": "Go to the 'Let's Meet Now' tab in the navigation. Tap '+' to post a spontaneous meetup. Be SUPER SPECIFIC about where you are - include venue name, street, what you're wearing. Example: 'I'm at Blue Bottle Coffee on Abbot Kinney, patio table, blue jacket, here for 2 hours.' The expiration is how long YOU'LL be there - your availability window.",
   
-  "What is the Ambassador Program?": "The Ambassador Program rewards active community members! You earn points by being engaged on the platform - creating events and meetups, inviting friends, making connections, and participating in chatrooms. Check your Ambassador status on your profile. Point values for specific activities are being finalized."
+  "How do I find travelers in my city?": "Go to the Discover page and select your city. You'll see travelers visiting or planning to visit. Use Advanced Search to filter by interests, age, dates, and more. People with matching interests appear at the top! You can also check the Match in City page for more detailed matching."
 };
 
 export function HelpChatbot() {
