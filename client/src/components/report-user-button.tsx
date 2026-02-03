@@ -87,24 +87,17 @@ export function ReportUserButton({
     <>
       <button
         type="button"
-        onClick={(e) => {
+        onPointerDown={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          console.log('🔘 Report User button clicked!');
-          // Use setTimeout to open dialog after current event cycle completes
-          setTimeout(() => {
-            console.log('🔘 Opening Report dialog...');
-            setShowDialog(true);
-          }, 10);
+          console.log('🔘 Report User button pointerdown - opening dialog');
+          setShowDialog(true);
         }}
-        onPointerDown={(e) => {
-          e.stopPropagation();
-          console.log('🔘 Report User button pointerdown!');
-        }}
+        onPointerDownCapture={(e) => e.stopPropagation()}
+        onClickCapture={(e) => e.stopPropagation()}
         className={`inline-flex items-center justify-center gap-2 text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 cursor-pointer ${
           size === 'sm' ? 'px-3 py-1.5 text-sm' : size === 'lg' ? 'px-6 py-3 text-base' : 'px-4 py-2 text-sm'
         } ${variant === 'ghost' ? 'hover:bg-gray-100 dark:hover:bg-gray-800 rounded' : ''}`}
-        data-radix-dismissable-layer-ignore=""
       >
         {showIcon && <Flag className="h-4 w-4" />}
         {showText && "Report"}
@@ -113,6 +106,8 @@ export function ReportUserButton({
       {showDialog && createPortal(
         <div 
           className="fixed inset-0 z-[100000] flex items-center justify-center"
+          onPointerDownCapture={(e) => e.stopPropagation()}
+          onClickCapture={(e) => e.stopPropagation()}
           onClick={(e) => {
             if (e.target === e.currentTarget) {
               setShowDialog(false);
