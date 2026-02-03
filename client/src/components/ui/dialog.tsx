@@ -41,8 +41,6 @@ const DialogContent = React.forwardRef<
         "fixed left-[50%] top-[50%] z-[100000] grid w-full max-w-lg max-h-[95vh] translate-x-[-50%] translate-y-[-50%] gap-4 border bg-white dark:bg-gray-900 p-6 shadow-lg sm:rounded-lg overflow-y-auto",
         className
       )}
-      onPointerDownOutside={(e) => e.preventDefault()}
-      onInteractOutside={(e) => e.preventDefault()}
       {...props}
     >
       {children}
