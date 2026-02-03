@@ -91,7 +91,11 @@ export function ReportUserButton({
           e.preventDefault();
           e.stopPropagation();
           console.log('🔘 Report User button clicked!');
-          setShowDialog(true);
+          // Use setTimeout to open dialog after current event cycle completes
+          setTimeout(() => {
+            console.log('🔘 Opening Report dialog...');
+            setShowDialog(true);
+          }, 10);
         }}
         onPointerDown={(e) => {
           e.stopPropagation();

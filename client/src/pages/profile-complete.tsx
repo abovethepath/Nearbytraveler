@@ -4171,7 +4171,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       e.preventDefault();
                       e.stopPropagation();
                       console.log('🔘 Write Reference button clicked!');
-                      setShowWriteReferenceModal(true);
+                      // Use setTimeout to open dialog after current event cycle completes
+                      setTimeout(() => {
+                        console.log('🔘 Opening Write Reference modal...');
+                        setShowWriteReferenceModal(true);
+                      }, 10);
                     }}
                     onPointerDown={(e) => {
                       e.stopPropagation();
