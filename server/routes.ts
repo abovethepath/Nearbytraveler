@@ -923,8 +923,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     
     // WhatsApp gets square image to avoid cropping
     const imageUrl = isWhatsApp
-      ? `${baseUrl}/api/og-image-square?v=13`
-      : `${baseUrl}/api/og-image?v=13`;
+      ? `${baseUrl}/api/og-image-square?v=15`
+      : `${baseUrl}/api/og-image?v=15`;
     const width = isWhatsApp ? 800 : 1200;
     const height = isWhatsApp ? 800 : 630;
     
