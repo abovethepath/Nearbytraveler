@@ -1,0 +1,118 @@
+This almost always means there’s one element sitting on top of the CTA row (often a gradient/blur overlay, a “shine” layer, or a full-size link/div used to make the hero clickable). Your z-index changes on the buttons won’t help if:
+
+
+the blocker is in a different stacking context (created by transform, filter, opacity, isolation, etc.), or
+
+
+the blocker is later in the DOM and already above, or
+
+
+the blocker is a full-cover element (absolute inset-0) with normal pointer-events.
+
+
+Here’s how to identify the exact blocker and the two fixes that solve 99% of cases.
+
+1) Find the invisible blocker in 10 seconds (DevTools)
+In Chrome DevTools Console, run this while the page is showing the buttons:
+const btn = document.querySelector('[data-testid="button-message"]');
+const r = btn.getBoundingClientRect();
+document.elementFromPoint(r.left + 10, r.top + 10);
+
+Whatever that returns is what’s eating the click.
+If it’s something like a hero overlay <div>, a ::before pseudo layer, an absolute inset-0 element, or a stretched <a>, that’s your culprit.
+Also check if any parent has transform / filter / opacity < 1 in the Computed panel — those create stacking contexts that make z-index “feel broken”.
+
+2) The real fix: make decorative hero layers ignore clicks
+If your hero has overlay div(s)
+Find things like:
+
+
+absolute inset-0
+
+
+bg-gradient-to-*
+
+
+backdrop-blur
+
+
+opacity-*
+
+
+z-*
+
+
+…and add pointer-events-none to them.
+Example pattern (recommended structure):
+<div className="relative isolate overflow-hidden rounded-2xl">
+  {/* Decorative layers MUST ignore pointer events */}
+  <div
+    aria-hidden="true"
+    className="pointer-events-none absolute inset-0 bg-gradient-to-r from-orange-500/30 to-purple-500/30"
+  />
+  <div
+    aria-hidden="true"
+    className="pointer-events-none absolute inset-0 backdrop-blur-[2px]"
+  />
+
+  {/* Real content */}
+  <div className="relative z-10">
+    {/* ...profile content... */}
+
+    {!isOwnProfile && (
+      <div className="relative z-20 pointer-events-auto flex items-center gap-3 flex-wrap min-w-0">
+        {/* your buttons */}
+      </div>
+    )}
+  </div>
+</div>
+
+Why isolate? It prevents weird interactions with outside stacking contexts and makes your z-* layering more predictable.
+
+3) Common “gotcha”: a full-cover Link/div is on top
+Sometimes people do this to make the whole hero clickable:
+<Link className="absolute inset-0" to="..." />
+
+That will block EVERYTHING underneath.
+Fix it like this:
+<Link className="absolute inset-0 pointer-events-none" to="..." />
+
+Then, if you still want some areas clickable, only wrap the specific area in a link—not the whole hero.
+
+4) If your overlay is a pseudo-element (before: / after:)
+If the hero background is built like:
+<div className="relative before:absolute before:inset-0 before:bg-gradient-to-r ...">
+
+Then add:
+<div className="relative isolate
+  before:absolute before:inset-0 before:pointer-events-none before:z-0
+">
+  <div className="relative z-10">
+    ...
+  </div>
+</div>
+
+before:pointer-events-none is the key.
+
+5) What I would do in your case (fastest, safest change)
+Leave your CTA code mostly as-is and fix the hero layers:
+
+
+Find the hero gradient/blur overlay div(s) near where the CTAs render
+
+
+Add pointer-events-none to those overlay layers
+
+
+Add isolate to the hero wrapper
+
+
+Ensure the “content container” is relative z-10 and CTAs relative z-20
+
+
+Your CTA wrapper is already good:
+<div className="flex items-center gap-3 flex-wrap min-w-0 relative z-20">
+
+So the blocker is almost certainly outside this CTA block.
+
+If you paste the hero wrapper markup above this CTA block (the part that includes the gradient/overlay/background layers), I can point to the exact element/class that’s blocking and tell you the minimal one-line change.

@@ -3813,7 +3813,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     
       {/* PROFILE HEADER - Mobile Responsive - Full Bleed */}
       <div
-        className={`bg-gradient-to-r ${gradientOptions[selectedGradient]} px-3 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12 relative`}
+        className={`bg-gradient-to-r ${gradientOptions[selectedGradient]} px-3 sm:px-6 lg:px-10 py-6 sm:py-8 lg:py-12 relative isolate`}
         style={{ 
           width: '100vw',
           position: 'relative',
@@ -4135,7 +4135,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* CTAs — wrap on mobile */}
             {!isOwnProfile ? (
-              <div className="flex items-center gap-3 flex-wrap min-w-0 relative z-50" style={{ position: 'relative', zIndex: 9999 }}>
+              <div className="flex items-center gap-3 flex-wrap min-w-0 relative z-50 pointer-events-auto" style={{ position: 'relative', zIndex: 9999 }}>
                 <Button 
                   className="bg-orange-500 hover:bg-orange-600 border-0 px-6 py-2 rounded-lg shadow-md transition-all"
                   style={{ color: 'black' }}
