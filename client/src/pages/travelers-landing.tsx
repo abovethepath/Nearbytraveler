@@ -3,20 +3,12 @@ import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import Footer from "@/components/footer";
-import { useTheme } from "@/components/theme-provider";
 import { trackEvent } from "@/lib/analytics";
 const travelersHeaderImage = "/landing-images/travelers_1756778615408.jpg";
 
 export default function TravelersLanding() {
   const [, setLocation] = useLocation();
   const [isMobile, setIsMobile] = useState(false);
-  const { setTheme } = useTheme();
-  
-  // FORCE LIGHT MODE for landing page - user requirement
-  useEffect(() => {
-    setTheme('light');
-  }, [setTheme]);
-  
   const [currentWisdom, setCurrentWisdom] = useState(0);
   const wisdomSayings = ["Adventure Awaits Everywhere.", "The World Is Your Playground.", "Travel Like a Local."];
 

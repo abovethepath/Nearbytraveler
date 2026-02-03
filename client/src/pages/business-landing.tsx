@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
-import { useTheme } from "@/components/theme-provider";
 import { trackEvent } from "@/lib/analytics";
 import { 
   DollarSign, 
@@ -19,13 +18,6 @@ import businessHeaderPhoto from "@assets/image_1756765621788.png";
 export default function BusinessLanding() {
   const [, setLocation] = useLocation();
   const [isMobile, setIsMobile] = useState(false);
-  const { setTheme } = useTheme();
-  
-  // FORCE LIGHT MODE for landing page - user requirement
-  useEffect(() => {
-    setTheme('light');
-  }, [setTheme]);
-
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 640);

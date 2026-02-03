@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import Footer from "@/components/footer";
-import { useTheme } from "@/components/theme-provider";
 import { trackEvent } from "@/lib/analytics";
 import karaokeImage from "@assets/image_1756447354157.png";
 import bikeImage from "@assets/image_1756447442403.png";
@@ -15,13 +14,6 @@ const eventHeaderImage = "/event page bbq party_1753299541268.png";
 export default function EventsLanding() {
   const [, setLocation] = useLocation();
   const [isMobile, setIsMobile] = useState(false);
-  const { setTheme } = useTheme();
-  
-  // FORCE LIGHT MODE for landing page - user requirement
-  useEffect(() => {
-    setTheme('light');
-  }, [setTheme]);
-  
   // Rotating wisdom sayings above the photo
   const [currentWisdom, setCurrentWisdom] = useState(0);
   const wisdomSayings = [
