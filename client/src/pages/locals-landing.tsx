@@ -238,36 +238,36 @@ export default function LocalsLanding() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch">
               <div className="bg-teal-500 dark:bg-teal-600 p-6 rounded-xl shadow-lg flex flex-col h-full">
                 <div className="text-4xl mb-4">🤝</div>
-                <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-900 leading-tight">Real Friendships & Connections</h3>
-                <p className="text-gray-800 text-sm leading-relaxed flex-grow">
+                <h3 className="text-lg sm:text-xl font-bold mb-4 text-black leading-tight">Real Friendships & Connections</h3>
+                <p className="text-black text-sm leading-relaxed flex-grow">
                   Meet people who share your interests and travel style — friendships that last beyond the trip.
                 </p>
               </div>
               <div className="bg-orange-500 dark:bg-orange-600 p-6 rounded-xl shadow-lg flex flex-col h-full">
                 <div className="text-4xl mb-4">🎉</div>
-                <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-900 leading-tight">Host or Join Events</h3>
-                <p className="text-gray-800 text-sm leading-relaxed flex-grow">
+                <h3 className="text-lg sm:text-xl font-bold mb-4 text-black leading-tight">Host or Join Events</h3>
+                <p className="text-black text-sm leading-relaxed flex-grow">
                   Create or join activities you love — from rooftop parties and food tours to hikes and art walks.
                 </p>
               </div>
               <div className="bg-purple-500 dark:bg-purple-600 p-6 rounded-xl shadow-lg flex flex-col h-full">
                 <div className="text-4xl mb-4">🎯</div>
-                <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-900 leading-tight">Interest-Based Matching</h3>
-                <p className="text-gray-800 text-sm leading-relaxed flex-grow">
+                <h3 className="text-lg sm:text-xl font-bold mb-4 text-black leading-tight">Interest-Based Matching</h3>
+                <p className="text-black text-sm leading-relaxed flex-grow">
                   Connect with travelers who share your hobbies and interests. Find hiking buddies, food lovers, art enthusiasts, and adventure seekers in your city.
                 </p>
               </div>
               <div className="bg-blue-500 dark:bg-blue-600 p-6 rounded-xl shadow-lg flex flex-col h-full">
                 <div className="text-4xl mb-4">📅</div>
-                <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-900 leading-tight">Stay Connected Globally</h3>
-                <p className="text-gray-800 text-sm leading-relaxed flex-grow">
+                <h3 className="text-lg sm:text-xl font-bold mb-4 text-black leading-tight">Stay Connected Globally</h3>
+                <p className="text-black text-sm leading-relaxed flex-grow">
                   Keep friendships alive as your traveler friends move to new cities around the world.
                 </p>
               </div>
               <div className="bg-yellow-500 dark:bg-yellow-600 p-6 rounded-xl shadow-lg flex flex-col h-full">
                 <div className="text-4xl mb-4">🎟️</div>
-                <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-900 leading-tight">Weekly Sponsored Events</h3>
-                <p className="text-gray-800 text-sm leading-relaxed flex-grow">
+                <h3 className="text-lg sm:text-xl font-bold mb-4 text-black leading-tight">Weekly Sponsored Events</h3>
+                <p className="text-black text-sm leading-relaxed flex-grow">
                   Every week, Nearby Traveler sponsors authentic local experiences. Host sponsored events or join curated activities that bring our community together.
                 </p>
               </div>

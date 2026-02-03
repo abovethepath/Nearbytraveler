@@ -147,33 +147,33 @@ export default function BusinessLanding() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="bg-blue-500 dark:bg-blue-600 p-6 rounded-xl shadow-lg">
               <div className="text-3xl mb-4">🎯</div>
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Tour Operators</h3>
-              <p className="text-gray-800 text-sm">Walking tours, food tours, cultural experiences</p>
+              <h3 className="text-xl font-bold mb-3 text-black">Tour Operators</h3>
+              <p className="text-black text-sm">Walking tours, food tours, cultural experiences</p>
             </div>
             <div className="bg-green-500 dark:bg-green-600 p-6 rounded-xl shadow-lg">
               <div className="text-3xl mb-4">🚴</div>
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Activity Providers</h3>
-              <p className="text-gray-800 text-sm">Hiking, biking, water sports, adventure activities</p>
+              <h3 className="text-xl font-bold mb-3 text-black">Activity Providers</h3>
+              <p className="text-black text-sm">Hiking, biking, water sports, adventure activities</p>
             </div>
             <div className="bg-orange-500 dark:bg-orange-600 p-6 rounded-xl shadow-lg">
               <div className="text-3xl mb-4">🍽️</div>
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Restaurants & Cafes</h3>
-              <p className="text-gray-800 text-sm">Hidden gems seeking authentic food lovers</p>
+              <h3 className="text-xl font-bold mb-3 text-black">Restaurants & Cafes</h3>
+              <p className="text-black text-sm">Hidden gems seeking authentic food lovers</p>
             </div>
             <div className="bg-purple-500 dark:bg-purple-600 p-6 rounded-xl shadow-lg">
               <div className="text-3xl mb-4">🎨</div>
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Cultural Experiences</h3>
-              <p className="text-gray-800 text-sm">Art classes, cooking lessons, craft workshops</p>
+              <h3 className="text-xl font-bold mb-3 text-black">Cultural Experiences</h3>
+              <p className="text-black text-sm">Art classes, cooking lessons, craft workshops</p>
             </div>
             <div className="bg-teal-500 dark:bg-teal-600 p-6 rounded-xl shadow-lg">
               <div className="text-3xl mb-4">🚗</div>
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Transportation Services</h3>
-              <p className="text-gray-800 text-sm">Local guides, drivers, unique transport</p>
+              <h3 className="text-xl font-bold mb-3 text-black">Transportation Services</h3>
+              <p className="text-black text-sm">Local guides, drivers, unique transport</p>
             </div>
             <div className="bg-pink-500 dark:bg-pink-600 p-6 rounded-xl shadow-lg">
               <div className="text-3xl mb-4">📸</div>
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Local Guides</h3>
-              <p className="text-gray-800 text-sm">Photography tours, city experts, neighborhood specialists</p>
+              <h3 className="text-xl font-bold mb-3 text-black">Local Guides</h3>
+              <p className="text-black text-sm">Photography tours, city experts, neighborhood specialists</p>
             </div>
           </div>
         </div>
@@ -238,28 +238,28 @@ export default function BusinessLanding() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="bg-emerald-500 dark:bg-emerald-600 p-6 rounded-xl shadow-lg">
               <div className="text-3xl mb-4">💰</div>
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Keep 100% of Your Revenue</h3>
-              <p className="text-gray-800 text-sm">No commission fees like TripAdvisor or Viator. What you earn is yours.</p>
+              <h3 className="text-xl font-bold mb-3 text-black">Keep 100% of Your Revenue</h3>
+              <p className="text-black text-sm">No commission fees like TripAdvisor or Viator. What you earn is yours.</p>
             </div>
             <div className="bg-blue-500 dark:bg-blue-600 p-6 rounded-xl shadow-lg">
               <div className="text-3xl mb-4">📱</div>
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Direct Relationships</h3>
-              <p className="text-gray-800 text-sm">Build lasting customer relationships without middlemen taking a cut.</p>
+              <h3 className="text-xl font-bold mb-3 text-black">Direct Relationships</h3>
+              <p className="text-black text-sm">Build lasting customer relationships without middlemen taking a cut.</p>
             </div>
             <div className="bg-purple-500 dark:bg-purple-600 p-6 rounded-xl shadow-lg">
               <div className="text-3xl mb-4">🔄</div>
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Recurring Customers</h3>
-              <p className="text-gray-800 text-sm">Travelers return and bring friends. Build a loyal following.</p>
+              <h3 className="text-xl font-bold mb-3 text-black">Recurring Customers</h3>
+              <p className="text-black text-sm">Travelers return and bring friends. Build a loyal following.</p>
             </div>
             <div className="bg-orange-500 dark:bg-orange-600 p-6 rounded-xl shadow-lg">
               <div className="text-3xl mb-4">📊</div>
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Real Customer Insights</h3>
-              <p className="text-gray-800 text-sm">Understand what travelers want before they arrive in your city.</p>
+              <h3 className="text-xl font-bold mb-3 text-black">Real Customer Insights</h3>
+              <p className="text-black text-sm">Understand what travelers want before they arrive in your city.</p>
             </div>
             <div className="bg-yellow-500 dark:bg-yellow-600 p-6 rounded-xl shadow-lg">
               <div className="text-3xl mb-4">⚡</div>
-              <h3 className="text-xl font-bold mb-3 text-gray-900">Instant Notifications</h3>
-              <p className="text-gray-800 text-sm">Get alerted when travelers matching your services are planning trips.</p>
+              <h3 className="text-xl font-bold mb-3 text-black">Instant Notifications</h3>
+              <p className="text-black text-sm">Get alerted when travelers matching your services are planning trips.</p>
             </div>
           </div>
         </div>
