@@ -940,7 +940,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       // Get event image - ensure it's an absolute URL (not base64)
       // Using landscape logo (16:9) for better social sharing on mobile
       // Using /api/og-image to bypass CORS restrictions on static files
-      let imageUrl = `${baseUrl}/api/og-image`;
+      // Version parameter forces social media to refresh cached images
+      let imageUrl = `${baseUrl}/api/og-image?v=12`;
       if (event.imageUrl && !event.imageUrl.startsWith('data:')) {
         // Only use if it's a real URL, not a base64 data URI
         if (event.imageUrl.startsWith('http')) {
