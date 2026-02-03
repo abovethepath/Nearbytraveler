@@ -860,6 +860,112 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     res.type('text/plain').send('loaderio-15c7c050ef251dcf711cfbdec3d0eb28');
   });
 
+  // Dynamic Open Graph meta tags for event pages (for social media sharing)
+  app.get("/events/:id", async (req, res, next) => {
+    const userAgent = req.headers['user-agent'] || '';
+    
+    // Check if this is a social media crawler/bot
+    const isCrawler = /facebookexternalhit|Facebot|Twitterbot|WhatsApp|LinkedInBot|Slackbot|TelegramBot|Discordbot|PinterestBot|RedditBot/i.test(userAgent);
+    
+    if (!isCrawler) {
+      // Not a crawler, pass to Vite/React
+      return next();
+    }
+    
+    try {
+      const eventId = parseInt(req.params.id);
+      if (isNaN(eventId)) {
+        return next();
+      }
+      
+      // Fetch event data
+      const [event] = await db.select().from(events).where(eq(events.id, eventId)).limit(1);
+      
+      if (!event) {
+        return next();
+      }
+      
+      // Get organizer info
+      let organizerName = 'A Nearby Traveler';
+      if (event.organizerId) {
+        const [organizer] = await db.select({ name: users.name, username: users.username })
+          .from(users)
+          .where(eq(users.id, event.organizerId))
+          .limit(1);
+        if (organizer) {
+          organizerName = organizer.name || organizer.username || 'A Nearby Traveler';
+        }
+      }
+      
+      // Format date
+      const eventDate = event.eventDate 
+        ? new Date(event.eventDate).toLocaleDateString('en-US', { 
+            weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' 
+          })
+        : '';
+      
+      // Build description
+      const description = event.description 
+        ? event.description.substring(0, 200) + (event.description.length > 200 ? '...' : '')
+        : `Join ${organizerName} for this event in ${event.city || 'a great location'}!`;
+      
+      // Get event image or use default
+      const imageUrl = event.imageUrl || 'https://nearbytraveler.org/icon-512x512.png';
+      
+      // Build the full URL for canonical
+      const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+      const host = req.headers.host || 'nearbytraveler.org';
+      const fullUrl = `${protocol}://${host}/events/${eventId}`;
+      
+      // Serve HTML with dynamic OG tags
+      const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${event.title} | Nearby Traveler Event</title>
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="${fullUrl}" />
+  <meta property="og:title" content="${event.title}" />
+  <meta property="og:description" content="${description.replace(/"/g, '&quot;')}" />
+  <meta property="og:image" content="${imageUrl}" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name" content="Nearby Traveler" />
+  
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="${fullUrl}" />
+  <meta name="twitter:title" content="${event.title}" />
+  <meta name="twitter:description" content="${description.replace(/"/g, '&quot;')}" />
+  <meta name="twitter:image" content="${imageUrl}" />
+  
+  <!-- Event specific meta -->
+  <meta property="event:start_date" content="${event.eventDate || ''}" />
+  <meta property="event:location" content="${event.city || ''}" />
+  
+  <!-- Redirect to actual page for browsers -->
+  <meta http-equiv="refresh" content="0;url=${fullUrl}" />
+</head>
+<body>
+  <h1>${event.title}</h1>
+  <p>${description}</p>
+  <p>Date: ${eventDate}</p>
+  <p>Location: ${event.city || 'TBA'}</p>
+  <p>Organized by: ${organizerName}</p>
+  <a href="${fullUrl}">View Event on Nearby Traveler</a>
+</body>
+</html>`;
+      
+      res.type('text/html').send(html);
+    } catch (error) {
+      console.error('OG meta tag error for event:', error);
+      next();
+    }
+  });
+
   // Real login endpoint with credentials
   app.post("/api/auth/login", async (req, res) => {
     try {
