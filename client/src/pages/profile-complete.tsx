@@ -4174,15 +4174,26 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     Write Reference
                   </Button>
                 )}
-                {/* Report User Button */}
-                {currentUser && user && (
-                  <ReportUserButton
-                    userId={currentUser.id}
-                    targetUserId={user.id}
-                    targetUsername={user.username}
-                    variant="ghost"
-                    size="sm"
-                  />
+                {/* Report User Button - always visible, prompts login if needed */}
+                {user && (
+                  currentUser ? (
+                    <ReportUserButton
+                      userId={currentUser.id}
+                      targetUserId={user.id}
+                      targetUsername={user.username}
+                      variant="ghost"
+                      size="sm"
+                    />
+                  ) : (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setLocation('/auth')}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                    >
+                      Report
+                    </Button>
+                  )
                 )}
               </div>
             ) : (
