@@ -1,0 +1,145 @@
+injected.js:37 ✅ Found user data in user: {id: 89, username: 'dylansmom'}
+injected.js:37 🔧 Setting user in all storage keys: {id: 89, username: 'dylansmom'}
+injected.js:37 🔧 AUTHENTICATION STATE: {currentUserId: 89, currentUsername: 'dylansmom', effectiveUserId: 80, isOwnProfile: false, propUserId: 80, …}
+injected.js:37 Profile OWNERSHIP: {isOwnProfile: false, propUserId: 80, currentUserId: 89, effectiveUserId: 80, comparison: '80 === 89', …}
+injected.js:37 ✅ Found user data in user: {id: 89, username: 'dylansmom'}
+injected.js:37 🔧 Setting user in all storage keys: {id: 89, username: 'dylansmom'}
+injected.js:37  ⚠️ PROFILE DEBUG: {isOwnProfile: false, propUserId: 80, currentUserId: 89, authContextUser: false, storageUser: true}
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+ProfileContent @ profile-complete.tsx:1131
+renderWithHooks @ react-dom.development.js:15486
+updateFunctionComponent @ react-dom.development.js:19617
+beginWork @ react-dom.development.js:21640
+beginWork$1 @ react-dom.development.js:27465
+performUnitOfWork @ react-dom.development.js:26596
+workLoopSync @ react-dom.development.js:26505
+renderRootSync @ react-dom.development.js:26473
+performSyncWorkOnRoot @ react-dom.development.js:26124
+flushSyncCallbacks @ react-dom.development.js:12042
+flushSync @ react-dom.development.js:26240
+flushSync$1 @ react-dom.development.js:29878
+dispatchDiscreteCustomEvent @ primitive.tsx:96
+handleAndDispatchCustomEvent @ dismissable-layer.tsx:344
+handleAndDispatchPointerDownOutsideEvent2 @ dismissable-layer.tsx:235
+handlePointerDown @ dismissable-layer.tsx:260
+injected.js:37 Profile component state: {propUserId: 80, effectiveUserId: 80, fetchedUser: true, userLoading: false, userError: undefined, …}
+injected.js:37 Profile render - about to render JSX {userId: 80, username: 'nearbylocal3', userType: 'local', hasUser: true, userKeys: 150}
+injected.js:37 🔧 Profile: Checking if location sharing should render: {isOwnProfile: false, userId: 80}
+injected.js:37 🎯 CURRENT ACTIVE TAB: 
+injected.js:37 ✅ Found user data in user: {id: 89, username: 'dylansmom'}
+injected.js:37 🔧 Setting user in all storage keys: {id: 89, username: 'dylansmom'}
+injected.js:37 🔧 AUTHENTICATION STATE: {currentUserId: 89, currentUsername: 'dylansmom', effectiveUserId: 80, isOwnProfile: false, propUserId: 80, …}
+injected.js:37 Profile OWNERSHIP: {isOwnProfile: false, propUserId: 80, currentUserId: 89, effectiveUserId: 80, comparison: '80 === 89', …}
+injected.js:37 ✅ Found user data in user: {id: 89, username: 'dylansmom'}
+injected.js:37 🔧 Setting user in all storage keys: {id: 89, username: 'dylansmom'}
+injected.js:37  ⚠️ PROFILE DEBUG: {isOwnProfile: false, propUserId: 80, currentUserId: 89, authContextUser: false, storageUser: true}
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+ProfileContent @ profile-complete.tsx:1131
+renderWithHooks @ react-dom.development.js:15486
+updateFunctionComponent @ react-dom.development.js:19617
+beginWork @ react-dom.development.js:21640
+beginWork$1 @ react-dom.development.js:27465
+performUnitOfWork @ react-dom.development.js:26596
+workLoopSync @ react-dom.development.js:26505
+renderRootSync @ react-dom.development.js:26473
+performSyncWorkOnRoot @ react-dom.development.js:26124
+flushSyncCallbacks @ react-dom.development.js:12042
+(anonymous) @ react-dom.development.js:25690
+injected.js:37 Profile component state: {propUserId: 80, effectiveUserId: 80, fetchedUser: true, userLoading: false, userError: undefined, …}
+injected.js:37 Profile render - about to render JSX {userId: 80, username: 'nearbylocal3', userType: 'local', hasUser: true, userKeys: 150}
+injected.js:37 🔧 Profile: Checking if location sharing should render: {isOwnProfile: false, userId: 80}
+injected.js:37 🎯 CURRENT ACTIVE TAB: 
+injected.js:37 ✅ Found user data in user: {id: 89, username: 'dylansmom'}
+injected.js:37 🔧 Setting user in all storage keys: {id: 89, username: 'dylansmom'}
+injected.js:37 🔧 AUTHENTICATION STATE: {currentUserId: 89, currentUsername: 'dylansmom', effectiveUserId: 80, isOwnProfile: false, propUserId: 80, …}
+injected.js:37 Profile OWNERSHIP: {isOwnProfile: false, propUserId: 80, currentUserId: 89, effectiveUserId: 80, comparison: '80 === 89', …}
+injected.js:37 ✅ Found user data in user: {id: 89, username: 'dylansmom'}
+injected.js:37 🔧 Setting user in all storage keys: {id: 89, username: 'dylansmom'}
+injected.js:37  ⚠️ PROFILE DEBUG: {isOwnProfile: false, propUserId: 80, currentUserId: 89, authContextUser: false, storageUser: true}
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+ProfileContent @ profile-complete.tsx:1131
+renderWithHooks @ react-dom.development.js:15486
+updateFunctionComponent @ react-dom.development.js:19617
+beginWork @ react-dom.development.js:21640
+beginWork$1 @ react-dom.development.js:27465
+performUnitOfWork @ react-dom.development.js:26596
+workLoopSync @ react-dom.development.js:26505
+renderRootSync @ react-dom.development.js:26473
+performSyncWorkOnRoot @ react-dom.development.js:26124
+flushSyncCallbacks @ react-dom.development.js:12042
+flushSync @ react-dom.development.js:26240
+flushSync$1 @ react-dom.development.js:29878
+dispatchDiscreteCustomEvent @ primitive.tsx:96
+handleAndDispatchCustomEvent @ dismissable-layer.tsx:344
+handleAndDispatchPointerDownOutsideEvent2 @ dismissable-layer.tsx:235
+handlePointerDown @ dismissable-layer.tsx:260
+injected.js:37 Profile component state: {propUserId: 80, effectiveUserId: 80, fetchedUser: true, userLoading: false, userError: undefined, …}
+injected.js:37 Profile render - about to render JSX {userId: 80, username: 'nearbylocal3', userType: 'local', hasUser: true, userKeys: 150}
+injected.js:37 🔧 Profile: Checking if location sharing should render: {isOwnProfile: false, userId: 80}
+injected.js:37 🎯 CURRENT ACTIVE TAB: 
+injected.js:37 ✅ Found user data in user: {id: 89, username: 'dylansmom'}
+injected.js:37 🔧 Setting user in all storage keys: {id: 89, username: 'dylansmom'}
+injected.js:37 🔧 AUTHENTICATION STATE: {currentUserId: 89, currentUsername: 'dylansmom', effectiveUserId: 80, isOwnProfile: false, propUserId: 80, …}
+injected.js:37 Profile OWNERSHIP: {isOwnProfile: false, propUserId: 80, currentUserId: 89, effectiveUserId: 80, comparison: '80 === 89', …}
+injected.js:37 ✅ Found user data in user: {id: 89, username: 'dylansmom'}
+injected.js:37 🔧 Setting user in all storage keys: {id: 89, username: 'dylansmom'}
+injected.js:37  ⚠️ PROFILE DEBUG: {isOwnProfile: false, propUserId: 80, currentUserId: 89, authContextUser: false, storageUser: true}
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+ProfileContent @ profile-complete.tsx:1131
+renderWithHooks @ react-dom.development.js:15486
+updateFunctionComponent @ react-dom.development.js:19617
+beginWork @ react-dom.development.js:21640
+beginWork$1 @ react-dom.development.js:27465
+performUnitOfWork @ react-dom.development.js:26596
+workLoopSync @ react-dom.development.js:26505
+renderRootSync @ react-dom.development.js:26473
+performSyncWorkOnRoot @ react-dom.development.js:26124
+flushSyncCallbacks @ react-dom.development.js:12042
+(anonymous) @ react-dom.development.js:25690
+injected.js:37 Profile component state: {propUserId: 80, effectiveUserId: 80, fetchedUser: true, userLoading: false, userError: undefined, …}
+injected.js:37 Profile render - about to render JSX {userId: 80, username: 'nearbylocal3', userType: 'local', hasUser: true, userKeys: 150}
+injected.js:37 🔧 Profile: Checking if location sharing should render: {isOwnProfile: false, userId: 80}
+injected.js:37  Unknown message type: pong
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+(anonymous) @ injected.js:37
+handleMessage @ websocketService.ts:204
+ws.onmessage @ websocketService.ts:82

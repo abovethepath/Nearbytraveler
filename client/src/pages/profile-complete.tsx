@@ -4136,15 +4136,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             {/* CTAs — wrap on mobile */}
             {!isOwnProfile ? (
               <div className="flex items-center gap-3 flex-wrap min-w-0 relative z-50 pointer-events-auto" style={{ position: 'relative', zIndex: 9999 }}>
-                <Button 
-                  className="bg-orange-500 hover:bg-orange-600 border-0 px-6 py-2 rounded-lg shadow-md transition-all"
-                  style={{ color: 'black' }}
+                <button 
+                  type="button"
+                  className="inline-flex items-center bg-orange-500 hover:bg-orange-600 border-0 px-6 py-2 rounded-lg shadow-md transition-all text-black font-medium"
                   onClick={handleMessage}
+                  onPointerDown={(e) => e.stopPropagation()}
                   data-testid="button-message"
                 >
-                  <MessageCircle className="w-4 h-4 mr-2" style={{ color: 'black' }} />
-                  <span style={{ color: 'black' }}>Message</span>
-                </Button>
+                  <MessageCircle className="w-4 h-4 mr-2 text-black" />
+                  <span className="text-black">Message</span>
+                </button>
                 <ConnectButton
                   currentUserId={currentUser?.id || 0}
                   targetUserId={user?.id || 0}
@@ -4155,33 +4156,27 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 {/* VouchButton moved to References section below for cleaner header */}
                 {/* Write Reference Button - visible to all logged in users viewing other profiles */}
                 {currentUser ? (
-                  <Button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setShowWriteReferenceModal(true);
-                    }}
-                    className="bg-green-600 hover:bg-green-700 text-white border-0 px-6 py-2 rounded-lg shadow-md transition-all"
-                    style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto', cursor: 'pointer' }}
+                  <button
+                    type="button"
+                    onClick={() => setShowWriteReferenceModal(true)}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    className="inline-flex items-center bg-green-600 hover:bg-green-700 text-white border-0 px-6 py-2 rounded-lg shadow-md transition-all font-medium"
                     data-testid="button-write-reference"
                   >
                     <MessageSquare className="w-4 h-4 mr-2" />
                     Write Reference
-                  </Button>
+                  </button>
                 ) : (
-                  <Button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setLocation('/auth');
-                    }}
-                    className="bg-green-600 hover:bg-green-700 text-white border-0 px-6 py-2 rounded-lg shadow-md transition-all"
-                    style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto', cursor: 'pointer' }}
+                  <button
+                    type="button"
+                    onClick={() => setLocation('/auth')}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    className="inline-flex items-center bg-green-600 hover:bg-green-700 text-white border-0 px-6 py-2 rounded-lg shadow-md transition-all font-medium"
                     data-testid="button-write-reference"
                   >
                     <MessageSquare className="w-4 h-4 mr-2" />
                     Write Reference
-                  </Button>
+                  </button>
                 )}
                 {/* Report User Button - always visible, prompts login if needed */}
                 {user && (
@@ -4196,19 +4191,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       />
                     </div>
                   ) : (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setLocation('/auth');
-                      }}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-                      style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto', cursor: 'pointer' }}
+                    <button
+                      type="button"
+                      onClick={() => setLocation('/auth')}
+                      onPointerDown={(e) => e.stopPropagation()}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-1.5 text-sm rounded font-medium"
                     >
                       Report
-                    </Button>
+                    </button>
                   )
                 )}
               </div>
