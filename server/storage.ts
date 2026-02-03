@@ -3607,8 +3607,9 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async getUserReferences(userId: number): Promise<any[]> {
+  async getUserReferences(userId: number): Promise<any> {
     try {
+      console.log('📝 STORAGE getUserReferences - Starting query for userId:', userId);
       const references = await db
         .select({
           id: userReferences.id,
@@ -3628,6 +3629,8 @@ export class DatabaseStorage implements IStorage {
         .leftJoin(users, eq(userReferences.reviewerId, users.id))
         .where(eq(userReferences.revieweeId, userId))
         .orderBy(desc(userReferences.createdAt));
+
+      console.log('📝 STORAGE getUserReferences - Query returned', references.length, 'references');
 
       // Calculate counts by experience type
       const counts = {

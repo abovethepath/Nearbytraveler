@@ -6701,14 +6701,20 @@ Questions? Just reply to this message. Welcome aboard!
   app.get("/api/users/:userId/references", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId || '0');
+      console.log('📝 REFERENCES DEBUG - Fetching references for userId:', userId);
       if (isNaN(userId) || userId <= 0) {
         return res.status(400).json({ message: "Invalid user ID" });
       }
       
       const references = await storage.getUserReferences(userId);
-      return res.json(references || []);
+      console.log('📝 REFERENCES DEBUG - Got result:', JSON.stringify({
+        hasReferences: !!references,
+        referencesCount: references?.references?.length || 0,
+        counts: references?.counts
+      }));
+      return res.json(references || { references: [], counts: { total: 0, positive: 0, negative: 0, neutral: 0 } });
     } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("Error fetching user references:", error);
+      console.error("Error fetching user references:", error);
       return res.status(500).json({ message: "Failed to fetch references" });
     }
   });
