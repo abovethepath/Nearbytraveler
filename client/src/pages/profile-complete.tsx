@@ -9378,7 +9378,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       {/* Write Reference Modal - Custom Implementation */}
       {showWriteReferenceModal && (
         <div 
-          className="fixed inset-0 z-[100000] flex items-center justify-center"
+          className="fixed inset-0 z-[100000] flex items-center justify-center p-4"
           onClick={() => {
             referenceForm.reset();
             setShowWriteReferenceModal(false);
@@ -9386,7 +9386,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         >
           <div className="fixed inset-0 bg-black/80" />
           <div 
-            className="relative z-[100001] w-full max-w-2xl mx-4 bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6 max-h-[90vh] overflow-y-auto"
+            className="relative z-[100001] w-full max-w-2xl bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6 max-h-[90vh] overflow-y-auto my-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <button
