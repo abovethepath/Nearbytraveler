@@ -9386,7 +9386,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         >
           <div className="fixed inset-0 bg-black/80" />
           <div 
-            className="relative z-[100001] w-full max-w-2xl bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6 max-h-[90vh] overflow-y-auto my-auto"
+            className="relative z-[100001] w-full max-w-lg bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -9400,8 +9400,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </button>
 
             <div className="mb-4">
-              <h2 className="text-lg font-semibold">Write a Reference for {user?.username}</h2>
-              <p className="text-sm text-gray-500 mt-1">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Write a Reference for {user?.username}</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 Share your experience with this traveler to help others in the community
               </p>
             </div>
@@ -9416,12 +9416,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   name="content"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Your Reference</FormLabel>
+                      <FormLabel className="text-gray-900 dark:text-white">Your Reference</FormLabel>
                       <FormControl>
                         <Textarea
                           {...field}
                           placeholder="Share your experience with this person..."
-                          className="min-h-[100px] text-black dark:text-white"
+                          className="min-h-[80px] resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
                         />
                       </FormControl>
                       <FormMessage />
@@ -9434,7 +9434,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   name="experience"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Experience</FormLabel>
+                      <FormLabel className="text-gray-900 dark:text-white">Experience</FormLabel>
                       <FormControl>
                         <div className="flex gap-4">
                           <label className="flex items-center space-x-2 cursor-pointer">
@@ -9445,7 +9445,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               onChange={() => field.onChange("positive")}
                               className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500"
                             />
-                            <span className="text-sm text-green-700">Positive</span>
+                            <span className="text-sm text-green-600 dark:text-green-400">Positive</span>
                           </label>
                           <label className="flex items-center space-x-2 cursor-pointer">
                             <input
@@ -9455,7 +9455,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               onChange={() => field.onChange("neutral")}
                               className="w-4 h-4 text-yellow-600 border-gray-300 focus:ring-yellow-500"
                             />
-                            <span className="text-sm text-yellow-700">Neutral</span>
+                            <span className="text-sm text-yellow-600 dark:text-yellow-400">Neutral</span>
                           </label>
                           <label className="flex items-center space-x-2 cursor-pointer">
                             <input
@@ -9465,7 +9465,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               onChange={() => field.onChange("negative")}
                               className="w-4 h-4 text-red-600 border-gray-300 focus:ring-red-500"
                             />
-                            <span className="text-sm text-red-700">Negative</span>
+                            <span className="text-sm text-red-600 dark:text-red-400">Negative</span>
                           </label>
                         </div>
                       </FormControl>
@@ -9488,7 +9488,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   <Button 
                     type="submit" 
                     disabled={createReference.isPending}
-                    className="border-2 border-black dark:border-white"
+                    className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100"
                     data-testid="button-submit-reference"
                   >
                     {createReference.isPending ? "Submitting..." : "Submit Reference"}
