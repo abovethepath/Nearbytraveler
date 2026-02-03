@@ -459,7 +459,7 @@ export default function BusinessLanding() {
               setLocation('/launching-soon');
             }}
             size="lg"
-            className="bg-white hover:bg-gray-100 text-orange-600 hover:text-orange-700 font-bold text-xl px-12 py-4 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200"
+            className="bg-white hover:bg-gray-100 text-black font-bold text-xl px-12 py-4 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200"
             data-testid="button-final-cta"
           >
             Claim Your Free Beta Access
