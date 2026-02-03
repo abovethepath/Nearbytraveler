@@ -1,0 +1,70 @@
+
+> rest-express@1.0.0 dev
+> tsx server/index.ts
+
+The `fetchConnectionCache` option is deprecated (now always `true`)
+📱 SMS Service: Twilio credentials not configured - SMS notifications disabled
+Environment check: { BREVO_API_KEY: 'LOADED', NODE_ENV: undefined }
+🚀 REGISTERING CRITICAL API ROUTES FIRST TO BYPASS VITE INTERCEPTION
+✅ CRITICAL API ROUTES REGISTERED BEFORE OTHER MIDDLEWARE
+🔴 Redis URL check: { hasRedisUrl: true, urlPrefix: 'rediss://d...', nodeEnv: undefined }
+🔴 Redis: Connecting to Redis for session storage...
+🍪 Session config: {
+  isProduction: false,
+  nodeEnv: undefined,
+  hasRedis: true,
+  cookieSecure: false
+}
+Starting server initialization...
+Basic routes added, starting lazy route registration...
+Loading minimal routes for startup...
+Quick login fix temporarily disabled for deployment stability
+Minimal routes registered successfully
+Registering main API routes from routes.ts...
+✅ Cache: Redis connected for API caching
+✅ Redis: Connected successfully - sessions will persist across restarts
+✅ Replit Auth setup complete
+⚠️ WebSocket: Running in single-instance mode (no Redis)
+✅ Main API routes registered successfully
+🚀 REGISTERING CRITICAL API ROUTES TO BYPASS VITE INTERCEPTION
+🔧 Development: Setting up Vite development server...
+✅ Redis PubSub: Publisher connected (instance 1770148586775-g1j33ur3z)
+✅ Redis PubSub: Subscriber connected (instance 1770148586775-g1j33ur3z)
+✅ Redis: Ready to accept commands
+🧹 Cleaned up expired dated activities
+✅ Vite development setup successful
+7:56:27 PM [express] serving on port 5000
+🚀 Server successfully started on http://0.0.0.0:5000
+🔄 Running initial travel status check...
+Checking travel status for 0 users with travel data
+Travel status update completed for 0 unique users
+✅ Initial travel status check completed
+✅ Server started successfully with travel status monitoring enabled
+Origin: undefined
+Origin: http://127.0.0.1:5000
+Origin: http://127.0.0.1:5000
+Origin: undefined
+Browserslist: browsers data (caniuse-lite) is 16 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev
+Origin: http://127.0.0.1:5000
+Origin: http://127.0.0.1:5000
+Origin: http://127.0.0.1:5000
+Origin: http://127.0.0.1:5000
+7:56:40 PM [vite] (client) Pre-transform error: Failed to resolve import "@assets/event-photo.png" from "client/src/pages/events.tsx". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /home/runner/workspace/client/src/pages/events.tsx:26:26
+  32 |  import { formatDateForDisplay } from "@/lib/dateUtils";
+  33 |  import { InterestButton } from "@/components/InterestButton";
+  34 |  import eventsBgImage from "@assets/event-photo.png";
+     |                             ^
+  35 |  function formatEventLocation(event) {
+  36 |    const parts = [];
