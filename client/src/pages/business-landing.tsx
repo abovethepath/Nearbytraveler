@@ -459,11 +459,11 @@ export default function BusinessLanding() {
               setLocation('/launching-soon');
             }}
             size="lg"
+            variant="ghost"
             className="bg-white hover:bg-gray-100 font-bold text-xl px-12 py-4 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200"
-            style={{ color: '#000000' }}
             data-testid="button-final-cta"
           >
-            Claim Your Free Beta Access
+            <span style={{ color: '#000000' }}>Claim Your Free Beta Access</span>
           </Button>
         </div>
       </section>
