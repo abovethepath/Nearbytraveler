@@ -11,23 +11,23 @@ interface ChatMessage {
 }
 
 const SUGGESTED_QUESTIONS = [
-  "How do I create a quick meetup?",
+  "How do I create a Let's Meet Now?",
   "What's the voice input feature?",
   "How do I find travelers in my city?",
   "Tell me about city chatrooms",
-  "How do I earn Ambassador Points?"
+  "What is the Ambassador Program?"
 ];
 
 const PREBUILT_ANSWERS: Record<string, string> = {
-  "How do I create a quick meetup?": "Creating a quick meetup is easy! Go to the Quick Meetups section from your home page or navigation menu. Tap the '+' button, then either type a description like 'coffee at the pier in 2 hours' or use the voice input feature to speak your meetup idea. The AI will automatically fill in the details for you - just review and post!",
+  "How do I create a Let's Meet Now?": "Go to the 'Let's Meet Now' tab in the navigation. Tap the '+' button to create a spontaneous meetup. You can type or use voice input - be VERY SPECIFIC about where you'll be! Say something like 'I'm at Blue Bottle Coffee on Abbot Kinney for the next 2 hours, come say hi!' The expiration time means how long YOU'LL be there - it's not when to meet, it's your availability window.",
   
-  "What's the voice input feature?": "The voice input feature lets you create meetups by speaking naturally! Just tap the microphone icon when creating a quick meetup, then say something like 'Let's grab tacos at the food truck near the beach at 6pm.' The AI understands natural language and converts your words into a structured meetup with title, location, time, and notes.",
+  "What's the voice input feature?": "The voice input feature lets you create meetups by speaking naturally! Tap the microphone icon and describe EXACTLY where you are. Be super specific - include the venue name, street, or landmark. Example: 'I'm sitting at the patio of Urth Caffe on Melrose, I'll be here for the next hour, wearing a blue jacket.' The AI converts this into a meetup post.",
   
   "How do I find travelers in my city?": "To find travelers visiting your city, go to the Discover page and select your city. You'll see a list of travelers who are currently visiting or planning to visit. You can also use the Advanced Search to filter by interests, age, and more. Travelers with matching interests will appear at the top!",
   
   "Tell me about city chatrooms": "City chatrooms are group chats for everyone in a specific city! Each city has its own chatroom where locals and travelers can connect, share tips, and plan meetups. Find chatrooms in the Chatrooms tab - you'll automatically be added to your hometown chatroom and any city you're traveling to.",
   
-  "How do I earn Ambassador Points?": "You earn Ambassador Points by being active on the platform! Create events and meetups (+10 points), invite friends who sign up (+25 points), get connections (+5 points), and participate in chatrooms (+2 points per message, up to 20/day). Check your points on your profile - top ambassadors get special recognition!"
+  "What is the Ambassador Program?": "The Ambassador Program rewards active community members! You earn points by being engaged on the platform - creating events and meetups, inviting friends, making connections, and participating in chatrooms. Check your Ambassador status on your profile. Point values for specific activities are being finalized."
 };
 
 export function HelpChatbot() {
