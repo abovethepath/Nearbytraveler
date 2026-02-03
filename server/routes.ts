@@ -904,13 +904,24 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           })
         : '';
       
-      // Build description
-      const description = event.description 
-        ? event.description.substring(0, 200) + (event.description.length > 200 ? '...' : '')
+      // Build description with Nearby Traveler branding
+      const baseDescription = event.description 
+        ? event.description.substring(0, 150) + (event.description.length > 150 ? '...' : '')
         : `Join ${organizerName} for this event in ${event.city || 'a great location'}!`;
+      const description = `${baseDescription} | 🌍 Nearby Traveler`;
       
-      // Get event image or use default
-      const imageUrl = event.imageUrl || 'https://nearbytraveler.org/icon-512x512.png';
+      // Get event image - ensure it's an absolute URL
+      let imageUrl = 'https://nearbytraveler.org/new-logo.png';
+      if (event.imageUrl) {
+        // Make sure image URL is absolute
+        if (event.imageUrl.startsWith('http')) {
+          imageUrl = event.imageUrl;
+        } else if (event.imageUrl.startsWith('/')) {
+          imageUrl = `https://nearbytraveler.org${event.imageUrl}`;
+        } else {
+          imageUrl = `https://nearbytraveler.org/${event.imageUrl}`;
+        }
+      }
       
       // Build the full URL for canonical
       const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
@@ -928,7 +939,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="${fullUrl}" />
-  <meta property="og:title" content="${event.title}" />
+  <meta property="og:title" content="${event.title} | Nearby Traveler" />
   <meta property="og:description" content="${description.replace(/"/g, '&quot;')}" />
   <meta property="og:image" content="${imageUrl}" />
   <meta property="og:image:width" content="1200" />
@@ -938,7 +949,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:url" content="${fullUrl}" />
-  <meta name="twitter:title" content="${event.title}" />
+  <meta name="twitter:title" content="${event.title} | Nearby Traveler" />
   <meta name="twitter:description" content="${description.replace(/"/g, '&quot;')}" />
   <meta name="twitter:image" content="${imageUrl}" />
   
