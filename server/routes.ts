@@ -4733,7 +4733,9 @@ Questions? Just reply to this message!
               .select({
                 id: users.id,
                 username: users.username,
-                referralCount: users.referralCount
+                referralCount: users.referralCount,
+                aura: users.aura,
+                ambassadorPoints: users.ambassadorPoints
               })
               .from(users)
               .where(eq(users.referralCode, referralCode))
@@ -4744,7 +4746,9 @@ Questions? Just reply to this message!
                 .select({
                   id: users.id,
                   username: users.username,
-                  referralCount: users.referralCount
+                  referralCount: users.referralCount,
+                  aura: users.aura,
+                  ambassadorPoints: users.ambassadorPoints
                 })
                 .from(users)
                 .where(eq(users.username, referralCode))
@@ -4768,11 +4772,12 @@ Questions? Just reply to this message!
               await db.update(users)
                 .set({ 
                   referralCount: (referrer.referralCount || 0) + 1,
-                  aura: (referrer.aura || 0) + 10 // Award 10 aura points per referral signup
+                  aura: (referrer.aura || 0) + 10, // Award 10 aura points per referral signup
+                  ambassadorPoints: (referrer.ambassadorPoints || 0) + 10 // Award 10 ambassador points per referral
                 })
                 .where(eq(users.id, referrer.id));
 
-              console.log(`✅ BACKGROUND: Referral connection created: ${referrer.username} → ${user.username} (+10 aura points)`);
+              console.log(`✅ BACKGROUND: Referral connection created: ${referrer.username} → ${user.username} (+10 aura, +10 ambassador points)`);
             }
           } catch (error) {
             console.error('❌ BACKGROUND: Error processing referral:', error);
