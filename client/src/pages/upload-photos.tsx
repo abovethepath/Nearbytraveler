@@ -37,17 +37,15 @@ export default function UploadPhotos() {
     onSuccess: () => {
       toast({
         title: "Success!",
-        description: "Photo uploaded successfully",
+        description: "Photo uploaded! You can continue uploading or close when done.",
       });
       
       // Invalidate photos cache to refresh the gallery
       queryClient.invalidateQueries({ queryKey: ['/api/photos'] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/photos`] });
       
-      // Navigate back to profile page after successful upload
-      setTimeout(() => {
-        setLocation('/profile');
-      }, 1000); // Small delay to show the success toast
+      // Stay on the page - don't navigate away after upload
+      // User can continue uploading more photos or manually close/navigate when done
     },
     onError: (error: Error) => {
       toast({

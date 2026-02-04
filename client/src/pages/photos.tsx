@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import SmartPhotoGallery from "@/components/smart-photo-gallery";
+import { PhotoAlbumWidget } from "@/components/photo-album-widget";
 import Navbar from "@/components/navbar";
-import { X, ArrowLeft } from "lucide-react";
+import { X, ArrowLeft, FolderOpen, Images } from "lucide-react";
 import { useLocation } from "wouter";
 import { authStorage } from "@/lib/auth";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { User } from "@shared/schema";
 
 export default function Photos() {
@@ -66,9 +68,37 @@ export default function Photos() {
         </div>
       </div>
 
-      {/* Photo Gallery Content */}
-      <div className="container mx-auto px-4 py-8">
-        <SmartPhotoGallery userId={user.id} />
+      {/* Photo Gallery Content with Tabs */}
+      <div className="container mx-auto px-4 py-6">
+        <Tabs defaultValue="photos" className="w-full">
+          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-6">
+            <TabsTrigger value="photos" className="flex items-center gap-2">
+              <Images className="w-4 h-4" />
+              All Photos
+            </TabsTrigger>
+            <TabsTrigger value="memories" className="flex items-center gap-2">
+              <FolderOpen className="w-4 h-4" />
+              Travel Memories
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="photos">
+            <SmartPhotoGallery userId={user.id} />
+          </TabsContent>
+          
+          <TabsContent value="memories">
+            <div className="max-w-4xl mx-auto">
+              <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-1">What are Travel Memories?</h3>
+                <p className="text-sm text-blue-700 dark:text-blue-300">
+                  Organize your photos into albums with labels, dates, trip info, and tagged friends. 
+                  Create memories to share your travel experiences!
+                </p>
+              </div>
+              <PhotoAlbumWidget userId={user.id} isOwnProfile={true} />
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
