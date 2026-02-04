@@ -309,7 +309,7 @@ export default function SignupLocal() {
   const { min: minDate, max: maxDate } = getDateInputConstraints();
 
   return (
-    <div className="light min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
       {/* Vibrant header banner */}
       <div className="fixed top-0 left-0 right-0 bg-gradient-to-r from-blue-600 to-orange-500 py-3 px-4 text-center z-40 shadow-lg">
         <p className="text-white font-bold text-sm sm:text-base">
@@ -318,7 +318,7 @@ export default function SignupLocal() {
       </div>
       
       <div className="max-w-2xl mx-auto pt-16">
-        <Card className="shadow-2xl border-0 bg-white overflow-hidden">
+        <Card className="shadow-2xl border-0 bg-white dark:bg-gray-800 overflow-hidden">
           <CardHeader className="text-center bg-gradient-to-r from-blue-600 to-orange-500 pb-8 pt-6">
             <div className="flex justify-start mb-4">
               <Button
@@ -344,14 +344,14 @@ export default function SignupLocal() {
 
               {/* Personal Information */}
               <div className="space-y-4">
-                <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                  <span className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-sm font-bold">1</span>
+                <h3 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                  <span className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-300 text-sm font-bold">1</span>
                   Personal Information
                 </h3>
 
-                <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                  <Label className="text-gray-700 font-semibold">Date of Birth *</Label>
-                  <p className="text-sm text-gray-500 mb-3">
+                <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border border-gray-200 dark:border-gray-600">
+                  <Label className="text-gray-700 dark:text-gray-200 font-semibold">Date of Birth *</Label>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
                     Can be hidden from public view later
                   </p>
                   <Input
@@ -362,20 +362,20 @@ export default function SignupLocal() {
                     max={maxDate}
                     required
                     data-testid="input-dateOfBirth"
-                    className="w-full bg-white text-gray-900 border-gray-300 rounded-lg"
+                    className="w-full bg-white dark:bg-gray-600 text-gray-900 dark:text-white border-gray-300 dark:border-gray-500 rounded-lg"
                   />
                 </div>
               </div>
 
               {/* Hometown Information */}
               <div className="space-y-4">
-                <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                  <span className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-sm font-bold">2</span>
+                <h3 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                  <span className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-300 text-sm font-bold">2</span>
                   Where Do You Live?
                 </h3>
 
-                <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                  <Label className="text-gray-700 font-semibold mb-2 block">Your Hometown *</Label>
+                <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border border-gray-200 dark:border-gray-600">
+                  <Label className="text-gray-700 dark:text-gray-200 font-semibold mb-2 block">Your Hometown *</Label>
                   <SmartLocationInput
                     country={formData.hometownCountry}
                     city={formData.hometownCity}
@@ -393,8 +393,8 @@ export default function SignupLocal() {
                     data-testid="hometown-input"
                   />
                   {formData.hometownCity && (
-                    <div className="mt-3 p-3 bg-green-100 rounded-lg border border-green-300">
-                      <p className="text-sm text-green-800 font-medium">
+                    <div className="mt-3 p-3 bg-green-100 dark:bg-green-900/40 rounded-lg border border-green-300 dark:border-green-700">
+                      <p className="text-sm text-green-800 dark:text-green-200 font-medium">
                         ✅ Hometown: {formData.hometownCity}
                         {formData.hometownState && `, ${formData.hometownState}`}
                         {formData.hometownCountry && `, ${formData.hometownCountry}`}
@@ -404,7 +404,7 @@ export default function SignupLocal() {
                 </div>
 
                 {/* New to Town Checkbox */}
-                <div className="flex items-start space-x-3 p-4 bg-blue-50 rounded-xl border border-blue-200">
+                <div className="flex items-start space-x-3 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-xl border border-blue-200 dark:border-blue-700">
                   <Checkbox
                     id="isNewToTown"
                     checked={formData.isNewToTown}
@@ -415,11 +415,11 @@ export default function SignupLocal() {
                   <div className="flex-1">
                     <label
                       htmlFor="isNewToTown"
-                      className="text-sm font-semibold text-gray-800 cursor-pointer"
+                      className="text-sm font-semibold text-gray-800 dark:text-gray-200 cursor-pointer"
                     >
                       I'm new to {formData.hometownCity || 'this area'}
                     </label>
-                    <p className="text-xs text-gray-600 mt-1">
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                       Check this if you recently moved here and want to explore your new hometown
                     </p>
                   </div>
@@ -428,13 +428,13 @@ export default function SignupLocal() {
 
               {/* Top Choices */}
               <div className="space-y-4">
-                <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                  <span className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 text-sm font-bold">3</span>
+                <h3 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                  <span className="w-8 h-8 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center text-orange-600 dark:text-orange-300 text-sm font-bold">3</span>
                   Your Interests
                 </h3>
                 
-                <div className="flex items-center justify-between bg-orange-50 rounded-lg p-3 border border-orange-200">
-                  <span className="text-sm font-medium text-gray-700">
+                <div className="flex items-center justify-between bg-orange-50 dark:bg-orange-900/30 rounded-lg p-3 border border-orange-200 dark:border-orange-700">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
                     Select at least 7 to help us match you
                   </span>
                   <span className={`text-sm font-bold px-3 py-1 rounded-full ${
@@ -446,7 +446,7 @@ export default function SignupLocal() {
                   </span>
                 </div>
 
-                <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-4">
+                <div className="bg-white dark:bg-gray-700 p-4 rounded-xl border border-gray-200 dark:border-gray-600 shadow-sm space-y-4">
                   <InterestSelector
                     options={getHometownInterests()}
                     selected={formData.interests}
@@ -457,9 +457,9 @@ export default function SignupLocal() {
                   />
 
                   {/* Custom Interests Input */}
-                  <div className="pt-4 border-t border-gray-200">
-                    <Label className="text-gray-700 font-semibold">✨ Add Your Own (Optional)</Label>
-                    <p className="text-sm text-gray-500 mb-2">
+                  <div className="pt-4 border-t border-gray-200 dark:border-gray-600">
+                    <Label className="text-gray-700 dark:text-gray-200 font-semibold">✨ Add Your Own (Optional)</Label>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
                       Don't see what you're looking for? Add your own, separated by commas.
                     </p>
                     <Input
@@ -467,7 +467,7 @@ export default function SignupLocal() {
                       value={formData.customInterests}
                       onChange={(e) => setFormData(prev => ({ ...prev, customInterests: e.target.value }))}
                       placeholder="e.g., Rock Climbing, Vintage Shopping, Board Games"
-                      className="w-full bg-white border-gray-300"
+                      className="w-full bg-white dark:bg-gray-600 border-gray-300 dark:border-gray-500 dark:text-white"
                       data-testid="input-custom-interests"
                     />
                   </div>
@@ -475,28 +475,28 @@ export default function SignupLocal() {
               </div>
 
               {/* Community Pledge */}
-              <div className="bg-white p-5 rounded-xl border-2 border-blue-200 shadow-sm">
+              <div className="bg-white dark:bg-gray-700 p-5 rounded-xl border-2 border-blue-200 dark:border-blue-700 shadow-sm">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
                     <span className="text-2xl">🌍</span>
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-lg font-bold text-gray-800 mb-3">The NearbyTraveler Pledge</h3>
-                    <div className="space-y-2 text-gray-600 mb-4 text-sm">
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-3">The NearbyTraveler Pledge</h3>
+                    <div className="space-y-2 text-gray-600 dark:text-gray-300 mb-4 text-sm">
                       <p>✓ I believe in real human connection.</p>
                       <p>✓ I will show up with kindness, respect, and openness.</p>
                       <p>✓ I will help make this a safe, welcoming community.</p>
                     </div>
-                    <label className="flex items-start gap-3 cursor-pointer bg-gray-50 p-3 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
+                    <label className="flex items-start gap-3 cursor-pointer bg-gray-50 dark:bg-gray-600 p-3 rounded-lg border border-gray-200 dark:border-gray-500 hover:bg-gray-100 dark:hover:bg-gray-500 transition-colors">
                       <input
                         type="checkbox"
                         id="pledge-checkbox"
                         checked={formData.pledgeAccepted}
                         onChange={(e) => setFormData(prev => ({ ...prev, pledgeAccepted: e.target.checked }))}
-                        className="mt-0.5 w-5 h-5 text-blue-600 border-2 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                        className="mt-0.5 w-5 h-5 text-blue-600 border-2 border-gray-300 dark:border-gray-400 rounded focus:ring-blue-500 focus:ring-2"
                         data-testid="checkbox-pledge"
                       />
-                      <span className="text-sm font-medium text-gray-700">
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
                         I agree to the NearbyTraveler Pledge
                       </span>
                     </label>
