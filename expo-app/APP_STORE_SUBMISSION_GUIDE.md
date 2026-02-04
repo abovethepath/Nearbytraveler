@@ -183,10 +183,53 @@ Take screenshots of:
 
 ## Test Account for Apple Review
 
-Create a test account for Apple reviewers:
-- Email: appreview@nearbytraveler.org
-- Password: [create a secure password]
-- Make sure this account has some data (profile complete, connections, etc.)
+**IMPORTANT**: Nearby Traveler uses Replit Auth (OAuth), so Apple reviewers need Replit.com credentials to sign in.
+
+### Step 1: Create a Replit Account for Apple Review
+
+1. Go to https://replit.com
+2. Click "Sign Up"
+3. Create account with:
+   - **Email:** nearbytravelerreview@gmail.com (or your preferred email)
+   - **Password:** AppleReview2026!
+4. Verify the email address
+
+### Step 2: Sign Up on Nearby Traveler
+
+1. Go to https://nearbytraveler.org
+2. Click "Continue with Replit" 
+3. Sign in with the Replit account you just created
+4. Complete the signup as a "Traveler" type user
+5. Fill out the profile with:
+   - Name: Apple Reviewer
+   - Hometown: Los Angeles (or any LA metro city)
+   - Add a few interests
+   - Add a profile photo (optional but recommended)
+
+### Step 3: Add Some Activity (Recommended)
+
+To show Apple reviewers the full experience:
+- Create a test travel plan
+- Join a city chatroom
+- Browse some events
+
+### Step 4: Provide Credentials in App Store Connect
+
+In App Store Connect → App Review Information:
+
+- **Sign-In Required:** Yes
+- **Username:** nearbytravelerreview@gmail.com
+- **Password:** AppleReview2026!
+- **Review Notes:**
+```
+To sign in:
+1. Tap "Continue with Replit" button
+2. Enter the username and password above (these are Replit.com credentials)
+3. You'll be redirected back to the app after authentication
+
+The app connects travelers, locals, and businesses through location-based meetups. 
+Key features to test: Quick Meetups, City Chatrooms, Events, User Profiles.
+```
 
 ## Review Timeline
 
