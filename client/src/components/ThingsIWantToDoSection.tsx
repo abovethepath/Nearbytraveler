@@ -495,21 +495,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                     })}
 
                   </div>
-                ) : (
-                  isOwnProfile ? (
-                    <div className="py-3 px-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
-                      <p className="text-sm text-orange-700 dark:text-orange-300">
-                        <MapPin className="w-4 h-4 inline mr-1" />
-                        No activities or events selected yet for your trip to {cityName}.
-                      </p>
-                      <Link href={`/match-in-city?city=${encodeURIComponent(cityName)}`}>
-                        <span className="text-sm text-orange-600 dark:text-orange-400 underline hover:text-orange-700 cursor-pointer">
-                          Click here to plan what you want to do!
-                        </span>
-                      </Link>
-                    </div>
-                  ) : null
-                );
+                ) : null;
                 })()}
               </div>
             );
