@@ -2836,6 +2836,20 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       
       if (process.env.NODE_ENV === 'development') console.log(`CONNECTIONS FIXED: Found ${users.length} users for location: ${finalSearchLocation}, type: ${userType}`);
       
+      // STEALTH MODE: Filter out users who have hidden themselves from the current searcher
+      if (currentUserId && currentUserId > 0) {
+        const hiddenFromMe = await db.select({ userId: hiddenFromUsers.userId })
+          .from(hiddenFromUsers)
+          .where(eq(hiddenFromUsers.hiddenFromId, currentUserId));
+        
+        const hiddenUserIds = new Set(hiddenFromMe.map(h => h.userId));
+        if (hiddenUserIds.size > 0) {
+          const beforeCount = users.length;
+          users = users.filter(u => !hiddenUserIds.has(u.id));
+          if (process.env.NODE_ENV === 'development') console.log(`👻 STEALTH: Filtered ${beforeCount - users.length} hidden users from results`);
+        }
+      }
+      
       // Enrich users with travel status for airplane badge display
       const now = new Date();
       const enrichedUsers = await Promise.all(users.map(async (user) => {
@@ -20085,8 +20099,24 @@ Questions? Just reply to this message. Welcome aboard!
         console.log(`🎯 CITY MATCH: Sorted ${enhancedUsers.length} users by best fit (top: ${enhancedUsers[0]?.username || 'none'} with ${enhancedUsers[0]?.sharedCityPicksCount || 0} shared picks)`);
       }
 
+      // STEALTH MODE: Filter out users who have hidden themselves from the current searcher
+      let finalUsers = enhancedUsers;
+      if (userId) {
+        const currentUserId = parseInt(userId as string);
+        const hiddenFromMe = await db.select({ usrId: hiddenFromUsers.userId })
+          .from(hiddenFromUsers)
+          .where(eq(hiddenFromUsers.hiddenFromId, currentUserId));
+        
+        const hiddenUserIds = new Set(hiddenFromMe.map(h => h.usrId));
+        if (hiddenUserIds.size > 0) {
+          const beforeCount = finalUsers.length;
+          finalUsers = finalUsers.filter((u: any) => !hiddenUserIds.has(u.id));
+          if (process.env.NODE_ENV === 'development') console.log(`👻 STEALTH: Filtered ${beforeCount - finalUsers.length} hidden users from city match results`);
+        }
+      }
+
       const response = {
-        users: enhancedUsers.slice(0, 20), // Return top 20 matches
+        users: finalUsers.slice(0, 20), // Return top 20 matches
         events: relevantEvents,
         userInterestCount: userInterests.length,
         matchingSummary: {
