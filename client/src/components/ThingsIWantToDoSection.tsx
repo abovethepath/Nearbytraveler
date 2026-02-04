@@ -364,7 +364,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     return cities;
   }, [allActivities, allEvents, travelDestinations]);
 
-  // Sort cities: current trips first, then planned (future), then past trips last
+  // Sort cities: hometown first (no travel plan), then current trip, then planned, then past
   const cities = useMemo(() => {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -373,10 +373,10 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
       const aPlan = citiesByName[a].travelPlan;
       const bPlan = citiesByName[b].travelPlan;
       
-      // Cities without travel plans go last (but before past trips)
+      // Cities without travel plans (hometown) go FIRST
       if (!aPlan && !bPlan) return 0;
-      if (!aPlan) return 1;
-      if (!bPlan) return -1;
+      if (!aPlan) return -1;  // a is hometown, put first
+      if (!bPlan) return 1;   // b is hometown, put first
       
       const aStart = new Date(aPlan.startDate);
       const aEnd = new Date(aPlan.endDate);
@@ -391,7 +391,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
       const aIsCurrent = aStart <= now && aEnd >= now;
       const bIsCurrent = bStart <= now && bEnd >= now;
       
-      // Current trips first
+      // Current trips second (after hometown)
       if (aIsCurrent && !bIsCurrent) return -1;
       if (!aIsCurrent && bIsCurrent) return 1;
       
@@ -399,7 +399,12 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
       if (aIsPast && !bIsPast) return 1;
       if (!aIsPast && bIsPast) return -1;
       
-      // Within same category, sort by start date (earliest first)
+      // Within same category, sort by start date (earliest first for planned, latest first for past)
+      if (aIsPast && bIsPast) {
+        // Past trips: most recent first
+        return bEnd.getTime() - aEnd.getTime();
+      }
+      // Planned trips: earliest first
       return aStart.getTime() - bStart.getTime();
     });
   }, [citiesByName]);
