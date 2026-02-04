@@ -324,6 +324,7 @@ import ReferralWidget from "@/components/referral-widget";
 import { BlockUserButton } from "@/components/block-user-button";
 import { ReportUserButton } from "@/components/report-user-button";
 import { StealthToggle } from "@/components/stealth-toggle";
+import { StealthToggleInline } from "@/components/stealth-toggle-inline";
 
 
 
@@ -6676,6 +6677,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                           
                           {/* PRIVACY FIX: Connection notes are private - only the person who wrote them can see them */}
                           {/* Notes are NOT shown to others viewing this profile */}
+                          
+                          {/* Stealth Mode Toggle - Hide yourself from this contact */}
+                          {isOwnProfile && connection.connectedUser?.id && (
+                            <StealthToggleInline 
+                              targetUserId={connection.connectedUser.id}
+                              targetUsername={connection.connectedUser.username}
+                            />
+                          )}
                         </div>
 
                         {/* Show the button on ≥sm only; on mobile the whole tile is tappable */}
