@@ -359,21 +359,26 @@ if (process.env.REDIS_URL) {
   console.log('⚠️ Redis: No REDIS_URL configured - using in-memory session store');
 }
 
-// Detect if we're in production
-const isProduction = process.env.NODE_ENV === 'production';
+// Detect if we're in production - check multiple indicators
+// This MUST match the logout routes detection to ensure cookie secure flags match
+const isProduction = process.env.NODE_ENV === 'production' || 
+                    process.env.REPL_SLUG !== undefined ||
+                    process.env.REPLIT_DEV_DOMAIN !== undefined;
 
 // Debug session config
 console.log('🍪 Session config:', {
   isProduction,
   nodeEnv: process.env.NODE_ENV,
+  replSlug: process.env.REPL_SLUG ? 'set' : 'unset',
   hasRedis: !!redis,
   cookieSecure: isProduction
 });
 
 // Trust proxy for secure cookies behind Render's reverse proxy / load balancer
-if (process.env.NODE_ENV === "production") {
+// Also trust proxy on Replit since it uses HTTPS
+if (isProduction) {
   app.set("trust proxy", 1);
-  console.log('🔒 Trust proxy enabled for production');
+  console.log('🔒 Trust proxy enabled for production/Replit');
 }
 
 app.use(session({
