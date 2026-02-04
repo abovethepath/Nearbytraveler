@@ -499,7 +499,10 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                   <div className="py-3 px-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
                     <p className="text-sm text-orange-700 dark:text-orange-300">
                       <MapPin className="w-4 h-4 inline mr-1" />
-                      No activities or events selected yet for your trip to {cityName}.
+                      {isOwnProfile 
+                        ? `No activities or events selected yet for your trip to ${cityName}.`
+                        : `No activities or events selected yet for this trip.`
+                      }
                     </p>
                     {isOwnProfile && (
                       <Link href={`/match-in-city?city=${encodeURIComponent(cityName)}`}>
