@@ -1164,11 +1164,27 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   // Logout route - supports both GET and POST
   app.get("/api/logout", (req, res) => {
     console.log("🔐 Logout GET");
-    (req as any).session.destroy((err: any) => {
+    
+    // Detect production environment
+    const isProduction = process.env.NODE_ENV === 'production' || 
+                        process.env.REPL_SLUG !== undefined ||
+                        (req.headers.host && !req.headers.host.includes('localhost'));
+    
+    const cookieOpts = { 
+      path: "/", 
+      sameSite: "lax" as const, 
+      secure: isProduction, 
+      httpOnly: true,
+      maxAge: 0
+    };
+    
+    res.clearCookie("nt.sid", cookieOpts);
+    res.clearCookie("connect.sid", cookieOpts);
+    
+    (req as any).session?.destroy((err: any) => {
       if (err) {
         console.error("Session destroy error:", err);
       }
-      res.clearCookie("connect.sid");
       res.redirect("/");
     });
   });
@@ -1177,11 +1193,16 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   app.post("/api/auth/logout", (req, res) => {
     console.log("🔐 Logout POST - session:", (req as any).sessionID);
     
+    // Detect production environment
+    const isProduction = process.env.NODE_ENV === 'production' || 
+                        process.env.REPL_SLUG !== undefined ||
+                        (req.headers.host && !req.headers.host.includes('localhost'));
+    
     // Clear cookie with EXACT same settings as session middleware
     const cookieOpts = { 
       path: "/", 
       sameSite: "lax" as const, 
-      secure: false, 
+      secure: isProduction, 
       httpOnly: true,
       maxAge: 0 // Force expiration
     };
@@ -20748,11 +20769,16 @@ Questions? Just reply to this message. Welcome aboard!
   app.post("/api/logout", (req, res) => {
     console.log('🚪 Server /api/logout called for session:', req.sessionID);
     
+    // Detect production environment
+    const isProduction = process.env.NODE_ENV === 'production' || 
+                        process.env.REPL_SLUG !== undefined ||
+                        (req.headers.host && !req.headers.host.includes('localhost'));
+    
     // Clear cookie with EXACT same settings as session middleware
     const cookieOpts = { 
       path: "/", 
       sameSite: "lax" as const, 
-      secure: false, 
+      secure: isProduction, 
       httpOnly: true,
       maxAge: 0 // Force expiration
     };
