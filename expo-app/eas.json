@@ -19,7 +19,8 @@
     "production": {
       "distribution": "store",
       "ios": {
-        "resourceClass": "m-medium"
+        "resourceClass": "m-medium",
+        "image": "macos-sonoma-14.6-xcode-16.0"
       },
       "android": {
         "buildType": "app-bundle"
