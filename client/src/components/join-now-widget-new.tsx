@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { MapPin, Plane, Store, Check } from "lucide-react";
 
 export default function JoinNowWidgetNew() {
   const [, setLocation] = useLocation();
@@ -35,85 +35,111 @@ export default function JoinNowWidgetNew() {
     setLocation('/signup/account');
   };
 
+  const userTypes = [
+    {
+      type: "local",
+      icon: MapPin,
+      title: "Nearby Local",
+      subtitle: "I live here & want to meet travelers",
+      color: "blue",
+      gradient: "from-blue-500 to-blue-600",
+      bgLight: "bg-blue-50",
+      borderColor: "border-blue-500",
+      ringColor: "ring-blue-300",
+    },
+    {
+      type: "traveler",
+      icon: Plane,
+      title: "Nearby Traveler",
+      subtitle: "I'm traveling & want to connect",
+      color: "orange",
+      gradient: "from-orange-500 to-orange-600",
+      bgLight: "bg-orange-50",
+      borderColor: "border-orange-500",
+      ringColor: "ring-orange-300",
+    },
+    {
+      type: "business",
+      icon: Store,
+      title: "Nearby Business",
+      subtitle: "I run a local business",
+      color: "teal",
+      gradient: "from-teal-500 to-teal-600",
+      bgLight: "bg-teal-50",
+      borderColor: "border-teal-500",
+      ringColor: "ring-teal-300",
+    },
+  ];
+
   return (
-    <div className="space-y-3">
-      {/* User Type Selection - 3 Types */}
-      <div className="space-y-2">
-        <Label className="text-sm md:text-base font-semibold text-gray-900 dark:text-white">I am a...</Label>
-        <div className="space-y-2.5">
-          {/* Local */}
-          <button
-            onClick={() => handleUserTypeClick("local")}
-            type="button"
-            className={`w-full cursor-pointer rounded-lg p-3.5 text-center transition-all border-2 border-l-4 ${
-              userType === "local" 
-                ? "border-blue-600 border-l-blue-600 bg-blue-50 dark:bg-blue-900 dark:border-blue-400 dark:border-l-blue-400 shadow-xl scale-[1.02] ring-2 ring-blue-200 dark:ring-blue-800" 
-                : "border-gray-300 dark:border-gray-600 border-l-blue-500 dark:border-l-blue-400 hover:border-blue-400 dark:hover:border-blue-500 bg-blue-50/30 dark:bg-blue-900/20 hover:shadow-lg"
-            }`}
-            data-testid="button-select-local"
-          >
-            <div className={`text-base md:text-lg font-bold mb-1 ${userType === "local" ? "text-blue-900 dark:text-white" : "text-gray-900 dark:text-white"}`}>
-              Nearby Local
-            </div>
-            <div className={`text-xs md:text-sm ${userType === "local" ? "text-blue-700 dark:text-blue-100" : "text-gray-600 dark:text-gray-400"}`}>
-              Not Traveling Now
-            </div>
-          </button>
-
-          {/* Traveler */}
-          <button
-            onClick={() => handleUserTypeClick("traveler")}
-            type="button"
-            className={`w-full cursor-pointer rounded-lg p-3.5 text-center transition-all border-2 border-l-4 ${
-              userType === "traveler" 
-                ? "border-orange-600 border-l-orange-600 bg-orange-50 dark:bg-orange-900 dark:border-orange-400 dark:border-l-orange-400 shadow-xl scale-[1.02] ring-2 ring-orange-200 dark:ring-orange-800" 
-                : "border-gray-300 dark:border-gray-600 border-l-orange-500 dark:border-l-orange-400 hover:border-orange-400 dark:hover:border-orange-500 bg-orange-50/30 dark:bg-orange-900/20 hover:shadow-lg"
-            }`}
-            data-testid="button-select-traveler"
-          >
-            <div className={`text-base md:text-lg font-bold mb-1 ${userType === "traveler" ? "text-orange-900 dark:text-white" : "text-gray-900 dark:text-white"}`}>
-              Nearby Traveler
-            </div>
-            <div className={`text-xs md:text-sm ${userType === "traveler" ? "text-orange-700 dark:text-orange-100" : "text-gray-600 dark:text-gray-400"}`}>
-              Currently Traveling
-            </div>
-          </button>
-
-          {/* Business */}
-          <button
-            onClick={() => handleUserTypeClick("business")}
-            type="button"
-            className={`w-full cursor-pointer rounded-lg p-3.5 text-center transition-all border-2 border-l-4 ${
-              userType === "business" 
-                ? "border-teal-600 border-l-teal-600 bg-teal-50 dark:bg-teal-900 dark:border-teal-400 dark:border-l-teal-400 shadow-xl scale-[1.02] ring-2 ring-teal-200 dark:ring-teal-800" 
-                : "border-gray-300 dark:border-gray-600 border-l-teal-500 dark:border-l-teal-400 hover:border-teal-400 dark:hover:border-teal-500 bg-teal-50/30 dark:bg-teal-900/20 hover:shadow-lg"
-            }`}
-            data-testid="button-select-business"
-          >
-            <div className={`text-base md:text-lg font-bold mb-1 ${userType === "business" ? "text-teal-900 dark:text-white" : "text-gray-900 dark:text-white"}`}>
-              Nearby Business
-            </div>
-            <div className={`text-xs md:text-sm ${userType === "business" ? "text-teal-700 dark:text-teal-100" : "text-gray-600 dark:text-gray-400"}`}>
-              Local Business Owner
-            </div>
-          </button>
-        </div>
+    <div className="space-y-5">
+      <p className="text-center text-gray-600 font-medium text-sm">
+        Choose how you want to connect
+      </p>
+      
+      <div className="space-y-3">
+        {userTypes.map(({ type, icon: Icon, title, subtitle, gradient, bgLight, borderColor, ringColor }) => {
+          const isSelected = userType === type;
+          
+          return (
+            <button
+              key={type}
+              onClick={() => handleUserTypeClick(type)}
+              type="button"
+              className={`
+                w-full relative overflow-hidden rounded-xl p-4 text-left transition-all duration-200
+                flex items-center gap-4
+                ${isSelected 
+                  ? `bg-gradient-to-r ${gradient} text-white shadow-lg scale-[1.02] ring-4 ${ringColor}` 
+                  : `${bgLight} border-2 ${borderColor} hover:shadow-md hover:scale-[1.01]`
+                }
+              `}
+              data-testid={`button-select-${type}`}
+            >
+              <div className={`
+                flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center
+                ${isSelected 
+                  ? "bg-white/20" 
+                  : `bg-gradient-to-br ${gradient}`
+                }
+              `}>
+                <Icon className={`w-6 h-6 ${isSelected ? "text-white" : "text-white"}`} />
+              </div>
+              
+              <div className="flex-grow">
+                <div className={`text-lg font-bold ${isSelected ? "text-white" : "text-gray-900"}`}>
+                  {title}
+                </div>
+                <div className={`text-sm ${isSelected ? "text-white/90" : "text-gray-600"}`}>
+                  {subtitle}
+                </div>
+              </div>
+              
+              {isSelected && (
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/30 flex items-center justify-center">
+                  <Check className="w-5 h-5 text-white" />
+                </div>
+              )}
+            </button>
+          );
+        })}
       </div>
 
-      <div className="mt-4">
-        <Button
-          onClick={handleContinue}
-          type="button"
-          className={`w-full py-2.5 text-base font-medium border-2 transition-all ${
-            userType 
-              ? "bg-orange-600 hover:bg-orange-700 dark:bg-orange-500 dark:hover:bg-orange-600 text-white border-orange-600 dark:border-orange-500 shadow-lg scale-[1.02] animate-pulse" 
-              : "bg-gray-300 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-700 cursor-not-allowed"
-          }`}
-          data-testid="button-continue"
-        >
-          Continue →
-        </Button>
-      </div>
+      <Button
+        onClick={handleContinue}
+        type="button"
+        disabled={!userType}
+        className={`
+          w-full py-6 text-lg font-semibold rounded-xl transition-all duration-200
+          ${userType 
+            ? "bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl hover:scale-[1.02]" 
+            : "bg-gray-200 text-gray-400 cursor-not-allowed"
+          }
+        `}
+        data-testid="button-continue"
+      >
+        {userType ? "Continue →" : "Select an option to continue"}
+      </Button>
     </div>
   );
 }
