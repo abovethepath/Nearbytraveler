@@ -398,7 +398,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                     </h3>
                     {cityData.travelPlan && (
                       <span className="text-xs text-gray-500 dark:text-gray-400">
-                        (Trip planned)
+                        ({new Date(cityData.travelPlan.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(cityData.travelPlan.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })})
                       </span>
                     )}
                   </div>
@@ -496,22 +496,19 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
 
                   </div>
                 ) : (
-                  <div className="py-3 px-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
-                    <p className="text-sm text-orange-700 dark:text-orange-300">
-                      <MapPin className="w-4 h-4 inline mr-1" />
-                      {isOwnProfile 
-                        ? `No activities or events selected yet for your trip to ${cityName}.`
-                        : `No activities or events selected yet for this trip.`
-                      }
-                    </p>
-                    {isOwnProfile && (
+                  isOwnProfile ? (
+                    <div className="py-3 px-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
+                      <p className="text-sm text-orange-700 dark:text-orange-300">
+                        <MapPin className="w-4 h-4 inline mr-1" />
+                        No activities or events selected yet for your trip to {cityName}.
+                      </p>
                       <Link href={`/match-in-city?city=${encodeURIComponent(cityName)}`}>
                         <span className="text-sm text-orange-600 dark:text-orange-400 underline hover:text-orange-700 cursor-pointer">
                           Click here to plan what you want to do!
                         </span>
                       </Link>
-                    )}
-                  </div>
+                    </div>
+                  ) : null
                 );
                 })()}
               </div>
