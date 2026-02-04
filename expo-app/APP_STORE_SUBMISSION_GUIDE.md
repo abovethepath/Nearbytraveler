@@ -190,7 +190,7 @@ Take screenshots of:
 1. Go to https://replit.com
 2. Click "Sign Up"
 3. Create account with:
-   - **Email:** nearbytravelerreview@gmail.com (or your preferred email)
+   - **Email:** [use an email you control, e.g., yourname+applereview@gmail.com]
    - **Password:** AppleReview2026!
 4. Verify the email address
 
@@ -218,7 +218,7 @@ To show Apple reviewers the full experience:
 In App Store Connect → App Review Information:
 
 - **Sign-In Required:** Yes
-- **Username:** nearbytravelerreview@gmail.com
+- **Username:** [the email you used to create the Replit account]
 - **Password:** AppleReview2026!
 - **Review Notes:**
 ```
