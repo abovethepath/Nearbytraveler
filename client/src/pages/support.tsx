@@ -110,7 +110,7 @@ export default function SupportPage() {
 
         <div className="text-center text-gray-500 dark:text-gray-400">
           <p className="mb-4">
-            Nearby Traveler, Inc. &copy; 2025
+            Nearby Traveler, Inc. &copy; 2026
           </p>
           <div className="flex justify-center gap-6">
             <a 
