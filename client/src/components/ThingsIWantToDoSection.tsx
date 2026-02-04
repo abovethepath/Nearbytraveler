@@ -364,7 +364,45 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     return cities;
   }, [allActivities, allEvents, travelDestinations]);
 
-  const cities = useMemo(() => Object.keys(citiesByName), [citiesByName]);
+  // Sort cities: current trips first, then planned (future), then past trips last
+  const cities = useMemo(() => {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    
+    return Object.keys(citiesByName).sort((a, b) => {
+      const aPlan = citiesByName[a].travelPlan;
+      const bPlan = citiesByName[b].travelPlan;
+      
+      // Cities without travel plans go last (but before past trips)
+      if (!aPlan && !bPlan) return 0;
+      if (!aPlan) return 1;
+      if (!bPlan) return -1;
+      
+      const aStart = new Date(aPlan.startDate);
+      const aEnd = new Date(aPlan.endDate);
+      const bStart = new Date(bPlan.startDate);
+      const bEnd = new Date(bPlan.endDate);
+      
+      aEnd.setHours(23, 59, 59, 999);
+      bEnd.setHours(23, 59, 59, 999);
+      
+      const aIsPast = aEnd < now;
+      const bIsPast = bEnd < now;
+      const aIsCurrent = aStart <= now && aEnd >= now;
+      const bIsCurrent = bStart <= now && bEnd >= now;
+      
+      // Current trips first
+      if (aIsCurrent && !bIsCurrent) return -1;
+      if (!aIsCurrent && bIsCurrent) return 1;
+      
+      // Past trips last
+      if (aIsPast && !bIsPast) return 1;
+      if (!aIsPast && bIsPast) return -1;
+      
+      // Within same category, sort by start date (earliest first)
+      return aStart.getTime() - bStart.getTime();
+    });
+  }, [citiesByName]);
 
   if (loadingCityActivities || loadingJoinedEvents || loadingEventInterests || loadingTravelPlans) {
     return (
