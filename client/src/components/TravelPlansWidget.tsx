@@ -68,17 +68,51 @@ export default function TravelPlansWidget({ userId, isOwnProfile = false }: Trav
     return acc;
   }, []);
 
-  // Helper functions to categorize travel plans
+  // Helper functions to categorize travel plans - use DATES only, not status field
+  // This ensures trips automatically show as "current" when dates begin
   const isCurrentlyTraveling = (plan: TripPlan) => {
+    if (!plan.startDate || !plan.endDate) return false;
     const now = new Date();
-    const startDate = new Date(plan.startDate);
-    const endDate = new Date(plan.endDate);
-    return now >= startDate && now <= endDate && plan.status === 'active';
+    now.setHours(0, 0, 0, 0);
+    
+    // Timezone-safe date parsing
+    const parseDate = (dateString: string | Date): Date => {
+      if (!dateString) return new Date();
+      const inputString = typeof dateString === 'string' ? dateString : dateString.toISOString();
+      const parts = inputString.split('T')[0].split('-');
+      if (parts.length === 3) {
+        return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+      }
+      return new Date(dateString);
+    };
+    
+    const startDate = parseDate(plan.startDate);
+    const endDate = parseDate(plan.endDate);
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(23, 59, 59, 999);
+    
+    return now >= startDate && now <= endDate;
   };
 
   const isPastTravel = (plan: TripPlan) => {
+    if (!plan.endDate) return plan.status === 'completed';
     const now = new Date();
-    const endDate = new Date(plan.endDate);
+    now.setHours(0, 0, 0, 0);
+    
+    // Timezone-safe date parsing
+    const parseDate = (dateString: string | Date): Date => {
+      if (!dateString) return new Date();
+      const inputString = typeof dateString === 'string' ? dateString : dateString.toISOString();
+      const parts = inputString.split('T')[0].split('-');
+      if (parts.length === 3) {
+        return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+      }
+      return new Date(dateString);
+    };
+    
+    const endDate = parseDate(plan.endDate);
+    endDate.setHours(23, 59, 59, 999);
+    
     return now > endDate || plan.status === 'completed';
   };
 
