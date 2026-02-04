@@ -751,6 +751,16 @@ export const blockedUsers = pgTable("blocked_users", {
   unique().on(table.blockerId, table.blockedId), // Prevent duplicate blocks
 ]);
 
+// Stealth mode - temporarily hide from specific users (soft privacy, not a block)
+export const hiddenFromUsers = pgTable("hidden_from_users", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(), // User who wants to be hidden
+  hiddenFromId: integer("hidden_from_id").notNull(), // User they want to hide from
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  unique().on(table.userId, table.hiddenFromId), // Prevent duplicates
+]);
+
 // User reports for safety/moderation
 export const userReports = pgTable("user_reports", {
   id: serial("id").primaryKey(),
@@ -838,6 +848,13 @@ export const insertBlockedUserSchema = createInsertSchema(blockedUsers).omit({
   id: true,
   blockedAt: true,
 });
+
+export const insertHiddenFromUserSchema = createInsertSchema(hiddenFromUsers).omit({
+  id: true,
+  createdAt: true,
+});
+export type HiddenFromUser = typeof hiddenFromUsers.$inferSelect;
+export type InsertHiddenFromUser = z.infer<typeof insertHiddenFromUserSchema>;
 
 export const insertUserPhotoSchema = createInsertSchema(userPhotos).omit({
   id: true,

@@ -323,6 +323,7 @@ import BusinessEventsWidget from "@/components/business-events-widget";
 import ReferralWidget from "@/components/referral-widget";
 import { BlockUserButton } from "@/components/block-user-button";
 import { ReportUserButton } from "@/components/report-user-button";
+import { StealthToggle } from "@/components/stealth-toggle";
 
 
 
@@ -6740,6 +6741,25 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 </Card>
               )}
             </div>
+            )}
+
+            {/* Stealth Mode Toggle - Hide yourself from this person's searches */}
+            {!isOwnProfile && currentUser && user && (
+              <Card className="border border-purple-200 dark:border-purple-800 bg-white dark:bg-gray-900">
+                <CardHeader className="pb-2">
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <EyeOff className="w-5 h-5 text-purple-500" />
+                    Privacy Settings
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <StealthToggle
+                    userId={currentUser.id}
+                    targetUserId={user.id}
+                    targetUsername={user.username}
+                  />
+                </CardContent>
+              </Card>
             )}
 
             {/* Reference Widget - Show for other users' profiles (no connection required) */}

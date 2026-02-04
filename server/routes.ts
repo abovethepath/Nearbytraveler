@@ -62,6 +62,7 @@ import {
   userEventInterests,
   vouches,
   blockedUsers,
+  hiddenFromUsers,
   userReports,
   insertWaitlistLeadSchema,
   userPhotos,
@@ -7053,6 +7054,127 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error) {
       console.error("❌ Error unblocking user:", error);
       res.status(500).json({ error: "Failed to unblock user" });
+    }
+  });
+
+  // ============ STEALTH MODE - Hide from specific users ============
+
+  // POST /api/users/hide - Hide yourself from a specific user (stealth mode)
+  app.post("/api/users/hide", async (req, res) => {
+    try {
+      const { hiddenFromId } = req.body;
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      if (!hiddenFromId || hiddenFromId === userId) {
+        return res.status(400).json({ error: "Valid user ID required" });
+      }
+
+      // Check if already hidden from this user
+      const existing = await db.select()
+        .from(hiddenFromUsers)
+        .where(and(
+          eq(hiddenFromUsers.userId, userId),
+          eq(hiddenFromUsers.hiddenFromId, hiddenFromId)
+        ))
+        .limit(1);
+
+      if (existing.length > 0) {
+        return res.json({ success: true, message: "Already hidden from this user" });
+      }
+
+      await db.insert(hiddenFromUsers).values({
+        userId,
+        hiddenFromId
+      });
+
+      console.log(`👻 STEALTH: User ${userId} is now hidden from user ${hiddenFromId}`);
+
+      res.json({ success: true, message: "You are now hidden from this user" });
+    } catch (error) {
+      console.error("❌ Error hiding from user:", error);
+      res.status(500).json({ error: "Failed to hide from user" });
+    }
+  });
+
+  // GET /api/users/hidden - Get list of users you're hidden from
+  app.get("/api/users/hidden", async (req, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const hiddenList = await db.select({
+        id: hiddenFromUsers.id,
+        hiddenFromId: hiddenFromUsers.hiddenFromId,
+        createdAt: hiddenFromUsers.createdAt,
+        username: users.username,
+        name: users.name,
+        profileImage: users.profileImage
+      })
+      .from(hiddenFromUsers)
+      .innerJoin(users, eq(hiddenFromUsers.hiddenFromId, users.id))
+      .where(eq(hiddenFromUsers.userId, userId));
+
+      res.json(hiddenList);
+    } catch (error) {
+      console.error("❌ Error fetching hidden users:", error);
+      res.status(500).json({ error: "Failed to fetch hidden users" });
+    }
+  });
+
+  // GET /api/users/hidden/:targetUserId - Check if hidden from a specific user
+  app.get("/api/users/hidden/:targetUserId", async (req, res) => {
+    try {
+      const targetUserId = parseInt(req.params.targetUserId);
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      const hidden = await db.select()
+        .from(hiddenFromUsers)
+        .where(and(
+          eq(hiddenFromUsers.userId, userId),
+          eq(hiddenFromUsers.hiddenFromId, targetUserId)
+        ))
+        .limit(1);
+
+      res.json({ isHidden: hidden.length > 0 });
+    } catch (error) {
+      console.error("❌ Error checking hidden status:", error);
+      res.status(500).json({ error: "Failed to check hidden status" });
+    }
+  });
+
+  // DELETE /api/users/hide/:targetUserId - Unhide yourself from a user
+  app.delete("/api/users/hide/:targetUserId", async (req, res) => {
+    try {
+      const targetUserId = parseInt(req.params.targetUserId);
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+
+      if (!userId) {
+        return res.status(401).json({ error: "Authentication required" });
+      }
+
+      await db.delete(hiddenFromUsers)
+        .where(and(
+          eq(hiddenFromUsers.userId, userId),
+          eq(hiddenFromUsers.hiddenFromId, targetUserId)
+        ));
+
+      console.log(`👁 VISIBLE: User ${userId} is now visible to user ${targetUserId}`);
+
+      res.json({ success: true, message: "You are now visible to this user" });
+    } catch (error) {
+      console.error("❌ Error unhiding from user:", error);
+      res.status(500).json({ error: "Failed to unhide from user" });
     }
   });
 
