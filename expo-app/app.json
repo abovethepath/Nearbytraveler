@@ -68,7 +68,7 @@
         "projectId": "your-eas-project-id"
       }
     },
-    "owner": "nearbytraveler",
+    "owner": "abovethepath",
     "runtimeVersion": {
       "policy": "sdkVersion"
     },
