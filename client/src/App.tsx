@@ -141,6 +141,7 @@ import AccountSuccess from "@/pages/account-success";
 import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
 import Cookies from "@/pages/cookies";
+import SupportPage from "@/pages/support";
 import CommunityGuidelines from "@/pages/community-guidelines";
 import ProfilePageResponsive from "@/pages/ProfilePageResponsive";
 import EventsListResponsive from "@/pages/EventsListResponsive";
@@ -777,6 +778,9 @@ function Router() {
       }
       if (location === '/community-guidelines') {
         return <CommunityGuidelines />;
+      }
+      if (location === '/support') {
+        return <SupportPage />;
       }
       if (location === '/profile-responsive') {
         return <ProfilePageResponsive />;
