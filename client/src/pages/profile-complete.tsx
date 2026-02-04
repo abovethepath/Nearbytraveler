@@ -4494,12 +4494,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       onMouseDown={(e) => {
                         console.log("EDIT MOUSEDOWN - Button mousedown");
                       }}
-                      className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md border-0 ${isProfileIncomplete() ? 'bg-red-100 hover:bg-red-200 border-red-400 text-red-700' : 'bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white'}`}
+                      className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md border-0 ${isProfileIncomplete() ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white'}`}
                       style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto', cursor: 'pointer' }}
                       data-testid="button-edit-profile"
                     >
-                      <Edit2 className={`w-4 h-4 ${isProfileIncomplete() ? 'text-red-700' : 'text-white'}`} />
-                      <span className={`hidden sm:inline ${isProfileIncomplete() ? 'text-red-700' : 'text-white'}`}>Edit Profile</span>
+                      <Edit2 className="w-4 h-4 text-white" />
+                      <span className="hidden sm:inline text-white">Edit Profile</span>
                     </button>
                   )}
                 </div>
