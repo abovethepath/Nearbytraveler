@@ -56,6 +56,7 @@ import EnhancedDiscovery from "@/components/EnhancedDiscovery";
 
 import BusinessesGrid from "@/components/BusinessesGrid";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
+import { MeetupAlertBanner } from "@/components/MeetupAlertBanner";
 import { ContextualEventRecommendations } from "@/components/ContextualEventRecommendations";
 import CityMap from "@/components/CityMap";
 import PeopleDiscoveryWidget from "@/components/PeopleDiscoveryWidget";
@@ -1849,6 +1850,11 @@ export default function Home() {
           
           {/* Main Content - Center column */}
           <div className="col-span-1 lg:col-span-2 space-y-3 sm:space-y-4 md:space-y-8 min-w-0 relative">
+
+            {/* Meetup Alert Banner - Shows when there are new meetups nearby */}
+            {effectiveUser?.id && effectiveUser?.userType !== 'business' && (
+              <MeetupAlertBanner userId={effectiveUser.id} />
+            )}
 
             {/* Glass Morphism Content Panel - Now in FRONT of orbs with lighter backdrop */}
             <div className="relative z-10 backdrop-blur-sm bg-white/60 dark:bg-gray-900/60 rounded-3xl p-4 sm:p-6 border border-white/30 dark:border-gray-700/30 shadow-2xl">

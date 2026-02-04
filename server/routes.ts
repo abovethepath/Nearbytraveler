@@ -6497,6 +6497,72 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // ============ NOTIFICATIONS API ============
+
+  // GET user notifications
+  app.get("/api/notifications/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId || '0');
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+
+      const userNotifications = await db.select()
+        .from(notifications)
+        .where(eq(notifications.userId, userId))
+        .orderBy(desc(notifications.createdAt))
+        .limit(50);
+
+      return res.json(userNotifications);
+    } catch (error: any) {
+      console.error("Error fetching notifications:", error);
+      return res.status(500).json({ message: "Failed to fetch notifications" });
+    }
+  });
+
+  // Mark notification as read
+  app.put("/api/notifications/:id/read", async (req, res) => {
+    try {
+      const notificationId = parseInt(req.params.id || '0');
+      if (isNaN(notificationId)) {
+        return res.status(400).json({ message: "Invalid notification ID" });
+      }
+
+      const [updated] = await db.update(notifications)
+        .set({ isRead: true })
+        .where(eq(notifications.id, notificationId))
+        .returning();
+
+      if (!updated) {
+        return res.status(404).json({ message: "Notification not found" });
+      }
+
+      return res.json({ success: true, notification: updated });
+    } catch (error: any) {
+      console.error("Error marking notification as read:", error);
+      return res.status(500).json({ message: "Failed to update notification" });
+    }
+  });
+
+  // Mark all notifications as read for a user
+  app.put("/api/notifications/:userId/read-all", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId || '0');
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+
+      await db.update(notifications)
+        .set({ isRead: true })
+        .where(eq(notifications.userId, userId));
+
+      return res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error marking all notifications as read:", error);
+      return res.status(500).json({ message: "Failed to update notifications" });
+    }
+  });
+
 
 
   // CRITICAL: Get all users endpoint with FULL SEARCH FILTERING and LA Metro consolidation
@@ -14965,6 +15031,44 @@ Questions? Just reply to this message. Welcome aboard!
       // Award 1 aura point for creating a quick meet
       await awardAuraPoints(parseInt(userId as string || '0'), 1, 'creating a quick meet');
       
+      // NOTIFY users in the same city about the new quick meetup
+      try {
+        const organizerUser = await storage.getUser(parseInt(userId as string || '0'));
+        if (organizerUser && newMeetup.city) {
+          // Find users in the same city (excluding organizer)
+          const cityUsers = await db.select({ id: users.id })
+            .from(users)
+            .where(and(
+              or(
+                eq(users.hometownCity, newMeetup.city),
+                eq(users.destinationCity, newMeetup.city)
+              ),
+              ne(users.id, parseInt(userId as string || '0'))
+            ))
+            .limit(100);
+          
+          if (cityUsers.length > 0) {
+            const organizerName = organizerUser.name?.split(' ')[0] || organizerUser.username;
+            console.log(`📣 Notifying ${cityUsers.length} users in ${newMeetup.city} about new quick meetup`);
+            
+            // Create notifications for each user in the city
+            for (const cityUser of cityUsers) {
+              await storage.createNotification({
+                userId: cityUser.id,
+                fromUserId: parseInt(userId as string || '0'),
+                type: 'quick_meetup_nearby',
+                title: `New Quick Meetup in ${newMeetup.city}!`,
+                message: `${organizerName} wants to meet: "${newMeetup.title}" at ${newMeetup.meetingPoint}`,
+                data: JSON.stringify({ meetupId: newMeetup.id, city: newMeetup.city }),
+              });
+            }
+          }
+        }
+      } catch (notifyError) {
+        console.error('Error sending meetup notifications:', notifyError);
+        // Don't fail the request if notifications fail
+      }
+      
       res.json(newMeetup);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error creating quick meet:", error);
@@ -15239,6 +15343,25 @@ Questions? Just reply to this message. Welcome aboard!
       // Join the meetup
       const result = await storage.joinQuickMeetup(meetupId, parseInt(userId as string || '0'));
       if (process.env.NODE_ENV === 'development') console.log(`✅ USER ${userId} SUCCESSFULLY JOINED QUICK MEET ${meetupId}`);
+      
+      // NOTIFY the organizer that someone joined their meetup
+      try {
+        const joiningUser = await storage.getUser(parseInt(userId as string || '0'));
+        if (joiningUser && meetup.organizerId !== parseInt(userId as string || '0')) {
+          const joinerName = joiningUser.name?.split(' ')[0] || joiningUser.username;
+          await storage.createNotification({
+            userId: meetup.organizerId,
+            fromUserId: parseInt(userId as string || '0'),
+            type: 'quick_meetup_joined',
+            title: `Someone joined your meetup!`,
+            message: `${joinerName} wants to join "${meetup.title}" at ${meetup.meetingPoint}`,
+            data: JSON.stringify({ meetupId: meetup.id, joinerId: parseInt(userId as string || '0') }),
+          });
+          console.log(`📣 Notified organizer ${meetup.organizerId} that user ${userId} joined their meetup`);
+        }
+      } catch (notifyError) {
+        console.error('Error sending join notification:', notifyError);
+      }
       
       return res.json({ success: true, result });
     } catch (error: any) {

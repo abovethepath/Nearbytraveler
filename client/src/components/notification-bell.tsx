@@ -1,6 +1,5 @@
-import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Bell, MessageCircle, UserPlus } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Bell, MessageCircle, UserPlus, Zap, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -11,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useLocation } from "wouter";
+import { apiRequest } from "@/lib/queryClient";
 
 interface NotificationBellProps {
   userId: number;
@@ -37,17 +37,26 @@ interface Message {
   isRead?: boolean;
 }
 
+interface Notification {
+  id: number;
+  userId: number;
+  fromUserId?: number;
+  type: string;
+  title: string;
+  message: string;
+  data?: string;
+  isRead: boolean;
+  createdAt: string;
+}
+
 export default function NotificationBell({ userId }: NotificationBellProps) {
   const [, setLocation] = useLocation();
+  const queryClient = useQueryClient();
 
   // Fetch pending connection requests
   const { data: connectionRequests = [] } = useQuery<ConnectionRequest[]>({
     queryKey: [`/api/connections/${userId}/requests`],
     enabled: !!userId,
-    select: (data) => {
-      console.log('Connection requests received:', data);
-      return data;
-    }
   });
 
   // Fetch messages to count unread ones
@@ -56,18 +65,46 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
     enabled: !!userId,
   });
 
-  // Count unread messages (messages where current user is receiver and isRead is false)
+  // Fetch general notifications (including meetup notifications)
+  const { data: notifications = [] } = useQuery<Notification[]>({
+    queryKey: [`/api/notifications/${userId}`],
+    enabled: !!userId,
+    refetchInterval: 30000,
+  });
+
+  // Mark notification as read
+  const markAsReadMutation = useMutation({
+    mutationFn: async (notificationId: number) => {
+      return await apiRequest('PUT', `/api/notifications/${notificationId}/read`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/notifications/${userId}`] });
+    },
+  });
+
+  // Count unread messages
   const unreadMessages = messages.filter(
     (message) => message.receiverId === userId && !message.isRead
   );
 
-  const totalNotifications = connectionRequests.length + unreadMessages.length;
+  // Filter unread meetup notifications
+  const meetupNotifications = notifications.filter(
+    (n) => !n.isRead && (n.type === 'quick_meetup_nearby' || n.type === 'quick_meetup_joined')
+  );
 
-  const handleBellClick = () => {
-    if (connectionRequests.length > 0) {
-      setLocation("/profile");
-    } else if (unreadMessages.length > 0) {
-      setLocation("/messages");
+  const totalNotifications = connectionRequests.length + unreadMessages.length + meetupNotifications.length;
+
+  const handleMeetupNotificationClick = (notification: Notification) => {
+    markAsReadMutation.mutate(notification.id);
+    try {
+      const data = notification.data ? JSON.parse(notification.data) : {};
+      if (data.meetupId) {
+        setLocation(`/quick-meetups?id=${data.meetupId}`);
+      } else {
+        setLocation('/quick-meetups');
+      }
+    } catch {
+      setLocation('/quick-meetups');
     }
   };
 
@@ -87,7 +124,7 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
           )}
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-80 bg-white dark:bg-gray-900">
+      <DropdownMenuContent align="end" className="w-80 bg-white dark:bg-gray-900 max-h-96 overflow-y-auto">
         <DropdownMenuLabel className="text-gray-900 dark:text-white">Notifications</DropdownMenuLabel>
         <DropdownMenuSeparator />
         
@@ -97,6 +134,38 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
           </div>
         ) : (
           <>
+            {/* Quick Meetup Notifications - Show first for urgency */}
+            {meetupNotifications.map((notification) => (
+              <DropdownMenuItem
+                key={notification.id}
+                className="cursor-pointer p-3 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                onClick={() => handleMeetupNotificationClick(notification)}
+              >
+                <div className="flex items-center gap-3 w-full">
+                  {notification.type === 'quick_meetup_nearby' ? (
+                    <Zap className="w-4 h-4 text-orange-500 flex-shrink-0" />
+                  ) : (
+                    <Users className="w-4 h-4 text-green-500 flex-shrink-0" />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      {notification.title}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-300 truncate">
+                      {notification.message}
+                    </p>
+                  </div>
+                  <Badge variant="secondary" className="ml-auto bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
+                    New
+                  </Badge>
+                </div>
+              </DropdownMenuItem>
+            ))}
+            
+            {meetupNotifications.length > 0 && (connectionRequests.length > 0 || unreadMessages.length > 0) && (
+              <DropdownMenuSeparator />
+            )}
+
             {/* Connection Requests */}
             {connectionRequests.length > 0 && (
               <>
