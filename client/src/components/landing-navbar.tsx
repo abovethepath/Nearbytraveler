@@ -59,11 +59,11 @@ export default function LandingNavbar() {
               Sign In
             </button>
             <button 
-              onClick={() => setLocation('/signup/account')}
+              onClick={() => setLocation('/launching-soon')}
               className="navbar-btn-black-text px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out whitespace-nowrap border-2"
               style={{ backgroundColor: '#fb923c', borderColor: '#fb923c' }}
             >
-              Sign Up Free
+              Join Waitlist
             </button>
           </div>
 
@@ -150,12 +150,12 @@ export default function LandingNavbar() {
               <button 
                 onClick={() => {
                   setMobileMenuOpen(false);
-                  setLocation('/signup/account');
+                  setLocation('/launching-soon');
                 }}
                 className="navbar-btn-black-text text-center px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 active:scale-95 shadow-lg touch-manipulation mb-2 border-2"
                 style={{ backgroundColor: '#fb923c', borderColor: '#fb923c' }}
               >
-                Sign Up Free
+                Join Waitlist
               </button>
               <button 
                 onClick={() => {
