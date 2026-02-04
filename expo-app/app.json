@@ -6,9 +6,10 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
+    "scheme": "nearbytraveler",
     "splash": {
       "image": "./assets/splash.png",
-      "resizeMode": "contain",
+      "resizeMode": "cover",
       "backgroundColor": "#F97316"
     },
     "assetBundlePatterns": [
@@ -17,9 +18,17 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.nearbytraveler.app",
+      "buildNumber": "1",
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "Nearby Traveler needs your location to show nearby travelers and events.",
-        "NSLocationAlwaysAndWhenInUseUsageDescription": "Nearby Traveler needs your location to notify you when friends are nearby."
+        "NSLocationWhenInUseUsageDescription": "Nearby Traveler uses your location to connect you with nearby travelers, locals, and events in your area.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Nearby Traveler uses your location to notify you when friends are nearby and to suggest relevant local experiences.",
+        "NSCameraUsageDescription": "Nearby Traveler uses your camera to take profile photos and share travel memories.",
+        "NSPhotoLibraryUsageDescription": "Nearby Traveler accesses your photos to let you upload profile pictures and travel memories.",
+        "NSMicrophoneUsageDescription": "Nearby Traveler uses your microphone for voice input when creating quick meetups.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "config": {
+        "usesNonExemptEncryption": false
       }
     },
     "android": {
@@ -28,9 +37,13 @@
         "backgroundColor": "#F97316"
       },
       "package": "com.nearbytraveler.app",
+      "versionCode": 1,
       "permissions": [
         "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION"
+        "ACCESS_COARSE_LOCATION",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "RECORD_AUDIO"
       ]
     },
     "plugins": [
@@ -44,14 +57,24 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Nearby Traveler needs your location to notify you when friends are nearby."
+          "locationAlwaysAndWhenInUsePermission": "Nearby Traveler uses your location to notify you when friends are nearby and to suggest relevant local experiences."
         }
-      ]
+      ],
+      "expo-camera",
+      "expo-image-picker"
     ],
     "extra": {
       "eas": {
-        "projectId": "your-project-id"
+        "projectId": "your-eas-project-id"
       }
+    },
+    "owner": "nearbytraveler",
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/your-eas-project-id"
     }
   }
 }
