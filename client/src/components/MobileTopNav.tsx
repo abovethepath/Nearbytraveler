@@ -182,21 +182,23 @@ export function MobileTopNav() {
       {/* Menu Portal - Rendered at body level for proper z-index */}
       {isOpen && createPortal(
         <>
-          {/* Backdrop */}
+          {/* Backdrop - only close on click, not on scroll/touch move */}
           <div
             className="fixed inset-0 bg-black/50 z-[10001] md:hidden"
-            style={{ touchAction: 'auto' }}
-            onTouchEnd={(e) => { e.preventDefault(); setIsOpen(false); }}
+            style={{ touchAction: 'none' }}
             onClick={() => setIsOpen(false)}
           />
 
-          {/* Slide-out Menu Panel */}
+          {/* Slide-out Menu Panel - allow vertical scrolling */}
           <nav
-            className="fixed top-0 left-0 bottom-0 w-72 max-w-[85vw] bg-white dark:bg-gray-900 z-[10002] shadow-xl md:hidden overflow-y-auto"
+            className="fixed top-0 left-0 bottom-0 w-72 max-w-[85vw] bg-white dark:bg-gray-900 z-[10002] shadow-xl md:hidden overflow-y-auto overscroll-contain"
             style={{
               animation: 'slideInLeft 0.25s ease-out',
+              touchAction: 'pan-y',
+              WebkitOverflowScrolling: 'touch',
             }}
             onClick={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
           >
             {/* Menu Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
