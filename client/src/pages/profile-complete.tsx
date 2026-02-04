@@ -7097,26 +7097,16 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 {(user?.referralCount && user.referralCount > 0) && (
                   <Card className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200 dark:border-green-700">
                     <CardContent className="py-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                            <Users className="w-5 h-5 text-white" />
-                          </div>
-                          <div>
-                            <p className="text-sm text-green-700 dark:text-green-300 font-medium">Community Builder</p>
-                            <p className="text-lg font-bold text-green-800 dark:text-green-200">
-                              {user.referralCount} {user.referralCount === 1 ? 'person' : 'people'} referred
-                            </p>
-                          </div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                          <Users className="w-5 h-5 text-white" />
                         </div>
-                        {(user.aura && user.aura > 0) && (
-                          <div className="text-right">
-                            <p className="text-xs text-purple-600 dark:text-purple-400 font-medium">Aura Points</p>
-                            <p className="text-2xl font-bold text-purple-700 dark:text-purple-300">
-                              {user.aura}
-                            </p>
-                          </div>
-                        )}
+                        <div>
+                          <p className="text-sm text-green-700 dark:text-green-300 font-medium">Community Builder</p>
+                          <p className="text-lg font-bold text-green-800 dark:text-green-200">
+                            {user.referralCount} {user.referralCount === 1 ? 'person' : 'people'} referred
+                          </p>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>

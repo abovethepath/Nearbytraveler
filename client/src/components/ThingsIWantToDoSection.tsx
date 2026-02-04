@@ -102,19 +102,28 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     gcTime: 1000 * 60 * 10, // 10 minutes
   });
 
-  // Get destination cities from travel plans (active/planned trips)
+  // Get destination cities from travel plans (all trips - we'll mark past ones)
   const travelDestinations = useMemo(() => {
     if (!Array.isArray(travelPlans)) return [];
     
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    
     return travelPlans
-      .filter((plan: TravelPlan) => plan.status === 'planned' || plan.status === 'active')
-      .map((plan: TravelPlan) => ({
-        cityName: plan.destinationCity || plan.destination,
-        tripId: plan.id,
-        startDate: plan.startDate,
-        endDate: plan.endDate,
-        fullDestination: plan.destination
-      }))
+      .map((plan: TravelPlan) => {
+        const endDate = new Date(plan.endDate);
+        endDate.setHours(23, 59, 59, 999);
+        const isPast = endDate < now;
+        
+        return {
+          cityName: plan.destinationCity || plan.destination,
+          tripId: plan.id,
+          startDate: plan.startDate,
+          endDate: plan.endDate,
+          fullDestination: plan.destination,
+          isPast
+        };
+      })
       .filter((dest, index, self) => 
         index === self.findIndex(d => d.cityName === dest.cityName)
       );
@@ -293,7 +302,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
 
   // Group by city with metro consolidation - memoized to prevent infinite re-renders
   const citiesByName = useMemo(() => {
-    const cities: Record<string, { activities: UserActivity[], events: UserEvent[], travelPlan?: { cityName: string; tripId: number; startDate: string; endDate: string; fullDestination: string } }> = {};
+    const cities: Record<string, { activities: UserActivity[], events: UserEvent[], travelPlan?: { cityName: string; tripId: number; startDate: string; endDate: string; fullDestination: string; isPast: boolean } }> = {};
 
     allActivities.forEach(activity => {
       const consolidatedCity = consolidateCity(activity.cityName);
@@ -385,15 +394,17 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
         <div className={`${isMobile ? 'space-y-4' : 'space-y-6'}`}>
           {cities.map((cityName) => {
             const cityData = citiesByName[cityName];
+            const isPastTrip = cityData.travelPlan?.isPast || false;
+            
             return (
-              <div key={cityName}>
+              <div key={cityName} className={isPastTrip ? 'opacity-50' : ''}>
                 {/* City Header */}
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     {cityData.travelPlan && (
-                      <Plane className="w-5 h-5 text-orange-500" />
+                      <Plane className={`w-5 h-5 ${isPastTrip ? 'text-gray-400' : 'text-orange-500'}`} />
                     )}
-                    <h3 className="font-semibold text-blue-600 dark:text-blue-400 text-xl">
+                    <h3 className={`font-semibold text-xl ${isPastTrip ? 'text-gray-500 dark:text-gray-500' : 'text-blue-600 dark:text-blue-400'}`}>
                       {cityName}
                     </h3>
                     {cityData.travelPlan && (
@@ -401,9 +412,14 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                         ({new Date(cityData.travelPlan.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {new Date(cityData.travelPlan.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })})
                       </span>
                     )}
+                    {isPastTrip && (
+                      <Badge variant="outline" className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border-gray-300 dark:border-gray-600">
+                        Past
+                      </Badge>
+                    )}
                   </div>
                   <div className="flex items-center gap-2">
-                    {isOwnProfile && (
+                    {isOwnProfile && !isPastTrip && (
                       <Link href={`/match-in-city?city=${encodeURIComponent(cityName)}`}>
                         <Button
                           variant="outline"
@@ -421,11 +437,14 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                         variant="ghost"
                         size="sm"
                         onClick={() => deleteCity(cityName)}
-                        className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
-                        title={`Remove all from ${cityName}`}
+                        className={isPastTrip 
+                          ? "text-gray-500 hover:text-red-400 hover:bg-red-900/20 border border-gray-400 dark:border-gray-600" 
+                          : "text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                        }
+                        title={isPastTrip ? `Clear past trip to ${cityName}` : `Remove all from ${cityName}`}
                       >
                         <Trash2 className="w-4 h-4 mr-1" />
-                        <span className="text-sm">Remove</span>
+                        <span className="text-sm">{isPastTrip ? 'Clear' : 'Remove'}</span>
                       </Button>
                     )}
                   </div>
