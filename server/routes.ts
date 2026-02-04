@@ -4766,10 +4766,13 @@ Questions? Just reply to this message!
               });
 
               await db.update(users)
-                .set({ referralCount: (referrer.referralCount || 0) + 1 })
+                .set({ 
+                  referralCount: (referrer.referralCount || 0) + 1,
+                  aura: (referrer.aura || 0) + 10 // Award 10 aura points per referral signup
+                })
                 .where(eq(users.id, referrer.id));
 
-              console.log(`✅ BACKGROUND: Referral connection created: ${referrer.username} → ${user.username}`);
+              console.log(`✅ BACKGROUND: Referral connection created: ${referrer.username} → ${user.username} (+10 aura points)`);
             }
           } catch (error) {
             console.error('❌ BACKGROUND: Error processing referral:', error);
