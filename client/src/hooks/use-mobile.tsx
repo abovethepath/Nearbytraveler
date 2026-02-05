@@ -3,6 +3,8 @@ import * as React from "react"
 const MOBILE_BREAKPOINT = 768
 const TABLET_BREAKPOINT = 1024
 const LARGE_TABLET_BREAKPOINT = 1366
+const IPAD_PRO_13_WIDTH = 1024  // iPad Pro 13" portrait width
+const IPAD_PRO_13_HEIGHT = 1366 // iPad Pro 13" portrait height
 
 export function useIsMobile() {
   const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)
