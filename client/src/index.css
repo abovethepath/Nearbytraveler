@@ -208,6 +208,129 @@ body {
   }
 }
 
+/* iPad/Tablet Responsive Fixes (768px - 1366px) */
+@media (min-width: 768px) and (max-width: 1366px) {
+  /* Ensure content fills iPad screens properly */
+  html, body, #root {
+    width: 100% !important;
+    max-width: 100vw !important;
+    min-height: 100vh !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* Make containers responsive for tablets */
+  .container {
+    max-width: 100% !important;
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+  }
+  
+  /* Ensure grids adapt to tablet widths */
+  .grid {
+    gap: 1.5rem !important;
+  }
+  
+  /* Fix hero sections for iPad */
+  .hero-section,
+  [class*="hero"],
+  .min-h-screen {
+    width: 100% !important;
+    max-width: 100vw !important;
+  }
+  
+  /* Ensure cards fill space properly on tablets */
+  .card,
+  [class*="card"] {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* Fix fixed navigation for tablets */
+  nav[class*="fixed"],
+  .mobile-top-nav,
+  .mobile-bottom-nav {
+    width: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+  }
+  
+  /* Ensure modals/dialogs center on tablets */
+  [role="dialog"],
+  .dialog,
+  [class*="Dialog"] {
+    max-width: 90vw !important;
+  }
+  
+  /* Fix flex layouts for tablets */
+  .flex-col.md\\:flex-row {
+    flex-direction: row !important;
+  }
+  
+  /* Ensure images scale properly */
+  img, video {
+    max-width: 100% !important;
+    height: auto !important;
+    object-fit: cover !important;
+  }
+  
+  /* Fix sidebars for tablet view */
+  aside,
+  .sidebar {
+    width: 100% !important;
+    max-width: 320px !important;
+  }
+  
+  /* Ensure buttons don't overflow */
+  button,
+  [role="button"],
+  a[class*="button"] {
+    max-width: 100% !important;
+    white-space: normal !important;
+  }
+  
+  /* Fix text sizing for readability on tablets */
+  h1 {
+    font-size: clamp(1.75rem, 4vw, 2.5rem) !important;
+  }
+  
+  h2 {
+    font-size: clamp(1.5rem, 3.5vw, 2rem) !important;
+  }
+  
+  /* Ensure form inputs are properly sized */
+  input,
+  select,
+  textarea {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
+
+/* Large iPad/iPad Pro specific (1024px - 1366px) */
+@media (min-width: 1024px) and (max-width: 1366px) {
+  /* Larger padding for bigger tablets */
+  .container {
+    padding-left: 3rem !important;
+    padding-right: 3rem !important;
+  }
+  
+  /* Optimize grid for larger tablets */
+  .grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  
+  .grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+  
+  /* Better sidebar width for large tablets */
+  aside,
+  .sidebar {
+    max-width: 380px !important;
+  }
+}
+
 /* Fix common mobile overflow culprits */
 @media (max-width: 768px) {
   .container, main, section, article, div, nav, header, footer {

@@ -6,7 +6,8 @@ import {
   StatusBar, 
   ActivityIndicator,
   BackHandler,
-  Platform
+  Platform,
+  Dimensions
 } from 'react-native';
 import { WebView } from 'react-native-webview';
 import * as SplashScreen from 'expo-splash-screen';
@@ -16,16 +17,52 @@ SplashScreen.preventAutoHideAsync();
 
 const WEBSITE_URL = 'https://nearbytraveler.org';
 
+// JavaScript to inject for proper viewport and responsive handling
+const INJECTED_JAVASCRIPT = `
+  (function() {
+    // Ensure viewport meta is set correctly for tablets/iPads
+    let viewport = document.querySelector('meta[name="viewport"]');
+    if (!viewport) {
+      viewport = document.createElement('meta');
+      viewport.name = 'viewport';
+      document.head.appendChild(viewport);
+    }
+    viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+    
+    // Add class to indicate we're in a native app wrapper
+    document.documentElement.classList.add('native-app-wrapper');
+    document.body.classList.add('native-app-wrapper');
+    
+    // Detect if running on iPad and add class
+    const isIPad = /iPad|Macintosh/.test(navigator.userAgent) && 'ontouchend' in document;
+    if (isIPad || window.innerWidth >= 768) {
+      document.documentElement.classList.add('tablet-device');
+      document.body.classList.add('tablet-device');
+    }
+    
+    // Force layout recalculation on orientation change
+    window.addEventListener('orientationchange', function() {
+      document.body.style.display = 'none';
+      setTimeout(function() {
+        document.body.style.display = '';
+      }, 10);
+    });
+    
+    true;
+  })();
+`;
+
 export default function App() {
   const webViewRef = useRef(null);
   const [isLoading, setIsLoading] = useState(true);
   const [canGoBack, setCanGoBack] = useState(false);
+  const [dimensions, setDimensions] = useState(Dimensions.get('window'));
 
   useEffect(() => {
-    // Hide splash screen after app loads
-    const hideSplash = async () => {
-      await SplashScreen.hideAsync();
-    };
+    // Handle dimension changes (rotation, multitasking)
+    const subscription = Dimensions.addEventListener('change', ({ window }) => {
+      setDimensions(window);
+    });
     
     // Handle Android back button
     if (Platform.OS === 'android') {
@@ -37,8 +74,13 @@ export default function App() {
         return false;
       });
       
-      return () => backHandler.remove();
+      return () => {
+        backHandler.remove();
+        subscription?.remove();
+      };
     }
+    
+    return () => subscription?.remove();
   }, [canGoBack]);
 
   const handleLoadEnd = () => {
@@ -57,9 +99,12 @@ export default function App() {
       <WebView
         ref={webViewRef}
         source={{ uri: WEBSITE_URL }}
-        style={styles.webview}
+        style={[styles.webview, { width: dimensions.width, height: dimensions.height }]}
         onLoadEnd={handleLoadEnd}
         onNavigationStateChange={handleNavigationStateChange}
+        
+        // Inject JavaScript for responsive handling
+        injectedJavaScript={INJECTED_JAVASCRIPT}
         
         // Performance optimizations
         javaScriptEnabled={true}
@@ -72,6 +117,10 @@ export default function App() {
         
         // iOS specific
         allowsBackForwardNavigationGestures={true}
+        
+        // Scaling for iPad
+        scalesPageToFit={true}
+        contentMode="mobile"
         
         // Geolocation
         geolocationEnabled={true}
