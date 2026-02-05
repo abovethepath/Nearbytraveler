@@ -52,7 +52,7 @@ export const users = pgTable("users", {
   // UNIFIED FIELDS - New approach: Single fields for all contexts
   activities: text("activities").array(), // All user activities (replaces localActivities + defaultTravelActivities)
   customActivities: text("custom_activities"), // User's custom activities as comma-separated string
-  subInterests: text("subInterests").array(), // Sub-interests for detailed matching
+  subInterests: text("sub_interests").array(), // Sub-interests for detailed matching
   events: text("events").array(), // All user events (replaces localEvents + defaultTravelEvents)
   customEvents: text("custom_events"), // User's custom events as comma-separated string
   
