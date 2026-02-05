@@ -19,11 +19,12 @@ import {
   DropdownMenuSeparator 
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getApiBaseUrl, queryClient } from "@/lib/queryClient";
 import Logo from "@/components/logo";
 import Navbar from "@/components/navbar";
 import type { Event } from "@shared/schema";
 import SmartLocationInput from "@/components/SmartLocationInput";
+import { Search } from "lucide-react";
 
 // Custom hook to update page meta tags for better sharing
 const useEventMeta = (event: any) => {
@@ -89,6 +90,10 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
   const [newTag, setNewTag] = useState("");
   const [imagePreview, setImagePreview] = useState<string>("");
   const [uploadingImage, setUploadingImage] = useState(false);
+  
+  const [coOrgSearchTerm, setCoOrgSearchTerm] = useState("");
+  const [coOrgSearchResults, setCoOrgSearchResults] = useState<any[]>([]);
+  const [coOrgSearching, setCoOrgSearching] = useState(false);
   
   // Social media posting states
   const [postingToInstagram, setPostingToInstagram] = useState(false);
@@ -236,6 +241,64 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
       toast({
         title: "Update Failed",
         description: "Failed to update participant role. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const searchCoOrganizer = async (term: string) => {
+    if (!term || term.length < 2) {
+      setCoOrgSearchResults([]);
+      return;
+    }
+    setCoOrgSearching(true);
+    try {
+      const apiBase = getApiBaseUrl();
+      const response = await fetch(`${apiBase}/api/search-users?search=${encodeURIComponent(term)}&currentUserId=${currentUser?.id}`);
+      if (response.ok) {
+        const data = await response.json();
+        const existingIds = new Set([
+          event?.organizerId,
+          ...participants.map((p: any) => p.userId)
+        ]);
+        setCoOrgSearchResults((data.users || data || []).filter((u: any) => !existingIds.has(u.id)).slice(0, 5));
+      }
+    } catch (error) {
+      console.error('Error searching users:', error);
+    } finally {
+      setCoOrgSearching(false);
+    }
+  };
+
+  const addCoOrgByUserMutation = useMutation({
+    mutationFn: async (userId: number) => {
+      const joinRes = await apiRequest("POST", `/api/events/${eventId}/join`, {
+        userId,
+        status: 'going',
+        notes: 'Added as co-organizer'
+      });
+      if (!joinRes.ok) throw new Error("Failed to add user to event");
+      
+      const roleRes = await apiRequest("PATCH", `/api/events/${eventId}/participants/${userId}/role`, {
+        role: 'co-organizer',
+        requesterId: currentUser?.id
+      });
+      if (!roleRes.ok) throw new Error("Failed to set co-organizer role");
+      return roleRes.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Co-Organizer Added",
+        description: "User has been added as a co-organizer for this event",
+      });
+      setCoOrgSearchTerm("");
+      setCoOrgSearchResults([]);
+      queryClient.invalidateQueries({ queryKey: [`/api/events/${eventId}/participants`] });
+    },
+    onError: () => {
+      toast({
+        title: "Failed to Add",
+        description: "Could not add user as co-organizer. They may already be a participant.",
         variant: "destructive",
       });
     },
@@ -787,10 +850,58 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                 </div>
               )}
               
+              {/* Search by Username */}
+              <div className="space-y-2">
+                <Label>Add by Username</Label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+                  <Input
+                    placeholder="Search by username..."
+                    value={coOrgSearchTerm}
+                    onChange={(e) => {
+                      setCoOrgSearchTerm(e.target.value);
+                      searchCoOrganizer(e.target.value);
+                    }}
+                    className="pl-10"
+                  />
+                </div>
+                {coOrgSearching && (
+                  <p className="text-sm text-gray-500">Searching...</p>
+                )}
+                {coOrgSearchResults.length > 0 && (
+                  <div className="space-y-1 max-h-48 overflow-y-auto">
+                    {coOrgSearchResults.map((user: any) => (
+                      <div key={user.id} className="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          {user.profileImage ? (
+                            <img src={user.profileImage} alt="" className="w-8 h-8 rounded-full object-cover" />
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                              <Users className="w-4 h-4" />
+                            </div>
+                          )}
+                          <span className="font-medium">{user.username}</span>
+                        </div>
+                        <Button
+                          size="sm"
+                          onClick={() => addCoOrgByUserMutation.mutate(user.id)}
+                          disabled={addCoOrgByUserMutation.isPending}
+                        >
+                          {addCoOrgByUserMutation.isPending ? "Adding..." : "Add"}
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {coOrgSearchTerm.length >= 2 && !coOrgSearching && coOrgSearchResults.length === 0 && (
+                  <p className="text-sm text-gray-500 italic">No users found matching "{coOrgSearchTerm}"</p>
+                )}
+              </div>
+
               {/* Promote Participants to Co-Organizer */}
-              {regularParticipants.length > 0 ? (
+              {regularParticipants.length > 0 && (
                 <div className="space-y-2">
-                  <Label>Add from Participants</Label>
+                  <Label>Add from Existing Participants</Label>
                   <div className="max-h-48 overflow-y-auto space-y-1">
                     {regularParticipants.map((participant: any) => (
                       <div key={participant.userId} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
@@ -819,10 +930,6 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                     ))}
                   </div>
                 </div>
-              ) : (
-                <p className="text-sm text-gray-500 italic">
-                  No participants yet. Once people join your event, you can promote them to co-organizers here.
-                </p>
               )}
             </CardContent>
           </Card>

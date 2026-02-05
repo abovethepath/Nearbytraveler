@@ -774,22 +774,11 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                     {isPrimaryOrganizer ? "You're organizing this event" : "You're co-organizing this event"}
                   </p>
                   
-                  {/* Organizer status - show current status with change option */}
                   {isParticipant ? (
                     <>
                       <Badge className="w-full justify-center py-2 mb-2 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                        ✓ {participantStatus === 'going' ? 'Going' : 'Interested'} ({isPrimaryOrganizer ? 'Organizer' : 'Co-Organizer'})
+                        ✓ Going ({isPrimaryOrganizer ? 'Organizer' : 'Co-Organizer'})
                       </Badge>
-                      {/* Allow organizer/co-organizer to upgrade to Going if they're just Interested */}
-                      {participantStatus === 'interested' && (
-                        <button
-                          onClick={() => joinEventMutation.mutate('going')}
-                          className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline mb-3 w-full text-center"
-                          disabled={joinEventMutation.isPending}
-                        >
-                          {joinEventMutation.isPending ? "Updating..." : "Change to Going"}
-                        </button>
-                      )}
                     </>
                   ) : (
                     /* If organizer somehow isn't in participant list, show button to add them */
