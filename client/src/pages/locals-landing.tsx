@@ -63,7 +63,7 @@ export default function LocalsLanding() {
         <Button 
           onClick={() => {
             trackEvent('signup_cta_click', 'locals_landing', 'floating_join_now');
-            setLocation('/launching-soon');
+            setLocation('/signup');
           }}
           className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 sm:px-6 sm:py-3 rounded-lg shadow-sm transition-all duration-200 text-sm sm:text-base"
           data-testid="button-floating-join-now"
@@ -96,7 +96,7 @@ export default function LocalsLanding() {
                   <Button
                     onClick={() => {
                       trackEvent('signup_cta_click', 'locals_landing', 'main_cta');
-                      setLocation('/launching-soon');
+                      setLocation('/signup');
                     }}
                     size="lg"
                     className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
@@ -387,7 +387,7 @@ export default function LocalsLanding() {
           {/* Another CTA */}
           <div className="text-center mt-16">
             <Button
-              onClick={() => setLocation('/launching-soon')}
+              onClick={() => setLocation('/signup')}
               size="lg"
               className="bg-blue-500 hover:bg-blue-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               style={{
@@ -414,7 +414,7 @@ BECOME A NEARBY LOCAL NOW
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center mb-8">
             <Button
-              onClick={() => setLocation('/launching-soon')}
+              onClick={() => setLocation('/signup')}
               size="lg"
               className="bg-blue-500 hover:bg-blue-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
               style={{

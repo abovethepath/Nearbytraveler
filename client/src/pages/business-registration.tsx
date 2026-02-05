@@ -84,7 +84,7 @@ export default function BusinessRegistration() {
       }));
     } else {
       // Redirect back to auth if no basic data
-      window.location.href = "/launching-soon";
+      window.location.href = "/signup";
     }
   }, []);
 

@@ -429,7 +429,7 @@ export default function BusinessLanding() {
             <Button
               onClick={() => {
                 trackEvent('signup_cta_click', 'business_landing', 'pricing_claim_beta');
-                setLocation('/launching-soon');
+                setLocation('/signup');
               }}
               size="lg"
               className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold text-xl px-12 py-4 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-200"
@@ -456,7 +456,7 @@ export default function BusinessLanding() {
           <Button
             onClick={() => {
               trackEvent('signup_cta_click', 'business_landing', 'final_cta_claim_beta');
-              setLocation('/launching-soon');
+              setLocation('/signup');
             }}
             size="lg"
             variant="ghost"

@@ -19,7 +19,7 @@ export default function NetworkingLanding() {
         <Button 
           onClick={() => {
             trackEvent('signup_cta_click', 'networking_landing', 'floating_join_now');
-            setLocation('/launching-soon');
+            setLocation('/signup');
           }}
           className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
         >
@@ -199,7 +199,7 @@ export default function NetworkingLanding() {
           
           <div className="text-center mt-12">
             <Button 
-              onClick={() => setLocation('/launching-soon')}
+              onClick={() => setLocation('/signup')}
               size="lg"
               className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
             >
@@ -216,7 +216,7 @@ export default function NetworkingLanding() {
             <p className="text-lg mb-8 text-gray-600 dark:opacity-90 font-light">Don't just show up. Arrive connected.</p>
             
             <Button
-              onClick={() => setLocation('/launching-soon')}
+              onClick={() => setLocation('/signup')}
               size="lg"
               className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
             >

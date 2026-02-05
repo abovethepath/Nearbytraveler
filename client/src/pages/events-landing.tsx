@@ -67,7 +67,7 @@ export default function EventsLanding() {
         <Button 
           onClick={() => {
             trackEvent('signup_cta_click', 'events_landing', 'floating_join_now');
-            setLocation('/launching-soon');
+            setLocation('/signup');
           }}
           className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 sm:px-6 sm:py-3 rounded-lg shadow-sm transition-all duration-200 text-sm sm:text-base"
           data-testid="button-floating-join-now"
@@ -100,7 +100,7 @@ export default function EventsLanding() {
                   <Button
                     onClick={() => {
                       trackEvent('signup_cta_click', 'events_landing', 'main_cta');
-                      setLocation('/launching-soon');
+                      setLocation('/signup');
                     }}
                     size="lg"
                     className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
@@ -237,7 +237,7 @@ export default function EventsLanding() {
                 
                 <p className="text-gray-700 dark:text-gray-300 text-sm mb-4 flex-grow">Join locals dancing to live music at Venice Beach boardwalk. Experience the authentic LA beach culture with sunset vibes and great people.</p>
                 <button
-                  onClick={() => setLocation('/launching-soon')}
+                  onClick={() => setLocation('/signup')}
                   className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
                 >
                   JOIN THE PARTY
@@ -268,7 +268,7 @@ export default function EventsLanding() {
                 
                 <p className="text-gray-700 dark:text-gray-300 text-sm mb-4 flex-grow">Join Locals as they plan meals at awesome hidden food spots like top tacos for a buck, korean bbq, from ethepian to korean and where to find the best burgers in town.</p>
                 <button
-                  onClick={() => setLocation('/launching-soon')}
+                  onClick={() => setLocation('/signup')}
                   className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
                 >
                   JOIN FOOD TOUR
@@ -299,7 +299,7 @@ export default function EventsLanding() {
                 
                 <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Free outdoor movie screenings at Burton Chace Park in Marina del Rey. Bring a blanket, pack a picnic, and enjoy movies under the stars with locals and travelers.</p>
                 <button
-                  onClick={() => setLocation('/launching-soon')}
+                  onClick={() => setLocation('/signup')}
                   className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
                 >
                   JOIN MOVIE NIGHT
@@ -329,7 +329,7 @@ export default function EventsLanding() {
                 
                 <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Monthly gallery walk through the Arts District. Meet artists, see local work, and discuss creativity with fellow art lovers and travelers.</p>
                 <button
-                  onClick={() => setLocation('/launching-soon')}
+                  onClick={() => setLocation('/signup')}
                   className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
                 >
                   JOIN ART WALK
@@ -359,7 +359,7 @@ export default function EventsLanding() {
                 
                 <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Weekly karaoke night where locals and travelers sing, laugh, and bond over terrible singing voices. No talent required - just bring the energy!</p>
                 <button
-                  onClick={() => setLocation('/launching-soon')}
+                  onClick={() => setLocation('/signup')}
                   className="w-full bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
                 >
                   JOIN KARAOKE
@@ -389,7 +389,7 @@ export default function EventsLanding() {
                 
                 <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Explore the city's best neighborhoods on two wheels. Local guides show hidden spots, street art, and authentic culture you'd never find on your own.</p>
                 <button
-                  onClick={() => setLocation('/launching-soon')}
+                  onClick={() => setLocation('/signup')}
                   className="w-full bg-gradient-to-r from-teal-500 to-green-600 hover:from-teal-600 hover:to-green-700 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
                 >
                   JOIN BIKE TOUR
@@ -432,7 +432,7 @@ export default function EventsLanding() {
             Share your passion with travelers and locals. From coffee meetups to hiking adventures—create the event you wish existed.
           </p>
           <Button
-            onClick={() => setLocation('/launching-soon')}
+            onClick={() => setLocation('/signup')}
             size="lg"
             className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-8 py-3 rounded-lg mb-4"
           >
@@ -450,7 +450,7 @@ export default function EventsLanding() {
             <p className="text-lg mb-8 text-black">Join others already creating unforgettable experiences together.</p>
             
             <Button
-              onClick={() => setLocation('/launching-soon')}
+              onClick={() => setLocation('/signup')}
               size="lg"
               className="bg-white hover:bg-gray-100 text-orange-600 font-bold px-10 py-3 rounded-lg transition-all duration-200"
             >
