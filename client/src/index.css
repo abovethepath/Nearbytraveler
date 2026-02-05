@@ -1686,3 +1686,66 @@ button[type="submit"],
     font-size: 1rem;
   }
 }
+
+/* iPad Pro 12.9" / 13" High Resolution (2048px+ width) */
+@media (min-width: 1800px) and (max-width: 2800px) {
+  .container,
+  .max-w-7xl,
+  .max-w-6xl,
+  .max-w-5xl,
+  .max-w-4xl,
+  main > div,
+  section > div {
+    max-width: 90% !important;
+    width: 90% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+  
+  .hero-section,
+  [class*="hero"] {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  .grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3 {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  
+  .grid-cols-1.md\\:grid-cols-2 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  html {
+    font-size: 18px;
+  }
+  
+  body {
+    font-size: 18px;
+    line-height: 1.7;
+  }
+  
+  h1 {
+    font-size: 3rem !important;
+  }
+  
+  h2 {
+    font-size: 2.5rem !important;
+  }
+  
+  h3 {
+    font-size: 2rem !important;
+  }
+  
+  button, 
+  [role="button"],
+  .btn {
+    min-height: 56px !important;
+    font-size: 1.125rem !important;
+  }
+  
+  input, select, textarea {
+    min-height: 56px !important;
+    font-size: 1.125rem !important;
+  }
+}
