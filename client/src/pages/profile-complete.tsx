@@ -8672,12 +8672,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     name="secretActivities"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Secret Local Things</FormLabel>
+                        <FormLabel>Hidden Gems of Your Hometown</FormLabel>
                         <FormControl>
                           <Textarea 
                             {...field} 
                             placeholder={`What hidden gems do you know of in ${user?.hometownCity || 'your hometown'}?`}
-                            className="min-h-[80px] resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+                            className="min-h-[80px] resize-none bg-orange-50 dark:bg-orange-950/30 text-orange-800 dark:text-orange-200 border-orange-300 dark:border-orange-700 placeholder:text-orange-400 dark:placeholder:text-orange-500"
                             maxLength={500}
                           />
                         </FormControl>
