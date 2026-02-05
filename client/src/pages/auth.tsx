@@ -121,25 +121,19 @@ export default function Auth() {
 
   return (
     <div 
-      className="light min-h-screen flex items-center justify-center p-4"
-      style={{
-        background: `linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.1) 100%), url('/hero-image-7.webp')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
-      }}
+      className="min-h-screen flex items-center justify-center p-4 bg-gray-100 dark:bg-gray-950"
     >
       <div className="w-full max-w-2xl">
-        <Card className="bg-white/95 backdrop-blur-sm shadow-2xl border-0">
+        <Card className="bg-white dark:bg-gray-900 shadow-2xl border-0 dark:border dark:border-gray-800">
           <CardHeader className="text-center pb-8 relative overflow-visible">
             {/* Back Button */}
             <button
               onClick={() => setLocation('/')}
-              className="absolute left-4 top-4 flex items-center gap-2 transition-colors group bg-white/50 px-3 py-1 rounded-md z-50"
+              className="absolute left-4 top-4 flex items-center gap-2 transition-colors group bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-md z-50"
               data-testid="button-back-home"
             >
-              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" style={{ color: '#1f2937' }} />
-              <span className="text-sm font-semibold" style={{ color: '#1f2937' }}>Back</span>
+              <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform text-gray-800 dark:text-gray-200" />
+              <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Back</span>
             </button>
             
             <div className="flex justify-center mb-6">
@@ -149,7 +143,7 @@ export default function Auth() {
               {isLogin ? 'Welcome Back' : 'Join Nearby Traveler'}
             </CardTitle>
             {!isLogin && (
-              <p className="text-lg text-gray-600 mt-2">
+              <p className="text-lg text-gray-600 dark:text-gray-400 mt-2">
                 Connect with travelers and locals worldwide
               </p>
             )}
@@ -161,20 +155,19 @@ export default function Auth() {
               <div className="space-y-6">
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="loginEmail" className="text-base font-medium" style={{ color: '#111827' }}>Email or Username</Label>
+                    <Label htmlFor="loginEmail" className="text-base font-medium text-gray-900 dark:text-gray-100">Email or Username</Label>
                     <Input
                       id="loginEmail"
                       type="text"
                       value={formData.email}
                       onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                       placeholder="Enter your email or username"
-                      className="text-base py-3 border-2"
-                      style={{ backgroundColor: '#ffffff', borderColor: '#d1d5db', color: '#111827' }}
+                      className="text-base py-3 border-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
                       data-testid="input-login-email"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="loginPassword" className="text-base font-medium" style={{ color: '#111827' }}>Password</Label>
+                    <Label htmlFor="loginPassword" className="text-base font-medium text-gray-900 dark:text-gray-100">Password</Label>
                     <div className="relative">
                       <Input
                         id="loginPassword"
@@ -182,15 +175,13 @@ export default function Auth() {
                         value={formData.password}
                         onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
                         placeholder="Enter your password"
-                        className="text-base py-3 pr-10 border-2"
-                        style={{ backgroundColor: '#ffffff', borderColor: '#d1d5db', color: '#111827' }}
+                        className="text-base py-3 pr-10 border-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
                         data-testid="input-login-password"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute inset-y-0 right-0 flex items-center pr-3"
-                        style={{ color: '#6b7280' }}
+                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 dark:text-gray-400"
                         data-testid="toggle-login-password-visibility"
                       >
                         {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -217,19 +208,19 @@ export default function Auth() {
                   className="text-sm font-medium underline"
                   data-testid="link-forgot-password"
                 >
-                  <span style={{ color: '#2563eb' }}>Forgot your password?</span>
+                  <span className="text-blue-600 dark:text-blue-400">Forgot your password?</span>
                 </button>
               </div>
             )}
 
             {!isSignupPage && isLogin && (
-              <div className="text-center pt-4 border-t mt-4" style={{ borderColor: '#e5e7eb' }}>
+              <div className="text-center pt-4 border-t border-gray-200 dark:border-gray-700 mt-4">
                 <button
                   onClick={() => window.location.href = '/signup'}
                   className="font-semibold text-base mt-4 block mx-auto"
                   data-testid="link-signup-from-login"
                 >
-                  <span style={{ color: '#2563eb' }}>Not a Current User? Sign up Here</span>
+                  <span className="text-blue-600 dark:text-blue-400">Not a Current User? Sign up Here</span>
                 </button>
               </div>
             )}
