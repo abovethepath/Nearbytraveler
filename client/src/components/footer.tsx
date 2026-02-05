@@ -45,7 +45,7 @@ export default function Footer() {
               <h3 className="text-sm font-semibold mb-4 text-black dark:text-white">Contact</h3>
               <div className="flex flex-col space-y-3 text-gray-600 dark:text-gray-300 text-sm">
                 <div>
-                  <p className="break-words">Aaron@thenearbytraveler.com</p>
+                  <p className="break-words">aaron@nearbytraveler.org</p>
                 </div>
                 <div className="flex flex-col space-y-1">
                   <p>30 Gould Street, STE R</p>

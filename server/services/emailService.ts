@@ -71,16 +71,16 @@ export class EmailService {
 
     try {
       const emailData = {
-        sender: { email: 'aaron@thenearbytraveler.com', name: 'Aaron from Nearby Traveler' },
+        sender: { email: 'aaron@nearbytraveler.org', name: 'Aaron from Nearby Traveler' },
         to: [{ email: to }],
         subject,
         htmlContent: html,
         textContent: text,
         // Optimized headers for deliverability
         headers: {
-          'Reply-To': 'aaron@thenearbytraveler.com',
+          'Reply-To': 'aaron@nearbytraveler.org',
           'X-Entity-Ref-ID': `NT-${Date.now()}`,
-          'List-Unsubscribe': '<mailto:aaron@thenearbytraveler.com?subject=Unsubscribe>'
+          'List-Unsubscribe': '<mailto:aaron@nearbytraveler.org?subject=Unsubscribe>'
         },
         // Simple tags to avoid spam triggers
         tags: ['transactional']
@@ -150,7 +150,7 @@ export class EmailService {
     try {
       const emailData = {
         sender: { 
-          email: 'aaron@thenearbytraveler.com', 
+          email: 'security@nearbytraveler.org', 
           name: 'Nearby Traveler Security' 
         },
         to: [{ email: to }],
@@ -161,9 +161,9 @@ export class EmailService {
           'X-Priority': '1',
           'X-MSMail-Priority': 'High',
           'Importance': 'high',
-          'Message-ID': `<urgent-security-${Date.now()}-${Math.random().toString(36)}@thenearbytraveler.com>`,
+          'Message-ID': `<urgent-security-${Date.now()}-${Math.random().toString(36)}@nearbytraveler.org>`,
           'X-Mailer': 'Nearby Traveler Security System v2',
-          'Reply-To': 'aaron@thenearbytraveler.com'
+          'Reply-To': 'security@nearbytraveler.org'
         },
         tags: ['URGENT', 'SECURITY', 'PASSWORD-RESET']
       };

@@ -24,7 +24,7 @@ export function setupSimpleAuth(app: Express) {
     const userInfo = {
       id: "2", // Use existing nearbytrav user ID from database
       username: "nearbytrav", 
-      email: "nearbytrav@thenearbytraveler.com",
+      email: "nearbytrav@nearbytraveler.org",
       profileImageUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=nearbytrav"
     };
 
@@ -51,7 +51,7 @@ export function setupSimpleAuth(app: Express) {
     const userInfo = {
       id: "2", // Use existing nearbytrav user ID from database
       username: "nearbytrav", 
-      email: "nearbytrav@thenearbytraveler.com",
+      email: "nearbytrav@nearbytraveler.org",
       profileImageUrl: "https://api.dicebear.com/7.x/avataaars/svg?seed=nearbytrav"
     };
 

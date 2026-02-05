@@ -188,7 +188,7 @@ export default function Cookies() {
               </p>
               <div className="bg-gray-50 p-4 rounded-md mt-3">
                 <p className="font-medium">Nearby Traveler, Inc</p>
-                <p>Email: Aaron@thenearbytraveler.com</p>
+                <p>Email: info@nearbytraveler.org</p>
                 <p>Address: 30 Gould Street, STE R, Sheridan, Wyoming 82801</p>
               </div>
             </section>

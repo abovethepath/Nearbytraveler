@@ -27,9 +27,9 @@ export default function SupportPage() {
               <p className="text-gray-600 dark:text-gray-300 mb-4">
                 Have a question or need help? Send us an email and we'll respond within 24 hours.
               </p>
-              <a href="mailto:support@thenearbytraveler.com">
+              <a href="mailto:support@nearbytraveler.org">
                 <Button className="w-full bg-orange-500 hover:bg-orange-600">
-                  support@thenearbytraveler.com
+                  support@nearbytraveler.org
                 </Button>
               </a>
             </CardContent>
@@ -102,7 +102,7 @@ export default function SupportPage() {
                 How do I delete my account?
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
-                Go to Settings in the app and select "Delete Account". You can also email support@thenearbytraveler.com to request account deletion.
+                Go to Settings in the app and select "Delete Account". You can also email support@nearbytraveler.org to request account deletion.
               </p>
             </div>
           </CardContent>

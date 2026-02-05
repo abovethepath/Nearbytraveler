@@ -79,7 +79,7 @@ This is an automated security notification.
     `;
 
     const sendSmtpEmail = new brevo.SendSmtpEmail();
-    sendSmtpEmail.to = [{ email: 'security@thenearbytraveler.com', name: 'Security Team' }];
+    sendSmtpEmail.to = [{ email: 'security@nearbytraveler.org', name: 'Security Team' }];
     sendSmtpEmail.sender = { email: 'aaron_marc2004@yahoo.com', name: 'NearbyTraveler Security' };
     sendSmtpEmail.subject = `🚨 User Blocking Alert: @${data.blockerUsername} blocked @${data.blockedUsername}`;
     sendSmtpEmail.textContent = emailText;
@@ -155,7 +155,7 @@ Generated: ${new Date().toISOString()}
     `;
 
     await mailService.send({
-      to: 'security@thenearbytraveler.com',
+      to: 'security@nearbytraveler.org',
       from: 'aaron_marc2004@yahoo.com',
       subject: `🚨 CRITICAL: @${username} has ${blockCount} blocks - Review Required`,
       text: emailText,

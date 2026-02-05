@@ -510,7 +510,7 @@ export async function sendCityActivityEmail(userId: number, cityName: string, ac
   }
 }
 
-const ADMIN_EMAIL = "aaron@thenearbytraveler.com";
+const ADMIN_EMAIL = "aaron@nearbytraveler.org";
 
 export async function sendAdminReportNotification(
   reporterUsername: string, 
