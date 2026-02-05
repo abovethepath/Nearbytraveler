@@ -253,11 +253,14 @@ export default function AmbassadorProgram() {
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 to-orange-500">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-bold text-white mb-4">Ready to Become an Ambassador?</h2>
-          <p className="text-blue-100 mb-8 max-w-2xl mx-auto">
+          <p className="text-blue-100 mb-4 max-w-2xl mx-auto">
             {user 
               ? "Apply now to join our Ambassador Program and start earning points for helping grow the community."
               : "Start earning points by inviting friends, referring local businesses, and hosting community events."
             }
+          </p>
+          <p className="text-white/90 mb-8">
+            Questions? Email us at <a href="mailto:ambassadors@nearbytraveler.org" className="underline font-medium">ambassadors@nearbytraveler.org</a>
           </p>
           <div className="flex justify-center">
             {user ? (
