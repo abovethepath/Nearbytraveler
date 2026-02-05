@@ -327,7 +327,7 @@ export function AIQuickCreateMeetup({ onDraftReady, defaultCity, onCancel, autoS
               )}
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-2">
+            <div className="flex flex-col sm:flex-row gap-2 mt-2">
               <Button
                 onClick={handleSubmit}
                 disabled={!inputText.trim() || parseMutation.isPending}

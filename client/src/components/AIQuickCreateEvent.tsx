@@ -362,14 +362,15 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
             )}
           </Button>
 
-          <div className="pt-2">
+          <div className="pt-4 mt-2">
             <p className="text-xs text-gray-400 mb-2">Try something like:</p>
-            <div className="space-y-1">
+            <div className="space-y-2">
               {examplePrompts.map((prompt, i) => (
                 <button
                   key={i}
                   onClick={() => setInputText(prompt)}
-                  className="block w-full text-left text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 truncate"
+                  className="block w-full text-left text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 py-1 leading-relaxed"
+                  style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}
                 >
                   "{prompt}"
                 </button>
