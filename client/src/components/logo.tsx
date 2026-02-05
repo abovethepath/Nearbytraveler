@@ -13,7 +13,7 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
       case "landing":
         return "h-48 w-auto scale-x-110"; // Optimal size for welcome back page with less horizontal stretch
       case "navbar":
-        return "h-20 sm:h-24 md:h-28 lg:h-32 xl:h-36 w-auto"; // Responsive: moderate sizes, caps at xl for iPad Pro
+        return "h-24 sm:h-28 md:h-32 lg:h-28 xl:h-32 w-auto"; // Original mobile sizes, reduced for iPad Pro (lg/xl)
       case "black-navbar":
         return "h-64 w-auto"; // Massive logo for maximum brand prominence
       case "footer":
