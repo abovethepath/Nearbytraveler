@@ -525,6 +525,11 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                                   Host
                                 </Badge>
                               )}
+                              {participant.role === 'co-organizer' && user?.id !== event?.organizerId && (
+                                <Badge variant="default" className="text-xs bg-blue-500 hover:bg-blue-600 shrink-0">
+                                  Co-Host
+                                </Badge>
+                              )}
                               {user?.id === event?.sharedBy && (
                                 <Badge variant="outline" className="text-xs border-purple-500 text-purple-600 dark:text-purple-400 shrink-0">
                                   Shared

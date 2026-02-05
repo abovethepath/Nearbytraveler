@@ -838,6 +838,7 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                         <Badge variant="secondary" className="text-xs">Co-Organizer</Badge>
                       </div>
                       <Button
+                        type="button"
                         variant="ghost"
                         size="sm"
                         onClick={() => updateRoleMutation.mutate({ userId: coOrg.userId, role: 'participant' })}
@@ -883,6 +884,7 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                           <span className="font-medium">{user.username}</span>
                         </div>
                         <Button
+                          type="button"
                           size="sm"
                           onClick={() => addCoOrgByUserMutation.mutate(user.id)}
                           disabled={addCoOrgByUserMutation.isPending}
@@ -919,6 +921,7 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                           </Badge>
                         </div>
                         <Button
+                          type="button"
                           variant="outline"
                           size="sm"
                           onClick={() => updateRoleMutation.mutate({ userId: participant.userId, role: 'co-organizer' })}
