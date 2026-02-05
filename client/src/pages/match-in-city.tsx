@@ -440,6 +440,13 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
     return cities;
   };
   
+  // Launch cities that have pre-built featured activities
+  const LAUNCH_CITY_NAMES = [
+    'Los Angeles', 'New York City', 'San Francisco', 'Austin', 'Chicago',
+    'Miami', 'New Orleans', 'Tokyo', 'Paris', 'London', 'Rome',
+    'Barcelona', 'Amsterdam', 'Bangkok', 'Singapore', 'Dubai', 'Istanbul'
+  ];
+
   // Default to showing only user's hometown and travel destinations, with fallback to all cities
   useEffect(() => {
     // Build list of user's cities (hometown + travel destinations)
@@ -457,6 +464,15 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
       setFilteredCities(allCities);
     }
   }, [allCities, user, userProfile, travelPlans]);
+
+  // Build launch cities list (cities with pre-built activities, excluding user's own cities)
+  const getLaunchCities = () => {
+    const userCityNames = getUserCitiesWithData().map(c => c.city.toLowerCase());
+    return allCities.filter(city => 
+      LAUNCH_CITY_NAMES.some(lc => lc.toLowerCase() === city.city.toLowerCase()) &&
+      !userCityNames.includes(city.city.toLowerCase())
+    );
+  };
 
   // Fetch real events from Ticketmaster API (function declaration for hoisting)
   async function fetchRealEvents() {
@@ -1969,6 +1985,42 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
             ))}
           </div>
           )}
+
+          {/* Explore Launch Cities - Show pre-built cities users can browse */}
+          {!citySearchTerm && (() => {
+            const launchCities = getLaunchCities();
+            if (launchCities.length === 0) return null;
+            return (
+              <div className="mt-12">
+                <div className="text-center mb-6">
+                  <h2 className="text-2xl font-bold text-white mb-2">Explore Cities</h2>
+                  <p className="text-white/70">Browse curated activities in cities we've launched</p>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                  {launchCities.map((city, index) => (
+                    <div 
+                      key={`launch-${index}`}
+                      className="relative overflow-hidden rounded-xl cursor-pointer transition-transform hover:scale-105 shadow-lg group"
+                      onClick={() => setSelectedCity(city.city)}
+                    >
+                      <div 
+                        className="w-full h-36 bg-cover bg-center relative"
+                        style={{ backgroundImage: `url(${city.photo})` }}
+                      >
+                        <div className={`absolute inset-0 bg-gradient-to-br ${city.gradient} backdrop-blur-[1px]`}></div>
+                        <div className="absolute inset-0 p-4 flex flex-col justify-end text-white">
+                          <h3 className="text-lg font-bold drop-shadow-lg">{city.city}</h3>
+                          <p className="text-xs opacity-90 drop-shadow-lg">
+                            {city.state ? `${city.state}, ${city.country}` : city.country}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </div>
     );
