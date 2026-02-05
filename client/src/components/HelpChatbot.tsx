@@ -40,6 +40,9 @@ export function HelpChatbot() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Hide on landing/public pages - chatbot is for logged-in users only
+  const landingPaths = ['/', '/landing', '/landing-new', '/locals-landing', '/travelers-landing', '/events-landing', '/business-landing', '/couchsurfing', '/cs', '/networking-landing', '/signup', '/signin', '/auth', '/join', '/launching-soon', '/about', '/privacy', '/terms', '/cookies', '/support', '/ambassador-program', '/forgot-password', '/reset-password', '/welcome', '/welcome-business', '/b', '/preview-landing', '/preview-first-landing', '/getting-started', '/quick-login'];
+  const isLandingPage = landingPaths.includes(location);
   // Hide on message/chat pages to avoid blocking input
   const isMessagePage = location.startsWith('/messages') || location.startsWith('/chatroom');
 
@@ -58,7 +61,7 @@ export function HelpChatbot() {
   }, [isOpen]);
 
   // Early return AFTER all hooks
-  if (isMessagePage) return null;
+  if (isMessagePage || isLandingPage) return null;
 
   const sendMessage = async (messageText: string) => {
     if (!messageText.trim() || isLoading) return;
