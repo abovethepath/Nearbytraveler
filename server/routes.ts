@@ -75,7 +75,8 @@ import {
   tripItineraries,
   itineraryItems,
   travelCrewMessages,
-  eventCompanionParticipants
+  eventCompanionParticipants,
+  notifications,
 } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
 import { waitlistLeads } from "../shared/schema";
