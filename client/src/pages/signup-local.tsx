@@ -410,7 +410,7 @@ export default function SignupLocal() {
                     checked={formData.isNewToTown}
                     onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isNewToTown: checked as boolean }))}
                     data-testid="checkbox-new-to-town"
-                    className="mt-0.5"
+                    className="mt-0.5 border-2 border-gray-400 dark:border-gray-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
                   />
                   <div className="flex-1">
                     <label

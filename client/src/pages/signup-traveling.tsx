@@ -498,7 +498,7 @@ export default function SignupTraveling() {
                       id="isNewToTown"
                       checked={formData.isNewToTown}
                       onChange={(e) => setFormData(prev => ({ ...prev, isNewToTown: e.target.checked }))}
-                      className="mt-0.5 h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
+                      className="mt-0.5 h-5 w-5 rounded focus:ring-blue-500 border-2 border-gray-400 dark:border-gray-300 bg-white dark:bg-gray-700 accent-blue-600"
                       data-testid="checkbox-new-to-town"
                     />
                     <label htmlFor="isNewToTown" className="text-sm text-gray-800 dark:text-gray-200 cursor-pointer">
