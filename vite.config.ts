@@ -1,37 +1,23 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import path from "path";
-import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
+
+// Replit plugins (optional)
+let runtimeErrorModal: any = null;
+let cartographer: any = null;
+
+try {
+  // These packages exist in Replit, but not on Render
+  runtimeErrorModal = (await import("@replit/vite-plugin-runtime-error-modal")).default;
+  cartographer = (await import("@replit/vite-plugin-cartographer")).default;
+} catch {
+  // ignore if not available (e.g., Render)
+}
 
 export default defineConfig({
   plugins: [
     react(),
-    runtimeErrorOverlay(),
-    ...(process.env.NODE_ENV !== "production" &&
-    process.env.REPL_ID !== undefined
-      ? [
-          await import("@replit/vite-plugin-cartographer").then((m) =>
-            m.cartographer(),
-          ),
-        ]
-      : []),
-  ],
-  resolve: {
-    alias: {
-      "@": path.resolve(import.meta.dirname, "client", "src"),
-      "@shared": path.resolve(import.meta.dirname, "shared"),
-      "@assets": path.resolve(import.meta.dirname, "attached_assets"),
-    },
-  },
-  root: path.resolve(import.meta.dirname, "client"),
-  build: {
-    outDir: path.resolve(import.meta.dirname, "dist/public"),
-    emptyOutDir: true,
-  },
-  server: {
-    fs: {
-      strict: true,
-      deny: ["**/.*"],
-    },
-  },
+    // Only include if available
+    runtimeErrorModal?.(),
+    cartographer?.()
+  ].filter(Boolean),
 });
