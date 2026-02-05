@@ -3105,13 +3105,34 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     setIsGeneratingBio(true);
     console.log('🤖 Starting bio generation...');
     try {
-      const response = await apiRequest("POST", "/api/users/generate-bio");
+      const storedUser = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
+      const userData = storedUser ? JSON.parse(storedUser) : null;
+      
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (userData) {
+        headers['x-user-id'] = userData.id?.toString();
+        headers['x-user-data'] = JSON.stringify({
+          id: userData.id,
+          username: userData.username,
+          email: userData.email,
+          name: userData.name
+        });
+      }
+
+      const apiBase = getApiBaseUrl();
+      const response = await fetch(`${apiBase}/api/users/generate-bio`, {
+        method: 'POST',
+        headers,
+        credentials: 'include',
+      });
+      
       console.log('🤖 Response received:', response.status, response.ok);
       const data = await response.json();
       console.log('🤖 Response data:', data);
       
       if (data.success && data.bio) {
-        // Set the generated bio into the form field
         profileForm.setValue('bio', data.bio);
         toast({
           title: "Bio generated!",
