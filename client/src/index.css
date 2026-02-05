@@ -1665,8 +1665,12 @@ button[type="submit"],
 
 /* Improved typography for iPad reading */
 @media (min-width: 768px) and (max-width: 1366px) {
+  html {
+    font-size: 16px !important;
+  }
+  
   body {
-    font-size: 16px;
+    font-size: 16px !important;
     line-height: 1.6;
   }
   
@@ -1682,7 +1686,15 @@ button[type="submit"],
     font-size: 1.5rem !important;
   }
   
-  p, .text-base {
+  p, span, div, .text-base, .text-sm {
+    font-size: 1rem !important;
+  }
+  
+  .text-xs {
+    font-size: 0.875rem !important;
+  }
+  
+  button, input, select, textarea {
     font-size: 1rem !important;
   }
 }
