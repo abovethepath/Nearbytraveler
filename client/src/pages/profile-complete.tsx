@@ -8651,11 +8651,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     name="secretActivities"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>If I could list a few Secret Local things in my hometown I would say they are...</FormLabel>
+                        <FormLabel>Secret Local Things</FormLabel>
                         <FormControl>
                           <Textarea 
                             {...field} 
-                            placeholder="Fill this out for others to see secret activities, hidden gems, local spots, or insider tips that only locals know about. Example: There's a hidden waterfall behind the old mill that locals love, or try the secret menu at Joe's Diner..."
+                            placeholder={`What hidden gems do you know of in ${user?.hometownCity || 'your hometown'}?`}
                             className="min-h-[80px] resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                             maxLength={500}
                           />
@@ -8817,25 +8817,24 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Gender</FormLabel>
-                        <div className="flex flex-wrap gap-3">
-                          {GENDER_OPTIONS.map((gender) => (
-                            <div key={gender} className="flex items-center space-x-2">
-                              <Checkbox
-                                id={`gender-${gender}`}
-                                checked={field.value === gender}
-                                onCheckedChange={(checked) => {
-                                  field.onChange(checked ? gender : "");
-                                }}
-                              />
-                              <label
-                                htmlFor={`gender-${gender}`}
-                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                              >
+                        <Select
+                          value={field.value || ""}
+                          onValueChange={(value) => field.onChange(value === "none" ? "" : value)}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600">
+                              <SelectValue placeholder="Select gender" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="none">Prefer not to say</SelectItem>
+                            {GENDER_OPTIONS.map((gender) => (
+                              <SelectItem key={gender} value={gender}>
                                 {gender}
-                              </label>
-                            </div>
-                          ))}
-                        </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
