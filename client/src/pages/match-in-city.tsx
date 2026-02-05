@@ -3042,8 +3042,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 {/* SECTION 3: Universal Travel Activities - Always show these for every city */}
                 <div className={`mt-8 md:block ${activeMobileSection === 'preferences' || activeMobileSection === 'all' ? 'block' : 'hidden'}`}>
                   <div className="text-center mb-6">
-                    <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-orange-500 bg-clip-text text-transparent mb-2">✈️ Universal Match Preferences</h3>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm">Match with travelers & locals who want to do these same things in {selectedCity}</p>
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-blue-500 to-orange-500 bg-clip-text text-transparent mb-2 px-2">✈️ Universal Match Preferences</h3>
+                    <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm px-2">Match with travelers & locals who want to do these same things in {selectedCity}</p>
                     <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-orange-500 mx-auto rounded-full mt-2"></div>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">

@@ -19444,6 +19444,7 @@ Questions? Just reply to this message. Welcome aboard!
             hiddenGems: cachedGuide.hiddenGems,
             foodRecommendations: cachedGuide.foodRecommendations,
             safetyTips: cachedGuide.safetyTips,
+            specificEvents: (cachedGuide as any).specificEvents || [],
             updatedAt: cachedGuide.updatedAt
           });
         }
@@ -19480,6 +19481,7 @@ Questions? Just reply to this message. Welcome aboard!
               hiddenGems: guide.hiddenGems,
               foodRecommendations: guide.foodRecommendations,
               safetyTips: guide.safetyTips,
+              specificEvents: guide.specificEvents || [],
               updatedAt: new Date()
             })
             .where(eq(cityGuides.cityName, cityName));
@@ -19494,7 +19496,8 @@ Questions? Just reply to this message. Welcome aboard!
             localTips: guide.localTips,
             hiddenGems: guide.hiddenGems,
             foodRecommendations: guide.foodRecommendations,
-            safetyTips: guide.safetyTips
+            safetyTips: guide.safetyTips,
+            specificEvents: guide.specificEvents || []
           });
           console.log(`✅ Saved new city guide to cache for ${cityName}`);
         }
@@ -19511,7 +19514,8 @@ Questions? Just reply to this message. Welcome aboard!
         localTips: guide.localTips,
         hiddenGems: guide.hiddenGems,
         foodRecommendations: guide.foodRecommendations,
-        safetyTips: guide.safetyTips
+        safetyTips: guide.safetyTips,
+        specificEvents: guide.specificEvents || []
       });
     } catch (error: any) {
       console.error('AI city guide error:', error);

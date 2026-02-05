@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Sparkles, RefreshCw, MapPin, Clock, Lightbulb, Gem, Utensils, Shield } from "lucide-react";
+import { Sparkles, RefreshCw, MapPin, Clock, Lightbulb, Gem, Utensils, Shield, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getApiBaseUrl } from "@/lib/queryClient";
 
@@ -19,6 +19,7 @@ interface CityGuide {
   hiddenGems: string[];
   foodRecommendations: string[];
   safetyTips: string[];
+  specificEvents?: string[];
 }
 
 export function AICityGuideWidget({ cityName, compact = false }: AICityGuideWidgetProps) {
@@ -171,6 +172,20 @@ export function AICityGuideWidget({ cityName, compact = false }: AICityGuideWidg
               </div>
               <p className="text-gray-700 dark:text-gray-300 text-sm">{cityGuide.overview}</p>
             </div>
+
+            {cityGuide.specificEvents && cityGuide.specificEvents.length > 0 && (
+              <div className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/40 dark:to-amber-900/40 rounded-lg p-3 border border-orange-200 dark:border-orange-700">
+                <div className="flex items-center gap-2 mb-2">
+                  <Calendar className="h-4 w-4 text-orange-600" />
+                  <h4 className="font-semibold text-orange-800 dark:text-orange-200">Events & Activities in {cityName}</h4>
+                </div>
+                <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 text-sm space-y-1">
+                  {cityGuide.specificEvents.map((event: string, i: number) => (
+                    <li key={i}>{event}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             {cityGuide.bestTimeToVisit && (
               <div className="bg-white/70 dark:bg-gray-800/70 rounded-lg p-3">

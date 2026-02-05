@@ -35,6 +35,7 @@ interface CityGuideContent {
   hiddenGems: string[];
   foodRecommendations: string[];
   safetyTips: string[];
+  specificEvents?: string[];
 }
 
 export class AiCityMatchService {
@@ -163,21 +164,26 @@ The user is a ${userData.userType === 'local' ? 'local resident' : 'traveler'}.
 Their interests include: ${[...(userData.interests || []), ...(userData.activities || [])].join(', ') || 'general exploration'}
 ${userData.travelStyle?.length ? `Travel style: ${userData.travelStyle.join(', ')}` : ''}` : '';
 
-    const prompt = `You are a knowledgeable local guide for ${cityName}. Create a helpful city guide.
+    const currentMonth = new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' });
+    
+    const prompt = `You are a knowledgeable local guide for ${cityName}. Create a helpful city guide with SPECIFIC events and activities happening in ${cityName}.
 ${userContext}
+
+IMPORTANT: Include real, specific events, festivals, markets, and recurring activities that actually happen in ${cityName}. Think about what's happening there around ${currentMonth} - seasonal events, weekly markets, popular venues, recurring meetups, local festivals, etc.
 
 Return ONLY a valid JSON object with these fields:
 - overview: 2-3 sentences about what makes ${cityName} special
+- specificEvents: array of 5 specific events, festivals, markets, or recurring activities in ${cityName} (e.g. "First Fridays Art Walk on Abbot Kinney Blvd - monthly art and food event", "Santa Monica Farmers Market - Wednesdays & Saturdays at Arizona Ave"). Include real venue names and locations within ${cityName}.
 - localTips: array of 4 practical tips only locals would know
 - bestTimeToVisit: one sentence about optimal visiting times
 - hiddenGems: array of 3 lesser-known spots worth visiting
 - foodRecommendations: array of 3 local food/dining suggestions
 - safetyTips: array of 2 practical safety considerations
 
-Focus on authentic, helpful information. Avoid generic tourist advice.
+Focus on authentic, real, city-specific information. The specificEvents should be REAL events and activities that happen in ${cityName}, not generic suggestions.
 
 Example format:
-{"overview":"City overview here...","localTips":["Tip 1","Tip 2","Tip 3","Tip 4"],"bestTimeToVisit":"Best time info...","hiddenGems":["Gem 1","Gem 2","Gem 3"],"foodRecommendations":["Food 1","Food 2","Food 3"],"safetyTips":["Safety 1","Safety 2"]}`;
+{"overview":"City overview here...","specificEvents":["Venice Beach Drum Circle - every Saturday at sunset on the boardwalk","First Fridays Art Walk on Abbot Kinney Blvd","Santa Monica Pier Twilight Concert Series - summer Thursday evenings","Culver City Art Walk - second Saturday of every month","Playa Vista Farmers Market - Saturdays 9am-2pm"],"localTips":["Tip 1","Tip 2","Tip 3","Tip 4"],"bestTimeToVisit":"Best time info...","hiddenGems":["Gem 1","Gem 2","Gem 3"],"foodRecommendations":["Food 1","Food 2","Food 3"],"safetyTips":["Safety 1","Safety 2"]}`;
 
     try {
       const response = await this.callAI(prompt);

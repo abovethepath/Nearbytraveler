@@ -1341,6 +1341,7 @@ export const cityGuides = pgTable("city_guides", {
   hiddenGems: jsonb("hidden_gems").$type<string[]>(),
   foodRecommendations: jsonb("food_recommendations").$type<string[]>(),
   safetyTips: jsonb("safety_tips").$type<string[]>(),
+  specificEvents: jsonb("specific_events").$type<string[]>(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
