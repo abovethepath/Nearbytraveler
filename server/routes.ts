@@ -6390,15 +6390,20 @@ Questions? Just reply to this message. Welcome aboard!
   // AI Bio Generator endpoint - generates a personalized bio from user's profile data
   app.post("/api/users/generate-bio", async (req, res) => {
     try {
-      // Get user ID from session or header (fallback for wrapped iOS app)
+      // Get user ID from session, header, or x-user-data (multiple fallbacks for wrapped iOS app)
       const sessionUserId = (req as any).session?.user?.id;
       const headerUserId = req.headers['x-user-id'] ? parseInt(req.headers['x-user-id'] as string) : null;
-      const userId = sessionUserId || headerUserId;
+      let userDataId: number | null = null;
+      try {
+        const userData = req.headers['x-user-data'] ? JSON.parse(req.headers['x-user-data'] as string) : null;
+        userDataId = userData?.id ? parseInt(userData.id) : null;
+      } catch {}
+      const userId = sessionUserId || headerUserId || userDataId;
       
-      console.log('🤖 AI Bio Generate - Auth check:', { sessionUserId, headerUserId, userId });
+      console.log('🤖 AI Bio Generate - Auth check:', { sessionUserId, headerUserId, userDataId, userId });
       
       if (!userId) {
-        console.log('🤖 AI Bio Generate - No user ID found');
+        console.log('🤖 AI Bio Generate - No user ID found in session, x-user-id, or x-user-data headers');
         return res.status(401).json({ message: "Authentication required", success: false });
       }
 
