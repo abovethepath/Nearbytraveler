@@ -19636,14 +19636,91 @@ Questions? Just reply to this message. Welcome aboard!
   // POST new user city interest
   app.post("/api/user-city-interests", async (req, res) => {
     try {
-      const { activityId, cityName } = req.body;
+      const { activityId, cityName, activityName: reqActivityName } = req.body;
       const userId = req.headers['x-user-id'];
       
       console.log('🔍 POST Debug - Body:', req.body, 'Headers:', { 'x-user-id': userId });
       
-      if (!activityId || !cityName || !userId) {
-        console.log('❌ Missing fields:', { activityId: !!activityId, cityName: !!cityName, userId: !!userId });
-        return res.status(400).json({ error: 'Missing required fields: activityId, cityName, userId' });
+      if ((!activityId && !reqActivityName) || !cityName || !userId) {
+        console.log('❌ Missing fields:', { activityId: !!activityId, activityName: !!reqActivityName, cityName: !!cityName, userId: !!userId });
+        return res.status(400).json({ error: 'Missing required fields: (activityId or activityName), cityName, userId' });
+      }
+      
+      // If activityName provided without activityId, find-or-create the city activity
+      if (reqActivityName && !activityId) {
+        console.log(`🔍 FIND-OR-CREATE: Looking for activity "${reqActivityName}" in ${cityName}`);
+        
+        // First try to find existing activity by name in this city
+        const [existingActivity] = await db
+          .select({ id: cityActivities.id, activityName: cityActivities.activityName })
+          .from(cityActivities)
+          .where(
+            and(
+              sql`LOWER(${cityActivities.activityName}) = LOWER(${reqActivityName})`,
+              eq(cityActivities.cityName, cityName)
+            )
+          );
+        
+        let dbActivityId: number;
+        let dbActivityName: string;
+        
+        if (existingActivity) {
+          console.log(`✅ FOUND existing activity: ${existingActivity.id} - ${existingActivity.activityName}`);
+          dbActivityId = existingActivity.id;
+          dbActivityName = existingActivity.activityName;
+        } else {
+          // Create a new city activity
+          console.log(`➕ CREATING new city activity: "${reqActivityName}" in ${cityName}`);
+          const [newActivity] = await db
+            .insert(cityActivities)
+            .values({
+              cityName,
+              activityName: reqActivityName,
+              category: 'universal',
+              description: 'Universal activity',
+              source: 'user',
+              createdByUserId: parseInt(userId as string),
+              isActive: true,
+              isHidden: false,
+              isFeatured: false,
+            })
+            .returning();
+          dbActivityId = newActivity.id;
+          dbActivityName = newActivity.activityName;
+        }
+        
+        // Check if user already has this interest
+        const [existingInterest] = await db
+          .select()
+          .from(userCityInterests)
+          .where(
+            and(
+              eq(userCityInterests.userId, parseInt(userId as string)),
+              eq(userCityInterests.activityId, dbActivityId)
+            )
+          );
+        
+        if (existingInterest) {
+          // Toggle off - remove it
+          await db.delete(userCityInterests).where(eq(userCityInterests.id, existingInterest.id));
+          console.log(`🔄 TOGGLED OFF: Removed interest ${existingInterest.id} for "${dbActivityName}"`);
+          return res.json({ removed: true, interest: existingInterest });
+        }
+        
+        // Add the interest
+        const [newInterest] = await db
+          .insert(userCityInterests)
+          .values({
+            userId: parseInt(userId as string),
+            activityId: dbActivityId,
+            activityName: dbActivityName,
+            cityName,
+            isActive: true
+          })
+          .returning();
+        
+        console.log(`✅ ADDED interest: ${newInterest.id} for "${dbActivityName}" in ${cityName}`);
+        return res.json(newInterest);
       }
       
       if (process.env.NODE_ENV === 'development') console.log(`💡 USER INTERESTS POST: Adding interest for user ${userId} in activity ${activityId}`);

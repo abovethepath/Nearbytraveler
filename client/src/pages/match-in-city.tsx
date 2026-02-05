@@ -3098,61 +3098,61 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                             const userId = actualUser.id;
                             console.log('🔧 Using userId:', userId);
                             
-                            // Create this as a city activity if it doesn't exist, then toggle
                             try {
                               const apiBase = getApiBaseUrl();
                               if (!isSelected) {
-                                // First create the activity for this city if it doesn't exist
-                                const createResponse = await fetch(`${apiBase}/api/city-activities`, {
+                                // Single API call - backend handles find-or-create
+                                const response = await fetch(`${apiBase}/api/user-city-interests`, {
                                   method: 'POST',
                                   headers: {
                                     'Content-Type': 'application/json',
                                     'x-user-id': userId.toString()
                                   },
                                   body: JSON.stringify({
-                                    cityName: selectedCity,
                                     activityName: activity,
-                                    createdByUserId: userId,
-                                    description: 'Universal activity',
-                                    category: 'universal'
+                                    cityName: selectedCity
                                   })
                                 });
                                 
-                                if (createResponse.ok) {
-                                  const newActivity = await createResponse.json();
-                                  
-                                  // Add to user interests
-                                  const interestResponse = await fetch(`${apiBase}/api/user-city-interests`, {
-                                    method: 'POST',
-                                    headers: {
-                                      'Content-Type': 'application/json',
-                                      'x-user-id': userId.toString()
-                                    },
-                                    body: JSON.stringify({
-                                      activityId: newActivity.id,
-                                      cityName: selectedCity
-                                    })
-                                  });
-                                  
-                                  if (interestResponse.ok) {
-                                    const newUserActivity = await interestResponse.json();
-                                    setUserActivities(prev => [...prev, newUserActivity]);
-                                    fetchUserActivities(); // Refresh to sync
+                                if (response.ok) {
+                                  const result = await response.json();
+                                  if (!result.removed) {
+                                    // Successfully added
+                                    await fetchUserActivities();
                                     
-                                    // Sync to user profile immediately with captured state
-                                    const selectedNames = [...userActivities, newUserActivity]
-                                      .filter(ua => ua.cityName === selectedCity)
-                                      .map(ua => ua.activityName);
-                                    
-                                    // Immediate sync with captured city name and state
-                                    syncActivitiesToProfile(selectedNames, selectedCity);
+                                    // Sync to user profile
+                                    const updatedActivities = await fetch(`${apiBase}/api/user-city-interests/${userId}/${encodeURIComponent(selectedCity)}`);
+                                    if (updatedActivities.ok) {
+                                      const allActivities = await updatedActivities.json();
+                                      const selectedNames = allActivities.map((ua: any) => ua.activityName);
+                                      syncActivitiesToProfile(selectedNames, selectedCity);
+                                    }
                                   }
                                 }
                               } else {
-                                // Remove from user activities (handleDeleteActivity already syncs to profile)
-                                const userActivity = userActivities.find(ua => ua.activityName === activity && ua.cityName === selectedCity);
-                                if (userActivity) {
-                                  await handleDeleteActivity(userActivity.id);
+                                // Use backend toggle - same endpoint, it will detect existing and remove
+                                const response = await fetch(`${apiBase}/api/user-city-interests`, {
+                                  method: 'POST',
+                                  headers: {
+                                    'Content-Type': 'application/json',
+                                    'x-user-id': userId.toString()
+                                  },
+                                  body: JSON.stringify({
+                                    activityName: activity,
+                                    cityName: selectedCity
+                                  })
+                                });
+                                
+                                if (response.ok) {
+                                  await fetchUserActivities();
+                                  
+                                  // Sync to user profile
+                                  const updatedActivities = await fetch(`${apiBase}/api/user-city-interests/${userId}/${encodeURIComponent(selectedCity)}`);
+                                  if (updatedActivities.ok) {
+                                    const allActivities = await updatedActivities.json();
+                                    const selectedNames = allActivities.map((ua: any) => ua.activityName);
+                                    syncActivitiesToProfile(selectedNames, selectedCity);
+                                  }
                                 }
                               }
                             } catch (error) {
