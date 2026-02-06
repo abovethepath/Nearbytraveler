@@ -1102,7 +1102,7 @@ export default function Home() {
       // 2. Search is active
       // 3. They're currently traveling (should see themselves in their destination)
       // 4. Sorted by "recent" (newest members) - user should see themselves as newest
-      if (filters.location || filters.search || effectiveUser?.isCurrentlyTraveling || sortBy === 'recent') return true;
+      if (filters.location || filters.search || effectiveUser?.isCurrentlyTraveling || sortBy === 'recent' || sortBy === 'available_now') return true;
 
       // Only exclude from general browsing without any specific context
       return false;
@@ -1938,7 +1938,7 @@ export default function Home() {
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="available_now">Available Now</SelectItem>
+                    <SelectItem value="available_now" className="text-green-600 dark:text-green-400 font-semibold">🟢 Available Now</SelectItem>
                     <SelectItem value="recent">Recent</SelectItem>
                     <SelectItem value="active">Most Active</SelectItem>
                     <SelectItem value="compatibility">Compatibility</SelectItem>
@@ -1985,6 +1985,7 @@ export default function Home() {
                             compatibilityData={compatibilityData?.find((match: any) => match.userId === otherUser.id)}
                             compact={isCompactMode}
                             connectionDegree={connectionDegreesData?.degrees?.[otherUser.id]}
+                            isAvailableNow={availableNowIds.includes(otherUser.id)}
                           />
                       ))
                     ) : (

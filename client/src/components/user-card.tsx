@@ -41,6 +41,7 @@ interface UserCardProps {
     degree: number;
     mutualCount: number;
   };
+  isAvailableNow?: boolean;
 }
 
 export default function UserCard({ 
@@ -51,7 +52,8 @@ export default function UserCard({
   showCompatibilityScore = false,
   compatibilityData,
   compact = false,
-  connectionDegree
+  connectionDegree,
+  isAvailableNow = false
 }: UserCardProps) {
   
   const handleCardClick = (e: React.MouseEvent) => {
@@ -114,7 +116,7 @@ export default function UserCard({
 
   return (
     <button 
-      className="w-full min-w-0 max-w-none rounded-xl overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all text-left lg:rounded-2xl"
+      className={`w-full min-w-0 max-w-none rounded-xl overflow-hidden bg-white dark:bg-gray-800 border shadow-sm hover:shadow-md transition-all text-left lg:rounded-2xl ${isAvailableNow ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : 'border-gray-200 dark:border-gray-700'}`}
       onClick={handleCardClick}
       data-testid={`user-card-${user.id}`}
     >
@@ -152,6 +154,16 @@ export default function UserCard({
           <div className="absolute top-1.5 right-1.5">
             <span className="bg-orange-500/90 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full">
               Biz
+            </span>
+          </div>
+        )}
+        
+        {/* Available Now badge */}
+        {isAvailableNow && (
+          <div className="absolute bottom-1.5 left-1.5 right-1.5">
+            <span className="flex items-center justify-center gap-1 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg animate-pulse w-full">
+              <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
+              Available Now
             </span>
           </div>
         )}
