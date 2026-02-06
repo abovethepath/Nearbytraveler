@@ -172,7 +172,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     return `${mins}m left`;
   };
 
-  const otherAvailableUsers = (availableUsers || []).filter(
+  const otherAvailableUsers = (Array.isArray(availableUsers) ? availableUsers : []).filter(
     (u: any) => u.userId !== currentUser?.id
   );
 
