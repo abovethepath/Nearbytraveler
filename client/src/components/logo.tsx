@@ -6,14 +6,12 @@ interface LogoProps {
 }
 
 export default function Logo({ className, variant = "default" }: LogoProps) {
-  const logoSrc = "/og-logo-landscape.png";
-
   const getVariantSize = () => {
     switch (variant) {
       case "landing":
         return "h-20 w-auto";
       case "navbar":
-        return "h-10 sm:h-10 md:h-12 lg:h-12 xl:h-12 w-auto";
+        return "h-20 sm:h-20 md:h-16 lg:h-16 xl:h-16 w-auto";
       case "black-navbar":
         return "h-14 w-auto";
       case "footer":
@@ -35,7 +33,7 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
 
   return (
     <img
-      src={logoSrc}
+      src="/new-logo.png"
       alt="Nearby Traveler"
       className={`${finalClassName} cursor-pointer hover:opacity-80 transition-opacity object-contain`}
       onClick={handleClick}

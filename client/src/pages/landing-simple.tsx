@@ -25,7 +25,7 @@ export default function LandingSimple() {
       <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
           <button onClick={() => { setLocation('/'); window.scrollTo(0, 0); }} className="flex items-center">
-            <img src="/new-logo.png" alt="Nearby Traveler" className="h-9 w-auto" />
+            <img src="/new-logo.png" alt="Nearby Traveler" className="h-9 w-auto object-contain" />
           </button>
           <Button
             onClick={() => handleJoin('nav')}

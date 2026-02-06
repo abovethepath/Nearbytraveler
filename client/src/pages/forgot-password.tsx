@@ -69,9 +69,9 @@ export default function ForgotPassword() {
           <CardHeader className="text-center pb-2">
             <div className="flex justify-center mb-6">
               <img 
-                src="/logo.png" 
+                src="/new-logo.png" 
                 alt="Nearby Traveler" 
-                className="h-16 w-auto"
+                className="h-16 w-auto object-contain"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
                 }}
@@ -138,9 +138,9 @@ export default function ForgotPassword() {
         <CardHeader className="text-center pb-2">
           <div className="flex justify-center mb-6">
             <img 
-              src="/logo.png" 
+              src="/new-logo.png" 
               alt="Nearby Traveler" 
-              className="h-16 w-auto"
+              className="h-16 w-auto object-contain"
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
               }}
