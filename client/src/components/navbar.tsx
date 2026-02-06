@@ -387,8 +387,8 @@ function Navbar() {
                 <img 
                   src="/new-logo_1753994063802.png" 
                   alt="Nearby Traveler" 
-                  className={`${isMobileMenuOpen ? 'h-14 sm:h-14' : 'h-12 sm:h-14'} md:h-14 lg:h-16 w-auto cursor-pointer hover:opacity-80 transition-all duration-300 object-contain`}
-                  style={{ maxWidth: '200px' }}
+                  className={`h-16 sm:h-16 md:h-16 lg:h-18 w-auto cursor-pointer hover:opacity-80 transition-all duration-300 object-contain`}
+                  style={{ maxWidth: '240px' }}
                   onLoad={() => console.log('Logo loaded successfully')}
                   onError={(e) => {
                     console.error('Logo failed to load from:', e.currentTarget.src);
