@@ -490,29 +490,30 @@ export default function SignupSteps() {
             {currentStep === 2 && (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="dateOfBirth">Date of Birth * (Can Be Hidden Later)</Label>
-                    <Input
-                      id="dateOfBirth"
-                      type="date"
-                      value={formData.dateOfBirth}
-                      onChange={(e) => {
-                        setFormData({ ...formData, dateOfBirth: e.target.value });
-                        // Validate age immediately
-                        const validation = validateAge(e.target.value);
-                        if (!validation.isValid && e.target.value) {
-                          toast({
-                            title: "Age Validation",
-                            description: validation.message,
-                            variant: "destructive",
-                          });
-                        }
-                      }}
-                      min="1925-01-01"
-                      max="9999-12-31"
-                      placeholder="YYYY-MM-DD"
-                      className="[&::-webkit-calendar-picker-indicator]:dark:invert"
-                    />
+                  <div className="overflow-hidden">
+                    <Label htmlFor="dateOfBirth" className="block text-center">Date of Birth * (Can Be Hidden Later)</Label>
+                    <div className="flex justify-center mt-2">
+                      <Input
+                        id="dateOfBirth"
+                        type="date"
+                        value={formData.dateOfBirth}
+                        onChange={(e) => {
+                          setFormData({ ...formData, dateOfBirth: e.target.value });
+                          const validation = validateAge(e.target.value);
+                          if (!validation.isValid && e.target.value) {
+                            toast({
+                              title: "Age Validation",
+                              description: validation.message,
+                              variant: "destructive",
+                            });
+                          }
+                        }}
+                        min="1925-01-01"
+                        max="9999-12-31"
+                        placeholder="YYYY-MM-DD"
+                        className="w-full max-w-xs text-center [&::-webkit-calendar-picker-indicator]:dark:invert"
+                      />
+                    </div>
                   </div>
                   <div>
                     <Label htmlFor="gender">Gender *</Label>

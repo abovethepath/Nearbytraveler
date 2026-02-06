@@ -8772,20 +8772,22 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     control={profileForm.control}
                     name="dateOfBirth"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Date of Birth</FormLabel>
+                      <FormItem className="overflow-hidden">
+                        <FormLabel className="block text-center">Date of Birth</FormLabel>
                         <FormControl>
-                          <Input 
-                            type="date" 
-                            placeholder="Your date of birth" 
-                            {...field}
-                            min={getDateInputConstraints().min}
-                            max={getDateInputConstraints().max}
-                            onChange={(e) => {
-                              field.onChange(e.target.value);
-                            }}
-                            className="dark:bg-gray-800 dark:border-gray-600 dark:text-white [&::-webkit-calendar-picker-indicator]:dark:invert"
-                          />
+                          <div className="flex justify-center">
+                            <Input 
+                              type="date" 
+                              placeholder="Your date of birth" 
+                              {...field}
+                              min={getDateInputConstraints().min}
+                              max={getDateInputConstraints().max}
+                              onChange={(e) => {
+                                field.onChange(e.target.value);
+                              }}
+                              className="w-full max-w-xs text-center dark:bg-gray-800 dark:border-gray-600 dark:text-white [&::-webkit-calendar-picker-indicator]:dark:invert"
+                            />
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>

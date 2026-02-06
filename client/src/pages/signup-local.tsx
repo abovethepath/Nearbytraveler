@@ -349,21 +349,23 @@ export default function SignupLocal() {
                   Personal Information
                 </h3>
 
-                <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border border-gray-200 dark:border-gray-600">
-                  <Label className="text-gray-700 dark:text-gray-200 font-semibold">Date of Birth *</Label>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+                <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-600 overflow-hidden">
+                  <Label className="text-gray-700 dark:text-gray-200 font-semibold block text-center">Date of Birth *</Label>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-3 text-center">
                     Can be hidden from public view later
                   </p>
-                  <Input
-                    type="date"
-                    value={formData.dateOfBirth}
-                    onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
-                    min={minDate}
-                    max={maxDate}
-                    required
-                    data-testid="input-dateOfBirth"
-                    className="w-full bg-white dark:bg-gray-600 text-gray-900 dark:text-white border-gray-300 dark:border-gray-500 rounded-lg"
-                  />
+                  <div className="flex justify-center">
+                    <Input
+                      type="date"
+                      value={formData.dateOfBirth}
+                      onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                      min={minDate}
+                      max={maxDate}
+                      required
+                      data-testid="input-dateOfBirth"
+                      className="w-full max-w-xs bg-white dark:bg-gray-600 text-gray-900 dark:text-white border-gray-300 dark:border-gray-500 rounded-lg text-center"
+                    />
+                  </div>
                 </div>
               </div>
 
