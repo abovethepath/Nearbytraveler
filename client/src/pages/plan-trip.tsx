@@ -730,8 +730,10 @@ export default function PlanTrip() {
               <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
               <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Plan • Connect • Explore</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white leading-tight mb-2">
-              {isEditMode ? "Edit Your Trip" : "Create a Trip"}
+            <h1 className="text-3xl sm:text-4xl font-bold leading-tight mb-2">
+              <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
+                {isEditMode ? "Edit Your Trip" : "Create a Trip"}
+              </span>
             </h1>
             <p className="text-lg text-gray-600 dark:text-gray-300 font-medium">
               {isEditMode ? "Update your travel plan details" : "Step 1 of 2: Destination + Dates"}
@@ -749,25 +751,13 @@ export default function PlanTrip() {
             <div className="space-y-6">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
                 {isEditMode ? (
-                  <>
-                    <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
-                      Edit Your
-                    </span>
-                    <br />
-                    <span className="text-gray-900 dark:text-white">
-                      Trip
-                    </span>
-                  </>
+                  <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
+                    Edit Your Trip
+                  </span>
                 ) : (
-                  <>
-                    <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
-                      Create a
-                    </span>
-                    <br />
-                    <span className="text-gray-900 dark:text-white">
-                      Trip
-                    </span>
-                  </>
+                  <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
+                    Create a Trip
+                  </span>
                 )}
               </h1>
               <div className="max-w-2xl space-y-4">
