@@ -385,10 +385,10 @@ function Navbar() {
             <div className="flex items-center justify-start flex-1 min-w-0">
               <Link href="/" className="flex items-center space-x-2 logo-container text-left">
                 <img 
-                  src="/new-logo_1753994063802.png" 
+                  src="/og-logo-landscape.png" 
                   alt="Nearby Traveler" 
                   className={`w-auto cursor-pointer hover:opacity-80 transition-all duration-300 object-contain`}
-                  style={{ height: '72px', maxWidth: '320px' }}
+                  style={{ height: '48px', maxWidth: '240px' }}
                   onLoad={() => console.log('Logo loaded successfully')}
                   onError={(e) => {
                     console.error('Logo failed to load from:', e.currentTarget.src);
