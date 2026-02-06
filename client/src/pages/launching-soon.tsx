@@ -79,7 +79,7 @@ export default function LaunchingSoon() {
                   Back
                 </Button>
                 <div className="flex-1 flex justify-center">
-                  <Logo className="h-32 sm:h-40 md:h-48 w-auto" />
+                  <Logo className="h-14 sm:h-16 md:h-20 w-auto" />
                 </div>
                 <div className="w-20"></div>
               </div>
@@ -126,7 +126,7 @@ export default function LaunchingSoon() {
                 Back
               </Button>
               <div className="flex-1 flex justify-center">
-                <Logo className="h-32 sm:h-40 md:h-48 w-auto" />
+                <Logo className="h-14 sm:h-16 md:h-20 w-auto" />
               </div>
               <div className="w-20"></div>
             </div>
