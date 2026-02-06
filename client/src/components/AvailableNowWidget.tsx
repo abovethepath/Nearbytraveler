@@ -168,13 +168,24 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   });
 
   const respondRequestMutation = useMutation({
-    mutationFn: async ({ requestId, status }: { requestId: number; status: string }) => {
+    mutationFn: async ({ requestId, status, fromUserId }: { requestId: number; status: string; fromUserId?: number }) => {
       const res = await apiRequest("PATCH", `/api/available-now/requests/${requestId}`, { status });
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data: any, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/requests"] });
-      toast({ title: "Response sent" });
+      if (variables.status === "accepted") {
+        const otherUserId = data?.otherUserId || variables.fromUserId;
+        toast({ title: "It's a meet!", description: "Opening your chat now..." });
+        if (otherUserId) {
+          setTimeout(() => {
+            window.history.pushState({}, '', `/messages/${otherUserId}`);
+            window.dispatchEvent(new PopStateEvent('popstate'));
+          }, 500);
+        }
+      } else {
+        toast({ title: "Request declined" });
+      }
     },
   });
 
@@ -342,7 +353,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                     <Button
                       size="sm"
                       className="h-7 bg-green-500 hover:bg-green-600 text-white text-xs"
-                      onClick={() => respondRequestMutation.mutate({ requestId: req.id, status: "accepted" })}
+                      onClick={() => respondRequestMutation.mutate({ requestId: req.id, status: "accepted", fromUserId: req.fromUser?.id })}
                     >
                       Accept
                     </Button>

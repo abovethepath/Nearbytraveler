@@ -21069,7 +21069,34 @@ Questions? Just reply to this message. Welcome aboard!
         ))
         .returning();
 
-      res.json(updated);
+      if (status === "accepted" && updated) {
+        const [acceptor] = await db.select({ username: users.username })
+          .from(users).where(eq(users.id, Number(userId)));
+        const acceptorName = acceptor?.username || "Someone";
+
+        await db.insert(messages).values({
+          senderId: Number(userId),
+          receiverId: updated.fromUserId,
+          content: `Hey! I accepted your meet request — let's figure out where to meet up! 🤝`,
+          messageType: 'text',
+          isRead: false,
+          createdAt: new Date(),
+        });
+
+        try {
+          const { sendPushNotification } = await import('./services/pushNotificationService');
+          await sendPushNotification(
+            updated.fromUserId,
+            "Meet Request Accepted!",
+            `@${acceptorName} wants to meet up! Tap to chat.`,
+            { type: "meet_accepted", userId: Number(userId) }
+          );
+        } catch (pushErr) {
+          console.error("Push notification error:", pushErr);
+        }
+      }
+
+      res.json({ ...updated, otherUserId: updated?.fromUserId });
     } catch (error: any) {
       console.error("Error updating request:", error);
       res.status(500).json({ error: "Failed to update request" });
