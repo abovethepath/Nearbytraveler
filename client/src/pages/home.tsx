@@ -848,10 +848,15 @@ export default function Home() {
   const events = useMemo(() => {
     if (!allEvents.length) return [];
 
-    // Filter to only show upcoming events
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const upcomingEvents = allEvents.filter(event => new Date(event.date) >= today);
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const upcomingEvents = allEvents.filter(event => {
+      const eventDate = new Date(event.date);
+      eventDate.setHours(0, 0, 0, 0);
+      return eventDate >= yesterday;
+    });
 
     // Handle recurring events - only show one instance per series
     const uniqueEvents = upcomingEvents.reduce((unique: any[], event: any) => {
