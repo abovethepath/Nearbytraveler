@@ -65,7 +65,7 @@ export default function LandingNew() {
 
   const handleGetStarted = () => {
     trackEvent('landing_page_cta_clicked', 'hero_section', 'Start Connecting Now');
-    setLocation('/signup');
+    setLocation('/launching-soon');
   };
 
   return (
@@ -76,7 +76,7 @@ export default function LandingNew() {
         <Button 
           onClick={() => {
             trackEvent('signup_cta_click', 'landing_page', 'floating_join_now');
-            setLocation('/signup');
+            setLocation('/launching-soon');
           }}
           className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 sm:px-6 sm:py-3 rounded-lg shadow-sm transition-all duration-200 text-sm sm:text-base"
           data-testid="button-floating-join-now"

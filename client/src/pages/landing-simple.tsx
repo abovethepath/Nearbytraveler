@@ -16,7 +16,7 @@ export default function LandingSimple() {
 
   const handleJoin = (source: string) => {
     trackEvent('signup_cta_click', 'landing_simple', source);
-    setLocation('/join');
+    setLocation('/launching-soon');
   };
 
   return (

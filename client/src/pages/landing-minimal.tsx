@@ -35,7 +35,7 @@ export default function LandingMinimal() {
         <Button 
           onClick={() => {
             trackEvent('signup_cta_click', 'landing_page', 'floating_join_now');
-            setLocation('/join');
+            setLocation('/launching-soon');
           }}
           className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
         >
@@ -88,7 +88,7 @@ export default function LandingMinimal() {
                           <Button
                             onClick={() => {
                               trackEvent('signup_cta_click', 'landing_page', 'main_hero_button');
-                              setLocation('/join');
+                              setLocation('/launching-soon');
                             }}
                             size="lg"
                             className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-bold px-8 py-3 rounded-xl shadow-lg transition-all duration-200 border-2 border-white max-w-md mx-auto"
@@ -241,7 +241,7 @@ export default function LandingMinimal() {
                     <Button 
                       onClick={() => {
                         trackEvent('event_card_click', 'landing_page', 'beach_bonfire');
-                        setLocation('/join');
+                        setLocation('/launching-soon');
                       }}
                       className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white text-sm py-2"
                     >
@@ -281,7 +281,7 @@ export default function LandingMinimal() {
                     <Button 
                       onClick={() => {
                         trackEvent('event_card_click', 'landing_page', 'walking_tour');
-                        setLocation('/join');
+                        setLocation('/launching-soon');
                       }}
                       className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white text-sm py-2"
                     >
@@ -321,7 +321,7 @@ export default function LandingMinimal() {
                     <Button 
                       onClick={() => {
                         trackEvent('event_card_click', 'landing_page', 'foodie_meetup');
-                        setLocation('/join');
+                        setLocation('/launching-soon');
                       }}
                       className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white text-sm py-2"
                     >
@@ -340,7 +340,7 @@ export default function LandingMinimal() {
                 <Button 
                   onClick={() => {
                     trackEvent('signup_cta_click', 'landing_page', 'featured_experiences_cta');
-                    setLocation('/join');
+                    setLocation('/launching-soon');
                   }}
                   size="lg"
                   className="bg-white text-blue-600 hover:bg-gray-100 font-bold px-8 py-3 rounded-xl shadow-lg transition-all duration-200"

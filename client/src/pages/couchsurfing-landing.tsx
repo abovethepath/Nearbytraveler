@@ -56,7 +56,7 @@ export default function CouchsurfingLanding() {
         <Button 
           onClick={() => {
             trackEvent('signup_cta_click', 'couchsurfing_landing', 'floating_join_now');
-            setLocation('/signup');
+            setLocation('/launching-soon');
           }}
           className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded-lg shadow-lg transition-all duration-200"
         >
@@ -93,7 +93,7 @@ export default function CouchsurfingLanding() {
                 <button 
                   onClick={() => {
                     trackEvent('signup_cta_click', 'couchsurfing_landing', 'hero_join_now');
-                    setLocation('/signup');
+                    setLocation('/launching-soon');
                   }}
                   className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-200 w-full sm:w-auto"
                   data-testid="button-hero-join-now"
@@ -339,7 +339,7 @@ export default function CouchsurfingLanding() {
               <Button 
                 onClick={() => {
                   trackEvent('signup_cta_click', 'couchsurfing_landing', 'reach_all_travelers');
-                  setLocation('/signup');
+                  setLocation('/launching-soon');
                 }}
                 className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-8 py-4 rounded-lg shadow-lg text-lg"
                 data-testid="button-reach-all-travelers"
@@ -483,7 +483,7 @@ export default function CouchsurfingLanding() {
             <Button 
               onClick={() => {
                 trackEvent('signup_cta_click', 'couchsurfing_landing', 'faq_join_waitlist');
-                setLocation('/signup');
+                setLocation('/launching-soon');
               }}
               className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-4 rounded-lg shadow-lg text-lg mb-4"
               data-testid="button-faq-join-waitlist"

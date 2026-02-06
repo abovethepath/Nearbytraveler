@@ -36,7 +36,7 @@ export default function TravelersLanding() {
         <Button 
           onClick={() => {
             trackEvent('signup_cta_click', 'travelers_landing', 'floating_join_now');
-            setLocation('/signup');
+            setLocation('/launching-soon');
           }}
           className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 sm:px-6 sm:py-3 rounded-lg shadow-sm transition-all duration-200 text-sm sm:text-base"
           data-testid="button-floating-join-now"
@@ -69,7 +69,7 @@ export default function TravelersLanding() {
                   <Button
                     onClick={() => {
                       trackEvent('signup_cta_click', 'travelers_landing', 'main_cta');
-                      setLocation('/signup');
+                      setLocation('/launching-soon');
                     }}
                     size="lg"
                     className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
@@ -308,7 +308,7 @@ export default function TravelersLanding() {
             <p className="text-lg mb-6 text-black">Join thousands of travelers who've turned solo trips into lifelong friendships. Your next adventure starts with the people you'll meet.</p>
             <p className="text-xl mb-6 text-black">✈️ Free to join • 🌍 Global community</p>
             <Button
-              onClick={() => setLocation('/signup')}
+              onClick={() => setLocation('/launching-soon')}
               size="lg"
               className="bg-white hover:bg-gray-100 text-orange-600 font-bold px-8 py-3 rounded-lg"
               data-testid="button-get-started"
