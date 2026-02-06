@@ -4,7 +4,7 @@ import { useLocation } from "wouter";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import Footer from "@/components/footer";
 import { trackEvent } from "@/lib/analytics";
-const travelersHeaderImage = "/landing-images/travelers_1756778615408.jpg";
+const travelersHeaderImage = "/travlersonastreet.jpg";
 
 export default function TravelersLanding() {
   const [, setLocation] = useLocation();

@@ -34,7 +34,7 @@ export default function LandingNew() {
   ];
 
   // Static hero image for users (no more rotating business content)
-  const heroImage = "/travelers_1756778615408.jpg";
+  const heroImage = "/travlersonastreet.jpg";
   const heroImageAlt = "Travelers connecting and making friends";
 
   useEffect(() => {
