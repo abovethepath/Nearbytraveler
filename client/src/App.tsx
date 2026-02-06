@@ -172,6 +172,7 @@ import QRCodePage from "@/pages/qr-code";
 import QRSimplePage from "@/pages/qr-simple";
 import LandingStreamlined from "@/pages/landing-new-streamlined";
 import LandingMinimal from "@/pages/landing-minimal";
+import LandingSimple from "@/pages/landing-simple";
 import ComingSoon from "@/pages/coming-soon";
 
 
@@ -239,7 +240,7 @@ function Router() {
     '/', '/landing', '/landing-new', '/auth', '/auth/signup', '/join', '/signup', '/signup/local', '/signup/traveler', '/signup/business', '/signup/account', '/signup/traveling', '/account-success',
     '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', /* '/networking-landing', */ '/couchsurfing', '/cs', '/b', '/privacy', '/terms', '/cookies', '/about', '/ambassador-program', '/getting-started',
     '/forgot-password', '/reset-password', '/welcome', '/welcome-business', '/quick-login', '/preview-landing', '/preview-first-landing',
-    '/travel-quiz', '/TravelIntentQuiz', '/business-card', '/qr-code'
+    '/travel-quiz', '/TravelIntentQuiz', '/business-card', '/qr-code', '/landing-simple'
   ];
   const isLandingPage = landingPageRoutes.includes(location);
 
@@ -754,6 +755,11 @@ function Router() {
       // Show minimal landing page for comparison
       if (location === '/landing-minimal') {
         return <LandingMinimal />;
+      }
+
+      // Show simple A/B test landing page
+      if (location === '/landing-simple') {
+        return <LandingSimple />;
       }
 
       // Show appropriate page for root path based on authentication
