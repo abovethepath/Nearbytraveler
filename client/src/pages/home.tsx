@@ -1630,6 +1630,19 @@ export default function Home() {
           {/* Main Content - Center column */}
           <div className="col-span-1 lg:col-span-2 space-y-3 sm:space-y-4 md:space-y-8 min-w-0 relative">
 
+            {/* Available Now Widget - FIRST THING on mobile, always visible at top */}
+            {effectiveUser?.userType !== 'business' && (
+              <div className="lg:hidden">
+                <AvailableNowWidget currentUser={effectiveUser} onSortByAvailableNow={() => {
+                  setSortBy('available_now');
+                  setTimeout(() => {
+                    const discoverSection = document.querySelector('[data-testid="discover-people-section"]');
+                    discoverSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }, 100);
+                }} />
+              </div>
+            )}
+
             {/* Meetup Alert Banner - Shows when there are new meetups nearby */}
             {effectiveUser?.id && effectiveUser?.userType !== 'business' && (
               <MeetupAlertBanner userId={effectiveUser.id} />
@@ -1893,15 +1906,17 @@ export default function Home() {
           {/* Right Sidebar - Weather, Messages, Quick Meetups, Events */}
           <div className="col-span-1 space-y-6 sm:space-y-8 md:space-y-10">
             
-            {/* Available Now Widget - Hangout Mode */}
+            {/* Available Now Widget - Hangout Mode (desktop sidebar only, mobile version is at top of main content) */}
             {effectiveUser?.userType !== 'business' && (
-              <AvailableNowWidget currentUser={effectiveUser} onSortByAvailableNow={() => {
-                setSortBy('available_now');
-                setTimeout(() => {
-                  const discoverSection = document.querySelector('[data-testid="discover-people-section"]');
-                  discoverSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 100);
-              }} />
+              <div className="hidden lg:block">
+                <AvailableNowWidget currentUser={effectiveUser} onSortByAvailableNow={() => {
+                  setSortBy('available_now');
+                  setTimeout(() => {
+                    const discoverSection = document.querySelector('[data-testid="discover-people-section"]');
+                    discoverSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }, 100);
+                }} />
+              </div>
             )}
 
             {/* Weather Widget */}

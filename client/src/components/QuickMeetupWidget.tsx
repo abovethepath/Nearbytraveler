@@ -345,7 +345,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
                 <h3 className="font-bold text-green-700 dark:text-green-300 text-lg">
-                  🎯 {allActiveMeetups.length} ACTIVE HANGOUT{allActiveMeetups.length > 1 ? 'S' : ''} HAPPENING NOW!
+                  {allActiveMeetups.length} Active Quick Meetup{allActiveMeetups.length > 1 ? 's' : ''}
                 </h3>
               </div>
               <div className="space-y-2 max-h-[300px] overflow-y-auto">
@@ -432,65 +432,44 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-gradient-to-br from-orange-400 to-amber-400 rounded-full opacity-25 blur-3xl animate-float-slower"></div>
       </div>
       
-      {/* ENERGETIC PRIMARY CTA - LETS MEET NOW! */}
-      <Card className="relative backdrop-blur-sm bg-white/70 dark:bg-gray-900/70 border-2 border-orange-400/50 dark:border-orange-600/50 shadow-2xl hover:shadow-3xl hover:border-orange-500/60 dark:hover:border-orange-500/60 transition-all duration-300 w-full max-h-[90vh] overflow-hidden group-hover:bg-white/80 dark:group-hover:bg-gray-900/80">
+      {/* Quick Meetup CTA */}
+      <Card className="relative backdrop-blur-sm bg-white/70 dark:bg-gray-900/70 border-2 border-orange-400/50 dark:border-orange-600/50 shadow-2xl hover:shadow-3xl hover:border-orange-500/60 dark:hover:border-orange-500/60 transition-all duration-300 w-full group-hover:bg-white/80 dark:group-hover:bg-gray-900/80">
         <CardContent className="p-6 bg-transparent">
           {!showCreateForm ? (
             <div className="text-center space-y-4">
               <div className="relative">
-                {/* Animated background effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-orange-400 rounded-full blur-xl opacity-20 animate-pulse"></div>
                 <div className="relative flex items-center justify-center gap-3">
-                  <Zap className="h-8 w-8 text-orange-600 dark:text-orange-400 animate-bounce" />
+                  <Coffee className="h-7 w-7 text-orange-600 dark:text-orange-400" />
                   <h3 className="font-black text-2xl bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
-                    LET'S MEET NOW!
+                    Quick Meetup
                   </h3>
-                  <Zap className="h-8 w-8 text-orange-600 dark:text-orange-400 animate-bounce" style={{ animationDelay: '0.2s' }} />
                 </div>
               </div>
               
               <div className="space-y-2">
-                <p className="text-lg font-bold text-orange-800 dark:text-orange-200">
-                  🚀 Available This Second?
-                </p>
-                <p className="text-sm font-medium text-red-700 dark:text-red-300">
-                  Create instant meetup • Expires today
-                </p>
-                <p className="text-xs text-gray-700 dark:text-gray-300 font-medium">
-                  ⚡ Lightning-fast connections with nearby people!
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Post a meetup idea and connect with nearby people today
                 </p>
               </div>
               
               <div className="relative">
                 <Button
                   onClick={() => {
-                    console.log('🔥 CLICKED: LETS MEET NOW! button');
                     setShowCreateForm(true);
-                    console.log('🔥 FORM STATE CHANGED TO TRUE');
                   }}
-                  className="w-full text-xl font-black py-6 h-16 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 border-0 rounded-xl shadow-2xl hover:shadow-orange-300 dark:hover:shadow-orange-900/50 transform hover:scale-105 transition-all duration-300 relative overflow-hidden"
-                  style={{ color: 'black' }}
+                  className="w-full text-lg font-bold py-5 h-14 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 border-0 rounded-xl shadow-lg text-white"
                 >
-                  <span className="relative z-10 flex items-center justify-center gap-2" style={{ color: 'black' }}>
-                    🎯 LETS MEET NOW!
-                    <Clock className="h-6 w-6 animate-spin" style={{ color: 'black' }} />
-                  </span>
-                  {/* Animated shine effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] animate-shine"></div>
+                  <Plus className="h-5 w-5 mr-2" />
+                  Create Quick Meetup
                 </Button>
-                
-                {/* Quick action buttons */}
-                <div className="mt-3 flex gap-2 justify-center">
-                  <Badge className="bg-orange-500 px-3 py-1 text-xs font-bold animate-pulse"><span style={{ color: 'black' }}>TODAY</span></Badge>
-                </div>
               </div>
             </div>
           ) : (
-            <div className="space-y-3 max-h-[80vh] overflow-y-auto no-scrollbar flex flex-col">
+            <div className="space-y-3 flex flex-col">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Zap className="h-6 w-6 text-orange-500 animate-bounce" />
-                  <h4 className="font-bold text-lg bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">🚀 LET'S DO THIS!</h4>
+                  <h4 className="font-bold text-lg bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Create Quick Meetup</h4>
                 </div>
                 <Button
                   onClick={() => {
@@ -691,8 +670,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
                 className="w-full text-lg font-black py-4 h-14 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0 rounded-xl shadow-2xl hover:scale-105 transition-all duration-300 relative overflow-hidden"
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
-                  {createMutation.isPending ? '🚀 POSTING...' : '🎯 LETS MEET NOW!'}
-                  {!createMutation.isPending && <Clock className="h-5 w-5 animate-spin" />}
+                  {createMutation.isPending ? 'Posting...' : 'Post Quick Meetup'}
                 </span>
                 {/* Animated shine effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] animate-shine"></div>
