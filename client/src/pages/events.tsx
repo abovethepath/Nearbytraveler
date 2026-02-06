@@ -478,14 +478,13 @@ export default function Events() {
               </h1>
               
               <div className="mb-6 flex justify-center px-4">
-                <div className="relative w-full max-w-sm" style={{ opacity: 0, transition: 'opacity 0.3s ease' }} ref={(el: HTMLDivElement | null) => { if (el) { const img = el.querySelector('img'); if (img && img.complete) el.style.opacity = '1'; } }}>
+                <div className="relative w-full max-w-sm">
                   <div className="relative rounded-2xl overflow-hidden shadow-xl aspect-[4/3]">
                     <img 
                       src={eventsBgImage}
                       alt="Events and experiences"
                       className="w-full h-full object-cover"
                       loading="eager"
-                      onLoad={(e) => { const container = (e.currentTarget as HTMLElement).closest('[style]') as HTMLElement; if (container) container.style.opacity = '1'; }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent"></div>
                   </div>
@@ -530,7 +529,7 @@ export default function Events() {
                 </div>
               
                 <div className="md:col-span-2 flex justify-center items-center relative order-first md:order-last">
-                  <div className="relative group" style={{ opacity: 0, transition: 'opacity 0.3s ease' }} ref={(el: HTMLDivElement | null) => { if (el) { const img = el.querySelector('img'); if (img && img.complete) el.style.opacity = '1'; } }}>
+                  <div className="relative group">
                     <div className="relative">
                       <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-xl overflow-hidden shadow-xl border border-gray-200/50 dark:border-gray-700/50">
                         <img
@@ -538,7 +537,6 @@ export default function Events() {
                           alt="Events and experiences"
                           className="w-full h-full object-cover"
                           loading="eager"
-                          onLoad={(e) => { const container = (e.currentTarget as HTMLElement).closest('[style]') as HTMLElement; if (container) container.style.opacity = '1'; }}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent"></div>
                       </div>
