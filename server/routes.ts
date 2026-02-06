@@ -79,7 +79,7 @@ import {
   notifications,
 } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
-import { waitlistLeads, availableNow, availableNowRequests } from "../shared/schema";
+import { waitlistLeads, availableNow, availableNowRequests, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags } from "../shared/schema";
 import { alias } from "drizzle-orm/pg-core";
 
 // Helper function to compute public display name based on user preference
@@ -21127,6 +21127,745 @@ Questions? Just reply to this message. Welcome aboard!
       }
       
       res.json(activeIds);
+    } catch (error: any) {
+      res.json([]);
+    }
+  });
+
+  // ==================== VIRAL FEATURES API ====================
+
+  // === LIVE LOCATION SHARES ===
+
+  // Create a live location share ("I'm at [place]")
+  app.post("/api/live-shares", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const { placeName, placeAddress, activity, note, city, state, country, latitude, longitude, durationMinutes } = req.body;
+      if (!placeName || !city || !country) return res.status(400).json({ error: "Place name, city, and country are required" });
+
+      const duration = Math.min(Math.max(durationMinutes || 60, 15), 240);
+      const expiresAt = new Date(Date.now() + duration * 60 * 1000);
+
+      // Deactivate any existing live shares
+      await db.update(liveLocationShares)
+        .set({ isActive: false })
+        .where(and(eq(liveLocationShares.userId, userId), eq(liveLocationShares.isActive, true)));
+
+      const [share] = await db.insert(liveLocationShares).values({
+        userId,
+        placeName,
+        placeAddress: placeAddress || null,
+        activity: activity || null,
+        note: note || null,
+        city,
+        state: state || null,
+        country,
+        latitude: latitude || null,
+        longitude: longitude || null,
+        durationMinutes: duration,
+        expiresAt,
+        visibility: req.body.visibility || "everyone",
+        isActive: true,
+      }).returning();
+
+      res.json(share);
+    } catch (error: any) {
+      console.error("Create live share error:", error);
+      res.status(500).json({ error: "Failed to create live share" });
+    }
+  });
+
+  // Get active live shares for a city
+  app.get("/api/live-shares", async (req: any, res) => {
+    try {
+      const city = req.query.city as string;
+      const now = new Date();
+      const currentUserId = req.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
+
+      let query = db.select()
+        .from(liveLocationShares)
+        .where(and(
+          eq(liveLocationShares.isActive, true),
+          gte(liveLocationShares.expiresAt, now),
+          city ? ilike(liveLocationShares.city, city) : undefined
+        ))
+        .orderBy(desc(liveLocationShares.createdAt));
+
+      const shares = await query;
+
+      // Filter blocked/hidden users
+      if (currentUserId > 0) {
+        const blockedByMe = await db.select({ blockedId: blockedUsers.blockedId })
+          .from(blockedUsers).where(eq(blockedUsers.blockerId, currentUserId));
+        const blockedMe = await db.select({ blockerId: blockedUsers.blockerId })
+          .from(blockedUsers).where(eq(blockedUsers.blockedId, currentUserId));
+        const excludeIds = new Set([
+          ...blockedByMe.map(b => b.blockedId),
+          ...blockedMe.map(b => b.blockerId),
+        ]);
+        const filtered = shares.filter(s => !excludeIds.has(s.userId));
+
+        // Enrich with user info
+        const userIds = filtered.map(s => s.userId);
+        if (userIds.length === 0) return res.json([]);
+        const shareUsers = await db.select({
+          id: users.id,
+          username: users.username,
+          name: users.name,
+          profileImage: users.profileImage,
+          avatarColor: users.avatarColor,
+          hometownCity: users.hometownCity,
+          hometownCountry: users.hometownCountry,
+          displayNamePreference: users.displayNamePreference,
+        }).from(users).where(inArray(users.id, userIds));
+
+        const userMap = new Map(shareUsers.map(u => [u.id, u]));
+        const enriched = filtered.map(s => ({
+          ...s,
+          user: userMap.get(s.userId) || null,
+          timeLeft: Math.max(0, Math.round((new Date(s.expiresAt).getTime() - Date.now()) / 60000)),
+        }));
+        return res.json(enriched);
+      }
+
+      res.json(shares);
+    } catch (error: any) {
+      console.error("Get live shares error:", error);
+      res.json([]);
+    }
+  });
+
+  // Get my active live share
+  app.get("/api/live-shares/mine", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.json(null);
+
+      const now = new Date();
+      const [share] = await db.select()
+        .from(liveLocationShares)
+        .where(and(
+          eq(liveLocationShares.userId, userId),
+          eq(liveLocationShares.isActive, true),
+          gte(liveLocationShares.expiresAt, now)
+        ))
+        .limit(1);
+
+      res.json(share || null);
+    } catch (error: any) {
+      res.json(null);
+    }
+  });
+
+  // Delete/deactivate my live share
+  app.delete("/api/live-shares", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      await db.update(liveLocationShares)
+        .set({ isActive: false })
+        .where(and(eq(liveLocationShares.userId, userId), eq(liveLocationShares.isActive, true)));
+
+      res.json({ ok: true });
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to clear live share" });
+    }
+  });
+
+  // React to a live share ("I'm interested" / "On my way")
+  app.post("/api/live-shares/:id/react", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const shareId = parseInt(req.params.id);
+      const { type, message } = req.body;
+
+      const [reaction] = await db.insert(liveShareReactions).values({
+        shareId,
+        userId,
+        type: type || "interested",
+        message: message || null,
+      }).returning();
+
+      // Update reaction count
+      await db.update(liveLocationShares)
+        .set({ reactionsCount: sql`${liveLocationShares.reactionsCount} + 1` })
+        .where(eq(liveLocationShares.id, shareId));
+
+      res.json(reaction);
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to react" });
+    }
+  });
+
+  // Get reactions for a live share
+  app.get("/api/live-shares/:id/reactions", async (req: any, res) => {
+    try {
+      const shareId = parseInt(req.params.id);
+      const reactions = await db.select()
+        .from(liveShareReactions)
+        .where(eq(liveShareReactions.shareId, shareId))
+        .orderBy(desc(liveShareReactions.createdAt));
+
+      // Enrich with user info
+      const userIds = reactions.map(r => r.userId);
+      if (userIds.length === 0) return res.json([]);
+      const reactionUsers = await db.select({
+        id: users.id,
+        username: users.username,
+        name: users.name,
+        profileImage: users.profileImage,
+        avatarColor: users.avatarColor,
+      }).from(users).where(inArray(users.id, userIds));
+
+      const userMap = new Map(reactionUsers.map(u => [u.id, u]));
+      res.json(reactions.map(r => ({ ...r, user: userMap.get(r.userId) || null })));
+    } catch (error: any) {
+      res.json([]);
+    }
+  });
+
+  // === MICRO-EXPERIENCES ===
+
+  // Create a micro-experience
+  app.post("/api/micro-experiences", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const { title, description, category, durationMinutes, meetingPoint, city, state, country,
+              latitude, longitude, startsAt, maxParticipants, costEstimate, energyLevel, templateId, tags } = req.body;
+
+      if (!title || !description || !category || !meetingPoint || !city || !country) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      const duration = Math.min(Math.max(durationMinutes || 60, 15), 120);
+      const startTime = startsAt ? new Date(startsAt) : new Date(Date.now() + 30 * 60 * 1000);
+      const expiresAt = new Date(startTime.getTime() + duration * 60 * 1000);
+
+      const [experience] = await db.insert(microExperiences).values({
+        creatorId: userId,
+        title,
+        description,
+        category,
+        durationMinutes: duration,
+        meetingPoint,
+        city,
+        state: state || null,
+        country,
+        latitude: latitude || null,
+        longitude: longitude || null,
+        startsAt: startTime,
+        expiresAt,
+        maxParticipants: maxParticipants || 4,
+        currentParticipants: 1,
+        costEstimate: costEstimate || null,
+        energyLevel: energyLevel || "medium",
+        isActive: true,
+        templateId: templateId || null,
+        tags: tags || null,
+      }).returning();
+
+      // Auto-join creator as participant
+      await db.insert(microExperienceParticipants).values({
+        experienceId: experience.id,
+        userId,
+        status: "joined",
+      });
+
+      // Increment template usage if from template
+      if (templateId) {
+        await db.update(activityTemplates)
+          .set({ usageCount: sql`${activityTemplates.usageCount} + 1` })
+          .where(eq(activityTemplates.id, templateId));
+      }
+
+      res.json(experience);
+    } catch (error: any) {
+      console.error("Create micro-experience error:", error);
+      res.status(500).json({ error: "Failed to create micro-experience" });
+    }
+  });
+
+  // Get micro-experiences for a city
+  app.get("/api/micro-experiences", async (req: any, res) => {
+    try {
+      const city = req.query.city as string;
+      const category = req.query.category as string;
+      const energyLevel = req.query.energyLevel as string;
+      const now = new Date();
+      const currentUserId = req.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
+
+      const conditions = [
+        eq(microExperiences.isActive, true),
+        gte(microExperiences.expiresAt, now),
+      ];
+      if (city) conditions.push(ilike(microExperiences.city, city));
+      if (category) conditions.push(eq(microExperiences.category, category));
+      if (energyLevel) conditions.push(eq(microExperiences.energyLevel, energyLevel));
+
+      const experiences = await db.select()
+        .from(microExperiences)
+        .where(and(...conditions))
+        .orderBy(asc(microExperiences.startsAt));
+
+      // Enrich with creator info
+      const creatorIds = [...new Set(experiences.map(e => e.creatorId))];
+      if (creatorIds.length === 0) return res.json([]);
+
+      const creators = await db.select({
+        id: users.id,
+        username: users.username,
+        name: users.name,
+        profileImage: users.profileImage,
+        avatarColor: users.avatarColor,
+        hometownCity: users.hometownCity,
+        hometownCountry: users.hometownCountry,
+        displayNamePreference: users.displayNamePreference,
+      }).from(users).where(inArray(users.id, creatorIds));
+
+      const creatorMap = new Map(creators.map(u => [u.id, u]));
+
+      // Get participant counts
+      const participantData = await db.select({
+        experienceId: microExperienceParticipants.experienceId,
+        count: count(),
+      })
+        .from(microExperienceParticipants)
+        .where(and(
+          inArray(microExperienceParticipants.experienceId, experiences.map(e => e.id)),
+          eq(microExperienceParticipants.status, "joined")
+        ))
+        .groupBy(microExperienceParticipants.experienceId);
+
+      const participantMap = new Map(participantData.map(p => [p.experienceId, Number(p.count)]));
+
+      const enriched = experiences.map(e => ({
+        ...e,
+        creator: creatorMap.get(e.creatorId) || null,
+        currentParticipants: participantMap.get(e.id) || 1,
+        spotsLeft: e.maxParticipants - (participantMap.get(e.id) || 1),
+        startsIn: Math.max(0, Math.round((new Date(e.startsAt).getTime() - Date.now()) / 60000)),
+      }));
+
+      res.json(enriched);
+    } catch (error: any) {
+      console.error("Get micro-experiences error:", error);
+      res.json([]);
+    }
+  });
+
+  // Join a micro-experience
+  app.post("/api/micro-experiences/:id/join", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const experienceId = parseInt(req.params.id);
+
+      // Check if experience exists and has spots
+      const [experience] = await db.select()
+        .from(microExperiences)
+        .where(and(eq(microExperiences.id, experienceId), eq(microExperiences.isActive, true)));
+
+      if (!experience) return res.status(404).json({ error: "Experience not found" });
+
+      // Check capacity
+      const [{ count: currentCount }] = await db.select({ count: count() })
+        .from(microExperienceParticipants)
+        .where(and(
+          eq(microExperienceParticipants.experienceId, experienceId),
+          eq(microExperienceParticipants.status, "joined")
+        ));
+
+      if (Number(currentCount) >= experience.maxParticipants) {
+        return res.status(400).json({ error: "Experience is full" });
+      }
+
+      // Check not already joined
+      const [existing] = await db.select()
+        .from(microExperienceParticipants)
+        .where(and(
+          eq(microExperienceParticipants.experienceId, experienceId),
+          eq(microExperienceParticipants.userId, userId)
+        ));
+
+      if (existing) return res.status(400).json({ error: "Already joined" });
+
+      await db.insert(microExperienceParticipants).values({
+        experienceId,
+        userId,
+        status: "joined",
+      });
+
+      await db.update(microExperiences)
+        .set({ currentParticipants: sql`${microExperiences.currentParticipants} + 1` })
+        .where(eq(microExperiences.id, experienceId));
+
+      res.json({ ok: true });
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to join" });
+    }
+  });
+
+  // Leave a micro-experience
+  app.delete("/api/micro-experiences/:id/leave", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const experienceId = parseInt(req.params.id);
+
+      await db.delete(microExperienceParticipants)
+        .where(and(
+          eq(microExperienceParticipants.experienceId, experienceId),
+          eq(microExperienceParticipants.userId, userId)
+        ));
+
+      await db.update(microExperiences)
+        .set({ currentParticipants: sql`GREATEST(1, ${microExperiences.currentParticipants} - 1)` })
+        .where(eq(microExperiences.id, experienceId));
+
+      res.json({ ok: true });
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to leave" });
+    }
+  });
+
+  // === ACTIVITY TEMPLATES ===
+
+  // Get all activity templates
+  app.get("/api/activity-templates", async (req: any, res) => {
+    try {
+      const category = req.query.category as string;
+      const skillSwapOnly = req.query.skillSwap === "true";
+
+      const conditions = [eq(activityTemplates.isActive, true)];
+      if (category) conditions.push(eq(activityTemplates.category, category));
+      if (skillSwapOnly) conditions.push(eq(activityTemplates.isSkillSwap, true));
+
+      // Use a simpler approach
+      let templates;
+      if (conditions.length === 1) {
+        templates = await db.select().from(activityTemplates)
+          .where(conditions[0])
+          .orderBy(desc(activityTemplates.usageCount));
+      } else {
+        templates = await db.select().from(activityTemplates)
+          .where(and(...conditions))
+          .orderBy(desc(activityTemplates.usageCount));
+      }
+
+      res.json(templates);
+    } catch (error: any) {
+      console.error("Get templates error:", error);
+      res.json([]);
+    }
+  });
+
+  // Create a custom activity template
+  app.post("/api/activity-templates", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const { title, description, category, durationMinutes, defaultCost, energyLevel,
+              isSkillSwap, offerText, seekText, icon, tags } = req.body;
+
+      if (!title || !description || !category || !durationMinutes) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      const [template] = await db.insert(activityTemplates).values({
+        title,
+        description,
+        category,
+        durationMinutes,
+        defaultCost: defaultCost || null,
+        energyLevel: energyLevel || "medium",
+        isSkillSwap: isSkillSwap || false,
+        offerText: offerText || null,
+        seekText: seekText || null,
+        icon: icon || null,
+        isSystem: false,
+        createdById: userId,
+        tags: tags || null,
+        isActive: true,
+      }).returning();
+
+      res.json(template);
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to create template" });
+    }
+  });
+
+  // === MEETUP SHARE CARDS ===
+
+  // Create a meetup share card
+  app.post("/api/share-cards", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const { meetupType, meetupId, user2Id, placeName, city, country, cardStyle } = req.body;
+
+      if (!meetupType || !user2Id || !city || !country) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      // Get both users' info
+      const [user1] = await db.select({
+        id: users.id, name: users.name, username: users.username,
+        hometownCountry: users.hometownCountry, profileImage: users.profileImage,
+        avatarColor: users.avatarColor, displayNamePreference: users.displayNamePreference,
+      }).from(users).where(eq(users.id, userId));
+
+      const [user2] = await db.select({
+        id: users.id, name: users.name, username: users.username,
+        hometownCountry: users.hometownCountry, profileImage: users.profileImage,
+        avatarColor: users.avatarColor, displayNamePreference: users.displayNamePreference,
+      }).from(users).where(eq(users.id, user2Id));
+
+      if (!user1 || !user2) return res.status(404).json({ error: "User not found" });
+
+      // Country to flag emoji mapping
+      const countryFlags: Record<string, string> = {
+        "United States": "🇺🇸", "Brazil": "🇧🇷", "Mexico": "🇲🇽", "Canada": "🇨🇦",
+        "United Kingdom": "🇬🇧", "France": "🇫🇷", "Germany": "🇩🇪", "Spain": "🇪🇸",
+        "Italy": "🇮🇹", "Japan": "🇯🇵", "South Korea": "🇰🇷", "Australia": "🇦🇺",
+        "India": "🇮🇳", "China": "🇨🇳", "Thailand": "🇹🇭", "Colombia": "🇨🇴",
+        "Argentina": "🇦🇷", "Portugal": "🇵🇹", "Netherlands": "🇳🇱", "Sweden": "🇸🇪",
+      };
+
+      const [card] = await db.insert(meetupShareCards).values({
+        meetupType,
+        meetupId: meetupId || null,
+        user1Id: userId,
+        user2Id,
+        placeName: placeName || null,
+        city,
+        country,
+        user1Country: user1.hometownCountry || null,
+        user2Country: user2.hometownCountry || null,
+        user1Flag: countryFlags[user1.hometownCountry || ""] || "🌍",
+        user2Flag: countryFlags[user2.hometownCountry || ""] || "🌍",
+        cardStyle: cardStyle || "classic",
+        isPublic: true,
+      }).returning();
+
+      res.json({
+        ...card,
+        user1: { ...user1, publicName: computePublicName(user1.displayNamePreference, user1.username, user1.name) },
+        user2: { ...user2, publicName: computePublicName(user2.displayNamePreference, user2.username, user2.name) },
+      });
+    } catch (error: any) {
+      console.error("Create share card error:", error);
+      res.status(500).json({ error: "Failed to create share card" });
+    }
+  });
+
+  // Get share cards for a user
+  app.get("/api/share-cards", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.json([]);
+
+      const cards = await db.select()
+        .from(meetupShareCards)
+        .where(or(
+          eq(meetupShareCards.user1Id, userId),
+          eq(meetupShareCards.user2Id, userId)
+        ))
+        .orderBy(desc(meetupShareCards.createdAt));
+
+      // Enrich with user info
+      const allUserIds = [...new Set(cards.flatMap(c => [c.user1Id, c.user2Id]))];
+      if (allUserIds.length === 0) return res.json([]);
+
+      const cardUsers = await db.select({
+        id: users.id, username: users.username, name: users.name,
+        profileImage: users.profileImage, avatarColor: users.avatarColor,
+        hometownCity: users.hometownCity, hometownCountry: users.hometownCountry,
+        displayNamePreference: users.displayNamePreference,
+      }).from(users).where(inArray(users.id, allUserIds));
+
+      const userMap = new Map(cardUsers.map(u => [u.id, u]));
+
+      const enriched = cards.map(c => ({
+        ...c,
+        user1: userMap.get(c.user1Id) || null,
+        user2: userMap.get(c.user2Id) || null,
+      }));
+
+      res.json(enriched);
+    } catch (error: any) {
+      res.json([]);
+    }
+  });
+
+  // Get public share cards for a city (viral discovery)
+  app.get("/api/share-cards/city/:city", async (req: any, res) => {
+    try {
+      const city = req.params.city;
+      const cards = await db.select()
+        .from(meetupShareCards)
+        .where(and(
+          ilike(meetupShareCards.city, city),
+          eq(meetupShareCards.isPublic, true)
+        ))
+        .orderBy(desc(meetupShareCards.createdAt))
+        .limit(20);
+
+      const allUserIds = [...new Set(cards.flatMap(c => [c.user1Id, c.user2Id]))];
+      if (allUserIds.length === 0) return res.json([]);
+
+      const cardUsers = await db.select({
+        id: users.id, username: users.username, name: users.name,
+        profileImage: users.profileImage, avatarColor: users.avatarColor,
+        hometownCountry: users.hometownCountry, displayNamePreference: users.displayNamePreference,
+      }).from(users).where(inArray(users.id, allUserIds));
+
+      const userMap = new Map(cardUsers.map(u => [u.id, u]));
+      res.json(cards.map(c => ({ ...c, user1: userMap.get(c.user1Id), user2: userMap.get(c.user2Id) })));
+    } catch (error: any) {
+      res.json([]);
+    }
+  });
+
+  // === COMMUNITY TAGS ===
+
+  // Get all community tags
+  app.get("/api/community-tags", async (req: any, res) => {
+    try {
+      const category = req.query.category as string;
+      const conditions = [eq(communityTags.isActive, true)];
+      if (category) conditions.push(eq(communityTags.category, category));
+
+      const tags = await db.select().from(communityTags)
+        .where(and(...conditions))
+        .orderBy(desc(communityTags.memberCount));
+
+      res.json(tags);
+    } catch (error: any) {
+      res.json([]);
+    }
+  });
+
+  // Get my community tags
+  app.get("/api/community-tags/mine", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.json([]);
+
+      const myTags = await db.select({
+        tag: communityTags,
+        userTag: userCommunityTags,
+      })
+        .from(userCommunityTags)
+        .innerJoin(communityTags, eq(userCommunityTags.tagId, communityTags.id))
+        .where(eq(userCommunityTags.userId, userId));
+
+      res.json(myTags.map(t => ({ ...t.tag, visibility: t.userTag.visibility, joinedAt: t.userTag.joinedAt })));
+    } catch (error: any) {
+      res.json([]);
+    }
+  });
+
+  // Join a community tag
+  app.post("/api/community-tags/:id/join", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const tagId = parseInt(req.params.id);
+      const visibility = req.body.visibility || "public";
+
+      // Check not already joined
+      const [existing] = await db.select()
+        .from(userCommunityTags)
+        .where(and(eq(userCommunityTags.userId, userId), eq(userCommunityTags.tagId, tagId)));
+
+      if (existing) return res.status(400).json({ error: "Already joined" });
+
+      await db.insert(userCommunityTags).values({ userId, tagId, visibility });
+
+      // Update member count
+      await db.update(communityTags)
+        .set({ memberCount: sql`${communityTags.memberCount} + 1` })
+        .where(eq(communityTags.id, tagId));
+
+      res.json({ ok: true });
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to join community" });
+    }
+  });
+
+  // Leave a community tag
+  app.delete("/api/community-tags/:id/leave", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const tagId = parseInt(req.params.id);
+
+      await db.delete(userCommunityTags)
+        .where(and(eq(userCommunityTags.userId, userId), eq(userCommunityTags.tagId, tagId)));
+
+      await db.update(communityTags)
+        .set({ memberCount: sql`GREATEST(0, ${communityTags.memberCount} - 1)` })
+        .where(eq(communityTags.id, tagId));
+
+      res.json({ ok: true });
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to leave community" });
+    }
+  });
+
+  // Get users by community tag for matching
+  app.get("/api/community-tags/:id/members", async (req: any, res) => {
+    try {
+      const tagId = parseInt(req.params.id);
+      const city = req.query.city as string;
+
+      const members = await db.select({
+        userId: userCommunityTags.userId,
+      })
+        .from(userCommunityTags)
+        .where(and(
+          eq(userCommunityTags.tagId, tagId),
+          eq(userCommunityTags.visibility, "public")
+        ));
+
+      const memberIds = members.map(m => m.userId);
+      if (memberIds.length === 0) return res.json([]);
+
+      const conditions = [inArray(users.id, memberIds), eq(users.isActive, true)];
+      if (city) {
+        conditions.push(or(
+          ilike(users.hometownCity, city),
+          ilike(users.travelDestination, city),
+          ilike(users.currentCity, city)
+        )!);
+      }
+
+      const memberUsers = await db.select({
+        id: users.id,
+        username: users.username,
+        name: users.name,
+        profileImage: users.profileImage,
+        avatarColor: users.avatarColor,
+        hometownCity: users.hometownCity,
+        hometownCountry: users.hometownCountry,
+        userType: users.userType,
+        displayNamePreference: users.displayNamePreference,
+      }).from(users).where(and(...conditions)).limit(50);
+
+      res.json(memberUsers);
     } catch (error: any) {
       res.json([]);
     }

@@ -335,6 +335,7 @@ function Navbar() {
     // Traveler/local users get streamlined navigation
     return [
       { path: "/", label: "Home", icon: "🏠" },
+      { path: "/explore", label: "Explore", icon: "⚡" },
       { path: "/plan-trip", label: "Trip Plan", icon: "✈️" },
       { path: "/discover", label: "Cities", icon: "🌍" },
       { path: "/events", label: "Events", icon: "📅" },

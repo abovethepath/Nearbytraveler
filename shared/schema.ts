@@ -2706,4 +2706,177 @@ export type InsertAvailableNow = z.infer<typeof insertAvailableNowSchema>;
 export type AvailableNowRequest = typeof availableNowRequests.$inferSelect;
 export type InsertAvailableNowRequest = z.infer<typeof insertAvailableNowRequestSchema>;
 
+// ==================== VIRAL FEATURES ====================
+
+// Live Location Shares - "I'm at [place] for the next hour"
+export const liveLocationShares = pgTable("live_location_shares", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  placeName: text("place_name").notNull(),
+  placeAddress: text("place_address"),
+  activity: text("activity"),
+  note: text("note"),
+  city: text("city").notNull(),
+  state: text("state"),
+  country: text("country").notNull(),
+  latitude: real("latitude"),
+  longitude: real("longitude"),
+  durationMinutes: integer("duration_minutes").notNull().default(60),
+  expiresAt: timestamp("expires_at").notNull(),
+  visibility: text("visibility").notNull().default("everyone"),
+  isActive: boolean("is_active").notNull().default(true),
+  reactionsCount: integer("reactions_count").default(0),
+  joinRequestsCount: integer("join_requests_count").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const liveShareReactions = pgTable("live_share_reactions", {
+  id: serial("id").primaryKey(),
+  shareId: integer("share_id").notNull().references(() => liveLocationShares.id),
+  userId: integer("user_id").notNull().references(() => users.id),
+  type: text("type").notNull().default("interested"),
+  message: text("message"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertLiveLocationShareSchema = createInsertSchema(liveLocationShares).omit({
+  id: true,
+  createdAt: true,
+  reactionsCount: true,
+  joinRequestsCount: true,
+});
+export type LiveLocationShare = typeof liveLocationShares.$inferSelect;
+export type InsertLiveLocationShare = z.infer<typeof insertLiveLocationShareSchema>;
+export type LiveShareReaction = typeof liveShareReactions.$inferSelect;
+
+// Micro-Experiences - Quick 15-90 min structured activities
+export const microExperiences = pgTable("micro_experiences", {
+  id: serial("id").primaryKey(),
+  creatorId: integer("creator_id").notNull().references(() => users.id),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  category: text("category").notNull(),
+  durationMinutes: integer("duration_minutes").notNull(),
+  meetingPoint: text("meeting_point").notNull(),
+  city: text("city").notNull(),
+  state: text("state"),
+  country: text("country").notNull(),
+  latitude: real("latitude"),
+  longitude: real("longitude"),
+  startsAt: timestamp("starts_at").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  maxParticipants: integer("max_participants").notNull().default(4),
+  currentParticipants: integer("current_participants").notNull().default(1),
+  costEstimate: text("cost_estimate"),
+  energyLevel: text("energy_level").notNull().default("medium"),
+  isActive: boolean("is_active").notNull().default(true),
+  templateId: integer("template_id"),
+  tags: text("tags").array(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const microExperienceParticipants = pgTable("micro_experience_participants", {
+  id: serial("id").primaryKey(),
+  experienceId: integer("experience_id").notNull().references(() => microExperiences.id),
+  userId: integer("user_id").notNull().references(() => users.id),
+  status: text("status").notNull().default("joined"),
+  joinedAt: timestamp("joined_at").defaultNow(),
+});
+
+export const insertMicroExperienceSchema = createInsertSchema(microExperiences).omit({
+  id: true,
+  createdAt: true,
+  currentParticipants: true,
+});
+export type MicroExperience = typeof microExperiences.$inferSelect;
+export type InsertMicroExperience = z.infer<typeof insertMicroExperienceSchema>;
+
+// Activity Templates - Reusable activity structures
+export const activityTemplates = pgTable("activity_templates", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  category: text("category").notNull(),
+  durationMinutes: integer("duration_minutes").notNull(),
+  defaultCost: text("default_cost"),
+  energyLevel: text("energy_level").notNull().default("medium"),
+  isSkillSwap: boolean("is_skill_swap").notNull().default(false),
+  offerText: text("offer_text"),
+  seekText: text("seek_text"),
+  icon: text("icon"),
+  usageCount: integer("usage_count").default(0),
+  isSystem: boolean("is_system").notNull().default(false),
+  isActive: boolean("is_active").notNull().default(true),
+  createdById: integer("created_by_id").references(() => users.id),
+  tags: text("tags").array(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertActivityTemplateSchema = createInsertSchema(activityTemplates).omit({
+  id: true,
+  createdAt: true,
+  usageCount: true,
+});
+export type ActivityTemplate = typeof activityTemplates.$inferSelect;
+export type InsertActivityTemplate = z.infer<typeof insertActivityTemplateSchema>;
+
+// Meetup Share Cards - Post-meetup shareable content
+export const meetupShareCards = pgTable("meetup_share_cards", {
+  id: serial("id").primaryKey(),
+  meetupType: text("meetup_type").notNull(),
+  meetupId: integer("meetup_id"),
+  user1Id: integer("user1_id").notNull().references(() => users.id),
+  user2Id: integer("user2_id").notNull().references(() => users.id),
+  placeName: text("place_name"),
+  city: text("city").notNull(),
+  country: text("country").notNull(),
+  user1Country: text("user1_country"),
+  user2Country: text("user2_country"),
+  user1Flag: text("user1_flag"),
+  user2Flag: text("user2_flag"),
+  cardStyle: text("card_style").notNull().default("classic"),
+  shareCount: integer("share_count").default(0),
+  isPublic: boolean("is_public").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertMeetupShareCardSchema = createInsertSchema(meetupShareCards).omit({
+  id: true,
+  createdAt: true,
+  shareCount: true,
+});
+export type MeetupShareCard = typeof meetupShareCards.$inferSelect;
+export type InsertMeetupShareCard = z.infer<typeof insertMeetupShareCardSchema>;
+
+// Community Tags - User identity and community membership
+export const communityTags = pgTable("community_tags", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull().unique(),
+  displayName: text("display_name").notNull(),
+  category: text("category").notNull(),
+  icon: text("icon"),
+  color: text("color"),
+  description: text("description"),
+  memberCount: integer("member_count").default(0),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const userCommunityTags = pgTable("user_community_tags", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  tagId: integer("tag_id").notNull().references(() => communityTags.id),
+  visibility: text("visibility").notNull().default("public"),
+  joinedAt: timestamp("joined_at").defaultNow(),
+});
+
+export const insertCommunityTagSchema = createInsertSchema(communityTags).omit({
+  id: true,
+  createdAt: true,
+  memberCount: true,
+});
+export type CommunityTag = typeof communityTags.$inferSelect;
+export type InsertCommunityTag = z.infer<typeof insertCommunityTagSchema>;
+export type UserCommunityTag = typeof userCommunityTags.$inferSelect;
+
 
