@@ -6,8 +6,7 @@ interface LogoProps {
 }
 
 export default function Logo({ className, variant = "default" }: LogoProps) {
-  const isNavbar = variant === "navbar" || variant === "black-navbar" || variant === "footer";
-  const logoSrc = isNavbar ? "/og-logo-landscape.png" : "/og-logo-dark.png";
+  const logoSrc = "/og-logo-landscape.png";
 
   const getVariantSize = () => {
     switch (variant) {
@@ -40,13 +39,11 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
       alt="Nearby Traveler"
       className={`${finalClassName} cursor-pointer hover:opacity-80 transition-opacity object-contain`}
       onClick={handleClick}
-      onLoad={() => console.log('Logo loaded successfully')}
       onError={(e) => {
-        console.error('Logo failed to load from:', logoSrc);
         const target = e.target as HTMLImageElement;
         target.style.display = 'none';
         const textLogo = document.createElement('div');
-        textLogo.className = finalClassName.replace('h-8', 'h-8') + ' cursor-pointer font-bold text-teal-600 dark:text-teal-400';
+        textLogo.className = finalClassName + ' cursor-pointer font-bold text-teal-600 dark:text-teal-400';
         textLogo.textContent = 'Nearby Traveler';
         textLogo.onclick = handleClick;
         target.parentElement?.appendChild(textLogo);
