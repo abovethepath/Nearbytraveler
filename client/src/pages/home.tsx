@@ -1505,288 +1505,112 @@ export default function Home() {
   </div>
 )}
 
-{/* HERO SECTION — Modern Glass Morphism Design 2025 */}
+{/* HERO SECTION — Standardized Layout */}
 {isHeroVisible && (
-<section className="relative py-4 sm:py-6 lg:py-10 overflow-hidden">
-  {/* Clean solid background */}
-  <div className="absolute inset-0 bg-white dark:bg-gray-900"></div>
-
-  {isMobile ? (
-    <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
+<section className="relative py-8 sm:py-12 lg:py-16 overflow-hidden bg-white dark:bg-gray-900">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="mb-4 flex items-center justify-end">
       <button
         onClick={toggleHeroVisibility}
-        className="inline-flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 mb-2"
+        className="inline-flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+        data-testid="button-hide-home-hero"
       >
         <X className="w-4 h-4" />
         Hide
       </button>
-      
-      <div className="inline-flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-full px-6 py-2 mb-4">
+    </div>
+
+  {isMobile ? (
+    <div className="text-center">
+      <div className="inline-flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-full px-6 py-2 mb-6">
         <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
         <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Connect • Discover • Experience</span>
       </div>
 
-      <h1 className="text-3xl sm:text-4xl font-bold leading-tight mb-4 px-2">
+      <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white leading-tight mb-6">
         {effectiveUser?.userType === "business" ? (
           <>
             <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Nearby Traveler</span>
             <br />
-            <span className="text-2xl sm:text-3xl text-gray-900 dark:text-white whitespace-nowrap">Connect Your Business</span>
-            <br />
-            <span className="text-2xl sm:text-3xl text-gray-900 dark:text-white whitespace-nowrap">with Travelers & Locals</span>
+            <span className="text-gray-900 dark:text-white">Connect Your Business with Travelers & Locals</span>
           </>
         ) : (
           <>
             <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Nearby Traveler</span>
             <br />
-            <span className="text-2xl sm:text-3xl text-gray-900 dark:text-white whitespace-nowrap">Connect with Travelers</span>
-            <br />
-            <span className="text-2xl sm:text-3xl text-gray-900 dark:text-white whitespace-nowrap">& Locals Worldwide</span>
+            <span className="text-gray-900 dark:text-white">Connect with Travelers & Locals Worldwide</span>
           </>
         )}
       </h1>
-      
-      {/* Clean image container - fully hidden until loaded */}
-      <div className="mb-4 flex justify-center px-4">
+
+      <div className="mb-6 flex justify-center px-4">
         <div className="relative w-full max-w-sm" style={{ opacity: 0, transition: 'opacity 0.3s ease' }} ref={(el) => { if (el) { const img = el.querySelector('img'); if (img && img.complete) el.style.opacity = '1'; } }}>
-          <div className="relative rounded-3xl overflow-hidden shadow-xl aspect-[4/3]">
+          <div className="relative rounded-2xl overflow-hidden shadow-xl aspect-[4/3]">
             <img 
               src={staticHeroMedia}
-              alt="Travelers connecting at coffee shop"
+              alt="Travelers connecting"
               className="w-full h-full object-cover"
               loading="eager"
-              fetchPriority="high"
-              onLoad={(e) => { const container = e.currentTarget.closest('[style]') as HTMLElement; if (container) container.style.opacity = '1'; }}
+              onLoad={(e) => { const container = (e.currentTarget as HTMLElement).closest('[style]') as HTMLElement; if (container) container.style.opacity = '1'; }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent"></div>
           </div>
         </div>
       </div>
-      
+
       <div className="max-w-2xl mx-auto px-4 space-y-4">
         <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
-          Travel doesn't change you.<br />
-          The people you meet do.
-        </p>
-        <p className="text-lg text-gray-700 dark:text-gray-200 leading-relaxed font-medium">
-          Nearby Traveler helps travelers meet locals and other travelers through shared interests, activities, and events — building friendships that last a lifetime.
+          Travel doesn't change you. The people you meet do.
         </p>
       </div>
-      
-      {effectiveUser?.userType === "business" && (
-        <div className="flex flex-col gap-4 justify-center pt-8">
-          <Button
-            size="lg"
-            className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-8 py-3 text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
-            onClick={() => setLocation("/business-dashboard")}
-          >
-            <Store className="w-5 h-5 mr-2" />
-            Manage Business
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-3 text-lg transform hover:scale-105 transition-all duration-300"
-            onClick={() => {
-              setConnectModalMode("current");
-              setShowConnectModal(true);
-            }}
-          >
-            <Users className="w-5 h-5 mr-2" />
-            Find Customers
-          </Button>
-        </div>
-      )}
     </div>
   ) : (
-    <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-12 z-10">
-      
+    <div className="relative py-8">
       <div className="grid gap-8 md:gap-12 md:grid-cols-5 items-center">
         <div className="md:col-span-3">
-          <div className="inline-flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full px-6 py-2.5 mb-6">
+          <div className="inline-flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full px-6 py-2.5 mb-8">
             <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
             <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Connect • Discover • Experience</span>
           </div>
 
           <div className="space-y-6">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
-              {effectiveUser?.userType === "business" ? (
-                <>
-                  <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
-                    Nearby Traveler
-                  </span>
-                  <br />
-                  <span className="text-gray-900 dark:text-white">
-                    Connect Your Business
-                  </span>
-                  <br />
-                  <span className="text-gray-900 dark:text-white">
-                    with Travelers & Locals
-                  </span>
-                </>
-              ) : (
-                <>
-                  <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
-                    Nearby Traveler
-                  </span>
-                  <br />
-                  <span className="text-gray-900 dark:text-white">
-                    Connect with Travelers
-                  </span>
-                  <br />
-                  <span className="text-gray-900 dark:text-white">
-                    & Locals Worldwide
-                  </span>
-                </>
-              )}
+              <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
+                Nearby Traveler
+              </span>
+              <br />
+              <span className="text-gray-900 dark:text-white">
+                Connect with Travelers
+              </span>
+              <br />
+              <span className="text-gray-900 dark:text-white">
+                & Locals Worldwide
+              </span>
             </h1>
             
             <div className="max-w-2xl space-y-4">
               <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
-                Travel doesn't change you.<br />
-                The people you meet do.
+                Travel doesn't change you. The people you meet do.
               </p>
               <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed">
                 Nearby Traveler helps travelers meet locals and other travelers through shared interests, activities, and events — building friendships that last a lifetime.
               </p>
             </div>
           </div>
-          
-          {/* Enhanced Features with attractive icons */}
-          <div className="mt-8 space-y-4">
-            {effectiveUser?.userType === "business" ? (
-              <>
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                    <Store className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Smart Customer Matching</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">AI-powered connections with travelers and locals who love your offerings</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg">
-                    <MapPin className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Location-Targeted Discovery</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Reach the right customers at the right time in your area</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
-                    <MessageCircle className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Business Notifications</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Real-time alerts for new customers and partnership opportunities</p>
-                  </div>
-                </div>
-                
-                {/* Business action buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                  <Button
-                    size="lg"
-                    className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-8 py-3 text-lg shadow-lg transform hover:scale-105 transition-all duration-200"
-                    onClick={() => setLocation("/business-dashboard")}
-                  >
-                    <Store className="w-5 h-5 mr-2" />
-                    Manage Business
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-3 text-lg transform hover:scale-105 transition-all duration-200"
-                    onClick={() => {
-                      setConnectModalMode("current");
-                      setShowConnectModal(true);
-                    }}
-                  >
-                    <Users className="w-5 h-5 mr-2" />
-                    Find Customers
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                    <Users className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Smart Matching</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">AI-powered connections based on shared interests and compatibility</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg">
-                    <MapPin className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Local Experiences</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Discover hidden gems and authentic local experiences in any city</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
-                    <MessageCircle className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Real-time Connect</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Instant messaging and live notifications for spontaneous quick meets</p>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
         </div>
       
-        {/* Right image side - more prominent and engaging */}
         <div className="md:col-span-2 flex justify-center items-center relative order-first md:order-last">
-          {/* Main image container - fully hidden until loaded */}
-          <div className="relative group" style={{ opacity: 0, transition: 'opacity 0.3s ease' }} ref={(el) => { if (el) { const img = el.querySelector('img'); const vid = el.querySelector('video'); if ((img && img.complete) || (vid && vid.readyState >= 2)) el.style.opacity = '1'; } }}>
+          <div className="relative group" style={{ opacity: 0, transition: 'opacity 0.3s ease' }} ref={(el) => { if (el) { const img = el.querySelector('img'); if (img && img.complete) el.style.opacity = '1'; } }}>
             <div className="relative">
               <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-xl overflow-hidden shadow-xl border border-gray-200/50 dark:border-gray-700/50">
-                
-                {isVideoMedia ? (
-                  <video
-                    src={staticHeroMedia}
-                    className="w-full h-full object-cover relative z-10"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    onLoadedData={(e) => {
-                      const container = e.currentTarget.closest('[style]') as HTMLElement;
-                      if (container) container.style.opacity = '1';
-                    }}
-                  >
-                    Your browser does not support the video tag.
-                  </video>
-                ) : (
-                  <img
-                    src={staticHeroMedia}
-                    alt="Travelers connecting at coffee shop"
-                    className="w-full h-full object-cover relative z-10"
-                    loading="eager"
-                    fetchPriority="high"
-                    onLoad={(e) => { const container = e.currentTarget.closest('[style]') as HTMLElement; if (container) container.style.opacity = '1'; }}
-                  />
-                )}
-                
-                {/* Enhanced overlay with better contrast */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10">
-                  <div className="absolute bottom-0 left-0 right-0 p-4 text-center">
-                    <p className="text-white/90 font-medium italic text-base drop-shadow-lg leading-relaxed">
-                      "Where Local Experiences Meet Worldwide Connections"
-                    </p>
-                  </div>
-                </div>
+                <img
+                  src={staticHeroMedia}
+                  alt="Travelers connecting"
+                  className="w-full h-full object-cover"
+                  loading="eager"
+                  onLoad={(e) => { const container = (e.currentTarget as HTMLElement).closest('[style]') as HTMLElement; if (container) container.style.opacity = '1'; }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent"></div>
               </div>
             </div>
           </div>
@@ -1794,7 +1618,7 @@ export default function Home() {
       </div>
     </div>
   )}
-  
+  </div>
 </section>
 )}
 

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Users, Calendar, Star, Search, Compass, TrendingUp, MessageCircle, Heart, Plane, X, ChevronDown } from "lucide-react";
 import { useLocation } from "wouter";
 import { ArrowLeft } from "lucide-react";
+import BackButton from "@/components/back-button";
 import { AuthContext } from "@/App";
 import { MobilePreview } from "@/components/MobilePreview";
 import { useIsMobile, useIsDesktop } from "@/hooks/useDeviceType";
@@ -191,162 +192,82 @@ export default function DiscoverPage() {
         </div>
       )}
 
-      {/* Hero Toggle Button */}
+      {/* Show Hero Button - Only visible when hero is hidden */}
       {!isHeroVisible && !isMobile && (
-        <div className="px-4 pt-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={toggleHeroVisibility}
-            className="text-sm"
-            data-testid="button-show-discover-hero"
-          >
-            <ChevronDown className="w-4 h-4 mr-2" />
-            Show Hero Section
-          </Button>
+        <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+          <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleHeroVisibility}
+              className="text-sm"
+              data-testid="button-show-discover-hero"
+            >
+              <ChevronDown className="w-4 h-4 mr-2" />
+              Show Cities Hero
+            </Button>
+          </div>
         </div>
       )}
-      
-      {/* Hero Section - Desktop Only */}
+
+      {/* HERO SECTION — Standardized Layout */}
       {isHeroVisible && !isMobile && (
-      <section className="bg-white dark:bg-gray-900 py-4 sm:py-8 lg:py-12 relative">
-        {/* Hide Hero Button */}
-        <div className="absolute top-2 right-2 z-20">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={toggleHeroVisibility}
-            className="text-sm bg-white dark:bg-gray-800"
-            data-testid="button-hide-discover-hero"
-          >
-            <X className="w-4 h-4 mr-2" />
-            Hide Hero Section
-          </Button>
-        </div>
-        
-        {(
-          // Desktop: Enhanced engaging layout (text left, image right)
-          <div className="mx-auto max-w-7xl px-2 sm:px-4 md:px-6 py-8 sm:py-12 md:py-16 relative overflow-hidden">
-            {/* Background decorative elements */}
-            <div className="absolute inset-0 opacity-5 pointer-events-none">
-              <div className="absolute top-20 left-10 w-32 h-32 bg-blue-500 rounded-full blur-3xl"></div>
-              <div className="absolute bottom-20 right-10 w-40 h-40 bg-orange-500 rounded-full blur-3xl"></div>
+        <section className="relative py-8 sm:py-12 lg:py-16 overflow-hidden bg-white dark:bg-gray-900">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mb-4 flex items-center justify-between">
+              <BackButton fallbackRoute="/" />
+              <button
+                onClick={toggleHeroVisibility}
+                className="inline-flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                data-testid="button-hide-discover-hero"
+              >
+                <X className="w-4 h-4" />
+                Hide
+              </button>
             </div>
-            
-            <div className="grid gap-8 md:gap-12 md:grid-cols-5 items-center relative z-10">
-              {/* Left text side - wider and enhanced */}
-              <div className="md:col-span-3">
-                {/* Premium badge */}
-                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100/80 to-orange-100/80 dark:from-blue-900/20 dark:to-orange-900/20 border border-blue-200 dark:border-blue-700/50 rounded-full px-4 py-2 mb-6">
-                  <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Explore • Connect • Experience</span>
+
+            <div className="relative py-8">
+              <div className="grid gap-8 md:gap-12 md:grid-cols-5 items-center">
+                <div className="md:col-span-3">
+                  <div className="inline-flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full px-6 py-2.5 mb-8">
+                    <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
+                    <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Explore • Connect • Experience</span>
+                  </div>
+
+                  <div className="space-y-6">
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
+                      <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
+                        Discover Amazing
+                      </span>
+                      <br />
+                      <span className="text-gray-900 dark:text-white">
+                        Destinations
+                      </span>
+                    </h1>
+
+                    <div className="max-w-2xl space-y-4">
+                      <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
+                        Every destination tells a story — discover yours.
+                      </p>
+                      <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed">
+                        Explore amazing cities, connect with locals and travelers, and find your next adventure. From hidden gems to popular hotspots, discover what makes each destination unique.
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="space-y-6">
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight leading-tight">
-                    <span className="bg-gradient-to-r from-gray-900 via-blue-800 to-gray-900 dark:from-white dark:via-blue-200 dark:to-white bg-clip-text text-transparent">
-                      Discover Amazing
-                    </span>
-                    <br />
-                    <span className="bg-gradient-to-r from-orange-600 via-red-600 to-orange-600 bg-clip-text text-transparent">
-                      Destinations
-                    </span>
-                  </h1>
-                  
-                  <div className="max-w-2xl space-y-4">
-                    <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
-                      Every destination tells a story — <em className="text-orange-600 dark:text-orange-400 font-semibold">discover yours.</em>
-                    </p>
-                    <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed">
-                      Explore amazing cities, connect with locals and travelers, and find your next adventure. From hidden gems to popular hotspots, discover what makes each destination unique.
-                    </p>
-                  </div>
-                </div>
-                
-                {/* Enhanced Features with attractive icons */}
-                <div className="mt-8 space-y-4">
-                  <div className="flex items-center gap-4">
-                    <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                      <MapPin className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white">Global Destinations</h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Explore cities worldwide and find your perfect travel match</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-4">
-                    <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg">
-                      <Users className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white">Local Connections</h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Meet locals and travelers who share your interests and passion for exploration</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-4">
-                    <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
-                      <Search className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white">Smart Discovery</h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">AI-powered recommendations tailored to your travel style and preferences</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-          
-              {/* Right image side - Dynamic LA Skyline */}
-              <div className="md:col-span-2 flex justify-center items-center relative order-first md:order-last">
-                {/* Decorative background blur effects */}
-                <div className="absolute inset-0 opacity-30 pointer-events-none">
-                  <div className="absolute top-4 -left-8 w-24 h-24 bg-blue-400/20 rounded-full blur-2xl"></div>
-                  <div className="absolute bottom-4 -right-8 w-32 h-32 bg-orange-400/20 rounded-full blur-2xl"></div>
-                </div>
-                
-                {/* Main image container with enhanced styling */}
-                <div className="relative group">
-                  {/* Quote above image */}
-                  <div className="text-center mb-4 relative z-10">
-                    <p className="text-lg md:text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-200 italic leading-tight">
-                      <span className="sm:hidden">Every destination tells a story.</span>
-                    </p>
-                  </div>
-                  
-                  {/* Compact image container */}
-                  <div className="relative">
-                    {/* Subtle background glow */}
-                    <div className="absolute -inset-2 bg-gradient-to-r from-blue-200/30 via-purple-200/30 to-orange-200/30 dark:from-blue-900/20 dark:via-purple-900/20 dark:to-orange-900/20 rounded-2xl blur-lg"></div>
-                    
-                    {/* Standardized Los Angeles Photo */}
-                    <div className="relative w-full max-w-sm h-[240px] rounded-xl overflow-hidden shadow-xl border border-gray-200/50 dark:border-gray-700/50 transform group-hover:scale-[1.02] transition-all duration-300">
-                      {/* Loading placeholder */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center">
-                        <div className="text-center">
-                          <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-2 animate-pulse" />
-                          <p className="text-gray-500 text-sm">Loading skyline...</p>
-                        </div>
-                      </div>
-                      
-                      {/* Real Los Angeles Griffith Observatory Photo */}
-                      <div className="relative w-full h-full overflow-hidden">
-                        <img 
+                <div className="md:col-span-2 flex justify-center items-center relative order-first md:order-last">
+                  <div className="relative group" style={{ opacity: 0, transition: 'opacity 0.3s ease' }} ref={(el: HTMLDivElement | null) => { if (el) { const img = el.querySelector('img'); if (img && img.complete) el.style.opacity = '1'; } }}>
+                    <div className="relative">
+                      <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-xl overflow-hidden shadow-xl border border-gray-200/50 dark:border-gray-700/50">
+                        <img
                           src="/Los_Angeles_1753819372180.jpg"
-                          alt="Los Angeles skyline from Griffith Observatory"
+                          alt="Los Angeles skyline"
                           className="w-full h-full object-cover"
                           loading="eager"
+                          onLoad={(e) => { const container = (e.currentTarget as HTMLElement).closest('[style]') as HTMLElement; if (container) container.style.opacity = '1'; }}
                         />
-                        
-                        {/* Enhanced gradient overlay for better contrast */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
-                        
-                        
-                        
-                        {/* Subtle city name overlay */}
-                        <div className="absolute bottom-4 left-4 text-white/90 font-bold text-sm bg-black/40 backdrop-blur-sm px-3 py-2 rounded-lg border border-white/20">
-                          Los Angeles
-                        </div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent"></div>
                       </div>
                     </div>
                   </div>
@@ -354,8 +275,7 @@ export default function DiscoverPage() {
               </div>
             </div>
           </div>
-        )}
-      </section>
+        </section>
       )}
 
       {/* Search Section */}

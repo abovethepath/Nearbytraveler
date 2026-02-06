@@ -14,6 +14,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Calendar, MapPin, Users, Building2, Heart, MessageCircle, Star, ArrowLeft, Home, User, Plus, X, Compass, Sparkles, Camera, Coffee, Utensils, Palette, Music, TreePine, ChevronDown, UserPlus, Link2, Baby } from "lucide-react";
+const planTripHeroImage = "/travlersonastreet.jpg";
 import { TravelCrew } from "@/components/TravelCrew";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -81,6 +82,16 @@ export default function PlanTrip() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [currentLocation, setLocation] = useLocation();
+
+  const [isHeroVisible, setIsHeroVisible] = useState<boolean>(() => {
+    const saved = localStorage.getItem('hidePlanTripHero');
+    return saved !== 'true';
+  });
+  const toggleHeroVisibility = () => {
+    const newValue = !isHeroVisible;
+    setIsHeroVisible(newValue);
+    localStorage.setItem('hidePlanTripHero', String(!newValue));
+  };
   
   console.log('=== PLAN TRIP PAGE INITIALIZATION ===');
   console.log('Current URL location:', currentLocation);
@@ -707,77 +718,131 @@ export default function PlanTrip() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-gray-900 overflow-hidden break-words">
-      {/* Hero Section - Mobile vs Desktop Layout */}
-      <div className="relative overflow-hidden bg-white dark:bg-gray-900">
-        {/* Close Button - Always positioned at top right */}
-        <button
-          onClick={() => {
-            // Clear any editing state
-            localStorage.removeItem('editingTravelPlan');
-            // Navigate to home
-            setLocation('/');
-          }}
-          className="absolute top-2 right-2 sm:top-4 sm:right-4 z-20 bg-white/90 hover:bg-white text-gray-800 dark:bg-white dark:text-gray-900 rounded-full p-1.5 sm:p-2 shadow-lg transition-all hover:scale-110"
-          aria-label="Close"
-        >
-          <X className="w-4 h-4 sm:w-6 sm:h-6 text-gray-800 dark:text-gray-900" />
-        </button>
+      {/* Show Hero Button - Only visible when hero is hidden */}
+      {!isHeroVisible && (
+        <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+          <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleHeroVisibility}
+              className="text-sm"
+              data-testid="button-show-plantrip-hero"
+            >
+              <ChevronDown className="w-4 h-4 mr-2" />
+              Show Trip Hero
+            </Button>
+          </div>
+        </div>
+      )}
 
-        {/* Mobile: Standardized layout */}
-        <div className="block md:hidden relative py-4 bg-white dark:bg-gray-900">
-          <div className="px-4 text-center">
-            <div className="inline-flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-full px-6 py-2 mb-4">
+      {/* HERO SECTION — Standardized Layout */}
+      {isHeroVisible && (
+        <section className="relative py-8 sm:py-12 lg:py-16 overflow-hidden bg-white dark:bg-gray-900">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mb-4 flex items-center justify-between">
+              <BackButton fallbackRoute="/" />
+              <button
+                onClick={toggleHeroVisibility}
+                className="inline-flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                data-testid="button-hide-plantrip-hero"
+              >
+                <X className="w-4 h-4" />
+                Hide
+              </button>
+            </div>
+
+          {/* Mobile layout */}
+          <div className="block md:hidden text-center">
+            <div className="inline-flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-full px-6 py-2 mb-6">
               <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
               <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Plan • Connect • Explore</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold leading-tight mb-2">
+
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white leading-tight mb-6">
               <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
                 {isEditMode ? "Edit Your Trip" : "Create a Trip"}
               </span>
             </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-300 font-medium">
-              {isEditMode ? "Update your travel plan details" : "Step 1 of 2: Destination + Dates"}
-            </p>
-          </div>
-        </div>
 
-        {/* Desktop: Standardized layout */}
-        <div className="hidden md:block relative py-6 sm:py-8 md:py-12 bg-white dark:bg-gray-900">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="inline-flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full px-6 py-2.5 mb-6">
-              <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
-              <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Plan • Connect • Explore</span>
+            <div className="mb-6 flex justify-center px-4">
+              <div className="relative w-full max-w-sm" style={{ opacity: 0, transition: 'opacity 0.3s ease' }} ref={(el: HTMLDivElement | null) => { if (el) { const img = el.querySelector('img'); if (img && img.complete) el.style.opacity = '1'; } }}>
+                <div className="relative rounded-2xl overflow-hidden shadow-xl aspect-[4/3]">
+                  <img 
+                    src={planTripHeroImage}
+                    alt="Plan your trip"
+                    className="w-full h-full object-cover"
+                    loading="eager"
+                    onLoad={(e) => { const container = (e.currentTarget as HTMLElement).closest('[style]') as HTMLElement; if (container) container.style.opacity = '1'; }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent"></div>
+                </div>
+              </div>
             </div>
-            <div className="space-y-6">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
-                {isEditMode ? (
-                  <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
-                    Edit Your Trip
-                  </span>
-                ) : (
-                  <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
-                    Create a Trip
-                  </span>
-                )}
-              </h1>
-              <div className="max-w-2xl space-y-4">
-                <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
-                  {isEditMode 
-                    ? "Perfect your journey — every detail matters."
-                    : "Step 1 of 2: Destination + dates get you into the right city."
-                  }
-                </p>
-                <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed">
-                  {isEditMode
-                    ? "Fine-tune your travel plan, update your interests, and enhance your adventure preferences to get even better matches and recommendations."
-                    : "Next, you'll pick City Plans (things you want to do) to match with the right people."
-                  }
-                </p>
+
+            <div className="max-w-2xl mx-auto px-4 space-y-4">
+              <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
+                {isEditMode ? "Perfect your journey — every detail matters." : "Step 1 of 2: Destination + dates get you into the right city."}
+              </p>
+            </div>
+          </div>
+
+          {/* Desktop layout */}
+          <div className="hidden md:block">
+            <div className="relative py-8">
+              <div className="grid gap-8 md:gap-12 md:grid-cols-5 items-center">
+                <div className="md:col-span-3">
+                  <div className="inline-flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full px-6 py-2.5 mb-8">
+                    <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
+                    <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Plan • Connect • Explore</span>
+                  </div>
+
+                  <div className="space-y-6">
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
+                      <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
+                        {isEditMode ? "Edit Your Trip" : "Create a Trip"}
+                      </span>
+                    </h1>
+
+                    <div className="max-w-2xl space-y-4">
+                      <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
+                        {isEditMode 
+                          ? "Perfect your journey — every detail matters."
+                          : "Step 1 of 2: Destination + dates get you into the right city."
+                        }
+                      </p>
+                      <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed">
+                        {isEditMode
+                          ? "Fine-tune your travel plan, update your interests, and enhance your adventure preferences to get even better matches and recommendations."
+                          : "Next, you'll pick City Plans (things you want to do) to match with the right people."
+                        }
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="md:col-span-2 flex justify-center items-center relative order-first md:order-last">
+                  <div className="relative group" style={{ opacity: 0, transition: 'opacity 0.3s ease' }} ref={(el: HTMLDivElement | null) => { if (el) { const img = el.querySelector('img'); if (img && img.complete) el.style.opacity = '1'; } }}>
+                    <div className="relative">
+                      <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-xl overflow-hidden shadow-xl border border-gray-200/50 dark:border-gray-700/50">
+                        <img
+                          src={planTripHeroImage}
+                          alt="Plan your trip"
+                          className="w-full h-full object-cover"
+                          loading="eager"
+                          onLoad={(e) => { const container = (e.currentTarget as HTMLElement).closest('[style]') as HTMLElement; if (container) container.style.opacity = '1'; }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
+          </div>
+        </section>
+      )}
 
       {/* Trip Planning Form - Mobile Responsive Layout */}
       <div className="container max-w-4xl mx-auto px-2 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8 overflow-hidden break-words">
