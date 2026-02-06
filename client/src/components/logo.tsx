@@ -11,17 +11,17 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
   const getVariantSize = () => {
     switch (variant) {
       case "landing":
-        return "h-48 w-auto scale-x-110"; // Optimal size for welcome back page with less horizontal stretch
+        return "h-20 w-auto";
       case "navbar":
-        return "h-24 sm:h-28 md:h-32 lg:h-28 xl:h-32 w-auto"; // Original mobile sizes, reduced for iPad Pro (lg/xl)
+        return "h-10 sm:h-10 md:h-12 lg:h-12 xl:h-12 w-auto";
       case "black-navbar":
-        return "h-64 w-auto"; // Massive logo for maximum brand prominence
+        return "h-14 w-auto";
       case "footer":
-        return "h-73 w-auto md:h-73 sm:h-63"; // Footer size exactly matching navbar
+        return "h-12 w-auto md:h-12 sm:h-10";
       case "header":
-        return "h-24 sm:h-32 md:h-40 lg:h-48 w-auto"; // Bigger mobile logo
+        return "h-12 sm:h-14 md:h-16 lg:h-20 w-auto";
       default:
-        return "h-12 w-auto scale-x-125"; // Increased default size
+        return "h-10 w-auto";
     }
   };
 
