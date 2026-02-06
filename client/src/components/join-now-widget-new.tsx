@@ -43,7 +43,7 @@ export default function JoinNowWidgetNew() {
       subtitle: "I live here & want to meet travelers",
       color: "blue",
       gradient: "from-blue-500 to-blue-600",
-      bgLight: "bg-blue-50",
+      bgLight: "bg-blue-50 dark:bg-blue-950/50",
       borderColor: "border-blue-500",
       ringColor: "ring-blue-300",
     },
@@ -54,7 +54,7 @@ export default function JoinNowWidgetNew() {
       subtitle: "I'm traveling & want to connect",
       color: "orange",
       gradient: "from-orange-500 to-orange-600",
-      bgLight: "bg-orange-50",
+      bgLight: "bg-orange-50 dark:bg-orange-950/50",
       borderColor: "border-orange-500",
       ringColor: "ring-orange-300",
     },
@@ -65,7 +65,7 @@ export default function JoinNowWidgetNew() {
       subtitle: "I run a local business",
       color: "teal",
       gradient: "from-teal-500 to-teal-600",
-      bgLight: "bg-teal-50",
+      bgLight: "bg-teal-50 dark:bg-teal-950/50",
       borderColor: "border-teal-500",
       ringColor: "ring-teal-300",
     },
@@ -73,7 +73,7 @@ export default function JoinNowWidgetNew() {
 
   return (
     <div className="space-y-5">
-      <p className="text-center text-gray-600 font-medium text-sm">
+      <p className="text-center text-gray-600 dark:text-gray-400 font-medium text-sm">
         Choose how you want to connect
       </p>
       
@@ -107,10 +107,10 @@ export default function JoinNowWidgetNew() {
               </div>
               
               <div className="flex-grow">
-                <div className={`text-lg font-bold ${isSelected ? "text-white" : "text-gray-900"}`}>
+                <div className={`text-lg font-bold ${isSelected ? "text-white" : "text-gray-900 dark:text-white"}`}>
                   {title}
                 </div>
-                <div className={`text-sm ${isSelected ? "text-white/90" : "text-gray-600"}`}>
+                <div className={`text-sm ${isSelected ? "text-white/90" : "text-gray-600 dark:text-gray-400"}`}>
                   {subtitle}
                 </div>
               </div>
@@ -133,7 +133,7 @@ export default function JoinNowWidgetNew() {
           w-full py-6 text-lg font-semibold rounded-xl transition-all duration-200
           ${userType 
             ? "bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl hover:scale-[1.02]" 
-            : "bg-gray-200 text-gray-400 cursor-not-allowed"
+            : "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
           }
         `}
         data-testid="button-continue"
