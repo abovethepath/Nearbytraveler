@@ -19,7 +19,7 @@ import { useTheme } from "@/components/theme-provider";
 import { AdaptiveThemeToggle } from "@/components/adaptive-theme-toggle";
 import { authStorage } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
-import { getApiBaseUrl } from "@/lib/queryClient";
+import { getApiBaseUrl, invalidateUserCache } from "@/lib/queryClient";
 
 
 // Theme Toggle as Dropdown Menu Item
@@ -276,49 +276,43 @@ function Navbar() {
 
     try {
       // Step 1: Call server logout to destroy session
-      console.log('Step 1: Calling server logout');
       try {
         await fetch(`${getApiBaseUrl()}/api/auth/logout`, {
           method: 'POST',
           credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json'
-          }
+          headers: { 'Content-Type': 'application/json' }
         });
-        console.log('✅ Server session destroyed');
       } catch (err) {
         console.warn('Server logout failed, continuing with client cleanup');
       }
 
-      // Step 2: Clear ALL localStorage
-      console.log('Step 2: Clearing localStorage');
+      // Step 2: Clear ALL client-side auth data
       localStorage.clear();
-
-      // Step 3: Clear sessionStorage
-      console.log('Step 3: Clearing sessionStorage');
       sessionStorage.clear();
 
-      // Step 4: Clear React Query cache
-      console.log('Step 4: Clearing React Query cache');
+      // Step 3: Clear in-memory caches
       queryClient.clear();
+      invalidateUserCache();
+
+      // Step 4: Clear cookies
+      document.cookie.split(';').forEach(c => {
+        const name = c.split('=')[0].trim();
+        document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+      });
 
       // Step 5: Update local state
-      console.log('Step 5: Clearing local state');
       setDirectUser(null);
       setUser(null);
 
-      // Step 6: Small delay then redirect (ensures cleanup happens)
-      console.log('Step 6: Waiting 100ms then redirecting to landing page');
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 100);
+      // Step 6: Hard redirect - replace prevents back button returning to auth'd page
+      window.location.replace('/');
 
     } catch (error) {
       console.error('❌ Logout error:', error);
-      // Force redirect anyway after delay
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 100);
+      localStorage.clear();
+      sessionStorage.clear();
+      invalidateUserCache();
+      window.location.replace('/');
     }
   };
 
