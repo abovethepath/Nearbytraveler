@@ -26,7 +26,7 @@ import { TravelMatchingService } from "./services/matching";
 import { businessProximityEngine } from "./businessProximityNotificationEngine";
 import { smsService } from "./services/smsService";
 import QRCode from "qrcode";
-import { detectMetroArea, getMetroAreaName } from '../shared/metro-areas';
+import { detectMetroArea, getMetroAreaName, getMetroCities } from '../shared/metro-areas';
 import { getMetroArea } from '../shared/constants';
 import { setupAuth } from "./replitAuth";
 import axios from "axios";
@@ -20861,12 +20861,23 @@ Questions? Just reply to this message. Welcome aboard!
       if (!city) return res.status(400).json({ error: "City is required" });
 
       const now = new Date();
+      const metroDetection = detectMetroArea(city as string);
+      let cityCondition;
+      if (metroDetection.isMetroCity && metroDetection.metroAreaName) {
+        const metroCities = getMetroCities(metroDetection.metroAreaName);
+        cityCondition = or(
+          ...metroCities.map(mc => ilike(availableNow.city, mc))
+        );
+      } else {
+        cityCondition = ilike(availableNow.city, city as string);
+      }
+
       const results = await db.select()
         .from(availableNow)
         .innerJoin(users, eq(availableNow.userId, users.id))
         .where(and(
           eq(availableNow.isAvailable, true),
-          ilike(availableNow.city, city as string),
+          cityCondition,
           gte(availableNow.expiresAt, now)
         ))
         .orderBy(desc(availableNow.createdAt));
