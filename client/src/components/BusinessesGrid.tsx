@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Globe, Phone, Clock, Tag } from "lucide-react";
+import { MapPin, Phone, Tag } from "lucide-react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentTravelDestination } from "@/lib/dateUtils";
@@ -127,36 +127,30 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
           const bio = stripHtml(bioRaw);
 
           return (
-            <Card key={b.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+            <Card key={b.id} className="overflow-hidden hover:shadow-lg transition-shadow min-w-0">
               <CardContent className="p-4 md:p-5">
                 {/* Header row */}
                 <div className="flex items-start gap-3 min-w-0">
-                  {/* Optional logo/avatar */}
                   {(b.logoUrl || b.profileImage) && (
                     <img
                       src={b.logoUrl || b.profileImage}
                       alt={title}
-                      className="h-10 w-10 rounded-lg object-cover shrink-0"
+                      className="h-12 w-12 rounded-lg object-cover shrink-0"
                       loading="lazy"
                     />
                   )}
-                  <div className="min-w-0 flex-1">
-                    <h3 className="font-semibold text-gray-900 dark:text-white text-base md:text-lg break-words">
+                  <div className="min-w-0 flex-1 overflow-hidden">
+                    <h3 className="font-semibold text-gray-900 dark:text-white text-sm md:text-base truncate" title={title}>
                       {title}
                     </h3>
                     {category && (
-                      <div className="mt-1">
-                        <span className="chip bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200 text-xs">
-                          {category}
-                        </span>
-                      </div>
+                      <Badge variant="secondary" className="mt-1 text-xs font-medium">
+                        {category}
+                      </Badge>
                     )}
-
-                    {/* Location row WITH STREET ADDRESS */}
-                    <div className="mt-1 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 min-w-0">
-                      <MapPin className="h-4 w-4 shrink-0" />
+                    <div className="mt-1 flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300 min-w-0">
+                      <MapPin className="h-3.5 w-3.5 shrink-0" />
                       <span className="truncate">
-                        {/* Show street address first, then city */}
                         {b.streetAddress || b.street_address || b.address ? 
                           `${b.streetAddress || b.street_address || b.address}, ${city}` :
                           [city, state, country].filter(Boolean).join(", ")
@@ -178,59 +172,42 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
                   </p>
                 )}
 
-                {/* Contact row — wrap on small, use wrap-any for addresses */}
-                <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-                  {website && (
-                    <a
-                      href={safeUrl(website)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline minw0"
-                      title={website}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <Globe className="h-4 w-4 shrink-0" />
-                      <span className="truncate">{website}</span>
-                    </a>
-                  )}
+                {/* Contact info */}
+                <div className="mt-3 space-y-1.5">
                   {phone && (
                     <a
                       href={`tel:${phone}`}
-                      className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 minw0"
+                      className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 min-w-0"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <Phone className="h-4 w-4 shrink-0" />
+                      <Phone className="h-3.5 w-3.5 shrink-0" />
                       <span className="truncate">{phone}</span>
                     </a>
                   )}
                   {b.streetAddress && (
-                    <div className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 minw0">
-                      <MapPin className="h-4 w-4 shrink-0" />
-                      <span className="wrap-any whitespace-normal">{b.streetAddress}</span>
-                    </div>
-                  )}
-                  {b.openHours && (
-                    <div className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 minw0">
-                      <Clock className="h-4 w-4 shrink-0" />
-                      <span className="truncate">{b.openHours}</span>
+                    <div className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300 min-w-0">
+                      <MapPin className="h-3.5 w-3.5 shrink-0" />
+                      <span className="truncate">{b.streetAddress}</span>
                     </div>
                   )}
                 </div>
 
                 {/* Actions */}
-                <div className="mt-4 flex gap-2">
+                <div className="mt-3 flex gap-2">
                   <Button
-                    className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white"
+                    size="sm"
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs"
                     onClick={() => setLocation(`/business/${b.id}`)}
                   >
                     View
                   </Button>
                   <Button
+                    size="sm"
                     variant="outline"
-                    className="flex-1 sm:flex-none border-orange-300 dark:border-orange-600 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                    className="flex-1 border-orange-300 dark:border-orange-600 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 text-xs"
                     onClick={() => setLocation(`/business/${b.id}/offers`)}
                   >
-                    <Tag className="h-4 w-4 mr-1" />
+                    <Tag className="h-3.5 w-3.5 mr-1" />
                     Deals
                   </Button>
                 </div>
