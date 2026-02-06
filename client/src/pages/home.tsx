@@ -1549,19 +1549,17 @@ export default function Home() {
         )}
       </h1>
       
-      {/* Clean image container */}
+      {/* Clean image container - fully hidden until loaded */}
       <div className="mb-8 flex justify-center px-4">
-        <div className="relative w-full max-w-sm">
-          {/* Main image with clean rounded corners */}
-          <div className="relative rounded-3xl overflow-hidden shadow-xl aspect-[4/3] bg-gray-200 dark:bg-gray-700">
+        <div className="relative w-full max-w-sm" style={{ opacity: 0, transition: 'opacity 0.3s ease' }} ref={(el) => { if (el) { const img = el.querySelector('img'); if (img && img.complete) el.style.opacity = '1'; } }}>
+          <div className="relative rounded-3xl overflow-hidden shadow-xl aspect-[4/3]">
             <img 
               src={staticHeroMedia}
               alt="Travelers connecting at coffee shop"
-              className="w-full h-full object-cover transition-opacity duration-300"
+              className="w-full h-full object-cover"
               loading="eager"
               fetchPriority="high"
-              style={{ opacity: 0 }}
-              onLoad={(e) => { e.currentTarget.style.opacity = '1'; }}
+              onLoad={(e) => { const container = e.currentTarget.closest('[style]') as HTMLElement; if (container) container.style.opacity = '1'; }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent"></div>
           </div>
@@ -1756,23 +1754,23 @@ export default function Home() {
       
         {/* Right image side - more prominent and engaging */}
         <div className="md:col-span-2 flex justify-center items-center relative order-first md:order-last">
-          {/* Main image container */}
-          <div className="relative group">
+          {/* Main image container - fully hidden until loaded */}
+          <div className="relative group" style={{ opacity: 0, transition: 'opacity 0.3s ease' }} ref={(el) => { if (el) { const img = el.querySelector('img'); const vid = el.querySelector('video'); if ((img && img.complete) || (vid && vid.readyState >= 2)) el.style.opacity = '1'; } }}>
             <div className="relative">
-              <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-xl overflow-hidden shadow-xl border border-gray-200/50 dark:border-gray-700/50 bg-gray-200 dark:bg-gray-700">
+              <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-xl overflow-hidden shadow-xl border border-gray-200/50 dark:border-gray-700/50">
                 
                 {isVideoMedia ? (
                   <video
                     src={staticHeroMedia}
-                    className="w-full h-full object-cover transition-opacity duration-500 relative z-10"
+                    className="w-full h-full object-cover relative z-10"
                     autoPlay
                     loop
                     muted
                     playsInline
                     onLoadedData={(e) => {
-                      e.currentTarget.style.opacity = '1';
+                      const container = e.currentTarget.closest('[style]') as HTMLElement;
+                      if (container) container.style.opacity = '1';
                     }}
-                    style={{ opacity: 0 }}
                   >
                     Your browser does not support the video tag.
                   </video>
@@ -1780,11 +1778,10 @@ export default function Home() {
                   <img
                     src={staticHeroMedia}
                     alt="Travelers connecting at coffee shop"
-                    className="w-full h-full object-cover relative z-10 transition-opacity duration-300"
+                    className="w-full h-full object-cover relative z-10"
                     loading="eager"
                     fetchPriority="high"
-                    style={{ opacity: 0 }}
-                    onLoad={(e) => { e.currentTarget.style.opacity = '1'; }}
+                    onLoad={(e) => { const container = e.currentTarget.closest('[style]') as HTMLElement; if (container) container.style.opacity = '1'; }}
                   />
                 )}
                 
