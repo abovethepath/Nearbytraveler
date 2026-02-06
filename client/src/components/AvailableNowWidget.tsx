@@ -199,39 +199,54 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
 
       <div className="p-4 bg-white dark:bg-gray-800">
         {myStatus ? (
-          <div className="mb-4 p-3 bg-gradient-to-r from-orange-50 to-purple-50 dark:from-orange-900/30 dark:to-purple-900/30 rounded-xl border border-orange-300 dark:border-orange-700">
-            <div className="flex items-center justify-between">
+          <div className="mb-4 rounded-xl border-2 border-green-400 dark:border-green-500 overflow-hidden">
+            <div className="bg-gradient-to-r from-green-500 to-emerald-500 px-4 py-2.5 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-lg shadow-green-500/50" />
-                <span className="text-sm font-bold text-orange-700 dark:text-orange-300">You're Live!</span>
+                <div className="w-3 h-3 bg-white rounded-full animate-pulse shadow-lg shadow-white/50" />
+                <span className="text-sm font-bold text-white">You're Live!</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-800/50 px-2 py-0.5 rounded-full">
+                <span className="text-xs font-semibold text-white bg-white/20 px-2.5 py-1 rounded-full">
                   <Clock className="w-3 h-3 inline mr-1" />
                   {getTimeRemaining(myStatus.expiresAt)}
                 </span>
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="h-6 w-6 p-0 text-red-400 hover:text-red-600 hover:bg-red-50"
+                  className="h-6 w-6 p-0 text-white/70 hover:text-white hover:bg-white/20"
                   onClick={() => clearAvailableMutation.mutate()}
                 >
                   <X className="w-4 h-4" />
                 </Button>
               </div>
             </div>
-            {myStatus.activities?.length > 0 && (
-              <div className="flex flex-wrap gap-1 mt-2">
-                {myStatus.activities.map((a: string) => (
-                  <Badge key={a} className="text-xs bg-orange-500 text-white border-0">
-                    {a}
-                  </Badge>
-                ))}
-              </div>
-            )}
-            {myStatus.customNote && (
-              <p className="text-xs text-purple-600 dark:text-purple-400 mt-2 italic">"{myStatus.customNote}"</p>
-            )}
+            <div className="px-4 py-3 bg-green-50 dark:bg-green-900/20">
+              {myStatus.activities?.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {myStatus.activities.map((a: string) => {
+                    const actOpt = ACTIVITY_OPTIONS.find(o => o.value === a);
+                    const Icon = actOpt?.icon;
+                    return (
+                      <Badge key={a} className="text-xs bg-orange-500 hover:bg-orange-500 text-white border-0 px-2.5 py-1 font-semibold gap-1">
+                        {Icon && <Icon className="w-3 h-3" />}
+                        {actOpt?.label || a}
+                      </Badge>
+                    );
+                  })}
+                </div>
+              )}
+              {myStatus.customNote && (
+                <div className="mt-1">
+                  <span className="text-[10px] uppercase tracking-wider font-bold text-purple-500 dark:text-purple-400">What I want to do now</span>
+                  <div className="mt-1 px-3 py-2 bg-white dark:bg-gray-800 rounded-lg border-2 border-purple-300 dark:border-purple-600 shadow-sm">
+                    <p className="text-sm font-bold text-purple-700 dark:text-purple-300">{myStatus.customNote}</p>
+                  </div>
+                </div>
+              )}
+              {!myStatus.customNote && (!myStatus.activities || myStatus.activities.length === 0) && (
+                <p className="text-xs text-green-600 dark:text-green-400 font-medium">Ready to hang out!</p>
+              )}
+            </div>
           </div>
         ) : (
           <button
@@ -331,7 +346,9 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                     </span>
                   </div>
                   {entry.customNote && (
-                    <p className="text-xs text-gray-400 dark:text-gray-500 truncate mt-0.5">{entry.customNote}</p>
+                    <div className="mt-1 px-2 py-1 bg-purple-50 dark:bg-purple-900/30 rounded border border-purple-200 dark:border-purple-700">
+                      <p className="text-xs font-semibold text-purple-700 dark:text-purple-300 truncate">{entry.customNote}</p>
+                    </div>
                   )}
                 </div>
                 {showMeetRequest === entry.userId ? (
@@ -422,16 +439,19 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
-                Quick note (optional)
+              <label className="text-sm font-bold text-purple-700 dark:text-purple-300 mb-1.5 flex items-center gap-1.5">
+                <span className="inline-block w-2 h-2 rounded-full bg-purple-500"></span>
+                What I want to do now
+                <span className="text-xs font-normal text-gray-400">(optional)</span>
               </label>
               <Input
-                placeholder="e.g. At the pier, come say hi!"
+                placeholder='e.g. "poker", "beach volleyball", "museum visit"'
                 value={customNote}
                 onChange={(e) => setCustomNote(e.target.value)}
                 maxLength={100}
-                className="bg-white dark:bg-gray-800"
+                className="bg-white dark:bg-gray-800 border-2 border-purple-200 dark:border-purple-700 focus:border-purple-500 text-sm font-medium"
               />
+              <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">Type anything specific — this stands out on your profile</p>
             </div>
             <div>
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
