@@ -376,19 +376,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
               </div>
             ))}
           </div>
-        ) : (
-          <div className="text-center py-5 px-3">
-            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-gradient-to-br from-purple-100 via-orange-100 to-green-100 dark:from-purple-900/30 dark:via-orange-900/30 dark:to-green-900/30 flex items-center justify-center">
-              <Zap className="w-6 h-6 text-orange-500" />
-            </div>
-            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              No one available in <span className="text-orange-600 dark:text-orange-400 font-semibold">{userCity || "your area"}</span> right now
-            </p>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-              Set yourself available and others will find you!
-            </p>
-          </div>
-        )}
+        ) : null}
       </div>
     </Card>
 
