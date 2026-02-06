@@ -1508,26 +1508,8 @@ export default function Home() {
 {/* HERO SECTION — Modern Glass Morphism Design 2025 */}
 {isHeroVisible && (
 <section className="relative py-8 sm:py-12 lg:py-20 overflow-hidden">
-  {/* Dramatic animated gradient background */}
-  <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-orange-100 dark:from-gray-900 dark:to-gray-900"></div>
-  
-  {/* DRAMATIC Floating orbs - highly visible animated background */}
-  <div className="absolute inset-0 opacity-70 dark:opacity-60 pointer-events-none overflow-hidden">
-    {/* Large blue orb - top left */}
-    <div className="absolute -top-20 -left-20 w-[500px] h-[500px] bg-gradient-to-br from-blue-500 via-cyan-400 to-blue-600 rounded-full blur-3xl animate-float-slow opacity-80"></div>
-    
-    {/* Huge orange orb - bottom right */}
-    <div className="absolute -bottom-32 -right-32 w-[600px] h-[600px] bg-gradient-to-br from-orange-400 via-amber-400 to-orange-500 rounded-full blur-3xl animate-float-slower opacity-60"></div>
-    
-    {/* Medium cyan orb - center */}
-    <div className="absolute top-1/3 left-1/3 w-[400px] h-[400px] bg-gradient-to-br from-cyan-400 via-blue-400 to-cyan-500 rounded-full blur-3xl animate-float opacity-50"></div>
-    
-    {/* Small accent orb - top right */}
-    <div className="absolute top-10 right-20 w-[300px] h-[300px] bg-gradient-to-br from-cyan-400 via-blue-300 to-cyan-500 rounded-full blur-2xl animate-float-slow opacity-60"></div>
-    
-    {/* Small accent orb - bottom left */}
-    <div className="absolute bottom-10 left-20 w-[350px] h-[350px] bg-gradient-to-br from-amber-300 via-orange-300 to-amber-400 rounded-full blur-2xl animate-float-slower opacity-50"></div>
-  </div>
+  {/* Clean solid background */}
+  <div className="absolute inset-0 bg-white dark:bg-gray-900"></div>
 
   {isMobile ? (
     // Mobile: Modern vertical layout with glass morphism
