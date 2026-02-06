@@ -1,7 +1,6 @@
 import { useLocation } from "wouter";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import Footer from "@/components/footer";
 import { MapPin, Users, Bell } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
@@ -22,8 +21,21 @@ export default function LandingSimple() {
 
   return (
     <div className="bg-white font-sans min-h-screen flex flex-col">
-      <LandingHeader />
-      <LandingHeaderSpacer />
+      {/* Compact header */}
+      <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+          <button onClick={() => { setLocation('/'); window.scrollTo(0, 0); }} className="flex items-center">
+            <img src="/new-logo.png" alt="Nearby Traveler" className="h-9 w-auto" />
+          </button>
+          <Button
+            onClick={() => handleJoin('nav')}
+            size="sm"
+            className="bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-full px-5"
+          >
+            Join Free
+          </Button>
+        </div>
+      </header>
 
       <main className="flex-1">
         {/* HERO */}
