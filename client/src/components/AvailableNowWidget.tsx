@@ -431,19 +431,19 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
                 What are you up for?
               </label>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="flex flex-wrap gap-2">
                 {ACTIVITY_OPTIONS.map(({ label, icon: Icon, value }) => (
                   <button
                     key={value}
                     type="button"
                     onClick={() => toggleActivity(value)}
-                    className={`flex flex-col items-center p-2 rounded-lg border text-xs transition-colors ${
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition-colors ${
                       selectedActivities.includes(value)
-                        ? "border-orange-500 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300"
-                        : "border-gray-200 dark:border-gray-700 hover:border-orange-300 text-gray-600 dark:text-gray-400"
+                        ? "border-orange-500 bg-orange-500/20 text-orange-300"
+                        : "border-gray-600 hover:border-orange-400 text-gray-300"
                     }`}
                   >
-                    <Icon className="w-5 h-5 mb-1" />
+                    <Icon className="w-3.5 h-3.5" />
                     {label}
                   </button>
                 ))}
