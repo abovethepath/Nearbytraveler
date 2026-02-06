@@ -61,9 +61,10 @@ const ACTIVITY_OPTIONS = [
 
 interface AvailableNowWidgetProps {
   currentUser: any;
+  onSortByAvailableNow?: () => void;
 }
 
-export function AvailableNowWidget({ currentUser }: AvailableNowWidgetProps) {
+export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: AvailableNowWidgetProps) {
   const [showSetup, setShowSetup] = useState(false);
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
   const [customNote, setCustomNote] = useState("");
@@ -231,6 +232,15 @@ export function AvailableNowWidget({ currentUser }: AvailableNowWidgetProps) {
             {myStatus.customNote && (
               <p className="text-xs text-purple-600 dark:text-purple-400 mt-2 italic">"{myStatus.customNote}"</p>
             )}
+            {onSortByAvailableNow && (
+              <Button
+                size="sm"
+                className="mt-2 w-full bg-green-600 hover:bg-green-700 text-white font-semibold text-xs py-2 rounded-full"
+                onClick={onSortByAvailableNow}
+              >
+                🟢 See Who Else is Available Now
+              </Button>
+            )}
           </div>
         ) : (
           <button
@@ -376,6 +386,15 @@ export function AvailableNowWidget({ currentUser }: AvailableNowWidgetProps) {
             <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
               Set yourself available and others will find you!
             </p>
+            {onSortByAvailableNow && (
+              <Button
+                size="sm"
+                className="mt-3 bg-green-600 hover:bg-green-700 text-white font-semibold text-xs px-4 py-2 rounded-full"
+                onClick={onSortByAvailableNow}
+              >
+                🟢 See Who Else is Available Now
+              </Button>
+            )}
           </div>
         )}
       </div>

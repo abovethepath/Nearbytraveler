@@ -2127,7 +2127,13 @@ export default function Home() {
             
             {/* Available Now Widget - Hangout Mode */}
             {effectiveUser?.userType !== 'business' && (
-              <AvailableNowWidget currentUser={effectiveUser} />
+              <AvailableNowWidget currentUser={effectiveUser} onSortByAvailableNow={() => {
+                setSortBy('available_now');
+                setTimeout(() => {
+                  const discoverSection = document.querySelector('[data-testid="discover-people-section"]');
+                  discoverSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+              }} />
             )}
 
             {/* Weather Widget */}
