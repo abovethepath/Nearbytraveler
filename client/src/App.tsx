@@ -630,6 +630,11 @@ function Router() {
       return <ProfileComplete userId={parseInt(businessId)} />;
     }
 
+    // Show simple A/B test landing page regardless of auth state
+    if (location === '/landing-simple') {
+      return <LandingSimple />;
+    }
+
     if (!isActuallyAuthenticated) {
       console.log('🏠 STREAMLINED LANDING - User not authenticated, showing streamlined landing page for:', location);
       console.log('🔐 DEBUG: window.location.pathname =', window.location.pathname);
