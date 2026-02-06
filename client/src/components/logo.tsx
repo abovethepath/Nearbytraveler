@@ -13,7 +13,7 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
       case "landing":
         return "h-20 w-auto";
       case "navbar":
-        return "h-10 sm:h-10 md:h-12 lg:h-12 xl:h-12 w-auto";
+        return "h-14 sm:h-14 md:h-14 lg:h-14 xl:h-14 w-auto";
       case "black-navbar":
         return "h-14 w-auto";
       case "footer":
