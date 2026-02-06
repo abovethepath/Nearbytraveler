@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Zap, Clock, MapPin, X, Send, Coffee, Music, Utensils, Camera, Dumbbell, BookOpen, ShoppingBag, Beer, ChevronDown } from "lucide-react";
+import { Zap, Clock, MapPin, X, Send, Coffee, Music, Utensils, Camera, Dumbbell, BookOpen, ShoppingBag, Beer, ChevronDown, ChevronUp } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import { useToast } from "@/hooks/use-toast";
 
@@ -59,6 +59,8 @@ const ACTIVITY_OPTIONS = [
   { label: "Shopping", icon: ShoppingBag, value: "shopping" },
 ];
 
+const PREVIEW_COUNT = 3;
+
 interface AvailableNowWidgetProps {
   currentUser: any;
   onSortByAvailableNow?: () => void;
@@ -71,6 +73,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const [duration, setDuration] = useState("4");
   const [showMeetRequest, setShowMeetRequest] = useState<number | null>(null);
   const [meetMessage, setMeetMessage] = useState("");
+  const [showAllUsers, setShowAllUsers] = useState(false);
   const { toast } = useToast();
 
   const userCity = currentUser?.hometownCity || currentUser?.city || "";
@@ -210,6 +213,8 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     window.dispatchEvent(new PopStateEvent('popstate'));
   };
 
+  const visibleUsers = showAllUsers ? otherAvailableUsers : otherAvailableUsers.slice(0, PREVIEW_COUNT);
+
   return (
     <>
     <Card className="overflow-hidden border-0 shadow-lg rounded-2xl bg-gray-900 dark:bg-gray-800">
@@ -292,7 +297,6 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              console.log("🟢 Available Now button clicked, opening setup dialog");
               setShowSetup(true);
             }}
             className="w-full mb-4 py-3.5 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-orange-500 to-green-500 hover:from-purple-700 hover:via-orange-600 hover:to-green-600 text-white font-bold text-base text-center shadow-lg shadow-orange-500/30 cursor-pointer active:scale-[0.98] transition-all relative z-10"
@@ -358,79 +362,130 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
         )}
 
         {otherAvailableUsers.length > 0 ? (
-          <div className="space-y-2">
-            {otherAvailableUsers.slice(0, 5).map((entry: any) => (
-              <div key={entry.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-700/50 transition-colors">
-                <button onClick={() => handleCardClick(entry.user.id)} className="flex-shrink-0">
-                  <SimpleAvatar
-                    user={{ id: entry.user?.id || 0, username: entry.user?.username || "?", profileImage: entry.user?.profilePhoto }}
-                    size="sm"
-                  />
-                </button>
-                <div className="flex-1 min-w-0">
-                  <button
-                    onClick={() => handleCardClick(entry.user.id)}
-                    className="text-sm font-medium text-white hover:text-orange-500 truncate block text-left"
-                  >
-                    @{entry.user?.username}
-                  </button>
-                  <div className="flex items-center gap-2">
-                    {entry.activities?.length > 0 && (
-                      <span className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                        {entry.activities.join(", ")}
-                      </span>
-                    )}
-                    <span className="text-xs text-green-600 dark:text-green-400 flex-shrink-0">
-                      {getTimeRemaining(entry.expiresAt)}
-                    </span>
-                  </div>
-                  {entry.customNote && (
-                    <div className="mt-1 px-2 py-1 bg-purple-50 dark:bg-purple-900/30 rounded border border-purple-200 dark:border-purple-700">
-                      <p className="text-xs font-semibold text-purple-700 dark:text-purple-300 truncate">{entry.customNote}</p>
+          <div>
+            {otherAvailableUsers.length > PREVIEW_COUNT && !showAllUsers && (
+              <div className="mb-3 flex items-center gap-2">
+                <div className="flex -space-x-2">
+                  {otherAvailableUsers.slice(0, 5).map((entry: any) => (
+                    <div key={entry.id} className="relative w-8 h-8 rounded-full border-2 border-gray-900 dark:border-gray-800 overflow-hidden">
+                      <SimpleAvatar
+                        user={{ id: entry.user?.id || 0, username: entry.user?.username || "?", profileImage: entry.user?.profilePhoto }}
+                        size="sm"
+                        clickable={false}
+                      />
+                      <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border border-gray-900" />
+                    </div>
+                  ))}
+                  {otherAvailableUsers.length > 5 && (
+                    <div className="w-8 h-8 rounded-full border-2 border-gray-900 dark:border-gray-800 bg-gray-700 flex items-center justify-center">
+                      <span className="text-[10px] font-bold text-white">+{otherAvailableUsers.length - 5}</span>
                     </div>
                   )}
                 </div>
-                {showMeetRequest === entry.userId ? (
-                  <div className="flex items-center gap-1">
-                    <Input
-                      placeholder="Say hi..."
-                      value={meetMessage}
-                      onChange={(e) => setMeetMessage(e.target.value)}
-                      className="h-7 text-xs w-24 bg-white dark:bg-gray-800"
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          sendRequestMutation.mutate({ toUserId: entry.userId, message: meetMessage });
-                        }
-                      }}
-                    />
-                    <Button
-                      size="sm"
-                      className="h-7 w-7 p-0 bg-green-500 hover:bg-green-600"
-                      onClick={() => sendRequestMutation.mutate({ toUserId: entry.userId, message: meetMessage })}
-                      disabled={sendRequestMutation.isPending}
-                    >
-                      <Send className="w-3 h-3 text-white" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-7 w-7 p-0"
-                      onClick={() => { setShowMeetRequest(null); setMeetMessage(""); }}
-                    >
-                      <X className="w-3 h-3" />
-                    </Button>
-                  </div>
-                ) : (
-                  <Button
-                    size="sm"
-                    className="h-7 text-xs bg-orange-500 hover:bg-orange-600 text-white border-0"
-                    onClick={() => setShowMeetRequest(entry.userId)}
-                  >
-                    Meet
-                  </Button>
-                )}
+                <button
+                  onClick={() => setShowAllUsers(true)}
+                  className="flex-1 text-left"
+                >
+                  <span className="text-xs font-semibold text-white">{otherAvailableUsers.length} people available</span>
+                  <span className="text-[10px] text-gray-400 block">Tap to see everyone</span>
+                </button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 text-xs text-orange-400 hover:text-orange-300 hover:bg-gray-800"
+                  onClick={() => setShowAllUsers(true)}
+                >
+                  View all
+                  <ChevronDown className="w-3 h-3 ml-1" />
+                </Button>
               </div>
-            ))}
+            )}
+
+            <div className={`space-y-2 ${showAllUsers ? 'max-h-80 overflow-y-auto pr-1' : ''}`}>
+              {visibleUsers.map((entry: any) => (
+                <div key={entry.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-700/50 transition-colors">
+                  <button onClick={() => handleCardClick(entry.user.id)} className="flex-shrink-0 relative">
+                    <SimpleAvatar
+                      user={{ id: entry.user?.id || 0, username: entry.user?.username || "?", profileImage: entry.user?.profilePhoto }}
+                      size="md"
+                    />
+                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900" />
+                  </button>
+                  <div className="flex-1 min-w-0">
+                    <button
+                      onClick={() => handleCardClick(entry.user.id)}
+                      className="text-sm font-medium text-white hover:text-orange-500 truncate block text-left"
+                    >
+                      @{entry.user?.username}
+                    </button>
+                    <div className="flex items-center gap-2">
+                      {entry.activities?.length > 0 && (
+                        <span className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                          {entry.activities.join(", ")}
+                        </span>
+                      )}
+                      <span className="text-xs text-green-600 dark:text-green-400 flex-shrink-0">
+                        {getTimeRemaining(entry.expiresAt)}
+                      </span>
+                    </div>
+                    {entry.customNote && (
+                      <div className="mt-1 px-2 py-1 bg-purple-50 dark:bg-purple-900/30 rounded border border-purple-200 dark:border-purple-700">
+                        <p className="text-xs font-semibold text-purple-700 dark:text-purple-300 truncate">{entry.customNote}</p>
+                      </div>
+                    )}
+                  </div>
+                  {showMeetRequest === entry.userId ? (
+                    <div className="flex items-center gap-1">
+                      <Input
+                        placeholder="Say hi..."
+                        value={meetMessage}
+                        onChange={(e) => setMeetMessage(e.target.value)}
+                        className="h-7 text-xs w-24 bg-white dark:bg-gray-800"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            sendRequestMutation.mutate({ toUserId: entry.userId, message: meetMessage });
+                          }
+                        }}
+                      />
+                      <Button
+                        size="sm"
+                        className="h-7 w-7 p-0 bg-green-500 hover:bg-green-600"
+                        onClick={() => sendRequestMutation.mutate({ toUserId: entry.userId, message: meetMessage })}
+                        disabled={sendRequestMutation.isPending}
+                      >
+                        <Send className="w-3 h-3 text-white" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 w-7 p-0"
+                        onClick={() => { setShowMeetRequest(null); setMeetMessage(""); }}
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button
+                      size="sm"
+                      className="h-7 text-xs bg-orange-500 hover:bg-orange-600 text-white border-0"
+                      onClick={() => setShowMeetRequest(entry.userId)}
+                    >
+                      Meet
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {showAllUsers && otherAvailableUsers.length > PREVIEW_COUNT && (
+              <button
+                onClick={() => setShowAllUsers(false)}
+                className="w-full mt-3 py-2 text-xs font-semibold text-gray-400 hover:text-white flex items-center justify-center gap-1 transition-colors"
+              >
+                Show less
+                <ChevronUp className="w-3 h-3" />
+              </button>
+            )}
           </div>
         ) : null}
       </div>
