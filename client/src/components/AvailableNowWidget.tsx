@@ -107,6 +107,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/available-now"] });
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/my-status"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/available-now/active-ids"] });
       setShowSetup(false);
       toast({ title: "You're Available Now!", description: "Others in your city can see you're ready to hang out." });
     },
@@ -124,6 +125,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/available-now"] });
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/my-status"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/available-now/active-ids"] });
       toast({ title: "Availability cleared" });
     },
     onError: (error: any) => {
