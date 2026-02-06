@@ -388,7 +388,7 @@ function Navbar() {
                   src="/new-logo.png" 
                   alt="Nearby Traveler" 
                   className={`w-auto cursor-pointer hover:opacity-80 transition-all duration-300 object-contain`}
-                  style={{ height: '90px', maxWidth: '400px' }}
+                  style={{ height: '144px', maxWidth: '500px' }}
                   onLoad={() => console.log('Logo loaded successfully')}
                   onError={(e) => {
                     console.error('Logo failed to load from:', e.currentTarget.src);
