@@ -232,15 +232,6 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
             {myStatus.customNote && (
               <p className="text-xs text-purple-600 dark:text-purple-400 mt-2 italic">"{myStatus.customNote}"</p>
             )}
-            {onSortByAvailableNow && (
-              <Button
-                size="sm"
-                className="mt-2 w-full bg-green-600 hover:bg-green-700 text-white font-semibold text-xs py-2 rounded-full"
-                onClick={onSortByAvailableNow}
-              >
-                🟢 See Who Else is Available Now
-              </Button>
-            )}
           </div>
         ) : (
           <button
@@ -257,6 +248,16 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
               I'm Available to Hang Out
             </span>
           </button>
+        )}
+
+        {onSortByAvailableNow && (
+          <Button
+            size="sm"
+            className="w-full mb-4 bg-green-600 hover:bg-green-700 text-white font-semibold text-xs py-2 rounded-full"
+            onClick={onSortByAvailableNow}
+          >
+            🟢 See Who Else is Available Now
+          </Button>
         )}
 
         {pendingRequests && pendingRequests.length > 0 && (
@@ -386,15 +387,6 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
             <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
               Set yourself available and others will find you!
             </p>
-            {onSortByAvailableNow && (
-              <Button
-                size="sm"
-                className="mt-3 bg-green-600 hover:bg-green-700 text-white font-semibold text-xs px-4 py-2 rounded-full"
-                onClick={onSortByAvailableNow}
-              >
-                🟢 See Who Else is Available Now
-              </Button>
-            )}
           </div>
         )}
       </div>

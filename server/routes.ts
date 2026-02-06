@@ -20882,7 +20882,7 @@ Questions? Just reply to this message. Welcome aboard!
         ))
         .orderBy(desc(availableNow.createdAt));
 
-      const formatted = results.map(r => ({
+      let formatted = results.map(r => ({
         ...r.available_now,
         user: {
           id: r.users.id,
@@ -20892,6 +20892,25 @@ Questions? Just reply to this message. Welcome aboard!
           displayNamePreference: r.users.displayNamePreference,
         }
       }));
+
+      const currentUserId = req.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
+      if (currentUserId > 0) {
+        const hiddenFromMe = await db.select({ userId: hiddenFromUsers.userId })
+          .from(hiddenFromUsers)
+          .where(eq(hiddenFromUsers.hiddenFromId, currentUserId));
+        const blockedByMe = await db.select({ blockedId: blockedUsers.blockedId })
+          .from(blockedUsers)
+          .where(eq(blockedUsers.blockerId, currentUserId));
+        const blockedMe = await db.select({ blockerId: blockedUsers.blockerId })
+          .from(blockedUsers)
+          .where(eq(blockedUsers.blockedId, currentUserId));
+        const excludeIds = new Set([
+          ...hiddenFromMe.map(h => h.userId),
+          ...blockedByMe.map(b => b.blockedId),
+          ...blockedMe.map(b => b.blockerId),
+        ]);
+        formatted = formatted.filter(f => !excludeIds.has(f.user.id));
+      }
 
       res.json(formatted);
     } catch (error: any) {
@@ -21080,13 +21099,34 @@ Questions? Just reply to this message. Welcome aboard!
   app.get("/api/available-now/active-ids", async (req: any, res) => {
     try {
       const now = new Date();
+      const currentUserId = req.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       const results = await db.select({ userId: availableNow.userId })
         .from(availableNow)
         .where(and(
           eq(availableNow.isAvailable, true),
           gte(availableNow.expiresAt, now)
         ));
-      res.json(results.map(r => r.userId));
+      let activeIds = results.map(r => r.userId);
+      
+      if (currentUserId > 0) {
+        const hiddenFromMe = await db.select({ userId: hiddenFromUsers.userId })
+          .from(hiddenFromUsers)
+          .where(eq(hiddenFromUsers.hiddenFromId, currentUserId));
+        const blockedByMe = await db.select({ blockedId: blockedUsers.blockedId })
+          .from(blockedUsers)
+          .where(eq(blockedUsers.blockerId, currentUserId));
+        const blockedMe = await db.select({ blockerId: blockedUsers.blockerId })
+          .from(blockedUsers)
+          .where(eq(blockedUsers.blockedId, currentUserId));
+        const excludeIds = new Set([
+          ...hiddenFromMe.map(h => h.userId),
+          ...blockedByMe.map(b => b.blockedId),
+          ...blockedMe.map(b => b.blockerId),
+        ]);
+        activeIds = activeIds.filter(id => !excludeIds.has(id));
+      }
+      
+      res.json(activeIds);
     } catch (error: any) {
       res.json([]);
     }
