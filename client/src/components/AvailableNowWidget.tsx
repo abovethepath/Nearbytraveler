@@ -117,6 +117,24 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     },
   });
 
+  const updateActivitiesMutation = useMutation({
+    mutationFn: async (data: { activities: string[] }) => {
+      const res = await apiRequest("POST", "/api/available-now", {
+        activities: data.activities,
+        customNote: myStatus?.customNote || "",
+        city: userCity,
+        state: userState,
+        country: userCountry,
+        durationHours: 4,
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/available-now"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/available-now/my-status"] });
+    },
+  });
+
   const clearAvailableMutation = useMutation({
     mutationFn: async () => {
       const res = await apiRequest("DELETE", "/api/available-now");
@@ -232,30 +250,40 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
               </div>
             </div>
             <div className="px-4 py-3 bg-green-50 dark:bg-green-900/20">
-              {myStatus.activities?.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mb-2">
-                  {myStatus.activities.map((a: string) => {
-                    const actOpt = ACTIVITY_OPTIONS.find(o => o.value === a);
-                    const Icon = actOpt?.icon;
-                    return (
-                      <Badge key={a} className="text-xs bg-orange-500 hover:bg-orange-500 text-white border-0 px-2.5 py-1 font-semibold gap-1">
-                        {Icon && <Icon className="w-3 h-3" />}
-                        {actOpt?.label || a}
-                      </Badge>
-                    );
-                  })}
-                </div>
-              )}
+              <div className="flex flex-wrap gap-1.5">
+                {ACTIVITY_OPTIONS.map(({ label, icon: Icon, value }) => {
+                  const isActive = myStatus.activities?.includes(value);
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      disabled={updateActivitiesMutation.isPending}
+                      onClick={() => {
+                        const current = myStatus.activities || [];
+                        const updated = isActive
+                          ? current.filter((a: string) => a !== value)
+                          : [...current, value];
+                        updateActivitiesMutation.mutate({ activities: updated });
+                      }}
+                      className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition-all ${
+                        isActive
+                          ? "bg-orange-500 text-white shadow-sm"
+                          : "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500"
+                      }`}
+                    >
+                      <Icon className="w-3 h-3" />
+                      {label}
+                      {isActive && <X className="w-3 h-3 ml-0.5" />}
+                    </button>
+                  );
+                })}
+              </div>
               {myStatus.customNote && (
-                <div className="mt-1">
-                  <span className="text-[10px] uppercase tracking-wider font-bold text-purple-500 dark:text-purple-400">What I want to do now</span>
-                  <div className="mt-1 px-3 py-2 bg-white dark:bg-gray-800 rounded-lg border-2 border-purple-300 dark:border-purple-600 shadow-sm">
-                    <p className="text-sm font-bold text-purple-700 dark:text-purple-300">{myStatus.customNote}</p>
+                <div className="mt-2">
+                  <div className="px-3 py-1.5 bg-white dark:bg-gray-800 rounded-lg border border-purple-300 dark:border-purple-600">
+                    <p className="text-xs font-semibold text-purple-700 dark:text-purple-300">{myStatus.customNote}</p>
                   </div>
                 </div>
-              )}
-              {!myStatus.customNote && (!myStatus.activities || myStatus.activities.length === 0) && (
-                <p className="text-xs text-green-600 dark:text-green-400 font-medium">Ready to hang out!</p>
               )}
             </div>
           </div>
