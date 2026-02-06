@@ -183,36 +183,39 @@ export function AvailableNowWidget({ currentUser }: AvailableNowWidgetProps) {
   };
 
   return (
-    <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-      <div className="p-4 sm:p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center">
-            <Zap className="w-5 h-5 mr-2 text-green-500" />
+    <Card className="overflow-hidden border-0 shadow-lg rounded-2xl">
+      <div className="bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 p-4 pb-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold text-white flex items-center">
+            <Zap className="w-5 h-5 mr-2 text-yellow-300" />
             Available Now
           </h2>
           {otherAvailableUsers.length > 0 && (
-            <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
+            <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm">
               {otherAvailableUsers.length} nearby
             </Badge>
           )}
         </div>
+        <p className="text-xs text-white/80 mt-1">See who's ready to hang out nearby</p>
+      </div>
 
+      <div className="p-4 bg-white dark:bg-gray-800">
         {myStatus ? (
-          <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-200 dark:border-green-800">
+          <div className="mb-4 p-3 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/40 dark:to-emerald-900/40 rounded-xl border border-green-300 dark:border-green-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                <span className="text-sm font-medium text-green-700 dark:text-green-300">You're available</span>
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-lg shadow-green-500/50" />
+                <span className="text-sm font-bold text-green-700 dark:text-green-300">You're Live!</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-green-600 dark:text-green-400">
+                <span className="text-xs font-medium text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-800/50 px-2 py-0.5 rounded-full">
                   <Clock className="w-3 h-3 inline mr-1" />
                   {getTimeRemaining(myStatus.expiresAt)}
                 </span>
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="h-6 w-6 p-0 text-gray-400 hover:text-red-500"
+                  className="h-6 w-6 p-0 text-red-400 hover:text-red-600 hover:bg-red-50"
                   onClick={() => clearAvailableMutation.mutate()}
                 >
                   <X className="w-4 h-4" />
@@ -222,23 +225,23 @@ export function AvailableNowWidget({ currentUser }: AvailableNowWidgetProps) {
             {myStatus.activities?.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
                 {myStatus.activities.map((a: string) => (
-                  <Badge key={a} variant="outline" className="text-xs bg-white/50 dark:bg-gray-800/50">
+                  <Badge key={a} className="text-xs bg-green-500 text-white border-0">
                     {a}
                   </Badge>
                 ))}
               </div>
             )}
             {myStatus.customNote && (
-              <p className="text-xs text-green-600 dark:text-green-400 mt-1">{myStatus.customNote}</p>
+              <p className="text-xs text-green-600 dark:text-green-400 mt-2 italic">"{myStatus.customNote}"</p>
             )}
           </div>
         ) : (
           <Dialog open={showSetup} onOpenChange={setShowSetup}>
             <DialogTrigger asChild>
-              <Button className="w-full bg-green-500 hover:bg-green-600 text-white mb-4">
-                <Zap className="w-4 h-4 mr-2" />
+              <button className="w-full mb-4 py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-green-500/30 cursor-pointer active:scale-[0.98] transition-transform">
+                <Zap className="w-5 h-5 text-yellow-300" />
                 I'm Available to Hang Out
-              </Button>
+              </button>
             </DialogTrigger>
             <DialogContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
               <DialogHeader>
@@ -430,13 +433,15 @@ export function AvailableNowWidget({ currentUser }: AvailableNowWidgetProps) {
             ))}
           </div>
         ) : (
-          <div className="text-center py-4">
-            <Zap className="w-8 h-8 mx-auto mb-2 text-gray-300 dark:text-gray-600" />
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              No one available in {userCity || "your area"} right now
+          <div className="text-center py-5 px-3">
+            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-gradient-to-br from-emerald-100 to-teal-100 dark:from-emerald-900/30 dark:to-teal-900/30 flex items-center justify-center">
+              <Zap className="w-6 h-6 text-emerald-500" />
+            </div>
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              No one available in <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{userCity || "your area"}</span> right now
             </p>
             <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-              Be the first to go available!
+              Set yourself available and others will find you!
             </p>
           </div>
         )}
