@@ -1756,23 +1756,10 @@ export default function Home() {
       
         {/* Right image side - more prominent and engaging */}
         <div className="md:col-span-2 flex justify-center items-center relative order-first md:order-last">
-          {/* Decorative background blur effects */}
-          <div className="absolute inset-0 opacity-30 pointer-events-none">
-            <div className="absolute top-4 -left-8 w-24 h-24 bg-blue-400/20 rounded-full blur-2xl"></div>
-            <div className="absolute bottom-4 -right-8 w-32 h-32 bg-orange-400/20 rounded-full blur-2xl"></div>
-          </div>
-          
-          {/* Main image container with enhanced styling */}
+          {/* Main image container */}
           <div className="relative group">
-            {/* Enhanced image container */}
             <div className="relative">
-              {/* Subtle background glow */}
-              <div className="absolute -inset-3 bg-gradient-to-r from-blue-200/30 to-orange-200/30 dark:from-blue-900/20 dark:to-orange-900/20 rounded-3xl blur-lg"></div>
-              
-              {/* Main image - standardized height matching landing page */}
-              <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-xl overflow-hidden shadow-xl border border-gray-200/50 dark:border-gray-700/50 transform group-hover:scale-[1.02] transition-all duration-300">
-                {/* Loading placeholder - simple gradient, no text to avoid flash */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-orange-100 dark:from-gray-800 dark:to-gray-700"></div>
+              <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-xl overflow-hidden shadow-xl border border-gray-200/50 dark:border-gray-700/50 bg-gray-200 dark:bg-gray-700">
                 
                 {isVideoMedia ? (
                   <video
@@ -1821,26 +1808,6 @@ export default function Home() {
 )}
 
       <div className="pt-2 sm:pt-4 pb-24 md:pb-8 lg:pb-4 relative">
-        {/* Border-to-Border Soft Blue-Orange Gradient Background - ABSOLUTE not fixed to avoid touch conflicts */}
-        <div className="absolute inset-x-0 top-0 bottom-0 overflow-hidden pointer-events-none -z-10">
-          {/* Soft Blue Orb - Top Left */}
-          <div className="absolute -top-40 -left-40 w-[800px] h-[800px] bg-gradient-to-br from-blue-300 via-blue-400 to-cyan-300 rounded-full opacity-20 blur-3xl animate-float"></div>
-          
-          {/* Soft Orange Orb - Top Right */}
-          <div className="absolute -top-32 -right-32 w-[700px] h-[700px] bg-gradient-to-br from-orange-300 via-orange-400 to-amber-300 rounded-full opacity-25 blur-3xl animate-float-slow"></div>
-          
-          {/* Soft Blue Orb - Middle Left */}
-          <div className="absolute top-1/3 -left-48 w-[650px] h-[650px] bg-gradient-to-br from-blue-400 to-cyan-400 rounded-full opacity-15 blur-3xl animate-float-slower"></div>
-          
-          {/* Soft Orange Orb - Middle Right */}
-          <div className="absolute top-1/2 -right-48 w-[700px] h-[700px] bg-gradient-to-br from-orange-400 to-amber-400 rounded-full opacity-20 blur-3xl animate-float"></div>
-          
-          {/* Soft Blue Orb - Bottom Left */}
-          <div className="absolute -bottom-40 -left-32 w-[750px] h-[750px] bg-gradient-to-br from-blue-300 via-cyan-400 to-blue-400 rounded-full opacity-20 blur-3xl animate-float-slow hidden lg:block"></div>
-          
-          {/* Soft Orange Orb - Bottom Right */}
-          <div className="absolute -bottom-48 -right-40 w-[800px] h-[800px] bg-gradient-to-br from-orange-300 via-amber-400 to-orange-400 rounded-full opacity-25 blur-3xl animate-float-slower hidden lg:block"></div>
-        </div>
         
         <div className="w-full max-w-full px-2 sm:px-4 lg:px-6">
 
@@ -1855,8 +1822,7 @@ export default function Home() {
               <MeetupAlertBanner userId={effectiveUser.id} />
             )}
 
-            {/* Glass Morphism Content Panel - Now in FRONT of orbs with lighter backdrop */}
-            <div className="relative z-10 backdrop-blur-sm bg-white/60 dark:bg-gray-900/60 rounded-3xl p-4 sm:p-6 border border-white/30 dark:border-gray-700/30 shadow-2xl">
+            <div className="relative z-10 bg-white dark:bg-gray-900 rounded-3xl p-4 sm:p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
             
             <div className="flex items-center justify-between mb-6" data-testid="discover-people-section">
               <div className="flex items-center gap-2 sm:gap-4">
