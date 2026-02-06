@@ -1,5 +1,5 @@
 import { pgTable, text, serial, integer, boolean, timestamp, real, varchar, jsonb, unique, bigint, decimal, index, date } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -2667,5 +2667,43 @@ export type QuickDeal = typeof quickDeals.$inferSelect;
 export type InsertQuickDeal = z.infer<typeof insertQuickDealSchema>;
 export type QuickDealRedemption = typeof quickDealRedemptions.$inferSelect;
 export type InsertQuickDealRedemption = z.infer<typeof insertQuickDealRedemptionSchema>;
+
+// Available Now (Hangout Mode)
+export const availableNow = pgTable("available_now", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  isAvailable: boolean("is_available").notNull().default(true),
+  activities: text("activities").array().notNull().default(sql`ARRAY[]::text[]`),
+  customNote: text("custom_note"),
+  city: text("city").notNull(),
+  state: text("state"),
+  country: text("country").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const availableNowRequests = pgTable("available_now_requests", {
+  id: serial("id").primaryKey(),
+  fromUserId: integer("from_user_id").notNull().references(() => users.id),
+  toUserId: integer("to_user_id").notNull().references(() => users.id),
+  message: text("message"),
+  status: text("status").notNull().default("pending"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertAvailableNowSchema = createInsertSchema(availableNow).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertAvailableNowRequestSchema = createInsertSchema(availableNowRequests).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type AvailableNow = typeof availableNow.$inferSelect;
+export type InsertAvailableNow = z.infer<typeof insertAvailableNowSchema>;
+export type AvailableNowRequest = typeof availableNowRequests.$inferSelect;
+export type InsertAvailableNowRequest = z.infer<typeof insertAvailableNowRequestSchema>;
 
 

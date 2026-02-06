@@ -79,7 +79,7 @@ import {
   notifications,
 } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
-import { waitlistLeads } from "../shared/schema";
+import { waitlistLeads, availableNow, availableNowRequests } from "../shared/schema";
 import { alias } from "drizzle-orm/pg-core";
 
 // Helper function to compute public display name based on user preference
@@ -20853,6 +20853,219 @@ Questions? Just reply to this message. Welcome aboard!
 
 
   // Logout route - properly destroy server session (alias for /api/auth/logout)
+  // ==================== AVAILABLE NOW (Hangout Mode) ====================
+
+  app.get("/api/available-now", async (req: any, res) => {
+    try {
+      const { city } = req.query;
+      if (!city) return res.status(400).json({ error: "City is required" });
+
+      const now = new Date();
+      const results = await db.select()
+        .from(availableNow)
+        .innerJoin(users, eq(availableNow.userId, users.id))
+        .where(and(
+          eq(availableNow.isAvailable, true),
+          ilike(availableNow.city, city as string),
+          gte(availableNow.expiresAt, now)
+        ))
+        .orderBy(desc(availableNow.createdAt));
+
+      const formatted = results.map(r => ({
+        ...r.available_now,
+        user: {
+          id: r.users.id,
+          username: r.users.username,
+          fullName: r.users.fullName,
+          profilePhoto: r.users.profilePhoto,
+          displayNamePreference: r.users.displayNamePreference,
+        }
+      }));
+
+      res.json(formatted);
+    } catch (error: any) {
+      console.error("Error fetching available now:", error);
+      res.status(500).json({ error: "Failed to fetch available users" });
+    }
+  });
+
+  app.get("/api/available-now/my-status", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const now = new Date();
+      const [status] = await db.select()
+        .from(availableNow)
+        .where(and(
+          eq(availableNow.userId, Number(userId)),
+          eq(availableNow.isAvailable, true),
+          gte(availableNow.expiresAt, now)
+        ))
+        .orderBy(desc(availableNow.createdAt))
+        .limit(1);
+
+      res.json(status || null);
+    } catch (error: any) {
+      console.error("Error fetching status:", error);
+      res.status(500).json({ error: "Failed to fetch status" });
+    }
+  });
+
+  app.post("/api/available-now", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const { activities, customNote, city, state, country, durationHours } = req.body;
+      if (!city || !country) return res.status(400).json({ error: "City and country are required" });
+
+      const hours = Math.min(Math.max(Number(durationHours) || 4, 1), 12);
+      const expiresAt = new Date(Date.now() + hours * 60 * 60 * 1000);
+
+      await db.update(availableNow)
+        .set({ isAvailable: false })
+        .where(and(
+          eq(availableNow.userId, Number(userId)),
+          eq(availableNow.isAvailable, true)
+        ));
+
+      const [entry] = await db.insert(availableNow).values({
+        userId: Number(userId),
+        isAvailable: true,
+        activities: activities || [],
+        customNote: customNote || null,
+        city,
+        state: state || null,
+        country,
+        expiresAt,
+      }).returning();
+
+      res.json(entry);
+    } catch (error: any) {
+      console.error("Error setting available now:", error);
+      res.status(500).json({ error: "Failed to set availability" });
+    }
+  });
+
+  app.delete("/api/available-now", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      await db.update(availableNow)
+        .set({ isAvailable: false })
+        .where(and(
+          eq(availableNow.userId, Number(userId)),
+          eq(availableNow.isAvailable, true)
+        ));
+
+      res.json({ ok: true });
+    } catch (error: any) {
+      console.error("Error clearing availability:", error);
+      res.status(500).json({ error: "Failed to clear availability" });
+    }
+  });
+
+  app.post("/api/available-now/request", async (req: any, res) => {
+    try {
+      const fromUserId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!fromUserId) return res.status(401).json({ error: "Not authenticated" });
+
+      const { toUserId, message } = req.body;
+      if (!toUserId) return res.status(400).json({ error: "Target user is required" });
+
+      const [request] = await db.insert(availableNowRequests).values({
+        fromUserId: Number(fromUserId),
+        toUserId: Number(toUserId),
+        message: message || null,
+        status: "pending",
+      }).returning();
+
+      res.json(request);
+    } catch (error: any) {
+      console.error("Error sending meet request:", error);
+      res.status(500).json({ error: "Failed to send meet request" });
+    }
+  });
+
+  app.get("/api/available-now/requests", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const requests = await db.select()
+        .from(availableNowRequests)
+        .innerJoin(users, eq(availableNowRequests.fromUserId, users.id))
+        .where(and(
+          eq(availableNowRequests.toUserId, Number(userId)),
+          eq(availableNowRequests.status, "pending")
+        ))
+        .orderBy(desc(availableNowRequests.createdAt));
+
+      const formatted = requests.map(r => ({
+        ...r.available_now_requests,
+        fromUser: {
+          id: r.users.id,
+          username: r.users.username,
+          fullName: r.users.fullName,
+          profilePhoto: r.users.profilePhoto,
+        }
+      }));
+
+      res.json(formatted);
+    } catch (error: any) {
+      console.error("Error fetching requests:", error);
+      res.status(500).json({ error: "Failed to fetch requests" });
+    }
+  });
+
+  app.patch("/api/available-now/requests/:requestId", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const { requestId } = req.params;
+      const { status } = req.body;
+      if (!["accepted", "declined"].includes(status)) {
+        return res.status(400).json({ error: "Invalid status" });
+      }
+
+      const [updated] = await db.update(availableNowRequests)
+        .set({ status })
+        .where(and(
+          eq(availableNowRequests.id, Number(requestId)),
+          eq(availableNowRequests.toUserId, Number(userId))
+        ))
+        .returning();
+
+      res.json(updated);
+    } catch (error: any) {
+      console.error("Error updating request:", error);
+      res.status(500).json({ error: "Failed to update request" });
+    }
+  });
+
+  app.get("/api/available-now/count", async (req: any, res) => {
+    try {
+      const { city } = req.query;
+      if (!city) return res.status(400).json({ count: 0 });
+
+      const now = new Date();
+      const [result] = await db.select({ count: count() })
+        .from(availableNow)
+        .where(and(
+          eq(availableNow.isAvailable, true),
+          ilike(availableNow.city, city as string),
+          gte(availableNow.expiresAt, now)
+        ));
+
+      res.json({ count: result?.count || 0 });
+    } catch (error: any) {
+      res.json({ count: 0 });
+    }
+  });
+
   app.post("/api/logout", (req, res) => {
     console.log('🚪 Server /api/logout called for session:', req.sessionID);
     

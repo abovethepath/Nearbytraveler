@@ -56,6 +56,7 @@ import EnhancedDiscovery from "@/components/EnhancedDiscovery";
 
 import BusinessesGrid from "@/components/BusinessesGrid";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
+import { AvailableNowWidget } from "@/components/AvailableNowWidget";
 import { MeetupAlertBanner } from "@/components/MeetupAlertBanner";
 import { ContextualEventRecommendations } from "@/components/ContextualEventRecommendations";
 import CityMap from "@/components/CityMap";
@@ -2113,6 +2114,11 @@ export default function Home() {
           {/* Right Sidebar - Weather, Messages, Quick Meetups, Events */}
           <div className="col-span-1 space-y-6 sm:space-y-8 md:space-y-10">
             
+            {/* Available Now Widget - Hangout Mode */}
+            {effectiveUser?.userType !== 'business' && (
+              <AvailableNowWidget currentUser={effectiveUser} />
+            )}
+
             {/* Weather Widget */}
             {loadedSections.has('weather') && (
               <div className="relative">
