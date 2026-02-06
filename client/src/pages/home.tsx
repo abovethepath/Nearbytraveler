@@ -1571,11 +1571,15 @@ export default function Home() {
       <div className="mb-8 flex justify-center px-4">
         <div className="relative w-full max-w-sm">
           {/* Main image with clean rounded corners */}
-          <div className="relative rounded-3xl overflow-hidden shadow-xl aspect-[4/3]">
+          <div className="relative rounded-3xl overflow-hidden shadow-xl aspect-[4/3] bg-gray-200 dark:bg-gray-700">
             <img 
               src={staticHeroMedia}
               alt="Travelers connecting at coffee shop"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-opacity duration-300"
+              loading="eager"
+              fetchPriority="high"
+              style={{ opacity: 0 }}
+              onLoad={(e) => { e.currentTarget.style.opacity = '1'; }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent"></div>
           </div>
@@ -1798,11 +1802,8 @@ export default function Home() {
                     playsInline
                     onLoadedData={(e) => {
                       e.currentTarget.style.opacity = '1';
-                      // Hide the loading placeholder
-                      const placeholder = e.currentTarget.previousElementSibling as HTMLElement;
-                      if (placeholder) placeholder.style.display = 'none';
                     }}
-                    style={{ opacity: '0' }}
+                    style={{ opacity: 0 }}
                   >
                     Your browser does not support the video tag.
                   </video>
@@ -1810,10 +1811,11 @@ export default function Home() {
                   <img
                     src={staticHeroMedia}
                     alt="Travelers connecting at coffee shop"
-                    className="w-full h-full object-cover relative z-10"
+                    className="w-full h-full object-cover relative z-10 transition-opacity duration-300"
                     loading="eager"
                     fetchPriority="high"
-                    decoding="async"
+                    style={{ opacity: 0 }}
+                    onLoad={(e) => { e.currentTarget.style.opacity = '1'; }}
                   />
                 )}
                 
