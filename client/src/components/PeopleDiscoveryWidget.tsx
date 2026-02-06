@@ -1,6 +1,6 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
-import { MapPin, Heart, Plane } from "lucide-react";
+import { MapPin, Heart, Plane, Zap } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useQuery } from "@tanstack/react-query";
 import { AuthContext } from "@/App";
@@ -44,7 +44,16 @@ export function PeopleDiscoveryWidget({
   const [, setLocation] = useLocation();
   const { user: currentUser } = useContext(AuthContext);
   const currentUserId = propCurrentUserId || currentUser?.id;
-  const [displayCount, setDisplayCount] = React.useState(8); // Show 8 people initially (2 rows x 4 cols)
+  const [displayCount, setDisplayCount] = React.useState(8);
+
+  const { data: availableActiveIds } = useQuery<number[]>({
+    queryKey: ["/api/available-now/active-ids"],
+    refetchInterval: 60000,
+  });
+
+  const availableUserIds = useMemo(() => {
+    return new Set(availableActiveIds || []);
+  }, [availableActiveIds]);
 
   // Helper function to display travel destinations exactly as entered by user
   const formatTravelDestination = (destination: string | null): string => {
@@ -332,8 +341,17 @@ export function PeopleDiscoveryWidget({
         className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 hover:shadow-lg transition-all duration-200 cursor-pointer text-gray-900 dark:text-white relative h-auto"
         onClick={handleCardClick}
       >
-        {/* Online Status - Top Right */}
-        {person.isOnline && (
+        {/* Available Now Badge - Top Right */}
+        {availableUserIds.has(person.id) && (
+          <div className="absolute top-2 right-2 z-10">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gradient-to-r from-orange-500 to-green-500 text-white shadow-md">
+              <Zap className="w-3 h-3" />
+              Available
+            </span>
+          </div>
+        )}
+        {/* Online Status - Top Right (when not available) */}
+        {!availableUserIds.has(person.id) && person.isOnline && (
           <div className="absolute top-6 right-6">
             <div className="w-3 h-3 bg-green-400 rounded-full"></div>
           </div>

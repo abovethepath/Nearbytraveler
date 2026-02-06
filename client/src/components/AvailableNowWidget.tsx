@@ -383,8 +383,8 @@ export function AvailableNowWidget({ currentUser }: AvailableNowWidgetProps) {
       </div>
     </Card>
 
-    <Dialog open={showSetup} onOpenChange={setShowSetup} modal={true}>
-      <DialogContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 z-[100]">
+    <Dialog open={showSetup} onOpenChange={setShowSetup}>
+      <DialogContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700" onPointerDownOutside={(e) => e.preventDefault()} onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle className="text-gray-900 dark:text-white">Set Your Availability</DialogTitle>
           <DialogDescription className="text-gray-500 dark:text-gray-400">

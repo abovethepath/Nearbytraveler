@@ -21066,6 +21066,21 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  app.get("/api/available-now/active-ids", async (req: any, res) => {
+    try {
+      const now = new Date();
+      const results = await db.select({ userId: availableNow.userId })
+        .from(availableNow)
+        .where(and(
+          eq(availableNow.isAvailable, true),
+          gte(availableNow.expiresAt, now)
+        ));
+      res.json(results.map(r => r.userId));
+    } catch (error: any) {
+      res.json([]);
+    }
+  });
+
   app.post("/api/logout", (req, res) => {
     console.log('🚪 Server /api/logout called for session:', req.sessionID);
     

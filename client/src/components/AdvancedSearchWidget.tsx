@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, Search, X, Users, Filter, MapPin, Building2 } from "lucide-react";
+import { ChevronDown, Search, X, Users, Filter, MapPin, Building2, Zap } from "lucide-react";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
@@ -73,6 +73,12 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
   const [advancedSearchResults, setAdvancedSearchResults] = useState<User[]>([]);
   const [eventSearchResults, setEventSearchResults] = useState<any[]>([]);
   const [isAdvancedSearching, setIsAdvancedSearching] = useState(false);
+
+  const { data: availableActiveIds } = useQuery<number[]>({
+    queryKey: ["/api/available-now/active-ids"],
+    refetchInterval: 60000,
+  });
+  const availableUserIds = React.useMemo(() => new Set(availableActiveIds || []), [availableActiveIds]);
 
   // Toggle section expansion
   const toggleSection = (section: keyof typeof expandedSections) => {
@@ -724,11 +730,19 @@ export function AdvancedSearchWidget({ open, onOpenChange }: AdvancedSearchWidge
                           )}
                         </div>
                         
-                        {/* Username and hostel match badge */}
+                        {/* Username and badges */}
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold text-black dark:text-white truncate">
-                            {user.username}
-                          </h4>
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-semibold text-black dark:text-white truncate">
+                              {user.username}
+                            </h4>
+                            {availableUserIds.has(user.id) && (
+                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-gradient-to-r from-orange-500 to-green-500 text-white flex-shrink-0">
+                                <Zap className="w-2.5 h-2.5" />
+                                Available
+                              </span>
+                            )}
+                          </div>
                           {/* Hostel match badge - shown when hostel search was used */}
                           {advancedFilters.hostelName && (
                             <div className="flex items-center gap-1 mt-1">
