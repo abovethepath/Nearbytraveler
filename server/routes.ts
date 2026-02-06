@@ -20888,7 +20888,7 @@ Questions? Just reply to this message. Welcome aboard!
           id: r.users.id,
           username: r.users.username,
           fullName: r.users.fullName,
-          profilePhoto: r.users.profilePhoto,
+          profilePhoto: r.users.profileImage,
           displayNamePreference: r.users.displayNamePreference,
         }
       }));
