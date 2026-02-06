@@ -101,13 +101,18 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const setAvailableMutation = useMutation({
     mutationFn: async (data: any) => {
       const res = await apiRequest("POST", "/api/available-now", data);
-      return res.json();
+      const json = await res.json();
+      return json;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/available-now"] });
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/my-status"] });
       setShowSetup(false);
       toast({ title: "You're Available Now!", description: "Others in your city can see you're ready to hang out." });
+    },
+    onError: (error: any) => {
+      console.error("Go Available error:", error);
+      toast({ title: "Couldn't set availability", description: error?.message || "Please try again", variant: "destructive" });
     },
   });
 
@@ -120,6 +125,10 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
       queryClient.invalidateQueries({ queryKey: ["/api/available-now"] });
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/my-status"] });
       toast({ title: "Availability cleared" });
+    },
+    onError: (error: any) => {
+      console.error("Clear availability error:", error);
+      toast({ title: "Couldn't clear availability", description: error?.message || "Please try again", variant: "destructive" });
     },
   });
 
