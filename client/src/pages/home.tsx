@@ -79,7 +79,7 @@ export default function Home() {
   const [connectModalMode, setConnectModalMode] = useState<'current' | 'hometown'>('current');
   const [connectTargetUser, setConnectTargetUser] = useState<any>(null);
   const [showAllUsers, setShowAllUsers] = useState(false);
-  const [sortBy, setSortBy] = useState<'recent' | 'active' | 'compatibility' | 'travel_experience' | 'closest_nearby' | 'aura' | 'references' | 'alphabetical'>('recent');
+  const [sortBy, setSortBy] = useState<'recent' | 'active' | 'compatibility' | 'travel_experience' | 'closest_nearby' | 'aura' | 'references' | 'alphabetical' | 'available_now'>('recent');
   
   // Compact mode via URL parameter (add ?compact=true for smaller cards)
   const isCompactMode = useMemo(() => {
@@ -337,6 +337,11 @@ export default function Home() {
       return scoreB - scoreA;
     });
   };
+
+  const { data: availableNowIds = [] } = useQuery<number[]>({
+    queryKey: ['/api/available-now/active-ids'],
+    refetchInterval: 30000,
+  });
 
   // Get compatibility data from API (matches profile page calculation)
   const { data: compatibilityData } = useQuery({
@@ -600,8 +605,12 @@ export default function Home() {
           const aCountries = a.countriesVisited?.length || 0;
           const bCountries = b.countriesVisited?.length || 0;
           return bCountries - aCountries;
+        case 'available_now':
+          const aAvail = availableNowIds.includes(a.id) ? 1 : 0;
+          const bAvail = availableNowIds.includes(b.id) ? 1 : 0;
+          if (bAvail !== aAvail) return bAvail - aAvail;
+          return new Date(b.lastLocationUpdate || b.createdAt || 0).getTime() - new Date(a.lastLocationUpdate || a.createdAt || 0).getTime();
         case 'alphabetical':
-          // Sort alphabetically by username
           return (a.username || '').localeCompare(b.username || '');
         default:
           return 0;
@@ -1929,6 +1938,7 @@ export default function Home() {
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="available_now">Available Now</SelectItem>
                     <SelectItem value="recent">Recent</SelectItem>
                     <SelectItem value="active">Most Active</SelectItem>
                     <SelectItem value="compatibility">Compatibility</SelectItem>
