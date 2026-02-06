@@ -17,7 +17,7 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
       case "footer":
         return "h-12 w-auto md:h-12 sm:h-10";
       case "header":
-        return "h-16 sm:h-20 md:h-20 lg:h-24 w-auto";
+        return "h-24 sm:h-28 md:h-32 lg:h-36 w-auto";
       default:
         return "h-10 w-auto";
     }
