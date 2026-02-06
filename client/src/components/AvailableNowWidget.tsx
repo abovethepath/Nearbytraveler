@@ -5,9 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Zap, Clock, MapPin, X, Send, Coffee, Music, Utensils, Camera, Dumbbell, BookOpen, ShoppingBag, Beer } from "lucide-react";
+import { Zap, Clock, MapPin, X, Send, Coffee, Music, Utensils, Camera, Dumbbell, BookOpen, ShoppingBag, Beer, ChevronDown } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import { useToast } from "@/hooks/use-toast";
 
@@ -383,81 +381,95 @@ export function AvailableNowWidget({ currentUser }: AvailableNowWidgetProps) {
       </div>
     </Card>
 
-    <Dialog open={showSetup} onOpenChange={setShowSetup}>
-      <DialogContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700" onPointerDownOutside={(e) => e.preventDefault()} onInteractOutside={(e) => e.preventDefault()}>
-        <DialogHeader>
-          <DialogTitle className="text-gray-900 dark:text-white">Set Your Availability</DialogTitle>
-          <DialogDescription className="text-gray-500 dark:text-gray-400">
-            Let others know you're ready to hang out
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4">
-          <div>
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-              What are you up for?
-            </label>
-            <div className="grid grid-cols-4 gap-2">
-              {ACTIVITY_OPTIONS.map(({ label, icon: Icon, value }) => (
-                <button
-                  key={value}
-                  onClick={() => toggleActivity(value)}
-                  className={`flex flex-col items-center p-2 rounded-lg border text-xs transition-colors ${
-                    selectedActivities.includes(value)
-                      ? "border-orange-500 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300"
-                      : "border-gray-200 dark:border-gray-700 hover:border-orange-300 text-gray-600 dark:text-gray-400"
-                  }`}
-                >
-                  <Icon className="w-5 h-5 mb-1" />
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div>
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
-              Quick note (optional)
-            </label>
-            <Input
-              placeholder="e.g. At the pier, come say hi!"
-              value={customNote}
-              onChange={(e) => setCustomNote(e.target.value)}
-              maxLength={100}
-              className="bg-white dark:bg-gray-800"
-            />
-          </div>
-          <div>
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
-              How long are you available?
-            </label>
-            <Select value={duration} onValueChange={setDuration}>
-              <SelectTrigger className="bg-white dark:bg-gray-800">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1">1 hour</SelectItem>
-                <SelectItem value="2">2 hours</SelectItem>
-                <SelectItem value="4">4 hours</SelectItem>
-                <SelectItem value="6">6 hours</SelectItem>
-                <SelectItem value="8">8 hours</SelectItem>
-                <SelectItem value="12">All day (12 hours)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-            <MapPin className="w-3 h-3" />
-            <span>Visible in {userCity || "your city"}</span>
-          </div>
+    {showSetup && (
+      <div className="fixed inset-0 z-[999999] flex items-center justify-center" onClick={() => setShowSetup(false)}>
+        <div className="absolute inset-0 bg-black/80" />
+        <div
+          className="relative z-[1] w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6 border border-gray-200 dark:border-gray-700"
+          onClick={(e) => e.stopPropagation()}
+        >
           <button
             type="button"
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 via-orange-500 to-green-500 hover:from-purple-700 hover:via-orange-600 hover:to-green-600 text-white font-bold text-sm text-center cursor-pointer disabled:opacity-50"
-            onClick={handleSetAvailable}
-            disabled={setAvailableMutation.isPending}
+            className="absolute right-4 top-4 rounded-sm opacity-70 hover:opacity-100 text-gray-500 dark:text-gray-400"
+            onClick={() => setShowSetup(false)}
           >
-            {setAvailableMutation.isPending ? "Setting..." : "Go Available"}
+            <X className="h-4 w-4" />
           </button>
+          <div className="mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Set Your Availability</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Let others know you're ready to hang out</p>
+          </div>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+                What are you up for?
+              </label>
+              <div className="grid grid-cols-4 gap-2">
+                {ACTIVITY_OPTIONS.map(({ label, icon: Icon, value }) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => toggleActivity(value)}
+                    className={`flex flex-col items-center p-2 rounded-lg border text-xs transition-colors ${
+                      selectedActivities.includes(value)
+                        ? "border-orange-500 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300"
+                        : "border-gray-200 dark:border-gray-700 hover:border-orange-300 text-gray-600 dark:text-gray-400"
+                    }`}
+                  >
+                    <Icon className="w-5 h-5 mb-1" />
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+                Quick note (optional)
+              </label>
+              <Input
+                placeholder="e.g. At the pier, come say hi!"
+                value={customNote}
+                onChange={(e) => setCustomNote(e.target.value)}
+                maxLength={100}
+                className="bg-white dark:bg-gray-800"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+                How long are you available?
+              </label>
+              <div className="relative">
+                <select
+                  value={duration}
+                  onChange={(e) => setDuration(e.target.value)}
+                  className="w-full h-10 px-3 pr-10 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500"
+                >
+                  <option value="1">1 hour</option>
+                  <option value="2">2 hours</option>
+                  <option value="4">4 hours</option>
+                  <option value="6">6 hours</option>
+                  <option value="8">8 hours</option>
+                  <option value="12">All day (12 hours)</option>
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+              </div>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+              <MapPin className="w-3 h-3" />
+              <span>Visible in {userCity || "your city"}</span>
+            </div>
+            <button
+              type="button"
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 via-orange-500 to-green-500 hover:from-purple-700 hover:via-orange-600 hover:to-green-600 text-white font-bold text-sm text-center cursor-pointer disabled:opacity-50"
+              onClick={handleSetAvailable}
+              disabled={setAvailableMutation.isPending}
+            >
+              {setAvailableMutation.isPending ? "Setting..." : "Go Available"}
+            </button>
+          </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    )}
     </>
   );
 }
