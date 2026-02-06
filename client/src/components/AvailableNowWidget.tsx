@@ -237,8 +237,12 @@ export function AvailableNowWidget({ currentUser }: AvailableNowWidgetProps) {
         ) : (
           <button
             type="button"
-            onClick={() => setShowSetup(true)}
-            className="w-full mb-4 py-3.5 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-orange-500 to-green-500 hover:from-purple-700 hover:via-orange-600 hover:to-green-600 text-white font-bold text-base text-center shadow-lg shadow-orange-500/30 cursor-pointer active:scale-[0.98] transition-all"
+            onClick={(e) => {
+              e.stopPropagation();
+              console.log("🟢 Available Now button clicked, opening setup dialog");
+              setShowSetup(true);
+            }}
+            className="w-full mb-4 py-3.5 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-orange-500 to-green-500 hover:from-purple-700 hover:via-orange-600 hover:to-green-600 text-white font-bold text-base text-center shadow-lg shadow-orange-500/30 cursor-pointer active:scale-[0.98] transition-all relative z-10"
           >
             <span className="flex items-center justify-center gap-2">
               <Zap className="w-5 h-5 text-yellow-300" />
