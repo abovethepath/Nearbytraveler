@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Zap, Clock, MapPin, X, Send, Coffee, Music, Utensils, Camera, Dumbbell, BookOpen, ShoppingBag, Beer } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
@@ -183,6 +183,7 @@ export function AvailableNowWidget({ currentUser }: AvailableNowWidgetProps) {
   };
 
   return (
+    <>
     <Card className="overflow-hidden border-0 shadow-lg rounded-2xl">
       <div className="bg-gradient-to-r from-purple-600 via-orange-500 to-green-500 p-4 pb-3">
         <div className="flex items-center justify-center gap-2">
@@ -234,90 +235,16 @@ export function AvailableNowWidget({ currentUser }: AvailableNowWidgetProps) {
             )}
           </div>
         ) : (
-          <>
-            <button
-              type="button"
-              onClick={() => setShowSetup(true)}
-              className="w-full mb-4 py-3.5 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-orange-500 to-green-500 hover:from-purple-700 hover:via-orange-600 hover:to-green-600 text-white font-bold text-base text-center shadow-lg shadow-orange-500/30 cursor-pointer active:scale-[0.98] transition-all"
-            >
-              <span className="flex items-center justify-center gap-2">
-                <Zap className="w-5 h-5 text-yellow-300" />
-                I'm Available to Hang Out
-              </span>
-            </button>
-          <Dialog open={showSetup} onOpenChange={setShowSetup}>
-            <DialogContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
-              <DialogHeader>
-                <DialogTitle className="text-gray-900 dark:text-white">Set Your Availability</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-                    What are you up for?
-                  </label>
-                  <div className="grid grid-cols-4 gap-2">
-                    {ACTIVITY_OPTIONS.map(({ label, icon: Icon, value }) => (
-                      <button
-                        key={value}
-                        onClick={() => toggleActivity(value)}
-                        className={`flex flex-col items-center p-2 rounded-lg border text-xs transition-colors ${
-                          selectedActivities.includes(value)
-                            ? "border-orange-500 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300"
-                            : "border-gray-200 dark:border-gray-700 hover:border-orange-300 text-gray-600 dark:text-gray-400"
-                        }`}
-                      >
-                        <Icon className="w-5 h-5 mb-1" />
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
-                    Quick note (optional)
-                  </label>
-                  <Input
-                    placeholder="e.g. At the pier, come say hi!"
-                    value={customNote}
-                    onChange={(e) => setCustomNote(e.target.value)}
-                    maxLength={100}
-                    className="bg-white dark:bg-gray-800"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
-                    How long are you available?
-                  </label>
-                  <Select value={duration} onValueChange={setDuration}>
-                    <SelectTrigger className="bg-white dark:bg-gray-800">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">1 hour</SelectItem>
-                      <SelectItem value="2">2 hours</SelectItem>
-                      <SelectItem value="4">4 hours</SelectItem>
-                      <SelectItem value="6">6 hours</SelectItem>
-                      <SelectItem value="8">8 hours</SelectItem>
-                      <SelectItem value="12">All day (12 hours)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                  <MapPin className="w-3 h-3" />
-                  <span>Visible in {userCity || "your city"}</span>
-                </div>
-                <button
-                  type="button"
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 via-orange-500 to-green-500 hover:from-purple-700 hover:via-orange-600 hover:to-green-600 text-white font-bold text-sm text-center cursor-pointer disabled:opacity-50"
-                  onClick={handleSetAvailable}
-                  disabled={setAvailableMutation.isPending}
-                >
-                  {setAvailableMutation.isPending ? "Setting..." : "Go Available"}
-                </button>
-              </div>
-            </DialogContent>
-          </Dialog>
-          </>
+          <button
+            type="button"
+            onClick={() => setShowSetup(true)}
+            className="w-full mb-4 py-3.5 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-orange-500 to-green-500 hover:from-purple-700 hover:via-orange-600 hover:to-green-600 text-white font-bold text-base text-center shadow-lg shadow-orange-500/30 cursor-pointer active:scale-[0.98] transition-all"
+          >
+            <span className="flex items-center justify-center gap-2">
+              <Zap className="w-5 h-5 text-yellow-300" />
+              I'm Available to Hang Out
+            </span>
+          </button>
         )}
 
         {pendingRequests && pendingRequests.length > 0 && (
@@ -451,5 +378,82 @@ export function AvailableNowWidget({ currentUser }: AvailableNowWidgetProps) {
         )}
       </div>
     </Card>
+
+    <Dialog open={showSetup} onOpenChange={setShowSetup} modal={true}>
+      <DialogContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 z-[100]">
+        <DialogHeader>
+          <DialogTitle className="text-gray-900 dark:text-white">Set Your Availability</DialogTitle>
+          <DialogDescription className="text-gray-500 dark:text-gray-400">
+            Let others know you're ready to hang out
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+              What are you up for?
+            </label>
+            <div className="grid grid-cols-4 gap-2">
+              {ACTIVITY_OPTIONS.map(({ label, icon: Icon, value }) => (
+                <button
+                  key={value}
+                  onClick={() => toggleActivity(value)}
+                  className={`flex flex-col items-center p-2 rounded-lg border text-xs transition-colors ${
+                    selectedActivities.includes(value)
+                      ? "border-orange-500 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300"
+                      : "border-gray-200 dark:border-gray-700 hover:border-orange-300 text-gray-600 dark:text-gray-400"
+                  }`}
+                >
+                  <Icon className="w-5 h-5 mb-1" />
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+              Quick note (optional)
+            </label>
+            <Input
+              placeholder="e.g. At the pier, come say hi!"
+              value={customNote}
+              onChange={(e) => setCustomNote(e.target.value)}
+              maxLength={100}
+              className="bg-white dark:bg-gray-800"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">
+              How long are you available?
+            </label>
+            <Select value={duration} onValueChange={setDuration}>
+              <SelectTrigger className="bg-white dark:bg-gray-800">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">1 hour</SelectItem>
+                <SelectItem value="2">2 hours</SelectItem>
+                <SelectItem value="4">4 hours</SelectItem>
+                <SelectItem value="6">6 hours</SelectItem>
+                <SelectItem value="8">8 hours</SelectItem>
+                <SelectItem value="12">All day (12 hours)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+            <MapPin className="w-3 h-3" />
+            <span>Visible in {userCity || "your city"}</span>
+          </div>
+          <button
+            type="button"
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 via-orange-500 to-green-500 hover:from-purple-700 hover:via-orange-600 hover:to-green-600 text-white font-bold text-sm text-center cursor-pointer disabled:opacity-50"
+            onClick={handleSetAvailable}
+            disabled={setAvailableMutation.isPending}
+          >
+            {setAvailableMutation.isPending ? "Setting..." : "Go Available"}
+          </button>
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
