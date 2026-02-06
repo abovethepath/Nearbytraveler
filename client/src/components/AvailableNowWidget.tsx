@@ -194,7 +194,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
 
   return (
     <>
-    <Card className="overflow-hidden border-0 shadow-lg rounded-2xl">
+    <Card className="overflow-hidden border-0 shadow-lg rounded-2xl bg-gray-900 dark:bg-gray-800">
       <div className="bg-gradient-to-r from-purple-600 via-orange-500 to-green-500 p-4 pb-3">
         <div className="flex items-center justify-center gap-2">
           <Zap className="w-5 h-5 text-yellow-300" />
@@ -208,7 +208,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
         <p className="text-xs text-white/80 mt-1 text-center">See who's ready to hang out nearby</p>
       </div>
 
-      <div className="p-4 bg-white dark:bg-gray-800">
+      <div className="p-4">
         {myStatus ? (
           <div className="mb-4 rounded-xl border-2 border-green-400 dark:border-green-500 overflow-hidden">
             <div className="bg-gradient-to-r from-green-500 to-emerald-500 px-4 py-2.5 flex items-center justify-between">
@@ -332,7 +332,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
         {otherAvailableUsers.length > 0 ? (
           <div className="space-y-2">
             {otherAvailableUsers.slice(0, 5).map((entry: any) => (
-              <div key={entry.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+              <div key={entry.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-700/50 transition-colors">
                 <button onClick={() => handleCardClick(entry.user.id)} className="flex-shrink-0">
                   <SimpleAvatar
                     user={{ id: entry.user?.id || 0, username: entry.user?.username || "?", profileImage: entry.user?.profilePhoto }}
@@ -342,7 +342,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                 <div className="flex-1 min-w-0">
                   <button
                     onClick={() => handleCardClick(entry.user.id)}
-                    className="text-sm font-medium text-gray-900 dark:text-white hover:text-orange-500 truncate block text-left"
+                    className="text-sm font-medium text-white hover:text-orange-500 truncate block text-left"
                   >
                     @{entry.user?.username}
                   </button>
