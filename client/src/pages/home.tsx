@@ -1507,50 +1507,47 @@ export default function Home() {
 
 {/* HERO SECTION — Modern Glass Morphism Design 2025 */}
 {isHeroVisible && (
-<section className="relative py-8 sm:py-12 lg:py-20 overflow-hidden">
+<section className="relative py-4 sm:py-6 lg:py-10 overflow-hidden">
   {/* Clean solid background */}
   <div className="absolute inset-0 bg-white dark:bg-gray-900"></div>
 
   {isMobile ? (
-    // Mobile: Modern vertical layout with glass morphism
     <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
-      {/* Hide Hero Button - above the pill */}
       <button
         onClick={toggleHeroVisibility}
-        className="inline-flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 mb-4"
+        className="inline-flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 mb-2"
       >
         <X className="w-4 h-4" />
         Hide
       </button>
       
-      {/* DRAMATIC Glass morphism badge */}
-      <div className="inline-flex items-center gap-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-2 border-blue-500/30 dark:border-orange-500/30 rounded-full px-8 py-3 mb-8 shadow-2xl">
-        <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full animate-pulse shadow-lg shadow-blue-500/50"></div>
-        <span className="text-base font-black bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Connect • Discover • Experience</span>
+      <div className="inline-flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-full px-6 py-2 mb-4">
+        <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
+        <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Connect • Discover • Experience</span>
       </div>
 
-      <h1 className="text-3xl sm:text-5xl font-black leading-tight mb-8 px-2 drop-shadow-2xl">
+      <h1 className="text-3xl sm:text-4xl font-bold leading-tight mb-4 px-2">
         {effectiveUser?.userType === "business" ? (
           <>
-            <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent animate-gradient drop-shadow-xl">Nearby Traveler</span>
+            <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Nearby Traveler</span>
             <br />
-            <span className="text-2xl sm:text-4xl text-gray-900 dark:text-white drop-shadow-lg whitespace-nowrap">Connect Your Business</span>
+            <span className="text-2xl sm:text-3xl text-gray-900 dark:text-white whitespace-nowrap">Connect Your Business</span>
             <br />
-            <span className="text-2xl sm:text-4xl text-gray-900 dark:text-white drop-shadow-lg whitespace-nowrap">with Travelers & Locals</span>
+            <span className="text-2xl sm:text-3xl text-gray-900 dark:text-white whitespace-nowrap">with Travelers & Locals</span>
           </>
         ) : (
           <>
-            <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent animate-gradient drop-shadow-xl">Nearby Traveler</span>
+            <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Nearby Traveler</span>
             <br />
-            <span className="text-2xl sm:text-4xl text-gray-900 dark:text-white drop-shadow-lg whitespace-nowrap">Connect with Travelers</span>
+            <span className="text-2xl sm:text-3xl text-gray-900 dark:text-white whitespace-nowrap">Connect with Travelers</span>
             <br />
-            <span className="text-2xl sm:text-4xl text-gray-900 dark:text-white drop-shadow-lg whitespace-nowrap">& Locals Worldwide</span>
+            <span className="text-2xl sm:text-3xl text-gray-900 dark:text-white whitespace-nowrap">& Locals Worldwide</span>
           </>
         )}
       </h1>
       
       {/* Clean image container - fully hidden until loaded */}
-      <div className="mb-8 flex justify-center px-4">
+      <div className="mb-4 flex justify-center px-4">
         <div className="relative w-full max-w-sm" style={{ opacity: 0, transition: 'opacity 0.3s ease' }} ref={(el) => { if (el) { const img = el.querySelector('img'); if (img && img.complete) el.style.opacity = '1'; } }}>
           <div className="relative rounded-3xl overflow-hidden shadow-xl aspect-[4/3]">
             <img 
@@ -1602,45 +1599,42 @@ export default function Home() {
       )}
     </div>
   ) : (
-    // Desktop: Modern glass morphism layout with enhanced visuals
-    <div className="relative mx-auto max-w-7xl px-2 sm:px-4 md:px-6 py-12 sm:py-16 md:py-24 z-10">
+    <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-12 z-10">
       
-      <div className="grid gap-8 md:gap-12 md:grid-cols-5 items-center relative z-10">
-        {/* Left text side - wider and enhanced */}
+      <div className="grid gap-8 md:gap-12 md:grid-cols-5 items-center">
         <div className="md:col-span-3">
-          {/* Glass morphism premium badge */}
-          <div className="inline-flex items-center gap-2 bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl border border-white/20 dark:border-gray-700/20 rounded-full px-6 py-2.5 mb-8 shadow-lg hover:shadow-xl transition-all duration-300">
-            <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full animate-pulse"></div>
+          <div className="inline-flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full px-6 py-2.5 mb-6">
+            <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
             <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Connect • Discover • Experience</span>
           </div>
 
-          <div className="space-y-8">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight leading-[1.1]">
+          <div className="space-y-6">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
               {effectiveUser?.userType === "business" ? (
                 <>
-                  <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl">
+                  <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
                     Nearby Traveler
                   </span>
                   <br />
-                  <span className="bg-gradient-to-r from-gray-900 via-blue-800 to-gray-900 dark:from-white dark:via-blue-200 dark:to-white bg-clip-text text-transparent">
+                  <span className="text-gray-900 dark:text-white">
                     Connect Your Business
                   </span>
                   <br />
-                  <span className="bg-gradient-to-r from-orange-600 via-red-600 to-orange-600 bg-clip-text text-transparent">
+                  <span className="text-gray-900 dark:text-white">
                     with Travelers & Locals
                   </span>
                 </>
               ) : (
                 <>
-                  <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl">
+                  <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
                     Nearby Traveler
                   </span>
                   <br />
-                  <span className="bg-gradient-to-r from-gray-900 via-blue-800 to-gray-900 dark:from-white dark:via-blue-200 dark:to-white bg-clip-text text-transparent">
+                  <span className="text-gray-900 dark:text-white">
                     Connect with Travelers
                   </span>
                   <br />
-                  <span className="bg-gradient-to-r from-orange-600 via-red-600 to-orange-600 bg-clip-text text-transparent">
+                  <span className="text-gray-900 dark:text-white">
                     & Locals Worldwide
                   </span>
                 </>

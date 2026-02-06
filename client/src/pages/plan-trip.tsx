@@ -708,7 +708,7 @@ export default function PlanTrip() {
   return (
     <div className="min-h-screen bg-gray-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-gray-900 overflow-hidden break-words">
       {/* Hero Section - Mobile vs Desktop Layout */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-blue-700 via-purple-700 to-orange-600">
+      <div className="relative overflow-hidden bg-white dark:bg-gray-900">
         {/* Close Button - Always positioned at top right */}
         <button
           onClick={() => {
@@ -723,149 +723,67 @@ export default function PlanTrip() {
           <X className="w-4 h-4 sm:w-6 sm:h-6 text-gray-800 dark:text-gray-900" />
         </button>
 
-        {/* Mobile: Modern gradient layout */}
-        <div className="block md:hidden relative h-48 sm:h-56 bg-gradient-to-br from-blue-600 via-purple-600 to-orange-500">
-          <div className="relative z-10 h-full flex items-center justify-center px-2 sm:px-4">
-            <div className="text-center text-white overflow-hidden break-words">
-              <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-2 sm:mb-4 bg-white/20 rounded-full backdrop-blur-sm">
-                <Compass className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 break-words">
-                {isEditMode ? "Edit Your Trip" : "Create a Trip"}
-              </h1>
-              <p className="text-sm sm:text-lg opacity-95 break-words font-medium">
-                {isEditMode ? "Update your travel plan details" : "Step 1 of 2: Destination + Dates"}
-              </p>
+        {/* Mobile: Standardized layout */}
+        <div className="block md:hidden relative py-4 bg-white dark:bg-gray-900">
+          <div className="px-4 text-center">
+            <div className="inline-flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-full px-6 py-2 mb-4">
+              <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
+              <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Plan • Connect • Explore</span>
             </div>
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white leading-tight mb-2">
+              {isEditMode ? "Edit Your Trip" : "Create a Trip"}
+            </h1>
+            <p className="text-lg text-gray-600 dark:text-gray-300 font-medium">
+              {isEditMode ? "Update your travel plan details" : "Step 1 of 2: Destination + Dates"}
+            </p>
           </div>
         </div>
 
-        {/* Desktop: Modern professional layout */}
-        <div className="hidden md:block relative py-16 overflow-hidden">
-          {/* Modern gradient background elements */}
-          <div className="absolute inset-0 opacity-10 pointer-events-none">
-            <div className="absolute top-20 left-12 w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-20 right-12 w-40 h-40 bg-gradient-to-br from-orange-500 to-red-500 rounded-full blur-3xl"></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full blur-3xl opacity-50"></div>
-          </div>
-          
-          <div className="max-w-7xl mx-auto px-8 grid gap-12 md:grid-cols-2 items-center relative z-10">
-            {/* Left text side - modern and compelling */}
-            <div className="space-y-8">
-              {/* Modern status badge */}
-              <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-6 py-3">
-                <div className="flex gap-1">
-                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                  <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-                  <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
-                </div>
-                <span className="text-sm font-semibold text-white/90">Plan • Connect • Explore</span>
-              </div>
-
-              <div className="space-y-6">
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
-                  {isEditMode ? (
-                    <>
-                      <span className="text-white drop-shadow-lg">
-                        Edit Your
-                      </span>
-                      <br />
-                      <span className="text-orange-300 drop-shadow-lg">
-                        Trip
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="text-white drop-shadow-lg">
-                        Create a
-                      </span>
-                      <br />
-                      <span className="text-orange-300 drop-shadow-lg">
-                        Trip
-                      </span>
-                    </>
-                  )}
-                </h1>
-                
-                <div className="max-w-2xl space-y-4">
-                  <p className="text-xl text-white leading-relaxed font-medium drop-shadow-md">
-                    {isEditMode 
-                      ? <>Perfect your journey — <em className="text-orange-200 font-semibold">every detail matters.</em></>
-                      : <>Step 1 of 2: <em className="text-orange-200 font-semibold">Destination + dates get you into the right city.</em></>
-                    }
-                  </p>
-                  <p className="text-base text-white/80 leading-relaxed">
-                    {isEditMode
-                      ? "Fine-tune your travel plan, update your interests, and enhance your adventure preferences to get even better matches and recommendations."
-                      : "Next, you'll pick City Plans (things you want to do) to match with the right people."
-                    }
-                  </p>
-                </div>
-              </div>
-              
-              {/* Enhanced Features with attractive icons */}
-              <div className="mt-8 space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                    <Users className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-white">Smart Connections</h3>
-                    <p className="text-sm text-white/80">Match with locals and travelers based on your travel plan</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
-                    <Sparkles className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-white">Personalized Experiences</h3>
-                    <p className="text-sm text-white/80">AI-curated recommendations based on your preferences</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg">
-                    <Building2 className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-white">Local Business Access</h3>
-                    <p className="text-sm text-white/80">Connect with authentic local businesses and services</p>
-                  </div>
-                </div>
-              </div>
+        {/* Desktop: Standardized layout */}
+        <div className="hidden md:block relative py-6 sm:py-8 md:py-12 bg-white dark:bg-gray-900">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="inline-flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full px-6 py-2.5 mb-6">
+              <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
+              <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Plan • Connect • Explore</span>
             </div>
-          
-            {/* Right image side - matching other pages layout */}
-            <div className="flex flex-col items-center order-first md:order-last">
-              {/* Rotating wisdom sayings above static quote */}
-              <div className="mb-1 text-center w-full overflow-hidden relative h-[40px] sm:h-[48px] md:h-[56px]">
-                <p className="absolute top-0 left-0 w-full text-xs md:text-sm font-medium text-white/90 italic px-2">
-                  <span className="sm:hidden">Every journey begins with a single step</span>
-                  <span className="hidden sm:inline">Every great adventure begins with careful planning</span>
+            <div className="space-y-6">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
+                {isEditMode ? (
+                  <>
+                    <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
+                      Edit Your
+                    </span>
+                    <br />
+                    <span className="text-gray-900 dark:text-white">
+                      Trip
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
+                      Create a
+                    </span>
+                    <br />
+                    <span className="text-gray-900 dark:text-white">
+                      Trip
+                    </span>
+                  </>
+                )}
+              </h1>
+              <div className="max-w-2xl space-y-4">
+                <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
+                  {isEditMode 
+                    ? "Perfect your journey — every detail matters."
+                    : "Step 1 of 2: Destination + dates get you into the right city."
+                  }
+                </p>
+                <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed">
+                  {isEditMode
+                    ? "Fine-tune your travel plan, update your interests, and enhance your adventure preferences to get even better matches and recommendations."
+                    : "Next, you'll pick City Plans (things you want to do) to match with the right people."
+                  }
                 </p>
               </div>
-              
-              {/* Static powerful quote */}
-              <div className="mb-2 text-center w-full">
-                <p className="text-sm md:text-lg lg:text-xl font-bold text-white italic px-2">
-                  <span className="sm:hidden">Planning today, exploring tomorrow</span>
-                  <span className="hidden sm:inline">Planning today creates the connections of tomorrow</span>
-                </p>
-              </div>
-              
-              <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md h-[200px] sm:h-[250px] md:h-[350px] rounded-2xl">
-                <img
-                  src="/trip-planning.webp"
-                  alt="People planning vacation trip with map and laptop"
-                  className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl shadow-lg"
-                />
-              </div>
-              
-              <p className="mt-2 text-xs md:text-sm italic text-orange-200 text-center font-medium">
-                Where Great Adventures Begin
-              </p>
             </div>
           </div>
         </div>

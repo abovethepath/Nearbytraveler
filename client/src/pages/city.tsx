@@ -272,33 +272,30 @@ export default function CityPage({ cityName }: CityPageProps) {
         </button>
       </div>
       
-      {/* City Header - Always Visible */}
-      <div 
-        className="relative mx-4 mt-2 mb-6 rounded-xl overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-700 to-orange-600 dark:from-blue-900 dark:via-indigo-900 dark:to-orange-900"
-        style={{
-          backgroundRepeat: 'no-repeat'
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent dark:from-black/80 dark:via-black/50 dark:to-black/20" />
-        <div className="relative z-10 p-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+      {/* City Header - Standardized Layout */}
+      <section className="relative py-4 sm:py-6 lg:py-10 overflow-hidden bg-white dark:bg-gray-900 mx-4 mt-2 mb-6 rounded-xl border border-gray-200 dark:border-gray-700">
+        <div className="relative z-10 px-6 py-2">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex-1 min-w-0">
               {isLAArea && (
                 <Badge className="bg-orange-500 text-white text-xs mb-2">
-                  🌟 Beta Launch City
+                  Beta Launch City
                 </Badge>
               )}
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight drop-shadow-lg">
+              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white leading-tight">
                 {decodedCityName}
               </h1>
+              <p className="text-lg text-gray-600 dark:text-gray-300 mt-2 font-medium">
+                Discover people, events, and businesses in {parsedCityName}
+              </p>
             </div>
-            <div className="flex items-center gap-2 text-white/90 flex-shrink-0">
-              <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="text-sm sm:text-base">{parsedCityName}</span>
+            <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 flex-shrink-0">
+              <MapPin className="w-5 h-5" />
+              <span className="text-base">{parsedCityName}</span>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">

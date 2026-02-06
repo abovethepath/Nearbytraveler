@@ -450,156 +450,97 @@ export default function Events() {
         </div>
       )}
 
-      {/* HERO SECTION — Airbnb Style Layout (Landing Page Layout) */}
+      {/* HERO SECTION — Standardized Layout */}
       {isHeroVisible && (
-        <section className="bg-white dark:bg-gray-900 py-8 sm:py-12 lg:py-16 relative">
-          {/* Hide Hero Button */}
-          <div className="absolute top-4 right-4 z-10">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleHeroVisibility}
-              className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-              data-testid="button-hide-events-hero"
-            >
-              <X className="w-4 h-4 mr-1" />
-              Hide
-            </Button>
-          </div>
-
-          <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-            <div className="mb-4">
+        <section className="relative py-8 sm:py-12 lg:py-16 overflow-hidden bg-white dark:bg-gray-900">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mb-4 flex items-center justify-between">
               <BackButton fallbackRoute="/events-landing" />
+              <button
+                onClick={toggleHeroVisibility}
+                className="inline-flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                data-testid="button-hide-events-hero"
+              >
+                <X className="w-4 h-4" />
+                Hide
+              </button>
             </div>
           
           {isMobile ? (
-            // Mobile: Keep vertical layout
             <div className="text-center">
-              <h1 className="text-3xl sm:text-4xl font-bold text-black dark:text-white leading-tight mb-6">
+              <div className="inline-flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 rounded-full px-6 py-2 mb-6">
+                <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
+                <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Discover • Create • Experience</span>
+              </div>
+
+              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white leading-tight mb-6">
                 Events & Experiences
               </h1>
               
               <div className="mb-6 flex justify-center px-4">
-                <div className="relative w-full max-w-sm rounded-xl overflow-hidden shadow-xl">
-                  <img 
-                    src={eventsBgImage}
-                    alt="Events and experiences"
-                    className="w-full h-auto object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                <div className="relative w-full max-w-sm" style={{ opacity: 0, transition: 'opacity 0.3s ease' }} ref={(el: HTMLDivElement | null) => { if (el) { const img = el.querySelector('img'); if (img && img.complete) el.style.opacity = '1'; } }}>
+                  <div className="relative rounded-2xl overflow-hidden shadow-xl aspect-[4/3]">
+                    <img 
+                      src={eventsBgImage}
+                      alt="Events and experiences"
+                      className="w-full h-full object-cover"
+                      loading="eager"
+                      onLoad={(e) => { const container = (e.currentTarget as HTMLElement).closest('[style]') as HTMLElement; if (container) container.style.opacity = '1'; }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent"></div>
+                  </div>
                 </div>
               </div>
               
-              <p className="text-base text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl mx-auto px-4">
-                Discover amazing events, create memorable experiences, and connect with fellow adventurers
-              </p>
+              <div className="max-w-2xl mx-auto px-4 space-y-4">
+                <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
+                  Discover amazing events and create memorable experiences with fellow adventurers.
+                </p>
+              </div>
             </div>
           ) : (
-            // Desktop: Enhanced engaging layout
-            <div className="relative py-8 overflow-hidden">
-              {/* Background decorative elements */}
-              <div className="absolute inset-0 opacity-5 pointer-events-none">
-                <div className="absolute top-16 left-8 w-28 h-28 bg-green-500 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-16 right-8 w-36 h-36 bg-purple-500 rounded-full blur-3xl"></div>
-              </div>
-              
-              <div className="grid gap-8 md:gap-12 md:grid-cols-5 items-center relative z-10">
-                {/* Left text side - wider and enhanced */}
+            <div className="relative py-8">
+              <div className="grid gap-8 md:gap-12 md:grid-cols-5 items-center">
                 <div className="md:col-span-3">
-                  {/* Premium badge */}
-                  <div className="inline-flex items-center gap-2 bg-gradient-to-r from-green-100/80 to-purple-100/80 dark:from-green-900/20 dark:to-purple-900/20 border border-green-200 dark:border-green-700/50 rounded-full px-4 py-2 mb-6">
-                    <div className="w-2 h-2 bg-gradient-to-r from-green-500 to-purple-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Discover • Create • Experience</span>
+                  <div className="inline-flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full px-6 py-2.5 mb-8">
+                    <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full"></div>
+                    <span className="text-sm font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">Discover • Create • Experience</span>
                   </div>
 
                   <div className="space-y-6">
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight leading-tight">
-                      <span className="bg-gradient-to-r from-gray-900 via-green-700 to-gray-900 dark:from-white dark:via-green-200 dark:to-white bg-clip-text text-transparent">
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
+                      <span className="bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
                         Events &
                       </span>
                       <br />
-                      <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
+                      <span className="text-gray-900 dark:text-white">
                         Experiences
                       </span>
                     </h1>
                     
                     <div className="max-w-2xl space-y-4">
                       <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
-                        Every event is a story — <em className="text-purple-600 dark:text-purple-400 font-semibold">waiting to be created.</em>
+                        Every event is a story — waiting to be created.
                       </p>
                       <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed">
                         From intimate coffee meetups to grand festivals, discover events that match your interests and travel style. Create unforgettable experiences with locals and fellow travelers.
                       </p>
                     </div>
                   </div>
-                  
-                  {/* Enhanced Features with attractive icons */}
-                  <div className="mt-8 space-y-4">
-                    <div className="flex items-center gap-4">
-                      <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
-                        <Users className="w-6 h-6 text-white" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white">Community Events</h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Join gatherings created by locals and fellow travelers</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-4">
-                      <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
-                        <Star className="w-6 h-6 text-white" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white">Meetups</h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Discover gatherings from Couchsurfing and Meetup communities</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-4">
-                      <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg">
-                        <Plus className="w-6 h-6 text-white" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white">Create Your Own</h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Host events and bring your community together</p>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               
-                {/* Right image side - more prominent and engaging */}
-                <div className="md:col-span-2 flex justify-center items-center relative">
-                  {/* Decorative background blur effects */}
-                  <div className="absolute inset-0 opacity-30 pointer-events-none">
-                    <div className="absolute top-4 -left-8 w-24 h-24 bg-green-400/20 rounded-full blur-2xl"></div>
-                    <div className="absolute bottom-4 -right-8 w-32 h-32 bg-purple-400/20 rounded-full blur-2xl"></div>
-                  </div>
-                  
-                  {/* Main image container with enhanced styling */}
-                  <div className="relative group">
-                    {/* Quote above image */}
-                    <div className="text-center mb-4 relative z-10">
-                      <p className="text-lg md:text-xl lg:text-2xl font-bold text-gray-800 dark:text-gray-200 italic leading-tight">
-                        <span className="sm:hidden">Every event tells a story.</span>
-                        <span className="hidden sm:inline">Every event is a story waiting to be created.</span>
-                      </p>
-                    </div>
-                    
-                    {/* Enhanced image container */}
+                <div className="md:col-span-2 flex justify-center items-center relative order-first md:order-last">
+                  <div className="relative group" style={{ opacity: 0, transition: 'opacity 0.3s ease' }} ref={(el: HTMLDivElement | null) => { if (el) { const img = el.querySelector('img'); if (img && img.complete) el.style.opacity = '1'; } }}>
                     <div className="relative">
-                      {/* Subtle background glow */}
-                      <div className="absolute -inset-3 bg-gradient-to-r from-green-200/30 via-purple-200/30 to-pink-200/30 dark:from-green-900/20 dark:via-purple-900/20 dark:to-pink-900/20 rounded-3xl blur-lg"></div>
-                      
-                      {/* Main image */}
-                      <div className="relative w-full max-w-sm sm:max-w-md h-[240px] sm:h-[280px] md:h-[320px] lg:h-[380px] rounded-2xl overflow-hidden shadow-2xl border border-gray-200/50 dark:border-gray-700/50 transform group-hover:scale-[1.02] transition-all duration-500">
+                      <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-xl overflow-hidden shadow-xl border border-gray-200/50 dark:border-gray-700/50">
                         <img
                           src={eventsBgImage}
                           alt="Events and experiences"
                           className="w-full h-full object-cover"
+                          loading="eager"
+                          onLoad={(e) => { const container = (e.currentTarget as HTMLElement).closest('[style]') as HTMLElement; if (container) container.style.opacity = '1'; }}
                         />
-                        
-                        {/* Simple gradient overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/15 via-transparent to-transparent"></div>
                       </div>
                     </div>
                   </div>
