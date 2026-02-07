@@ -4,6 +4,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useEffect, useState, useMemo } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Link } from "wouter";
@@ -54,6 +55,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();
+  const [confirmDialog, setConfirmDialog] = useState<{ open: boolean; cityName: string } | null>(null);
 
   // Fetch user's travel plans to get trip destinations
   const { data: travelPlans = [], isLoading: loadingTravelPlans } = useQuery<TravelPlan[]>({
@@ -188,10 +190,8 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
       });
     }
     
-    // No general profile events - those are shown in the interests section above
-    
-    return combined;
-  }, [joinedEvents, eventInterestsData, userId]);
+    return combined.filter(e => !dismissedEventIds.has(e.id));
+  }, [joinedEvents, eventInterestsData, userId, dismissedEventIds]);
 
   // Delete activity
   const deleteActivity = useMutation({
@@ -209,25 +209,44 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     }
   });
 
-  // Delete event (handles both joined events and event interests)
+  // Local dismissed events - for organizer events that can't be "left"
+  const [dismissedEventIds, setDismissedEventIds] = useState<Set<number>>(() => {
+    try {
+      const saved = localStorage.getItem(`dismissed_events_${userId}`);
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch { return new Set(); }
+  });
+
+  const dismissEvent = (eventId: number) => {
+    setDismissedEventIds(prev => {
+      const next = new Set(prev);
+      next.add(eventId);
+      localStorage.setItem(`dismissed_events_${userId}`, JSON.stringify([...next]));
+      return next;
+    });
+  };
+
+  // Delete event (handles joined events, event interests, and organizer events)
   const deleteEvent = useMutation({
     mutationFn: async (eventData: any) => {
-      // If it's an event interest (from city page selection), delete from user_event_interests
       if (eventData.isEventInterest) {
         const response = await apiRequest('DELETE', `/api/user-event-interests/${eventData.id}`);
         if (!response.ok) throw new Error('Failed to delete event interest');
       } else {
-        // It's a joined event - use the proper leave endpoint
         const eventId = eventData.id;
+        const isOrganizer = (eventData as any).organizerId === userId;
+        if (isOrganizer) {
+          dismissEvent(eventId);
+          return;
+        }
         const response = await apiRequest('DELETE', `/api/events/${eventId}/leave`, { userId });
         if (!response.ok) throw new Error('Failed to leave event');
       }
     },
     onSuccess: () => {
-      // Invalidate all related caches
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/all-events`] });
       queryClient.invalidateQueries({ queryKey: [`/api/user-event-interests/${userId}`] });
-      toast({ title: "Removed", description: "Event removed successfully." });
+      toast({ title: "Removed", description: "Event removed from your profile." });
     },
     onError: () => {
       toast({ title: "Error", description: "Failed to remove event", variant: "destructive" });
@@ -235,38 +254,35 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
   });
 
   // Delete entire city - removes all activities and events for the city
-  const deleteCity = async (cityName: string) => {
+  const executeCityDelete = async (cityName: string) => {
     const consolidatedName = consolidateCity(cityName);
     const cityData = citiesByName[consolidatedName] || citiesByName[cityName];
-    const cityActs = cityData?.activities || allActivities.filter(a => consolidateCity(a.cityName) === consolidatedName);
-    const cityEvts = cityData?.events || allEvents.filter(e => consolidateCity(e.cityName || '') === consolidatedName);
-    const totalItems = cityActs.length + cityEvts.length;
-
-    if (!confirm(`Remove everything from ${cityName}? (${cityActs.length} activities, ${cityEvts.length} events)`)) {
-      return;
-    }
+    const cityActs = cityData?.activities || [];
+    const cityEvts = cityData?.events || [];
 
     try {
-      // Delete all activities for this city
       await Promise.all(cityActs.map((a: any) => apiRequest('DELETE', `/api/user-city-interests/${a.id}`)));
 
-      // Delete all events for this city - handle both event interests and joined events
       await Promise.all(cityEvts.map((e: any) => {
         if (e.isEventInterest) {
           return apiRequest('DELETE', `/api/user-event-interests/${e.id}`);
         } else {
+          const isOrganizer = (e as any).organizerId === userId;
+          if (isOrganizer) {
+            dismissEvent(e.id);
+            return Promise.resolve();
+          }
           return apiRequest('DELETE', `/api/events/${e.id}/leave`, { userId });
         }
       }));
 
-      // Refresh all caches
       queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/all-events`] });
       queryClient.invalidateQueries({ queryKey: [`/api/user-event-interests/${userId}`] });
 
       toast({ 
         title: "Cleared", 
-        description: `Removed ${totalItems} items from ${cityName}` 
+        description: `Removed all items from ${cityName}` 
       });
     } catch (error) {
       toast({ title: "Error", description: "Failed to remove items", variant: "destructive" });
@@ -480,7 +496,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => deleteCity(cityName)}
+                        onClick={() => setConfirmDialog({ open: true, cityName })}
                         className={isPastTrip 
                           ? "text-gray-500 hover:text-red-400 hover:bg-red-900/20 border border-gray-400 dark:border-gray-600" 
                           : "text-red-400 hover:text-red-300 hover:bg-red-900/20"
@@ -529,15 +545,16 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
 
                     {/* Event Pills - Clickable to go to event page */}
                     {cityData.events.map((event) => {
-                      // Determine the event URL based on available IDs
                       const eventId = (event as any).eventId || event.id;
                       const eventUrl = `/events/${eventId}`;
+                      const eventDate = (event as any).date || (event as any).eventDate;
+                      const isEventPast = eventDate ? new Date(eventDate) < new Date() : false;
                       
                       return (
-                        <div key={`evt-${event.id}`} className="relative group">
+                        <div key={`evt-${event.id}`} className={`relative group ${isEventPast ? 'opacity-60' : ''}`}>
                           <Link href={eventUrl}>
-                            <div className="inline-flex items-center justify-center rounded-full px-4 py-1.5 text-xs font-medium bg-gradient-to-r from-blue-600 to-cyan-500 border-0 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm cursor-pointer hover:from-blue-700 hover:to-cyan-600 transition-all hover:scale-105">
-                              <span style={{ color: 'black' }}>📅 {event.eventTitle || (event as any).title}</span>
+                            <div className={`inline-flex items-center justify-center rounded-full px-4 py-1.5 text-xs font-medium border-0 h-7 min-w-[4rem] leading-none whitespace-nowrap shadow-sm cursor-pointer transition-all hover:scale-105 ${isEventPast ? 'bg-gradient-to-r from-gray-500 to-gray-400' : 'bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600'}`}>
+                              <span style={{ color: 'black' }}>{isEventPast ? '⏰' : '📅'} {event.eventTitle || (event as any).title}</span>
                             </div>
                           </Link>
                           {isOwnProfile && (
@@ -576,6 +593,30 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
           </div>
         </Link>
       )}
+      <AlertDialog open={!!confirmDialog?.open} onOpenChange={(open) => !open && setConfirmDialog(null)}>
+        <AlertDialogContent className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-gray-900 dark:text-white">Remove {confirmDialog?.cityName}?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-600 dark:text-gray-400">
+              This will remove all activities and events you've saved for {confirmDialog?.cityName} from your profile.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-500 hover:bg-red-600 text-white"
+              onClick={() => {
+                if (confirmDialog?.cityName) {
+                  executeCityDelete(confirmDialog.cityName);
+                }
+                setConfirmDialog(null);
+              }}
+            >
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
