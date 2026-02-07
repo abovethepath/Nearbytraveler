@@ -234,41 +234,42 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     }
   });
 
-  // Delete entire city
+  // Delete entire city - removes all activities and events for the city
   const deleteCity = async (cityName: string) => {
-    const cityActivities = allActivities.filter(a => a.cityName === cityName);
-    const cityEvents = allEvents.filter(e => e.cityName === cityName);
+    const consolidatedName = consolidateCity(cityName);
+    const cityData = citiesByName[consolidatedName] || citiesByName[cityName];
+    const cityActs = cityData?.activities || allActivities.filter(a => consolidateCity(a.cityName) === consolidatedName);
+    const cityEvts = cityData?.events || allEvents.filter(e => consolidateCity(e.cityName || '') === consolidatedName);
+    const totalItems = cityActs.length + cityEvts.length;
 
-    if (!confirm(`Remove all ${cityActivities.length} activities and ${cityEvents.length} events from ${cityName}?`)) {
+    if (!confirm(`Remove everything from ${cityName}? (${cityActs.length} activities, ${cityEvts.length} events)`)) {
       return;
     }
 
     try {
       // Delete all activities for this city
-      await Promise.all(cityActivities.map(a => apiRequest('DELETE', `/api/user-city-interests/${a.id}`)));
+      await Promise.all(cityActs.map((a: any) => apiRequest('DELETE', `/api/user-city-interests/${a.id}`)));
 
       // Delete all events for this city - handle both event interests and joined events
-      await Promise.all(cityEvents.map(e => {
+      await Promise.all(cityEvts.map((e: any) => {
         if (e.isEventInterest) {
-          // Event interest from city page selection
           return apiRequest('DELETE', `/api/user-event-interests/${e.id}`);
         } else {
-          // Joined event - use the leave endpoint
           return apiRequest('DELETE', `/api/events/${e.id}/leave`, { userId });
         }
       }));
 
-      // Refresh all caches - no local state updates needed
+      // Refresh all caches
       queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/all-events`] });
       queryClient.invalidateQueries({ queryKey: [`/api/user-event-interests/${userId}`] });
 
       toast({ 
-        title: "City Removed", 
-        description: `Removed ${cityActivities.length} activities and ${cityEvents.length} events from ${cityName}` 
+        title: "Cleared", 
+        description: `Removed ${totalItems} items from ${cityName}` 
       });
     } catch (error) {
-      toast({ title: "Error", description: "Failed to remove city", variant: "destructive" });
+      toast({ title: "Error", description: "Failed to remove items", variant: "destructive" });
     }
   };
 
@@ -475,7 +476,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                         </Button>
                       </Link>
                     )}
-                    {isOwnProfile && (cityData.activities.length > 0 || cityData.events.length > 0) && (
+                    {isOwnProfile && (cityData.activities.length > 0 || cityData.events.length > 0 || isPastTrip) && (
                       <Button
                         variant="ghost"
                         size="sm"
@@ -517,7 +518,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                         {isOwnProfile && (
                           <button
                             onClick={() => deleteActivity.mutate(activity.id)}
-                            className="absolute bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center transition-opacity -top-1 -right-1 w-5 h-5 opacity-0 group-hover:opacity-100"
+                            className="absolute bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center transition-opacity -top-1 -right-1 w-5 h-5 sm:opacity-0 sm:group-hover:opacity-100 opacity-80"
                             title="Remove activity"
                           >
                             <X className="w-3 h-3" />
@@ -546,7 +547,7 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
                                 e.stopPropagation();
                                 deleteEvent.mutate(event);
                               }}
-                              className="absolute bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center transition-opacity -top-1 -right-1 w-5 h-5 opacity-0 group-hover:opacity-100"
+                              className="absolute bg-gray-400 hover:bg-gray-500 text-white rounded-full flex items-center justify-center transition-opacity -top-1 -right-1 w-5 h-5 sm:opacity-0 sm:group-hover:opacity-100 opacity-80"
                               title="Remove event"
                             >
                               <X className="w-3 h-3" />
