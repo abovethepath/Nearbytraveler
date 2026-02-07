@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Zap, Clock, MapPin, X, Send, Coffee, Music, Utensils, Camera, Dumbbell, Beer, ChevronDown, ChevronUp, Mountain, Bike, Waves, Compass, MessageCircle, Users, LogOut } from "lucide-react";
+import { Zap, Clock, MapPin, X, Send, Coffee, Music, Utensils, Camera, Dumbbell, Beer, ChevronDown, ChevronUp, Mountain, Bike, Waves, Compass, MessageCircle, Users, LogOut, ThumbsUp, Reply, Heart } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import { useToast } from "@/hooks/use-toast";
 
@@ -82,6 +82,8 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const [showGroupChat, setShowGroupChat] = useState(false);
   const [selectedGroupChat, setSelectedGroupChat] = useState<any>(null);
   const [groupChatMessage, setGroupChatMessage] = useState("");
+  const [replyingTo, setReplyingTo] = useState<any>(null);
+  const [selectedMessage, setSelectedMessage] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -248,15 +250,30 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const sendGroupMessageMutation = useMutation({
     mutationFn: async (message: string) => {
       if (!groupChatroom?.id) throw new Error("No active chat");
-      const res = await apiRequest("POST", `/api/available-now/group-chat/${groupChatroom.id}/messages`, { message });
+      const body: any = { message };
+      if (replyingTo) body.replyToId = replyingTo.id;
+      const res = await apiRequest("POST", `/api/available-now/group-chat/${groupChatroom.id}/messages`, body);
       return res.json();
     },
     onSuccess: () => {
       setGroupChatMessage("");
+      setReplyingTo(null);
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/group-chat", groupChatroom?.id, "messages"] });
     },
     onError: (error: any) => {
       toast({ title: "Failed to send message", description: error?.message || "Please try again", variant: "destructive" });
+    },
+  });
+
+  const reactToMessageMutation = useMutation({
+    mutationFn: async ({ messageId, emoji }: { messageId: number; emoji: string }) => {
+      if (!groupChatroom?.id) throw new Error("No active chat");
+      const res = await apiRequest("POST", `/api/available-now/group-chat/${groupChatroom.id}/messages/${messageId}/react`, { emoji });
+      return res.json();
+    },
+    onSuccess: () => {
+      setSelectedMessage(null);
+      queryClient.invalidateQueries({ queryKey: ["/api/available-now/group-chat", groupChatroom?.id, "messages"] });
     },
   });
 
@@ -710,16 +727,19 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     )}
 
     {/* Group Chat Dialog */}
-    <Dialog open={showGroupChat} onOpenChange={setShowGroupChat}>
-      <DialogContent className="max-w-lg w-[95vw] sm:w-full h-[500px] flex flex-col bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-0">
-        <DialogHeader className="flex-shrink-0 px-4 pt-4 pb-2 border-b border-gray-200 dark:border-gray-700">
+    <Dialog open={showGroupChat} onOpenChange={(open) => { setShowGroupChat(open); if (!open) { setSelectedMessage(null); setReplyingTo(null); } }}>
+      <DialogContent 
+        className="max-w-lg w-[92vw] sm:w-full h-[70vh] sm:h-[600px] flex flex-col bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-0 overflow-hidden"
+        style={{ zIndex: 999999, position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', display: 'grid', visibility: 'visible', opacity: 1 }}
+      >
+        <DialogHeader className="flex-shrink-0 px-4 pt-3 pb-2 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
                 <Users className="h-4 w-4 text-white" />
               </div>
-              <div>
-                <DialogTitle className="text-base font-bold text-gray-900 dark:text-white">
+              <div className="min-w-0">
+                <DialogTitle className="text-base font-bold text-gray-900 dark:text-white truncate">
                   {groupChatroom?.chatroomName || "Quick Meet Chat"}
                 </DialogTitle>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -732,7 +752,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
               size="sm"
               onClick={() => leaveGroupChatMutation.mutate()}
               disabled={leaveGroupChatMutation.isPending}
-              className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 text-xs gap-1"
+              className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 text-xs gap-1 flex-shrink-0"
             >
               <LogOut className="w-3.5 h-3.5" />
               Leave
@@ -740,8 +760,8 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
           </div>
         </DialogHeader>
 
-        <ScrollArea className="flex-1 px-4 py-2">
-          <div className="space-y-3">
+        <ScrollArea className="flex-1 px-3 py-2 overflow-y-auto">
+          <div className="space-y-2">
             {groupChatMessages.length === 0 ? (
               <div className="text-center py-8">
                 <MessageCircle className="h-10 w-10 mx-auto mb-3 text-gray-300 dark:text-gray-600" />
@@ -752,9 +772,13 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
               groupChatMessages.map((msg: any) => {
                 const isSystem = msg.messageType === 'system';
                 const isMe = msg.userId === currentUser?.id;
+                const replyMsg = msg.replyToId ? groupChatMessages.find((m: any) => m.id === msg.replyToId) : null;
+                const reactions = (msg.reactions || {}) as Record<string, number[]>;
+                const hasReactions = Object.keys(reactions).length > 0;
+
                 if (isSystem) {
                   return (
-                    <div key={msg.id} className="text-center">
+                    <div key={msg.id} className="text-center my-2">
                       <span className="inline-block px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-xs text-gray-500 dark:text-gray-400">
                         {msg.message}
                       </span>
@@ -763,22 +787,69 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                 }
                 return (
                   <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[75%] ${isMe ? 'order-2' : ''}`}>
+                    {!isMe && msg.userProfileImage && (
+                      <img 
+                        src={msg.userProfileImage} 
+                        alt={msg.username}
+                        className="w-7 h-7 rounded-full mr-1.5 mt-4 flex-shrink-0 object-cover"
+                      />
+                    )}
+                    {!isMe && !msg.userProfileImage && (
+                      <div className="w-7 h-7 rounded-full mr-1.5 mt-4 flex-shrink-0 bg-blue-500 flex items-center justify-center text-white text-xs font-bold">
+                        {msg.username?.charAt(0)?.toUpperCase() || '?'}
+                      </div>
+                    )}
+                    <div className={`max-w-[75%] min-w-[80px]`}>
                       {!isMe && (
                         <p className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 mb-0.5 ml-1">
                           @{msg.username}
                         </p>
                       )}
-                      <div className={`px-3 py-2 rounded-2xl ${
-                        isMe 
-                          ? 'bg-blue-500 text-white rounded-br-sm' 
-                          : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-bl-sm'
-                      }`}>
-                        <p className="text-sm">{msg.message}</p>
+
+                      {replyMsg && (
+                        <div className={`mx-1 mb-0.5 px-2 py-1 rounded-lg border-l-2 border-blue-400 ${
+                          isMe ? 'bg-blue-400/20' : 'bg-gray-200/60 dark:bg-gray-700/60'
+                        }`}>
+                          <p className="text-[10px] font-semibold text-blue-500">@{replyMsg.username}</p>
+                          <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">{replyMsg.message}</p>
+                        </div>
+                      )}
+
+                      <div 
+                        className={`px-3 py-2 rounded-2xl cursor-pointer ${
+                          isMe 
+                            ? 'bg-emerald-500 text-white rounded-br-sm' 
+                            : 'bg-gray-700 text-white rounded-bl-sm'
+                        }`}
+                        onClick={() => setSelectedMessage(msg)}
+                      >
+                        <p className="text-sm break-words whitespace-pre-wrap">{msg.message}</p>
+                        <p className={`text-[10px] mt-0.5 ${isMe ? 'text-emerald-100' : 'text-gray-400'} text-right`}>
+                          {msg.sentAt ? new Date(msg.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                        </p>
                       </div>
-                      <p className={`text-[10px] text-gray-400 mt-0.5 ${isMe ? 'text-right mr-1' : 'ml-1'}`}>
-                        {msg.sentAt ? new Date(msg.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
-                      </p>
+
+                      {hasReactions && (
+                        <div className="flex gap-1 mt-0.5 ml-1 flex-wrap">
+                          {Object.entries(reactions).map(([emoji, userIds]) => {
+                            const hasReacted = currentUser?.id ? userIds.includes(currentUser.id) : false;
+                            return (
+                              <button
+                                key={emoji}
+                                onClick={() => reactToMessageMutation.mutate({ messageId: msg.id, emoji })}
+                                className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs transition-colors ${
+                                  hasReacted 
+                                    ? 'bg-blue-500/20 border border-blue-500/40' 
+                                    : 'bg-gray-100 dark:bg-gray-800 border border-transparent'
+                                }`}
+                              >
+                                <span>{emoji}</span>
+                                <span className="text-gray-500 dark:text-gray-400">{userIds.length}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
@@ -787,6 +858,20 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
             <div ref={messagesEndRef} />
           </div>
         </ScrollArea>
+
+        {replyingTo && (
+          <div className="px-3 py-1.5 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-blue-500 font-semibold">Replying to @{replyingTo.username}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{replyingTo.message}</p>
+              </div>
+              <button onClick={() => setReplyingTo(null)} className="text-gray-400 hover:text-gray-600 ml-2 flex-shrink-0 p-1">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
 
         <form
           onSubmit={(e) => {
@@ -800,9 +885,10 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
           <Input
             value={groupChatMessage}
             onChange={(e) => setGroupChatMessage(e.target.value)}
-            placeholder="Type a message..."
+            placeholder={replyingTo ? "Reply..." : "Type a message..."}
             className="flex-1 min-w-0 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 h-10 text-sm"
             disabled={sendGroupMessageMutation.isPending}
+            autoFocus
           />
           <Button
             type="submit"
@@ -815,6 +901,64 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
         </form>
       </DialogContent>
     </Dialog>
+
+    {/* Message Action Menu - Like & Reply */}
+    {selectedMessage && showGroupChat && createPortal(
+      <>
+        <div 
+          className="fixed inset-0 bg-black/60"
+          style={{ zIndex: 9999998 }}
+          onClick={() => setSelectedMessage(null)}
+        />
+        <div 
+          className="fixed left-3 right-3 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700"
+          style={{ zIndex: 9999999, bottom: '100px' }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="px-2 py-2 space-y-0.5">
+            {(() => {
+              const reactions = (selectedMessage.reactions || {}) as Record<string, number[]>;
+              const hasLiked = currentUser?.id ? reactions['👍']?.includes(currentUser.id) : false;
+              return (
+                <button
+                  type="button"
+                  onClick={() => reactToMessageMutation.mutate({ messageId: selectedMessage.id, emoji: '👍' })}
+                  className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-gray-900 dark:text-white"
+                >
+                  <ThumbsUp className={`w-5 h-5 ${hasLiked ? 'text-orange-500 fill-orange-500' : 'text-blue-500'}`} />
+                  <span className="text-sm">{hasLiked ? 'Unlike' : 'Like'}</span>
+                </button>
+              );
+            })()}
+
+            {(() => {
+              const reactions = (selectedMessage.reactions || {}) as Record<string, number[]>;
+              const hasHearted = currentUser?.id ? reactions['❤️']?.includes(currentUser.id) : false;
+              return (
+                <button
+                  type="button"
+                  onClick={() => reactToMessageMutation.mutate({ messageId: selectedMessage.id, emoji: '❤️' })}
+                  className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-gray-900 dark:text-white"
+                >
+                  <Heart className={`w-5 h-5 ${hasHearted ? 'text-red-500 fill-red-500' : 'text-red-400'}`} />
+                  <span className="text-sm">{hasHearted ? 'Unlove' : 'Love'}</span>
+                </button>
+              );
+            })()}
+
+            <button
+              type="button"
+              onClick={() => { setReplyingTo(selectedMessage); setSelectedMessage(null); }}
+              className="flex items-center gap-3 w-full px-3 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-gray-900 dark:text-white"
+            >
+              <Reply className="w-5 h-5 text-green-500" />
+              <span className="text-sm">Reply</span>
+            </button>
+          </div>
+        </div>
+      </>,
+      document.body
+    )}
     </>
   );
 }

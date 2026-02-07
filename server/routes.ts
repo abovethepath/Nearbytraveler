@@ -21336,6 +21336,8 @@ Questions? Just reply to this message. Welcome aboard!
         message: meetupChatroomMessages.message,
         messageType: meetupChatroomMessages.messageType,
         sentAt: meetupChatroomMessages.sentAt,
+        replyToId: meetupChatroomMessages.replyToId,
+        reactions: meetupChatroomMessages.reactions,
         userProfileImage: users.profileImage,
       })
         .from(meetupChatroomMessages)
@@ -21358,7 +21360,7 @@ Questions? Just reply to this message. Welcome aboard!
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
       const { chatroomId } = req.params;
-      const { message } = req.body;
+      const { message, replyToId } = req.body;
       if (!message?.trim()) return res.status(400).json({ error: "Message is required" });
 
       const [user] = await db.select({ username: users.username })
@@ -21370,12 +21372,54 @@ Questions? Just reply to this message. Welcome aboard!
         username: user?.username || 'Anonymous',
         message: message.trim(),
         messageType: 'text',
+        replyToId: replyToId ? Number(replyToId) : null,
       }).returning();
 
       res.json(newMessage);
     } catch (error: any) {
       console.error("Error sending group chat message:", error);
       res.status(500).json({ error: "Failed to send message" });
+    }
+  });
+
+  // React to a message in Available Now group chat
+  app.post("/api/available-now/group-chat/:chatroomId/messages/:messageId/react", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const { chatroomId, messageId } = req.params;
+      const { emoji } = req.body;
+      if (!emoji) return res.status(400).json({ error: "Emoji is required" });
+
+      const [msg] = await db.select({ reactions: meetupChatroomMessages.reactions, meetupChatroomId: meetupChatroomMessages.meetupChatroomId })
+        .from(meetupChatroomMessages)
+        .where(and(eq(meetupChatroomMessages.id, Number(messageId)), eq(meetupChatroomMessages.meetupChatroomId, Number(chatroomId))));
+
+      if (!msg) return res.status(404).json({ error: "Message not found" });
+
+      const reactions = (msg.reactions as Record<string, number[]>) || {};
+      const userIdNum = Number(userId);
+
+      if (reactions[emoji]) {
+        if (reactions[emoji].includes(userIdNum)) {
+          reactions[emoji] = reactions[emoji].filter((id: number) => id !== userIdNum);
+          if (reactions[emoji].length === 0) delete reactions[emoji];
+        } else {
+          reactions[emoji].push(userIdNum);
+        }
+      } else {
+        reactions[emoji] = [userIdNum];
+      }
+
+      await db.update(meetupChatroomMessages)
+        .set({ reactions })
+        .where(eq(meetupChatroomMessages.id, Number(messageId)));
+
+      res.json({ success: true, reactions });
+    } catch (error: any) {
+      console.error("Error reacting to group chat message:", error);
+      res.status(500).json({ error: "Failed to react" });
     }
   });
 
