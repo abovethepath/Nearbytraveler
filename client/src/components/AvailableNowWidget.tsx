@@ -228,21 +228,8 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
 
   return (
     <>
-    <Card className="overflow-hidden border-0 shadow-lg rounded-2xl bg-gray-900 dark:bg-gray-800">
-      <div className="bg-gradient-to-r from-purple-600 via-orange-500 to-green-500 p-4 pb-3">
-        <div className="flex items-center justify-center gap-2">
-          <Zap className="w-5 h-5 text-yellow-300" />
-          <h2 className="text-lg font-bold text-white">Available Now</h2>
-          {otherAvailableUsers.length > 0 && (
-            <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm ml-2">
-              {otherAvailableUsers.length} nearby
-            </Badge>
-          )}
-        </div>
-        <p className="text-xs text-white/80 mt-1 text-center">See who's ready to hang out nearby</p>
-      </div>
-
-      <div className="p-4">
+    <Card className="overflow-hidden border-0 shadow-none rounded-2xl bg-transparent dark:bg-transparent">
+      <div className="p-2 sm:p-4">
         {myStatus ? (
           <div className="mb-4 rounded-xl border-2 border-green-400 dark:border-green-500 overflow-hidden">
             <div className="bg-gradient-to-r from-green-500 to-emerald-500 px-4 py-2.5 flex items-center justify-between">
