@@ -247,12 +247,16 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
 
   const sendGroupMessageMutation = useMutation({
     mutationFn: async (message: string) => {
-      const res = await apiRequest("POST", `/api/available-now/group-chat/${groupChatroom?.id}/messages`, { message });
+      if (!groupChatroom?.id) throw new Error("No active chat");
+      const res = await apiRequest("POST", `/api/available-now/group-chat/${groupChatroom.id}/messages`, { message });
       return res.json();
     },
     onSuccess: () => {
       setGroupChatMessage("");
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/group-chat", groupChatroom?.id, "messages"] });
+    },
+    onError: (error: any) => {
+      toast({ title: "Failed to send message", description: error?.message || "Please try again", variant: "destructive" });
     },
   });
 
@@ -716,7 +720,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
               </div>
               <div>
                 <DialogTitle className="text-base font-bold text-gray-900 dark:text-white">
-                  {groupChatroom?.chatroomName || "Hangout Chat"}
+                  {groupChatroom?.chatroomName || "Quick Meet Chat"}
                 </DialogTitle>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   {groupChatroom?.participantCount || 0} people · {groupChatroom?.city}

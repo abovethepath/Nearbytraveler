@@ -21112,15 +21112,15 @@ Questions? Just reply to this message. Welcome aboard!
               meetupChatroomId: existingChatroom.id,
               userId: updated.fromUserId,
               username: requesterName,
-              message: `@${requesterName} joined the hangout! 🎉`,
+              message: `@${requesterName} joined the quick meet! 🎉`,
               messageType: 'system',
             });
           } else {
             // Create a new group chat for this Available Now session
-            const activities = activeSession.activities?.join(', ') || 'Hanging out';
+            const activities = activeSession.activities?.join(', ') || 'Quick Meet';
             const [newChatroom] = await db.insert(meetupChatrooms).values({
               availableNowId: activeSession.id,
-              chatroomName: `${acceptorName}'s Hangout`,
+              chatroomName: `${acceptorName}'s Quick Meet`,
               description: `Group chat for everyone meeting up with @${acceptorName} — ${activities}`,
               city: activeSession.city,
               state: activeSession.state || '',
@@ -21354,7 +21354,7 @@ Questions? Just reply to this message. Welcome aboard!
   // Send message to Available Now group chat
   app.post("/api/available-now/group-chat/:chatroomId/messages", async (req: any, res) => {
     try {
-      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
       const { chatroomId } = req.params;
