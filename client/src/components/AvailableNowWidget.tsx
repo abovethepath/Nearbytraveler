@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Zap, Clock, MapPin, X, Send, Coffee, Music, Utensils, Camera, Dumbbell, BookOpen, ShoppingBag, Beer, ChevronDown, ChevronUp } from "lucide-react";
+import { Zap, Clock, MapPin, X, Send, Coffee, Music, Utensils, Camera, Dumbbell, Beer, ChevronDown, ChevronUp, Mountain, Bike, Waves, Compass } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import { useToast } from "@/hooks/use-toast";
 
@@ -56,8 +56,10 @@ const ACTIVITY_OPTIONS = [
   { label: "Explore", icon: Camera, value: "explore" },
   { label: "Music", icon: Music, value: "music" },
   { label: "Fitness", icon: Dumbbell, value: "fitness" },
-  { label: "Study", icon: BookOpen, value: "study" },
-  { label: "Shopping", icon: ShoppingBag, value: "shopping" },
+  { label: "Hike", icon: Mountain, value: "hike" },
+  { label: "Bike", icon: Bike, value: "bike" },
+  { label: "Beach", icon: Waves, value: "beach" },
+  { label: "Sightseeing", icon: Compass, value: "sightseeing" },
 ];
 
 const PREVIEW_COUNT = 3;
