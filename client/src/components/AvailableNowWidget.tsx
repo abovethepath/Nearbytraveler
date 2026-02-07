@@ -711,7 +711,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
 
     {/* Group Chat Dialog */}
     <Dialog open={showGroupChat} onOpenChange={setShowGroupChat}>
-      <DialogContent className="max-w-lg h-[500px] flex flex-col bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-0">
+      <DialogContent className="max-w-lg w-[95vw] sm:w-full h-[500px] flex flex-col bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-0">
         <DialogHeader className="flex-shrink-0 px-4 pt-4 pb-2 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -795,20 +795,20 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
               sendGroupMessageMutation.mutate(groupChatMessage.trim());
             }
           }}
-          className="flex-shrink-0 px-4 py-3 border-t border-gray-200 dark:border-gray-700 flex gap-2"
+          className="flex-shrink-0 px-3 py-2 border-t border-gray-200 dark:border-gray-700 flex items-center gap-2"
         >
           <Input
             value={groupChatMessage}
             onChange={(e) => setGroupChatMessage(e.target.value)}
             placeholder="Type a message..."
-            className="flex-1 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+            className="flex-1 min-w-0 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 h-10 text-sm"
             disabled={sendGroupMessageMutation.isPending}
           />
           <Button
             type="submit"
             size="sm"
             disabled={!groupChatMessage.trim() || sendGroupMessageMutation.isPending}
-            className="bg-blue-500 hover:bg-blue-600 h-10 w-10 p-0"
+            className="bg-blue-500 hover:bg-blue-600 h-10 w-10 min-w-[40px] p-0 flex-shrink-0"
           >
             <Send className="h-4 w-4" />
           </Button>

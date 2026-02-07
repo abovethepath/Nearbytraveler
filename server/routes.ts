@@ -21336,7 +21336,7 @@ Questions? Just reply to this message. Welcome aboard!
         message: meetupChatroomMessages.message,
         messageType: meetupChatroomMessages.messageType,
         sentAt: meetupChatroomMessages.sentAt,
-        userProfilePhoto: users.profilePhoto,
+        userProfileImage: users.profileImage,
       })
         .from(meetupChatroomMessages)
         .leftJoin(users, eq(meetupChatroomMessages.userId, users.id))
