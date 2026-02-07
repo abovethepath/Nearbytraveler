@@ -146,29 +146,23 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     });
     return Array.isArray(cityActivities) ? cityActivities : [];
   }, [cityActivities]);
-  const allEvents = useMemo(() => {
-    console.log('🎯 ThingsIWantToDoSection events data:', { 
-      userId, 
-      rawJoinedEvents: joinedEvents, 
-      joinedEventsCount: Array.isArray(joinedEvents) ? joinedEvents.length : 0,
-      rawEventInterests: eventInterestsData,
-      eventInterestsCount: Array.isArray(eventInterestsData) ? eventInterestsData.length : 0,
-      firstJoinedEventSample: Array.isArray(joinedEvents) && joinedEvents[0] ? {
-        id: joinedEvents[0]?.id,
-        title: joinedEvents[0]?.title,
-        eventTitle: joinedEvents[0]?.eventTitle,
-        cityName: joinedEvents[0]?.cityName,
-        location: joinedEvents[0]?.location,
-        allKeys: Object.keys(joinedEvents[0])
-      } : null,
-      firstEventInterestSample: Array.isArray(eventInterestsData) && eventInterestsData[0] ? {
-        id: eventInterestsData[0]?.id,
-        eventTitle: eventInterestsData[0]?.eventtitle || eventInterestsData[0]?.eventTitle,
-        cityName: eventInterestsData[0]?.cityname || eventInterestsData[0]?.cityName,
-        allKeys: Object.keys(eventInterestsData[0])
-      } : null
+  const [dismissedEventIds, setDismissedEventIds] = useState<Set<number>>(() => {
+    try {
+      const saved = localStorage.getItem(`dismissed_events_${userId}`);
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch { return new Set(); }
+  });
+
+  const dismissEvent = (eventId: number) => {
+    setDismissedEventIds(prev => {
+      const next = new Set(prev);
+      next.add(eventId);
+      localStorage.setItem(`dismissed_events_${userId}`, JSON.stringify([...next]));
+      return next;
     });
-    
+  };
+
+  const allEvents = useMemo(() => {
     const combined = [];
     
     // Add specific events the user joined
@@ -208,23 +202,6 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
       toast({ title: "Error", description: "Failed to remove activity", variant: "destructive" });
     }
   });
-
-  // Local dismissed events - for organizer events that can't be "left"
-  const [dismissedEventIds, setDismissedEventIds] = useState<Set<number>>(() => {
-    try {
-      const saved = localStorage.getItem(`dismissed_events_${userId}`);
-      return saved ? new Set(JSON.parse(saved)) : new Set();
-    } catch { return new Set(); }
-  });
-
-  const dismissEvent = (eventId: number) => {
-    setDismissedEventIds(prev => {
-      const next = new Set(prev);
-      next.add(eventId);
-      localStorage.setItem(`dismissed_events_${userId}`, JSON.stringify([...next]));
-      return next;
-    });
-  };
 
   // Delete event (handles joined events, event interests, and organizer events)
   const deleteEvent = useMutation({
