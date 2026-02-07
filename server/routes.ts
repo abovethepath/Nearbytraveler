@@ -21239,27 +21239,29 @@ Questions? Just reply to this message. Welcome aboard!
       const userId = req.session?.user?.id || req.headers['x-user-id'];
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
-      // Find active Available Now session for this user
-      const [activeSession] = await db.select()
+      // Find recent Available Now sessions for this user (active OR expired within last 24h)
+      const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const recentSessions = await db.select()
         .from(availableNow)
         .where(and(
           eq(availableNow.userId, Number(userId)),
-          eq(availableNow.isAvailable, true),
-          gte(availableNow.expiresAt, new Date())
+          gte(availableNow.expiresAt, twentyFourHoursAgo)
         ))
         .orderBy(desc(availableNow.createdAt))
-        .limit(1);
+        .limit(5);
 
-      if (!activeSession) {
+      if (recentSessions.length === 0) {
         return res.json({ chatroom: null });
       }
 
+      const sessionIds = recentSessions.map(s => s.id);
       const [chatroom] = await db.select()
         .from(meetupChatrooms)
         .where(and(
-          eq(meetupChatrooms.availableNowId, activeSession.id),
+          inArray(meetupChatrooms.availableNowId, sessionIds),
           eq(meetupChatrooms.isActive, true)
         ))
+        .orderBy(desc(meetupChatrooms.createdAt))
         .limit(1);
 
       res.json({ chatroom: chatroom || null });
@@ -21289,14 +21291,14 @@ Questions? Just reply to this message. Welcome aboard!
         return res.json({ chatrooms: [] });
       }
 
-      // Find active Available Now sessions for those users
+      // Find recent Available Now sessions for those users (active OR expired within last 24h)
       const hostUserIds = acceptedRequests.map(r => r.toUserId);
+      const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
       const activeSessions = await db.select()
         .from(availableNow)
         .where(and(
           inArray(availableNow.userId, hostUserIds),
-          eq(availableNow.isAvailable, true),
-          gte(availableNow.expiresAt, new Date())
+          gte(availableNow.expiresAt, twentyFourHoursAgo)
         ));
 
       if (activeSessions.length === 0) {

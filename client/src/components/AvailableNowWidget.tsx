@@ -80,6 +80,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const [meetMessage, setMeetMessage] = useState("");
   const [showAllUsers, setShowAllUsers] = useState(false);
   const [showGroupChat, setShowGroupChat] = useState(false);
+  const [selectedGroupChat, setSelectedGroupChat] = useState<any>(null);
   const [groupChatMessage, setGroupChatMessage] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -203,10 +204,10 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     },
   });
 
-  // Group chat for my Available Now session (I'm the host)
+  // Group chat for my Available Now session (I'm the host) - always check, even after session expires
   const { data: groupChatData } = useQuery<{ chatroom: any | null }>({
     queryKey: ["/api/available-now/group-chat"],
-    enabled: !!currentUser?.id && !!myStatus?.isAvailable,
+    enabled: !!currentUser?.id,
     refetchInterval: 15000,
   });
 
@@ -218,7 +219,21 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   });
 
   const myAcceptedGroupChats = myGroupChatsData?.chatrooms || [];
-  const groupChatroom = groupChatData?.chatroom || myAcceptedGroupChats[0] || null;
+  const hostGroupChat = groupChatData?.chatroom || null;
+
+  // Combine all group chats (host's own + accepted into), deduplicated
+  const allGroupChats = (() => {
+    const chats: any[] = [];
+    const seenIds = new Set<number>();
+    if (hostGroupChat) { chats.push(hostGroupChat); seenIds.add(hostGroupChat.id); }
+    for (const c of myAcceptedGroupChats) {
+      if (!seenIds.has(c.id)) { chats.push(c); seenIds.add(c.id); }
+    }
+    return chats;
+  })();
+
+  // The active chatroom for the dialog - either explicitly selected or the first available
+  const groupChatroom = selectedGroupChat || allGroupChats[0] || null;
 
   const { data: groupChatMessages = [] } = useQuery<any[]>({
     queryKey: ["/api/available-now/group-chat", groupChatroom?.id, "messages"],
@@ -248,6 +263,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     },
     onSuccess: () => {
       setShowGroupChat(false);
+      setSelectedGroupChat(null);
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/group-chat"] });
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/my-group-chats"] });
       toast({ title: "Left the chat" });
@@ -359,16 +375,17 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                   </div>
                 </div>
               )}
-              {groupChatroom && (
+              {allGroupChats.length > 0 && allGroupChats.map((chat: any) => (
                 <button
+                  key={chat.id}
                   type="button"
-                  onClick={() => setShowGroupChat(true)}
+                  onClick={() => { setSelectedGroupChat(chat); setShowGroupChat(true); }}
                   className="mt-2 w-full flex items-center justify-center gap-2 px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-xs font-bold transition-all"
                 >
                   <MessageCircle className="w-4 h-4" />
-                  Group Chat ({groupChatroom.participantCount} people)
+                  {chat.chatroomName} ({chat.participantCount} people)
                 </button>
-              )}
+              ))}
             </div>
           </div>
         ) : (
@@ -394,14 +411,14 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
           </Button>
         )}
 
-        {/* Show group chats the user has been accepted into (as requester) */}
-        {!myStatus && myAcceptedGroupChats.length > 0 && (
-          <div className="mb-4">
-            {myAcceptedGroupChats.map((chat: any) => (
+        {/* Show all group chats when not currently available (both host and requester chats) */}
+        {!myStatus && allGroupChats.length > 0 && (
+          <div className="mb-4 space-y-2">
+            {allGroupChats.map((chat: any) => (
               <button
                 key={chat.id}
                 type="button"
-                onClick={() => setShowGroupChat(true)}
+                onClick={() => { setSelectedGroupChat(chat); setShowGroupChat(true); }}
                 className="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl text-sm font-semibold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all"
               >
                 <div className="flex items-center gap-2">
