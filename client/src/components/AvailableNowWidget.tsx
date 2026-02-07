@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
@@ -486,16 +487,21 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
       </div>
     </Card>
 
-    {showSetup && (
-      <div className="fixed inset-0 z-[999999] flex items-center justify-center" onClick={() => setShowSetup(false)}>
-        <div className="absolute inset-0 bg-black/80" />
+    {showSetup && createPortal(
+      <div 
+        className="fixed inset-0 flex items-center justify-center"
+        style={{ zIndex: 999999 }}
+        onClick={() => setShowSetup(false)}
+      >
+        <div className="absolute inset-0 bg-black/95" />
         <div
-          className="relative z-[1] w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 rounded-lg shadow-xl p-6 border border-gray-200 dark:border-gray-700"
+          className="relative w-full max-w-lg mx-4 max-h-[85vh] overflow-y-auto bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-6 border border-gray-200 dark:border-gray-700"
+          style={{ zIndex: 1000000 }}
           onClick={(e) => e.stopPropagation()}
         >
           <button
             type="button"
-            className="absolute right-4 top-4 rounded-sm opacity-70 hover:opacity-100 text-gray-500 dark:text-gray-400"
+            className="absolute right-4 top-4 rounded-full w-8 h-8 flex items-center justify-center bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400"
             onClick={() => setShowSetup(false)}
           >
             <X className="h-4 w-4" />
@@ -576,7 +582,8 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
             </button>
           </div>
         </div>
-      </div>
+      </div>,
+      document.body
     )}
     </>
   );
