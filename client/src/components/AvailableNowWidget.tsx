@@ -228,8 +228,8 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
 
   return (
     <>
-    <Card className="overflow-hidden border-0 shadow-none rounded-2xl bg-transparent dark:bg-transparent">
-      <div className="p-2 sm:p-4">
+    <Card className="overflow-hidden border-0 shadow-lg rounded-2xl bg-gray-900 dark:bg-gray-800 relative z-20">
+      <div className="p-4">
         {myStatus ? (
           <div className="mb-4 rounded-xl border-2 border-green-400 dark:border-green-500 overflow-hidden">
             <div className="bg-gradient-to-r from-green-500 to-emerald-500 px-4 py-2.5 flex items-center justify-between">
@@ -293,13 +293,10 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
         ) : (
           <button
             type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowSetup(true);
-            }}
-            className="w-full mb-4 py-3.5 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-orange-500 to-green-500 hover:from-purple-700 hover:via-orange-600 hover:to-green-600 text-white font-bold text-base text-center shadow-lg shadow-orange-500/30 cursor-pointer active:scale-[0.98] transition-all relative z-10"
+            onClick={() => setShowSetup(true)}
+            className="w-full mb-4 py-3.5 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-orange-500 to-green-500 hover:from-purple-700 hover:via-orange-600 hover:to-green-600 text-white font-bold text-base text-center shadow-lg shadow-orange-500/30 cursor-pointer active:scale-[0.98] transition-all relative z-30"
           >
-            <span className="flex items-center justify-center gap-2">
+            <span className="flex items-center justify-center gap-2 pointer-events-none">
               <Zap className="w-5 h-5 text-yellow-300" />
               I'm Available to Hang Out
             </span>
