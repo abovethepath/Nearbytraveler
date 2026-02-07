@@ -79,7 +79,7 @@ import {
   notifications,
 } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
-import { waitlistLeads, availableNow, availableNowRequests, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags } from "../shared/schema";
+import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags } from "../shared/schema";
 import { alias } from "drizzle-orm/pg-core";
 
 // Helper function to compute public display name based on user preference
@@ -21069,15 +21069,87 @@ Questions? Just reply to this message. Welcome aboard!
         ))
         .returning();
 
+      let groupChatroomId: number | null = null;
+
       if (status === "accepted" && updated) {
         const [acceptor] = await db.select({ username: users.username })
           .from(users).where(eq(users.id, Number(userId)));
         const acceptorName = acceptor?.username || "Someone";
 
+        const [requester] = await db.select({ username: users.username })
+          .from(users).where(eq(users.id, updated.fromUserId));
+        const requesterName = requester?.username || "Someone";
+
+        // Find the active Available Now session for this user (the acceptor)
+        const [activeSession] = await db.select()
+          .from(availableNow)
+          .where(and(
+            eq(availableNow.userId, Number(userId)),
+            eq(availableNow.isAvailable, true),
+            gte(availableNow.expiresAt, new Date())
+          ))
+          .orderBy(desc(availableNow.createdAt))
+          .limit(1);
+
+        if (activeSession) {
+          // Check if a group chat already exists for this Available Now session
+          const [existingChatroom] = await db.select()
+            .from(meetupChatrooms)
+            .where(and(
+              eq(meetupChatrooms.availableNowId, activeSession.id),
+              eq(meetupChatrooms.isActive, true)
+            ))
+            .limit(1);
+
+          if (existingChatroom) {
+            groupChatroomId = existingChatroom.id;
+            // Add the new person to the group chat with a system message
+            await db.update(meetupChatrooms)
+              .set({ participantCount: sql`${meetupChatrooms.participantCount} + 1` })
+              .where(eq(meetupChatrooms.id, existingChatroom.id));
+
+            await db.insert(meetupChatroomMessages).values({
+              meetupChatroomId: existingChatroom.id,
+              userId: updated.fromUserId,
+              username: requesterName,
+              message: `@${requesterName} joined the hangout! 🎉`,
+              messageType: 'system',
+            });
+          } else {
+            // Create a new group chat for this Available Now session
+            const activities = activeSession.activities?.join(', ') || 'Hanging out';
+            const [newChatroom] = await db.insert(meetupChatrooms).values({
+              availableNowId: activeSession.id,
+              chatroomName: `${acceptorName}'s Hangout`,
+              description: `Group chat for everyone meeting up with @${acceptorName} — ${activities}`,
+              city: activeSession.city,
+              state: activeSession.state || '',
+              country: activeSession.country,
+              isActive: true,
+              expiresAt: activeSession.expiresAt,
+              participantCount: 2,
+            }).returning();
+
+            groupChatroomId = newChatroom.id;
+
+            // Add system welcome message
+            await db.insert(meetupChatroomMessages).values({
+              meetupChatroomId: newChatroom.id,
+              userId: Number(userId),
+              username: acceptorName,
+              message: `Group chat created! @${acceptorName} and @${requesterName} are meeting up. Everyone accepted will join here automatically. 🤝`,
+              messageType: 'system',
+            });
+          }
+        }
+
+        // Still send a DM notification so they see it in messages
         await db.insert(messages).values({
           senderId: Number(userId),
           receiverId: updated.fromUserId,
-          content: `Hey! I accepted your meet request — let's figure out where to meet up! 🤝`,
+          content: groupChatroomId 
+            ? `Hey! I accepted your meet request — check the group chat to coordinate! 🤝`
+            : `Hey! I accepted your meet request — let's figure out where to meet up! 🤝`,
           messageType: 'text',
           isRead: false,
           createdAt: new Date(),
@@ -21089,14 +21161,14 @@ Questions? Just reply to this message. Welcome aboard!
             updated.fromUserId,
             "Meet Request Accepted!",
             `@${acceptorName} wants to meet up! Tap to chat.`,
-            { type: "meet_accepted", userId: Number(userId) }
+            { type: "meet_accepted", userId: Number(userId), groupChatroomId }
           );
         } catch (pushErr) {
           console.error("Push notification error:", pushErr);
         }
       }
 
-      res.json({ ...updated, otherUserId: updated?.fromUserId });
+      res.json({ ...updated, otherUserId: updated?.fromUserId, groupChatroomId: groupChatroomId || null });
     } catch (error: any) {
       console.error("Error updating request:", error);
       res.status(500).json({ error: "Failed to update request" });
@@ -21156,6 +21228,152 @@ Questions? Just reply to this message. Welcome aboard!
       res.json(activeIds);
     } catch (error: any) {
       res.json([]);
+    }
+  });
+
+  // ==================== AVAILABLE NOW GROUP CHAT ====================
+
+  // Get group chat for current user's active Available Now session
+  app.get("/api/available-now/group-chat", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      // Find active Available Now session for this user
+      const [activeSession] = await db.select()
+        .from(availableNow)
+        .where(and(
+          eq(availableNow.userId, Number(userId)),
+          eq(availableNow.isAvailable, true),
+          gte(availableNow.expiresAt, new Date())
+        ))
+        .orderBy(desc(availableNow.createdAt))
+        .limit(1);
+
+      if (!activeSession) {
+        return res.json({ chatroom: null });
+      }
+
+      const [chatroom] = await db.select()
+        .from(meetupChatrooms)
+        .where(and(
+          eq(meetupChatrooms.availableNowId, activeSession.id),
+          eq(meetupChatrooms.isActive, true)
+        ))
+        .limit(1);
+
+      res.json({ chatroom: chatroom || null });
+    } catch (error: any) {
+      console.error("Error fetching group chat:", error);
+      res.status(500).json({ error: "Failed to fetch group chat" });
+    }
+  });
+
+  // Get group chats the user has been accepted into (as a requester)
+  app.get("/api/available-now/my-group-chats", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      // Find all accepted requests FROM this user
+      const acceptedRequests = await db.select({
+        toUserId: availableNowRequests.toUserId,
+      })
+        .from(availableNowRequests)
+        .where(and(
+          eq(availableNowRequests.fromUserId, Number(userId)),
+          eq(availableNowRequests.status, "accepted")
+        ));
+
+      if (acceptedRequests.length === 0) {
+        return res.json({ chatrooms: [] });
+      }
+
+      // Find active Available Now sessions for those users
+      const hostUserIds = acceptedRequests.map(r => r.toUserId);
+      const activeSessions = await db.select()
+        .from(availableNow)
+        .where(and(
+          inArray(availableNow.userId, hostUserIds),
+          eq(availableNow.isAvailable, true),
+          gte(availableNow.expiresAt, new Date())
+        ));
+
+      if (activeSessions.length === 0) {
+        return res.json({ chatrooms: [] });
+      }
+
+      const sessionIds = activeSessions.map(s => s.id);
+      const chatrooms = await db.select()
+        .from(meetupChatrooms)
+        .where(and(
+          inArray(meetupChatrooms.availableNowId, sessionIds),
+          eq(meetupChatrooms.isActive, true)
+        ));
+
+      res.json({ chatrooms });
+    } catch (error: any) {
+      console.error("Error fetching my group chats:", error);
+      res.status(500).json({ error: "Failed to fetch group chats" });
+    }
+  });
+
+  // Get messages for an Available Now group chat
+  app.get("/api/available-now/group-chat/:chatroomId/messages", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const { chatroomId } = req.params;
+
+      const chatMessages = await db.select({
+        id: meetupChatroomMessages.id,
+        meetupChatroomId: meetupChatroomMessages.meetupChatroomId,
+        userId: meetupChatroomMessages.userId,
+        username: meetupChatroomMessages.username,
+        message: meetupChatroomMessages.message,
+        messageType: meetupChatroomMessages.messageType,
+        sentAt: meetupChatroomMessages.sentAt,
+        userProfilePhoto: users.profilePhoto,
+      })
+        .from(meetupChatroomMessages)
+        .leftJoin(users, eq(meetupChatroomMessages.userId, users.id))
+        .where(eq(meetupChatroomMessages.meetupChatroomId, Number(chatroomId)))
+        .orderBy(asc(meetupChatroomMessages.sentAt))
+        .limit(200);
+
+      res.json(chatMessages);
+    } catch (error: any) {
+      console.error("Error fetching group chat messages:", error);
+      res.status(500).json({ error: "Failed to fetch messages" });
+    }
+  });
+
+  // Send message to Available Now group chat
+  app.post("/api/available-now/group-chat/:chatroomId/messages", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const { chatroomId } = req.params;
+      const { message } = req.body;
+      if (!message?.trim()) return res.status(400).json({ error: "Message is required" });
+
+      const [user] = await db.select({ username: users.username })
+        .from(users).where(eq(users.id, Number(userId)));
+
+      const [newMessage] = await db.insert(meetupChatroomMessages).values({
+        meetupChatroomId: Number(chatroomId),
+        userId: Number(userId),
+        username: user?.username || 'Anonymous',
+        message: message.trim(),
+        messageType: 'text',
+      }).returning();
+
+      res.json(newMessage);
+    } catch (error: any) {
+      console.error("Error sending group chat message:", error);
+      res.status(500).json({ error: "Failed to send message" });
     }
   });
 

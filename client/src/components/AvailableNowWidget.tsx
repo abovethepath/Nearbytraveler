@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Zap, Clock, MapPin, X, Send, Coffee, Music, Utensils, Camera, Dumbbell, Beer, ChevronDown, ChevronUp, Mountain, Bike, Waves, Compass } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Zap, Clock, MapPin, X, Send, Coffee, Music, Utensils, Camera, Dumbbell, Beer, ChevronDown, ChevronUp, Mountain, Bike, Waves, Compass, MessageCircle, Users } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import { useToast } from "@/hooks/use-toast";
 
@@ -77,6 +79,9 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const [showMeetRequest, setShowMeetRequest] = useState<number | null>(null);
   const [meetMessage, setMeetMessage] = useState("");
   const [showAllUsers, setShowAllUsers] = useState(false);
+  const [showGroupChat, setShowGroupChat] = useState(false);
+  const [groupChatMessage, setGroupChatMessage] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   const userCity = currentUser?.hometownCity || currentUser?.city || "";
@@ -177,20 +182,70 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     },
     onSuccess: (data: any, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/requests"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/available-now/group-chat"] });
       if (variables.status === "accepted") {
-        const otherUserId = data?.otherUserId || variables.fromUserId;
-        toast({ title: "It's a meet!", description: "Opening your chat now..." });
-        if (otherUserId) {
-          setTimeout(() => {
-            window.history.pushState({}, '', `/messages/${otherUserId}`);
-            window.dispatchEvent(new PopStateEvent('popstate'));
-          }, 500);
+        if (data?.groupChatroomId) {
+          toast({ title: "It's a meet!", description: "Opening the group chat..." });
+          setTimeout(() => setShowGroupChat(true), 500);
+        } else {
+          const otherUserId = data?.otherUserId || variables.fromUserId;
+          toast({ title: "It's a meet!", description: "Opening your chat now..." });
+          if (otherUserId) {
+            setTimeout(() => {
+              window.history.pushState({}, '', `/messages/${otherUserId}`);
+              window.dispatchEvent(new PopStateEvent('popstate'));
+            }, 500);
+          }
         }
       } else {
         toast({ title: "Request declined" });
       }
     },
   });
+
+  // Group chat for my Available Now session (I'm the host)
+  const { data: groupChatData } = useQuery<{ chatroom: any | null }>({
+    queryKey: ["/api/available-now/group-chat"],
+    enabled: !!currentUser?.id && !!myStatus?.isAvailable,
+    refetchInterval: 15000,
+  });
+
+  // Group chats I've been accepted into (I sent the request)
+  const { data: myGroupChatsData } = useQuery<{ chatrooms: any[] }>({
+    queryKey: ["/api/available-now/my-group-chats"],
+    enabled: !!currentUser?.id,
+    refetchInterval: 15000,
+  });
+
+  const myAcceptedGroupChats = myGroupChatsData?.chatrooms || [];
+  const groupChatroom = groupChatData?.chatroom || myAcceptedGroupChats[0] || null;
+
+  const { data: groupChatMessages = [] } = useQuery<any[]>({
+    queryKey: ["/api/available-now/group-chat", groupChatroom?.id, "messages"],
+    queryFn: async () => {
+      const res = await apiRequest("GET", `/api/available-now/group-chat/${groupChatroom.id}/messages`);
+      return res.json();
+    },
+    enabled: !!groupChatroom?.id && showGroupChat,
+    refetchInterval: 3000,
+  });
+
+  const sendGroupMessageMutation = useMutation({
+    mutationFn: async (message: string) => {
+      const res = await apiRequest("POST", `/api/available-now/group-chat/${groupChatroom?.id}/messages`, { message });
+      return res.json();
+    },
+    onSuccess: () => {
+      setGroupChatMessage("");
+      queryClient.invalidateQueries({ queryKey: ["/api/available-now/group-chat", groupChatroom?.id, "messages"] });
+    },
+  });
+
+  useEffect(() => {
+    if (showGroupChat) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [groupChatMessages, showGroupChat]);
 
   const toggleActivity = (value: string) => {
     setSelectedActivities(prev =>
@@ -291,6 +346,16 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                   </div>
                 </div>
               )}
+              {groupChatroom && (
+                <button
+                  type="button"
+                  onClick={() => setShowGroupChat(true)}
+                  className="mt-2 w-full flex items-center justify-center gap-2 px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-xs font-bold transition-all"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  Group Chat ({groupChatroom.participantCount} people)
+                </button>
+              )}
             </div>
           </div>
         ) : (
@@ -314,6 +379,28 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
           >
             🟢 See Who Else is Available Now
           </Button>
+        )}
+
+        {/* Show group chats the user has been accepted into (as requester) */}
+        {!myStatus && myAcceptedGroupChats.length > 0 && (
+          <div className="mb-4">
+            {myAcceptedGroupChats.map((chat: any) => (
+              <button
+                key={chat.id}
+                type="button"
+                onClick={() => setShowGroupChat(true)}
+                className="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl text-sm font-semibold text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all"
+              >
+                <div className="flex items-center gap-2">
+                  <MessageCircle className="w-4 h-4" />
+                  <span>{chat.chatroomName}</span>
+                </div>
+                <Badge className="bg-blue-500 text-white text-[10px]">
+                  {chat.participantCount} people
+                </Badge>
+              </button>
+            ))}
+          </div>
         )}
 
         {pendingRequests && pendingRequests.length > 0 && (
@@ -587,6 +674,103 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
       </div>,
       document.body
     )}
+
+    {/* Group Chat Dialog */}
+    <Dialog open={showGroupChat} onOpenChange={setShowGroupChat}>
+      <DialogContent className="max-w-lg h-[500px] flex flex-col bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-0">
+        <DialogHeader className="flex-shrink-0 px-4 pt-4 pb-2 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+                <Users className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <DialogTitle className="text-base font-bold text-gray-900 dark:text-white">
+                  {groupChatroom?.chatroomName || "Hangout Chat"}
+                </DialogTitle>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {groupChatroom?.participantCount || 0} people · {groupChatroom?.city}
+                </p>
+              </div>
+            </div>
+          </div>
+        </DialogHeader>
+
+        <ScrollArea className="flex-1 px-4 py-2">
+          <div className="space-y-3">
+            {groupChatMessages.length === 0 ? (
+              <div className="text-center py-8">
+                <MessageCircle className="h-10 w-10 mx-auto mb-3 text-gray-300 dark:text-gray-600" />
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">No messages yet</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">Say hello to the group!</p>
+              </div>
+            ) : (
+              groupChatMessages.map((msg: any) => {
+                const isSystem = msg.messageType === 'system';
+                const isMe = msg.userId === currentUser?.id;
+                if (isSystem) {
+                  return (
+                    <div key={msg.id} className="text-center">
+                      <span className="inline-block px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-xs text-gray-500 dark:text-gray-400">
+                        {msg.message}
+                      </span>
+                    </div>
+                  );
+                }
+                return (
+                  <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-[75%] ${isMe ? 'order-2' : ''}`}>
+                      {!isMe && (
+                        <p className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 mb-0.5 ml-1">
+                          @{msg.username}
+                        </p>
+                      )}
+                      <div className={`px-3 py-2 rounded-2xl ${
+                        isMe 
+                          ? 'bg-blue-500 text-white rounded-br-sm' 
+                          : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-bl-sm'
+                      }`}>
+                        <p className="text-sm">{msg.message}</p>
+                      </div>
+                      <p className={`text-[10px] text-gray-400 mt-0.5 ${isMe ? 'text-right mr-1' : 'ml-1'}`}>
+                        {msg.sentAt ? new Date(msg.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+        </ScrollArea>
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (groupChatMessage.trim() && !sendGroupMessageMutation.isPending) {
+              sendGroupMessageMutation.mutate(groupChatMessage.trim());
+            }
+          }}
+          className="flex-shrink-0 px-4 py-3 border-t border-gray-200 dark:border-gray-700 flex gap-2"
+        >
+          <Input
+            value={groupChatMessage}
+            onChange={(e) => setGroupChatMessage(e.target.value)}
+            placeholder="Type a message..."
+            className="flex-1 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+            disabled={sendGroupMessageMutation.isPending}
+          />
+          <Button
+            type="submit"
+            size="sm"
+            disabled={!groupChatMessage.trim() || sendGroupMessageMutation.isPending}
+            className="bg-blue-500 hover:bg-blue-600 h-10 w-10 p-0"
+          >
+            <Send className="h-4 w-4" />
+          </Button>
+        </form>
+      </DialogContent>
+    </Dialog>
     </>
   );
 }

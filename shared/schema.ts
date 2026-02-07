@@ -1179,15 +1179,16 @@ export const meetupChatrooms = pgTable("meetup_chatrooms", {
   id: serial("id").primaryKey(),
   meetupId: integer("meetup_id").references(() => quickMeetups.id),
   eventId: integer("event_id").references(() => events.id),
+  availableNowId: integer("available_now_id").references(() => availableNow.id),
   chatroomName: text("chatroom_name").notNull(),
   description: text("description"),
   city: text("city").notNull(),
   state: text("state"),
   country: text("country").notNull(),
-  latitude: real("latitude"), // For map integration
-  longitude: real("longitude"), // For map integration
+  latitude: real("latitude"),
+  longitude: real("longitude"),
   isActive: boolean("is_active").notNull().default(true),
-  expiresAt: timestamp("expires_at").notNull(), // Same as meetup expiry
+  expiresAt: timestamp("expires_at").notNull(),
   participantCount: integer("participant_count").notNull().default(0),
   createdAt: timestamp("created_at").defaultNow(),
 });
