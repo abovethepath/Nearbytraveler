@@ -447,7 +447,7 @@ export function QuickMeetupWidget({ city, profileUserId, triggerCreate }: { city
               </div>
               
               <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                <p className="text-sm font-medium text-black dark:text-gray-300">
                   Post a meetup idea and connect with nearby people today
                 </p>
               </div>
