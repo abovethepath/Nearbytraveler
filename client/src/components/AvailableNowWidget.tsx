@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Zap, Clock, MapPin, X, Send, Coffee, Music, Utensils, Camera, Dumbbell, Beer, ChevronDown, ChevronUp, Mountain, Bike, Waves, Compass, MessageCircle, Users } from "lucide-react";
+import { Zap, Clock, MapPin, X, Send, Coffee, Music, Utensils, Camera, Dumbbell, Beer, ChevronDown, ChevronUp, Mountain, Bike, Waves, Compass, MessageCircle, Users, LogOut } from "lucide-react";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import { useToast } from "@/hooks/use-toast";
 
@@ -238,6 +238,19 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     onSuccess: () => {
       setGroupChatMessage("");
       queryClient.invalidateQueries({ queryKey: ["/api/available-now/group-chat", groupChatroom?.id, "messages"] });
+    },
+  });
+
+  const leaveGroupChatMutation = useMutation({
+    mutationFn: async () => {
+      if (!groupChatroom?.id) return;
+      await apiRequest("POST", `/api/available-now/group-chat/${groupChatroom.id}/leave`);
+    },
+    onSuccess: () => {
+      setShowGroupChat(false);
+      queryClient.invalidateQueries({ queryKey: ["/api/available-now/group-chat"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/available-now/my-group-chats"] });
+      toast({ title: "Left the chat" });
     },
   });
 
@@ -693,6 +706,16 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                 </p>
               </div>
             </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => leaveGroupChatMutation.mutate()}
+              disabled={leaveGroupChatMutation.isPending}
+              className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 text-xs gap-1"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              Leave
+            </Button>
           </div>
         </DialogHeader>
 

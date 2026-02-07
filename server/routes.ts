@@ -21377,6 +21377,62 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Leave an Available Now group chat
+  app.post("/api/available-now/group-chat/:chatroomId/leave", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const { chatroomId } = req.params;
+
+      const [chatroom] = await db.select()
+        .from(meetupChatrooms)
+        .where(eq(meetupChatrooms.id, Number(chatroomId)))
+        .limit(1);
+
+      if (!chatroom) return res.status(404).json({ error: "Chat not found" });
+
+      const [user] = await db.select({ username: users.username })
+        .from(users).where(eq(users.id, Number(userId)));
+
+      await db.insert(meetupChatroomMessages).values({
+        meetupChatroomId: Number(chatroomId),
+        userId: Number(userId),
+        username: user?.username || 'Anonymous',
+        message: `@${user?.username || 'Someone'} left the chat`,
+        messageType: 'system',
+      });
+
+      const newCount = Math.max((chatroom.participantCount || 1) - 1, 0);
+      await db.update(meetupChatrooms)
+        .set({ participantCount: newCount })
+        .where(eq(meetupChatrooms.id, Number(chatroomId)));
+
+      // If user was accepted into this chat via a request, update request status
+      if (chatroom.availableNowId) {
+        const [session] = await db.select({ userId: availableNow.userId })
+          .from(availableNow)
+          .where(eq(availableNow.id, chatroom.availableNowId))
+          .limit(1);
+
+        if (session) {
+          await db.update(availableNowRequests)
+            .set({ status: "declined" })
+            .where(and(
+              eq(availableNowRequests.fromUserId, Number(userId)),
+              eq(availableNowRequests.toUserId, session.userId),
+              eq(availableNowRequests.status, "accepted")
+            ));
+        }
+      }
+
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error leaving group chat:", error);
+      res.status(500).json({ error: "Failed to leave chat" });
+    }
+  });
+
   // ==================== VIRAL FEATURES API ====================
 
   // === LIVE LOCATION SHARES ===
