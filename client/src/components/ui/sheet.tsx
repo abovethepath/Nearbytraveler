@@ -57,7 +57,7 @@ const SheetContent = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Content>,
   SheetContentProps
 >(({ side = "right", className, children, ...props }, ref) => (
-  <SheetPortal>
+  <SheetPortal container={document.body}>
     <SheetOverlay />
     <SheetPrimitive.Content
       ref={ref}

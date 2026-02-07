@@ -730,7 +730,6 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     <Dialog open={showGroupChat} onOpenChange={(open) => { setShowGroupChat(open); if (!open) { setSelectedMessage(null); setReplyingTo(null); } }}>
       <DialogContent 
         className="max-w-lg w-[92vw] sm:w-full h-[70vh] sm:h-[600px] flex flex-col bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 p-0 overflow-hidden"
-        style={{ zIndex: 999999, position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', display: 'grid', visibility: 'visible', opacity: 1 }}
       >
         <DialogHeader className="flex-shrink-0 px-4 pt-3 pb-2 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
