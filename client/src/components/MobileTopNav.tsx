@@ -54,11 +54,23 @@ export function MobileTopNav() {
     };
   }, []);
 
-  // Lock body scroll when menu open
+  // Lock body scroll when menu open - iOS-safe approach
   useEffect(() => {
     if (isOpen) {
+      const scrollY = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = "0";
+      document.body.style.right = "0";
       document.body.style.overflow = "hidden";
-      return () => { document.body.style.overflow = ""; };
+      return () => {
+        document.body.style.position = "";
+        document.body.style.top = "";
+        document.body.style.left = "";
+        document.body.style.right = "";
+        document.body.style.overflow = "";
+        window.scrollTo(0, scrollY);
+      };
     }
   }, [isOpen]);
 
@@ -182,11 +194,12 @@ export function MobileTopNav() {
       {/* Menu Portal - Rendered at body level for proper z-index */}
       {isOpen && createPortal(
         <>
-          {/* Backdrop - only close on click, not on scroll/touch move */}
+          {/* Backdrop - prevent all touch events from reaching page */}
           <div
             className="fixed inset-0 bg-black/50 z-[10001] md:hidden"
             style={{ touchAction: 'none' }}
             onClick={() => setIsOpen(false)}
+            onTouchMove={(e) => e.preventDefault()}
           />
 
           {/* Slide-out Menu Panel - allow vertical scrolling */}

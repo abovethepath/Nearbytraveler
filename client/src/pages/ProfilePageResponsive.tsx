@@ -1,7 +1,9 @@
 import ResponsiveNavbar from "@/components/ResponsiveNavbar";
 import { useAuth } from "@/App";
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { getApiBaseUrl } from "@/lib/queryClient";
+import { Zap } from "lucide-react";
 
 export default function ProfilePageResponsive() {
   const authContext = useAuth();
@@ -98,6 +100,13 @@ export default function ProfilePageResponsive() {
   
   const user = actualUser;
 
+  const { data: availableNowIds = [] } = useQuery<number[]>({
+    queryKey: ['/api/available-now/active-ids'],
+    refetchInterval: 30000,
+  });
+
+  const isAvailableNow = user?.id ? availableNowIds.includes(user.id) : false;
+
   // Extract user data
   const displayName = user.name || user.username || "User";
   const profileImage = user.profileImage || "https://placehold.co/320x320";
@@ -141,7 +150,15 @@ export default function ProfilePageResponsive() {
           {/* Name + actions */}
           <div className="space-y-3">
             <div className="space-y-1">
-              <h1 className="text-2xl md:text-3xl font-bold" data-testid="text-name">{displayName}</h1>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-2xl md:text-3xl font-bold" data-testid="text-name">{displayName}</h1>
+                {isAvailableNow && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-500 text-white text-xs font-semibold whitespace-nowrap">
+                    <Zap className="w-3 h-3" />
+                    Available Now
+                  </span>
+                )}
+              </div>
               {/* CRITICAL: Always show hometown location - consistent mobile sizing */}
               <div className="flex flex-col gap-1">
                 <p className="text-sm text-gray-600 font-medium" data-testid="text-hometown-location">
