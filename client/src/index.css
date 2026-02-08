@@ -44,8 +44,8 @@ body {
   cursor: pointer !important;
 }
 
-/* Push ALL page content below navbar */
-body > div:not(.mobile-top-nav),
+/* Push page content below navbar - ONLY target #root, NOT portal elements */
+#root,
 main,
 [role="main"],
 .page-container {
