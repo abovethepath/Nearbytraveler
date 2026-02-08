@@ -3971,9 +3971,7 @@ export class DatabaseStorage implements IStorage {
   async deleteAiRecommendation(): Promise<any> { return true; }
   async bookmarkRecommendation(): Promise<any> { return undefined; }
   async markRecommendationVisited(): Promise<any> { return undefined; }
-  async createUserTravelPreferences(): Promise<any> { return {}; }
-  async getUserTravelPreferences(): Promise<any> { return undefined; }
-  async updateUserTravelPreferences(): Promise<any> { return undefined; }
+  // Travel preferences - real implementations are defined later in the class
   async createAiConversation(): Promise<any> { return {}; }
   async getUserAiConversations(): Promise<any> { return []; }
   async getAiConversationsByLocation(): Promise<any> { return []; }
@@ -8919,13 +8917,6 @@ export class DatabaseStorage implements IStorage {
   }
 
 
-
-  async getUserByResetToken(token: string) {
-    const [user] = await db.select().from(users)
-      .where(eq(users.passwordResetToken, token));
-    return user || null;
-  }
-
   // Travel preferences methods
   async getUserTravelPreferences(userId: number): Promise<any> {
     try {
@@ -9107,43 +9098,6 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  // Instagram methods implementation
-  async createInstagramPost(data: InsertInstagramPost): Promise<InstagramPost> {
-    try {
-      const [post] = await db.insert(instagramPosts).values({
-        eventId: data.eventId,
-        userId: data.userId,
-        postContent: data.postContent,
-        imageUrl: data.imageUrl,
-        userPostStatus: data.userPostStatus || 'pending',
-        nearbytravelerPostStatus: data.nearbytravelerPostStatus || 'pending',
-      }).returning();
-      
-      console.log('Instagram post created:', post.id);
-      return post;
-    } catch (error) {
-      console.error('Error creating Instagram post:', error);
-      throw error;
-    }
-  }
-
-  async getInstagramPosts(eventId?: number, userId?: number): Promise<InstagramPost[]> {
-    try {
-      let query = db.select().from(instagramPosts);
-      
-      if (eventId) {
-        query = query.where(eq(instagramPosts.eventId, eventId));
-      } else if (userId) {
-        query = query.where(eq(instagramPosts.userId, userId));
-      }
-      
-      const posts = await query;
-      return posts;
-    } catch (error) {
-      console.error('Error fetching Instagram posts:', error);
-      return [];
-    }
-  }
 
   async getInstagramPostsByEvent(eventId: number): Promise<InstagramPost[]> {
     try {
