@@ -610,28 +610,28 @@ img,
 
 /* LIGHT MODE ONLY PILL CONSISTENCY FIX - Force ALL pills to use standard white bg/black text styling */
 /* IMPORTANT: These selectors are now more specific to avoid catching input fields and chat bubbles */
-.pill:not(input):not(.chat-message-bubble), 
-[class*="pill"]:not(input):not(.chat-message-bubble),
-[class*="pill-"]:not(input):not(.chat-message-bubble),
-.inline-flex.items-center.justify-center.rounded-full[class*="bg-green"]:not(input):not(.chat-message-bubble),
-.inline-flex[class*="bg-green"][class*="text-white"]:not(input):not(.chat-message-bubble),
-.inline-flex.items-center.justify-center.rounded-full[class*="bg-blue"]:not(input):not(.chat-message-bubble),
-.inline-flex[class*="bg-blue"][class*="text-white"]:not(input):not(.chat-message-bubble),
-.inline-flex.items-center.justify-center.rounded-full[class*="bg-purple"]:not(input):not(.chat-message-bubble),
-.inline-flex[class*="bg-purple"][class*="text-white"]:not(input):not(.chat-message-bubble),
-div[class*="bg-green-500 text-white"]:not(.chat-message-bubble),
-div[class*="bg-green-600 text-white"]:not(.chat-message-bubble),
-div[class*="bg-blue-500 text-white"]:not(.chat-message-bubble),
-div[class*="bg-blue-600 text-white"]:not(.chat-message-bubble),
-div[class*="bg-purple-500 text-white"]:not(.chat-message-bubble),
-div[class*="bg-purple-600 text-white"]:not(.chat-message-bubble),
-button[class*="bg-green"][class*="text-white"][class*="rounded-full"]:not(.chat-message-bubble),
-button[class*="bg-blue"][class*="text-white"][class*="rounded-full"]:not(.chat-message-bubble),
-button[class*="bg-purple"][class*="text-white"][class*="rounded-full"]:not(.chat-message-bubble),
+.pill:not(input):not(.chat-message-bubble):not(.status-badge), 
+[class*="pill"]:not(input):not(.chat-message-bubble):not(.status-badge),
+[class*="pill-"]:not(input):not(.chat-message-bubble):not(.status-badge),
+.inline-flex.items-center.justify-center.rounded-full[class*="bg-green"]:not(input):not(.chat-message-bubble):not(.status-badge),
+.inline-flex[class*="bg-green"][class*="text-white"]:not(input):not(.chat-message-bubble):not(.status-badge),
+.inline-flex.items-center.justify-center.rounded-full[class*="bg-blue"]:not(input):not(.chat-message-bubble):not(.status-badge),
+.inline-flex[class*="bg-blue"][class*="text-white"]:not(input):not(.chat-message-bubble):not(.status-badge),
+.inline-flex.items-center.justify-center.rounded-full[class*="bg-purple"]:not(input):not(.chat-message-bubble):not(.status-badge),
+.inline-flex[class*="bg-purple"][class*="text-white"]:not(input):not(.chat-message-bubble):not(.status-badge),
+div[class*="bg-green-500 text-white"]:not(.chat-message-bubble):not(.status-badge),
+div[class*="bg-green-600 text-white"]:not(.chat-message-bubble):not(.status-badge),
+div[class*="bg-blue-500 text-white"]:not(.chat-message-bubble):not(.status-badge),
+div[class*="bg-blue-600 text-white"]:not(.chat-message-bubble):not(.status-badge),
+div[class*="bg-purple-500 text-white"]:not(.chat-message-bubble):not(.status-badge),
+div[class*="bg-purple-600 text-white"]:not(.chat-message-bubble):not(.status-badge),
+button[class*="bg-green"][class*="text-white"][class*="rounded-full"]:not(.chat-message-bubble):not(.status-badge),
+button[class*="bg-blue"][class*="text-white"][class*="rounded-full"]:not(.chat-message-bubble):not(.status-badge),
+button[class*="bg-purple"][class*="text-white"][class*="rounded-full"]:not(.chat-message-bubble):not(.status-badge),
 /* Activity pills from profile pages */
-div[class*="pill-activities"]:not(.chat-message-bubble),
-div[class*="pill-interests"]:not(.chat-message-bubble),
-div[class*="pill-events"]:not(.chat-message-bubble) {
+div[class*="pill-activities"]:not(.chat-message-bubble):not(.status-badge),
+div[class*="pill-interests"]:not(.chat-message-bubble):not(.status-badge),
+div[class*="pill-events"]:not(.chat-message-bubble):not(.status-badge) {
   background-color: white !important;
   background: white !important;
   color: black !important;
@@ -1129,19 +1129,19 @@ p, span, div, button, input, textarea, select {
 }
 
 /* UNIVERSAL PILL SIZE STANDARDIZATION - 12pt for ALL pills site-wide */
-.pill, 
-.badge, 
-[class*="badge"], 
-[class*="pill"],
-.rounded-full[class*="text-"][class*="px-"],
-.rounded[class*="text-"][class*="px-"],
-.inline-flex[class*="text-"][class*="px-"][class*="rounded"],
-.inline-flex[class*="bg-"][class*="text-"][class*="rounded-full"],
-.inline-flex[class*="bg-"][class*="text-"][class*="rounded"],
-span[class*="bg-"][class*="text-"][class*="rounded-full"],
-span[class*="bg-"][class*="text-"][class*="rounded"],
-div[class*="bg-"][class*="text-"][class*="rounded-full"],
-div[class*="bg-"][class*="text-"][class*="rounded"] {
+.pill:not(.status-badge), 
+.badge:not(.status-badge), 
+[class*="badge"]:not(.status-badge), 
+[class*="pill"]:not(.status-badge),
+.rounded-full[class*="text-"][class*="px-"]:not(.status-badge),
+.rounded[class*="text-"][class*="px-"]:not(.status-badge),
+.inline-flex[class*="text-"][class*="px-"][class*="rounded"]:not(.status-badge),
+.inline-flex[class*="bg-"][class*="text-"][class*="rounded-full"]:not(.status-badge),
+.inline-flex[class*="bg-"][class*="text-"][class*="rounded"]:not(.status-badge),
+span[class*="bg-"][class*="text-"][class*="rounded-full"]:not(.status-badge),
+span[class*="bg-"][class*="text-"][class*="rounded"]:not(.status-badge),
+div[class*="bg-"][class*="text-"][class*="rounded-full"]:not(.status-badge),
+div[class*="bg-"][class*="text-"][class*="rounded"]:not(.status-badge) {
   font-size: var(--pill-font-size) !important;
 }
 
@@ -1748,4 +1748,22 @@ button[type="submit"],
     min-height: 56px !important;
     font-size: 1.125rem !important;
   }
+}
+
+/* STATUS BADGES - Protected from pill override rules. Used for Available Now, Online status, etc. */
+.status-badge {
+  background-color: inherit !important;
+  background: inherit !important;
+  color: inherit !important;
+  border: none !important;
+  border-color: transparent !important;
+}
+.status-badge.bg-green-500 {
+  background-color: rgb(34 197 94) !important;
+  background: rgb(34 197 94) !important;
+  color: white !important;
+}
+.status-badge.bg-white {
+  background-color: white !important;
+  background: white !important;
 }

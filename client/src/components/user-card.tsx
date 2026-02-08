@@ -161,8 +161,8 @@ export default function UserCard({
         {/* Available Now badge */}
         {isAvailableNow && (
           <div className="absolute bottom-1.5 left-1.5 right-1.5">
-            <span className="flex items-center justify-center gap-1 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg animate-pulse w-full">
-              <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
+            <span className="status-badge flex items-center justify-center gap-1 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg animate-pulse w-full">
+              <span className="status-badge w-1.5 h-1.5 bg-white rounded-full"></span>
               Available Now
             </span>
           </div>

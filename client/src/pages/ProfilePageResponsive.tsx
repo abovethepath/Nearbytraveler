@@ -153,7 +153,7 @@ export default function ProfilePageResponsive() {
               <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-2xl md:text-3xl font-bold" data-testid="text-name">{displayName}</h1>
                 {isAvailableNow && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-500 text-white text-xs font-semibold whitespace-nowrap">
+                  <span className="status-badge inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-green-500 text-white text-xs font-semibold whitespace-nowrap">
                     <Zap className="w-3 h-3" />
                     Available Now
                   </span>

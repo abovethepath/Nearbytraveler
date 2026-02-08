@@ -202,16 +202,13 @@ export function MobileTopNav() {
             onTouchMove={(e) => e.preventDefault()}
           />
 
-          {/* Slide-out Menu Panel - allow vertical scrolling */}
+          {/* Slide-out Menu Panel */}
           <nav
-            className="fixed top-0 left-0 bottom-0 w-72 max-w-[85vw] bg-white dark:bg-gray-900 z-[10002] shadow-xl md:hidden overflow-y-auto overscroll-contain"
+            className="fixed top-0 left-0 bottom-0 w-72 max-w-[85vw] bg-white dark:bg-gray-900 z-[10002] shadow-xl md:hidden flex flex-col"
             style={{
               animation: 'slideInLeft 0.25s ease-out',
-              touchAction: 'pan-y',
-              WebkitOverflowScrolling: 'touch',
             }}
             onClick={(e) => e.stopPropagation()}
-            onTouchMove={(e) => e.stopPropagation()}
           >
             {/* Menu Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
@@ -227,53 +224,62 @@ export function MobileTopNav() {
               </button>
             </div>
 
-            {/* User Info */}
-            {currentUser && (
-              <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-                <div className="flex items-center gap-3">
-                  <Avatar className="w-12 h-12 pointer-events-none">
-                    <AvatarImage src={currentUser.profileImage} className="pointer-events-none" />
-                    <AvatarFallback className="bg-orange-500 text-white pointer-events-none">
-                      {currentUser.name?.charAt(0)?.toUpperCase() || currentUser.username?.charAt(0)?.toUpperCase() || "U"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-white">@{currentUser.username}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{currentUser.hometownCity || 'Location'}</p>
+            {/* Scrollable content area */}
+            <div
+              className="flex-1 overflow-y-auto overscroll-contain"
+              style={{
+                WebkitOverflowScrolling: 'touch',
+                touchAction: 'pan-y',
+              }}
+            >
+              {/* User Info */}
+              {currentUser && (
+                <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="w-12 h-12 pointer-events-none">
+                      <AvatarImage src={currentUser.profileImage} className="pointer-events-none" />
+                      <AvatarFallback className="bg-orange-500 text-white pointer-events-none">
+                        {currentUser.name?.charAt(0)?.toUpperCase() || currentUser.username?.charAt(0)?.toUpperCase() || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-medium text-gray-900 dark:text-white">@{currentUser.username}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{currentUser.hometownCity || 'Location'}</p>
+                    </div>
                   </div>
                 </div>
+              )}
+
+              {/* Menu Items */}
+              <div className="py-2">
+                {menuItems.map((item, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    className="mobile-touch-btn w-full flex items-center gap-4 px-4 py-3 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-orange-50 dark:active:bg-orange-900/20"
+                    style={{ touchAction: 'manipulation' }}
+                    onTouchEnd={(e) => { e.preventDefault(); navigate(item.path); }}
+                    onClick={() => navigate(item.path)}
+                  >
+                    <item.icon className="w-5 h-5 text-gray-500 dark:text-gray-400 pointer-events-none" />
+                    <span className="pointer-events-none">{item.label}</span>
+                  </button>
+                ))}
               </div>
-            )}
 
-            {/* Menu Items */}
-            <div className="py-2">
-              {menuItems.map((item, idx) => (
+              {/* Logout */}
+              <div className="border-t border-gray-200 dark:border-gray-700 py-2">
                 <button
-                  key={idx}
                   type="button"
-                  className="mobile-touch-btn w-full flex items-center gap-4 px-4 py-3 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-orange-50 dark:active:bg-orange-900/20"
+                  className="mobile-touch-btn w-full flex items-center gap-4 px-4 py-3 text-left text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 active:bg-red-100 dark:active:bg-red-900/30"
                   style={{ touchAction: 'manipulation' }}
-                  onTouchEnd={(e) => { e.preventDefault(); navigate(item.path); }}
-                  onClick={() => navigate(item.path)}
+                  onTouchEnd={(e) => { e.preventDefault(); handleLogout(); }}
+                  onClick={handleLogout}
                 >
-                  <item.icon className="w-5 h-5 text-gray-500 dark:text-gray-400 pointer-events-none" />
-                  <span className="pointer-events-none">{item.label}</span>
+                  <LogOut className="w-5 h-5 pointer-events-none" />
+                  <span className="pointer-events-none">Sign Out</span>
                 </button>
-              ))}
-            </div>
-
-            {/* Logout */}
-            <div className="border-t border-gray-200 dark:border-gray-700 py-2">
-              <button
-                type="button"
-                className="mobile-touch-btn w-full flex items-center gap-4 px-4 py-3 text-left text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 active:bg-red-100 dark:active:bg-red-900/30"
-                style={{ touchAction: 'manipulation' }}
-                onTouchEnd={(e) => { e.preventDefault(); handleLogout(); }}
-                onClick={handleLogout}
-              >
-                <LogOut className="w-5 h-5 pointer-events-none" />
-                <span className="pointer-events-none">Sign Out</span>
-              </button>
+              </div>
             </div>
           </nav>
         </>,
