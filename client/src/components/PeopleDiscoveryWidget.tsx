@@ -344,7 +344,7 @@ export function PeopleDiscoveryWidget({
         {/* Available Now Badge - Top Right */}
         {availableUserIds.has(person.id) && (
           <div className="absolute top-2 right-2 z-10">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gradient-to-r from-orange-500 to-green-500 text-white shadow-md">
+            <span className="status-badge inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gradient-to-r from-orange-500 to-green-500 text-white shadow-md">
               <Zap className="w-3 h-3" />
               Available
             </span>
