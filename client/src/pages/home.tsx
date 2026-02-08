@@ -1107,7 +1107,8 @@ export default function Home() {
       // 2. Search is active
       // 3. They're currently traveling (should see themselves in their destination)
       // 4. Sorted by "recent" (newest members) - user should see themselves as newest
-      if (filters.location || filters.search || effectiveUser?.isCurrentlyTraveling || sortBy === 'recent' || sortBy === 'available_now') return true;
+      // 5. They have Available Now active - show their card with green badge
+      if (filters.location || filters.search || effectiveUser?.isCurrentlyTraveling || sortBy === 'recent' || sortBy === 'available_now' || availableNowIds.includes(otherUser.id)) return true;
 
       // Only exclude from general browsing without any specific context
       return false;

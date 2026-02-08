@@ -260,6 +260,15 @@ export function PeopleDiscoveryWidget({
     if (person.id === currentUserId) {
       return (
         <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-4 text-gray-900 dark:text-white relative h-96">
+          {/* Available Now Badge for current user */}
+          {availableUserIds.has(person.id) && (
+            <div className="absolute top-2 right-2 z-10">
+              <span className="status-badge inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-gradient-to-r from-orange-500 to-green-500 text-white shadow-md">
+                <Zap className="w-3 h-3" />
+                Available
+              </span>
+            </div>
+          )}
           <div className="flex flex-col h-full">
             {/* Large Profile Photo - Clickable */}
             <div className="flex-1 flex items-center justify-center">
