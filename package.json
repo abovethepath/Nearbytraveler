@@ -144,10 +144,10 @@
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
     "@types/ws": "^8.5.13",
-    "autoprefixer": "^10.4.20",
+    "autoprefixer": "^10.4.24",
     "drizzle-kit": "^0.30.4",
     "esbuild": "^0.24.2",
-    "postcss": "^8.4.47",
+    "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
@@ -156,4 +156,3 @@
     "bufferutil": "^4.0.8"
   }
 }
-
