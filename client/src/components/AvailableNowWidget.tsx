@@ -663,7 +663,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                     onClick={() => toggleActivity(value)}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition-colors ${
                       selectedActivities.includes(value)
-                        ? "border-orange-500 bg-orange-500/20 text-orange-300"
+                        ? "border-orange-400 bg-orange-500 text-white font-semibold shadow-md"
                         : "border-gray-600 hover:border-orange-400 text-gray-300"
                     }`}
                   >
