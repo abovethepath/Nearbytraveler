@@ -1,0 +1,86 @@
+// Debug Redis URL configuration
+console.log('🔴 Redis URL check:', {
+  hasRedisUrl: !!process.env.REDIS_URL,
+  urlPrefix: process.env.REDIS_URL?.substring(0, 10) + '...',
+  nodeEnv: process.env.NODE_ENV
+});
+
+if (process.env.REDIS_URL) {
+  try {
+    // Upstash Redis requires TLS - ioredis handles rediss:// URLs automatically
+    redis = new Redis(process.env.REDIS_URL, {
+      maxRetriesPerRequest: 3,
+      lazyConnect: false,
+      enableReadyCheck: true,
+      connectTimeout: 10000,
+    });
+    
+    console.log('🔴 Redis: Connecting to Redis for session storage...');
+    redis.on('connect', () => console.log('✅ Redis: Connected successfully - sessions will persist across restarts'));
+    redis.on('ready', () => console.log('✅ Redis: Ready to accept commands'));
+    redis.on('error', (err) => console.error('❌ Redis connection error:', err.message));
+    redis.on('close', () => console.log('🔴 Redis: Connection closed'));
+  } catch (err: any) {
+    console.error('❌ Redis: Failed to initialize:', err.message);
+    redis = null;
+  }
+} else {
+  console.log('⚠️ Redis: No REDIS_URL configured - using in-memory session store');
+}
+
+// Detect if we're in production - check multiple indicators
+// This MUST match the logout routes detection to ensure cookie secure flags match
+const isProduction = process.env.NODE_ENV === 'production' || 
+                    process.env.REPL_SLUG !== undefined ||
+                    process.env.REPLIT_DEV_DOMAIN !== undefined;
+
+// Debug session config
+console.log('🍪 Session config:', {
+  isProduction,
+  nodeEnv: process.env.NODE_ENV,
+  replSlug: process.env.REPL_SLUG ? 'set' : 'unset',
+  hasRedis: !!redis,
+  cookieSecure: isProduction
+});
+
+// Trust proxy for secure cookies behind Render's reverse proxy / load balancer
+// Also trust proxy on Replit since it uses HTTPS
+if (isProduction) {
+  app.set("trust proxy", 1);
+  console.log('🔒 Trust proxy enabled for production/Replit');
+}
+
+app.use(session({
+  store: redis ? new RedisStore({ client: redis, ttl: 365 * 24 * 60 * 60 }) : undefined,
+  secret: process.env.SESSION_SECRET || 'nearby-traveler-secret-key-dev',
+  resave: false,
+  saveUninitialized: false,
+  rolling: true,
+  cookie: {
+    secure: isProduction,
+    httpOnly: true,
+    sameSite: "lax" as const,
+    maxAge: 365 * 24 * 60 * 60 * 1000,
+    path: "/" // Explicit path
+  },
+  name: "nt.sid"
+}));
+
+// CRITICAL FIX: Increase payload limits to prevent 431 "Request Header Fields Too Large" errors
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb', parameterLimit: 100000 }));
+
+// Password reset routes (Brevo email)
+app.use("/api/auth", passwordResetRouter);
+
+// Serve static files from public directories FIRST (for logo)
+app.use(express.static(path.join(process.cwd(), 'public')));
+app.use(express.static(path.join(process.cwd(), 'client', 'public')));
+
+// Serve attached assets with aggressive no-cache headers
+// NOTE: Using /user-assets instead of /assets to avoid conflict with Vite's /assets path
+app.use('/user-assets', (req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Surrogate-Control', 'no-store');
