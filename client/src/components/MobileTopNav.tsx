@@ -230,7 +230,10 @@ export function MobileTopNav() {
               style={{
                 WebkitOverflowScrolling: 'touch',
                 touchAction: 'pan-y',
+                overscrollBehavior: 'contain',
+                minHeight: 0,
               }}
+              onTouchMove={(e) => e.stopPropagation()}
             >
               {/* User Info */}
               {currentUser && (
