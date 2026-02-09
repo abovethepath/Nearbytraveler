@@ -1265,6 +1265,44 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
   
+  // Session recovery endpoint - re-establishes server session when it's lost (e.g., after server restart)
+  app.post("/api/auth/recover-session", async (req, res) => {
+    try {
+      const { userId } = req.body;
+      if (!userId) {
+        return res.status(400).json({ message: "User ID required" });
+      }
+
+      // Check if session already exists
+      if ((req as any).session?.user?.id) {
+        const existingUser = await storage.getUser((req as any).session.user.id);
+        if (existingUser) {
+          return res.json(existingUser);
+        }
+      }
+
+      // Look up user in database
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Re-establish the session
+      (req as any).session.user = { id: user.id, username: user.username };
+      (req as any).session.save((err: any) => {
+        if (err) {
+          console.error("Session save error during recovery:", err);
+        }
+      });
+
+      console.log("🔄 Session recovered for user:", user.username, "ID:", user.id);
+      res.json(user);
+    } catch (error) {
+      console.error("Session recovery error:", error);
+      res.status(500).json({ message: "Session recovery failed" });
+    }
+  });
+
   // Simple auth middleware
   const isAuthenticated = (req: any, res: any, next: any) => {
     const user = req.session.user;

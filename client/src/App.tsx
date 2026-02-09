@@ -313,8 +313,28 @@ function Router() {
       }
 
       if (foundUser) {
-        setUser(foundUser);
-        console.log('✅ USER SET SUCCESSFULLY:', foundUser.username, 'ID:', foundUser.id);
+        // Try to recover the server session using localStorage data
+        try {
+          console.log('🔄 Attempting session recovery for:', foundUser.username);
+          const recoveryResponse = await fetch('/api/auth/recover-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ userId: foundUser.id })
+          });
+          if (recoveryResponse.ok) {
+            const recoveredUser = await recoveryResponse.json();
+            console.log('✅ Session recovered successfully:', recoveredUser.username);
+            setUser(recoveredUser);
+            authStorage.setUser(recoveredUser);
+          } else {
+            console.log('⚠️ Session recovery failed, using localStorage data');
+            setUser(foundUser);
+          }
+        } catch (recoveryError) {
+          console.log('⚠️ Session recovery error, using localStorage data:', recoveryError);
+          setUser(foundUser);
+        }
       } else {
         console.log('❌ NO USER DATA FOUND - STAYING LOGGED OUT');
         setUser(null);

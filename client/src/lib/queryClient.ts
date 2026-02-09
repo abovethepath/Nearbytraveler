@@ -16,6 +16,42 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
+let sessionRecoveryInProgress: Promise<boolean> | null = null;
+
+async function attemptSessionRecovery(): Promise<boolean> {
+  if (sessionRecoveryInProgress) return sessionRecoveryInProgress;
+  
+  sessionRecoveryInProgress = (async () => {
+    try {
+      const storedUser = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
+      if (!storedUser) return false;
+      
+      const user = JSON.parse(storedUser);
+      if (!user?.id) return false;
+
+      console.log('🔄 Auto-recovering session for:', user.username);
+      const response = await fetch('/api/auth/recover-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ userId: user.id })
+      });
+      
+      if (response.ok) {
+        console.log('✅ Session auto-recovered successfully');
+        return true;
+      }
+      return false;
+    } catch {
+      return false;
+    } finally {
+      sessionRecoveryInProgress = null;
+    }
+  })();
+  
+  return sessionRecoveryInProgress;
+}
+
 // Cache user data to avoid localStorage parsing on every request
 let cachedUser: any = null;
 let cacheTimestamp = 0;
@@ -151,10 +187,21 @@ export const getQueryFn: <T>(options: {
       headers["x-user-data"] = JSON.stringify(userData);
     }
 
-    const res = await fetch(fullUrl, {
+    let res = await fetch(fullUrl, {
       credentials: "include",
       headers,
     });
+
+    // If 401 and we have stored user data, try session recovery then retry
+    if (res.status === 401 && user) {
+      const recovered = await attemptSessionRecovery();
+      if (recovered) {
+        res = await fetch(fullUrl, {
+          credentials: "include",
+          headers,
+        });
+      }
+    }
 
     if (unauthorizedBehavior === "returnNull" && res.status === 401) {
       return null;
