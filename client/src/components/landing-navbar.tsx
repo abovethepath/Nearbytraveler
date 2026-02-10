@@ -10,13 +10,13 @@ export default function LandingNavbar() {
   return (
     <nav className="bg-transparent relative z-10 block w-full" style={{display: 'block', visibility: 'visible', minHeight: '64px'}}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 gap-4" style={{display: 'flex', minHeight: '64px'}}>
+        <div className="flex justify-between items-center h-16 lg:h-auto gap-4" style={{display: 'flex', minHeight: '64px'}}>
           
           {/* Logo Section - Fixed Width */}
           <div className="flex-shrink-0 flex items-center justify-start" style={{display: 'flex', alignItems: 'center'}}>
             <Link href="/" className="flex items-center text-left">
               <div>
-                <Logo variant="navbar" />
+                <Logo variant="landing" />
               </div>
             </Link>
           </div>
