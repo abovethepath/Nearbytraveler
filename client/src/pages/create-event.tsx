@@ -694,22 +694,19 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
             className="space-y-6"
           >
             {/* AI Quick Create - Describe your event in natural language */}
-            <Card className="border-2 border-orange-200 dark:border-orange-800 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30">
+            <Card 
+              className="border-2 border-orange-200 dark:border-orange-800 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/30 cursor-pointer hover:border-orange-400 dark:hover:border-orange-600 transition-colors"
+              onClick={() => setShowAiQuickCreate(!showAiQuickCreate)}
+            >
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg flex items-center gap-2 text-orange-800 dark:text-orange-200">
                     <Sparkles className="w-5 h-5" />
                     AI Quick Create
                   </CardTitle>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowAiQuickCreate(!showAiQuickCreate)}
-                    className="text-orange-600 hover:text-orange-800 dark:text-orange-400"
-                  >
+                  <span className="text-sm font-medium text-orange-600 dark:text-orange-400">
                     {showAiQuickCreate ? "Hide" : "Try it"}
-                  </Button>
+                  </span>
                 </div>
                 {!showAiQuickCreate && (
                   <p className="text-sm text-orange-700 dark:text-orange-300">
