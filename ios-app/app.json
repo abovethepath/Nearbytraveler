@@ -45,11 +45,6 @@
           "color": "#f97316"
         }
       ]
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "your-project-id"
-      }
-    }
+    ]
   }
 }
