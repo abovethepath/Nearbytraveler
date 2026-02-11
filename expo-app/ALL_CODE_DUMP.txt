@@ -1,0 +1,2207 @@
+========================================
+FILE: expo-app/App.js
+========================================
+﻿import React from 'react';
+import { StatusBar } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { AuthProvider } from './src/services/AuthContext';
+import AppNavigator from './src/navigation/AppNavigator';
+
+export default function App() {
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+      <AuthProvider>
+        <AppNavigator />
+      </AuthProvider>
+    </GestureHandlerRootView>
+  );
+}
+
+========================================
+FILE: expo-app/src/services/api.js
+========================================
+const BASE_URL = 'https://nearbytraveler.org';
+
+let sessionCookie = null;
+
+const getHeaders = () => {
+  const headers = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  };
+  if (sessionCookie) {
+    headers['Cookie'] = sessionCookie;
+  }
+  return headers;
+};
+
+const extractCookie = (response) => {
+  const setCookie = response.headers.get('set-cookie');
+  if (setCookie) {
+    sessionCookie = setCookie.split(';')[0];
+  }
+};
+
+const api = {
+  setSessionCookie(cookie) {
+    sessionCookie = cookie;
+  },
+
+  getSessionCookie() {
+    return sessionCookie;
+  },
+
+  async login(email, password) {
+    const res = await fetch(`${BASE_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: getHeaders(),
+      credentials: 'include',
+      body: JSON.stringify({ email, password }),
+    });
+    extractCookie(res);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Login failed');
+    return data;
+  },
+
+  async getUser() {
+    const res = await fetch(`${BASE_URL}/api/auth/user`, {
+      headers: getHeaders(),
+      credentials: 'include',
+    });
+    if (!res.ok) return null;
+    return res.json();
+  },
+
+  async logout() {
+    await fetch(`${BASE_URL}/api/auth/logout`, {
+      method: 'POST',
+      headers: getHeaders(),
+      credentials: 'include',
+    });
+    sessionCookie = null;
+  },
+
+  async register(userData) {
+    const res = await fetch(`${BASE_URL}/api/register`, {
+      method: 'POST',
+      headers: getHeaders(),
+      credentials: 'include',
+      body: JSON.stringify(userData),
+    });
+    extractCookie(res);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Registration failed');
+    return data;
+  },
+
+  async checkUsername(username) {
+    const res = await fetch(`${BASE_URL}/api/check-username/${encodeURIComponent(username)}`, {
+      headers: getHeaders(),
+      credentials: 'include',
+    });
+    if (!res.ok) return { available: false };
+    return res.json();
+  },
+
+  async forgotPassword(email) {
+    const res = await fetch(`${BASE_URL}/api/auth/forgot-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    return res.json();
+  },
+
+  async getEvents(city = 'Los Angeles') {
+    const res = await fetch(`${BASE_URL}/api/events?city=${encodeURIComponent(city)}`, {
+      headers: getHeaders(),
+      credentials: 'include',
+    });
+    if (!res.ok) return [];
+    return res.json();
+  },
+
+  async getEvent(id) {
+    const res = await fetch(`${BASE_URL}/api/events/${id}`, {
+      headers: getHeaders(),
+      credentials: 'include',
+    });
+    if (!res.ok) return null;
+    return res.json();
+  },
+
+  async joinEvent(eventId) {
+    const res = await fetch(`${BASE_URL}/api/events/${eventId}/join`, {
+      method: 'POST',
+      headers: getHeaders(),
+      credentials: 'include',
+    });
+    return res.json();
+  },
+
+  async getUsersByLocation(city, userType = 'all') {
+    const res = await fetch(`${BASE_URL}/api/users-by-location/${encodeURIComponent(city)}/${userType}`, {
+      headers: getHeaders(),
+      credentials: 'include',
+    });
+    if (!res.ok) return [];
+    return res.json();
+  },
+
+  async getUserProfile(userId) {
+    const res = await fetch(`${BASE_URL}/api/users/${userId}`, {
+      headers: getHeaders(),
+      credentials: 'include',
+    });
+    if (!res.ok) return null;
+    return res.json();
+  },
+
+  async updateProfile(userId, updates) {
+    const res = await fetch(`${BASE_URL}/api/users/${userId}`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      credentials: 'include',
+      body: JSON.stringify(updates),
+    });
+    return res.json();
+  },
+
+  async getConnections(userId) {
+    const res = await fetch(`${BASE_URL}/api/connections/${userId}`, {
+      headers: getHeaders(),
+      credentials: 'include',
+    });
+    if (!res.ok) return [];
+    return res.json();
+  },
+
+  async sendConnection(targetUserId) {
+    const res = await fetch(`${BASE_URL}/api/connections`, {
+      method: 'POST',
+      headers: getHeaders(),
+      credentials: 'include',
+      body: JSON.stringify({ targetUserId }),
+    });
+    return res.json();
+  },
+
+  async getConversations(userId) {
+    const res = await fetch(`${BASE_URL}/api/conversations/${userId}`, {
+      headers: getHeaders(),
+      credentials: 'include',
+    });
+    if (!res.ok) return [];
+    return res.json();
+  },
+
+  async getMessages(userId) {
+    const res = await fetch(`${BASE_URL}/api/messages/${userId}`, {
+      headers: getHeaders(),
+      credentials: 'include',
+    });
+    if (!res.ok) return [];
+    return res.json();
+  },
+
+  async sendMessage(userId, content) {
+    const res = await fetch(`${BASE_URL}/api/messages/${userId}`, {
+      method: 'POST',
+      headers: getHeaders(),
+      credentials: 'include',
+      body: JSON.stringify({ content }),
+    });
+    return res.json();
+  },
+};
+
+export default api;
+
+========================================
+FILE: expo-app/src/services/AuthContext.js
+========================================
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import api from './api';
+
+const AuthContext = createContext(null);
+
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    try {
+      const storedCookie = await AsyncStorage.getItem('sessionCookie');
+      if (storedCookie) {
+        api.setSessionCookie(storedCookie);
+      }
+      const storedUser = await AsyncStorage.getItem('user');
+      if (storedUser) {
+        const parsed = JSON.parse(storedUser);
+        setUser(parsed);
+        const fullUser = await api.getUser();
+        if (fullUser && fullUser.id) {
+          setUser(fullUser);
+          await AsyncStorage.setItem('user', JSON.stringify(fullUser));
+        } else {
+          await AsyncStorage.removeItem('user');
+          await AsyncStorage.removeItem('sessionCookie');
+          setUser(null);
+        }
+      }
+    } catch (e) {
+      console.log('Auth check failed:', e);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const login = async (email, password) => {
+    const result = await api.login(email, password);
+    if (result.ok) {
+      const cookie = api.getSessionCookie();
+      if (cookie) {
+        await AsyncStorage.setItem('sessionCookie', cookie);
+      }
+      const fullUser = await api.getUser();
+      if (fullUser) {
+        setUser(fullUser);
+        await AsyncStorage.setItem('user', JSON.stringify(fullUser));
+      }
+    }
+    return result;
+  };
+
+  const register = async (userData) => {
+    const result = await api.register(userData);
+    if (result.user || result.ok) {
+      const cookie = api.getSessionCookie();
+      if (cookie) {
+        await AsyncStorage.setItem('sessionCookie', cookie);
+      }
+      const fullUser = result.user || await api.getUser();
+      if (fullUser) {
+        setUser(fullUser);
+        await AsyncStorage.setItem('user', JSON.stringify(fullUser));
+      }
+    }
+    return result;
+  };
+
+  const logout = async () => {
+    await api.logout();
+    await AsyncStorage.removeItem('user');
+    await AsyncStorage.removeItem('sessionCookie');
+    setUser(null);
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, loading, login, logout, register, setUser, checkAuth }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export const useAuth = () => useContext(AuthContext);
+
+========================================
+FILE: expo-app/src/navigation/AppNavigator.js
+========================================
+﻿import React from 'react';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Text, View } from 'react-native';
+import { useAuth } from '../services/AuthContext';
+
+import LoginScreen from '../screens/LoginScreen';
+import RegisterScreen from '../screens/RegisterScreen';
+import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
+import ExploreScreen from '../screens/ExploreScreen';
+import EventsScreen from '../screens/EventsScreen';
+import EventDetailScreen from '../screens/EventDetailScreen';
+import MessagesScreen from '../screens/MessagesScreen';
+import ChatScreen from '../screens/ChatScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import UserProfileScreen from '../screens/UserProfileScreen';
+import { EditProfileScreen, ConnectionsScreen, SettingsScreen } from '../screens/WebViewScreens';
+
+const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
+
+const TabIcon = ({ emoji, focused }) => (
+  <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+    <Text style={{ fontSize: focused ? 26 : 24 }}>{emoji}</Text>
+  </View>
+);
+
+function ExploreStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="ExploreHome" component={ExploreScreen} />
+      <Stack.Screen name="UserProfile" component={UserProfileScreen} />
+      <Stack.Screen name="Chat" component={ChatScreen} />
+    </Stack.Navigator>
+  );
+}
+
+function EventsStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="EventsHome" component={EventsScreen} />
+      <Stack.Screen name="EventDetail" component={EventDetailScreen} />
+    </Stack.Navigator>
+  );
+}
+
+function MessagesStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="MessagesHome" component={MessagesScreen} />
+      <Stack.Screen name="Chat" component={ChatScreen} />
+    </Stack.Navigator>
+  );
+}
+
+function ProfileStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="ProfileHome" component={ProfileScreen} />
+      <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+      <Stack.Screen name="Connections" component={ConnectionsScreen} />
+      <Stack.Screen name="Settings" component={SettingsScreen} />
+    </Stack.Navigator>
+  );
+}
+
+function AuthStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Register" component={RegisterScreen} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+    </Stack.Navigator>
+  );
+}
+
+function MainTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          backgroundColor: '#FFFFFF',
+          borderTopWidth: 1,
+          borderTopColor: '#F3F4F6',
+          paddingBottom: 8,
+          paddingTop: 8,
+          height: 88,
+        },
+        tabBarActiveTintColor: '#F97316',
+        tabBarInactiveTintColor: '#9CA3AF',
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '600',
+          marginTop: 2,
+        },
+      }}
+    >
+      <Tab.Screen
+        name="Explore"
+        component={ExploreStack}
+        options={{
+          tabBarIcon: ({ focused }) => <TabIcon emoji="&#x1F50D;" focused={focused} />,
+        }}
+      />
+      <Tab.Screen
+        name="Events"
+        component={EventsStack}
+        options={{
+          tabBarIcon: ({ focused }) => <TabIcon emoji="&#x1F4C5;" focused={focused} />,
+        }}
+      />
+      <Tab.Screen
+        name="Messages"
+        component={MessagesStack}
+        options={{
+          tabBarIcon: ({ focused }) => <TabIcon emoji="&#x1F4AC;" focused={focused} />,
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileStack}
+        options={{
+          tabBarIcon: ({ focused }) => <TabIcon emoji="&#x1F464;" focused={focused} />,
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
+
+export default function AppNavigator() {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFFFFF' }}>
+        <Text style={{ fontSize: 40 }}>&#x1F30D;</Text>
+      </View>
+    );
+  }
+
+  return (
+    <NavigationContainer>
+      {user ? <MainTabs /> : <AuthStack />}
+    </NavigationContainer>
+  );
+}
+
+========================================
+FILE: expo-app/src/constants/options.js
+========================================
+export const TOP_CHOICES = [
+  "Restaurants & Food Scene",
+  "Brunch Spots",
+  "Street Food",
+  "Coffee Shops & Cafes",
+  "Late Night Eats",
+  "Vegan/Vegetarian",
+  "Happy Hour",
+  "Craft Beer & Breweries",
+  "Wine Bars & Vineyards",
+  "Nightlife & Dancing",
+  "Live Music",
+  "Karaoke",
+  "Comedy Shows",
+  "Local Hidden Gems",
+  "Historical Sites & Tours",
+  "Museums",
+  "Cultural Experiences",
+  "Photography & Scenic Spots",
+  "Local Markets & Bazaars",
+  "Beach Activities",
+  "Water Sports",
+  "Hiking",
+  "Fitness Classes",
+  "Working Out",
+  "Golf",
+  "Pickleball",
+  "Meeting New People",
+  "Open to Dating",
+  "LGBTQIA+",
+  "Family-Oriented"
+];
+
+export const ACTIVITIES = [
+  "Shopping Adventures",
+  "Day Trips",
+  "Group Workouts",
+  "Sports & Recreation",
+  "Cooking Together",
+  "Game Nights",
+  "Movie Watching",
+  "Concert Going",
+  "Language Practice Meetups",
+  "Study & Coworking Sessions"
+];
+
+export const BUSINESS_TYPES = [
+  "Restaurant/Food Service",
+  "Hotel/Accommodation",
+  "Bar/Nightlife",
+  "Tour Company/Guide Service",
+  "Transportation Service",
+  "Retail Store",
+  "Adventure/Outdoor Activity",
+  "Cultural Experience/Museum",
+  "Entertainment Venue",
+  "Coffee Shop/Cafe",
+  "Wellness/Spa Service",
+  "Photography/Creative Service",
+  "Event Planning/Catering",
+  "Local Tours & Experiences",
+  "Rental Service",
+  "Custom (specify below)"
+];
+
+export const ALL_LANGUAGES = [
+  "English", "Spanish", "French", "German", "Italian", "Portuguese", "Dutch",
+  "Russian", "Polish", "Czech", "Hungarian", "Swedish", "Norwegian", "Danish",
+  "Chinese (Mandarin)", "Japanese", "Korean", "Thai", "Vietnamese", "Indonesian",
+  "Arabic", "Hebrew", "Turkish", "Greek", "Hindi", "Urdu", "Bengali"
+];
+
+========================================
+FILE: expo-app/src/screens/LoginScreen.js
+========================================
+﻿import React, { useState } from 'react';
+import {
+  View, Text, TextInput, TouchableOpacity, StyleSheet,
+  SafeAreaView, KeyboardAvoidingView, Platform,
+  ActivityIndicator, ScrollView, Dimensions,
+} from 'react-native';
+import { useAuth } from '../services/AuthContext';
+
+const { width } = Dimensions.get('window');
+
+export default function LoginScreen({ navigation }) {
+  const { login } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+    if (!email.trim() || !password.trim()) {
+      setError('Please enter your email and password');
+      return;
+    }
+    setError('');
+    setLoading(true);
+    try {
+      await login(email.trim(), password);
+    } catch (e) {
+      setError(e.message || 'Invalid credentials. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardView}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+          <View style={styles.brandSection}>
+            <View style={styles.logoContainer}>
+              <Text style={styles.logoIcon}>&#x1F30D;</Text>
+            </View>
+            <Text style={styles.appName}>Nearby Traveler</Text>
+            <Text style={styles.tagline}>Connect with travelers & locals nearby</Text>
+          </View>
+
+          <View style={styles.formSection}>
+            {error ? (
+              <View style={styles.errorContainer}>
+                <Text style={styles.errorText}>{error}</Text>
+              </View>
+            ) : null}
+
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Email or Username</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your email or username"
+                placeholderTextColor="#9CA3AF"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                autoCorrect={false}
+                keyboardType="email-address"
+                textContentType="emailAddress"
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Password</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your password"
+                placeholderTextColor="#9CA3AF"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                textContentType="password"
+              />
+            </View>
+
+            <TouchableOpacity
+              style={[styles.loginButton, loading && styles.loginButtonDisabled]}
+              onPress={handleLogin}
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.loginButtonText}>Sign In</Text>
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.forgotButton} onPress={() => navigation.navigate('ForgotPassword')}>
+              <Text style={styles.forgotText}>Forgot password?</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.registerSection}>
+            <Text style={styles.registerPrompt}>Don't have an account?</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+              <Text style={styles.registerLink}>Sign Up</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
+  keyboardView: { flex: 1 },
+  scrollContent: { flexGrow: 1, justifyContent: 'center', paddingHorizontal: 28, paddingVertical: 40 },
+  brandSection: { alignItems: 'center', marginBottom: 40 },
+  logoContainer: { width: 80, height: 80, borderRadius: 20, backgroundColor: '#FFF7ED', justifyContent: 'center', alignItems: 'center', marginBottom: 16 },
+  logoIcon: { fontSize: 40 },
+  appName: { fontSize: 28, fontWeight: '700', color: '#111827', marginBottom: 8 },
+  tagline: { fontSize: 16, color: '#6B7280', textAlign: 'center' },
+  formSection: { marginBottom: 32 },
+  errorContainer: { backgroundColor: '#FEF2F2', borderRadius: 12, padding: 14, marginBottom: 16, borderWidth: 1, borderColor: '#FECACA' },
+  errorText: { color: '#DC2626', fontSize: 14, textAlign: 'center' },
+  inputContainer: { marginBottom: 18 },
+  inputLabel: { fontSize: 14, fontWeight: '600', color: '#374151', marginBottom: 8 },
+  input: { backgroundColor: '#F9FAFB', borderWidth: 1.5, borderColor: '#E5E7EB', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14, fontSize: 16, color: '#111827' },
+  loginButton: { backgroundColor: '#F97316', borderRadius: 12, paddingVertical: 16, alignItems: 'center', marginTop: 8, shadowColor: '#F97316', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 },
+  loginButtonDisabled: { opacity: 0.7 },
+  loginButtonText: { color: '#FFFFFF', fontSize: 17, fontWeight: '700' },
+  forgotButton: { alignItems: 'center', marginTop: 16 },
+  forgotText: { color: '#F97316', fontSize: 14, fontWeight: '500' },
+  registerSection: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 6 },
+  registerPrompt: { color: '#6B7280', fontSize: 15 },
+  registerLink: { color: '#F97316', fontSize: 15, fontWeight: '700' },
+});
+
+========================================
+FILE: expo-app/src/screens/RegisterScreen.js
+========================================
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  View, Text, TextInput, TouchableOpacity, StyleSheet,
+  SafeAreaView, KeyboardAvoidingView, Platform,
+  ActivityIndicator, ScrollView, Alert, Dimensions,
+} from 'react-native';
+import api from '../services/api';
+import { useAuth } from '../services/AuthContext';
+import { TOP_CHOICES, BUSINESS_TYPES } from '../constants/options';
+
+const { width } = Dimensions.get('window');
+const INTEREST_MIN = 7;
+
+export default function RegisterScreen({ navigation }) {
+  const { register } = useAuth();
+  const [step, setStep] = useState(1);
+  const [userType, setUserType] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const scrollRef = useRef(null);
+
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    phone: '',
+    fullName: '',
+    city: '',
+    state: '',
+    country: '',
+    destinationCity: '',
+    destinationState: '',
+    destinationCountry: '',
+    travelReturnDate: '',
+    businessName: '',
+    businessType: '',
+    streetAddress: '',
+    zipCode: '',
+    interests: [],
+    customInterests: '',
+    pledgeAccepted: false,
+  });
+
+  const [usernameStatus, setUsernameStatus] = useState(null);
+  const [checkingUsername, setCheckingUsername] = useState(false);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({ y: 0, animated: true });
+    }
+  }, [step]);
+
+  const checkUsername = async (username) => {
+    if (!username || username.length < 3) {
+      setUsernameStatus(null);
+      return;
+    }
+    setCheckingUsername(true);
+    try {
+      const result = await api.checkUsername(username);
+      setUsernameStatus(result.available ? 'available' : 'taken');
+    } catch (e) {
+      setUsernameStatus(null);
+    } finally {
+      setCheckingUsername(false);
+    }
+  };
+
+  const updateField = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (field === 'username') {
+      setUsernameStatus(null);
+      if (value.length >= 3) {
+        const timer = setTimeout(() => checkUsername(value), 500);
+        return () => clearTimeout(timer);
+      }
+    }
+  };
+
+  const toggleInterest = (interest) => {
+    setFormData(prev => ({
+      ...prev,
+      interests: prev.interests.includes(interest)
+        ? prev.interests.filter(i => i !== interest)
+        : [...prev.interests, interest],
+    }));
+  };
+
+  const getCustomCount = () => {
+    if (!formData.customInterests.trim()) return 0;
+    return formData.customInterests.split(',').filter(i => i.trim()).length;
+  };
+
+  const getTotalInterests = () => formData.interests.length + getCustomCount();
+
+  const validateStep2 = () => {
+    if (!formData.username.trim()) return 'Username is required';
+    if (formData.username.trim().length < 3) return 'Username must be at least 3 characters';
+    if (usernameStatus === 'taken') return 'Username is already taken';
+    if (!formData.email.trim()) return 'Email is required';
+    if (!formData.email.includes('@')) return 'Please enter a valid email';
+    if (!formData.password || formData.password.length < 6) return 'Password must be at least 6 characters';
+    return null;
+  };
+
+  const validateStep3 = () => {
+    if (!formData.city.trim()) return 'Hometown city is required';
+    if (!formData.country.trim()) return 'Country is required';
+    if (userType === 'traveler') {
+      if (!formData.destinationCity.trim()) return 'Destination city is required';
+      if (!formData.travelReturnDate) return 'Trip end date is required';
+    }
+    if (userType === 'business') {
+      if (!formData.businessName.trim()) return 'Business name is required';
+      if (!formData.businessType) return 'Business type is required';
+      if (!formData.streetAddress.trim()) return 'Street address is required';
+    }
+    if ((userType === 'local' || userType === 'traveler') && getTotalInterests() < INTEREST_MIN) {
+      return `Please select at least ${INTEREST_MIN} interests (${getTotalInterests()} selected)`;
+    }
+    if (!formData.pledgeAccepted) return 'Please accept the community pledge';
+    return null;
+  };
+
+  const handleNext = () => {
+    setError('');
+    if (step === 2) {
+      const err = validateStep2();
+      if (err) { setError(err); return; }
+    }
+    setStep(step + 1);
+  };
+
+  const handleSubmit = async () => {
+    setError('');
+    const err = validateStep3();
+    if (err) { setError(err); return; }
+
+    setLoading(true);
+    try {
+      const payload = {
+        username: formData.username.trim(),
+        email: formData.email.trim(),
+        password: formData.password,
+        phone: formData.phone.trim() || undefined,
+        fullName: formData.fullName.trim() || undefined,
+        userType,
+        city: formData.city.trim(),
+        state: formData.state.trim() || undefined,
+        country: formData.country.trim(),
+        interests: formData.interests,
+        customInterests: formData.customInterests.trim() || undefined,
+        pledgeAccepted: formData.pledgeAccepted,
+      };
+
+      if (userType === 'traveler') {
+        payload.destinationCity = formData.destinationCity.trim();
+        payload.destinationState = formData.destinationState.trim() || undefined;
+        payload.destinationCountry = formData.destinationCountry.trim() || undefined;
+        payload.travelReturnDate = formData.travelReturnDate;
+      }
+
+      if (userType === 'business') {
+        payload.businessName = formData.businessName.trim();
+        payload.businessType = formData.businessType;
+        payload.streetAddress = formData.streetAddress.trim();
+        payload.zipCode = formData.zipCode.trim() || undefined;
+      }
+
+      await register(payload);
+    } catch (e) {
+      setError(e.message || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const renderStep1 = () => (
+    <View style={styles.stepContainer}>
+      <View style={styles.headerSection}>
+        <Text style={styles.logoEmoji}>{'\u{1F30D}'}</Text>
+        <Text style={styles.stepTitle}>Join Nearby Traveler</Text>
+        <Text style={styles.stepSubtitle}>How would you like to connect?</Text>
+      </View>
+
+      <TouchableOpacity
+        style={[styles.typeCard, userType === 'local' && styles.typeCardSelected]}
+        onPress={() => { setUserType('local'); setStep(2); }}
+        activeOpacity={0.7}
+      >
+        <View style={styles.typeCardIcon}>
+          <Text style={styles.typeEmoji}>{'\u{1F3E0}'}</Text>
+        </View>
+        <View style={styles.typeCardContent}>
+          <Text style={styles.typeCardTitle}>I'm a Local</Text>
+          <Text style={styles.typeCardDesc}>Meet travelers visiting my city and share my local knowledge</Text>
+        </View>
+        <Text style={styles.typeArrow}>{'\u203A'}</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[styles.typeCard, userType === 'traveler' && styles.typeCardSelected]}
+        onPress={() => { setUserType('traveler'); setStep(2); }}
+        activeOpacity={0.7}
+      >
+        <View style={styles.typeCardIcon}>
+          <Text style={styles.typeEmoji}>{'\u2708\uFE0F'}</Text>
+        </View>
+        <View style={styles.typeCardContent}>
+          <Text style={styles.typeCardTitle}>I'm Traveling</Text>
+          <Text style={styles.typeCardDesc}>Connect with locals and fellow travelers at my destination</Text>
+        </View>
+        <Text style={styles.typeArrow}>{'\u203A'}</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[styles.typeCard, userType === 'business' && styles.typeCardSelected]}
+        onPress={() => { setUserType('business'); setStep(2); }}
+        activeOpacity={0.7}
+      >
+        <View style={styles.typeCardIcon}>
+          <Text style={styles.typeEmoji}>{'\u{1F3EA}'}</Text>
+        </View>
+        <View style={styles.typeCardContent}>
+          <Text style={styles.typeCardTitle}>I'm a Business</Text>
+          <Text style={styles.typeCardDesc}>Attract travelers and locals to your business</Text>
+        </View>
+        <Text style={styles.typeArrow}>{'\u203A'}</Text>
+      </TouchableOpacity>
+
+      <View style={styles.loginPrompt}>
+        <Text style={styles.loginPromptText}>Already have an account?</Text>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text style={styles.loginLink}>Sign In</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
+  const renderStep2 = () => (
+    <View style={styles.stepContainer}>
+      <View style={styles.headerSection}>
+        <View style={styles.stepBadge}>
+          <Text style={styles.stepBadgeText}>Step 1 of 2</Text>
+        </View>
+        <Text style={styles.stepTitle}>Create Your Account</Text>
+        <Text style={styles.stepSubtitle}>
+          {userType === 'local' ? 'Welcome, neighbor!' : userType === 'traveler' ? 'Welcome, adventurer!' : 'Welcome, business owner!'}
+        </Text>
+      </View>
+
+      {error ? <View style={styles.errorBox}><Text style={styles.errorText}>{error}</Text></View> : null}
+
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>Full Name</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Your name"
+          placeholderTextColor="#9CA3AF"
+          value={formData.fullName}
+          onChangeText={(v) => updateField('fullName', v)}
+          autoCapitalize="words"
+        />
+      </View>
+
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>Username *</Text>
+        <View style={styles.inputWithStatus}>
+          <TextInput
+            style={[styles.input, styles.inputFlex]}
+            placeholder="Choose a unique username"
+            placeholderTextColor="#9CA3AF"
+            value={formData.username}
+            onChangeText={(v) => updateField('username', v.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+            autoCapitalize="none"
+            autoCorrect={false}
+            onBlur={() => checkUsername(formData.username)}
+          />
+          {checkingUsername && <ActivityIndicator size="small" color="#F97316" style={styles.inputStatus} />}
+          {!checkingUsername && usernameStatus === 'available' && (
+            <Text style={[styles.inputStatus, styles.statusAvailable]}>{'\u2713'}</Text>
+          )}
+          {!checkingUsername && usernameStatus === 'taken' && (
+            <Text style={[styles.inputStatus, styles.statusTaken]}>{'\u2717'}</Text>
+          )}
+        </View>
+        {usernameStatus === 'taken' && (
+          <Text style={styles.fieldError}>This username is already taken</Text>
+        )}
+      </View>
+
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>Email *</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="your@email.com"
+          placeholderTextColor="#9CA3AF"
+          value={formData.email}
+          onChangeText={(v) => updateField('email', v)}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          textContentType="emailAddress"
+        />
+      </View>
+
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>Password *</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="At least 6 characters"
+          placeholderTextColor="#9CA3AF"
+          value={formData.password}
+          onChangeText={(v) => updateField('password', v)}
+          secureTextEntry
+          textContentType="newPassword"
+        />
+      </View>
+
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>Phone Number</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="+1 (555) 123-4567"
+          placeholderTextColor="#9CA3AF"
+          value={formData.phone}
+          onChangeText={(v) => updateField('phone', v)}
+          keyboardType="phone-pad"
+          textContentType="telephoneNumber"
+        />
+      </View>
+
+      <TouchableOpacity
+        style={styles.nextButton}
+        onPress={handleNext}
+      >
+        <Text style={styles.nextButtonText}>Continue</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const renderStep3 = () => (
+    <View style={styles.stepContainer}>
+      <View style={styles.headerSection}>
+        <View style={styles.stepBadge}>
+          <Text style={styles.stepBadgeText}>Step 2 of 2</Text>
+        </View>
+        <Text style={styles.stepTitle}>Complete Your Profile</Text>
+      </View>
+
+      {error ? <View style={styles.errorBox}><Text style={styles.errorText}>{error}</Text></View> : null}
+
+      <View style={styles.sectionCard}>
+        <Text style={styles.sectionTitle}>{'\u{1F3E0}'} Your Hometown</Text>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>City *</Text>
+          <TextInput style={styles.input} placeholder="e.g. Los Angeles" placeholderTextColor="#9CA3AF"
+            value={formData.city} onChangeText={(v) => updateField('city', v)} autoCapitalize="words" />
+        </View>
+        <View style={styles.rowInputs}>
+          <View style={styles.halfInput}>
+            <Text style={styles.label}>State/Region</Text>
+            <TextInput style={styles.input} placeholder="e.g. California" placeholderTextColor="#9CA3AF"
+              value={formData.state} onChangeText={(v) => updateField('state', v)} autoCapitalize="words" />
+          </View>
+          <View style={styles.halfInput}>
+            <Text style={styles.label}>Country *</Text>
+            <TextInput style={styles.input} placeholder="e.g. United States" placeholderTextColor="#9CA3AF"
+              value={formData.country} onChangeText={(v) => updateField('country', v)} autoCapitalize="words" />
+          </View>
+        </View>
+      </View>
+
+      {userType === 'traveler' && (
+        <View style={styles.sectionCard}>
+          <Text style={styles.sectionTitle}>{'\u2708\uFE0F'} Your Destination</Text>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Destination City *</Text>
+            <TextInput style={styles.input} placeholder="Where are you traveling?" placeholderTextColor="#9CA3AF"
+              value={formData.destinationCity} onChangeText={(v) => updateField('destinationCity', v)} autoCapitalize="words" />
+          </View>
+          <View style={styles.rowInputs}>
+            <View style={styles.halfInput}>
+              <Text style={styles.label}>State/Region</Text>
+              <TextInput style={styles.input} placeholder="State/Region" placeholderTextColor="#9CA3AF"
+                value={formData.destinationState} onChangeText={(v) => updateField('destinationState', v)} autoCapitalize="words" />
+            </View>
+            <View style={styles.halfInput}>
+              <Text style={styles.label}>Country</Text>
+              <TextInput style={styles.input} placeholder="Country" placeholderTextColor="#9CA3AF"
+                value={formData.destinationCountry} onChangeText={(v) => updateField('destinationCountry', v)} autoCapitalize="words" />
+            </View>
+          </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Trip End Date *</Text>
+            <TextInput style={styles.input} placeholder="YYYY-MM-DD" placeholderTextColor="#9CA3AF"
+              value={formData.travelReturnDate} onChangeText={(v) => updateField('travelReturnDate', v)} />
+          </View>
+        </View>
+      )}
+
+      {userType === 'business' && (
+        <View style={styles.sectionCard}>
+          <Text style={styles.sectionTitle}>{'\u{1F3EA}'} Business Details</Text>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Business Name *</Text>
+            <TextInput style={styles.input} placeholder="Your business name" placeholderTextColor="#9CA3AF"
+              value={formData.businessName} onChangeText={(v) => updateField('businessName', v)} autoCapitalize="words" />
+          </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Business Type *</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.typeScroll}>
+              {BUSINESS_TYPES.map((type) => (
+                <TouchableOpacity
+                  key={type}
+                  style={[styles.typeChip, formData.businessType === type && styles.typeChipSelected]}
+                  onPress={() => updateField('businessType', type)}
+                >
+                  <Text style={[styles.typeChipText, formData.businessType === type && styles.typeChipTextSelected]}>{type}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Street Address *</Text>
+            <TextInput style={styles.input} placeholder="123 Main Street" placeholderTextColor="#9CA3AF"
+              value={formData.streetAddress} onChangeText={(v) => updateField('streetAddress', v)} autoCapitalize="words" />
+          </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Zip/Postal Code</Text>
+            <TextInput style={styles.input} placeholder="90210" placeholderTextColor="#9CA3AF"
+              value={formData.zipCode} onChangeText={(v) => updateField('zipCode', v)} keyboardType="number-pad" />
+          </View>
+        </View>
+      )}
+
+      <View style={styles.sectionCard}>
+        <View style={styles.sectionTitleRow}>
+          <Text style={styles.sectionTitle}>{'\u2B50'} Your Interests</Text>
+          {(userType === 'local' || userType === 'traveler') && (
+            <View style={[styles.countBadge, getTotalInterests() >= INTEREST_MIN ? styles.countBadgeGood : styles.countBadgeNeed]}>
+              <Text style={styles.countBadgeText}>{getTotalInterests()}/{INTEREST_MIN}</Text>
+            </View>
+          )}
+        </View>
+        {(userType === 'local' || userType === 'traveler') && (
+          <Text style={styles.sectionHint}>Select at least {INTEREST_MIN} interests to help us match you</Text>
+        )}
+        {userType === 'business' && (
+          <Text style={styles.sectionHint}>Select interests your business serves (optional)</Text>
+        )}
+        <View style={styles.interestGrid}>
+          {TOP_CHOICES.map((interest) => (
+            <TouchableOpacity
+              key={interest}
+              style={[styles.interestChip, formData.interests.includes(interest) && styles.interestChipSelected]}
+              onPress={() => toggleInterest(interest)}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.interestChipText, formData.interests.includes(interest) && styles.interestChipTextSelected]}>
+                {interest}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>{'\u2728'} Add Your Own (Optional)</Text>
+          <TextInput style={styles.input} placeholder="e.g., Rock Climbing, Board Games"
+            placeholderTextColor="#9CA3AF" value={formData.customInterests}
+            onChangeText={(v) => updateField('customInterests', v)} />
+          <Text style={styles.fieldHint}>Separate multiple interests with commas</Text>
+        </View>
+      </View>
+
+      <View style={styles.pledgeCard}>
+        <Text style={styles.pledgeEmoji}>{'\u{1F30D}'}</Text>
+        <Text style={styles.pledgeTitle}>The NearbyTraveler Pledge</Text>
+        <Text style={styles.pledgeItem}>{'\u2713'} I believe in real human connection.</Text>
+        <Text style={styles.pledgeItem}>{'\u2713'} I will show up with kindness, respect, and openness.</Text>
+        <Text style={styles.pledgeItem}>{'\u2713'} I will help make this a safe, welcoming community.</Text>
+        <TouchableOpacity
+          style={styles.pledgeCheck}
+          onPress={() => updateField('pledgeAccepted', !formData.pledgeAccepted)}
+          activeOpacity={0.7}
+        >
+          <View style={[styles.checkbox, formData.pledgeAccepted && styles.checkboxChecked]}>
+            {formData.pledgeAccepted && <Text style={styles.checkmark}>{'\u2713'}</Text>}
+          </View>
+          <Text style={styles.pledgeCheckText}>I agree to the NearbyTraveler Pledge</Text>
+        </TouchableOpacity>
+      </View>
+
+      <TouchableOpacity
+        style={[
+          styles.submitButton,
+          (loading || ((userType === 'local' || userType === 'traveler') && getTotalInterests() < INTEREST_MIN) || !formData.pledgeAccepted) && styles.submitButtonDisabled
+        ]}
+        onPress={handleSubmit}
+        disabled={loading || ((userType === 'local' || userType === 'traveler') && getTotalInterests() < INTEREST_MIN) || !formData.pledgeAccepted}
+      >
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.submitButtonText}>
+            {(userType === 'local' || userType === 'traveler') && getTotalInterests() < INTEREST_MIN
+              ? `Select ${INTEREST_MIN - getTotalInterests()} more interests`
+              : !formData.pledgeAccepted
+                ? 'Accept the pledge to continue'
+                : 'Complete Signup'}
+          </Text>
+        )}
+      </TouchableOpacity>
+    </View>
+  );
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardView}
+      >
+        {step > 1 && (
+          <View style={styles.topNav}>
+            <TouchableOpacity onPress={() => { setError(''); setStep(step - 1); }} style={styles.backBtn}>
+              <Text style={styles.backBtnText}>{'\u2039'} Back</Text>
+            </TouchableOpacity>
+            <View style={styles.progressBar}>
+              <View style={[styles.progressFill, { width: step === 2 ? '50%' : '100%' }]} />
+            </View>
+          </View>
+        )}
+        <ScrollView
+          ref={scrollRef}
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          {step === 1 && renderStep1()}
+          {step === 2 && renderStep2()}
+          {step === 3 && renderStep3()}
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
+  keyboardView: { flex: 1 },
+  scrollContent: { paddingHorizontal: 24, paddingBottom: 40 },
+  topNav: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 12, gap: 12, borderBottomWidth: 1, borderBottomColor: '#F3F4F6' },
+  backBtn: { paddingVertical: 4 },
+  backBtnText: { color: '#F97316', fontSize: 17, fontWeight: '600' },
+  progressBar: { flex: 1, height: 4, backgroundColor: '#F3F4F6', borderRadius: 2, overflow: 'hidden' },
+  progressFill: { height: '100%', backgroundColor: '#F97316', borderRadius: 2 },
+  stepContainer: { paddingTop: 20 },
+  headerSection: { alignItems: 'center', marginBottom: 28 },
+  logoEmoji: { fontSize: 48, marginBottom: 12 },
+  stepBadge: { backgroundColor: '#FFF7ED', paddingHorizontal: 14, paddingVertical: 6, borderRadius: 16, marginBottom: 12 },
+  stepBadgeText: { color: '#F97316', fontSize: 13, fontWeight: '600' },
+  stepTitle: { fontSize: 26, fontWeight: '800', color: '#111827', textAlign: 'center', marginBottom: 6 },
+  stepSubtitle: { fontSize: 15, color: '#6B7280', textAlign: 'center' },
+  typeCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFFFFF', borderRadius: 16, padding: 18, marginBottom: 12, borderWidth: 2, borderColor: '#E5E7EB', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4 },
+  typeCardSelected: { borderColor: '#F97316', backgroundColor: '#FFF7ED' },
+  typeCardIcon: { width: 52, height: 52, borderRadius: 14, backgroundColor: '#F3F4F6', justifyContent: 'center', alignItems: 'center', marginRight: 14 },
+  typeEmoji: { fontSize: 26 },
+  typeCardContent: { flex: 1 },
+  typeCardTitle: { fontSize: 18, fontWeight: '700', color: '#111827', marginBottom: 3 },
+  typeCardDesc: { fontSize: 13, color: '#6B7280', lineHeight: 18 },
+  typeArrow: { fontSize: 28, color: '#D1D5DB', fontWeight: '300' },
+  loginPrompt: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 6, marginTop: 28 },
+  loginPromptText: { color: '#6B7280', fontSize: 15 },
+  loginLink: { color: '#F97316', fontSize: 15, fontWeight: '700' },
+  errorBox: { backgroundColor: '#FEF2F2', borderRadius: 12, padding: 14, marginBottom: 16, borderWidth: 1, borderColor: '#FECACA' },
+  errorText: { color: '#DC2626', fontSize: 14, textAlign: 'center' },
+  inputGroup: { marginBottom: 18 },
+  label: { fontSize: 14, fontWeight: '600', color: '#374151', marginBottom: 8 },
+  input: { backgroundColor: '#F9FAFB', borderWidth: 1.5, borderColor: '#E5E7EB', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14, fontSize: 16, color: '#111827' },
+  inputWithStatus: { flexDirection: 'row', alignItems: 'center' },
+  inputFlex: { flex: 1 },
+  inputStatus: { position: 'absolute', right: 14, fontSize: 18, fontWeight: '700' },
+  statusAvailable: { color: '#059669' },
+  statusTaken: { color: '#DC2626' },
+  fieldError: { color: '#DC2626', fontSize: 12, marginTop: 4 },
+  fieldHint: { color: '#9CA3AF', fontSize: 12, marginTop: 4 },
+  nextButton: { backgroundColor: '#F97316', borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginTop: 8, shadowColor: '#F97316', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.25, shadowRadius: 8 },
+  nextButtonText: { color: '#FFFFFF', fontSize: 17, fontWeight: '700' },
+  sectionCard: { backgroundColor: '#F9FAFB', borderRadius: 16, padding: 18, marginBottom: 20, borderWidth: 1, borderColor: '#E5E7EB' },
+  sectionTitle: { fontSize: 18, fontWeight: '700', color: '#111827', marginBottom: 4 },
+  sectionTitleRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
+  sectionHint: { fontSize: 13, color: '#6B7280', marginBottom: 14 },
+  rowInputs: { flexDirection: 'row', gap: 12 },
+  halfInput: { flex: 1, marginBottom: 18 },
+  typeScroll: { marginBottom: 8 },
+  typeChip: { paddingHorizontal: 14, paddingVertical: 10, borderRadius: 20, backgroundColor: '#FFFFFF', borderWidth: 1.5, borderColor: '#E5E7EB', marginRight: 8 },
+  typeChipSelected: { backgroundColor: '#FFF7ED', borderColor: '#F97316' },
+  typeChipText: { fontSize: 13, color: '#6B7280', fontWeight: '500' },
+  typeChipTextSelected: { color: '#F97316', fontWeight: '600' },
+  interestGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 },
+  interestChip: { paddingHorizontal: 14, paddingVertical: 10, borderRadius: 20, backgroundColor: '#FFFFFF', borderWidth: 1.5, borderColor: '#E5E7EB' },
+  interestChipSelected: { backgroundColor: '#F97316', borderColor: '#F97316' },
+  interestChipText: { fontSize: 13, color: '#374151', fontWeight: '500' },
+  interestChipTextSelected: { color: '#FFFFFF', fontWeight: '600' },
+  countBadge: { paddingHorizontal: 12, paddingVertical: 4, borderRadius: 12 },
+  countBadgeGood: { backgroundColor: '#059669' },
+  countBadgeNeed: { backgroundColor: '#F97316' },
+  countBadgeText: { color: '#FFFFFF', fontSize: 13, fontWeight: '700' },
+  pledgeCard: { backgroundColor: '#FFF7ED', borderRadius: 16, padding: 20, marginBottom: 20, borderWidth: 2, borderColor: '#FDBA74', alignItems: 'center' },
+  pledgeEmoji: { fontSize: 36, marginBottom: 10 },
+  pledgeTitle: { fontSize: 18, fontWeight: '700', color: '#111827', marginBottom: 14 },
+  pledgeItem: { fontSize: 14, color: '#4B5563', marginBottom: 6, alignSelf: 'flex-start' },
+  pledgeCheck: { flexDirection: 'row', alignItems: 'center', marginTop: 14, paddingVertical: 10, paddingHorizontal: 14, backgroundColor: '#FFFFFF', borderRadius: 12, borderWidth: 1, borderColor: '#E5E7EB', alignSelf: 'stretch' },
+  checkbox: { width: 24, height: 24, borderRadius: 6, borderWidth: 2, borderColor: '#D1D5DB', marginRight: 12, justifyContent: 'center', alignItems: 'center' },
+  checkboxChecked: { backgroundColor: '#F97316', borderColor: '#F97316' },
+  checkmark: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
+  pledgeCheckText: { fontSize: 14, fontWeight: '600', color: '#374151', flex: 1 },
+  submitButton: { backgroundColor: '#F97316', borderRadius: 14, paddingVertical: 18, alignItems: 'center', marginTop: 4, shadowColor: '#F97316', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.25, shadowRadius: 8 },
+  submitButtonDisabled: { backgroundColor: '#D1D5DB', shadowOpacity: 0 },
+  submitButtonText: { color: '#FFFFFF', fontSize: 17, fontWeight: '700' },
+});
+
+========================================
+FILE: expo-app/src/screens/ForgotPasswordScreen.js
+========================================
+﻿import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ActivityIndicator, Alert } from 'react-native';
+
+export default function ForgotPasswordScreen({ navigation }) {
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  const handleReset = async () => {
+    if (!email.trim()) return;
+    setLoading(true);
+    try {
+      await fetch('https://nearbytraveler.org/api/auth/forgot-password', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email.trim() }) });
+      setSent(true);
+    } catch (e) {
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (sent) {
+    return (
+      <SafeAreaView style={styles.container}><View style={styles.content}>
+        <Text style={styles.icon}>&#x1F4E7;</Text>
+        <Text style={styles.title}>Check Your Email</Text>
+        <Text style={styles.subtitle}>If an account exists for {email}, we sent password reset instructions.</Text>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}><Text style={styles.buttonText}>Back to Sign In</Text></TouchableOpacity>
+      </View></SafeAreaView>
+    );
+  }
+
+  return (
+    <SafeAreaView style={styles.container}><View style={styles.content}>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}><Text style={styles.backText}>Back</Text></TouchableOpacity>
+      <Text style={styles.title}>Reset Password</Text>
+      <Text style={styles.subtitle}>Enter your email and we will send reset instructions.</Text>
+      <View style={styles.inputContainer}><TextInput style={styles.input} placeholder="your@email.com" placeholderTextColor="#9CA3AF" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" /></View>
+      <TouchableOpacity style={[styles.button, loading && { opacity: 0.7 }]} onPress={handleReset} disabled={loading}>
+        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Send Reset Link</Text>}
+      </TouchableOpacity>
+    </View></SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
+  content: { flex: 1, justifyContent: 'center', paddingHorizontal: 28 },
+  backButton: { position: 'absolute', top: 20, left: 0 },
+  backText: { color: '#F97316', fontSize: 16, fontWeight: '600' },
+  icon: { fontSize: 48, textAlign: 'center', marginBottom: 16 },
+  title: { fontSize: 24, fontWeight: '700', color: '#111827', marginBottom: 8, textAlign: 'center' },
+  subtitle: { fontSize: 15, color: '#6B7280', textAlign: 'center', marginBottom: 28, lineHeight: 22 },
+  inputContainer: { marginBottom: 20 },
+  input: { backgroundColor: '#F9FAFB', borderWidth: 1.5, borderColor: '#E5E7EB', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 14, fontSize: 16, color: '#111827' },
+  button: { backgroundColor: '#F97316', borderRadius: 12, paddingVertical: 16, alignItems: 'center' },
+  buttonText: { color: '#FFFFFF', fontSize: 17, fontWeight: '700' },
+});
+
+========================================
+FILE: expo-app/src/screens/ExploreScreen.js
+========================================
+﻿import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, RefreshControl, ActivityIndicator, SafeAreaView, TextInput } from 'react-native';
+import { useAuth } from '../services/AuthContext';
+import api from '../services/api';
+
+const UserCard = ({ user, onPress }) => (
+  <TouchableOpacity style={styles.userCard} onPress={() => onPress(user)} activeOpacity={0.7}>
+    <Image source={user.profileImage ? { uri: user.profileImage } : require('../../assets/icon.png')} style={styles.avatar} />
+    <View style={styles.userInfo}>
+      <Text style={styles.userName} numberOfLines={1}>{user.fullName || user.username}</Text>
+      <Text style={styles.userCity} numberOfLines={1}>&#x1F4CD; {user.city || 'Unknown location'}</Text>
+      {user.bio ? <Text style={styles.userBio} numberOfLines={2}>{user.bio}</Text> : null}
+      <View style={styles.tagRow}>
+        {user.userType === 'traveler' && <View style={[styles.tag, styles.travelerTag]}><Text style={styles.tagText}>Traveler</Text></View>}
+        {user.userType === 'local' && <View style={[styles.tag, styles.localTag]}><Text style={styles.tagText}>Local</Text></View>}
+        {user.availableToMeet && <View style={[styles.tag, styles.availableTag]}><Text style={styles.tagText}>Available</Text></View>}
+      </View>
+    </View>
+  </TouchableOpacity>
+);
+
+export default function ExploreScreen({ navigation }) {
+  const { user } = useAuth();
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [city, setCity] = useState(user?.city || 'Los Angeles');
+  const [filter, setFilter] = useState('all');
+
+  const fetchUsers = useCallback(async () => {
+    try {
+      const data = await api.getUsersByLocation(city, filter);
+      setUsers(Array.isArray(data) ? data : []);
+    } catch (e) { console.log('Failed to fetch users:', e); }
+    finally { setLoading(false); setRefreshing(false); }
+  }, [city, filter]);
+
+  useEffect(() => { fetchUsers(); }, [fetchUsers]);
+  const onRefresh = () => { setRefreshing(true); fetchUsers(); };
+  const handleUserPress = (selectedUser) => { navigation.navigate('UserProfile', { userId: selectedUser.id }); };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.searchSection}>
+        <View style={styles.searchBar}>
+          <Text style={styles.searchIcon}>&#x1F50D;</Text>
+          <TextInput style={styles.searchInput} placeholder="Search by city..." placeholderTextColor="#9CA3AF" value={city} onChangeText={setCity} onSubmitEditing={fetchUsers} returnKeyType="search" />
+        </View>
+      </View>
+      <View style={styles.filterRow}>
+        {[{ key: 'all', label: 'All' }, { key: 'traveler', label: 'Travelers' }, { key: 'local', label: 'Locals' }].map((f) => (
+          <TouchableOpacity key={f.key} style={[styles.filterTab, filter === f.key && styles.filterTabActive]} onPress={() => setFilter(f.key)}>
+            <Text style={[styles.filterText, filter === f.key && styles.filterTextActive]}>{f.label}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+      {loading ? <View style={styles.centered}><ActivityIndicator size="large" color="#F97316" /></View> : (
+        <FlatList data={users} keyExtractor={(item) => String(item.id)} renderItem={({ item }) => <UserCard user={item} onPress={handleUserPress} />}
+          contentContainerStyle={styles.listContent} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#F97316" />}
+          ListEmptyComponent={<View style={styles.emptyState}><Text style={styles.emptyIcon}>&#x1F30E;</Text><Text style={styles.emptyTitle}>No travelers found</Text><Text style={styles.emptySubtitle}>Try searching a different city</Text></View>}
+        />
+      )}
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#F9FAFB' },
+  searchSection: { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 8 },
+  searchBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFFFFF', borderRadius: 14, paddingHorizontal: 14, paddingVertical: 10, borderWidth: 1, borderColor: '#E5E7EB' },
+  searchIcon: { fontSize: 18, marginRight: 10 },
+  searchInput: { flex: 1, fontSize: 16, color: '#111827' },
+  filterRow: { flexDirection: 'row', paddingHorizontal: 16, paddingBottom: 12, gap: 8 },
+  filterTab: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E5E7EB' },
+  filterTabActive: { backgroundColor: '#FFF7ED', borderColor: '#F97316' },
+  filterText: { fontSize: 14, color: '#6B7280', fontWeight: '500' },
+  filterTextActive: { color: '#F97316', fontWeight: '600' },
+  listContent: { paddingHorizontal: 16, paddingBottom: 20 },
+  userCard: { flexDirection: 'row', backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, marginBottom: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2 },
+  avatar: { width: 60, height: 60, borderRadius: 30, backgroundColor: '#F3F4F6', marginRight: 14 },
+  userInfo: { flex: 1 },
+  userName: { fontSize: 17, fontWeight: '700', color: '#111827', marginBottom: 2 },
+  userCity: { fontSize: 14, color: '#6B7280', marginBottom: 4 },
+  userBio: { fontSize: 13, color: '#9CA3AF', lineHeight: 18, marginBottom: 8 },
+  tagRow: { flexDirection: 'row', gap: 6, flexWrap: 'wrap' },
+  tag: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
+  travelerTag: { backgroundColor: '#EFF6FF' },
+  localTag: { backgroundColor: '#F0FDF4' },
+  availableTag: { backgroundColor: '#FFF7ED' },
+  tagText: { fontSize: 12, fontWeight: '500', color: '#374151' },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  emptyState: { alignItems: 'center', paddingTop: 80 },
+  emptyIcon: { fontSize: 48, marginBottom: 12 },
+  emptyTitle: { fontSize: 18, fontWeight: '600', color: '#374151', marginBottom: 4 },
+  emptySubtitle: { fontSize: 14, color: '#9CA3AF' },
+});
+
+========================================
+FILE: expo-app/src/screens/EventsScreen.js
+========================================
+﻿import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, RefreshControl, ActivityIndicator, SafeAreaView } from 'react-native';
+import { useAuth } from '../services/AuthContext';
+import api from '../services/api';
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  const now = new Date();
+  const diffDays = Math.floor((d - now) / (1000 * 60 * 60 * 24));
+  const timeStr = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  if (diffDays === 0) return 'Today at ' + timeStr;
+  if (diffDays === 1) return 'Tomorrow at ' + timeStr;
+  if (diffDays < 7) return d.toLocaleDateString('en-US', { weekday: 'long' }) + ' at ' + timeStr;
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+};
+
+const EventCard = ({ event, onPress }) => (
+  <TouchableOpacity style={styles.eventCard} onPress={() => onPress(event)} activeOpacity={0.7}>
+    {event.imageUrl ? <Image source={{ uri: event.imageUrl }} style={styles.eventImage} /> : <View style={[styles.eventImage, styles.eventImagePlaceholder]}><Text style={styles.eventImageEmoji}>&#x1F389;</Text></View>}
+    <View style={styles.eventContent}>
+      <View style={styles.eventMeta}>
+        <Text style={styles.eventDate}>{formatDate(event.date)}</Text>
+        {event.category && <View style={styles.categoryBadge}><Text style={styles.categoryText}>{event.category}</Text></View>}
+      </View>
+      <Text style={styles.eventTitle} numberOfLines={2}>{event.title}</Text>
+      <Text style={styles.eventLocation} numberOfLines={1}>&#x1F4CD; {event.venueName || event.location || event.city || 'TBD'}</Text>
+      {event.description ? <Text style={styles.eventDescription} numberOfLines={2}>{event.description}</Text> : null}
+      <View style={styles.eventFooter}>
+        <Text style={styles.attendees}>&#x1F465; {event.participantCount || 0} going</Text>
+        <Text style={styles.price}>{event.price && event.price !== 'free' && event.price !== '0' ? '$' + event.price : 'Free'}</Text>
+      </View>
+    </View>
+  </TouchableOpacity>
+);
+
+export default function EventsScreen({ navigation }) {
+  const { user } = useAuth();
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const city = user?.city || 'Los Angeles';
+
+  const fetchEvents = useCallback(async () => {
+    try { const data = await api.getEvents(city); setEvents(Array.isArray(data) ? data : []); }
+    catch (e) { console.log('Failed to fetch events:', e); }
+    finally { setLoading(false); setRefreshing(false); }
+  }, [city]);
+
+  useEffect(() => { fetchEvents(); }, [fetchEvents]);
+  const onRefresh = () => { setRefreshing(true); fetchEvents(); };
+  const handleEventPress = (event) => { navigation.navigate('EventDetail', { eventId: event.id, event }); };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}><Text style={styles.headerTitle}>Events</Text><Text style={styles.headerSubtitle}>&#x1F4CD; {city}</Text></View>
+      {loading ? <View style={styles.centered}><ActivityIndicator size="large" color="#F97316" /></View> : (
+        <FlatList data={events} keyExtractor={(item) => String(item.id)} renderItem={({ item }) => <EventCard event={item} onPress={handleEventPress} />}
+          contentContainerStyle={styles.listContent} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#F97316" />}
+          ListEmptyComponent={<View style={styles.emptyState}><Text style={styles.emptyIcon}>&#x1F4C5;</Text><Text style={styles.emptyTitle}>No upcoming events</Text><Text style={styles.emptySubtitle}>Check back later for events in {city}</Text></View>}
+        />
+      )}
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#F9FAFB' },
+  header: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 12 },
+  headerTitle: { fontSize: 28, fontWeight: '800', color: '#111827' },
+  headerSubtitle: { fontSize: 15, color: '#6B7280', marginTop: 2 },
+  listContent: { paddingHorizontal: 16, paddingBottom: 20 },
+  eventCard: { backgroundColor: '#FFFFFF', borderRadius: 16, marginBottom: 16, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 },
+  eventImage: { width: '100%', height: 160 },
+  eventImagePlaceholder: { backgroundColor: '#FFF7ED', justifyContent: 'center', alignItems: 'center' },
+  eventImageEmoji: { fontSize: 48 },
+  eventContent: { padding: 16 },
+  eventMeta: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
+  eventDate: { fontSize: 13, fontWeight: '600', color: '#F97316' },
+  categoryBadge: { backgroundColor: '#F3F4F6', paddingHorizontal: 10, paddingVertical: 3, borderRadius: 10 },
+  categoryText: { fontSize: 12, color: '#6B7280', fontWeight: '500' },
+  eventTitle: { fontSize: 18, fontWeight: '700', color: '#111827', marginBottom: 6, lineHeight: 24 },
+  eventLocation: { fontSize: 14, color: '#6B7280', marginBottom: 6 },
+  eventDescription: { fontSize: 14, color: '#9CA3AF', lineHeight: 20, marginBottom: 12 },
+  eventFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  attendees: { fontSize: 13, color: '#6B7280' },
+  price: { fontSize: 14, fontWeight: '700', color: '#059669' },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  emptyState: { alignItems: 'center', paddingTop: 80 },
+  emptyIcon: { fontSize: 48, marginBottom: 12 },
+  emptyTitle: { fontSize: 18, fontWeight: '600', color: '#374151', marginBottom: 4 },
+  emptySubtitle: { fontSize: 14, color: '#9CA3AF' },
+});
+
+========================================
+FILE: expo-app/src/screens/EventDetailScreen.js
+========================================
+﻿import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, SafeAreaView, Alert, ActivityIndicator } from 'react-native';
+import { useAuth } from '../services/AuthContext';
+import api from '../services/api';
+
+export default function EventDetailScreen({ route, navigation }) {
+  const { eventId, event } = route.params;
+  const { user } = useAuth();
+  const [joining, setJoining] = useState(false);
+  const [joined, setJoined] = useState(false);
+
+  if (!event) return <SafeAreaView style={styles.container}><Text>Event not found</Text></SafeAreaView>;
+
+  const handleJoin = async () => {
+    setJoining(true);
+    try { await api.joinEvent(event.id); setJoined(true); Alert.alert('You are in!', 'You have joined this event.'); }
+    catch (e) { Alert.alert('Error', 'Could not join event.'); }
+    finally { setJoining(false); }
+  };
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return 'TBD';
+    return new Date(dateStr).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}><Text style={styles.backText}>Back</Text></TouchableOpacity>
+        {event.imageUrl ? <Image source={{ uri: event.imageUrl }} style={styles.heroImage} /> : <View style={[styles.heroImage, styles.heroPlaceholder]}><Text style={styles.heroEmoji}>&#x1F389;</Text></View>}
+        <View style={styles.content}>
+          {event.category && <View style={styles.categoryBadge}><Text style={styles.categoryText}>{event.category}</Text></View>}
+          <Text style={styles.title}>{event.title}</Text>
+          <View style={styles.infoRow}><Text style={styles.infoIcon}>&#x1F4C5;</Text><Text style={styles.infoText}>{formatDate(event.date)}</Text></View>
+          <View style={styles.infoRow}><Text style={styles.infoIcon}>&#x1F4CD;</Text><Text style={styles.infoText}>{event.venueName || event.location || event.city || 'TBD'}</Text></View>
+          <View style={styles.infoRow}><Text style={styles.infoIcon}>&#x1F465;</Text><Text style={styles.infoText}>{event.participantCount || 0} people going</Text></View>
+          {event.description ? <View style={styles.descriptionSection}><Text style={styles.sectionTitle}>About</Text><Text style={styles.description}>{event.description}</Text></View> : null}
+        </View>
+      </ScrollView>
+      <View style={styles.bottomBar}>
+        <View style={styles.priceSection}><Text style={styles.priceLabel}>Price</Text><Text style={styles.priceValue}>{event.price && event.price !== 'free' && event.price !== '0' ? '$' + event.price : 'Free'}</Text></View>
+        <TouchableOpacity style={[styles.joinButton, joined && styles.joinedButton]} onPress={handleJoin} disabled={joining || joined}>
+          {joining ? <ActivityIndicator color="#fff" /> : <Text style={styles.joinButtonText}>{joined ? 'Joined' : 'Join Event'}</Text>}
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
+  backButton: { paddingHorizontal: 20, paddingVertical: 12 },
+  backText: { color: '#F97316', fontSize: 16, fontWeight: '600' },
+  heroImage: { width: '100%', height: 220 },
+  heroPlaceholder: { backgroundColor: '#FFF7ED', justifyContent: 'center', alignItems: 'center' },
+  heroEmoji: { fontSize: 64 },
+  content: { padding: 20 },
+  categoryBadge: { alignSelf: 'flex-start', backgroundColor: '#FFF7ED', paddingHorizontal: 12, paddingVertical: 5, borderRadius: 12, marginBottom: 12 },
+  categoryText: { fontSize: 13, color: '#F97316', fontWeight: '600' },
+  title: { fontSize: 24, fontWeight: '800', color: '#111827', marginBottom: 16, lineHeight: 30 },
+  infoRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
+  infoIcon: { fontSize: 18, marginRight: 10, width: 24 },
+  infoText: { fontSize: 15, color: '#4B5563', flex: 1 },
+  descriptionSection: { marginTop: 20, paddingTop: 20, borderTopWidth: 1, borderTopColor: '#F3F4F6' },
+  sectionTitle: { fontSize: 18, fontWeight: '700', color: '#111827', marginBottom: 10 },
+  description: { fontSize: 15, color: '#4B5563', lineHeight: 24 },
+  bottomBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 14, borderTopWidth: 1, borderTopColor: '#F3F4F6', backgroundColor: '#FFFFFF' },
+  priceSection: {},
+  priceLabel: { fontSize: 12, color: '#9CA3AF' },
+  priceValue: { fontSize: 20, fontWeight: '800', color: '#111827' },
+  joinButton: { backgroundColor: '#F97316', paddingHorizontal: 32, paddingVertical: 14, borderRadius: 14 },
+  joinedButton: { backgroundColor: '#059669' },
+  joinButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
+});
+
+========================================
+FILE: expo-app/src/screens/MessagesScreen.js
+========================================
+﻿import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, RefreshControl, ActivityIndicator, SafeAreaView } from 'react-native';
+import { useAuth } from '../services/AuthContext';
+import api from '../services/api';
+
+const ConversationCard = ({ conversation, onPress }) => {
+  const otherUser = conversation.otherUser || {};
+  const lastMsg = conversation.lastMessage;
+  const timeAgo = (dateStr) => {
+    if (!dateStr) return '';
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'now';
+    if (mins < 60) return mins + 'm';
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return hours + 'h';
+    return Math.floor(hours / 24) + 'd';
+  };
+  return (
+    <TouchableOpacity style={styles.conversationCard} onPress={() => onPress(conversation)} activeOpacity={0.7}>
+      <Image source={otherUser.profileImage ? { uri: otherUser.profileImage } : require('../../assets/icon.png')} style={styles.avatar} />
+      <View style={styles.conversationInfo}>
+        <View style={styles.nameRow}>
+          <Text style={styles.userName} numberOfLines={1}>{otherUser.fullName || otherUser.username || 'User'}</Text>
+          {lastMsg && <Text style={styles.timeText}>{timeAgo(lastMsg.createdAt || lastMsg.sentAt)}</Text>}
+        </View>
+        <Text style={[styles.lastMessage, conversation.unreadCount > 0 && styles.unreadMessage]} numberOfLines={1}>{lastMsg ? (lastMsg.content || 'Sent a message') : 'Start a conversation'}</Text>
+      </View>
+      {conversation.unreadCount > 0 && <View style={styles.unreadBadge}><Text style={styles.unreadCount}>{conversation.unreadCount}</Text></View>}
+    </TouchableOpacity>
+  );
+};
+
+export default function MessagesScreen({ navigation }) {
+  const { user } = useAuth();
+  const [conversations, setConversations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchConversations = useCallback(async () => {
+    if (!user?.id) return;
+    try { const data = await api.getConversations(user.id); setConversations(Array.isArray(data) ? data : []); }
+    catch (e) { console.log('Failed to fetch conversations:', e); }
+    finally { setLoading(false); setRefreshing(false); }
+  }, [user?.id]);
+
+  useEffect(() => { fetchConversations(); }, [fetchConversations]);
+  const onRefresh = () => { setRefreshing(true); fetchConversations(); };
+  const handlePress = (conv) => { navigation.navigate('Chat', { userId: conv.otherUser?.id, userName: conv.otherUser?.fullName || conv.otherUser?.username }); };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}><Text style={styles.headerTitle}>Messages</Text></View>
+      {loading ? <View style={styles.centered}><ActivityIndicator size="large" color="#F97316" /></View> : (
+        <FlatList data={conversations} keyExtractor={(item, i) => String(item.id || i)} renderItem={({ item }) => <ConversationCard conversation={item} onPress={handlePress} />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#F97316" />}
+          ListEmptyComponent={<View style={styles.emptyState}><Text style={styles.emptyIcon}>&#x1F4AC;</Text><Text style={styles.emptyTitle}>No messages yet</Text><Text style={styles.emptySubtitle}>Connect with travelers to start chatting</Text></View>}
+        />
+      )}
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
+  header: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: '#F3F4F6' },
+  headerTitle: { fontSize: 28, fontWeight: '800', color: '#111827' },
+  conversationCard: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#F9FAFB' },
+  avatar: { width: 52, height: 52, borderRadius: 26, backgroundColor: '#F3F4F6', marginRight: 14 },
+  conversationInfo: { flex: 1 },
+  nameRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 3 },
+  userName: { fontSize: 16, fontWeight: '700', color: '#111827', flex: 1, marginRight: 8 },
+  timeText: { fontSize: 12, color: '#9CA3AF' },
+  lastMessage: { fontSize: 14, color: '#9CA3AF', lineHeight: 20 },
+  unreadMessage: { color: '#374151', fontWeight: '600' },
+  unreadBadge: { backgroundColor: '#F97316', width: 22, height: 22, borderRadius: 11, justifyContent: 'center', alignItems: 'center', marginLeft: 8 },
+  unreadCount: { color: '#FFFFFF', fontSize: 12, fontWeight: '700' },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  emptyState: { alignItems: 'center', paddingTop: 100 },
+  emptyIcon: { fontSize: 48, marginBottom: 12 },
+  emptyTitle: { fontSize: 18, fontWeight: '600', color: '#374151', marginBottom: 4 },
+  emptySubtitle: { fontSize: 14, color: '#9CA3AF' },
+});
+
+========================================
+FILE: expo-app/src/screens/ChatScreen.js
+========================================
+﻿import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native';
+import { useAuth } from '../services/AuthContext';
+import api from '../services/api';
+
+const MessageBubble = ({ message, isOwn }) => (
+  <View style={[styles.bubbleRow, isOwn && styles.bubbleRowOwn]}>
+    <View style={[styles.bubble, isOwn ? styles.bubbleOwn : styles.bubbleOther]}>
+      <Text style={[styles.bubbleText, isOwn && styles.bubbleTextOwn]}>{message.content}</Text>
+    </View>
+  </View>
+);
+
+export default function ChatScreen({ route, navigation }) {
+  const { userId, userName } = route.params;
+  const { user } = useAuth();
+  const [messages, setMessages] = useState([]);
+  const [text, setText] = useState('');
+  const [sending, setSending] = useState(false);
+
+  useEffect(() => {
+    fetchMessages();
+    const interval = setInterval(fetchMessages, 10000);
+    return () => clearInterval(interval);
+  }, [userId]);
+
+  const fetchMessages = async () => {
+    try { const data = await api.getMessages(userId); setMessages(Array.isArray(data) ? data.reverse() : []); }
+    catch (e) { console.log('Failed to fetch messages:', e); }
+  };
+
+  const handleSend = async () => {
+    if (!text.trim() || sending) return;
+    setSending(true);
+    try { await api.sendMessage(userId, text.trim()); setText(''); await fetchMessages(); }
+    catch (e) { console.log('Failed to send:', e); }
+    finally { setSending(false); }
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}><Text style={styles.backText}>Back</Text></TouchableOpacity>
+        <Text style={styles.headerName}>{userName || 'Chat'}</Text>
+        <View style={{ width: 50 }} />
+      </View>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.chatArea} keyboardVerticalOffset={90}>
+        <FlatList data={messages} keyExtractor={(item, i) => String(item.id || i)} renderItem={({ item }) => <MessageBubble message={item} isOwn={item.senderId === user?.id} />}
+          inverted contentContainerStyle={styles.messagesList}
+          ListEmptyComponent={<View style={styles.emptyChat}><Text style={styles.emptyChatText}>Say hello!</Text></View>}
+        />
+        <View style={styles.inputBar}>
+          <TextInput style={styles.textInput} placeholder="Type a message..." placeholderTextColor="#9CA3AF" value={text} onChangeText={setText} multiline maxLength={2000} />
+          <TouchableOpacity style={[styles.sendButton, !text.trim() && styles.sendButtonDisabled]} onPress={handleSend} disabled={!text.trim() || sending}>
+            <Text style={styles.sendText}>&#x2191;</Text>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#F9FAFB' },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F3F4F6' },
+  backText: { color: '#F97316', fontSize: 16, fontWeight: '600' },
+  headerName: { fontSize: 17, fontWeight: '700', color: '#111827' },
+  chatArea: { flex: 1 },
+  messagesList: { paddingHorizontal: 16, paddingVertical: 12 },
+  bubbleRow: { flexDirection: 'row', marginBottom: 8 },
+  bubbleRowOwn: { justifyContent: 'flex-end' },
+  bubble: { maxWidth: '75%', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 18 },
+  bubbleOwn: { backgroundColor: '#F97316', borderBottomRightRadius: 4 },
+  bubbleOther: { backgroundColor: '#FFFFFF', borderBottomLeftRadius: 4 },
+  bubbleText: { fontSize: 15, color: '#374151', lineHeight: 21 },
+  bubbleTextOwn: { color: '#FFFFFF' },
+  emptyChat: { alignItems: 'center', paddingTop: 40 },
+  emptyChatText: { fontSize: 16, color: '#9CA3AF' },
+  inputBar: { flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal: 12, paddingVertical: 10, backgroundColor: '#FFFFFF', borderTopWidth: 1, borderTopColor: '#F3F4F6' },
+  textInput: { flex: 1, backgroundColor: '#F3F4F6', borderRadius: 20, paddingHorizontal: 16, paddingVertical: 10, fontSize: 16, color: '#111827', maxHeight: 100, marginRight: 10 },
+  sendButton: { width: 38, height: 38, borderRadius: 19, backgroundColor: '#F97316', justifyContent: 'center', alignItems: 'center' },
+  sendButtonDisabled: { backgroundColor: '#D1D5DB' },
+  sendText: { color: '#FFFFFF', fontSize: 20, fontWeight: '700' },
+});
+
+========================================
+FILE: expo-app/src/screens/ProfileScreen.js
+========================================
+﻿import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, SafeAreaView, Alert } from 'react-native';
+import { useAuth } from '../services/AuthContext';
+import api from '../services/api';
+
+export default function ProfileScreen({ navigation }) {
+  const { user, logout } = useAuth();
+  const [connections, setConnections] = useState([]);
+
+  useEffect(() => {
+    if (user?.id) { api.getConnections(user.id).then(data => setConnections(Array.isArray(data) ? data : [])).catch(() => {}); }
+  }, [user?.id]);
+
+  const handleLogout = () => {
+    Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Sign Out', style: 'destructive', onPress: logout },
+    ]);
+  };
+
+  if (!user) return null;
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.profileHeader}>
+          <Image source={user.profileImage ? { uri: user.profileImage } : require('../../assets/icon.png')} style={styles.profileImage} />
+          <Text style={styles.displayName}>{user.fullName || user.username}</Text>
+          {user.fullName && <Text style={styles.username}>@{user.username}</Text>}
+          {user.city && <Text style={styles.location}>&#x1F4CD; {user.city}</Text>}
+        </View>
+        <View style={styles.statsRow}>
+          <View style={styles.statItem}><Text style={styles.statNumber}>{connections.length}</Text><Text style={styles.statLabel}>Connections</Text></View>
+          <View style={styles.statDivider} />
+          <View style={styles.statItem}><Text style={styles.statNumber}>{user.aura || 0}</Text><Text style={styles.statLabel}>Aura Points</Text></View>
+          <View style={styles.statDivider} />
+          <View style={styles.statItem}><Text style={styles.statNumber}>{user.userType === 'traveler' ? 'Traveler' : 'Local'}</Text><Text style={styles.statLabel}>Type</Text></View>
+        </View>
+        {user.bio ? <View style={styles.section}><Text style={styles.sectionTitle}>About</Text><Text style={styles.bioText}>{user.bio}</Text></View> : null}
+        {user.interests && user.interests.length > 0 && (
+          <View style={styles.section}><Text style={styles.sectionTitle}>Interests</Text>
+            <View style={styles.tagsRow}>{(Array.isArray(user.interests) ? user.interests : []).map((interest, i) => <View key={i} style={styles.interestTag}><Text style={styles.interestText}>{interest}</Text></View>)}</View>
+          </View>
+        )}
+        <View style={styles.section}>
+          <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('EditProfile')}><Text style={styles.menuIcon}>&#x270F;&#xFE0F;</Text><Text style={styles.menuText}>Edit Profile</Text><Text style={styles.menuArrow}>></Text></TouchableOpacity>
+          <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Connections')}><Text style={styles.menuIcon}>&#x1F465;</Text><Text style={styles.menuText}>My Connections</Text><Text style={styles.menuArrow}>></Text></TouchableOpacity>
+          <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Settings')}><Text style={styles.menuIcon}>&#x2699;&#xFE0F;</Text><Text style={styles.menuText}>Settings</Text><Text style={styles.menuArrow}>></Text></TouchableOpacity>
+        </View>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}><Text style={styles.logoutText}>Sign Out</Text></TouchableOpacity>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#F9FAFB' },
+  scrollContent: { paddingBottom: 40 },
+  profileHeader: { alignItems: 'center', paddingTop: 24, paddingBottom: 20, backgroundColor: '#FFFFFF' },
+  profileImage: { width: 100, height: 100, borderRadius: 50, backgroundColor: '#F3F4F6', marginBottom: 14 },
+  displayName: { fontSize: 24, fontWeight: '800', color: '#111827', marginBottom: 2 },
+  username: { fontSize: 15, color: '#9CA3AF', marginBottom: 6 },
+  location: { fontSize: 15, color: '#6B7280', marginTop: 4 },
+  statsRow: { flexDirection: 'row', backgroundColor: '#FFFFFF', paddingVertical: 18, marginTop: 1, justifyContent: 'center', alignItems: 'center' },
+  statItem: { flex: 1, alignItems: 'center' },
+  statNumber: { fontSize: 20, fontWeight: '800', color: '#111827', marginBottom: 2 },
+  statLabel: { fontSize: 12, color: '#9CA3AF', fontWeight: '500' },
+  statDivider: { width: 1, height: 30, backgroundColor: '#F3F4F6' },
+  section: { backgroundColor: '#FFFFFF', marginTop: 12, paddingHorizontal: 20, paddingVertical: 18 },
+  sectionTitle: { fontSize: 16, fontWeight: '700', color: '#111827', marginBottom: 10 },
+  bioText: { fontSize: 15, color: '#4B5563', lineHeight: 22 },
+  tagsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  interestTag: { backgroundColor: '#FFF7ED', paddingHorizontal: 14, paddingVertical: 7, borderRadius: 16 },
+  interestText: { fontSize: 13, color: '#F97316', fontWeight: '600' },
+  menuItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#F9FAFB' },
+  menuIcon: { fontSize: 20, marginRight: 14, width: 28 },
+  menuText: { flex: 1, fontSize: 16, color: '#374151', fontWeight: '500' },
+  menuArrow: { fontSize: 22, color: '#D1D5DB' },
+  logoutButton: { marginHorizontal: 20, marginTop: 24, paddingVertical: 16, borderRadius: 14, borderWidth: 1.5, borderColor: '#FCA5A5', alignItems: 'center' },
+  logoutText: { fontSize: 16, fontWeight: '700', color: '#DC2626' },
+});
+
+========================================
+FILE: expo-app/src/screens/UserProfileScreen.js
+========================================
+﻿import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, SafeAreaView, ActivityIndicator, Alert } from 'react-native';
+import { useAuth } from '../services/AuthContext';
+import api from '../services/api';
+
+export default function UserProfileScreen({ route, navigation }) {
+  const { userId } = route.params;
+  const { user: currentUser } = useAuth();
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => { loadProfile(); }, [userId]);
+  const loadProfile = async () => {
+    try { setProfile(await api.getUserProfile(userId)); } catch (e) { console.log('Failed:', e); }
+    finally { setLoading(false); }
+  };
+  const handleConnect = async () => {
+    try { await api.sendConnection(userId); Alert.alert('Request Sent', 'Connection request sent!'); } catch (e) { Alert.alert('Error', 'Could not send request.'); }
+  };
+  const handleMessage = () => { navigation.navigate('Chat', { userId: profile.id, userName: profile.fullName || profile.username }); };
+
+  if (loading) return <SafeAreaView style={styles.container}><View style={styles.centered}><ActivityIndicator size="large" color="#F97316" /></View></SafeAreaView>;
+  if (!profile) return <SafeAreaView style={styles.container}><TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}><Text style={styles.backText}>Back</Text></TouchableOpacity><View style={styles.centered}><Text>User not found</Text></View></SafeAreaView>;
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}><Text style={styles.backText}>Back</Text></TouchableOpacity>
+        <View style={styles.profileHeader}>
+          <Image source={profile.profileImage ? { uri: profile.profileImage } : require('../../assets/icon.png')} style={styles.profileImage} />
+          <Text style={styles.displayName}>{profile.fullName || profile.username}</Text>
+          <Text style={styles.username}>@{profile.username}</Text>
+          {profile.city && <Text style={styles.location}>&#x1F4CD; {profile.city}</Text>}
+          <View style={styles.tagRow}>
+            <View style={styles.typeTag}><Text style={styles.typeTagText}>{profile.userType === 'traveler' ? 'Traveler' : 'Local'}</Text></View>
+            {profile.availableToMeet && <View style={[styles.typeTag, styles.availableTag]}><Text style={styles.typeTagText}>Available</Text></View>}
+          </View>
+        </View>
+        {currentUser?.id !== profile.id && (
+          <View style={styles.actionRow}>
+            <TouchableOpacity style={styles.connectButton} onPress={handleConnect}><Text style={styles.connectButtonText}>Connect</Text></TouchableOpacity>
+            <TouchableOpacity style={styles.messageButton} onPress={handleMessage}><Text style={styles.messageButtonText}>Message</Text></TouchableOpacity>
+          </View>
+        )}
+        {profile.bio ? <View style={styles.section}><Text style={styles.sectionTitle}>About</Text><Text style={styles.bioText}>{profile.bio}</Text></View> : null}
+        {profile.interests && profile.interests.length > 0 && (
+          <View style={styles.section}><Text style={styles.sectionTitle}>Interests</Text>
+            <View style={styles.tagsRow}>{(Array.isArray(profile.interests) ? profile.interests : []).map((interest, i) => <View key={i} style={styles.interestTag}><Text style={styles.interestText}>{interest}</Text></View>)}</View>
+          </View>
+        )}
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  backButton: { paddingHorizontal: 20, paddingVertical: 12 },
+  backText: { color: '#F97316', fontSize: 16, fontWeight: '600' },
+  profileHeader: { alignItems: 'center', paddingBottom: 20 },
+  profileImage: { width: 100, height: 100, borderRadius: 50, backgroundColor: '#F3F4F6', marginBottom: 14 },
+  displayName: { fontSize: 24, fontWeight: '800', color: '#111827', marginBottom: 2 },
+  username: { fontSize: 15, color: '#9CA3AF', marginBottom: 8 },
+  location: { fontSize: 15, color: '#6B7280' },
+  tagRow: { flexDirection: 'row', gap: 8, marginTop: 10 },
+  typeTag: { backgroundColor: '#EFF6FF', paddingHorizontal: 14, paddingVertical: 6, borderRadius: 14 },
+  availableTag: { backgroundColor: '#F0FDF4' },
+  typeTagText: { fontSize: 13, fontWeight: '600', color: '#374151' },
+  actionRow: { flexDirection: 'row', gap: 12, paddingHorizontal: 20, paddingVertical: 16, borderTopWidth: 1, borderTopColor: '#F3F4F6' },
+  connectButton: { flex: 1, backgroundColor: '#F97316', paddingVertical: 14, borderRadius: 14, alignItems: 'center' },
+  connectButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '700' },
+  messageButton: { flex: 1, backgroundColor: '#F3F4F6', paddingVertical: 14, borderRadius: 14, alignItems: 'center' },
+  messageButtonText: { color: '#374151', fontSize: 16, fontWeight: '700' },
+  section: { paddingHorizontal: 20, paddingVertical: 18, borderTopWidth: 1, borderTopColor: '#F3F4F6' },
+  sectionTitle: { fontSize: 16, fontWeight: '700', color: '#111827', marginBottom: 10 },
+  bioText: { fontSize: 15, color: '#4B5563', lineHeight: 22 },
+  tagsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  interestTag: { backgroundColor: '#FFF7ED', paddingHorizontal: 14, paddingVertical: 7, borderRadius: 16 },
+  interestText: { fontSize: 13, color: '#F97316', fontWeight: '600' },
+});
+
+========================================
+FILE: expo-app/src/screens/WebViewScreens.js
+========================================
+﻿import React from 'react';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
+import { WebView } from 'react-native-webview';
+
+export function EditProfileScreen({ navigation }) {
+  return (
+    <SafeAreaView style={styles.container}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}><Text style={styles.backText}>Back</Text></TouchableOpacity>
+      <WebView source={{ uri: 'https://nearbytraveler.org/profile/edit' }} style={styles.webview} />
+    </SafeAreaView>
+  );
+}
+
+export function ConnectionsScreen({ navigation }) {
+  return (
+    <SafeAreaView style={styles.container}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}><Text style={styles.backText}>Back</Text></TouchableOpacity>
+      <WebView source={{ uri: 'https://nearbytraveler.org/connections' }} style={styles.webview} />
+    </SafeAreaView>
+  );
+}
+
+export function SettingsScreen({ navigation }) {
+  return (
+    <SafeAreaView style={styles.container}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}><Text style={styles.backText}>Back</Text></TouchableOpacity>
+      <WebView source={{ uri: 'https://nearbytraveler.org/settings' }} style={styles.webview} />
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
+  backButton: { paddingHorizontal: 20, paddingVertical: 12 },
+  backText: { color: '#F97316', fontSize: 16, fontWeight: '600' },
+  webview: { flex: 1 },
+});
+
+========================================
+FILE: expo-app/app.json
+========================================
+{
+  "expo": {
+    "name": "Nearby Traveler",
+    "slug": "nearby-traveler",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "scheme": "nearbytraveler",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#F97316"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.nearbytraveler.app",
+      "buildNumber": "3",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Nearby Traveler uses your location to connect you with nearby travelers, locals, and events in your area.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Nearby Traveler uses your location to notify you when friends are nearby and to suggest relevant local experiences.",
+        "NSCameraUsageDescription": "Nearby Traveler uses your camera to take profile photos and share travel memories.",
+        "NSPhotoLibraryUsageDescription": "Nearby Traveler accesses your photos to let you upload profile pictures and travel memories.",
+        "NSMicrophoneUsageDescription": "Nearby Traveler uses your microphone for voice input when creating quick meetups.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "config": {
+        "usesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#F97316"
+      },
+      "package": "com.nearbytraveler.app",
+      "versionCode": 2,
+      "permissions": [
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#F97316"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Nearby Traveler uses your location to notify you when friends are nearby and to suggest relevant local experiences."
+        }
+      ],
+      "expo-camera",
+      "expo-image-picker"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "8719f7f8-34c0-4486-8657-55a3ade7bf5f"
+      }
+    },
+    "owner": "abovethepath",
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/8719f7f8-34c0-4486-8657-55a3ade7bf5f"
+    }
+  }
+}
+
+========================================
+FILE: expo-app/eas.json
+========================================
+{
+  "cli": {
+    "version": ">= 5.0.0"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "ios": {
+        "simulator": false
+      }
+    },
+    "production": {
+      "distribution": "store",
+      "ios": {
+        "resourceClass": "m-medium",
+
+        "image": "macos-sonoma-14.6-xcode-16.0"
+      },
+      "android": {
+        "buildType": "app-bundle"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "aaron_marc2004@yahoo.com",
+        "ascAppId": "6758695946",
+        "appleTeamId": "RB6U9D75UN"
+      }
+    }
+  }
+}
+
+========================================
+FILE: expo-app/package.json
+========================================
+{
+  "name": "nearby-traveler-app",
+  "version": "1.0.0",
+  "main": "expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "build:ios": "eas build --platform ios --profile production",
+    "build:android": "eas build --platform android --profile production",
+    "submit:ios": "eas submit --platform ios --profile production"
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "1.21.0",
+    "@react-navigation/bottom-tabs": "^6.6.1",
+    "@react-navigation/native": "^6.1.18",
+    "@react-navigation/native-stack": "^6.11.0",
+    "babel-preset-expo": "^54.0.10",
+    "expo": "~54.0.0",
+    "expo-camera": "~14.0.0",
+    "expo-image-picker": "~14.7.0",
+    "expo-location": "~16.5.0",
+    "expo-notifications": "~0.27.8",
+    "expo-splash-screen": "~0.26.0",
+    "expo-status-bar": "~1.11.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-native": "0.81.5",
+    "react-native-gesture-handler": "~2.14.0",
+    "react-native-safe-area-context": "4.8.2",
+    "react-native-screens": "~3.29.0",
+    "react-native-webview": "13.15.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0"
+  },
+  "private": true
+}
+
+========================================
+FILE: expo-app/babel.config.js
+========================================
+module.exports = function(api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+  };
+};
