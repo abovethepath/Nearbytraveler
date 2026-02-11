@@ -157,11 +157,22 @@ app.use((req, _res, next) => {
 
 app.use(
   cors({
-    origin: [
-      "https://nearbytraveler.org",
-      "https://nearbytraveler.onrender.com",
-      "http://localhost:5000",
-    ],
+    origin: function (origin, callback) {
+      if (
+        !origin ||
+        origin.includes("replit.dev") ||
+        origin.includes("replit.app") ||
+        origin.includes("repl.co") ||
+        origin === "https://nearbytraveler.org" ||
+        origin === "https://nearbytraveler.onrender.com" ||
+        origin.startsWith("http://localhost") ||
+        origin.startsWith("http://127.0.0.1")
+      ) {
+        callback(null, true);
+      } else {
+        callback(null, true);
+      }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
