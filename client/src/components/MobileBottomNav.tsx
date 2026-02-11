@@ -1,13 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Home, Plus, MessageCircle, User, Calendar, Search, X, MapPin, Zap, Users } from "lucide-react";
 import { AuthContext } from "@/App";
 import { AdvancedSearchWidget } from "@/components/AdvancedSearchWidget";
 import { useQuery } from "@tanstack/react-query";
 
+function useIsDarkMode() {
+  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
+  return isDark;
+}
+
 export function MobileBottomNav() {
   const [location, setLocation] = useLocation();
   const [showActionMenu, setShowActionMenu] = useState(false);
+  const isDark = useIsDarkMode();
   const [showSearchWidget, setShowSearchWidget] = useState(false);
   const authContext = React.useContext(AuthContext);
   let user = authContext?.user;
@@ -93,15 +106,15 @@ export function MobileBottomNav() {
             onClick={(e) => e.stopPropagation()}
           >
             <div style={{
-              background: 'white',
+              background: isDark ? '#1c1c1e' : 'white',
               borderRadius: '16px',
               overflow: 'hidden',
               marginBottom: '8px',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
             }}>
-              <div style={{ padding: '12px 16px', borderBottom: '1px solid #f3f4f6' }}>
-                <div style={{ width: '36px', height: '4px', background: '#d1d5db', borderRadius: '9999px', margin: '0 auto 8px' }} />
-                <h3 style={{ fontSize: '15px', fontWeight: 600, color: '#111827', textAlign: 'center' }}>
+              <div style={{ padding: '12px 16px', borderBottom: `1px solid ${isDark ? '#2c2c2e' : '#f3f4f6'}` }}>
+                <div style={{ width: '36px', height: '4px', background: isDark ? '#48484a' : '#d1d5db', borderRadius: '9999px', margin: '0 auto 8px' }} />
+                <h3 style={{ fontSize: '15px', fontWeight: 600, color: isDark ? '#f5f5f7' : '#111827', textAlign: 'center' }}>
                   Create New
                 </h3>
               </div>
@@ -144,7 +157,7 @@ export function MobileBottomNav() {
                         }}>
                           <ActionIcon style={{ width: '24px', height: '24px', color: 'white' }} />
                         </div>
-                        <span style={{ fontSize: '11px', fontWeight: 500, color: '#374151', textAlign: 'center', lineHeight: '14px' }}>
+                        <span style={{ fontSize: '11px', fontWeight: 500, color: isDark ? '#d1d1d6' : '#374151', textAlign: 'center', lineHeight: '14px' }}>
                           {action.label}
                         </span>
                       </button>
@@ -157,7 +170,7 @@ export function MobileBottomNav() {
               onClick={() => setShowActionMenu(false)}
               style={{
                 width: '100%',
-                background: 'white',
+                background: isDark ? '#1c1c1e' : 'white',
                 borderRadius: '16px',
                 padding: '14px',
                 fontSize: '17px',
@@ -165,7 +178,7 @@ export function MobileBottomNav() {
                 color: '#f97316',
                 border: 'none',
                 cursor: 'pointer',
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
                 touchAction: 'manipulation',
                 WebkitTapHighlightColor: 'transparent',
               }}
@@ -185,8 +198,8 @@ export function MobileBottomNav() {
           zIndex: 9999, 
           width: '100vw',
           paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-          background: '#f8f8f8',
-          borderTop: '1px solid #e5e5e5',
+          background: isDark ? '#1c1c1e' : '#f8f8f8',
+          borderTop: `1px solid ${isDark ? '#38383a' : '#e5e5e5'}`,
         }}
       >
         <div style={{ 
@@ -238,7 +251,7 @@ export function MobileBottomNav() {
                     width: '22px', 
                     height: '22px', 
                     marginBottom: '2px',
-                    color: isActive ? '#f97316' : '#9ca3af',
+                    color: isActive ? '#f97316' : (isDark ? '#8e8e93' : '#9ca3af'),
                     strokeWidth: isActive ? 2.5 : 1.8,
                   }}
                 />
@@ -246,7 +259,7 @@ export function MobileBottomNav() {
                   fontSize: '10px', 
                   lineHeight: '12px', 
                   fontWeight: 500,
-                  color: isActive ? '#f97316' : '#9ca3af',
+                  color: isActive ? '#f97316' : (isDark ? '#8e8e93' : '#9ca3af'),
                 }}>
                   {item.label}
                 </span>
@@ -332,7 +345,7 @@ export function MobileBottomNav() {
                       width: '22px', 
                       height: '22px', 
                       marginBottom: '2px',
-                      color: isActive ? '#f97316' : '#9ca3af',
+                      color: isActive ? '#f97316' : (isDark ? '#8e8e93' : '#9ca3af'),
                       strokeWidth: isActive ? 2.5 : 1.8,
                     }}
                   />
@@ -362,7 +375,7 @@ export function MobileBottomNav() {
                   fontSize: '10px', 
                   lineHeight: '12px', 
                   fontWeight: 500,
-                  color: isActive ? '#f97316' : '#9ca3af',
+                  color: isActive ? '#f97316' : (isDark ? '#8e8e93' : '#9ca3af'),
                 }}>
                   {item.label}
                 </span>
