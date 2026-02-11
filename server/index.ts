@@ -760,8 +760,8 @@ app.use((req, res, next) => {
     // DO NOT throw here - this prevents process crashes
   });
 
-  // Use PORT from environment or default to 5000
-  const port = Number(process.env.PORT) || 5000;
+  // Use PORT from environment or default to 3000
+  const port = Number(process.env.PORT) || 3000;
 
   // Add server error handling
   httpServerWithWebSocket.on("error", (error: any) => {
