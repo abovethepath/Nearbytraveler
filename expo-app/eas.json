@@ -21,7 +21,7 @@
       "ios": {
         "resourceClass": "m-medium",
 
-        "image": "macos-sequoia-15.3-xcode-16.2"
+        "image": "macos-sonoma-14.6-xcode-16.0"
       },
       "android": {
         "buildType": "app-bundle"
