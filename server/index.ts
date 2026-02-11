@@ -346,8 +346,11 @@ console.log("✅ CRITICAL API ROUTES REGISTERED BEFORE OTHER MIDDLEWARE");
 // Security headers
 app.use(
   helmet({
-    crossOriginEmbedderPolicy: false, // easier with Vite assets
-    contentSecurityPolicy: false, // turn on later with a tuned CSP
+    crossOriginEmbedderPolicy: false,
+    contentSecurityPolicy: false,
+    frameguard: false,
+    crossOriginResourcePolicy: false,
+    crossOriginOpenerPolicy: false,
   }),
 );
 
