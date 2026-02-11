@@ -1,0 +1,94 @@
+Awesome — that nails it:
+
+✅ 127.0.0.1:5000 returns 200
+
+✅ 172.31.109.226:5000 returns 200
+
+So your app is fully reachable on the container network.
+If *.worf.replit.dev still says refused to connect, then the only thing left is:
+
+Replit’s public proxy is not attached to this repl/run session
+
+That’s an environment / config issue, not your server.
+
+Here are the fixes that actually work in this situation (in order of “least annoying”):
+
+Fix 1: Put the app back into Replit’s “web exposure” system
+
+In .replit, add/ensure these two things:
+
+Set run to include host
+
+run = "npm run dev -- --host 0.0.0.0"
+
+
+Re-add a ports block (but correct)
+Since you removed it and your environment has no Ports panel, add:
+
+[[ports]]
+localPort = 5000
+externalPort = 5000
+
+
+NOT externalPort = 80.
+
+Why: your public proxy is trying to connect to the port Replit exposes. Mapping to 80 can break it in modern environments. Exposing 5000→5000 is the most consistent.
+
+Then:
+
+Stop
+
+Run
+
+Open the .replit.dev link in a new tab and hard refresh.
+
+Fix 2: Make sure you’re not in a “Workspace” that doesn’t expose .replit.dev
+
+The …worf.replit.dev subdomain is commonly a workspace/hosted environment where web exposure can be disabled or restricted.
+
+Quick check:
+
+In Replit, look for “Deployments” on the left.
+
+If you only get .replit.dev when you create a Deployment, then your current Run session will never be exposed publicly.
+
+If so: create a deployment (Autoscale is already configured in your .replit) and use the deployment URL.
+
+Your .replit already has:
+
+[deployment]
+deploymentTarget = "autoscale"
+build = ["npm", "run", "build"]
+run = ["npm", "run", "start"]
+
+
+So deployment is the “official” path in that setup.
+
+Fix 3 (fastest guaranteed): create a fresh Web repl and paste the code
+
+If you’re in a restricted workspace where .replit.dev proxying is flaky/disabled, the fastest guarantee is:
+
+Create a new Node.js (Web) repl
+
+Paste/clone your repo
+
+Run — the webview will attach normally
+
+I know that’s annoying, but it’s the most reliable when the proxy layer is broken at the workspace level.
+
+Do this now (minimal)
+
+Update .replit:
+
+run = "npm run dev -- --host 0.0.0.0"
+
+[[ports]]
+localPort = 5000
+externalPort = 5000
+
+
+Stop → Run
+
+Open the .replit.dev URL in a new tab and hard refresh (Ctrl+Shift+R)
+
+If it still refuses after that, it confirms your workspace doesn’t expose run sessions and you’ll need to use Deployments (or a fresh web repl).
