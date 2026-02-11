@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocation } from "wouter";
-import { Home, Plus, MessageCircle, User, Calendar, Search, X } from "lucide-react";
+import { Home, Plus, MessageCircle, User, Calendar, Search, X, MapPin, Zap, Users } from "lucide-react";
 import { AuthContext } from "@/App";
 import { AdvancedSearchWidget } from "@/components/AdvancedSearchWidget";
 import { useQuery } from "@tanstack/react-query";
@@ -31,7 +31,9 @@ export function MobileBottomNav() {
 
   const unreadCount = (unreadData as any)?.unreadCount || 0;
 
-  const navItems = user?.userType === 'business' ? [
+  const isBusinessUser = user?.userType === 'business';
+
+  const navItems = isBusinessUser ? [
     { icon: Home, label: "Dashboard", path: "/" },
     { icon: Search, label: "Search", action: "search" },
     { icon: MessageCircle, label: "Messages", path: "/messages" },
@@ -42,58 +44,107 @@ export function MobileBottomNav() {
     { icon: MessageCircle, label: "Messages", path: "/messages" },
     { icon: User, label: "Profile", path: user ? `/profile/${user.id}` : "/profile" },
   ];
-
-  const isBusinessUser = user?.userType === 'business';
   
   const actionMenuItems = isBusinessUser ? [
-    { label: "Create Deal", path: "/business-dashboard", icon: Calendar },
-    { label: "Create Quick Deal", path: "/business-dashboard", icon: MessageCircle },
+    { label: "Create Deal", path: "/business-dashboard", icon: Calendar, color: "#f97316" },
+    { label: "Quick Deal", path: "/business-dashboard", icon: Zap, color: "#3b82f6" },
   ] : [
-    { label: "Create Event", path: "/create-event", icon: Calendar },
-    { label: "Create Trip", path: "/plan-trip", icon: Calendar },
-    { label: "Create Quick Meetup", path: "/quick-meetups", icon: MessageCircle },
+    { label: "Create Event", path: "/create-event", icon: Calendar, color: "#f97316" },
+    { label: "Plan Trip", path: "/plan-trip", icon: MapPin, color: "#3b82f6" },
+    { label: "Quick Meetup", path: "/quick-meetups", icon: Users, color: "#10b981" },
   ];
+
+  const handleCreateTap = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowActionMenu(true);
+  };
 
   return (
     <>
       {showActionMenu && (
         <div 
-          className="fixed inset-0 z-50 flex items-end justify-center"
+          style={{ 
+            position: 'fixed', 
+            inset: 0, 
+            zIndex: 2147483646,
+            display: 'flex',
+            alignItems: 'flex-end',
+            justifyContent: 'center',
+          }}
           onClick={() => setShowActionMenu(false)}
         >
-          <div className="ios-action-sheet-backdrop absolute inset-0" />
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'rgba(0, 0, 0, 0.4)',
+            backdropFilter: 'blur(4px)',
+            WebkitBackdropFilter: 'blur(4px)',
+          }} />
           <div 
-            className="relative w-full max-w-lg mx-2 ios-action-sheet"
-            style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 8px)' }}
+            style={{ 
+              position: 'relative',
+              width: '100%',
+              maxWidth: '480px',
+              margin: '0 8px',
+              paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 8px)',
+              animation: 'iosSheetUp 0.35s cubic-bezier(0.32, 0.72, 0, 1)',
+            }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden mb-2 shadow-2xl">
-              <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
-                <div className="w-9 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mb-2" />
-                <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white text-center">
+            <div style={{
+              background: 'white',
+              borderRadius: '16px',
+              overflow: 'hidden',
+              marginBottom: '8px',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            }}>
+              <div style={{ padding: '12px 16px', borderBottom: '1px solid #f3f4f6' }}>
+                <div style={{ width: '36px', height: '4px', background: '#d1d5db', borderRadius: '9999px', margin: '0 auto 8px' }} />
+                <h3 style={{ fontSize: '15px', fontWeight: 600, color: '#111827', textAlign: 'center' }}>
                   Create New
                 </h3>
               </div>
-              <div className="p-3">
-                <div className="grid grid-cols-3 gap-2">
+              <div style={{ padding: '12px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: `repeat(${actionMenuItems.length}, 1fr)`, gap: '8px' }}>
                   {actionMenuItems.map((action, index) => {
                     const ActionIcon = action.icon;
                     return (
                       <button
                         key={index}
                         onClick={() => {
-                          if (action.path) {
-                            setLocation(action.path);
-                            setShowActionMenu(false);
-                          }
+                          setLocation(action.path);
+                          setShowActionMenu(false);
                         }}
-                        className="flex flex-col items-center justify-center p-3 rounded-2xl active:bg-gray-100 dark:active:bg-gray-700 transition-colors"
-                        style={{ minHeight: '80px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          padding: '12px',
+                          borderRadius: '16px',
+                          border: 'none',
+                          background: 'transparent',
+                          cursor: 'pointer',
+                          minHeight: '80px',
+                          touchAction: 'manipulation',
+                          WebkitTapHighlightColor: 'transparent',
+                        }}
                       >
-                        <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-orange-600 rounded-2xl flex items-center justify-center mb-2 shadow-sm">
-                          <ActionIcon className="w-6 h-6 text-white" />
+                        <div style={{
+                          width: '48px',
+                          height: '48px',
+                          background: `linear-gradient(135deg, ${action.color}, ${action.color}dd)`,
+                          borderRadius: '16px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          marginBottom: '8px',
+                          boxShadow: `0 4px 12px ${action.color}40`,
+                        }}>
+                          <ActionIcon style={{ width: '24px', height: '24px', color: 'white' }} />
                         </div>
-                        <span className="text-[11px] font-medium text-gray-700 dark:text-gray-300 text-center leading-tight">
+                        <span style={{ fontSize: '11px', fontWeight: 500, color: '#374151', textAlign: 'center', lineHeight: '14px' }}>
                           {action.label}
                         </span>
                       </button>
@@ -104,8 +155,20 @@ export function MobileBottomNav() {
             </div>
             <button
               onClick={() => setShowActionMenu(false)}
-              className="w-full bg-white dark:bg-gray-800 rounded-2xl py-3.5 text-[17px] font-semibold text-orange-500 active:bg-gray-50 dark:active:bg-gray-700 shadow-2xl"
-              style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+              style={{
+                width: '100%',
+                background: 'white',
+                borderRadius: '16px',
+                padding: '14px',
+                fontSize: '17px',
+                fontWeight: 600,
+                color: '#f97316',
+                border: 'none',
+                cursor: 'pointer',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                touchAction: 'manipulation',
+                WebkitTapHighlightColor: 'transparent',
+              }}
             >
               Cancel
             </button>
@@ -114,55 +177,79 @@ export function MobileBottomNav() {
       )}
 
       <div 
-        className="ios-tab-bar fixed bottom-0 left-0 right-0 overflow-visible"
         style={{ 
-          position: 'fixed', 
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
           zIndex: 9999, 
-          width: '100vw', 
-          bottom: '0px', 
-          display: 'block', 
-          overflow: 'visible',
+          width: '100vw',
           paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+          background: 'rgba(255, 255, 255, 0.92)',
+          backdropFilter: 'saturate(180%) blur(20px)',
+          WebkitBackdropFilter: 'saturate(180%) blur(20px)',
+          borderTop: '0.5px solid rgba(0, 0, 0, 0.12)',
         }}
       >
-        <div className="relative flex items-end justify-between px-2 max-w-lg mx-auto overflow-visible" style={{ height: '49px' }}>
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'flex-end', 
+          justifyContent: 'space-between', 
+          padding: '0 8px', 
+          maxWidth: '480px', 
+          margin: '0 auto', 
+          height: '49px',
+          position: 'relative',
+          overflow: 'visible',
+        }}>
           {navItems.slice(0, 2).map((item, index) => {
             const isActive = item.path ? (location === item.path || (item.path === '/' && location === '/')) : false;
             const Icon = item.icon;
-            const handleNavClick = (e: React.MouseEvent | React.TouchEvent) => {
-              e.preventDefault();
-              e.stopPropagation();
-              if (item.action === "search") {
-                setShowSearchWidget(true);
-              } else if (item.path) {
-                setLocation(item.path);
-              }
-            };
             return (
               <button
                 key={item.path || item.action || index}
                 type="button"
-                onClick={handleNavClick}
-                onTouchEnd={handleNavClick}
-                className="flex flex-col items-center justify-center flex-1"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (item.action === "search") {
+                    setShowSearchWidget(true);
+                  } else if (item.path) {
+                    setLocation(item.path);
+                  }
+                }}
                 style={{ 
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flex: 1,
                   touchAction: 'manipulation', 
                   WebkitTapHighlightColor: 'transparent', 
                   minHeight: '49px',
                   paddingTop: '6px',
                   paddingBottom: '2px',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
                 }}
                 aria-label={item.label}
               >
                 <Icon 
-                  className={`mb-0.5 transition-colors ${isActive ? 'text-orange-500' : 'text-gray-400 dark:text-gray-500'}`}
-                  style={{ width: '22px', height: '22px' }}
-                  strokeWidth={isActive ? 2.5 : 1.8}
+                  style={{ 
+                    width: '22px', 
+                    height: '22px', 
+                    marginBottom: '2px',
+                    color: isActive ? '#f97316' : '#9ca3af',
+                    strokeWidth: isActive ? 2.5 : 1.8,
+                  }}
                 />
-                <span 
-                  className={`font-medium transition-colors ${isActive ? 'text-orange-500' : 'text-gray-400 dark:text-gray-500'}`}
-                  style={{ fontSize: '10px', lineHeight: '12px' }}
-                >
+                <span style={{ 
+                  fontSize: '10px', 
+                  lineHeight: '12px', 
+                  fontWeight: 500,
+                  color: isActive ? '#f97316' : '#9ca3af',
+                }}>
                   {item.label}
                 </span>
               </button>
@@ -170,18 +257,30 @@ export function MobileBottomNav() {
           })}
 
           <button
-            onClick={() => setShowActionMenu(true)}
+            type="button"
+            onClick={handleCreateTap}
             aria-label="Create"
-            className="absolute left-1/2 -translate-x-1/2 -top-4 flex items-center justify-center ios-create-button"
             style={{
+              position: 'absolute',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              top: '-16px',
               width: '50px',
               height: '50px',
               borderRadius: '25px',
+              background: 'linear-gradient(135deg, #f97316, #ea580c)',
+              boxShadow: '0 4px 14px rgba(249, 115, 22, 0.4)',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               touchAction: 'manipulation',
               WebkitTapHighlightColor: 'transparent',
+              zIndex: 10,
             }}
           >
-            <Plus className="text-white" style={{ width: '26px', height: '26px' }} strokeWidth={2.5} />
+            <Plus style={{ width: '26px', height: '26px', color: 'white' }} strokeWidth={2.5} />
           </button>
 
           {navItems.slice(2).map((item, index) => {
@@ -192,39 +291,71 @@ export function MobileBottomNav() {
             return (
               <button
                 key={item.path || item.action || index}
-                onClick={() => {
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   if (item.action === "search") {
                     setShowSearchWidget(true);
                   } else if (item.path) {
                     setLocation(item.path);
                   }
                 }}
-                className="flex flex-col items-center justify-center flex-1"
                 style={{ 
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flex: 1,
                   touchAction: 'manipulation', 
                   WebkitTapHighlightColor: 'transparent', 
                   minHeight: '49px',
                   paddingTop: '6px',
                   paddingBottom: '2px',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
                 }}
                 aria-label={item.label}
               >
-                <div className="relative">
+                <div style={{ position: 'relative' }}>
                   <Icon 
-                    className={`mb-0.5 transition-colors ${isActive ? 'text-orange-500' : 'text-gray-400 dark:text-gray-500'}`}
-                    style={{ width: '22px', height: '22px' }}
-                    strokeWidth={isActive ? 2.5 : 1.8}
+                    style={{ 
+                      width: '22px', 
+                      height: '22px', 
+                      marginBottom: '2px',
+                      color: isActive ? '#f97316' : '#9ca3af',
+                      strokeWidth: isActive ? 2.5 : 1.8,
+                    }}
                   />
                   {isMessagesItem && unreadCount > 0 && (
-                    <span className="absolute -top-1.5 -right-2.5 min-w-[16px] h-[16px] flex items-center justify-center bg-red-500 text-white rounded-full px-1 shadow-sm" style={{ fontSize: '10px', fontWeight: 700 }}>
+                    <span style={{
+                      position: 'absolute',
+                      top: '-6px',
+                      right: '-10px',
+                      minWidth: '16px',
+                      height: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: '#ef4444',
+                      color: 'white',
+                      borderRadius: '9999px',
+                      padding: '0 4px',
+                      fontSize: '10px',
+                      fontWeight: 700,
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                    }}>
                       {unreadCount > 99 ? '99+' : unreadCount}
                     </span>
                   )}
                 </div>
-                <span 
-                  className={`font-medium transition-colors ${isActive ? 'text-orange-500' : 'text-gray-400 dark:text-gray-500'}`}
-                  style={{ fontSize: '10px', lineHeight: '12px' }}
-                >
+                <span style={{ 
+                  fontSize: '10px', 
+                  lineHeight: '12px', 
+                  fontWeight: 500,
+                  color: isActive ? '#f97316' : '#9ca3af',
+                }}>
                   {item.label}
                 </span>
               </button>
@@ -239,32 +370,6 @@ export function MobileBottomNav() {
       />
 
       <style>{`
-        .ios-tab-bar {
-          background: rgba(255, 255, 255, 0.92);
-          backdrop-filter: saturate(180%) blur(20px);
-          -webkit-backdrop-filter: saturate(180%) blur(20px);
-          border-top: 0.5px solid rgba(0, 0, 0, 0.12);
-        }
-        .dark .ios-tab-bar {
-          background: rgba(17, 24, 39, 0.92);
-          border-top: 0.5px solid rgba(255, 255, 255, 0.08);
-        }
-        .ios-create-button {
-          background: linear-gradient(135deg, #f97316, #ea580c);
-          box-shadow: 0 4px 14px rgba(249, 115, 22, 0.4);
-        }
-        .ios-create-button:active {
-          transform: scale(0.92);
-          transition: transform 0.1s ease;
-        }
-        .ios-action-sheet-backdrop {
-          background: rgba(0, 0, 0, 0.4);
-          backdrop-filter: blur(4px);
-          -webkit-backdrop-filter: blur(4px);
-        }
-        .ios-action-sheet {
-          animation: iosSheetUp 0.35s cubic-bezier(0.32, 0.72, 0, 1);
-        }
         @keyframes iosSheetUp {
           from { transform: translateY(100%); }
           to { transform: translateY(0); }
