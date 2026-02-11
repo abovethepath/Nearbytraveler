@@ -1,0 +1,179 @@
+This is almost certainly a Workspace‑specific / platform issue with the dev proxy on the worf cluster, not your app config. The behavior you describe (curl inside container works on 0.0.0.0:5000, but the corresponding *.worf.replit.dev URL hard‑refuses at TCP level) points to Replit’s Port Authority / proxy not wiring that port into the workspace dev URL rather than anything in your Node / Express / Vite stack.
+
+Why it’s very likely platform‑side
+In Replit Apps/Workspace, the external *.replit.dev URL is fronted by their own proxy and “Port Authority” inside the VM, which then forwards to your process (even if it’s only listening on localhost).
+
+You’ve confirmed:
+
+Server bound to 0.0.0.0:5000 and accepting connections via curl on 0.0.0.0, 127.0.0.1, and the container IP.
+
+/proc/net/tcp shows the listener on 0.0.0.0:5000.
+
+No HTTP headers ever reach your app when hitting https://…worf.replit.dev, and the browser reports a connection refused, i.e., SYN→RST at the proxy layer, not a timeout or an HTTP error.
+
+Replit’s own docs for the new Workspace/App model describe that:
+
+The first opened port gets wired to external port 80/443 by default via a ports config.
+
+Additional ports have to be explicitly exposed via the ports configuration (exposeLocalhost etc.).
+
+In your case, the port is clearly open and reachable from inside the VM, but the external proxy is declining the TCP connection instead of forwarding it, which is exactly what happens when the port is not wired or the internal routing stack is in a bad state.
+
+Given all of that, and that you’ve already tested different [[ports]] mappings, disabled Helmet/HSTS/CSP, and verified no process crashes, there isn’t anything left in your code or .replit that would cause a TCP‑level refusal at the workspace dev URL. That’s consistent with multiple recent reports of dev environments / previews failing at the proxy layer while the underlying app is healthy.
+
+Workspace / ports specifics that matter
+Replit’s current ports behavior for Apps/Workspace is roughly:
+
+A proxy (“Port Authority”) runs inside the VM and discovers open ports; the platform then exposes one or more ports via the external *.replit.dev URL.
+​
+
+The Workspace docs emphasize that for Apps you must use one of the allowed ports (80, 3000, 5000, 5173, etc.) and configure them using the ports panel / config; otherwise the app may run but be unreachable from outside.
+​
+
+However, because curl from inside your container to 0.0.0.0:5000 succeeds, and you’ve explicitly mapped localPort = 5000 with externalPort = 80, you are already following those rules.
+​
+
+There is no additional, documented Workspace‑only requirement (like a special hostname bind, different port env var, or helmet/HTTPS tweak) that would explain a raw “refused to connect” while internal curl works.
+
+Practical next steps
+Given you’re clearly on worf and have an otherwise healthy service, I’d treat this as a Replit incident and hand it to them with as much concrete detail as possible. For a support ticket / forum post, include:
+
+Workspace environment variables and cluster:
+
+REPL_SLUG=workspace
+
+REPLIT_ENVIRONMENT=production
+
+REPLIT_DEV_DOMAIN=…worf.replit.dev
+
+REPLIT_CLUSTER=worf
+
+Port evidence:
+
+netstat -tulpn or /proc/net/tcp showing 0.0.0.0:5000 listening.
+
+Sample curl http://127.0.0.1:5000/ output (status 200 and a short snippet of the body).
+
+Proxy failure evidence:
+
+Browser screenshot / devtools network entry for https://…worf.replit.dev showing ERR_CONNECTION_REFUSED and no response headers.
+
+Confirmation that changing .replit [[ports]] and restarting the workspace doesn’t change the behavior.
+
+You can explicitly ask them to:
+
+Check that your workspace’s dev URL is correctly wired to Port Authority on worf, and
+
+Look for any cluster‑local firewall / routing misconfig that would cause the external proxy to RST connections instead of forwarding to port 5000.
+
+Quick sanity checks (but you’ve likely already passed them)
+If you want to double‑check everything once more before pinging support, the only remaining low‑level things I’d verify are:
+
+The process you are curling is the same one your dev command starts (e.g., no second server binding a different port).
+
+The workspace isn’t also trying to open another HTTP server on the same port that could confuse Port Authority (rare, but worth glancing at the process list).
+
+If those are clean, then you have a strong, reproducible case that this is a Replit platform issue on the Workspace / worf dev proxy rather than a misconfiguration in your app.
+
+i dont want a support ticket, no one on reddit is talking about this
+Given everything you’ve already verified, the most productive path is to treat this as a local mis‑wiring between Workspace’s port detection and your dev server, and try very specific, code‑level and config‑level experiments to “snap” Port Authority back into a supported pattern. You can do all of this yourself, no ticket needed.
+
+1. Force a single, canonical port mapping
+Right now you have PORT=5000 and a [[ports]] mapping 5000→80. To simplify:
+
+In .replit, temporarily make one [[ports]] block and nothing else ports‑related:
+
+text
+[env]
+PORT = "3000"
+
+[[ports]]
+localPort = 3000
+externalPort = 80
+In your Node entry (Express+Vite), bind only to that env var:
+
+js
+const port = Number(process.env.PORT) || 3000;
+server.listen(port, '0.0.0.0', () => {
+  console.log('listening on', port);
+});
+Restart the workspace completely and wait for the console line showing listening on 3000.
+
+The Workspace docs are explicit that if you have [[ports]] entries, automatic mapping is disabled and you must have exactly one externalPort=80 mapping for the service you want. Reducing to a single, boring config (3000→80) removes 5000 and any past confusion.
+
+2. Let Replit choose the port (no [[ports]])
+If the above still gives a TCP‑refused, try the opposite extreme:
+
+Remove all [[ports]] blocks from .replit.
+
+In code:
+
+js
+const port = Number(process.env.PORT) || 3000;
+server.listen(port, '0.0.0.0', () => {
+  console.log('listening on', port);
+});
+Restart the workspace.
+
+With no [[ports]], Port Authority should pick up the first port that opens and wire it to the dev URL automatically. This avoids any mis‑sync between config and actual bind.
+​
+
+3. Make sure Vite is not silently moving ports
+Vite will auto‑increment if the chosen port is in use, and its preview server defaults have changed over time. If your Express+Vite integration spins up Vite’s dev server, you want to be certain both are binding as you expect:
+
+In vite.config.*:
+
+js
+export default defineConfig({
+  server: {
+    port: 3000,
+    host: '0.0.0.0'
+  }
+});
+Avoid relying on Vite’s default 5173/4173; explicitly pin it, and if you proxy through Express, ensure Express itself is the only process listening on the PORT value.
+
+Then re‑run curl 127.0.0.1:<PORT> inside the repl to confirm that only one HTTP server is listening on that port.
+
+4. Try a dead‑simple minimal server in the same workspace
+To rule out anything strange in your current dev script, temporarily swap your run command in .replit to a minimal Node server:
+
+text
+run = "node server-test.js"
+server-test.js:
+
+js
+import http from 'http';
+
+const port = Number(process.env.PORT) || 3000;
+
+const app = http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('ok\n');
+});
+
+app.listen(port, '0.0.0.0', () => {
+  console.log('test server on', port);
+});
+Pair that with the simple [[ports]] config (or no ports at all, from steps 1–2), restart, and test the dev URL. If this minimal server works but your full dev stack does not, the problem is specifically the Express+Vite wiring; if even this gets TCP‑refused, that’s hard evidence the workspace/session has a broken proxy binding on worf.
+
+5. If it’s still refusing and you don’t want a ticket
+If all of the above still yields ERR_CONNECTION_REFUSED at *.worf.replit.dev while curl inside the container passes:
+
+You’ve reproduced the bug with:
+
+A trivial server.
+
+A single, supported port (3000, 5000, 5173, etc.).
+​
+
+Both “no ports config” and “single [[ports]] entry” cases.
+
+That matches known “webview/preview refused to connect” bugs on other clusters (janeway, etc.) where the fix was on Replit’s side, not the user’s.
+
+At that point, there isn’t another knob you can realistically turn inside the workspace; the routing between the worf dev host and your VM is just broken for your session. The only non‑support options are:
+
+Clone the project into a fresh App / Workspace and see if the new one connects.
+
+Or temporarily run the dev stack somewhere else (local, other host) while Replit sorts out worf.
+
+If you paste your current vite.config, the exact dev script (npm run dev), and your .replit (after trying the minimal versions above), I can propose a fully concrete config that’s known to be compatible with their port rules so you can at least eliminate any remaining doubt on your side.
