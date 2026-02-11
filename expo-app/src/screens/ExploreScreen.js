@@ -54,7 +54,7 @@ export default function ExploreScreen({ navigation }) {
           </TouchableOpacity>
         ))}
       </View>
-      {loading ? <View style={styles.centered}><ActivityIndicator size="large" color="#F97316" /></View> : (
+      {loading ? <View style={styles.centered}><ActivityIndicator size={36} color="#F97316" /></View> : (
         <FlatList data={users} keyExtractor={(item) => String(item.id)} renderItem={({ item }) => <UserCard user={item} onPress={handleUserPress} />}
           contentContainerStyle={styles.listContent} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#F97316" />}
           ListEmptyComponent={<View style={styles.emptyState}><Text style={styles.emptyIcon}>&#x1F30E;</Text><Text style={styles.emptyTitle}>No travelers found</Text><Text style={styles.emptySubtitle}>Try searching a different city</Text></View>}

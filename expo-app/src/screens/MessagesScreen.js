@@ -51,7 +51,7 @@ export default function MessagesScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}><Text style={styles.headerTitle}>Messages</Text></View>
-      {loading ? <View style={styles.centered}><ActivityIndicator size="large" color="#F97316" /></View> : (
+      {loading ? <View style={styles.centered}><ActivityIndicator size={36} color="#F97316" /></View> : (
         <FlatList data={conversations} keyExtractor={(item, i) => String(item.id || i)} renderItem={({ item }) => <ConversationCard conversation={item} onPress={handlePress} />}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#F97316" />}
           ListEmptyComponent={<View style={styles.emptyState}><Text style={styles.emptyIcon}>&#x1F4AC;</Text><Text style={styles.emptyTitle}>No messages yet</Text><Text style={styles.emptySubtitle}>Connect with travelers to start chatting</Text></View>}

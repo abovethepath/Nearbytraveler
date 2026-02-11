@@ -19,7 +19,7 @@ export default function UserProfileScreen({ route, navigation }) {
   };
   const handleMessage = () => { navigation.navigate('Chat', { userId: profile.id, userName: profile.fullName || profile.username }); };
 
-  if (loading) return <SafeAreaView style={styles.container}><View style={styles.centered}><ActivityIndicator size="large" color="#F97316" /></View></SafeAreaView>;
+  if (loading) return <SafeAreaView style={styles.container}><View style={styles.centered}><ActivityIndicator size={36} color="#F97316" /></View></SafeAreaView>;
   if (!profile) return <SafeAreaView style={styles.container}><TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}><Text style={styles.backText}>Back</Text></TouchableOpacity><View style={styles.centered}><Text>User not found</Text></View></SafeAreaView>;
 
   return (
