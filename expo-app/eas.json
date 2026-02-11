@@ -1,4 +1,4 @@
-{
+﻿{
   "cli": {
     "version": ">= 5.0.0"
   },
@@ -21,7 +21,7 @@
       "ios": {
         "resourceClass": "m-medium",
 
-        "image": "macos-sonoma-14.6-xcode-16.0"
+        "image": "macos-sequoia-15.2-xcode-16.2"
       },
       "android": {
         "buildType": "app-bundle"
