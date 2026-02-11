@@ -76,7 +76,7 @@ integrations = [
 
 [userenv.shared]
 MAIL_FROM_NAME = "Nearby Traveler"
-MAIL_FROM_EMAIL = "aaron@thenearbytraveler.com"
+MAIL_FROM_EMAIL = "aaron@nearbytraveler.org"
 APP_URL = "https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev"
 
 [objectStorage]
