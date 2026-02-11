@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Heart, MapPin, Star } from "lucide-react";
 import { useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { SimpleAvatar } from "@/components/simple-avatar";
 
 interface User {
@@ -39,6 +40,11 @@ export default function ResponsiveUserGrid({
 }: ResponsiveUserGridProps) {
   const [, setLocation] = useLocation();
   const displayUsers = limit ? users.slice(0, limit) : users;
+
+  const { data: availableNowIds = [] } = useQuery<number[]>({
+    queryKey: ['/api/available-now/active-ids'],
+    refetchInterval: 30000,
+  });
 
   const getLocation = (user: User) => {
     // ALWAYS use hometownCity - never fall back to location field (which contains metro area)
@@ -83,13 +89,24 @@ export default function ResponsiveUserGrid({
   };
 
   // Desktop Card Component - LINKEDIN INSPIRED PROFESSIONAL DESIGN
-  const DesktopUserCard = ({ user }: { user: User }) => (
+  const DesktopUserCard = ({ user }: { user: User }) => {
+    const isAvailable = availableNowIds.includes(user.id);
+    return (
     <Card 
-      className="group cursor-pointer bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all duration-200 overflow-hidden"
+      className={`group cursor-pointer bg-white dark:bg-gray-800 border hover:shadow-xl transition-all duration-200 overflow-hidden ${isAvailable ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : 'border-gray-200 dark:border-gray-700'}`}
       onClick={() => setLocation(`/profile/${user.id}`)}
     >
       {/* Cover Background */}
-      <div className="h-16 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500"></div>
+      <div className="h-16 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500 relative">
+        {isAvailable && (
+          <div className="absolute top-2 right-2">
+            <span className="flex items-center gap-1 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg animate-pulse">
+              <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
+              Available Now
+            </span>
+          </div>
+        )}
+      </div>
       
       {/* Content */}
       <div className="px-6 pb-6 -mt-12 text-center">
@@ -141,15 +158,27 @@ export default function ResponsiveUserGrid({
       </div>
     </Card>
   );
+  };
 
   // Mobile Card Component - LINKEDIN INSPIRED PROFESSIONAL DESIGN
-  const MobileUserCard = ({ user }: { user: User }) => (
+  const MobileUserCard = ({ user }: { user: User }) => {
+    const isAvailable = availableNowIds.includes(user.id);
+    return (
     <Card 
-      className="cursor-pointer bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all duration-200 overflow-hidden h-full"
+      className={`cursor-pointer bg-white dark:bg-gray-800 border hover:shadow-xl transition-all duration-200 overflow-hidden h-full ${isAvailable ? 'border-green-400 dark:border-green-500 ring-2 ring-green-400/30' : 'border-gray-200 dark:border-gray-700'}`}
       onClick={() => setLocation(`/profile/${user.id}`)}
     >
       {/* Gradient Cover - smaller for mobile */}
-      <div className="h-12 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500"></div>
+      <div className="h-12 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500 relative">
+        {isAvailable && (
+          <div className="absolute top-1 right-1">
+            <span className="flex items-center gap-1 bg-green-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-lg animate-pulse">
+              <span className="w-1 h-1 bg-white rounded-full"></span>
+              Available
+            </span>
+          </div>
+        )}
+      </div>
       
       {/* Content */}
       <div className="px-3 pb-4 -mt-8 text-center">
@@ -181,6 +210,7 @@ export default function ResponsiveUserGrid({
       </div>
     </Card>
   );
+  };
 
   if (!users || users.length === 0) {
     return (

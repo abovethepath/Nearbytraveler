@@ -87,6 +87,12 @@ export default function CityPage({ cityName }: CityPageProps) {
 
   // Removed photo display functions per user request
 
+  // Fetch available now user IDs for green badge
+  const { data: availableNowIds = [] } = useQuery<number[]>({
+    queryKey: ['/api/available-now/active-ids'],
+    refetchInterval: 30000,
+  });
+
   // Fetch users for this city using metropolitan area consolidation
   const { data: users = [], isLoading: usersLoading } = useQuery({
     queryKey: ['/api/city', decodedCityName, 'users', filter, 'metro'],
@@ -418,7 +424,8 @@ export default function CityPage({ cityName }: CityPageProps) {
                             isCurrentlyTraveling: user.isCurrentlyTraveling || false,
                             secretActivities: user.secretActivities || ""
                           }} 
-                          searchLocation={decodedCityName} 
+                          searchLocation={decodedCityName}
+                          isAvailableNow={availableNowIds.includes(user.id)}
                         />
                       ))}
                     </div>
@@ -486,6 +493,7 @@ export default function CityPage({ cityName }: CityPageProps) {
                           key={business.id} 
                           user={business}
                           currentUserId={isActuallyAuthenticated ? JSON.parse(authStorageUser || '{}').id : undefined}
+                          isAvailableNow={availableNowIds.includes(business.id)}
                         />
                       ))}
                   </div>
