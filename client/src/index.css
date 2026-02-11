@@ -1,20 +1,71 @@
-/* Import modern mobile-optimized font */
+/* Import modern mobile-optimized font - SF Pro inspired */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* CAPACITOR iOS Safe Area Support */
+/* iOS NATIVE FEEL - System font stack + Safe Area Support */
 :root {
   --sat: env(safe-area-inset-top);
   --sab: env(safe-area-inset-bottom);
   --sal: env(safe-area-inset-left);
   --sar: env(safe-area-inset-right);
+  --ios-font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Inter', system-ui, sans-serif;
 }
 
-/* Apply safe area padding for iOS notch/home indicator */
+/* iOS-style base body */
 body {
+  font-family: var(--ios-font);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   padding-top: var(--sat);
   padding-bottom: var(--sab);
   padding-left: var(--sal);
   padding-right: var(--sar);
+  overscroll-behavior-y: none;
+}
+
+/* iOS momentum scrolling for all scrollable areas */
+.ios-scroll-container,
+[data-radix-scroll-area-viewport],
+.overflow-y-auto,
+.overflow-auto {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+}
+
+/* iOS-style touch feedback - no highlight flash */
+button, a, [role="button"], input[type="submit"] {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* iOS-style active state for interactive elements */
+@media (hover: none) and (pointer: coarse) {
+  button:active, a:active, [role="button"]:active {
+    opacity: 0.7;
+    transition: opacity 0.1s ease;
+  }
+}
+
+/* iOS prevent zoom on input focus */
+@media (max-width: 768px) {
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+}
+
+/* iOS-style card border radius */
+@media (max-width: 768px) {
+  .rounded-lg {
+    border-radius: 12px;
+  }
+  .rounded-xl {
+    border-radius: 14px;
+  }
+  .rounded-2xl {
+    border-radius: 16px;
+  }
 }
 
 /* Ensure fixed elements respect safe areas */
@@ -22,10 +73,10 @@ body {
   padding-bottom: var(--sab);
 }
 
-/* FORCE navbar clickable - CRITICAL NUCLEAR FIX */
+/* FORCE navbar clickable - CRITICAL FIX */
 .mobile-top-nav {
   position: fixed !important;
-  z-index: 2147483647 !important; /* Maximum possible z-index */
+  z-index: 2147483647 !important;
   isolation: isolate !important;
   pointer-events: auto !important;
   padding-top: var(--sat);
@@ -51,6 +102,30 @@ main,
 .page-container {
   position: relative;
   z-index: 1 !important;
+}
+
+/* iOS-style selection color */
+::selection {
+  background: rgba(249, 115, 22, 0.25);
+}
+
+/* iOS standalone PWA improvements */
+@media (display-mode: standalone) {
+  body {
+    overscroll-behavior: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  
+  a, p, span, h1, h2, h3, h4, h5, h6, li {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+  
+  input, textarea {
+    -webkit-user-select: auto;
+    user-select: auto;
+  }
 }
 
 .hero-clean h1 .hero-blue,

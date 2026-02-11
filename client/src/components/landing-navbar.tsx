@@ -67,31 +67,29 @@ export default function LandingNavbar() {
             </button>
           </div>
 
-          {/* Mobile Menu Button with Beta Badge */}
           <div className="flex items-center lg:hidden gap-2">
             <ThemeToggle />
-            <span className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-2 py-1 rounded-full font-medium">
-              Beta Launch
+            <span className="text-[11px] text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-2 py-1 rounded-full font-medium">
+              Beta
             </span>
             <button 
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('🍔 Hamburger clicked, current state:', mobileMenuOpen);
                 setMobileMenuOpen(!mobileMenuOpen);
               }}
               type="button" 
-              className="inline-flex items-center justify-center p-3 rounded-xl text-gray-600 hover:text-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 active:scale-95 transition-all duration-200 touch-manipulation bg-gray-50 relative z-50"
-              style={{ minHeight: '48px', minWidth: '48px', display: 'flex', visibility: 'visible' }}
+              className="flex items-center justify-center rounded-xl text-gray-600 hover:text-gray-800 active:bg-gray-100 dark:active:bg-gray-700 transition-colors"
+              style={{ width: '44px', height: '44px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
               data-testid="mobile-menu-button"
             >
               {!mobileMenuOpen ? (
-                <svg className="block h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <svg className="block" width="22" height="22" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               ) : (
-                <svg className="h-7 w-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <svg width="22" height="22" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               )}
@@ -100,60 +98,38 @@ export default function LandingNavbar() {
         </div>
       </div>
       
-      {/* Enhanced Mobile menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-white dark:bg-gray-800 shadow-lg max-h-screen overflow-y-auto">
-          <div className="pt-3 pb-3 space-y-1 px-4">
-            <Link href="/" 
-              className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-3 pr-3 py-2 border-l-4 text-sm font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              🏠 Home
-            </Link>
-            <Link href="/locals-landing" 
-              className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-3 pr-3 py-2 border-l-4 text-sm font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
-              onClick={(e) => {
-                console.log('🗺️ Locals link clicked!');
-                setMobileMenuOpen(false);
-              }}
-              data-testid="mobile-locals-link"
-            >
-              🗺️ For Locals
-            </Link>
-            <Link href="/travelers-landing" 
-              className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-3 pr-3 py-2 border-l-4 text-sm font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              ✈️ For Travelers
-            </Link>
-            <Link href="/events-landing" 
-              className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-3 pr-3 py-2 border-l-4 text-sm font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              📅 For Events
-            </Link>
-            <Link href="/business-landing" 
-              className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-3 pr-3 py-2 border-l-4 text-sm font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              💼 For Businesses
-            </Link>
-            <Link href="/cs" 
-              className="border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 block pl-3 pr-3 py-2 border-l-4 text-sm font-medium rounded-r-lg transition-all duration-200 touch-manipulation"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              🛋️ Couchsurfer
-            </Link>
+        <div className="lg:hidden shadow-lg max-h-screen overflow-y-auto" style={{ background: 'rgba(255,255,255,0.98)', WebkitOverflowScrolling: 'touch' }}>
+          <div className="pt-2 pb-2 space-y-0.5 px-3">
+            {[
+              { href: "/", label: "Home", icon: "🏠" },
+              { href: "/locals-landing", label: "For Locals", icon: "🗺️" },
+              { href: "/travelers-landing", label: "For Travelers", icon: "✈️" },
+              { href: "/events-landing", label: "For Events", icon: "📅" },
+              { href: "/business-landing", label: "For Businesses", icon: "💼" },
+              { href: "/cs", label: "Couchsurfer", icon: "🛋️" },
+            ].map((item) => (
+              <Link 
+                key={item.href}
+                href={item.href} 
+                className="flex items-center gap-3 px-4 py-3 text-[15px] text-gray-700 dark:text-gray-300 rounded-xl active:bg-gray-100 dark:active:bg-gray-700 transition-colors"
+                style={{ minHeight: '44px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <span>{item.icon}</span>
+                <span className="font-medium">{item.label}</span>
+              </Link>
+            ))}
           </div>
-          <div className="pt-3 pb-4 border-t border-gray-200 dark:border-gray-700 px-4">
+          <div className="pt-2 pb-4 border-t border-gray-200/60 dark:border-gray-700/60 px-3">
             <div className="flex flex-col space-y-2">
               <button 
                 onClick={() => {
                   setMobileMenuOpen(false);
                   setLocation('/signup');
                 }}
-                className="navbar-btn-black-text text-center px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 active:scale-95 shadow-lg touch-manipulation mb-2 border-2"
-                style={{ backgroundColor: '#fb923c', borderColor: '#fb923c' }}
+                className="text-center px-4 py-3.5 rounded-xl text-[15px] font-semibold text-white transition-all active:scale-[0.98] shadow-sm"
+                style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)', minHeight: '44px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
               >
                 Sign Up
               </button>
@@ -162,8 +138,8 @@ export default function LandingNavbar() {
                   setMobileMenuOpen(false);
                   setLocation('/signin');
                 }}
-                className="navbar-btn-black-text text-center px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 active:scale-95 shadow-lg touch-manipulation border-2"
-                style={{ backgroundColor: '#f3f4f6', borderColor: '#d1d5db' }}
+                className="text-center px-4 py-3.5 rounded-xl text-[15px] font-semibold text-gray-700 bg-gray-100 active:bg-gray-200 transition-all active:scale-[0.98]"
+                style={{ minHeight: '44px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
               >
                 Sign In
               </button>

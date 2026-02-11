@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Menu, X, Home, MapPin, Calendar, Users, MessageCircle, User, LogOut, Compass, Zap, Building2, Star } from "lucide-react";
+import { Menu, X, Home, MapPin, Calendar, Users, MessageCircle, User, LogOut, Compass, Zap, Building2, Star, ChevronRight, Settings } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AuthContext } from "@/App";
 import { useLocation } from "wouter";
@@ -14,7 +14,6 @@ export function MobileTopNav() {
   const [isOpen, setIsOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
 
-  // Hydrate user from best source
   useEffect(() => {
     let effectiveUser = null;
     if (user?.username) {
@@ -36,7 +35,6 @@ export function MobileTopNav() {
     setCurrentUser(effectiveUser);
   }, [user]);
 
-  // Listen for profile updates
   useEffect(() => {
     const handleUpdate = (e: any) => {
       if (e?.detail) {
@@ -54,7 +52,6 @@ export function MobileTopNav() {
     };
   }, []);
 
-  // Lock body scroll when menu open - iOS-safe approach
   useEffect(() => {
     if (isOpen) {
       const scrollY = window.scrollY;
@@ -77,14 +74,12 @@ export function MobileTopNav() {
   const handleMenuToggle = (e: React.TouchEvent | React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('🍔 Menu toggle');
     setIsOpen(prev => !prev);
   };
 
   const handleAvatarTap = (e: React.TouchEvent | React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('👤 Avatar tap');
     setIsOpen(false);
     const profilePath = currentUser?.id ? `/profile/${currentUser.id}` : "/profile";
     setLocation(profilePath);
@@ -109,73 +104,113 @@ export function MobileTopNav() {
 
   const isBusiness = currentUser?.userType === "business";
 
-  const menuItems = isBusiness ? [
-    { icon: Home, label: "Dashboard", path: "/" },
-    { icon: Building2, label: "Manage Deals", path: "/business-dashboard" },
-    { icon: Calendar, label: "Create Event", path: "/create-event" },
-    { icon: Calendar, label: "View Events", path: "/events" },
-    { icon: MessageCircle, label: "Chat Rooms", path: "/chatrooms" },
-    { icon: MessageCircle, label: "Customer Messages", path: "/messages" },
-    { icon: User, label: "Business Profile", path: currentUser?.id ? `/profile/${currentUser.id}` : "/profile" },
-    { icon: MapPin, label: "View Cities", path: "/discover" },
+  const menuGroups = isBusiness ? [
+    {
+      title: "Main",
+      items: [
+        { icon: Home, label: "Dashboard", path: "/" },
+        { icon: Building2, label: "Manage Deals", path: "/business-dashboard" },
+      ]
+    },
+    {
+      title: "Events & Chat",
+      items: [
+        { icon: Calendar, label: "Create Event", path: "/create-event" },
+        { icon: Calendar, label: "View Events", path: "/events" },
+        { icon: MessageCircle, label: "Chat Rooms", path: "/chatrooms" },
+        { icon: MessageCircle, label: "Customer Messages", path: "/messages" },
+      ]
+    },
+    {
+      title: "Account",
+      items: [
+        { icon: User, label: "Business Profile", path: currentUser?.id ? `/profile/${currentUser.id}` : "/profile" },
+        { icon: MapPin, label: "View Cities", path: "/discover" },
+      ]
+    }
   ] : [
-    { icon: Home, label: "Home", path: "/" },
-    { icon: MapPin, label: "Cities", path: "/discover" },
-    { icon: Calendar, label: "Events", path: "/events" },
-    { icon: Compass, label: "Plan Trip", path: "/plan-trip" },
-    { icon: Zap, label: "Quick Meetups", path: "/quick-meetups" },
-    { icon: MessageCircle, label: "Chat Rooms", path: "/chatrooms" },
-    { icon: Users, label: "City Plans", path: "/match-in-city" },
-    { icon: Users, label: "Connect", path: "/connect" },
-    { icon: MessageCircle, label: "Messages", path: "/messages" },
-    { icon: User, label: "Profile", path: currentUser?.id ? `/profile/${currentUser.id}` : "/profile" },
-    { icon: Star, label: "Ambassador Program", path: "/ambassador-program" },
+    {
+      title: "Discover",
+      items: [
+        { icon: Home, label: "Home", path: "/" },
+        { icon: MapPin, label: "Cities", path: "/discover" },
+        { icon: Calendar, label: "Events", path: "/events" },
+      ]
+    },
+    {
+      title: "Connect",
+      items: [
+        { icon: Compass, label: "Plan Trip", path: "/plan-trip" },
+        { icon: Zap, label: "Quick Meetups", path: "/quick-meetups" },
+        { icon: Users, label: "City Plans", path: "/match-in-city" },
+        { icon: Users, label: "Connect", path: "/connect" },
+      ]
+    },
+    {
+      title: "Messages",
+      items: [
+        { icon: MessageCircle, label: "Chat Rooms", path: "/chatrooms" },
+        { icon: MessageCircle, label: "Messages", path: "/messages" },
+      ]
+    },
+    {
+      title: "Account",
+      items: [
+        { icon: User, label: "Profile", path: currentUser?.id ? `/profile/${currentUser.id}` : "/profile" },
+        { icon: Star, label: "Ambassador Program", path: "/ambassador-program" },
+        { icon: Settings, label: "Settings", path: "/settings" },
+      ]
+    }
   ];
 
   return (
     <>
-      {/* Fixed Top Navbar */}
-      <header className="fixed top-0 left-0 right-0 z-[10000] h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 md:hidden">
-        <div className="flex items-center justify-between h-full px-3">
-          {/* Left: Hamburger */}
+      <header 
+        className="fixed top-0 left-0 right-0 z-[10000] md:hidden ios-nav-bar"
+        style={{
+          paddingTop: 'env(safe-area-inset-top, 0px)',
+        }}
+      >
+        <div 
+          className="h-11 flex items-center justify-between px-4"
+          style={{ minHeight: '44px' }}
+        >
           <button
             type="button"
             aria-label="Menu"
             aria-expanded={isOpen}
             data-testid="button-mobile-menu"
-            className="mobile-touch-btn w-12 h-12 flex items-center justify-center rounded-lg text-gray-700 dark:text-gray-200"
+            className="ios-touch-target flex items-center justify-center rounded-xl text-gray-700 dark:text-gray-200 active:bg-gray-200/60 dark:active:bg-gray-700/60"
             style={{
+              width: '44px',
+              height: '44px',
               touchAction: 'manipulation',
-              WebkitTapHighlightColor: 'rgba(255, 165, 0, 0.3)',
-              WebkitUserSelect: 'none',
-              userSelect: 'none',
+              WebkitTapHighlightColor: 'transparent',
             }}
             onTouchEnd={handleMenuToggle}
             onClick={handleMenuToggle}
           >
-            {isOpen ? <X className="w-6 h-6 pointer-events-none" /> : <Menu className="w-6 h-6 pointer-events-none" />}
+            {isOpen ? <X className="w-[22px] h-[22px] pointer-events-none" /> : <Menu className="w-[22px] h-[22px] pointer-events-none" />}
           </button>
 
-          {/* Center: Logo */}
           <div className="flex-1 flex justify-center pointer-events-none">
             <Logo variant="navbar" />
           </div>
 
-          {/* Right: Avatar */}
           <button
             type="button"
             aria-label="Profile"
-            className="mobile-touch-btn w-12 h-12 flex items-center justify-center rounded-full"
+            className="ios-touch-target flex items-center justify-center"
             style={{
+              width: '44px',
+              height: '44px',
               touchAction: 'manipulation',
-              WebkitTapHighlightColor: 'rgba(255, 165, 0, 0.3)',
-              WebkitUserSelect: 'none',
-              userSelect: 'none',
+              WebkitTapHighlightColor: 'transparent',
             }}
             onTouchEnd={handleAvatarTap}
             onClick={handleAvatarTap}
           >
-            <Avatar className="w-9 h-9 border-2 border-gray-200 dark:border-gray-600 pointer-events-none">
+            <Avatar className="w-8 h-8 border-2 border-gray-200/80 dark:border-gray-600/80 pointer-events-none ring-1 ring-white/20">
               <AvatarImage
                 src={currentUser?.profileImage || undefined}
                 alt={currentUser?.name || currentUser?.username || "User"}
@@ -191,42 +226,38 @@ export function MobileTopNav() {
         </div>
       </header>
 
-      {/* Menu Portal - Rendered at body level for proper z-index */}
       {isOpen && createPortal(
         <>
-          {/* Backdrop - prevent all touch events from reaching page */}
           <div
-            className="fixed inset-0 bg-black/50 z-[10001] md:hidden"
+            className="fixed inset-0 z-[10001] md:hidden ios-menu-backdrop"
             style={{ touchAction: 'none' }}
             onClick={() => setIsOpen(false)}
             onTouchMove={(e) => e.preventDefault()}
           />
 
-          {/* Slide-out Menu Panel */}
           <nav
-            className="fixed top-0 left-0 bottom-0 w-72 max-w-[85vw] bg-white dark:bg-gray-900 z-[10002] shadow-xl md:hidden flex flex-col"
+            className="fixed top-0 left-0 bottom-0 w-80 max-w-[85vw] z-[10002] md:hidden flex flex-col ios-slide-menu"
             style={{
-              animation: 'slideInLeft 0.25s ease-out',
+              paddingTop: 'env(safe-area-inset-top, 0px)',
+              paddingBottom: 'env(safe-area-inset-bottom, 0px)',
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Menu Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-              <span className="text-lg font-semibold text-gray-900 dark:text-white">Menu</span>
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200/60 dark:border-gray-700/60">
+              <span className="text-[17px] font-semibold text-gray-900 dark:text-white">Menu</span>
               <button
                 type="button"
-                className="mobile-touch-btn w-10 h-10 flex items-center justify-center rounded-lg text-gray-600 dark:text-gray-300"
-                style={{ touchAction: 'manipulation' }}
+                className="ios-touch-target flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800"
+                style={{ width: '30px', height: '30px', touchAction: 'manipulation' }}
                 onTouchEnd={(e) => { e.preventDefault(); setIsOpen(false); }}
                 onClick={() => setIsOpen(false)}
               >
-                <X className="w-5 h-5 pointer-events-none" />
+                <X className="w-4 h-4 text-gray-500 dark:text-gray-400 pointer-events-none" />
               </button>
             </div>
 
-            {/* Scrollable content area */}
             <div
-              className="flex-1 overflow-y-auto overscroll-contain"
+              className="flex-1 overflow-y-auto overscroll-contain ios-scroll-container"
               style={{
                 WebkitOverflowScrolling: 'touch',
                 touchAction: 'pan-y',
@@ -235,53 +266,74 @@ export function MobileTopNav() {
               }}
               onTouchMove={(e) => e.stopPropagation()}
             >
-              {/* User Info */}
               {currentUser && (
-                <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                <div className="px-4 py-4 border-b border-gray-200/60 dark:border-gray-700/60">
                   <div className="flex items-center gap-3">
-                    <Avatar className="w-12 h-12 pointer-events-none">
+                    <Avatar className="w-14 h-14 pointer-events-none ring-2 ring-orange-200 dark:ring-orange-800">
                       <AvatarImage src={currentUser.profileImage} className="pointer-events-none" />
-                      <AvatarFallback className="bg-orange-500 text-white pointer-events-none">
+                      <AvatarFallback className="bg-orange-500 text-white text-lg pointer-events-none">
                         {currentUser.name?.charAt(0)?.toUpperCase() || currentUser.username?.charAt(0)?.toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-white">@{currentUser.username}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">{currentUser.hometownCity || 'Location'}</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-[17px] text-gray-900 dark:text-white truncate">{currentUser.name || currentUser.username}</p>
+                      <p className="text-[13px] text-gray-500 dark:text-gray-400 truncate">@{currentUser.username}</p>
+                      {currentUser.hometownCity && (
+                        <p className="text-[13px] text-gray-400 dark:text-gray-500 flex items-center gap-1 mt-0.5">
+                          <MapPin className="w-3 h-3" />
+                          {currentUser.hometownCity}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* Menu Items */}
-              <div className="py-2">
-                {menuItems.map((item, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    className="mobile-touch-btn w-full flex items-center gap-4 px-4 py-3 text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-orange-50 dark:active:bg-orange-900/20"
-                    style={{ touchAction: 'manipulation' }}
-                    onTouchEnd={(e) => { e.preventDefault(); navigate(item.path); }}
-                    onClick={() => navigate(item.path)}
-                  >
-                    <item.icon className="w-5 h-5 text-gray-500 dark:text-gray-400 pointer-events-none" />
-                    <span className="pointer-events-none">{item.label}</span>
-                  </button>
-                ))}
-              </div>
+              {menuGroups.map((group, groupIdx) => (
+                <div key={groupIdx} className="py-1">
+                  <p className="px-4 pt-4 pb-1.5 text-[13px] font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                    {group.title}
+                  </p>
+                  <div className="mx-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl overflow-hidden">
+                    {group.items.map((item, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        className="w-full flex items-center gap-3 px-4 text-left text-[15px] text-gray-900 dark:text-gray-100 active:bg-gray-200/80 dark:active:bg-gray-700/80 transition-colors"
+                        style={{ 
+                          touchAction: 'manipulation',
+                          minHeight: '44px',
+                          borderBottom: idx < group.items.length - 1 ? '0.5px solid rgba(0,0,0,0.08)' : 'none',
+                        }}
+                        onTouchEnd={(e) => { e.preventDefault(); navigate(item.path); }}
+                        onClick={() => navigate(item.path)}
+                      >
+                        <div className="w-7 h-7 rounded-md bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center flex-shrink-0">
+                          <item.icon className="w-4 h-4 text-orange-600 dark:text-orange-400 pointer-events-none" />
+                        </div>
+                        <span className="flex-1 pointer-events-none">{item.label}</span>
+                        <ChevronRight className="w-4 h-4 text-gray-300 dark:text-gray-600 pointer-events-none" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
 
-              {/* Logout */}
-              <div className="border-t border-gray-200 dark:border-gray-700 py-2">
-                <button
-                  type="button"
-                  className="mobile-touch-btn w-full flex items-center gap-4 px-4 py-3 text-left text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 active:bg-red-100 dark:active:bg-red-900/30"
-                  style={{ touchAction: 'manipulation' }}
-                  onTouchEnd={(e) => { e.preventDefault(); handleLogout(); }}
-                  onClick={handleLogout}
-                >
-                  <LogOut className="w-5 h-5 pointer-events-none" />
-                  <span className="pointer-events-none">Sign Out</span>
-                </button>
+              <div className="py-1 pb-4">
+                <div className="mx-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl overflow-hidden">
+                  <button
+                    type="button"
+                    className="w-full flex items-center gap-3 px-4 text-left text-[15px] text-red-500 dark:text-red-400 active:bg-red-50 dark:active:bg-red-900/20 transition-colors"
+                    style={{ touchAction: 'manipulation', minHeight: '44px' }}
+                    onTouchEnd={(e) => { e.preventDefault(); handleLogout(); }}
+                    onClick={handleLogout}
+                  >
+                    <div className="w-7 h-7 rounded-md bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0">
+                      <LogOut className="w-4 h-4 text-red-500 dark:text-red-400 pointer-events-none" />
+                    </div>
+                    <span className="flex-1 pointer-events-none">Sign Out</span>
+                  </button>
+                </div>
               </div>
             </div>
           </nav>
@@ -289,19 +341,44 @@ export function MobileTopNav() {
         document.body
       )}
 
-      {/* CSS Animation */}
       <style>{`
-        @keyframes slideInLeft {
-          from { transform: translateX(-100%); }
-          to { transform: translateX(0); }
+        .ios-nav-bar {
+          background: rgba(255, 255, 255, 0.88);
+          backdrop-filter: saturate(180%) blur(20px);
+          -webkit-backdrop-filter: saturate(180%) blur(20px);
+          border-bottom: 0.5px solid rgba(0, 0, 0, 0.12);
         }
-        .mobile-touch-btn {
-          -webkit-tap-highlight-color: rgba(255, 165, 0, 0.2);
+        .dark .ios-nav-bar {
+          background: rgba(17, 24, 39, 0.88);
+          border-bottom: 0.5px solid rgba(255, 255, 255, 0.08);
+        }
+        .ios-menu-backdrop {
+          background: rgba(0, 0, 0, 0.4);
+          backdrop-filter: blur(4px);
+          -webkit-backdrop-filter: blur(4px);
+        }
+        .ios-slide-menu {
+          background: rgba(248, 250, 252, 0.98);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+          animation: iosSlideIn 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+        .dark .ios-slide-menu {
+          background: rgba(17, 24, 39, 0.98);
+        }
+        @keyframes iosSlideIn {
+          from { transform: translateX(-100%); opacity: 0.8; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        .ios-touch-target {
+          -webkit-tap-highlight-color: transparent;
           touch-action: manipulation;
           cursor: pointer;
         }
-        .mobile-touch-btn:active {
-          background-color: rgba(249, 115, 22, 0.1);
+        .ios-scroll-container {
+          -webkit-overflow-scrolling: touch;
+          scroll-behavior: smooth;
         }
       `}</style>
     </>

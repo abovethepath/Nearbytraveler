@@ -12,34 +12,25 @@ export function MobileBottomNav() {
   const authContext = React.useContext(AuthContext);
   let user = authContext?.user;
   
-  // Fallback to localStorage if AuthContext user is null
   if (!user) {
     const storedUser = localStorage.getItem('user') || localStorage.getItem('currentUser') || localStorage.getItem('authUser');
     if (storedUser) {
       try {
         user = JSON.parse(storedUser);
-        console.log('🔧 MobileBottomNav - Recovered user from localStorage:', user?.username, 'userType:', user?.userType);
       } catch (e) {
         console.error('Error parsing stored user in MobileBottomNav:', e);
       }
     }
   }
-  
-  console.log('🔍 MobileBottomNav - Final user object:', user);
-  console.log('🔍 MobileBottomNav - userType:', user?.userType, 'is business?:', user?.userType === 'business');
 
-  // Query for unread messages count using dedicated endpoint
   const { data: unreadData } = useQuery({
     queryKey: [`/api/messages/${user?.id}/unread-count`],
     enabled: !!user?.id,
-    refetchInterval: 30000, // Reduced from 3s to 30s for performance with 500+ users
+    refetchInterval: 30000,
   });
 
   const unreadCount = (unreadData as any)?.unreadCount || 0;
 
-  console.log('📧 MobileBottomNav - Unread messages count:', unreadCount);
-
-  // Navigation items based on user type - Search opens widget instead of navigating
   const navItems = user?.userType === 'business' ? [
     { icon: Home, label: "Dashboard", path: "/" },
     { icon: Search, label: "Search", action: "search" },
@@ -52,11 +43,8 @@ export function MobileBottomNav() {
     { icon: User, label: "Profile", path: user ? `/profile/${user.id}` : "/profile" },
   ];
 
-  // CRITICAL BUSINESS USER FIX - Check userType properly
   const isBusinessUser = user?.userType === 'business';
-  console.log('🚨 BUSINESS USER CHECK:', { username: user?.username, userType: user?.userType, isBusinessUser });
   
-  // Different action menu items for business vs regular users
   const actionMenuItems = isBusinessUser ? [
     { label: "Create Deal", path: "/business-dashboard", icon: Calendar },
     { label: "Create Quick Deal", path: "/business-dashboard", icon: MessageCircle },
@@ -68,58 +56,76 @@ export function MobileBottomNav() {
 
   return (
     <>
-      {/* Action Menu Overlay */}
       {showActionMenu && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center md:items-end justify-center">
-          <div className="w-full max-w-md mx-4 bg-white dark:bg-gray-900 rounded-2xl md:rounded-t-2xl md:mb-20 p-4 pb-safe max-h-[60vh] md:max-h-[70vh] lg:max-h-[80vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent shadow-2xl">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Create New
-              </h3>
-              <button
-                onClick={() => setShowActionMenu(false)}
-                className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
+        <div 
+          className="fixed inset-0 z-50 flex items-end justify-center"
+          onClick={() => setShowActionMenu(false)}
+        >
+          <div className="ios-action-sheet-backdrop absolute inset-0" />
+          <div 
+            className="relative w-full max-w-lg mx-2 ios-action-sheet"
+            style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 8px)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden mb-2 shadow-2xl">
+              <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+                <div className="w-9 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mb-2" />
+                <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white text-center">
+                  Create New
+                </h3>
+              </div>
+              <div className="p-3">
+                <div className="grid grid-cols-3 gap-2">
+                  {actionMenuItems.map((action, index) => {
+                    const ActionIcon = action.icon;
+                    return (
+                      <button
+                        key={index}
+                        onClick={() => {
+                          if (action.path) {
+                            setLocation(action.path);
+                            setShowActionMenu(false);
+                          }
+                        }}
+                        className="flex flex-col items-center justify-center p-3 rounded-2xl active:bg-gray-100 dark:active:bg-gray-700 transition-colors"
+                        style={{ minHeight: '80px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                      >
+                        <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-orange-600 rounded-2xl flex items-center justify-center mb-2 shadow-sm">
+                          <ActionIcon className="w-6 h-6 text-white" />
+                        </div>
+                        <span className="text-[11px] font-medium text-gray-700 dark:text-gray-300 text-center leading-tight">
+                          {action.label}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3 md:gap-4">
-              {actionMenuItems.map((action, index) => {
-                const ActionIcon = action.icon;
-                return (
-                  <button
-                    key={index}
-                    onClick={() => {
-                      console.log('🎯 MOBILE ACTION MENU: Clicked', action.label);
-                      if (action.path) {
-                        setLocation(action.path);
-                        setShowActionMenu(false);
-                      }
-                    }}
-                    className="flex flex-col items-center justify-center p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                  >
-                    <div className="w-12 h-12 bg-blue-500 rounded-2xl flex items-center justify-center mb-2">
-                      <ActionIcon className="w-6 h-6 text-white" />
-                    </div>
-                    <span className="text-sm font-medium text-gray-900 dark:text-white text-center">
-                      {action.label}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+            <button
+              onClick={() => setShowActionMenu(false)}
+              className="w-full bg-white dark:bg-gray-800 rounded-2xl py-3.5 text-[17px] font-semibold text-orange-500 active:bg-gray-50 dark:active:bg-gray-700 shadow-2xl"
+              style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+            >
+              Cancel
+            </button>
           </div>
         </div>
       )}
 
-      {/* Bottom Navigation */}
       <div 
-        className="mobile-bottom-nav fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 shadow-lg overflow-visible"
-        style={{ position: 'fixed', zIndex: 9999, width: '100vw', height: '72px', bottom: '0px', display: 'block', overflow: 'visible' }}
+        className="ios-tab-bar fixed bottom-0 left-0 right-0 overflow-visible"
+        style={{ 
+          position: 'fixed', 
+          zIndex: 9999, 
+          width: '100vw', 
+          bottom: '0px', 
+          display: 'block', 
+          overflow: 'visible',
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        }}
       >
-        <div className="relative h-full flex items-center justify-between px-4 md:px-8 max-w-6xl mx-auto overflow-visible">
-          {/* Left two items */}
+        <div className="relative flex items-end justify-between px-2 max-w-lg mx-auto overflow-visible" style={{ height: '49px' }}>
           {navItems.slice(0, 2).map((item, index) => {
             const isActive = item.path ? (location === item.path || (item.path === '/' && location === '/')) : false;
             const Icon = item.icon;
@@ -127,10 +133,8 @@ export function MobileBottomNav() {
               e.preventDefault();
               e.stopPropagation();
               if (item.action === "search") {
-                console.log('🎯 MOBILE NAV: Opening Advanced Search Widget');
                 setShowSearchWidget(true);
               } else if (item.path) {
-                console.log('🎯 MOBILE NAV: Navigating to', item.path);
                 setLocation(item.path);
               }
             };
@@ -140,26 +144,46 @@ export function MobileBottomNav() {
                 type="button"
                 onClick={handleNavClick}
                 onTouchEnd={handleNavClick}
-                className="flex flex-col items-center justify-center min-w-0 flex-1 py-2"
-                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', minHeight: '60px' }}
+                className="flex flex-col items-center justify-center flex-1"
+                style={{ 
+                  touchAction: 'manipulation', 
+                  WebkitTapHighlightColor: 'transparent', 
+                  minHeight: '49px',
+                  paddingTop: '6px',
+                  paddingBottom: '2px',
+                }}
                 aria-label={item.label}
               >
-                <Icon className={`w-6 h-6 md:w-7 md:h-7 mb-1 ${isActive ? 'text-orange-500' : 'text-gray-400 dark:text-gray-500'}`} />
-                <span className={`text-xs md:text-sm font-medium ${isActive ? 'text-orange-500' : 'text-gray-500 dark:text-gray-500'}`}>{item.label}</span>
+                <Icon 
+                  className={`mb-0.5 transition-colors ${isActive ? 'text-orange-500' : 'text-gray-400 dark:text-gray-500'}`}
+                  style={{ width: '22px', height: '22px' }}
+                  strokeWidth={isActive ? 2.5 : 1.8}
+                />
+                <span 
+                  className={`font-medium transition-colors ${isActive ? 'text-orange-500' : 'text-gray-400 dark:text-gray-500'}`}
+                  style={{ fontSize: '10px', lineHeight: '12px' }}
+                >
+                  {item.label}
+                </span>
               </button>
             );
           })}
 
-          {/* Center create button - responsive sizing for all mobile screens */}
           <button
             onClick={() => setShowActionMenu(true)}
             aria-label="Create"
-            className="absolute left-1/2 -translate-x-1/2 -top-3 w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-white dark:bg-gray-800 border-2 border-orange-400 dark:border-orange-500 shadow-xl flex items-center justify-center hover:scale-105 transition-transform"
+            className="absolute left-1/2 -translate-x-1/2 -top-4 flex items-center justify-center ios-create-button"
+            style={{
+              width: '50px',
+              height: '50px',
+              borderRadius: '25px',
+              touchAction: 'manipulation',
+              WebkitTapHighlightColor: 'transparent',
+            }}
           >
-            <Plus className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-orange-500" />
+            <Plus className="text-white" style={{ width: '26px', height: '26px' }} strokeWidth={2.5} />
           </button>
 
-          {/* Right two items */}
           {navItems.slice(2).map((item, index) => {
             const isActive = item.path ? (location === item.path || (item.path.startsWith('/profile') && location.startsWith('/profile'))) : false;
             const Icon = item.icon;
@@ -170,39 +194,82 @@ export function MobileBottomNav() {
                 key={item.path || item.action || index}
                 onClick={() => {
                   if (item.action === "search") {
-                    console.log('🎯 MOBILE NAV: Opening Advanced Search Widget');
                     setShowSearchWidget(true);
                   } else if (item.path) {
                     setLocation(item.path);
                   }
                 }}
-                className="flex flex-col items-center justify-center min-w-0 flex-1"
+                className="flex flex-col items-center justify-center flex-1"
+                style={{ 
+                  touchAction: 'manipulation', 
+                  WebkitTapHighlightColor: 'transparent', 
+                  minHeight: '49px',
+                  paddingTop: '6px',
+                  paddingBottom: '2px',
+                }}
                 aria-label={item.label}
               >
                 <div className="relative">
-                  <Icon className={`w-6 h-6 md:w-7 md:h-7 mb-1 ${isActive ? 'text-orange-500' : 'text-gray-400 dark:text-gray-500'}`} />
-                  {/* Unread message badge */}
+                  <Icon 
+                    className={`mb-0.5 transition-colors ${isActive ? 'text-orange-500' : 'text-gray-400 dark:text-gray-500'}`}
+                    style={{ width: '22px', height: '22px' }}
+                    strokeWidth={isActive ? 2.5 : 1.8}
+                  />
                   {isMessagesItem && unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 text-red-500 text-[10px] font-bold">
+                    <span className="absolute -top-1.5 -right-2.5 min-w-[16px] h-[16px] flex items-center justify-center bg-red-500 text-white rounded-full px-1 shadow-sm" style={{ fontSize: '10px', fontWeight: 700 }}>
                       {unreadCount > 99 ? '99+' : unreadCount}
                     </span>
                   )}
                 </div>
-                <span className={`text-xs md:text-sm font-medium ${isActive ? 'text-orange-500' : 'text-gray-500 dark:text-gray-500'}`}>{item.label}</span>
+                <span 
+                  className={`font-medium transition-colors ${isActive ? 'text-orange-500' : 'text-gray-400 dark:text-gray-500'}`}
+                  style={{ fontSize: '10px', lineHeight: '12px' }}
+                >
+                  {item.label}
+                </span>
               </button>
             );
           })}
         </div>
-        <div className="h-safe-area-inset-bottom" />
       </div>
 
-      {/* Advanced Search Widget */}
       <AdvancedSearchWidget 
         open={showSearchWidget}
         onOpenChange={setShowSearchWidget}
       />
 
-      {/* Business functionality removed - focusing on travelers and locals */}
+      <style>{`
+        .ios-tab-bar {
+          background: rgba(255, 255, 255, 0.92);
+          backdrop-filter: saturate(180%) blur(20px);
+          -webkit-backdrop-filter: saturate(180%) blur(20px);
+          border-top: 0.5px solid rgba(0, 0, 0, 0.12);
+        }
+        .dark .ios-tab-bar {
+          background: rgba(17, 24, 39, 0.92);
+          border-top: 0.5px solid rgba(255, 255, 255, 0.08);
+        }
+        .ios-create-button {
+          background: linear-gradient(135deg, #f97316, #ea580c);
+          box-shadow: 0 4px 14px rgba(249, 115, 22, 0.4);
+        }
+        .ios-create-button:active {
+          transform: scale(0.92);
+          transition: transform 0.1s ease;
+        }
+        .ios-action-sheet-backdrop {
+          background: rgba(0, 0, 0, 0.4);
+          backdrop-filter: blur(4px);
+          -webkit-backdrop-filter: blur(4px);
+        }
+        .ios-action-sheet {
+          animation: iosSheetUp 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+        @keyframes iosSheetUp {
+          from { transform: translateY(100%); }
+          to { transform: translateY(0); }
+        }
+      `}</style>
     </>
   );
 }
