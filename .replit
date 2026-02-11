@@ -55,7 +55,7 @@ args = "pkill -f \"npm run dev\" || true"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "lsof -ti:5000 | xargs kill -9 || true"
+args = "lsof -ti:3000 | xargs kill -9 || true"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
