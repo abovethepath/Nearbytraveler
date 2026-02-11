@@ -766,23 +766,8 @@ app.use((req, res, next) => {
   httpServerWithWebSocket.on("error", (error: any) => {
     console.error("Server error:", error);
     if (error.code === "EADDRINUSE") {
-      console.error(
-        `Port ${port} is already in use - trying to kill existing process`,
-      );
-
-      // Try to kill process using the port and retry
-      const { exec } = require("child_process");
-      exec(`lsof -ti:${port} | xargs kill -9 || true`, () => {
-        setTimeout(() => {
-          console.log("Retrying server start...");
-          httpServerWithWebSocket.listen({
-            port,
-            host: "0.0.0.0",
-            reusePort: true,
-          });
-        }, 2000);
-      });
-      return;
+      console.error(`Port ${port} is already in use. Exiting...`);
+      process.exit(1);
     } else {
       console.error("Server failed to start:", error.message);
       process.exit(1);
