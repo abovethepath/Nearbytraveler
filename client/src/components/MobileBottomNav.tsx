@@ -185,10 +185,8 @@ export function MobileBottomNav() {
           zIndex: 9999, 
           width: '100vw',
           paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-          background: 'rgba(255, 255, 255, 0.92)',
-          backdropFilter: 'saturate(180%) blur(20px)',
-          WebkitBackdropFilter: 'saturate(180%) blur(20px)',
-          borderTop: '0.5px solid rgba(0, 0, 0, 0.12)',
+          background: '#f8f8f8',
+          borderTop: '1px solid #e5e5e5',
         }}
       >
         <div style={{ 
@@ -261,26 +259,36 @@ export function MobileBottomNav() {
             onClick={handleCreateTap}
             aria-label="Create"
             style={{
-              position: 'absolute',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              top: '-16px',
-              width: '50px',
-              height: '50px',
-              borderRadius: '25px',
-              background: 'linear-gradient(135deg, #f97316, #ea580c)',
-              boxShadow: '0 4px 14px rgba(249, 115, 22, 0.4)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flex: 1,
+              touchAction: 'manipulation',
+              WebkitTapHighlightColor: 'transparent',
+              minHeight: '49px',
+              paddingTop: '6px',
+              paddingBottom: '2px',
+              background: 'none',
               border: 'none',
               cursor: 'pointer',
+            }}
+          >
+            <div style={{
+              width: '28px',
+              height: '28px',
+              borderRadius: '8px',
+              background: '#f97316',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              touchAction: 'manipulation',
-              WebkitTapHighlightColor: 'transparent',
-              zIndex: 10,
-            }}
-          >
-            <Plus style={{ width: '26px', height: '26px', color: 'white' }} strokeWidth={2.5} />
+              marginBottom: '2px',
+            }}>
+              <Plus style={{ width: '18px', height: '18px', color: 'white' }} strokeWidth={2.5} />
+            </div>
+            <span style={{ fontSize: '10px', lineHeight: '12px', fontWeight: 500, color: '#f97316' }}>
+              Create
+            </span>
           </button>
 
           {navItems.slice(2).map((item, index) => {
