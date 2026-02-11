@@ -12,7 +12,10 @@ build = ["npm", "run", "build"]
 run = ["npm", "run", "start"]
 
 [env]
-PORT = "5000"
+
+[[ports]]
+localPort = 5000
+externalPort = 5000
 
 [workflows]
 runButton = "Start application"
@@ -78,7 +81,3 @@ APP_URL = "https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.rep
 
 [objectStorage]
 defaultBucketID = "replit-objstore-e81f8396-1f3e-4539-8815-f5ac8716f43f"
-
-[[ports]]
-localPort = 5000
-externalPort = 80
