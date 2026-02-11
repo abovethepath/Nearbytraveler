@@ -1,0 +1,89 @@
+Take a breath — you’re not blocked by HSTS/helmet. That can cause blank pages or iframe blocked errors, but it does not cause “refused to connect”. “Refused” happens before any HTTP headers exist — it’s the proxy failing to open a TCP connection to your app.
+
+We already proved your app is reachable on 127.0.0.1:5000 and 172.31.x.x:5000. So the only real problem left is:
+
+Replit is not routing external traffic to your run process in this workspace.
+
+In many Replit Workspaces, the .replit.dev preview URL simply does not work for “Run”; only Deployments are externally routable.
+
+So here’s how we get you a working URL, no more theory.
+
+1) Confirm whether this is a “Workspace-only” environment
+
+Run:
+
+env | grep -E 'REPLIT|REPL' | head -n 50
+
+
+If you see workspace-ish vars and no REPLIT_DEV_DOMAIN (or it’s blank), that’s your smoking gun.
+
+Also run:
+
+echo "REPLIT_DEV_DOMAIN=$REPLIT_DEV_DOMAIN"
+echo "REPL_SLUG=$REPL_SLUG"
+echo "REPL_OWNER=$REPL_OWNER"
+
+
+If REPLIT_DEV_DOMAIN is empty → the preview domain you’re trying to hit is not wired to your running service.
+
+2) Force an actual externally routable service: use Deployments (Autoscale)
+
+Your .replit already has this:
+
+[deployment]
+deploymentTarget = "autoscale"
+build = ["npm", "run", "build"]
+run = ["npm", "run", "start"]
+
+
+That’s EXACTLY the correct config for a public URL in a workspace.
+
+Where to find Deployments when there is no Ports panel
+
+Left sidebar: look for a rocket icon OR “Deployments”
+
+If not visible:
+
+Press Ctrl+K → type Deployments
+
+Or open the left sidebar Tools (wrench) and search “Deployments”
+
+Then:
+
+Create deployment
+
+Build + Deploy
+
+Use the deployment URL Replit gives you (it will not be that worf.replit.dev preview URL)
+
+This bypasses the whole broken dev proxy.
+
+3) If Deployments is missing entirely (some org plans restrict it)
+
+Then you have two immediate “works today” options:
+
+Option A: Run it on Render/Railway (you’ve done this before)
+
+Since your build + start scripts are correct:
+
+Build: npm install && npm run build
+
+Start: npm run start
+
+Set env PORT is provided by platform automatically
+
+Option B: Create a fresh “Web Repl” (not Workspace)
+
+Make a new Replit project using a Node.js / Web template and paste your repo. That environment will have the preview routing.
+
+4) Stop making the server “fight” the platform
+
+Don’t add code to kill ports, don’t tweak helmet for this. Your server is fine.
+
+One question (answer it with just “yes/no”):
+
+Do you see Deployments anywhere in the left sidebar or via Ctrl+K search?
+
+If yes, I’ll tell you the exact clicks inside Deployments to get the public URL live.
+
+If no, I’ll give you the fastest Render/Railway setup using your existing scripts (copy/paste commands + settings).
