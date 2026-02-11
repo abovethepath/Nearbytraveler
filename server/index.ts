@@ -362,6 +362,7 @@ app.use(
     frameguard: false,
     crossOriginResourcePolicy: false,
     crossOriginOpenerPolicy: false,
+    hsts: false,
   }),
 );
 
