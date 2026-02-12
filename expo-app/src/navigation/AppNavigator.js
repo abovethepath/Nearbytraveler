@@ -15,6 +15,8 @@ import MessagesScreen from '../screens/MessagesScreen';
 import ChatScreen from '../screens/ChatScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import UserProfileScreen from '../screens/UserProfileScreen';
+import MapScreen from '../screens/MapScreen';
+import CameraScreen from '../screens/CameraScreen';
 import { EditProfileScreen, ConnectionsScreen, SettingsScreen } from '../screens/WebViewScreens';
 
 const Tab = createBottomTabNavigator();
@@ -58,6 +60,7 @@ function ProfileStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="ProfileHome" component={ProfileScreen} />
+      <Stack.Screen name="Camera" component={CameraScreen} />
       <Stack.Screen name="EditProfile" component={EditProfileScreen} />
       <Stack.Screen name="Connections" component={ConnectionsScreen} />
       <Stack.Screen name="Settings" component={SettingsScreen} />
@@ -102,6 +105,13 @@ function MainTabs() {
         component={ExploreStack}
         options={{
           tabBarIcon: ({ focused }) => <TabIcon emoji="&#x1F50D;" focused={focused} />,
+        }}
+      />
+        <Tab.Screen
+        name="Map"
+        component={MapScreen}
+        options={{
+          tabBarIcon: ({ focused }) => <TabIcon emoji="🗺️" focused={focused} />,
         }}
       />
       <Tab.Screen
