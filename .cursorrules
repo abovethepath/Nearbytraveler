@@ -1,0 +1,547 @@
+# Nearby Traveler - Cursor Project Rules
+# Base URL: https://nearbytraveler.org
+# Bundle ID: com.nearbytraveler.app
+
+## Project Overview
+Nearby Traveler is a social networking platform connecting travelers, locals, and businesses through location-based meetups and cross-cultural interactions. The web app is a React/Express full-stack app hosted on Replit, with a wrapped iOS app planned via Capacitor.
+
+## Tech Stack
+- **Frontend**: React 18 + TypeScript, Vite, Tailwind CSS, shadcn/ui, Wouter (routing), TanStack Query v5
+- **Backend**: Node.js + Express + TypeScript, session-based auth with Redis
+- **Database**: PostgreSQL (Neon serverless) with Drizzle ORM
+- **Real-time**: WebSocket (ws library) for chat and notifications
+- **AI**: OpenAI GPT-4o-mini + Anthropic Claude Sonnet
+- **Payments**: Stripe
+- **Email**: Brevo (SendGrid)
+- **SMS**: Twilio
+
+## Authentication Flow
+- Session-based auth with express-session + Redis store (connect-redis)
+- Passwords hashed with bcrypt
+- Sessions persist indefinitely with rolling renewal
+- Cookie config: httpOnly, secure in production, sameSite: 'lax'
+- JWT NOT used for primary auth (sessions only)
+- Login: POST /api/auth/login { email, password } → sets session cookie
+- Logout: POST /api/auth/logout → destroys session
+- Check auth: GET /api/auth/user → returns user object or 401
+- Register: POST /api/register { username, email, password, name, userType, ... }
+
+## User Types
+- `traveler` - Users who travel and want to meet locals
+- `local` - Users who live in a city and want to meet travelers
+- `business` - Local businesses that want to connect with travelers
+
+## Base API URL
+All endpoints are relative to: https://nearbytraveler.org
+
+## API Endpoints - Complete Reference
+
+### Authentication
+- POST /api/auth/login - Login with email/password
+- POST /api/auth/logout - Logout (destroy session)
+- GET /api/auth/user - Get current authenticated user
+- GET /api/auth/whoami - Alternative auth check
+- POST /api/auth/check-email - Check if email exists
+- POST /api/auth/check-username - Check if username is taken
+- POST /api/auth/complete-profile - Complete profile after signup
+- POST /api/auth/forgot-password - Request password reset email
+- POST /api/auth/reset-password - Reset password with token
+- GET /api/auth/verify-reset-token - Verify reset token validity
+- POST /api/auth/recover-session - Recover session from token
+- POST /api/register - Register new user
+
+### Users & Profiles
+- GET /api/users - List/search users
+- GET /api/users/:id - Get user by ID
+- PUT /api/users/:id - Update user profile
+- GET /api/users/search - Search users by criteria
+- GET /api/users/search-by-location - Search users by location
+- GET /api/users/:userId/profile-bundle - Consolidated profile data (18 API calls in 1)
+- PUT /api/users/:id/profile-photo - Update profile photo
+- DELETE /api/users/profile-photo - Remove profile photo
+- PUT /api/users/:id/cover-photo - Update cover photo
+- POST /api/users/:id/cover-photo - Upload cover photo
+- POST /api/users/:id/photos - Upload user photos
+- GET /api/users/:id/photos - Get user photos
+- GET /api/users/:id/photo-albums - Get user photo albums
+- POST /api/users/generate-bio - AI-generate bio
+- PUT /api/users/display-preference - Update display name preference
+- PUT /api/users/status - Update online status
+- GET /api/users/:userId/status - Get user status
+- GET /api/users/status - Get own status
+- GET /api/users-by-location/:city/:userType - Get users in a city
+- POST /api/users/push-token - Register push notification token
+- DELETE /api/users/push-token - Remove push token
+- PUT /api/users/:id/notification-settings - Update notification prefs
+- PUT /api/users/notification-settings - Update own notification prefs
+- GET /api/users/:id/notification-settings - Get notification prefs
+- POST /api/user/add-interest - Add interest to profile
+- GET /api/users/blocked - Get blocked users list
+- POST /api/users/block - Block a user
+- DELETE /api/users/block/:blockedUserId - Unblock user
+- GET /api/users/hidden - Get hidden users list
+- POST /api/users/hide - Hide a user
+- DELETE /api/users/hide/:targetUserId - Unhide user
+- GET /api/users/hidden/:targetUserId - Check if user is hidden
+- POST /api/users/report - Report a user
+
+### Connections (Friend System)
+- GET /api/connections/:userId - Get user's connections
+- GET /api/connections/:userId/requests - Get pending connection requests
+- POST /api/connections - Send connection request
+- PUT /api/connections/:id - Accept/reject connection request
+- DELETE /api/connections/:id - Remove connection
+- GET /api/connections/status/:userId/:targetUserId - Check connection status
+- GET /api/connections/degree/:userId/:targetUserId - Get connection degree
+- GET /api/connections/network/:userId - Get connection network
+- POST /api/connections/degrees/batch - Batch connection degree check
+
+### Matching
+- GET /api/cities/:city/matches - Get matches in a city
+- GET /api/users/:userId/matches - Get user's matches
+- GET /api/users/:currentUserId/shared-matches/:otherUserId - Get shared matches
+- GET /api/compatibility/:userId1/:userId2 - Get compatibility score
+
+### Chat & Messaging
+- GET /api/conversations/:userId - Get user's conversations (DMs)
+- POST /api/messages - Send direct message
+- GET /api/messages/:userId/:otherUserId - Get messages between users
+- DELETE /api/messages/:id - Delete message
+
+### Chatrooms (Group Chat)
+- GET /api/chatrooms - List chatrooms
+- GET /api/chatrooms/public - List public chatrooms
+- GET /api/chatrooms/my-rooms - Get user's joined rooms
+- GET /api/chatrooms/cities - Get city chatrooms
+- GET /api/chatrooms/events - Get event chatrooms
+- GET /api/chatrooms/my-locations - Get chatrooms for user's locations
+- GET /api/chatrooms/:chatroomId - Get chatroom details
+- GET /api/chatrooms/:chatroomId/members - Get chatroom members
+- POST /api/chatrooms/:roomId/join - Join chatroom
+- POST /api/chatrooms/:roomId/leave - Leave chatroom
+- GET /api/chatrooms/:roomId/messages - Get chatroom messages
+- POST /api/chatrooms/:roomId/messages - Send chatroom message
+- DELETE /api/chatroom-messages/:messageId - Delete chatroom message
+- POST /api/chatrooms/:chatroomId/mute - Mute chatroom
+- POST /api/chatrooms/:chatroomId/unmute - Unmute chatroom
+- GET /api/chatrooms/:chatroomId/is-muted/:userId - Check mute status
+- GET /api/chatrooms/:chatroomId/moderation - Get moderation records
+
+### Events
+- GET /api/events - List events (with city filter)
+- POST /api/events - Create event
+- GET /api/events/:id - Get event details
+- PUT /api/events/:id - Update event
+- DELETE /api/events/:id - Delete event
+- POST /api/events/:id/join - Join event
+- DELETE /api/events/:id/leave - Leave event
+- GET /api/events/:id/participants - Get event participants
+- PUT /api/events/:id/participants/:userId/role - Update participant role
+- GET /api/events/:id/companions - Get event companions
+- DELETE /api/events/:eventId/companions/:companionId - Remove companion
+- GET /api/events/:id/attendance-count - Get attendance count
+- POST /api/events/:id/image - Upload event image
+- GET /api/events/nearby - Get nearby events
+- GET /api/events/history - Get past events
+- GET /api/events/organizer/:organizerId - Get events by organizer
+- GET /api/events/interested-users - Get interested users
+- POST /api/events/import-url - Import event from URL
+- POST /api/events/generate-ai/:city - AI-generate events for city
+
+### Event Chatrooms
+- GET /api/event-chatrooms/:eventId - Get event chatroom
+- POST /api/event-chatrooms/:chatroomId/join - Join event chatroom
+- GET /api/event-chatrooms/:chatroomId/messages - Get messages
+- POST /api/event-chatrooms/:chatroomId/messages - Send message
+- GET /api/event-chatrooms/:chatroomId/members - Get members
+- POST /api/event-chatrooms/:chatroomId/mark-read - Mark as read
+
+### Event Interests
+- POST /api/event-interests - Express interest in event
+- DELETE /api/event-interests - Remove interest
+- GET /api/event-interests/check - Check if interested
+
+### External Events
+- GET /api/external-events/ticketmaster - Ticketmaster events
+- GET /api/external-events/stubhub - StubHub events
+- GET /api/external-events/meetup - Meetup events
+- GET /api/external-events/eventbrite - Eventbrite events
+- GET /api/external-events/allevents - AllEvents events
+- GET /api/external-events/local-la - Local LA events
+
+### Travel Plans
+- GET /api/travel-plans - Get user's travel plans
+- POST /api/travel-plans - Create travel plan
+- GET /api/travel-plans/:id - Get travel plan
+- PUT /api/travel-plans/:id - Update travel plan
+- DELETE /api/travel-plans/:id - Delete travel plan
+- POST /api/travel-plans/:id/complete - Complete travel plan
+- GET /api/travel-plans/:id/public - Get public travel plan info
+- GET /api/travel-plans/:userId - Get user's travel plans
+- GET /api/travel-plans-with-itineraries/:userId - Get plans with itineraries
+- GET /api/travel-plans/single/:id - Get single plan
+
+### Travel Crew
+- POST /api/travel-plans/:id/crew/members - Add crew member
+- DELETE /api/travel-plans/:planId/crew/members/:memberId - Remove member
+- POST /api/travel-plans/:id/crew/companions - Add companion
+- DELETE /api/travel-plans/:planId/crew/companions/:companionId - Remove companion
+- POST /api/travel-plans/:id/crew/invite - Invite to crew
+- POST /api/travel-plans/:id/crew/messages - Send crew message
+- GET /api/travel-plans/:id/crew - Get crew info
+
+### Itineraries
+- GET /api/travel-plans/:id/itineraries - Get itineraries for plan
+- POST /api/travel-plans/:id/itineraries - Create itinerary
+- GET /api/travel-plans/:id/itineraries/public - Get public itinerary
+- GET /api/itineraries/:id - Get itinerary
+- PUT /api/itinerary-items/:id - Update itinerary item
+- DELETE /api/itinerary-items/:id - Delete itinerary item
+
+### Quick Meetups
+- GET /api/quick-meetups - List quick meetups
+- POST /api/quick-meetups - Create quick meetup
+- PUT /api/quick-meetups/:id - Update quick meetup
+- DELETE /api/quick-meetups/:id - Delete quick meetup
+- POST /api/quick-meetups/:id/join - Join quick meetup
+- POST /api/quick-meetups/:id/restart - Restart expired meetup
+- GET /api/users/:userId/expired-meetups - Get expired meetups
+
+### Quick Meets (Alternate meetup system)
+- GET /api/quick-meets - List quick meets
+- POST /api/quick-meets - Create quick meet
+- PUT /api/quick-meets/:id - Update quick meet
+- DELETE /api/quick-meets/:id - Delete quick meet
+- POST /api/quick-meets/:id/join - Join quick meet
+- DELETE /api/quick-meets/:id/participants/:participantId - Remove participant
+- GET /api/users/:userId/expired-quick-meets - Get expired quick meets
+
+### Available Now (Real-time availability)
+- GET /api/available-now - Get available users
+- POST /api/available-now - Set available now status
+- DELETE /api/available-now - Remove available status
+- GET /api/available-now/my-status - Get own availability status
+- GET /api/available-now/count - Get count of available users
+- GET /api/available-now/active-ids - Get active user IDs
+- POST /api/available-now/request - Send meet request
+- GET /api/available-now/requests - Get meet requests
+- PUT /api/available-now/requests/:requestId - Accept/reject request
+- GET /api/available-now/group-chat - Get group chat for session
+- POST /api/available-now/group-chat - Create/get group chat
+- GET /api/available-now/my-group-chats - Get user's group chats
+- GET /api/available-now/group-chat/:chatroomId/messages - Get messages
+- POST /api/available-now/group-chat/:chatroomId/messages - Send message
+- POST /api/available-now/group-chat/:chatroomId/messages/:messageId/react - React
+- POST /api/available-now/group-chat/:chatroomId/leave - Leave chat
+
+### Businesses
+- GET /api/businesses - List businesses
+- POST /api/businesses - Create business listing
+- GET /api/businesses/map - Get businesses for map
+- GET /api/businesses/:businessId/customer-photos - Get customer photos
+- POST /api/businesses/:businessId/customer-photos - Upload customer photo
+- DELETE /api/businesses/:businessId/customer-photos/:photoId - Delete photo
+
+### Business Deals
+- GET /api/business-deals - List deals
+- POST /api/business-deals - Create deal
+- GET /api/business-deals/business/:businessId - Deals by business
+- GET /api/business-deals/analytics - Deal analytics
+- PUT /api/business-deals/:id - Update deal
+- DELETE /api/business-deals/:id - Delete deal
+- POST /api/business-deals/claim - Claim a deal
+
+### Business Subscriptions (Stripe)
+- POST /api/business/create-subscription - Create Stripe subscription
+- POST /api/business/cancel-subscription - Cancel subscription
+- GET /api/business/subscription-status - Get subscription status
+
+### Notifications
+- GET /api/notifications/:userId - Get notifications
+- PUT /api/notifications/:id/read - Mark notification as read
+- PUT /api/notifications/:userId/read-all - Mark all as read
+- POST /api/notifications - Create notification
+
+### AI Features
+- POST /api/ai/city-guide - AI city guide
+- POST /api/ai/meetup-draft - AI meetup draft from voice/text
+- POST /api/ai/event-draft - AI event draft
+- POST /api/ai/help-chat - AI help chatbot
+- POST /api/ai/activity-suggestions - AI activity suggestions
+- POST /api/ai/matching-insight - AI matching insights
+- POST /api/users/generate-bio - AI bio generation
+
+### City Features
+- GET /api/cities/:city/overview - City overview with stats
+- POST /api/cities/ensure - Ensure city infrastructure exists
+- GET /api/city-guide/:cityName - Get city guide
+- GET /api/city-stats - Get all city stats
+- GET /api/city-stats/:city - Get specific city stats
+- GET /api/city/:city/users - Get users in city
+- GET /api/city-map-data - Get map data for cities
+- GET /api/city-chatrooms - Get city chatrooms
+
+### City Activities
+- GET /api/city-activities/:cityName - Get activities for city
+- POST /api/city-activities - Create activity
+- DELETE /api/city-activities/:activityId - Delete activity
+- POST /api/city-activities/:cityName/enhance - AI enhance activities
+- POST /api/city-activities/:cityName/refresh-featured - Refresh featured
+- POST /api/city-activities/:cityName/seed-and-refresh - Seed and refresh
+
+### City Photos
+- GET /api/city-photos - Get city photos
+- GET /api/city-photos/:city - Get photos for city
+- GET /api/city-photos/all - Get all city photos
+- POST /api/city-photos/upload - Upload city photo
+- POST /api/city-photos/upload-url - Get upload URL
+- POST /api/city-photos/confirm - Confirm upload
+
+### Companions
+- GET /api/companions - Get companions
+- POST /api/companions - Add companion
+- DELETE /api/companions/:id - Remove companion
+
+### Vouches & References
+- POST /api/vouches - Create vouch
+- GET /api/users/:userId/vouches - Get vouches for user
+- GET /api/users/:userId/vouches-given - Get vouches given
+- GET /api/users/:userId/vouch-network - Get vouch network
+- GET /api/users/:userId/can-vouch - Check if can vouch
+- POST /api/user-references - Create reference
+- GET /api/users/:userId/references - Get user references
+- DELETE /api/user-references/:referenceId - Delete reference
+- GET /api/user-references/check/:reviewerId/:revieweeId - Check if reviewed
+
+### User City Interests
+- POST /api/user-city-interests - Add city interest
+- GET /api/user-city-interests/:userId - Get user's city interests
+- GET /api/user-city-interests/:userId/:cityName - Get for specific city
+- DELETE /api/user-city-interests/:interestId - Remove interest
+
+### User Event Interests
+- POST /api/user-event-interests - Add event interest
+- GET /api/user-event-interests/:userId - Get user's event interests
+- GET /api/user-event-interests/:userId/:city - Get by city
+- DELETE /api/user-event-interests/:eventId - Remove interest
+
+### Explore/Viral Features
+- POST /api/live-shares - Create live location share
+- GET /api/live-shares - Get active shares
+- DELETE /api/live-shares - Delete share
+- POST /api/live-shares/:id/react - React to share
+- GET /api/micro-experiences - List micro experiences
+- POST /api/micro-experiences - Create micro experience
+- POST /api/micro-experiences/:id/join - Join experience
+- DELETE /api/micro-experiences/:id/leave - Leave experience
+- GET /api/activity-templates - Get activity templates
+- POST /api/share-cards - Create shareable card
+- GET /api/community-tags - List community tags
+- GET /api/community-tags/mine - Get user's tags
+- POST /api/community-tags/:id/join - Join tag
+- DELETE /api/community-tags/:id/leave - Leave tag
+- GET /api/community-tags/:id/members - Get tag members
+
+### Travel Memories
+- POST /api/travel-memories - Create memory
+- GET /api/users/:id/travel-memories - Get user's memories
+- GET /api/travel-memories/public - Get public memories
+
+### Photo Management
+- POST /api/photo-albums - Create album
+- DELETE /api/photo-albums/:id - Delete album
+- POST /api/photos/:id/tags/:userId - Tag user in photo
+- DELETE /api/photos/:id/tags/:userId - Remove tag
+- DELETE /api/photos/:id - Delete photo
+
+### Mood/Status
+- POST /api/mood - Create mood entry
+- GET /api/mood/:userId - Get mood entries
+
+### Weather
+- GET /api/weather - Get weather data
+
+### Invites
+- GET /api/invite/:token - Get invite details
+- POST /api/invite/:token/accept - Accept invite
+
+### Platform Stats
+- GET /api/stats/platform - Get platform statistics
+
+### Health
+- GET /api/health - Server health check
+
+### Bootstrap (Post-registration)
+- POST /api/bootstrap/after-register - Run after registration setup
+- GET /api/bootstrap/status - Check bootstrap status
+
+### Waitlist
+- POST /api/waitlist - Join waitlist
+
+## Database Schema - Key Tables (70+ tables)
+
+### Core Tables
+- `users` - Main user table (100+ columns including profile, travel, business fields)
+- `connections` - Friend connections between users (userId, connectedUserId, status)
+- `messages` - Direct messages between users
+- `notifications` - User notifications
+
+### Chat System
+- `city_chatrooms` - City-based chatrooms
+- `chatroom_messages` - Messages in chatrooms
+- `chatroom_members` - Chatroom membership
+- `chatroom_access_requests` - Access requests for private rooms
+- `chatroom_moderation_records` - Moderation actions
+- `chatroom_blocks` - Blocked users per chatroom
+- `chatroom_invitations` - Chatroom invitations
+- `meetup_chatrooms` - Chatrooms for meetups/available-now
+- `meetup_chatroom_messages` - Messages in meetup chatrooms
+
+### Events
+- `events` - Events (title, description, city, date, organizer, capacity, etc.)
+- `event_participants` - Event attendance
+- `event_companion_participants` - Companion participation in events
+
+### Travel
+- `travel_plans` - User travel plans (destination, dates, interests)
+- `trip_itineraries` - Itineraries for travel plans
+- `itinerary_items` - Individual itinerary items
+- `shared_itineraries` - Shared itinerary access
+- `companions` - Travel companions
+- `travel_crew_members` - Travel crew membership
+- `travel_crew_companions` - Crew companions
+- `travel_crew_invites` - Crew invitations
+- `travel_crew_messages` - Crew chat messages
+- `travel_memories` - Travel memory entries
+
+### Meetups
+- `quick_meetups` - Quick meetup listings
+- `quick_meetup_participants` - Quick meetup participants
+- `hangouts` - Hangout listings
+- `hangout_participants` - Hangout participants
+
+### Available Now
+- `available_now` - Real-time availability status
+- `available_now_requests` - Meet requests
+
+### Business
+- `business_locations` - Business location details
+- `business_subscriptions` - Stripe subscriptions
+- `business_customer_photos` - Customer-uploaded photos
+- `business_referrals` - Business referral tracking
+- `quick_deals` - Business deals/promotions
+- `quick_deal_redemptions` - Deal redemptions
+
+### City Content
+- `city_pages` - City page content
+- `city_photos` - City photo gallery
+- `city_activities` - Activities per city
+- `city_guides` - AI-generated city guides
+- `city_landmarks` - City landmarks
+- `landmark_ratings` - Landmark ratings
+- `secret_local_experiences` - Local secret spots
+
+### Photos
+- `user_photos` - User uploaded photos
+- `photo_tags` - Photo tags
+- `photo_albums` - Photo albums
+
+### Social/Trust
+- `vouches` - User vouches
+- `references` - User references/reviews
+- `reference_votes` - Reference vote tracking
+- `blocked_users` - Block list
+- `hidden_from_users` - Hidden users
+- `user_reports` - User reports
+
+### Explore/Viral
+- `live_location_shares` - "I'm at X" sharing
+- `live_share_reactions` - Reactions to shares
+- `micro_experiences` - Quick 15-90 min activities
+- `micro_experience_participants` - Experience participants
+- `activity_templates` - Pre-built activity templates
+- `meetup_share_cards` - Shareable meetup cards
+- `community_tags` - Community identity tags
+- `user_community_tags` - User-tag associations
+
+### Gamification
+- `passport_stamps` - Travel passport stamps
+- `achievements` - User achievements
+- `user_stats` - User statistics
+- `travel_challenges` - Travel challenges
+- `user_challenges` - User challenge progress
+- `user_leaderboard` - Leaderboard entries
+- `mood_entries` - Mood/status entries
+
+### AI
+- `ai_recommendations` - AI recommendations
+- `ai_conversations` - AI conversation history
+
+### Other
+- `waitlist_leads` - Waitlist entries
+- `weekly_digest_tracker` - Email digest tracking
+- `pricing_tiers` - Pricing plans
+- `packing_lists` / `packing_list_items` - Trip packing lists
+- `user_contributed_interests` - Community interests
+- `user_city_interests` - User interests per city
+- `user_event_interests` - User event interests
+- `restaurants` / `restaurant_reviews` / `restaurant_categories` - Restaurant data
+- `proximity_notifications` - Location-based notifications
+- `business_interest_notifications` - Business interest alerts
+- `user_notification_settings` - Notification preferences
+
+## WebSocket Events
+The server uses WebSocket (ws) for real-time features:
+- Chat messages (DM and chatroom)
+- Typing indicators
+- Online/offline status
+- Notifications
+- Connection events
+
+WebSocket URL: wss://nearbytraveler.org (upgrades from HTTP)
+
+## Key Business Rules
+1. Users have 3 types: traveler, local, business
+2. Locals see "Nearby Local • [Hometown]" always on profiles
+3. Travelers see additional "Nearby Traveler • [Destination]" during active trips
+4. LA Metro cities (Playa del Rey, Santa Monica, Venice, Culver City) appear in both specific city AND Los Angeles searches
+5. Bio is NEVER required during signup
+6. All times display in user's LOCAL timezone
+7. No private/adult interests (Apple App Store compliance)
+8. Business users redirected away from /discover page
+9. Available Now creates group chats (not individual DMs)
+10. Profile bundle endpoint consolidates 18 API calls into 1
+
+## iOS App Requirements
+- Bundle ID: com.nearbytraveler.app
+- Must pass Apple App Store guidelines 2.1 (iPad login discoverability) and 4.2 (native features)
+- Sign In button always visible in header for iPad
+- Native features needed: push notifications, camera, geolocation, haptic feedback, share sheet, biometric auth
+- All modals/dialogs must have SOLID backgrounds (not translucent)
+- iOS system fonts (-apple-system, SF Pro)
+- Dark mode: #1c1c1e backgrounds, #8e8e93 inactive elements
+
+## File Structure
+```
+server/
+  index.ts          - Express server setup, middleware, session config
+  routes.ts         - All API route handlers (5000+ lines)
+  routes/           - Additional route files (email, location, password)
+  db.ts             - Database connection (Neon serverless)
+  storage.ts        - Storage interface and implementation
+  services/         - Business logic services
+  instrument.ts     - Sentry error monitoring
+
+client/
+  src/
+    App.tsx         - Main app with routing
+    pages/          - Page components
+    components/     - Reusable components
+    hooks/          - Custom React hooks
+    lib/            - Utilities (queryClient, etc.)
+    contexts/       - React contexts (auth, theme)
+
+shared/
+  schema.ts         - Drizzle ORM schema (2883 lines, 70+ tables)
+  base-options.ts   - Shared constants and options
+```
