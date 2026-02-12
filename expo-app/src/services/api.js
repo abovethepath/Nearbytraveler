@@ -1,17 +1,35 @@
-﻿import offlineStorage from './offlineStorage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import offlineStorage from './offlineStorage';
 
 const BASE_URL = 'https://nearbytraveler.org';
+const SESSION_KEY = 'nt_session_id';
+
 let sessionCookie = null;
 
+/** Restore session id from storage (call on app load so subsequent requests send Cookie). */
+const restoreSession = async () => {
+  try {
+    const sid = await AsyncStorage.getItem(SESSION_KEY);
+    if (sid) sessionCookie = `nt.sid=${sid}`;
+    else sessionCookie = null;
+  } catch (e) {
+    sessionCookie = null;
+  }
+};
+
 const getHeaders = () => {
-  const h = { 'Content-Type': 'application/json', Accept: 'application/json' };
+  const h = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+    'X-Client': 'ReactNative',
+  };
   if (sessionCookie) h['Cookie'] = sessionCookie;
   return h;
 };
 
 const extractCookie = (r) => {
-  const s = r.headers.get('set-cookie');
-  if (s) sessionCookie = s.split(';')[0];
+  const s = r.headers.get && r.headers.get('set-cookie');
+  if (s) sessionCookie = s.split(';')[0].trim();
 };
 
 // Helper to check network and use cache if offline
@@ -74,11 +92,17 @@ const api = {
     });
 
     extractCookie(r);
-
     const d = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(d.message || 'Login failed');
 
-    // Cache user profile after login
+    // React Native: server returns sessionId in body; persist and send as Cookie on future requests
+    if (d.sessionId) {
+      sessionCookie = `nt.sid=${d.sessionId}`;
+      try {
+        await AsyncStorage.setItem(SESSION_KEY, d.sessionId);
+      } catch (e) {}
+    }
+
     if (d.user) {
       await offlineStorage.cacheProfile(d.user);
     }
@@ -111,8 +135,15 @@ const api = {
       credentials: 'include',
     });
     sessionCookie = null;
+    try {
+      await AsyncStorage.removeItem(SESSION_KEY);
+    } catch (e) {}
     await offlineStorage.clearCache();
   },
+
+  restoreSession,
+  /** For WebView: pass this as Cookie header so the site sees the user as logged in. */
+  getSessionCookie: () => sessionCookie,
 
   async register(userData) {
     const r = await fetch(`${BASE_URL}/api/register`, {

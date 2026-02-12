@@ -1150,11 +1150,18 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           sessionID: (req as any).sessionID?.substring(0, 10) + '...',
           setCookieHeader: res.getHeader('Set-Cookie')
         });
-        return res.status(200).json({ ok: true, user: { id: user.id, username: user.username } });
+        // React Native cannot read Set-Cookie; send sessionId in body so app can send Cookie header
+        const isMobile = req.get('X-Client') === 'ReactNative';
+        const body: { ok: boolean; user: { id: string; username: string }; sessionId?: string } = { ok: true, user: { id: user.id, username: user.username } };
+        if (isMobile && (req as any).sessionID) body.sessionId = (req as any).sessionID;
+        return res.status(200).json(body);
       } catch (saveError: any) {
         console.error("❌ Session save failed:", saveError?.message);
         // Still return success - session might work on next request
-        return res.status(200).json({ ok: true, user: { id: user.id, username: user.username } });
+        const isMobile = req.get('X-Client') === 'ReactNative';
+        const body: { ok: boolean; user: { id: string; username: string }; sessionId?: string } = { ok: true, user: { id: user.id, username: user.username } };
+        if (isMobile && (req as any).sessionID) body.sessionId = (req as any).sessionID;
+        return res.status(200).json(body);
       }
     } catch (error) {
       console.error("Login error:", error);

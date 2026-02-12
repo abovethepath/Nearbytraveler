@@ -155,16 +155,24 @@ app.use((req, _res, next) => {
   next();
 });
 
+// Allow Expo/React Native app: origin can be null, exp://..., or localhost
+const allowedOrigins = [
+  "https://nearbytraveler.org",
+  "https://nearbytraveler.onrender.com",
+  "http://localhost:5000",
+];
 app.use(
   cors({
-    origin: [
-      "https://nearbytraveler.org",
-      "https://nearbytraveler.onrender.com",
-      "http://localhost:5000",
-    ],
+    origin: (origin, cb) => {
+      if (!origin) return cb(null, true); // mobile apps often send no origin
+      if (allowedOrigins.includes(origin)) return cb(null, true);
+      if (origin.startsWith("exp://") || origin.startsWith("exps://")) return cb(null, true);
+      if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) return cb(null, true);
+      return cb(null, false);
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Client"],
   }),
 );
 

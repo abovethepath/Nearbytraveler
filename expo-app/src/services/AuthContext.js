@@ -1,4 +1,4 @@
-﻿import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../services/api';
 
@@ -12,6 +12,7 @@ export function AuthProvider({ children }) {
 
   const checkAuth = async () => {
     try {
+      await api.restoreSession();
       const storedUser = await AsyncStorage.getItem('user');
       if (storedUser) {
         const fullUser = await api.getUser();
@@ -39,14 +40,18 @@ export function AuthProvider({ children }) {
       throw new Error('Missing credentials');
     }
 
-    const payload = cleanedIdentifier.includes('@')
-      ? { email: cleanedIdentifier, password: cleanedPassword }
-      : { username: cleanedIdentifier, password: cleanedPassword };
+    // Server expects "email" in body and looks up by email first, then by username.
+    // So we always send the identifier (email or username) as "email".
+    const payload = { email: cleanedIdentifier, password: cleanedPassword };
 
     // api.login throws on failure; if we get here, login succeeded
     const result = await api.login(payload);
 
-    const fullUser = await api.getUser();
+    let fullUser = await api.getUser();
+    // If session cookie didn't persist (e.g. React Native), use user from login response
+    if (!fullUser?.id && result?.user) {
+      fullUser = result.user;
+    }
     if (fullUser) {
       setUser(fullUser);
       await AsyncStorage.setItem('user', JSON.stringify(fullUser));

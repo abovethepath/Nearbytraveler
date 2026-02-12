@@ -1,0 +1,49 @@
+{
+	"folders": [
+		{
+			"path": "tmp"
+		},
+		{
+			"path": "android"
+		},
+		{
+			"path": "attached_assets"
+		},
+		{
+			"path": "capacitor-app"
+		},
+		{
+			"path": "client"
+		},
+		{
+			"path": "docs"
+		},
+		{
+			"path": "expo-app"
+		},
+		{
+			"path": "ios"
+		},
+		{
+			"path": "ios-app"
+		},
+		{
+			"path": "migrations"
+		},
+		{
+			"path": "public"
+		},
+		{
+			"path": "scripts"
+		},
+		{
+			"path": "server"
+		},
+		{
+			"path": "shared"
+		},
+		{
+			"path": "tests"
+		}
+	]
+}
