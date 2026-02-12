@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, SafeAreaView, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  TouchableOpacity,
+  SafeAreaView,
+  Alert,
+} from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { useAuth } from '../services/AuthContext';
@@ -19,12 +27,13 @@ export default function MapScreen({ navigation }) {
 
   useEffect(() => {
     requestLocationPermission();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const requestLocationPermission = async () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
-      
+
       if (status !== 'granted') {
         Alert.alert(
           'Location Permission',
@@ -51,7 +60,6 @@ export default function MapScreen({ navigation }) {
         longitudeDelta: 0.1,
       });
 
-      // Fetch nearby users
       await fetchNearbyUsers(user?.city || 'Los Angeles');
     } catch (error) {
       console.error('Location error:', error);
@@ -63,12 +71,14 @@ export default function MapScreen({ navigation }) {
   const fetchNearbyUsers = async (city) => {
     try {
       const data = await api.getUsersByLocation(city, 'all');
-      // Add mock coordinates for demo (in real app, users would have lat/long in database)
-      const usersWithCoords = (data || []).map((u, index) => ({
+
+      // Demo coords (replace later with real lat/lng from DB)
+      const usersWithCoords = (data || []).map((u) => ({
         ...u,
         latitude: 34.0522 + (Math.random() - 0.5) * 0.1,
         longitude: -118.2437 + (Math.random() - 0.5) * 0.1,
       }));
+
       setUsers(usersWithCoords);
     } catch (error) {
       console.error('Failed to fetch users:', error);
@@ -81,14 +91,14 @@ export default function MapScreen({ navigation }) {
     navigation.navigate('UserProfile', { userId: selectedUser.id });
   };
 
-  const centerOnMyLocation = async () => {
-    if (location) {
-      setRegion({
-        ...location,
-        latitudeDelta: 0.1,
-        longitudeDelta: 0.1,
-      });
-    }
+  const centerOnMyLocation = () => {
+    if (!location) return;
+
+    setRegion({
+      ...location,
+      latitudeDelta: 0.1,
+      longitudeDelta: 0.1,
+    });
   };
 
   if (loading) {
@@ -107,7 +117,7 @@ export default function MapScreen({ navigation }) {
         style={styles.map}
         region={region}
         onRegionChangeComplete={setRegion}
-        showsUserLocation={true}
+        showsUserLocation
         showsMyLocationButton={false}
       >
         {users.map((u) => (
@@ -123,4 +133,47 @@ export default function MapScreen({ navigation }) {
       </MapView>
 
       <TouchableOpacity style={styles.locationButton} onPress={centerOnMyLocation}>
-        <Text style={styles.locationIcon}>📍</
+        <Text style={styles.locationIcon}>📍</Text>
+      </TouchableOpacity>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
+  map: {
+    flex: 1,
+  },
+  centered: {
+    flex: 1,
+    backgroundColor: '#000',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+  },
+  loadingText: {
+    marginTop: 12,
+    color: '#fff',
+    fontSize: 16,
+  },
+  locationButton: {
+    position: 'absolute',
+    right: 16,
+    bottom: 24,
+    backgroundColor: '#111827',
+    borderRadius: 24,
+    width: 48,
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#374151',
+  },
+  locationIcon: {
+    fontSize: 22,
+    color: '#fff',
+  },
+});
