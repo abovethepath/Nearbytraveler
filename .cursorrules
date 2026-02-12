@@ -521,6 +521,26 @@ WebSocket URL: wss://nearbytraveler.org (upgrades from HTTP)
 - iOS system fonts (-apple-system, SF Pro)
 - Dark mode: #1c1c1e backgrounds, #8e8e93 inactive elements
 
+## Native iOS App Integration (WebView)
+The web app detects when it's running inside the native iOS WebView and adapts:
+- **Detection utility**: `client/src/lib/nativeApp.ts` exports `isNativeIOSApp()` and `sendToNativeApp()`
+- **Detection methods** (any of these signals native app):
+  1. `window.NearbyTravelerNative = true` — set by native app's JavaScript injection
+  2. `window.isNativeApp = true` — alternative flag
+  3. URL param `?native=ios` — append to WebView URL
+  4. `window.webkit.messageHandlers` present (WKWebView bridge)
+- **Bottom navbar hidden**: `MobileBottomNav` returns null when `isNativeIOSApp()` is true, so native tab bar is the only navigation
+- **Native bridge**: `sendToNativeApp(action, data)` posts messages to `window.webkit.messageHandlers.nearbyTraveler` for native features (push tokens, haptics, camera, etc.)
+
+**For the native iOS app (Swift/Capacitor) to signal it's a native app, do ONE of:**
+```swift
+// Option 1 (recommended): Inject JS after page load
+webView.evaluateJavaScript("window.NearbyTravelerNative = true;")
+
+// Option 2: Append URL param
+let url = URL(string: "https://nearbytraveler.org?native=ios")
+```
+
 ## File Structure
 ```
 server/
