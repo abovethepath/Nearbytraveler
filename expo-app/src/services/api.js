@@ -4,7 +4,7 @@ const BASE_URL = 'https://nearbytraveler.org';
 let sessionCookie = null;
 
 const getHeaders = () => {
-  const h = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
+  const h = { 'Content-Type': 'application/json', Accept: 'application/json' };
   if (sessionCookie) h['Cookie'] = sessionCookie;
   return h;
 };
@@ -19,18 +19,18 @@ const fetchWithOffline = async (url, options, cacheKey, cacheGetter) => {
   try {
     const response = await fetch(url, options);
     if (!response.ok) throw new Error('Network response not ok');
-    
+
     const data = await response.json();
-    
+
     // Cache the successful response
     if (cacheKey && data) {
       await offlineStorage.cacheData(cacheKey, data);
     }
-    
+
     return data;
   } catch (error) {
     console.log('Network error, trying cache:', error.message);
-    
+
     // If network fails, try to get cached data
     if (cacheGetter) {
       const cachedData = await cacheGetter();
@@ -39,28 +39,50 @@ const fetchWithOffline = async (url, options, cacheKey, cacheGetter) => {
         return cachedData;
       }
     }
-    
+
     throw error;
   }
 };
 
 const api = {
-  async login(email, password) {
+  // Supports:
+  // 1) login(email, password)  (backward compatible)
+  // 2) login({ email, password }) or login({ username, password })
+  async login(arg1, arg2) {
+    let payload;
+
+    if (typeof arg1 === 'object' && arg1 !== null) {
+      payload = {
+        email: arg1.email,
+        username: arg1.username,
+        password: arg1.password,
+      };
+    } else {
+      payload = { email: arg1, password: arg2 };
+    }
+
+    // clean up strings
+    if (payload.email) payload.email = String(payload.email).trim();
+    if (payload.username) payload.username = String(payload.username).trim();
+    if (payload.password) payload.password = String(payload.password).trim();
+
     const r = await fetch(`${BASE_URL}/api/auth/login`, {
       method: 'POST',
       headers: getHeaders(),
       credentials: 'include',
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify(payload),
     });
+
     extractCookie(r);
-    const d = await r.json();
+
+    const d = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(d.message || 'Login failed');
-    
+
     // Cache user profile after login
     if (d.user) {
       await offlineStorage.cacheProfile(d.user);
     }
-    
+
     return d;
   },
 
@@ -68,7 +90,7 @@ const api = {
     try {
       const r = await fetch(`${BASE_URL}/api/auth/user`, {
         headers: getHeaders(),
-        credentials: 'include'
+        credentials: 'include',
       });
       if (!r.ok) {
         // Try cached profile if network fails
@@ -86,7 +108,7 @@ const api = {
     await fetch(`${BASE_URL}/api/auth/logout`, {
       method: 'POST',
       headers: getHeaders(),
-      credentials: 'include'
+      credentials: 'include',
     });
     sessionCookie = null;
     await offlineStorage.clearCache();
@@ -97,10 +119,10 @@ const api = {
       method: 'POST',
       headers: getHeaders(),
       credentials: 'include',
-      body: JSON.stringify(userData)
+      body: JSON.stringify(userData),
     });
     extractCookie(r);
-    const d = await r.json();
+    const d = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(d.message || 'Registration failed');
     return d;
   },
@@ -117,7 +139,7 @@ const api = {
   async getEvent(id) {
     const r = await fetch(`${BASE_URL}/api/events/${id}`, {
       headers: getHeaders(),
-      credentials: 'include'
+      credentials: 'include',
     });
     if (!r.ok) return null;
     return r.json();
@@ -127,7 +149,7 @@ const api = {
     const r = await fetch(`${BASE_URL}/api/events/${eventId}/join`, {
       method: 'POST',
       headers: getHeaders(),
-      credentials: 'include'
+      credentials: 'include',
     });
     return r.json();
   },
@@ -144,7 +166,7 @@ const api = {
   async getUserProfile(userId) {
     const r = await fetch(`${BASE_URL}/api/users/${userId}`, {
       headers: getHeaders(),
-      credentials: 'include'
+      credentials: 'include',
     });
     if (!r.ok) return null;
     return r.json();
@@ -155,7 +177,7 @@ const api = {
       method: 'PUT',
       headers: getHeaders(),
       credentials: 'include',
-      body: JSON.stringify(updates)
+      body: JSON.stringify(updates),
     });
     return r.json();
   },
@@ -163,7 +185,7 @@ const api = {
   async getConnections(userId) {
     const r = await fetch(`${BASE_URL}/api/connections/${userId}`, {
       headers: getHeaders(),
-      credentials: 'include'
+      credentials: 'include',
     });
     if (!r.ok) return [];
     return r.json();
@@ -174,7 +196,7 @@ const api = {
       method: 'POST',
       headers: getHeaders(),
       credentials: 'include',
-      body: JSON.stringify({ targetUserId })
+      body: JSON.stringify({ targetUserId }),
     });
     return r.json();
   },
@@ -182,7 +204,7 @@ const api = {
   async getConversations(userId) {
     const r = await fetch(`${BASE_URL}/api/conversations/${userId}`, {
       headers: getHeaders(),
-      credentials: 'include'
+      credentials: 'include',
     });
     if (!r.ok) return [];
     return r.json();
@@ -191,7 +213,7 @@ const api = {
   async getMessages(userId) {
     const r = await fetch(`${BASE_URL}/api/messages/${userId}`, {
       headers: getHeaders(),
-      credentials: 'include'
+      credentials: 'include',
     });
     if (!r.ok) return [];
     return r.json();
@@ -202,7 +224,7 @@ const api = {
       method: 'POST',
       headers: getHeaders(),
       credentials: 'include',
-      body: JSON.stringify({ receiverId, content })
+      body: JSON.stringify({ receiverId, content }),
     });
     return r.json();
   },
@@ -210,7 +232,7 @@ const api = {
   async getNotifications(userId) {
     const r = await fetch(`${BASE_URL}/api/notifications/${userId}`, {
       headers: getHeaders(),
-      credentials: 'include'
+      credentials: 'include',
     });
     if (!r.ok) return [];
     return r.json();

@@ -20,7 +20,6 @@
       "distribution": "store",
       "ios": {
         "resourceClass": "m-medium",
-
         "image": "macos-sequoia-15.3-xcode-16.2"
       },
       "android": {

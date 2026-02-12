@@ -15,19 +15,43 @@ export function AuthProvider({ children }) {
       const storedUser = await AsyncStorage.getItem('user');
       if (storedUser) {
         const fullUser = await api.getUser();
-        if (fullUser && fullUser.id) { setUser(fullUser); }
-        else { await AsyncStorage.removeItem('user'); setUser(null); }
+        if (fullUser && fullUser.id) {
+          setUser(fullUser);
+        } else {
+          await AsyncStorage.removeItem('user');
+          setUser(null);
+        }
       }
-    } catch (e) { console.log('Auth check failed:', e); setUser(null); }
-    finally { setLoading(false); }
+    } catch (e) {
+      console.log('Auth check failed:', e);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const login = async (email, password) => {
-    const result = await api.login(email, password);
-    if (result.ok) {
-      const fullUser = await api.getUser();
-      if (fullUser) { setUser(fullUser); await AsyncStorage.setItem('user', JSON.stringify(fullUser)); }
+  // Accept username OR email in the first param (identifier)
+  const login = async (identifier, password) => {
+    const cleanedIdentifier = (identifier || '').trim();
+    const cleanedPassword = (password || '').trim();
+
+    if (!cleanedIdentifier || !cleanedPassword) {
+      throw new Error('Missing credentials');
     }
+
+    const payload = cleanedIdentifier.includes('@')
+      ? { email: cleanedIdentifier, password: cleanedPassword }
+      : { username: cleanedIdentifier, password: cleanedPassword };
+
+    // api.login throws on failure; if we get here, login succeeded
+    const result = await api.login(payload);
+
+    const fullUser = await api.getUser();
+    if (fullUser) {
+      setUser(fullUser);
+      await AsyncStorage.setItem('user', JSON.stringify(fullUser));
+    }
+
     return result;
   };
 
