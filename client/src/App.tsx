@@ -113,6 +113,7 @@ import SignupSteps from "@/pages/signup-steps";
 import SignupAccount from "@/pages/signup-account";
 // OLD BROKEN UNIFIED SIGNUP DELETED FOREVER
 import BusinessRegistration from "@/pages/business-registration";
+import EventIntegrations from "@/pages/event-integrations";
 import LandingNew from "@/pages/landing-new";
 import LaunchingSoon from "@/pages/launching-soon";
 import Photos from "@/pages/photos";
@@ -1094,6 +1095,8 @@ function Router() {
 
       case '/connect':
         return <Connect />;
+      case '/integrations':
+        return <EventIntegrations />;
       case '/matches':
         // Redirect to connect page since matches functionality is there
         setLocation('/connect');

@@ -135,6 +135,7 @@ export function MobileTopNav() {
         { icon: Home, label: "Home", path: "/" },
         { icon: MapPin, label: "Cities", path: "/discover" },
         { icon: Calendar, label: "Events", path: "/events" },
+        { icon: Zap, label: "Event Integrations", path: "/integrations" },
       ]
     },
     {

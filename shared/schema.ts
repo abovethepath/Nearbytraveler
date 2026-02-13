@@ -2880,4 +2880,80 @@ export type CommunityTag = typeof communityTags.$inferSelect;
 export type InsertCommunityTag = z.infer<typeof insertCommunityTagSchema>;
 export type UserCommunityTag = typeof userCommunityTags.$inferSelect;
 
+export const eventIntegrations = pgTable("event_integrations", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  provider: text("provider").notNull(),
+  displayName: text("display_name"),
+  apiKey: text("api_key"),
+  icsUrl: text("ics_url"),
+  calendarId: text("calendar_id"),
+  status: text("status").notNull().default("active"),
+  lastSyncAt: timestamp("last_sync_at"),
+  nextSyncAt: timestamp("next_sync_at"),
+  syncIntervalMinutes: integer("sync_interval_minutes").default(60),
+  eventCount: integer("event_count").default(0),
+  settings: jsonb("settings"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("idx_event_integrations_user_provider").on(table.userId, table.provider),
+]);
+
+export const insertEventIntegrationSchema = createInsertSchema(eventIntegrations).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  lastSyncAt: true,
+  nextSyncAt: true,
+  eventCount: true,
+});
+export type EventIntegration = typeof eventIntegrations.$inferSelect;
+export type InsertEventIntegration = z.infer<typeof insertEventIntegrationSchema>;
+
+export const externalEvents = pgTable("external_events", {
+  id: serial("id").primaryKey(),
+  integrationId: integer("integration_id").notNull().references(() => eventIntegrations.id, { onDelete: "cascade" }),
+  provider: text("provider").notNull(),
+  providerEventId: text("provider_event_id").notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  startTime: timestamp("start_time").notNull(),
+  endTime: timestamp("end_time"),
+  venueName: text("venue_name"),
+  address: text("address"),
+  city: text("city"),
+  state: text("state"),
+  country: text("country"),
+  latitude: decimal("latitude", { precision: 10, scale: 8 }),
+  longitude: decimal("longitude", { precision: 11, scale: 8 }),
+  imageUrl: text("image_url"),
+  url: text("url"),
+  organizerName: text("organizer_name"),
+  category: text("category"),
+  tags: text("tags").array(),
+  ticketUrl: text("ticket_url"),
+  isFree: boolean("is_free"),
+  priceInfo: text("price_info"),
+  capacity: integer("capacity"),
+  attendeeCount: integer("attendee_count"),
+  rawPayload: jsonb("raw_payload"),
+  syncStatus: text("sync_status").notNull().default("synced"),
+  importedEventId: integer("imported_event_id"),
+  lastSyncedAt: timestamp("last_synced_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("idx_external_events_provider").on(table.provider, table.providerEventId),
+  index("idx_external_events_city_date").on(table.city, table.startTime),
+  index("idx_external_events_integration").on(table.integrationId),
+]);
+
+export const insertExternalEventSchema = createInsertSchema(externalEvents).omit({
+  id: true,
+  createdAt: true,
+  lastSyncedAt: true,
+});
+export type ExternalEvent = typeof externalEvents.$inferSelect;
+export type InsertExternalEvent = z.infer<typeof insertExternalEventSchema>;
+
 

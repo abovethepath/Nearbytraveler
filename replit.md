@@ -83,3 +83,5 @@ VIRAL FEATURES (Explore Page at /explore): Added comprehensive viral growth feat
 - **StubHub**: Premium event listings.
 - **Ticketmaster**: Event listings.
 - **Meetup**: Local event feeds.
+- **Luma**: Event calendar sync via API (requires Luma Plus). Tables: `event_integrations`, `external_events`. Services: `server/services/lumaClient.ts`, `server/services/eventSyncService.ts`. API: `/api/integrations`, `/api/external-events`. Frontend: `/integrations` page.
+- **Partiful**: Event calendar sync via ICS feed URL. Service: `server/services/icsParser.ts`. Shares same tables and API endpoints as Luma integration.

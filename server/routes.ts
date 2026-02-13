@@ -79,7 +79,7 @@ import {
   notifications,
 } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
-import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags } from "../shared/schema";
+import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, eventIntegrations, externalEvents } from "../shared/schema";
 import { alias } from "drizzle-orm/pg-core";
 
 // Helper function to compute public display name based on user preference
@@ -22290,6 +22290,270 @@ Questions? Just reply to this message. Welcome aboard!
       console.log('✅ Session destroyed successfully');
       res.json({ ok: true, message: "Logged out successfully" });
     });
+  });
+
+  // ==================== EVENT INTEGRATIONS (Luma / Partiful) ====================
+
+  app.get("/api/integrations", async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user?.id || req.session?.user?.id;
+      if (!userId) return res.status(401).json({ error: "Authentication required" });
+
+      const integrations = await db
+        .select({
+          id: eventIntegrations.id,
+          provider: eventIntegrations.provider,
+          displayName: eventIntegrations.displayName,
+          status: eventIntegrations.status,
+          lastSyncAt: eventIntegrations.lastSyncAt,
+          nextSyncAt: eventIntegrations.nextSyncAt,
+          syncIntervalMinutes: eventIntegrations.syncIntervalMinutes,
+          eventCount: eventIntegrations.eventCount,
+          createdAt: eventIntegrations.createdAt,
+        })
+        .from(eventIntegrations)
+        .where(eq(eventIntegrations.userId, userId))
+        .orderBy(desc(eventIntegrations.createdAt));
+
+      res.json(integrations);
+    } catch (err: any) {
+      console.error("Error fetching integrations:", err);
+      res.status(500).json({ error: "Failed to fetch integrations" });
+    }
+  });
+
+  app.post("/api/integrations/connect", async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user?.id || req.session?.user?.id;
+      if (!userId) return res.status(401).json({ error: "Authentication required" });
+
+      const { provider, apiKey, icsUrl, displayName, calendarId } = req.body;
+
+      if (!provider || !["luma", "partiful"].includes(provider)) {
+        return res.status(400).json({ error: "Invalid provider. Use 'luma' or 'partiful'" });
+      }
+
+      if (provider === "luma" && !apiKey) {
+        return res.status(400).json({ error: "Luma requires an API key" });
+      }
+      if (provider === "partiful" && !icsUrl) {
+        return res.status(400).json({ error: "Partiful requires an ICS calendar URL" });
+      }
+
+      if (provider === "luma") {
+        const { LumaClient } = await import("./services/lumaClient");
+        const client = new LumaClient(apiKey);
+        const valid = await client.validateKey();
+        if (!valid) {
+          return res.status(400).json({ error: "Invalid Luma API key. Make sure you have Luma Plus." });
+        }
+      }
+
+      if (provider === "partiful" && icsUrl) {
+        const { ICSParser } = await import("./services/icsParser");
+        const valid = await ICSParser.validateUrl(icsUrl);
+        if (!valid) {
+          return res.status(400).json({ error: "Invalid ICS URL. Make sure it's a valid calendar feed." });
+        }
+      }
+
+      const existing = await db
+        .select()
+        .from(eventIntegrations)
+        .where(
+          and(
+            eq(eventIntegrations.userId, userId),
+            eq(eventIntegrations.provider, provider)
+          )
+        );
+
+      let integration;
+      if (existing.length > 0) {
+        [integration] = await db
+          .update(eventIntegrations)
+          .set({
+            apiKey: apiKey || null,
+            icsUrl: icsUrl || null,
+            displayName: displayName || provider,
+            calendarId: calendarId || null,
+            status: "active",
+            updatedAt: new Date(),
+          })
+          .where(eq(eventIntegrations.id, existing[0].id))
+          .returning();
+      } else {
+        [integration] = await db
+          .insert(eventIntegrations)
+          .values({
+            userId,
+            provider,
+            apiKey: apiKey || null,
+            icsUrl: icsUrl || null,
+            displayName: displayName || provider,
+            calendarId: calendarId || null,
+            status: "active",
+            syncIntervalMinutes: provider === "partiful" ? 1440 : 60,
+          })
+          .returning();
+      }
+
+      const { eventSyncService } = await import("./services/eventSyncService");
+      const syncResult = await eventSyncService.syncIntegration(integration.id);
+
+      res.json({
+        integration: {
+          id: integration.id,
+          provider: integration.provider,
+          displayName: integration.displayName,
+          status: integration.status,
+          eventCount: syncResult.synced,
+        },
+        sync: syncResult,
+      });
+    } catch (err: any) {
+      console.error("Error connecting integration:", err);
+      res.status(500).json({ error: "Failed to connect integration" });
+    }
+  });
+
+  app.post("/api/integrations/:id/sync", async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user?.id || req.session?.user?.id;
+      if (!userId) return res.status(401).json({ error: "Authentication required" });
+
+      const integrationId = parseInt(req.params.id);
+      const [integration] = await db
+        .select()
+        .from(eventIntegrations)
+        .where(
+          and(
+            eq(eventIntegrations.id, integrationId),
+            eq(eventIntegrations.userId, userId)
+          )
+        );
+
+      if (!integration) {
+        return res.status(404).json({ error: "Integration not found" });
+      }
+
+      const { eventSyncService } = await import("./services/eventSyncService");
+      const result = await eventSyncService.syncIntegration(integrationId);
+      res.json(result);
+    } catch (err: any) {
+      console.error("Error syncing integration:", err);
+      res.status(500).json({ error: "Failed to sync integration" });
+    }
+  });
+
+  app.delete("/api/integrations/:id", async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user?.id || req.session?.user?.id;
+      if (!userId) return res.status(401).json({ error: "Authentication required" });
+
+      const integrationId = parseInt(req.params.id);
+      const [integration] = await db
+        .select()
+        .from(eventIntegrations)
+        .where(
+          and(
+            eq(eventIntegrations.id, integrationId),
+            eq(eventIntegrations.userId, userId)
+          )
+        );
+
+      if (!integration) {
+        return res.status(404).json({ error: "Integration not found" });
+      }
+
+      await db.delete(externalEvents).where(eq(externalEvents.integrationId, integrationId));
+      await db.delete(eventIntegrations).where(eq(eventIntegrations.id, integrationId));
+
+      res.json({ ok: true, message: "Integration disconnected" });
+    } catch (err: any) {
+      console.error("Error deleting integration:", err);
+      res.status(500).json({ error: "Failed to disconnect integration" });
+    }
+  });
+
+  app.get("/api/external-events", async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user?.id || req.session?.user?.id;
+      if (!userId) return res.status(401).json({ error: "Authentication required" });
+
+      const { city, provider, limit: limitStr } = req.query;
+      const limit = parseInt(limitStr as string) || 50;
+
+      const userIntegrations = await db
+        .select({ id: eventIntegrations.id })
+        .from(eventIntegrations)
+        .where(eq(eventIntegrations.userId, userId));
+
+      if (userIntegrations.length === 0) {
+        return res.json([]);
+      }
+
+      const integrationIds = userIntegrations.map(i => i.id);
+      const conditions: any[] = [
+        eq(externalEvents.syncStatus, "synced"),
+        inArray(externalEvents.integrationId, integrationIds),
+        gte(externalEvents.startTime, new Date()),
+      ];
+
+      if (city) {
+        conditions.push(ilike(externalEvents.city, `%${city}%`));
+      }
+      if (provider) {
+        conditions.push(eq(externalEvents.provider, provider as string));
+      }
+
+      const results = await db
+        .select()
+        .from(externalEvents)
+        .where(and(...conditions))
+        .orderBy(asc(externalEvents.startTime))
+        .limit(limit);
+
+      res.json(results);
+    } catch (err: any) {
+      console.error("Error fetching external events:", err);
+      res.status(500).json({ error: "Failed to fetch external events" });
+    }
+  });
+
+  app.get("/api/external-events/:id", async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user?.id || req.session?.user?.id;
+      if (!userId) return res.status(401).json({ error: "Authentication required" });
+
+      const eventId = parseInt(req.params.id);
+      const [event] = await db
+        .select()
+        .from(externalEvents)
+        .where(eq(externalEvents.id, eventId));
+
+      if (!event) {
+        return res.status(404).json({ error: "External event not found" });
+      }
+
+      const [ownership] = await db
+        .select()
+        .from(eventIntegrations)
+        .where(
+          and(
+            eq(eventIntegrations.id, event.integrationId),
+            eq(eventIntegrations.userId, userId)
+          )
+        );
+
+      if (!ownership) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      res.json(event);
+    } catch (err: any) {
+      console.error("Error fetching external event:", err);
+      res.status(500).json({ error: "Failed to fetch external event" });
+    }
   });
 
   // Return the configured HTTP server with WebSocket support  
