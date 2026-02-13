@@ -1677,12 +1677,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       const migratedInterests = migrateLegacyOptions(user.interests || []);
       const migratedActivities = migrateLegacyOptions(user.activities || []);
       
-      setTempInterests(migratedInterests.filter(interest => !signupInterests.includes(interest)));
+      setTempInterests(migratedInterests);
       setTempActivities(migratedActivities);
       
-      // Initialize editFormData with current user preferences - EXCLUDE signup interests
       setEditFormData({
-        interests: migratedInterests.filter(interest => !signupInterests.includes(interest)),
+        interests: migratedInterests,
         activities: migratedActivities
       });
       
@@ -4973,6 +4972,54 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 {/* EDIT MODE - Single scrolling form with all sections */}
                 {isOwnProfile && isEditingPublicInterests ? (
                   <div className="p-4 sm:p-6 rounded-lg border bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 space-y-6">
+
+                    {/* TOP SAVE/CANCEL BUTTONS */}
+                    <div className="flex gap-2 pb-4 border-b border-gray-200 dark:border-gray-600 sticky top-0 z-10 bg-white dark:bg-gray-800 -mt-2 pt-2">
+                      <Button 
+                        onClick={async () => {
+                          try {
+                            const allInterests = [...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS];
+                            const predefinedInterests = editFormData.interests.filter(int => allInterests.includes(int));
+                            const customInterests = editFormData.interests.filter(int => !allInterests.includes(int));
+                            const predefinedActivities = editFormData.activities.filter(act => ALL_ACTIVITIES.includes(act));
+                            const customActivities = editFormData.activities.filter(act => !ALL_ACTIVITIES.includes(act));
+                            const saveData = {
+                              interests: predefinedInterests,
+                              customInterests: customInterests.join(', '),
+                              activities: predefinedActivities,
+                              customActivities: customActivities.join(', ')
+                            };
+                            const apiBase = getApiBaseUrl();
+                            const response = await fetch(`${apiBase}/api/users/${user.id}`, {
+                              method: 'PUT',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify(saveData)
+                            });
+                            if (!response.ok) throw new Error('Failed to save');
+                            queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+                            setIsEditingPublicInterests(false);
+                            setTimeout(() => {
+                              const section = document.getElementById('interests-activities-section');
+                              if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }, 100);
+                          } catch (error) {
+                            console.error('Failed to update:', error);
+                          }
+                        }}
+                        className="bg-green-600 hover:bg-green-700 text-white"
+                        size="sm"
+                      >
+                        Save All
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => setIsEditingPublicInterests(false)}
+                        className="border-orange-500 text-orange-600 hover:bg-orange-50"
+                        size="sm"
+                      >
+                        Cancel
+                      </Button>
+                    </div>
                     
                     {/* TOP CHOICES / INTERESTS SECTION */}
                     <div>
