@@ -173,7 +173,7 @@ export function MobileTopNav() {
   return (
     <>
       <header 
-        className="fixed top-0 left-0 right-0 z-[10000] md:hidden ios-nav-bar"
+        className="fixed top-0 left-0 right-0 z-[10000] md:hidden ios-nav-bar mobile-top-nav"
         style={{
           paddingTop: 'env(safe-area-inset-top, 0px)',
         }}

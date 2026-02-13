@@ -1324,6 +1324,12 @@ function Router() {
 }
 
 function App() {
+  useEffect(() => {
+    if (isNativeIOSApp()) {
+      document.body.setAttribute('data-native-ios', 'true');
+    }
+  }, []);
+
   // Initialize Google Analytics when app loads
   useEffect(() => {
     // Verify required environment variable is present

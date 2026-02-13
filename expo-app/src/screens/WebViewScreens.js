@@ -30,8 +30,12 @@ const NATIVE_INJECT_JS = `
   window.isNativeApp = true;
   (function() {
     var s = document.createElement('style');
-    s.textContent = ':root { --native-tabbar-height: 88px; } body { padding-bottom: 88px !important; }';
+    s.textContent = ':root { --native-tabbar-height: 88px; } body { padding-bottom: 88px !important; } body[data-native-ios] .mobile-top-nav, body[data-native-ios] .mobile-bottom-nav, body[data-native-ios] .desktop-navbar { display: none !important; }';
     document.head.appendChild(s);
+    document.addEventListener('DOMContentLoaded', function() {
+      document.body.setAttribute('data-native-ios', 'true');
+    });
+    if (document.body) document.body.setAttribute('data-native-ios', 'true');
   })();
   true;
 `;

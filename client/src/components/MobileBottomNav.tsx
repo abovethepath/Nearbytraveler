@@ -193,6 +193,7 @@ export function MobileBottomNav() {
       )}
 
       <div 
+        className="mobile-bottom-nav"
         style={{ 
           position: 'fixed',
           bottom: 0,
