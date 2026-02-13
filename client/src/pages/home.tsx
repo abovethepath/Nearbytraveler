@@ -343,6 +343,19 @@ export default function Home() {
     refetchInterval: 30000,
   });
 
+  // My "available now" status so the current user's card shows the green badge when they're available
+  const { data: myAvailableStatus } = useQuery<{ isAvailable?: boolean }>({
+    queryKey: ['/api/available-now/my-status'],
+    enabled: !!effectiveUser?.id,
+  });
+  const effectiveAvailableNowIds = React.useMemo(() => {
+    const ids = Array.isArray(availableNowIds) ? [...availableNowIds] : [];
+    if (myAvailableStatus?.isAvailable && effectiveUser?.id && !ids.includes(effectiveUser.id)) {
+      ids.push(effectiveUser.id);
+    }
+    return ids;
+  }, [availableNowIds, myAvailableStatus?.isAvailable, effectiveUser?.id]);
+
   // Get compatibility data from API (matches profile page calculation)
   const { data: compatibilityData } = useQuery({
     queryKey: [`/api/users/${user?.id || currentUserProfile?.id || effectiveUser?.id}/matches`],
@@ -606,8 +619,8 @@ export default function Home() {
           const bCountries = b.countriesVisited?.length || 0;
           return bCountries - aCountries;
         case 'available_now':
-          const aAvail = availableNowIds.includes(a.id) ? 1 : 0;
-          const bAvail = availableNowIds.includes(b.id) ? 1 : 0;
+          const aAvail = effectiveAvailableNowIds.includes(a.id) ? 1 : 0;
+          const bAvail = effectiveAvailableNowIds.includes(b.id) ? 1 : 0;
           if (bAvail !== aAvail) return bAvail - aAvail;
           return new Date(b.lastLocationUpdate || b.createdAt || 0).getTime() - new Date(a.lastLocationUpdate || a.createdAt || 0).getTime();
         case 'alphabetical':
@@ -1108,7 +1121,7 @@ export default function Home() {
       // 3. They're currently traveling (should see themselves in their destination)
       // 4. Sorted by "recent" (newest members) - user should see themselves as newest
       // 5. They have Available Now active - show their card with green badge
-      if (filters.location || filters.search || effectiveUser?.isCurrentlyTraveling || sortBy === 'recent' || sortBy === 'available_now' || availableNowIds.includes(otherUser.id)) return true;
+      if (filters.location || filters.search || effectiveUser?.isCurrentlyTraveling || sortBy === 'recent' || sortBy === 'available_now' || effectiveAvailableNowIds.includes(otherUser.id)) return true;
 
       // Only exclude from general browsing without any specific context
       return false;
@@ -1767,7 +1780,7 @@ export default function Home() {
                             compatibilityData={compatibilityData?.find((match: any) => match.userId === otherUser.id)}
                             compact={isCompactMode}
                             connectionDegree={connectionDegreesData?.degrees?.[otherUser.id]}
-                            isAvailableNow={availableNowIds.includes(otherUser.id)}
+                            isAvailableNow={effectiveAvailableNowIds.includes(otherUser.id)}
                           />
                       ))
                     ) : (

@@ -1,9 +1,10 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, RefreshControl, ActivityIndicator, SafeAreaView } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, ActivityIndicator, SafeAreaView } from 'react-native';
 import { useAuth } from '../services/AuthContext';
 import api from '../services/api';
+import UserAvatar from '../components/UserAvatar';
 
-const ConversationCard = ({ conversation, onPress }) => {
+const ConversationCard = ({ conversation, onPress, navigation }) => {
   const otherUser = conversation.otherUser || {};
   const lastMsg = conversation.lastMessage;
   const timeAgo = (dateStr) => {
@@ -18,7 +19,7 @@ const ConversationCard = ({ conversation, onPress }) => {
   };
   return (
     <TouchableOpacity style={styles.conversationCard} onPress={() => onPress(conversation)} activeOpacity={0.7}>
-      <Image source={otherUser.profileImage ? { uri: otherUser.profileImage } : require('../../assets/icon.png')} style={styles.avatar} />
+      <UserAvatar user={otherUser} size={52} navigation={navigation} style={styles.avatar} />
       <View style={styles.conversationInfo}>
         <View style={styles.nameRow}>
           <Text style={styles.userName} numberOfLines={1}>{otherUser.fullName || otherUser.username || 'User'}</Text>
@@ -46,13 +47,16 @@ export default function MessagesScreen({ navigation }) {
 
   useEffect(() => { fetchConversations(); }, [fetchConversations]);
   const onRefresh = () => { setRefreshing(true); fetchConversations(); };
-  const handlePress = (conv) => { navigation.navigate('Chat', { userId: conv.otherUser?.id, userName: conv.otherUser?.fullName || conv.otherUser?.username }); };
+  const handlePress = (conv) => {
+    const other = conv.otherUser || {};
+    navigation.navigate('Chat', { userId: other.id, userName: other.fullName || other.username, otherUser: other });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}><Text style={styles.headerTitle}>Messages</Text></View>
       {loading ? <View style={styles.centered}><ActivityIndicator size={36} color="#F97316" /></View> : (
-        <FlatList data={conversations} keyExtractor={(item, i) => String(item.id || i)} renderItem={({ item }) => <ConversationCard conversation={item} onPress={handlePress} />}
+        <FlatList data={conversations} keyExtractor={(item, i) => String(item.id || i)} renderItem={({ item }) => <ConversationCard conversation={item} onPress={handlePress} navigation={navigation} />}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#F97316" />}
           ListEmptyComponent={<View style={styles.emptyState}><Text style={styles.emptyIcon}>&#x1F4AC;</Text><Text style={styles.emptyTitle}>No messages yet</Text><Text style={styles.emptySubtitle}>Connect with travelers to start chatting</Text></View>}
         />
@@ -66,7 +70,7 @@ const styles = StyleSheet.create({
   header: { paddingHorizontal: 20, paddingTop: 12, paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: '#F3F4F6' },
   headerTitle: { fontSize: 28, fontWeight: '800', color: '#111827' },
   conversationCard: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#F9FAFB' },
-  avatar: { width: 52, height: 52, borderRadius: 26, backgroundColor: '#F3F4F6', marginRight: 14 },
+  avatar: { marginRight: 14 },
   conversationInfo: { flex: 1 },
   nameRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 3 },
   userName: { fontSize: 16, fontWeight: '700', color: '#111827', flex: 1, marginRight: 8 },

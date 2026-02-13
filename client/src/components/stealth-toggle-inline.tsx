@@ -32,8 +32,10 @@ export function StealthToggleInline({ targetUserId, targetUsername }: StealthTog
       }
     },
     onSuccess: () => {
+      queryClient.setQueryData(['/api/users/hidden', targetUserId], !isHidden);
       queryClient.invalidateQueries({ queryKey: ['/api/users/hidden', targetUserId] });
       queryClient.invalidateQueries({ queryKey: ['/api/users/hidden'] });
+      queryClient.refetchQueries({ queryKey: ['/api/users/hidden', targetUserId] });
       setIsUpdating(false);
     },
     onError: () => {

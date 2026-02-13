@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useLocation } from "wouter";
 import { initGA } from "@/lib/analytics";
 import { useAnalytics } from "@/hooks/use-analytics";
@@ -377,6 +377,22 @@ function Router() {
     return undefined;
   }, [user]);
 
+  // Hydrate user from storage when loading so we keep current route instead of flashing Home
+  useLayoutEffect(() => {
+    if (!isLoading) return;
+    const raw = localStorage.getItem("user") || localStorage.getItem("travelconnect_user");
+    if (!raw) return;
+    try {
+      const parsed = JSON.parse(raw) as User;
+      if (parsed?.id && parsed?.username) {
+        setUser(parsed);
+        setIsLoading(false);
+      }
+    } catch {
+      // ignore
+    }
+  }, [isLoading]);
+
   // Scroll to top when location changes
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -482,40 +498,6 @@ function Router() {
   }, [user, setLocation, queryClient]);
 
   if (isLoading) {
-    // If we have user data in storage, don't show loading screen
-    const hasStoredUser = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
-    if (hasStoredUser) {
-      try {
-        const parsedUser = JSON.parse(hasStoredUser);
-        if (parsedUser && parsedUser.id) {
-          console.log('🚀 Loading with user data - showing app immediately');
-          return (
-            <AuthContext.Provider value={{
-              user: parsedUser,
-              setUser: setUser,
-              logout: () => { localStorage.clear(); window.location.href = '/'; },
-              login: (userData: User, token?: string) => { setUser(userData); },
-              isAuthenticated: true
-            }}>
-          <div className="min-h-screen w-full max-w-full flex flex-col bg-background text-foreground overflow-x-hidden">
-                <div className="md:hidden">
-                  <MobileTopNav />
-                </div>
-            <main className="flex-1 w-full max-w-full pt-16 pb-24 md:pt-0 md:pb-20 overflow-x-hidden main-with-bottom-nav">
-                  <Home />
-                </main>
-                <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 9999 }}>
-                  <MobileBottomNav />
-                </div>
-              </div>
-            </AuthContext.Provider>
-          );
-        }
-      } catch (error) {
-        console.error('Error parsing stored user during loading:', error);
-      }
-    }
-    
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-2xl font-semibold text-gray-700">Loading Nearby Traveler...</div>
@@ -523,8 +505,9 @@ function Router() {
     );
   }
 
-  const renderPage = () => {
-    console.log('🔍 ROUTING DEBUG - isAuthenticated:', authValue.isAuthenticated, 'location:', location, 'user:', user);
+  const renderPage = (overrideUser?: User | null) => {
+    const effectiveUser = overrideUser !== undefined ? overrideUser : user;
+    console.log('🔍 ROUTING DEBUG - isAuthenticated:', authValue.isAuthenticated, 'location:', location, 'user:', effectiveUser);
     console.log('🔍 Current window.location.pathname:', window.location.pathname);
 
     // Don't interfere with API routes - let browser handle them naturally
@@ -612,9 +595,9 @@ function Router() {
       'final_isActuallyAuthenticated': isActuallyAuthenticated
     });
 
-    // Simplified user state fix - only run once
-    if (!hasUserInState && (hasUserInLocalStorage || hasTravelConnectUser) && !user && !isLoading) {
-      console.log('🔄 FIXING USER STATE: User has auth data but no state, setting from storage');
+    // Simplified user state fix - recover user from storage and re-render for current location
+    if (!hasUserInState && (hasUserInLocalStorage || hasTravelConnectUser) && !user && !isLoading && overrideUser === undefined) {
+      console.log('🔄 FIXING USER STATE: User has auth data but no state, rendering for current location');
       try {
         const storedUser = localStorage.getItem('user') || localStorage.getItem('travelconnect_user');
         if (storedUser) {
@@ -622,7 +605,7 @@ function Router() {
           if (parsedUser && parsedUser.id) {
             console.log('🔧 Setting user from storage:', parsedUser.username);
             setUser(parsedUser);
-            return <Home />; // Directly return Home to break the loop
+            return renderPage(parsedUser); // Preserve current route instead of forcing Home
           }
         }
       } catch (error) {
@@ -911,7 +894,7 @@ function Router() {
       }
     }
 
-    console.log('✅ USER AUTHENTICATED - routing to:', location, 'user:', user?.username || 'unknown user');
+    console.log('✅ USER AUTHENTICATED - routing to:', location, 'user:', effectiveUser?.username || 'unknown user');
 
     // Welcome pages - only for authenticated users
     if (location === '/welcome') {
@@ -1101,7 +1084,7 @@ function Router() {
       case '/requests':
         return <Requests />;
       case '/passport':
-        return <Passport userId={user?.id || 0} />;
+        return <Passport userId={effectiveUser?.id || 0} />;
       case '/photos':
         return <Photos />;
       case '/upload-photos':
@@ -1147,7 +1130,7 @@ function Router() {
       case '/pitch-preview':
         return <PitchPreview />;
       case '/admin-settings':
-        return <AdminSettings user={user} />;
+        return <AdminSettings user={effectiveUser ?? user} />;
       case '/sms-test':
         return <SMSTest />;
       case '/travel-blog':
@@ -1222,7 +1205,7 @@ function Router() {
         );
         
         // Only redirect business users if route is NOT allowed
-        if (user?.userType === 'business' && location !== '/' && !isBusinessAllowedRoute) {
+        if (effectiveUser?.userType === 'business' && location !== '/' && !isBusinessAllowedRoute) {
           console.log('🏢 BUSINESS USER: Unknown route detected (not whitelisted), redirecting to home page');
           setLocation('/');
           return null;

@@ -1,7 +1,8 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useAuth } from '../services/AuthContext';
 import api from '../services/api';
+import UserAvatar from '../components/UserAvatar';
 
 const MessageBubble = ({ message, isOwn }) => (
   <View style={[styles.bubbleRow, isOwn && styles.bubbleRowOwn]}>
@@ -12,7 +13,7 @@ const MessageBubble = ({ message, isOwn }) => (
 );
 
 export default function ChatScreen({ route, navigation }) {
-  const { userId, userName } = route.params;
+  const { userId, userName, otherUser: paramUser } = route.params || {};
   const { user } = useAuth();
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
@@ -37,11 +38,16 @@ export default function ChatScreen({ route, navigation }) {
     finally { setSending(false); }
   };
 
+  const chatUser = paramUser && paramUser.id ? paramUser : { id: userId, fullName: userName, username: userName };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}><Text style={styles.backText}>Back</Text></TouchableOpacity>
-        <Text style={styles.headerName}>{userName || 'Chat'}</Text>
+        <View style={styles.headerCenter}>
+          <UserAvatar user={chatUser} size={36} navigation={navigation} style={styles.headerAvatar} />
+          <Text style={styles.headerName}>{userName || 'Chat'}</Text>
+        </View>
         <View style={{ width: 50 }} />
       </View>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.chatArea} keyboardVerticalOffset={90}>
@@ -64,6 +70,8 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F9FAFB' },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F3F4F6' },
   backText: { color: '#F97316', fontSize: 16, fontWeight: '600' },
+  headerCenter: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
+  headerAvatar: { marginRight: 0 },
   headerName: { fontSize: 17, fontWeight: '700', color: '#111827' },
   chatArea: { flex: 1 },
   messagesList: { paddingHorizontal: 16, paddingVertical: 12 },

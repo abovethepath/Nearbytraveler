@@ -43,6 +43,7 @@ import ConnectButton from "@/components/ConnectButton";
 import { VouchButton } from "@/components/VouchButton";
 
 import { formatDateForDisplay, getCurrentTravelDestination, formatLocationCompact } from "@/lib/dateUtils";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 import { METRO_AREAS } from "@shared/constants";
 import { COUNTRIES, CITIES_BY_COUNTRY } from "@/lib/locationData";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
@@ -3466,6 +3467,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       // CRITICAL: Clear localStorage cache to prevent stale data
       invalidateUserCache();
       
+      // Update profile-bundle cache immediately so the red "fill out bio" bar disappears without waiting for refetch
+      queryClient.setQueryData(
+        [`/api/users/${effectiveUserId}/profile-bundle`, currentUser?.id],
+        (prev: any) => (prev ? { ...prev, user: { ...prev.user, ...updatedUser } } : { user: updatedUser })
+      );
+      
       // Update all caches
       queryClient.setQueryData([`/api/users/${effectiveUserId}`], updatedUser);
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
@@ -3818,8 +3825,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </div>
       )}
 
-      {/* Profile Completion Warning - OUTSIDE overflow container for full bleed */}
-      {isProfileIncomplete() && (
+      {/* Profile Completion Warning - hidden in native app (Apple) to avoid covering profile */}
+      {isProfileIncomplete() && !isNativeIOSApp() && (
         <div className="w-full bg-red-600 text-white px-4 py-3">
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -4282,12 +4289,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700
                                border-0 shadow-md rounded-lg
                                inline-flex items-center justify-center gap-2
-                               px-6 py-2 transition-all"
-                    style={{ color: 'black' }}
+                               px-6 py-2 transition-all text-black dark:text-white dark:border dark:border-gray-400"
                     data-testid="button-chatrooms"
                   >
-                    <MessageCircle className="w-4 h-4" style={{ color: 'black' }} />
-                    <span style={{ color: 'black' }}>Go to Chatrooms</span>
+                    <MessageCircle className="w-4 h-4" />
+                    <span>Go to Chatrooms</span>
                   </Button>
                 )}
                 <Button
@@ -4295,12 +4301,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   className="bg-gradient-to-r from-orange-600 to-blue-600 hover:from-orange-700 hover:to-blue-700
                              border-0 shadow-md rounded-lg
                              inline-flex items-center justify-center gap-2
-                             px-6 py-2 transition-all"
-                  style={{ color: 'black' }}
+                             px-6 py-2 transition-all text-black dark:text-white dark:border dark:border-gray-400"
                   data-testid="button-share-qr"
                 >
-                  <Share2 className="w-4 h-4" style={{ color: 'black' }} />
-                  <span style={{ color: 'black' }}>Invite Friends</span>
+                  <Share2 className="w-4 h-4" />
+                  <span>Invite Friends</span>
                 </Button>
               </div>
             )}
@@ -4532,12 +4537,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       onMouseDown={(e) => {
                         console.log("EDIT MOUSEDOWN - Button mousedown");
                       }}
-                      className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md border-0 ${isProfileIncomplete() ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white'}`}
+                      className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md border border-transparent dark:border-gray-400 ${isProfileIncomplete() ? 'bg-red-500 hover:bg-red-600 text-white dark:ring-2 dark:ring-red-400' : 'bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white dark:ring-2 dark:ring-gray-400'}`}
                       style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto', cursor: 'pointer' }}
                       data-testid="button-edit-profile"
                     >
-                      <Edit2 className="w-4 h-4 text-white" />
-                      <span className="hidden sm:inline text-white">Edit Profile</span>
+                      <span className="text-white font-medium">Edit</span>
                     </button>
                   )}
                 </div>
@@ -6446,7 +6450,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                   </div>
                   <button 
                     type="button"
-                    className="flex items-center justify-between cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-900/30 rounded-lg p-2 -m-2 transition-colors w-full text-left"
+                    className="flex items-center justify-between cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-900/30 dark:border dark:border-gray-600 rounded-lg p-2 -m-2 transition-colors w-full text-left"
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();

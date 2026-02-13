@@ -85,7 +85,7 @@ export default function PlanTrip() {
 
   const [isHeroVisible, setIsHeroVisible] = useState<boolean>(() => {
     const saved = localStorage.getItem('hidePlanTripHero');
-    return saved !== 'true';
+    return saved === 'false';
   });
   const toggleHeroVisibility = () => {
     const newValue = !isHeroVisible;

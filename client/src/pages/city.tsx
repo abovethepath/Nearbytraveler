@@ -87,6 +87,24 @@ export default function CityPage({ cityName }: CityPageProps) {
 
   // Removed photo display functions per user request
 
+  // Available-now IDs for green pulsating badge on user cards (same as home)
+  const { data: availableNowIds = [] } = useQuery<number[]>({
+    queryKey: ['/api/available-now/active-ids'],
+    refetchInterval: 30000,
+  });
+  const currentUserId = isActuallyAuthenticated && authStorageUser ? (JSON.parse(authStorageUser || '{}') as { id?: number }).id : undefined;
+  const { data: myAvailableStatus } = useQuery<{ isAvailable?: boolean }>({
+    queryKey: ['/api/available-now/my-status'],
+    enabled: !!currentUserId,
+  });
+  const effectiveAvailableNowIds = React.useMemo(() => {
+    const ids = Array.isArray(availableNowIds) ? [...availableNowIds] : [];
+    if (myAvailableStatus?.isAvailable && currentUserId != null && !ids.includes(currentUserId)) {
+      ids.push(currentUserId);
+    }
+    return ids;
+  }, [availableNowIds, myAvailableStatus?.isAvailable, currentUserId]);
+
   // Fetch users for this city using metropolitan area consolidation
   const { data: users = [], isLoading: usersLoading } = useQuery({
     queryKey: ['/api/city', decodedCityName, 'users', filter, 'metro'],
@@ -418,7 +436,9 @@ export default function CityPage({ cityName }: CityPageProps) {
                             isCurrentlyTraveling: user.isCurrentlyTraveling || false,
                             secretActivities: user.secretActivities || ""
                           }} 
-                          searchLocation={decodedCityName} 
+                          searchLocation={decodedCityName}
+                          compact
+                          isAvailableNow={effectiveAvailableNowIds.includes(user.id)}
                         />
                       ))}
                     </div>
@@ -477,7 +497,7 @@ export default function CityPage({ cityName }: CityPageProps) {
 
                 {/* Business Users Grid - using same UserCard component for consistent sizing */}
                 {users.filter((user: User) => user.userType === 'business').length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
                     {users
                       .filter((user: User) => user.userType === 'business')
                       .slice(0, 6)
@@ -485,6 +505,7 @@ export default function CityPage({ cityName }: CityPageProps) {
                         <UserCard 
                           key={business.id} 
                           user={business}
+                          compact
                           currentUserId={isActuallyAuthenticated ? JSON.parse(authStorageUser || '{}').id : undefined}
                         />
                       ))}

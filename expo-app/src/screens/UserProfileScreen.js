@@ -1,7 +1,8 @@
-﻿import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, SafeAreaView, ActivityIndicator, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, ActivityIndicator, Alert } from 'react-native';
 import { useAuth } from '../services/AuthContext';
 import api from '../services/api';
+import UserAvatar from '../components/UserAvatar';
 
 export default function UserProfileScreen({ route, navigation }) {
   const { userId } = route.params;
@@ -27,7 +28,7 @@ export default function UserProfileScreen({ route, navigation }) {
       <ScrollView>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}><Text style={styles.backText}>Back</Text></TouchableOpacity>
         <View style={styles.profileHeader}>
-          <Image source={profile.profileImage ? { uri: profile.profileImage } : require('../../assets/icon.png')} style={styles.profileImage} />
+          <UserAvatar user={profile} size={100} navigation={navigation} style={styles.profileImage} />
           <Text style={styles.displayName}>{profile.fullName || profile.username}</Text>
           <Text style={styles.username}>@{profile.username}</Text>
           {profile.city && <Text style={styles.location}>&#x1F4CD; {profile.city}</Text>}
@@ -59,7 +60,7 @@ const styles = StyleSheet.create({
   backButton: { paddingHorizontal: 20, paddingVertical: 12 },
   backText: { color: '#F97316', fontSize: 16, fontWeight: '600' },
   profileHeader: { alignItems: 'center', paddingBottom: 20 },
-  profileImage: { width: 100, height: 100, borderRadius: 50, backgroundColor: '#F3F4F6', marginBottom: 14 },
+  profileImage: { marginBottom: 14 },
   displayName: { fontSize: 24, fontWeight: '800', color: '#111827', marginBottom: 2 },
   username: { fontSize: 15, color: '#9CA3AF', marginBottom: 8 },
   location: { fontSize: 15, color: '#6B7280' },

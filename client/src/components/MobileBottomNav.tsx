@@ -4,6 +4,7 @@ import { Home, Plus, MessageCircle, User, Calendar, Search, X } from "lucide-rea
 import { AuthContext } from "@/App";
 import { AdvancedSearchWidget } from "@/components/AdvancedSearchWidget";
 import { useQuery } from "@tanstack/react-query";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 export function MobileBottomNav() {
   const [location, setLocation] = useLocation();
@@ -11,33 +12,29 @@ export function MobileBottomNav() {
   const [showSearchWidget, setShowSearchWidget] = useState(false);
   const authContext = React.useContext(AuthContext);
   let user = authContext?.user;
-  
+
+  // Query for unread messages count using dedicated endpoint
+  const { data: unreadData } = useQuery({
+    queryKey: [`/api/messages/${user?.id}/unread-count`],
+    enabled: !!user?.id && !isNativeIOSApp(),
+    refetchInterval: 30000,
+  });
+
+  if (isNativeIOSApp()) return null;
+
   // Fallback to localStorage if AuthContext user is null
   if (!user) {
     const storedUser = localStorage.getItem('user') || localStorage.getItem('currentUser') || localStorage.getItem('authUser');
     if (storedUser) {
       try {
         user = JSON.parse(storedUser);
-        console.log('🔧 MobileBottomNav - Recovered user from localStorage:', user?.username, 'userType:', user?.userType);
       } catch (e) {
         console.error('Error parsing stored user in MobileBottomNav:', e);
       }
     }
   }
-  
-  console.log('🔍 MobileBottomNav - Final user object:', user);
-  console.log('🔍 MobileBottomNav - userType:', user?.userType, 'is business?:', user?.userType === 'business');
-
-  // Query for unread messages count using dedicated endpoint
-  const { data: unreadData } = useQuery({
-    queryKey: [`/api/messages/${user?.id}/unread-count`],
-    enabled: !!user?.id,
-    refetchInterval: 30000, // Reduced from 3s to 30s for performance with 500+ users
-  });
 
   const unreadCount = (unreadData as any)?.unreadCount || 0;
-
-  console.log('📧 MobileBottomNav - Unread messages count:', unreadCount);
 
   // Navigation items based on user type - Search opens widget instead of navigating
   const navItems = user?.userType === 'business' ? [
@@ -63,7 +60,7 @@ export function MobileBottomNav() {
   ] : [
     { label: "Create Event", path: "/create-event", icon: Calendar },
     { label: "Create Trip", path: "/plan-trip", icon: Calendar },
-    { label: "Create Quick Meetup", path: "/quick-meetups", icon: MessageCircle },
+    { label: "Create Quick Meetup", path: "/quick-meetups?create=1", icon: MessageCircle },
   ];
 
   return (

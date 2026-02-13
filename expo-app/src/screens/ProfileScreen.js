@@ -1,7 +1,8 @@
-﻿import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, SafeAreaView, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, Alert } from 'react-native';
 import { useAuth } from '../services/AuthContext';
 import api from '../services/api';
+import UserAvatar from '../components/UserAvatar';
 
 export default function ProfileScreen({ navigation }) {
   const { user, logout } = useAuth();
@@ -24,7 +25,7 @@ export default function ProfileScreen({ navigation }) {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.profileHeader}>
-          <Image source={user.profileImage ? { uri: user.profileImage } : require('../../assets/icon.png')} style={styles.profileImage} />
+          <UserAvatar user={user} size={100} navigation={navigation} style={styles.profileImage} />
           <Text style={styles.displayName}>{user.fullName || user.username}</Text>
           {user.fullName && <Text style={styles.username}>@{user.username}</Text>}
           {user.city && <Text style={styles.location}>&#x1F4CD; {user.city}</Text>}

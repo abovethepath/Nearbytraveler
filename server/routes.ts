@@ -21243,7 +21243,7 @@ Questions? Just reply to this message. Welcome aboard!
   app.get("/api/available-now/active-ids", async (req: any, res) => {
     try {
       const now = new Date();
-      const currentUserId = req.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
+      const currentUserId = req.session?.user?.id || req.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       const results = await db.select({ userId: availableNow.userId })
         .from(availableNow)
         .where(and(

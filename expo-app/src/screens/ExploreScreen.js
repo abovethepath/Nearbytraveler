@@ -1,11 +1,12 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, RefreshControl, ActivityIndicator, SafeAreaView, TextInput } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, ActivityIndicator, SafeAreaView, TextInput } from 'react-native';
 import { useAuth } from '../services/AuthContext';
 import api from '../services/api';
+import UserAvatar from '../components/UserAvatar';
 
-const UserCard = ({ user, onPress }) => (
+const UserCard = ({ user, onPress, navigation }) => (
   <TouchableOpacity style={styles.userCard} onPress={() => onPress(user)} activeOpacity={0.7}>
-    <Image source={user.profileImage ? { uri: user.profileImage } : require('../../assets/icon.png')} style={styles.avatar} />
+    <UserAvatar user={user} size={60} navigation={navigation} style={styles.avatar} />
     <View style={styles.userInfo}>
       <Text style={styles.userName} numberOfLines={1}>{user.fullName || user.username}</Text>
       <Text style={styles.userCity} numberOfLines={1}>&#x1F4CD; {user.city || 'Unknown location'}</Text>
@@ -37,7 +38,10 @@ export default function ExploreScreen({ navigation }) {
 
   useEffect(() => { fetchUsers(); }, [fetchUsers]);
   const onRefresh = () => { setRefreshing(true); fetchUsers(); };
-  const handleUserPress = (selectedUser) => { navigation.navigate('UserProfile', { userId: selectedUser.id }); };
+  const rootNav = navigation.getParent?.()?.getParent?.() ?? navigation;
+  const handleUserPress = (selectedUser) => {
+    rootNav.navigate('WebView', { path: `/users/${selectedUser.id}`, title: selectedUser.fullName || selectedUser.username });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -55,7 +59,7 @@ export default function ExploreScreen({ navigation }) {
         ))}
       </View>
       {loading ? <View style={styles.centered}><ActivityIndicator size={36} color="#F97316" /></View> : (
-        <FlatList data={users} keyExtractor={(item) => String(item.id)} renderItem={({ item }) => <UserCard user={item} onPress={handleUserPress} />}
+        <FlatList data={users} keyExtractor={(item) => String(item.id)} renderItem={({ item }) => <UserCard user={item} onPress={handleUserPress} navigation={navigation} />}
           contentContainerStyle={styles.listContent} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#F97316" />}
           ListEmptyComponent={<View style={styles.emptyState}><Text style={styles.emptyIcon}>&#x1F30E;</Text><Text style={styles.emptyTitle}>No travelers found</Text><Text style={styles.emptySubtitle}>Try searching a different city</Text></View>}
         />
@@ -77,7 +81,7 @@ const styles = StyleSheet.create({
   filterTextActive: { color: '#F97316', fontWeight: '600' },
   listContent: { paddingHorizontal: 16, paddingBottom: 20 },
   userCard: { flexDirection: 'row', backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, marginBottom: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2 },
-  avatar: { width: 60, height: 60, borderRadius: 30, backgroundColor: '#F3F4F6', marginRight: 14 },
+  avatar: { marginRight: 14 },
   userInfo: { flex: 1 },
   userName: { fontSize: 17, fontWeight: '700', color: '#111827', marginBottom: 2 },
   userCity: { fontSize: 14, color: '#6B7280', marginBottom: 4 },

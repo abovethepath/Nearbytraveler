@@ -527,12 +527,12 @@ The web app detects when it's running inside the native iOS WebView and adapts:
 - **Detection methods** (any of these signals native app):
   1. `window.NearbyTravelerNative = true` — set by native app's JavaScript injection
   2. `window.isNativeApp = true` — alternative flag
-  3. URL param `?native=ios` — append to WebView URL
+  3. **URL param `?native=ios`** — append to WebView URL (e.g. `https://nearbytraveler.org/profile?native=ios`). The Expo/hybrid app must append this to all WebView URLs so the site knows to hide its bottom nav.
   4. `window.webkit.messageHandlers` present (WKWebView bridge)
-- **Bottom navbar hidden**: `MobileBottomNav` returns null when `isNativeIOSApp()` is true, so native tab bar is the only navigation
+- **Bottom navbar hidden**: When `isNativeIOSApp()` is true (including when `?native=ios` is in the URL), the website **hides its bottom navbar** (`MobileBottomNav` returns null) so only the native app's tab bar is shown—avoiding a double navbar in the hybrid iOS app.
 - **Native bridge**: `sendToNativeApp(action, data)` posts messages to `window.webkit.messageHandlers.nearbyTraveler` for native features (push tokens, haptics, camera, etc.)
 
-**For the native iOS app (Swift/Capacitor) to signal it's a native app, do ONE of:**
+**For the native iOS app (Swift/Capacitor or Expo WebView) to signal it's a native app, do ONE of:**
 ```swift
 // Option 1 (recommended): Inject JS after page load
 webView.evaluateJavaScript("window.NearbyTravelerNative = true;")

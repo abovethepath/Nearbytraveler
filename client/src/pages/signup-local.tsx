@@ -144,7 +144,7 @@ export default function SignupLocal() {
 
       // Merge custom languages into languagesSpoken
       const customLangs = parseCustomCSV(formData.customLanguages);
-      const languagesSpoken = formData.languages;
+      const languagesSpoken = [...(formData.languages || []), ...customLangs];
 
       // Build normalized location strings
       const hometown = safeJoin([formData.hometownCity, formData.hometownState, formData.hometownCountry]);
