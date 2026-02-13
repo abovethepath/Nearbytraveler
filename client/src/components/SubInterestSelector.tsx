@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronUp, Check, X, Sparkles } from "lucide-react";
 import { SUB_INTEREST_CATEGORIES, type SubInterestCategory } from "@shared/base-options";
 
@@ -140,29 +139,6 @@ export default function SubInterestSelector({
         })}
       </div>
       
-      {selectedSubInterests.length > 0 && (
-        <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Your selections:</p>
-          <div className="flex flex-wrap gap-1.5">
-            {selectedSubInterests.map(subInterest => (
-              <Badge
-                key={subInterest}
-                variant="secondary"
-                className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 text-xs cursor-pointer hover:bg-orange-200 dark:hover:bg-orange-800/40 transition-colors"
-                onClick={() => {
-                  const category = SUB_INTEREST_CATEGORIES.find(c => c.subInterests.includes(subInterest));
-                  if (category) {
-                    toggleSubInterest(subInterest, category.id);
-                  }
-                }}
-              >
-                {subInterest}
-                <X className="w-3 h-3 ml-1" />
-              </Badge>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
