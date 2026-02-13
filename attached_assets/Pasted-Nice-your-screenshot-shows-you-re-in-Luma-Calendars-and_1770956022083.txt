@@ -1,0 +1,278 @@
+Nice — your screenshot shows you’re in Luma → Calendars and right now it says “No Calendars”. So the next move is simple: create the official NT calendar(s), then embed that calendar on your LA City Events page.
+
+Step 1 (in Luma): Create your first calendar
+
+Click + Create (top right on that page)
+
+Name it something that feels like a product, not “Aaron’s events”:
+
+Nearby Traveler — Los Angeles (Official)
+
+Make sure it’s public (so it can be embedded/shared)
+
+Add a short description like:
+
+“Official meetups for locals + travelers in LA. RSVP to meet people with shared interests.”
+
+Step 2: Create 3–5 “anchor” LA events
+
+Do a few recurring formats so it doesn’t look random:
+
+Sunday Sunset Meetup (Westside)
+
+Coffee + Co-work (weekday morning)
+
+Hike + Brunch
+
+New in LA / Visiting LA Meetup
+
+International Night
+
+In each event:
+
+Put “Hosted by Nearby Traveler” in the title/host line
+
+Add 3–6 tags in the description (Beach, Hiking, Coffee, Networking, etc.)
+
+Add a strong first-line CTA: “Say hi in chat before you come.”
+
+Step 3: Turn on the social proof inside Luma
+
+For each event, enable:
+
+Guest list visibility (so people can see who’s going)
+
+Event Chat (start it early and pin a message like: “Introduce yourself + where you’re from”)
+
+That solves your exact worry: “If they RSVP on Luma, nobody knows others are going.” On Luma, they’ll literally see the list + chat.
+
+Step 4 (Nearby Traveler): Embed the LA calendar on the LA City Events page
+
+This is the key: even without the API, your LA page looks alive.
+
+What you’ll do in your React page:
+
+Add a section: Official LA Events
+
+Embed the Luma calendar (iframe or Luma’s embed snippet)
+
+Under it add buttons:
+
+Create an Event (NT flow)
+
+View on Luma / RSVP (opens Luma event)
+
+If you want the embed to feel native, wrap it in your card UI and set a fixed height with internal scrolling.
+
+Step 5: Make it not show for every city
+
+Only render the embed when:
+
+City = Los Angeles
+So it doesn’t feel like “random LA stuff” for someone browsing NYC.
+
+Quick question (so I can tell you the exact next click)
+
+When you create the calendar, do you see an “Embed” option in Luma (calendar settings/share)?
+If you screenshot that calendar “Share/Embed” screen, I’ll tell you exactly which embed type to use and how to drop it into your LA city events page without breaking mobile scrolling.
+
+wait so this is for actual events I am going to create myself?
+
+Yes.
+
+If you’re using your own Luma account without the API, then what we’re talking about is:
+
+👉 You hosting actual events
+👉 Luma handling RSVPs + guest list + chat
+👉 Nearby Traveler promoting and wrapping those events
+
+That’s the cleanest version right now.
+
+Important mindset shift
+
+Right now, Luma is not your event marketplace feed.
+
+It’s your event operations tool.
+
+Nearby Traveler is:
+
+discovery
+
+matching
+
+city community
+
+identity layer
+
+Luma is:
+
+RSVP
+
+reminders
+
+guest list
+
+check-in
+
+So yes — this calendar would be:
+
+Nearby Traveler – Los Angeles (Official)
+And the events would be things you (or ambassadors) are actually hosting.
+
+That’s actually powerful for you because:
+
+You’re already strong at:
+
+organizing networking events
+
+hosting communities
+
+activating people
+
+You’ve done 400+ Couchsurfing hosts.
+This is your unfair advantage.
+
+Here’s the real strategic question:
+
+Do you want Nearby Traveler to:
+
+Aggregate other people’s events
+OR
+
+Become known for hosting high-quality curated meetups?
+
+Because those are two different plays.
+
+Right now, with no Luma API, the strongest play is:
+
+Be the curator + host in LA first.
+
+That gives you:
+
+real photos
+
+real testimonials
+
+real traction
+
+real stories for investors
+
+real engagement metrics
+
+That’s way more valuable than scraping random events.
+
+If you don’t want to personally host everything
+
+You can:
+
+Create the calendar
+
+Give ambassadors co-host access
+
+Let them create events under the NT brand
+
+Now it becomes:
+“Official Nearby Traveler LA Events”
+
+Not “Aaron’s networking events.”
+
+Let me ask you something important:
+
+Are you trying to:
+A) Fill the LA events page with activity quickly
+or
+B) Build a long-term scalable event ingestion system?
+
+Because your answer changes what we build next.
+
+oh but i have all that integrated int nearby traveler now, chatrooms created for each event etc
+
+Perfect — if NT already creates the event + chatroom, then Luma should be optional plumbing, not the source of truth.
+
+Make Nearby Traveler the source of truth
+
+Create event in Nearby Traveler → chatroom auto-created (you already have this)
+
+Then optionally attach a Luma RSVP link to that NT event
+
+So the event “lives” in NT, and Luma is just the RSVP/guestlist engine.
+
+What you can do with Luma (without API) that still fits your setup
+1) Add a “RSVP on Luma” link field to NT events
+
+Add 2 fields to your events table:
+
+externalRsvpUrl (string)
+
+externalProvider (“luma” | “partiful” | null)
+
+Then your event page shows:
+
+Primary: Join Chat (NT)
+
+Secondary: RSVP on Luma (opens Luma)
+
+This keeps your community + conversation inside NT.
+
+2) Use Luma only for “Official” / high-stakes events
+
+For example:
+
+big meetups
+
+paid events
+
+venue-cap events
+
+check-in needed
+
+Everything else can stay NT-native.
+
+3) Keep Luma in sync manually (fast + realistic)
+
+Without API, you’re not syncing attendance automatically. But you don’t need to for MVP.
+
+Workflow:
+
+Create event in NT
+
+Create matching Luma event
+
+Paste Luma URL into NT event
+
+4) If you want social proof inside NT without syncing
+
+Add an NT button like:
+
+“I’m going” (NT attendance)
+That powers:
+
+attendee count
+
+attendee list (NT users)
+
+“Friends going”
+
+your chatroom growth
+
+Luma remains the “official RSVP” if you need it.
+
+What NOT to do
+
+Don’t make Luma your calendar feed/embedded page if NT is already your event system — that creates duplication and confusion.
+
+The clean LA City Events page structure
+
+List NT events (your DB)
+
+Each card can optionally show a small badge:
+
+“RSVP required” (Luma)
+
+Event detail page:
+
+Join Chat
+
+RSVP on Luma (if present)
+
+If you want, paste your current event schema (or the Event type/interface) and I’ll tell you exactly where to add the 2 fields + what the UI should look like so it’s dead simple and doesn’t mess up mobile.
