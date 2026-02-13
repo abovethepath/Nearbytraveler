@@ -1,0 +1,38 @@
+
+can you give me a list to give to replit a summary of every thing we changed today on the webside 
+
+Summary of changes for Replit:
+Website / Client Changes
+1. Chatroom modal (client/src/pages/profile-complete.tsx + client/src/components/ui/dialog.tsx)
+Raised z-index to 2147483647 so the modal stays on top in WebView
+Added pointerEvents: 'auto', touchAction: 'pan-y', overscrollBehavior: 'contain' so the modal scrolls correctly
+Wrapped the chatroom list in a scrollable container with overflow-y-auto and WebkitOverflowScrolling: 'touch'
+2. Cities page (client/src/pages/discover.tsx)
+Switched cities grid from 1 to 2 columns on mobile
+Reduced card height on mobile: h-36 (was h-48)
+Reduced padding and text size on mobile: p-3 sm:p-5, text-base sm:text-xl, text-xs sm:text-base
+3. Match-in-city (City Plans) page (client/src/pages/match-in-city.tsx)
+Removed tally/count displays (section counts and “People Who Match” count)
+Fixed “More city Ideas” pills: added activityName fallback for selection and e.preventDefault() / e.stopPropagation() on click
+Fixed Universal Match Preferences: removed scroll-mt-24 to stop jump on pill click
+Increased “Suggested for you” suggestions from 5 to 10
+Increased shared activities preview per user from 2 to 5
+Added activityName fallback for isSelected on AI activity pills
+Removed debug console.logs
+Server Changes
+4. Matching users API (server/routes.ts)
+Matching now includes users who share city picks (not only profile interests)
+Increased matching users limit from 20 to 50
+Adjusted compatibleUsers logic to prioritize users with shared city picks
+Expo App Changes (not on Replit)
+Removed expo-speech-recognition (package + plugin) to fix native module crash
+Updated header: logo size, avatar visibility, centering
+WebViewScreens.js: simplified getSpeechModule() to always return null
+Files Touched
+File	Changes
+client/src/pages/profile-complete.tsx	Chatroom modal fixes
+client/src/components/ui/dialog.tsx	Z-index for modals
+client/src/pages/discover.tsx	Cities grid layout
+client/src/pages/match-in-city.tsx	Tally removal, pill fixes, suggestion limits
+server/routes.ts	Matching users logic
+Replit only needs the client and server changes; Expo changes are for the native app.

@@ -9737,16 +9737,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       {/* Chatroom List Modal */}
       <Dialog open={showChatroomList} onOpenChange={setShowChatroomList}>
         <DialogContent 
-          className="max-w-2xl max-h-[80vh] overflow-y-auto bg-white dark:bg-gray-900"
+          className="max-w-2xl max-h-[80vh] bg-white dark:bg-gray-900"
           style={{
             position: 'fixed',
             left: '50%',
             top: '50%',
             transform: 'translate(-50%, -50%)',
-            zIndex: 100001,
+            zIndex: 2147483647,
             display: 'grid',
             visibility: 'visible',
-            opacity: 1
+            opacity: 1,
+            pointerEvents: 'auto' as const
           }}
         >
           <DialogHeader>
@@ -9761,7 +9762,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-3">
+          <div className="space-y-3 overflow-y-auto" style={{ maxHeight: '60vh', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', overscrollBehavior: 'contain' } as React.CSSProperties}>
             {userChatrooms.length > 0 ? (
               userChatrooms.filter((chatroom: any) => chatroom && chatroom.id).map((chatroom: any) => (
                 <div 

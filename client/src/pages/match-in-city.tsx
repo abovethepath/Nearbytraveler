@@ -137,7 +137,6 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
   
   const [selectedCity, setSelectedCity] = useState<string>('');
   
-  console.log('🔧 MATCH IN CITY RENDER - selectedCity:', selectedCity, 'authUser:', !!authUser, 'effectiveUser:', !!user, 'userId:', user?.id);
   const [newActivityName, setNewActivityName] = useState('');
   const [newActivityDescription, setNewActivityDescription] = useState('');
   const [editActivityName, setEditActivityName] = useState('');
@@ -2163,7 +2162,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                           : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                       }`}
                     >
-                      {section.label} {section.count > 0 && <span className="ml-1 opacity-80">({section.count})</span>}
+                      {section.label}
                     </button>
                   ))}
                   <button
@@ -2216,7 +2215,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
                       <div>
                         <h3 className="text-xl font-bold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
-                          Your Plans {userPicksForCity.length > 0 && <span className="text-green-600">({userPicksForCity.length})</span>}
+                          Your Plans
                         </h3>
                         <p className="text-sm text-gray-500 dark:text-gray-400">Things you want to do in {selectedCity}</p>
                       </div>
@@ -2600,7 +2599,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                   const suggestions: { name: string; because: string; existingActivity: any }[] = [];
                   
                   for (const universal of selectedUniversals) {
-                    if (suggestions.length >= 5) break;
+                    if (suggestions.length >= 10) break;
                     
                     const categories = UNIVERSAL_TO_CATEGORIES[universal] || [];
                     const keywords = UNIVERSAL_KEYWORDS[universal] || [];
@@ -2659,7 +2658,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     // Add up to 2 suggestions per universal to keep variety
                     let addedForUniversal = 0;
                     for (const activity of matchingActivities) {
-                      if (suggestions.length >= 5 || addedForUniversal >= 2) break;
+                      if (suggestions.length >= 10 || addedForUniversal >= 2) break;
                       
                       const nameNorm = normalizeName(activity.activityName);
                       // Skip synonyms/duplicates
@@ -3327,8 +3326,8 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                     </div>
                     {/* Shared activities preview */}
                     <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
-                      {matchedUser.sharedActivities.slice(0, 2).join(', ')}
-                      {matchedUser.sharedActivities.length > 2 && '...'}
+                      {matchedUser.sharedActivities.slice(0, 5).join(', ')}
+                      {matchedUser.sharedActivities.length > 5 && '...'}
                     </p>
                     
                     {/* AI Insight (expandable) */}

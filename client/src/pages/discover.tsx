@@ -117,11 +117,6 @@ export default function DiscoverPage() {
     return gradients[index % gradients.length];
   };
 
-  // Filter cities based on search or default to user's relevant cities
-  console.log("Discover page - allCities:", allCities);
-  console.log("Discover page - searchQuery:", searchQuery);
-  console.log("Discover page - userRelevantCities:", getUserRelevantCities);
-
   const filtered = useMemo(() => {
     if (searchQuery) {
       // Search across ALL cities when user types
@@ -154,8 +149,6 @@ export default function DiscoverPage() {
     // Then sort alphabetically
     return a.city.localeCompare(b.city);
   });
-
-  console.log("Discover page - filtered cities:", filtered.length);
 
   // Don't show destination discovery to business users while redirecting
   if (user?.userType === 'business') {
@@ -360,14 +353,14 @@ export default function DiscoverPage() {
 
         {/* ALL OTHER CITIES GRID - Clean Airbnb-style cards */}
         {sortedCities.filter(city => city.city !== 'Los Angeles Metro').length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 lg:gap-8">
             {sortedCities.filter(city => city.city !== 'Los Angeles Metro').map((city, index) => (
               <Card
                 key={`${city.city}-${city.state}-${index}`}
                 className="group cursor-pointer hover:shadow-xl transition-all duration-300 overflow-hidden bg-white dark:bg-gray-800 border-0 shadow-lg rounded-2xl"
                 onClick={() => setLocation(`/city/${encodeURIComponent(city.city)}`)}
               >
-                <div className="relative h-48 sm:h-56 overflow-hidden rounded-t-2xl">
+                <div className="relative h-36 sm:h-56 overflow-hidden rounded-t-2xl">
                   <div className={`w-full h-full bg-gradient-to-br ${getCityGradient(city.city, index + 1)} group-hover:scale-105 transition-transform duration-300 flex items-center justify-center`}>
                     <MapPin className="w-12 h-12 text-white/60" />
                   </div>
@@ -387,11 +380,11 @@ export default function DiscoverPage() {
                   </div>
                 </div>
                 
-                <CardContent className="p-5">
-                  <h3 className="font-bold text-xl text-gray-900 dark:text-white mb-2">
+                <CardContent className="p-3 sm:p-5">
+                  <h3 className="font-bold text-base sm:text-xl text-gray-900 dark:text-white mb-2">
                     {city.city}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-base leading-relaxed">
+                  <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-base leading-relaxed">
                     {city.country === 'United States' 
                       ? `${city.city}, ${city.state || 'Unknown State'}, United States`
                       : city.state 

@@ -20285,7 +20285,32 @@ Questions? Just reply to this message. Welcome aboard!
 
       // Find users with compatible interests or in the target city
       // IMPORTANT: Only return matches if current user has at least one city pick
+      // Get ALL city picks for this city to find users with shared picks
+      const allCityPicksForMatching = await db
+        .select({
+          userId: userCityInterests.userId,
+          activityId: userCityInterests.activityId,
+          activityName: userCityInterests.activityName
+        })
+        .from(userCityInterests)
+        .where(and(
+          ilike(userCityInterests.cityName, `%${city}%`),
+          eq(userCityInterests.isActive, true)
+        ));
+      
+      // Users who share city picks with current user
+      const currentUserActivityIds = new Set(userInterests.map(i => i.activityId));
+      const usersWithSharedPicks = new Set<number>();
+      for (const pick of allCityPicksForMatching) {
+        if (currentUserActivityIds.has(pick.activityId) && pick.userId !== (userId ? parseInt(userId as string) : -1)) {
+          usersWithSharedPicks.add(pick.userId);
+        }
+      }
+
       const compatibleUsers = userInterests.length > 0 ? allUsers.filter(user => {
+        // Include users who share city picks (most important)
+        if (usersWithSharedPicks.has(user.id)) return true;
+        
         // Include users from the target city
         const isInTargetCity = user.location?.toLowerCase().includes(city.toLowerCase()) ||
                               user.hometownCity?.toLowerCase().includes(city.toLowerCase());
@@ -20402,7 +20427,7 @@ Questions? Just reply to this message. Welcome aboard!
       }
 
       const response = {
-        users: finalUsers.slice(0, 20), // Return top 20 matches
+        users: finalUsers.slice(0, 50), // Return top 50 matches
         events: relevantEvents,
         userInterestCount: userInterests.length,
         matchingSummary: {
