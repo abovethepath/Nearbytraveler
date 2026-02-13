@@ -4555,57 +4555,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </div>
       </div>
       
-      {/* Native iOS App Navigation Menu - Shows only when Menu tab is active */}
-      {isNativeIOSApp() && isOwnProfile && activeTab === 'menu' && (
-        <div className="mx-4 mt-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
-          <div className="px-4 pt-3 pb-2">
-            <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">Navigate</p>
-          </div>
-          {[
-            ...(user?.userType === 'business' ? [
-              { icon: Home, label: "Dashboard", path: "/" },
-              { icon: Building2, label: "Manage Deals", path: "/business-dashboard" },
-              { icon: Calendar, label: "Create Event", path: "/create-event" },
-              { icon: Calendar, label: "View Events", path: "/events" },
-              { icon: MessageCircle, label: "Chat Rooms", path: "/chatrooms" },
-              { icon: MessageCircle, label: "Customer Messages", path: "/messages" },
-              { icon: MapPin, label: "View Cities", path: "/discover" },
-            ] : [
-              { icon: Home, label: "Home", path: "/" },
-              { icon: MapPin, label: "Cities", path: "/discover" },
-              { icon: Calendar, label: "Events", path: "/events" },
-              { icon: Zap, label: "Event Integrations", path: "/integrations" },
-              { icon: Plane, label: "Plan Trip", path: "/plan-trip" },
-              { icon: Users, label: "Quick Meetups", path: "/quick-meetups" },
-              { icon: Users, label: "City Match", path: "/match-in-city" },
-              { icon: Users, label: "Connect", path: "/connect" },
-              { icon: MessageCircle, label: "Chat Rooms", path: "/chatrooms" },
-              { icon: MessageCircle, label: "Messages", path: "/messages" },
-              { icon: Award, label: "Ambassador Program", path: "/ambassador-program" },
-              { icon: Settings, label: "Settings", path: "/settings" },
-            ])
-          ].map((item, idx, arr) => (
-            <button
-              key={idx}
-              onClick={() => setLocation(item.path)}
-              className="w-full flex items-center gap-3 px-4 text-left text-[15px] text-gray-900 dark:text-gray-100 active:bg-gray-100 dark:active:bg-gray-800"
-              style={{
-                touchAction: 'manipulation',
-                WebkitTapHighlightColor: 'transparent',
-                minHeight: '44px',
-                borderBottom: idx < arr.length - 1 ? '0.5px solid rgba(0,0,0,0.08)' : 'none',
-              } as React.CSSProperties}
-            >
-              <div className="w-7 h-7 rounded-md bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center flex-shrink-0">
-                <item.icon className="w-4 h-4 text-orange-600 dark:text-orange-400" />
-              </div>
-              <span className="flex-1">{item.label}</span>
-              <ChevronRight className="w-4 h-4 text-gray-300 dark:text-gray-600" />
-            </button>
-          ))}
-        </div>
-      )}
-
       {/* Main content section - Mobile Responsive Layout */}
       <div className="w-full max-w-full mx-auto pb-20 sm:pb-4 px-2 sm:px-4 lg:px-6 mt-2 overflow-x-hidden box-border">
         <div className="flex flex-col lg:grid lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
@@ -9991,6 +9940,58 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Native iOS App Navigation Menu - at bottom of profile page */}
+      {isNativeIOSApp() && isOwnProfile && activeTab === 'menu' && (
+        <div className="mx-4 mt-6 mb-24 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+          <div className="px-4 pt-3 pb-2">
+            <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">Navigate</p>
+          </div>
+          {[
+            ...(user?.userType === 'business' ? [
+              { icon: Home, label: "Dashboard", path: "/" },
+              { icon: Building2, label: "Manage Deals", path: "/business-dashboard" },
+              { icon: Calendar, label: "Create Event", path: "/create-event" },
+              { icon: Calendar, label: "View Events", path: "/events" },
+              { icon: MessageCircle, label: "Chat Rooms", path: "/chatrooms" },
+              { icon: MessageCircle, label: "Customer Messages", path: "/messages" },
+              { icon: MapPin, label: "View Cities", path: "/discover" },
+            ] : [
+              { icon: Home, label: "Home", path: "/" },
+              { icon: MapPin, label: "Cities", path: "/discover" },
+              { icon: Calendar, label: "Events", path: "/events" },
+              { icon: Zap, label: "Event Integrations", path: "/integrations" },
+              { icon: Plane, label: "Plan Trip", path: "/plan-trip" },
+              { icon: Users, label: "Quick Meetups", path: "/quick-meetups" },
+              { icon: Users, label: "City Match", path: "/match-in-city" },
+              { icon: Users, label: "Connect", path: "/connect" },
+              { icon: MessageCircle, label: "Chat Rooms", path: "/chatrooms" },
+              { icon: MessageCircle, label: "Messages", path: "/messages" },
+              { icon: Award, label: "Ambassador Program", path: "/ambassador-program" },
+              { icon: Settings, label: "Settings", path: "/settings" },
+            ])
+          ].map((item, idx, arr) => (
+            <button
+              key={idx}
+              onClick={() => setLocation(item.path)}
+              className="w-full flex items-center gap-3 px-4 text-left text-[15px] text-gray-900 dark:text-gray-100 active:bg-gray-100 dark:active:bg-gray-800"
+              style={{
+                touchAction: 'manipulation',
+                WebkitTapHighlightColor: 'transparent',
+                minHeight: '44px',
+                borderBottom: idx < arr.length - 1 ? '0.5px solid rgba(0,0,0,0.08)' : 'none',
+              } as React.CSSProperties}
+            >
+              <div className="w-7 h-7 rounded-md bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center flex-shrink-0">
+                <item.icon className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+              </div>
+              <span className="flex-1">{item.label}</span>
+              <ChevronRight className="w-4 h-4 text-gray-300 dark:text-gray-600" />
+            </button>
+          ))}
+        </div>
+      )}
+
       </div>
     </>
   );
