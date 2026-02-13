@@ -4011,6 +4011,27 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                         <div className="flex items-center gap-2 flex-wrap">
                           <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-bold text-black break-all">@{user.username}</h1>
                           
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              const profileUrl = `https://nearbytraveler.org/profile/${user.id}`;
+                              const shareText = `Check out @${user.username} on Nearby Traveler`;
+                              if (navigator.share) {
+                                try {
+                                  await navigator.share({ title: shareText, url: profileUrl });
+                                } catch (e) {}
+                              } else {
+                                await navigator.clipboard.writeText(profileUrl);
+                                toast({ title: "Profile link copied!", description: "You can now paste it anywhere." });
+                              }
+                            }}
+                            className="p-1.5 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+                            style={{ touchAction: 'manipulation' }}
+                            title="Share profile"
+                          >
+                            <Share2 className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+                          </button>
+                          
                           {/* Connection Degree Badge - LinkedIn style */}
                           {!isOwnProfile && connectionDegreeData?.degree && connectionDegreeData.degree > 0 && (
                             <Badge 
