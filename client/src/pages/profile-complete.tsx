@@ -4559,7 +4559,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       </div>
       
       {/* Main content section - Mobile Responsive Layout */}
-      <div className="w-full max-w-full mx-auto pb-20 sm:pb-4 px-2 sm:px-4 lg:px-6 mt-2 overflow-x-hidden box-border">
+      <div className={`w-full max-w-full mx-auto ${isNativeIOSApp() && activeTab === 'menu' ? 'pb-2' : 'pb-20 sm:pb-4'} px-2 sm:px-4 lg:px-6 mt-2 overflow-x-hidden box-border`}>
         <div className="flex flex-col lg:grid lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
           {/* Main Content Column */}
           <div className="w-full lg:col-span-2 space-y-3 sm:space-y-4 lg:space-y-6">
@@ -9996,7 +9996,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
       {/* Native iOS App Navigation Menu - at bottom of profile page */}
       {isNativeIOSApp() && isOwnProfile && activeTab === 'menu' && (
-        <div ref={tabRefs.menu} className="mx-4 mt-6 mb-24 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+        <div ref={tabRefs.menu} className="mx-4 mt-2 mb-24 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
           <div className="px-4 pt-3 pb-2">
             <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">Navigate</p>
           </div>

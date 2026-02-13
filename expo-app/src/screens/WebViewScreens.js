@@ -242,7 +242,7 @@ function WebViewWithChrome({ path, navigation }) {
   const headerBg = dark ? DARK.bg : '#FFFFFF';
   const headerBorder = dark ? DARK.border : '#F3F4F6';
   const profileImg = user?.profileImage || user?.profilePhoto;
-  const initials = (user?.fullName || user?.username || 'U').charAt(0).toUpperCase();
+  const initials = (user?.name || user?.fullName || user?.username || 'U').charAt(0).toUpperCase();
 
   if (error) {
     return (
