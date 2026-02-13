@@ -224,6 +224,11 @@ const NATIVE_INJECT_JS = `
   window.NearbyTravelerNative = true;
   window.__NEARBY_NATIVE_IOS__ = true;
   window.isNativeApp = true;
+  (function() {
+    var s = document.createElement('style');
+    s.textContent = ':root { --native-tabbar-height: 88px; } body { padding-bottom: 88px !important; }';
+    document.head.appendChild(s);
+  })();
   true;
 `;
 

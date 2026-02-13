@@ -13,7 +13,7 @@ import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, Volu
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
-import { isNativeIOSApp } from "@/lib/nativeApp";
+
 
 interface Message {
   id: number;
@@ -740,25 +740,14 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
   };
 
-  const isNative = isNativeIOSApp();
-  const inputBottomPadding = isNative ? '12px' : 'max(16px, env(safe-area-inset-bottom, 0px))';
+  const inputBottomPadding = 'max(16px, env(safe-area-inset-bottom, 0px))';
 
   return (
     <div 
       className="flex flex-col bg-gray-900 text-white overflow-hidden min-h-0"
       style={{ 
-        ...(isNative && {
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 'calc(80px + env(safe-area-inset-bottom, 0px))',
-          height: 'auto',
-        }),
-        ...(!isNative && {
-          height: '100dvh',
-          minHeight: '100vh'
-        })
+        height: '100dvh',
+        minHeight: '100vh'
       }}
     >
       {/* Desktop Members Sidebar - Always visible on lg+ screens, positioned on LEFT */}
@@ -849,7 +838,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
       {/* Main Chat Area */}
       <div className="flex flex-col flex-1 min-w-0">
       {/* Header - flex-shrink-0 so chat name/participants always visible; compact when native */}
-      <div className={`flex items-center gap-1.5 px-2 bg-gray-800 border-b border-gray-700 flex-shrink-0 ${isNative ? 'py-1' : 'py-1.5'}`}>
+      <div className="flex items-center gap-1.5 px-2 py-1.5 bg-gray-800 border-b border-gray-700 flex-shrink-0">
         <Button
           variant="ghost"
           size="icon"
