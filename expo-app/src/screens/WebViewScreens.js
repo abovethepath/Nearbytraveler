@@ -263,13 +263,9 @@ function NTWebView({ uri }) {
   );
 }
 
-export function EditProfileScreen({ navigation }) {
-  return (
-    <SafeAreaView style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}><Text style={styles.backText}>Back</Text></TouchableOpacity>
-      <NTWebView uri="https://nearbytraveler.org/profile/edit" />
-    </SafeAreaView>
-  );
+export function GenericWebViewScreen({ route, navigation }) {
+  const path = route?.params?.path || '/';
+  return <WebViewWithChrome path={path} navigation={navigation} />;
 }
 
 export function EditProfileScreen({ navigation }) {
