@@ -164,9 +164,10 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, cb) => {
-      if (!origin) return cb(null, true); // mobile apps often send no origin
+      if (!origin) return cb(null, true);
       if (allowedOrigins.includes(origin)) return cb(null, true);
       if (origin.startsWith("exp://") || origin.startsWith("exps://")) return cb(null, true);
+      if (origin.includes("replit.dev") || origin.includes("replit.app") || origin.includes("repl.co")) return cb(null, true);
       if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) return cb(null, true);
       return cb(null, false);
     },

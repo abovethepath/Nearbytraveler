@@ -105,6 +105,17 @@ export default function CityPage({ cityName }: CityPageProps) {
     return ids;
   }, [availableNowIds, myAvailableStatus?.isAvailable, currentUserId]);
 
+  // Fetch city page info (official calendar URL)
+  const { data: cityPageInfo } = useQuery<{ officialExternalCalendarUrl: string | null; officialExternalProvider: string | null }>({
+    queryKey: ['/api/cities', parsedCityName, 'page-info'],
+    queryFn: async () => {
+      const response = await fetch(`${getApiBaseUrl()}/api/cities/${encodeURIComponent(parsedCityName)}/page-info`);
+      if (!response.ok) return { officialExternalCalendarUrl: null, officialExternalProvider: null };
+      return response.json();
+    },
+    enabled: !!parsedCityName,
+  });
+
   // Fetch users for this city using metropolitan area consolidation
   const { data: users = [], isLoading: usersLoading } = useQuery({
     queryKey: ['/api/city', decodedCityName, 'users', filter, 'metro'],
