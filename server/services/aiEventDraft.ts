@@ -53,10 +53,13 @@ export class AiEventDraftService {
   private openai: OpenAI | null = null;
 
   constructor() {
-    if (process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.AI_INTEGRATIONS_OPENAI_BASE_URL) {
+    // Prefer Replit/custom AI integrations; fallback to standard OpenAI
+    const apiKey = process.env.AI_INTEGRATIONS_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
+    const baseURL = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
+    if (apiKey && apiKey.length > 20 && !apiKey.toLowerCase().startsWith("dum-") && !apiKey.includes("your_")) {
       this.openai = new OpenAI({
-        apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-        baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+        apiKey,
+        ...(baseURL && { baseURL }),
       });
     }
   }
@@ -212,10 +215,15 @@ Extract the event details and return ONLY valid JSON. Use today's date to calcul
 
     } catch (error: any) {
       console.error("AI event draft extraction failed:", error);
+      const rawMessage = error?.message || "Failed to process your event description.";
+      // Never expose API key details or technical auth errors to users
+      const sanitized = rawMessage.toLowerCase().includes("api key") || rawMessage.toLowerCase().includes("incorrect") || rawMessage.includes("401")
+        ? "AI service is not configured correctly. Please contact support or try again later."
+        : rawMessage;
       return {
         draft: null,
         success: false,
-        error: error?.message || "Failed to process your event description."
+        error: sanitized
       };
     }
   }

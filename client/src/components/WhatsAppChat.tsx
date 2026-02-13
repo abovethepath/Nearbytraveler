@@ -13,6 +13,7 @@ import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, Volu
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 interface Message {
   id: number;
@@ -55,9 +56,16 @@ interface WhatsAppChatProps {
   eventId?: number; // For event chats, this is the actual event ID (chatId is the chatroom ID)
 }
 
-export default function WhatsAppChat({ chatId, chatType, title, subtitle, currentUserId, onBack, eventId }: WhatsAppChatProps) {
+export default function WhatsAppChat({ chatId, chatType, title, subtitle, currentUserId: propUserId, onBack, eventId }: WhatsAppChatProps) {
   const [, navigate] = useLocation();
   const { toast } = useToast();
+  // Resolve currentUserId from localStorage if not provided (e.g. WebView auth timing)
+  const currentUserId = propUserId ?? (() => {
+    try {
+      const u = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || '{}');
+      return u?.id ? Number(u.id) : undefined;
+    } catch { return undefined; }
+  })();
   
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageText, setMessageText] = useState("");
@@ -285,7 +293,14 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
 
   // Initialize WebSocket connection with auto-reconnect
   useEffect(() => {
-    if (!currentUserId || !chatId) return;
+    if (!chatId) return;
+    const effectiveUserId = currentUserId ?? (() => {
+      try {
+        const u = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || '{}');
+        return u?.id ? Number(u.id) : undefined;
+      } catch { return undefined; }
+    })();
+    if (!effectiveUserId) return;
     
     // Reset messages state when chatId changes
     setMessages([]);
@@ -298,7 +313,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         const response = await fetch(`${getApiBaseUrl()}/api/chatrooms/${chatId}/messages?chatType=${chatType}&format=whatsapp`, {
           headers: {
-            'x-user-id': (currentUserId || user.id || '').toString()
+            'x-user-id': (effectiveUserId || user.id || '').toString()
           }
         });
         
@@ -321,6 +336,13 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     let reconnectTimeout: NodeJS.Timeout | null = null;
     let isCleaningUp = false;
 
+    // Fallback: if WebSocket never connects, still load messages via HTTP after 2.5s
+    const httpFallbackTimer = setTimeout(() => {
+      if (!isCleaningUp) {
+        fetchMessagesViaHttp();
+      }
+    }, 2500);
+
     const connect = () => {
       if (isCleaningUp) return;
       
@@ -333,10 +355,10 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         
         // Authenticate
-        console.log('🔐 WhatsApp Chat: Authenticating with userId:', currentUserId, 'chatId:', chatId, 'chatType:', chatType);
+        console.log('🔐 WhatsApp Chat: Authenticating with userId:', effectiveUserId, 'chatId:', chatId, 'chatType:', chatType);
         ws?.send(JSON.stringify({
           type: 'auth',
-          userId: currentUserId,
+          userId: effectiveUserId,
           username: user.username
         }));
       };
@@ -459,6 +481,7 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
 
     return () => {
       isCleaningUp = true;
+      clearTimeout(httpFallbackTimer);
       if (reconnectTimeout) clearTimeout(reconnectTimeout);
       if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
       if (ws) ws.close();
@@ -717,8 +740,17 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
   };
 
+  // Native iOS has its own tab bar (~80px) - reserve space so input is always visible
+  const inputBottomPadding = isNativeIOSApp() ? 'max(80px, env(safe-area-inset-bottom, 0px))' : 'max(16px, env(safe-area-inset-bottom, 0px))';
+
   return (
-    <div className="flex h-screen bg-gray-900 text-white overflow-hidden">
+    <div 
+      className="flex flex-col bg-gray-900 text-white overflow-hidden min-h-0"
+      style={{ 
+        height: '100dvh',
+        minHeight: '100vh'
+      }}
+    >
       {/* Desktop Members Sidebar - Always visible on lg+ screens, positioned on LEFT */}
       {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
         <div className="hidden lg:flex lg:flex-col lg:w-[320px] bg-gray-800 border-r border-gray-700">
@@ -806,8 +838,8 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
       
       {/* Main Chat Area */}
       <div className="flex flex-col flex-1 min-w-0">
-      {/* Header */}
-      <div className="flex items-center gap-1.5 px-2 py-1.5 bg-gray-800 border-b border-gray-700">
+      {/* Header - flex-shrink-0 so chat name/participants always visible */}
+      <div className="flex items-center gap-1.5 px-2 py-1.5 bg-gray-800 border-b border-gray-700 flex-shrink-0">
         <Button
           variant="ghost"
           size="icon"
@@ -975,10 +1007,10 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
         </Button>
       </div>
 
-      {/* Messages - Flex wrapper ensures proper spacing */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      {/* Messages - Flex wrapper ensures proper spacing; min-h-0 allows shrink on small screens */}
+      <div className="flex-1 flex flex-col overflow-hidden min-h-0">
         {/* Scrollable messages area */}
-        <div className="flex-1 overflow-y-auto px-3 py-2 bg-[#e5ddd5] dark:bg-[#0b141a]" style={{
+        <div className="flex-1 min-h-0 overflow-y-auto px-3 py-2 bg-[#e5ddd5] dark:bg-[#0b141a]" style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23999999' stroke-width='2' opacity='0.18'%3E%3Ccircle cx='100' cy='100' r='50'/%3E%3Cpath d='M200 200 L250 250 M250 200 L200 250'/%3E%3Crect x='350' y='50' width='80' height='80' rx='10'/%3E%3Cpath d='M500 150 Q550 100 600 150 T700 150'/%3E%3Ccircle cx='150' cy='300' r='30'/%3E%3Cpath d='M300 350 L320 380 L340 340 L360 380 L380 340'/%3E%3Crect x='450' y='300' width='60' height='100' rx='30'/%3E%3Cpath d='M600 350 L650 300 L700 350 Z'/%3E%3Ccircle cx='100' cy='500' r='40'/%3E%3Cpath d='M250 500 C250 450 350 450 350 500 S250 550 250 500'/%3E%3Crect x='450' y='480' width='70' height='70' rx='15'/%3E%3Cpath d='M600 500 L650 520 L670 470 L620 450 Z'/%3E%3Ccircle cx='150' cy='700' r='35'/%3E%3Cpath d='M300 680 Q350 650 400 680'/%3E%3Crect x='500' y='650' width='90' height='60' rx='8'/%3E%3Cpath d='M150 150 L180 180 M180 150 L150 180'/%3E%3C/g%3E%3C/svg%3E")`
         }}>
           <div className="flex flex-col min-h-full">
@@ -1164,8 +1196,11 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
           </div>
         )}
 
-        {/* Input box - fixed at bottom */}
-        <div className="px-3 py-2 bg-gray-800 border-t border-gray-700">
+        {/* Input box - fixed at bottom, always visible with safe-area padding for native tab bar */}
+        <div 
+          className="px-3 py-2 bg-gray-800 border-t border-gray-700 flex-shrink-0"
+          style={{ paddingBottom: `calc(0.5rem + ${inputBottomPadding})` }}
+        >
           {/* Connection status - only show briefly if not connected AND no messages loaded */}
           {!messagesLoaded && !isWsConnected && (
             <div className="text-center text-yellow-400 text-xs mb-2 animate-pulse">

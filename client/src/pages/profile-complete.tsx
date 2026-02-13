@@ -4536,14 +4536,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        console.log("EDIT CLICK - Button pressed");
                         setIsEditMode(true);
                       }}
-                      onMouseDown={(e) => {
-                        console.log("EDIT MOUSEDOWN - Button mousedown");
-                      }}
                       className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md border border-transparent dark:border-gray-400 ${isProfileIncomplete() ? 'bg-red-500 hover:bg-red-600 text-white dark:ring-2 dark:ring-red-400' : 'bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white dark:ring-2 dark:ring-gray-400'}`}
-                      style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto', cursor: 'pointer' }}
+                      style={{ position: 'relative', zIndex: 9999, pointerEvents: 'auto', cursor: 'pointer', touchAction: 'manipulation' }}
                       data-testid="button-edit-profile"
                     >
                       <span className="text-white font-medium">Edit</span>
@@ -8421,18 +8417,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         </Card>
       )}
 
-      {/* Profile Edit Modal */}
+      {/* Profile Edit Modal - inset+margin keeps dialog on-screen in WebView; z-index above overlay so content is clickable */}
       <Dialog open={isEditMode} onOpenChange={setIsEditMode}>
         <DialogContent 
-          className="max-w-[95vw] w-full md:max-w-2xl max-h-[90vh] overflow-hidden flex flex-col bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 dark:text-gray-100"
+          className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 dark:text-gray-100"
           style={{
             position: 'fixed',
-            left: '50%',
-            top: '50%',
-            transform: 'translate(-50%, -50%)',
-            zIndex: 100001,
-            visibility: 'visible',
-            opacity: 1
+            inset: '5%',
+            margin: 'auto',
+            width: '90%',
+            maxHeight: '85vh',
+            zIndex: 2147483647,
+            pointerEvents: 'auto',
+            touchAction: 'manipulation'
           }}
         >
           <DialogHeader className="flex-shrink-0 pr-10">
@@ -9772,6 +9769,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
             visibility: 'visible',
             opacity: 1
           }}
+          onPointerDownOutside={(e) => e.preventDefault()}
+          onInteractOutside={(e) => e.preventDefault()}
         >
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -9788,19 +9787,22 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           <div className="space-y-3">
             {userChatrooms.length > 0 ? (
               userChatrooms.filter((chatroom: any) => chatroom && chatroom.id).map((chatroom: any) => (
-                <div 
+                <button
                   key={chatroom.id}
-                  className="flex items-start gap-4 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors"
-                  onClick={() => {
+                  type="button"
+                  className="flex items-start gap-4 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors w-full text-left"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
                     const path = `/chatroom/${chatroom.id}`;
-                    setShowChatroomList(false);
-                    // In native WebView (Expo), client-side setLocation can be lost when dialog closes; force full URL so we actually land on the chatroom
+                    // Navigate FIRST so we don't lose navigation when dialog closes
                     if (isNativeIOSApp()) {
                       const search = window.location.search || '';
                       window.location.href = `${window.location.origin}${path}${search}`;
                     } else {
                       setLocation(path);
                     }
+                    setShowChatroomList(false);
                   }}
                 >
                   <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-blue-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
@@ -9825,7 +9827,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                     </div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 mt-1" />
-                </div>
+                </button>
               ))
             ) : (
               <div className="text-center py-8">

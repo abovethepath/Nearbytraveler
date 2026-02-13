@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
   Linking,
   Platform,
   BackHandler,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
@@ -63,7 +64,7 @@ function shouldLoadInWebView(requestUrl) {
   }
 }
 
-/** Shared WebView with back button, loading, error, refresh, and external-link handling. Used by GenericWebViewScreen and fixed-path screens. */
+/** Shared WebView with back button, logo, avatar, and pull-to-refresh. Used by GenericWebViewScreen and fixed-path screens. */
 function WebViewWithChrome({ path, navigation }) {
   const colorScheme = useColorScheme();
   const dark = colorScheme === 'dark';
@@ -71,9 +72,22 @@ function WebViewWithChrome({ path, navigation }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [user, setUser] = useState(null);
   const webViewRef = useRef(null);
   const source = webViewSource(path);
   const webViewHeight = Math.max(400, windowHeight - HEADER_HEIGHT - (Platform.OS === 'ios' ? 44 : 24));
+
+  useEffect(() => {
+    api.getUser().then(setUser).catch(() => setUser(null));
+  }, []);
+
+  const onAvatarPress = useCallback(() => {
+    const profilePath = user?.id ? `/profile/${user.id}` : '/profile';
+    const fullPath = pathWithNativeIOS(profilePath);
+    webViewRef.current?.injectJavaScript(
+      `window.location.href='${BASE_URL}${fullPath}';true;`
+    );
+  }, [user?.id]);
 
   // Android hardware back: only let GO_BACK run when we can go back, to avoid "GO_BACK was not handled"
   useFocusEffect(
@@ -111,7 +125,7 @@ function WebViewWithChrome({ path, navigation }) {
 
   return (
     <SafeAreaView style={containerStyle}>
-      {/* Native bar sits above the WebView; pull-to-refresh in the scroll area reloads the page. */}
+      {/* Native bar: back arrow, logo, user avatar. Pull-to-refresh in scroll area reloads the page. */}
       <View style={[headerStyle, { minHeight: HEADER_HEIGHT }]}>
         <TouchableOpacity
           style={styles.backButton}
@@ -126,12 +140,34 @@ function WebViewWithChrome({ path, navigation }) {
           <Text style={styles.backText}>Back</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.refreshButton}
-          onPress={onRefresh}
-          disabled={refreshing}
-          accessibilityLabel="Reload page"
+          style={styles.logoContainer}
+          onPress={() => webViewRef.current?.injectJavaScript(`window.location.href='${BASE_URL}${pathWithNativeIOS('/')}';true;`)}
+          activeOpacity={0.8}
         >
-          <Text style={styles.refreshText}>{refreshing ? '…' : 'Refresh'}</Text>
+          <Image
+            source={{ uri: `${BASE_URL}/new-logo.png` }}
+            style={styles.logoImage}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.avatarButton}
+          onPress={onAvatarPress}
+          activeOpacity={0.7}
+          accessibilityLabel="Go to profile"
+        >
+          {user?.profileImage ? (
+            <Image
+              source={{ uri: user.profileImage.startsWith('http') ? user.profileImage : `${BASE_URL}${user.profileImage.startsWith('/') ? user.profileImage : '/' + user.profileImage}` }}
+              style={styles.avatarImage}
+            />
+          ) : (
+            <View style={[styles.avatarFallback, dark && styles.avatarFallbackDark]}>
+              <Text style={styles.avatarFallbackText}>
+                {user?.name?.charAt(0) || user?.username?.charAt(0) || '?'}
+              </Text>
+            </View>
+          )}
         </TouchableOpacity>
       </View>
       {error ? (
@@ -188,9 +224,14 @@ export function GenericWebViewScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FFFFFF' },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 12, paddingHorizontal: 8, borderBottomWidth: 1, borderBottomColor: '#F3F4F6' },
-  backButton: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, paddingHorizontal: 12 },
-  refreshButton: { paddingVertical: 8, paddingHorizontal: 12 },
-  refreshText: { color: '#F97316', fontSize: 14, fontWeight: '600' },
+  backButton: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, paddingHorizontal: 12, minWidth: 80 },
+  logoContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
+  logoImage: { height: 36, width: 160, maxWidth: '100%' },
+  avatarButton: { width: 56, minWidth: 56, height: 44, alignItems: 'center', justifyContent: 'center' },
+  avatarImage: { width: 36, height: 36, borderRadius: 18 },
+  avatarFallback: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center' },
+  avatarFallbackDark: { backgroundColor: '#EA580C' },
+  avatarFallbackText: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },
   backChevron: { color: '#F97316', fontSize: 28, fontWeight: '600', marginRight: 2, lineHeight: 32 },
   backText: { color: '#F97316', fontSize: 16, fontWeight: '600' },
   loadingOverlay: { position: 'absolute', left: 0, right: 0, top: HEADER_HEIGHT, bottom: 0, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.8)', zIndex: 1 },

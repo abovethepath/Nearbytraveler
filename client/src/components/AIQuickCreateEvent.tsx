@@ -102,9 +102,11 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
   const startListening = async () => {
     const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognitionAPI) {
+      const msg = "Voice input isn't supported in this app. Please type your event details instead.";
+      setInlineError(msg);
       toast({
         title: "Voice not available",
-        description: "Voice input isn't supported in this app. Please type your event details instead.",
+        description: msg,
         variant: "destructive"
       });
       return;
@@ -118,11 +120,13 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
         } catch (permErr: any) {
           setIsListening(false);
           const denied = permErr?.name === "NotAllowedError" || permErr?.message?.toLowerCase().includes("permission");
+          const msg = denied
+            ? "Please allow microphone access in your browser or device settings, then try again."
+            : "Could not access microphone. Please type your event details instead.";
+          setInlineError(msg);
           toast({
             title: "Microphone access needed",
-            description: denied
-              ? "Please allow microphone access in your browser or device settings, then try again."
-              : "Could not access microphone. Please type your event details instead.",
+            description: msg,
             variant: "destructive"
           });
           return;
@@ -166,6 +170,7 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
           errorMessage = "Microphone not available. Please type your event details.";
         }
 
+        setInlineError(errorMessage);
         toast({
           title: "Voice unavailable",
           description: errorMessage,
@@ -185,9 +190,11 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
         console.error("recognition.start error:", startErr);
         setIsListening(false);
         recognitionRef.current = null;
+        const msg = "Could not start listening. Please allow microphone access or type your event details.";
+        setInlineError(msg);
         toast({
           title: "Voice unavailable",
-          description: "Could not start listening. Please allow microphone access or type your event details.",
+          description: msg,
           variant: "destructive"
         });
         return;
@@ -202,9 +209,11 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
       console.error("Speech recognition initialization error:", error);
       setIsListening(false);
       recognitionRef.current = null;
+      const msg = "Voice input isn't available. Please type your event details instead.";
+      setInlineError(msg);
       toast({
         title: "Voice unavailable",
-        description: "Voice input isn't available. Please type your event details instead.",
+        description: msg,
         variant: "destructive"
       });
     }
@@ -408,13 +417,15 @@ export function AIQuickCreateEvent({ onDraftReady, defaultCity }: AIQuickCreateE
 
           {inlineError && (
             <div
-              className="rounded-lg border border-red-400 bg-red-50 dark:bg-red-950/50 dark:border-red-600 p-3 text-red-800 dark:text-red-200 text-sm flex items-start gap-2"
+              className="rounded-lg border-2 border-red-500 bg-red-50 dark:bg-red-950/50 dark:border-red-500 p-4 text-red-800 dark:text-red-200 text-sm flex items-start gap-2"
               role="alert"
             >
-              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-red-600" />
               <div className="flex-1 min-w-0">
-                <p className="font-medium">Couldn't generate event</p>
-                <p className="mt-0.5">{inlineError}</p>
+                <p className="font-semibold text-base">
+                  {inlineError.toLowerCase().includes("microphone") || inlineError.toLowerCase().includes("voice") ? "Voice unavailable" : "Couldn't generate event"}
+                </p>
+                <p className="mt-1">{inlineError}</p>
               </div>
               <button
                 type="button"
