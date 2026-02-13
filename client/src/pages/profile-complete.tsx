@@ -782,14 +782,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   };
 
   function openTab(key: TabKey) {
-    console.log('🔥 OPENING TAB:', key);
     setActiveTab(key);
-    // Mark this tab as loaded for lazy loading
     setLoadedTabs(prev => new Set([...prev, key]));
-    // Wait for the panel to render, then scroll it into view
     requestAnimationFrame(() => {
-      console.log('📍 SCROLLING TO TAB:', key);
-      tabRefs[key].current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      requestAnimationFrame(() => {
+        tabRefs[key].current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
     });
   }
   const [selectedCountry, setSelectedCountry] = useState("");
@@ -9945,7 +9943,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
       {/* Native iOS App Navigation Menu - at bottom of profile page */}
       {isNativeIOSApp() && isOwnProfile && activeTab === 'menu' && (
-        <div className="mx-4 mt-6 mb-24 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+        <div ref={tabRefs.menu} className="mx-4 mt-6 mb-24 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
           <div className="px-4 pt-3 pb-2">
             <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">Navigate</p>
           </div>
