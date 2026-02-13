@@ -1,0 +1,30 @@
+pplying both changes:
+city.tsx
++11
+  // Fetch city page info (official calendar URL)  const { data: cityPageInfo } = useQuery<{ officialExternalCalendarUrl: string | null; officialExternalProvider: string | null }>({    queryKey: ['/api/cities', parsedCityName, 'page-info'],    queryFn: async () => {      const response = await fetch(`${getApiBaseUrl()}/api/cities/${encodeURIComponent(parsedCityName)}/page-info`);
+index.ts
++2
+-1
+    origin: (origin, cb) => {      if (!origin) return cb(null, true); // mobile apps often send no origin      if (allowedOrigins.includes(origin)) return cb(null, true);      if (origin.startsWith("exp://") || origin.startsWith("exps://")) return cb(null, true);
+      if (!origin) return cb(null, true); // mobile apps often send no origin    origin: (origin, cb) => {      if (!origin) return cb(null, true);      if (allowedOrigins.includes(origin)) return cb(null, true);      if (origin.startsWith("exp://") || origin.startsWith("exps://")) return cb(null, true);      if (origin.includes("replit.dev") || origin.includes("replit.app") || origin.includes("repl.co")) return cb(null, true);
+Committing and pushing changes.
+cd C:\Users\13109\Nearbytraveler; git add client/src/pages/city.tsx server/index.ts; git commit --trailer "Co-authored-by: Cursor <cursoragent@cursor.com>" -m "Add official calendar page-info query (city.tsx) and Replit CORS origins (server)"; git push origin main
+[main 05035121] Add official calendar page-info query (city.tsx) and Replit CORS origins (server)
+ 2 files changed, 13 insertions(+), 1 deletion(-)
+To https://github.com/abovethepath/Nearbytraveler.git
+   6740954c..05035121  main -> main
+Summary of what was done:
+1. client/src/pages/city.tsx
+Added the official calendar page-info query after the available-now block:
+useQuery with key ['/api/cities', parsedCityName, 'page-info']
+Fetches /api/cities/${parsedCityName}/page-info and returns officialExternalCalendarUrl and officialExternalProvider
+Runs only when parsedCityName is set
+2. server/index.ts
+Updated the CORS origin callback to allow Replit origins:
+origin.includes("replit.dev")
+origin.includes("replit.app")
+origin.includes("repl.co")
+3. Git
+Committed as: Add official calendar page-info query (city.tsx) and Replit CORS origins (server)
+Pushed to origin main (commit 05035121)
+Render should pick up the push and deploy. If the Official Calendar banner (the UI that uses cityPageInfo) isn’t in this repo yet, you’ll need to add that in city.tsx (or a child component) so the banner actually renders; the data fetch is in place.
