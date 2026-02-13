@@ -72,6 +72,8 @@ interface EventFormData {
   ageRestrictionMin?: number;
   ageRestrictionMax?: number;
   privateNotes?: string;
+  externalRsvpUrl?: string;
+  externalRsvpProvider?: string;
 }
 
 export default function CreateEvent({ onEventCreated, isModal = false }: CreateEventProps) {
@@ -621,6 +623,9 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
         externalOrganizerName: (importedFromUrl && externalOrganizerName) ? externalOrganizerName : null,
         // Cross-metro visibility - show event in additional cities
         additionalCities: additionalCities.length > 0 ? additionalCities : null,
+        // External RSVP link
+        externalRsvpUrl: data.externalRsvpUrl || null,
+        externalRsvpProvider: data.externalRsvpProvider || null,
       };
 
       await createEventMutation.mutateAsync(eventData);
@@ -1635,6 +1640,30 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                 placeholder="Any special requirements, age restrictions, what to bring, etc."
                 className="w-full"
               />
+            </div>
+
+            {/* External RSVP Link */}
+            <div className="space-y-2">
+              <Label htmlFor="externalRsvpUrl">External RSVP Link (optional)</Label>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Paste a Luma or Partiful event link if you want attendees to RSVP there too</p>
+              <Input
+                id="externalRsvpUrl"
+                {...register("externalRsvpUrl")}
+                placeholder="https://lu.ma/your-event or https://partiful.com/e/..."
+                className="w-full"
+              />
+              {watch("externalRsvpUrl") && (
+                <select
+                  {...register("externalRsvpProvider")}
+                  className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm"
+                >
+                  <option value="">Select platform</option>
+                  <option value="luma">Luma</option>
+                  <option value="partiful">Partiful</option>
+                  <option value="eventbrite">Eventbrite</option>
+                  <option value="other">Other</option>
+                </select>
+              )}
             </div>
 
             {/* PRIVATE EVENT VISIBILITY TAGS - Collapsible */}

@@ -927,6 +927,29 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
         </div>
       </div>
       
+      {event?.externalRsvpUrl && (
+        <div className="mt-4 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-lg border border-indigo-200 dark:border-indigo-800">
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            {event.externalRsvpProvider === 'luma' ? 'RSVP on Luma' : 
+             event.externalRsvpProvider === 'partiful' ? 'RSVP on Partiful' : 
+             'External RSVP'}
+          </p>
+          <a
+            href={event.externalRsvpUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-white font-medium text-sm bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 transition-all"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+            {event.externalRsvpProvider === 'luma' ? 'RSVP on Luma' : 
+             event.externalRsvpProvider === 'partiful' ? 'RSVP on Partiful' : 
+             'RSVP Externally'}
+          </a>
+        </div>
+      )}
+
       {/* Share Section - At Bottom */}
       <div className="mt-8 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
         <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
