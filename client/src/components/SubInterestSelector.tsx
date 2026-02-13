@@ -116,8 +116,9 @@ export default function SubInterestSelector({
                           key={subInterest}
                           type="button"
                           onClick={() => toggleSubInterest(subInterest, category.id)}
+                          style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                           className={`
-                            px-3 py-1.5 rounded-full text-xs font-medium transition-all
+                            px-3 py-2 rounded-full text-xs font-medium transition-colors min-h-[36px]
                             ${isSelected 
                               ? "bg-orange-500 text-white shadow-sm" 
                               : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:border-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20"
