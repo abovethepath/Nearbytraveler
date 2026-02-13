@@ -1596,11 +1596,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const profileEvents = profileBundle?.profileEvents || [];
   const profileEventsLoading = bundleLoading;
   
-  // BUNDLE-DERIVED: Events user is going to (committed attendance)
-  const eventsGoing = profileBundle?.eventsGoing || [];
+  // BUNDLE-DERIVED: Events user is going to (committed attendance) - only future events
+  const eventsGoing = (profileBundle?.eventsGoing || []).filter((e: any) => new Date(e.date) >= new Date(new Date().toDateString()));
   
-  // BUNDLE-DERIVED: Events user is interested in (bookmarked/watching)
-  const eventsInterested = profileBundle?.eventsInterested || [];
+  // BUNDLE-DERIVED: Events user is interested in (bookmarked/watching) - only future events
+  const eventsInterested = (profileBundle?.eventsInterested || []).filter((e: any) => new Date(e.date) >= new Date(new Date().toDateString()));
 
 
 
