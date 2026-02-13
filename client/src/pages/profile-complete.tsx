@@ -4936,7 +4936,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
             {/* Interests, Activities & Events Section */}
             {user?.userType !== 'business' && (
-            <Card>
+            <Card id="interests-activities-section">
               <CardHeader className="pb-4 px-4 sm:px-6 pt-4 sm:pt-6">
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
@@ -5261,7 +5261,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               customActivities: customActivities.join(', ')
                             };
                             
-                            const scrollY = window.scrollY;
                             const apiBase = getApiBaseUrl();
                             const response = await fetch(`${apiBase}/api/users/${user.id}`, {
                               method: 'PUT',
@@ -5272,9 +5271,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             
                             queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
                             setIsEditingPublicInterests(false);
-                            requestAnimationFrame(() => {
-                              window.scrollTo(0, Math.max(0, scrollY - 200));
-                            });
+                            setTimeout(() => {
+                              const section = document.getElementById('interests-activities-section');
+                              if (section) {
+                                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                              }
+                            }, 100);
                           } catch (error) {
                             console.error('Failed to update:', error);
                           }
