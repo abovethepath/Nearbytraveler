@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import BackButton from "@/components/back-button";
 import CreateEvent from "@/pages/create-event";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 import { ParticipantAvatars } from "@/components/ParticipantAvatars";
 import { formatDateForDisplay } from "@/lib/dateUtils";
@@ -433,7 +434,7 @@ export default function Events() {
       {/* MobileNav removed - using global MobileTopNav and MobileBottomNav */}
       
       {/* Show Hero Button - Only visible when hero is hidden */}
-      {!isHeroVisible && (
+      {!isNativeIOSApp() && !isHeroVisible && (
         <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
           <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
             <Button
@@ -451,7 +452,7 @@ export default function Events() {
       )}
 
       {/* HERO SECTION — Standardized Layout */}
-      {isHeroVisible && (
+      {!isNativeIOSApp() && isHeroVisible && (
         <section className="relative py-8 sm:py-12 lg:py-16 overflow-hidden bg-white dark:bg-gray-900">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-4 flex items-center justify-between">

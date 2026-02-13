@@ -33,6 +33,7 @@ import { queryClient } from "@/lib/queryClient";
 import { getAllInterests, getAllActivities, getAllLanguages, validateSelections, getMostPopularInterests } from "../../../shared/base-options";
 import { BASE_TRAVELER_TYPES } from "../../../shared/base-options";
 import { getInterestStyle, getActivityStyle, getEventStyle } from "@/lib/topChoicesUtils";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 import type { User, Event, Message } from "@shared/schema";
 import SmartPhotoGallery from "@/components/smart-photo-gallery";
 import SmartLocationInput from "@/components/SmartLocationInput";
@@ -1488,7 +1489,7 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 w-full max-w-full overflow-x-hidden">
 
 {/* Hero Toggle Button & Theme Toggle (when hero is hidden) */}
-{!isHeroVisible && (
+{!isNativeIOSApp() && !isHeroVisible && (
   <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
     <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
       <Button
@@ -1507,7 +1508,7 @@ export default function Home() {
 )}
 
 {/* HERO SECTION — Standardized Layout */}
-{isHeroVisible && (
+{!isNativeIOSApp() && isHeroVisible && (
 <section className="relative py-8 sm:py-12 lg:py-16 overflow-hidden bg-white dark:bg-gray-900">
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div className="mb-4 flex items-center justify-end">

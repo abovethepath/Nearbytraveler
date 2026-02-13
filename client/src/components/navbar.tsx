@@ -20,6 +20,7 @@ import { AdaptiveThemeToggle } from "@/components/adaptive-theme-toggle";
 import { authStorage } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
 import { getApiBaseUrl, invalidateUserCache } from "@/lib/queryClient";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 
 // Theme Toggle as Dropdown Menu Item
@@ -53,6 +54,7 @@ function ThemeToggleMenuItem() {
 }
 
 function Navbar() {
+  if (isNativeIOSApp()) return null;
   const [location, setLocation] = useLocation();
   const { user, setUser } = useContext(AuthContext);
   const [showConnectModal, setShowConnectModal] = useState(false);

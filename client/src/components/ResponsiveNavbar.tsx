@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 export default function ResponsiveNavbar() {
+  if (isNativeIOSApp()) return null;
   const [open, setOpen] = useState(false);
 
   return (

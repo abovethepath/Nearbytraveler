@@ -6,8 +6,10 @@ import { AuthContext } from "@/App";
 import { useLocation } from "wouter";
 import Logo from "@/components/logo";
 import { authStorage } from "@/lib/auth";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 export function MobileTopNav() {
+  if (isNativeIOSApp()) return null;
   const authContext = React.useContext(AuthContext);
   const { user, logout } = authContext;
   const [, setLocation] = useLocation();
