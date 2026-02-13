@@ -5267,6 +5267,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                               customActivities: customActivities.join(', ')
                             };
                             
+                            const scrollY = window.scrollY;
                             const apiBase = getApiBaseUrl();
                             const response = await fetch(`${apiBase}/api/users/${user.id}`, {
                               method: 'PUT',
@@ -5277,6 +5278,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             
                             queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
                             setIsEditingPublicInterests(false);
+                            requestAnimationFrame(() => {
+                              window.scrollTo(0, Math.max(0, scrollY - 200));
+                            });
                           } catch (error) {
                             console.error('Failed to update:', error);
                           }
