@@ -1649,21 +1649,46 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
               <Input
                 id="externalRsvpUrl"
                 {...register("externalRsvpUrl")}
-                placeholder="https://lu.ma/your-event or https://partiful.com/e/..."
+                placeholder="lu.ma/your-event or partiful.com/e/..."
                 className="w-full"
+                onBlur={(e) => {
+                  let url = e.target.value.trim();
+                  if (!url) return;
+                  if (url && !url.startsWith('http://') && !url.startsWith('https://')) {
+                    url = 'https://' + url;
+                    setValue("externalRsvpUrl", url);
+                  }
+                  if (url.includes('lu.ma/') || url.includes('luma.')) {
+                    setValue("externalRsvpProvider", "luma");
+                  } else if (url.includes('partiful.com')) {
+                    setValue("externalRsvpProvider", "partiful");
+                  } else if (url.includes('eventbrite.com')) {
+                    setValue("externalRsvpProvider", "eventbrite");
+                  } else {
+                    setValue("externalRsvpProvider", "other");
+                  }
+                }}
               />
               {watch("externalRsvpUrl") && (
-                <select
-                  {...register("externalRsvpProvider")}
-                  className="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm"
-                >
-                  <option value="">Select platform</option>
-                  <option value="luma">Luma</option>
-                  <option value="partiful">Partiful</option>
-                  <option value="eventbrite">Eventbrite</option>
-                  <option value="other">Other</option>
-                </select>
+                <div className="flex items-center gap-2">
+                  {watch("externalRsvpProvider") === "luma" && (
+                    <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">Luma detected</Badge>
+                  )}
+                  {watch("externalRsvpProvider") === "partiful" && (
+                    <Badge className="bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300">Partiful detected</Badge>
+                  )}
+                  {watch("externalRsvpProvider") === "eventbrite" && (
+                    <Badge className="bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300">Eventbrite detected</Badge>
+                  )}
+                  {watch("externalRsvpProvider") === "other" && (
+                    <Badge className="bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300">External link</Badge>
+                  )}
+                  {!watch("externalRsvpProvider") && (
+                    <p className="text-xs text-amber-600 dark:text-amber-400">Tip: Use a Luma or Partiful link for best experience</p>
+                  )}
+                </div>
               )}
+              <input type="hidden" {...register("externalRsvpProvider")} />
             </div>
 
             {/* PRIVATE EVENT VISIBILITY TAGS - Collapsible */}

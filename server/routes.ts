@@ -2588,6 +2588,23 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
+  // GET /api/cities/:city/page-info - Get city page info (calendar URL, provider)
+  app.get("/api/cities/:city/page-info", async (req, res) => {
+    try {
+      const city = decodeURIComponent(req.params.city);
+      const result = await db.select({
+        officialExternalCalendarUrl: cityPages.officialExternalCalendarUrl,
+        officialExternalProvider: cityPages.officialExternalProvider,
+      }).from(cityPages)
+        .where(sql`LOWER(${cityPages.city}) = LOWER(${city})`)
+        .limit(1);
+      
+      res.json(result[0] || { officialExternalCalendarUrl: null, officialExternalProvider: null });
+    } catch (error) {
+      res.json({ officialExternalCalendarUrl: null, officialExternalProvider: null });
+    }
+  });
+
   // GET /api/cities/:city/overview - Get city overview data
   app.get("/api/cities/:city/overview", async (req, res) => {
     try {

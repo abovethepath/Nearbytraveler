@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, MapPin, Calendar, Filter, ArrowLeft, ArrowUpDown, ChevronDown, X, Clock, Globe, Star, Zap, Briefcase, Phone, Building2 } from "lucide-react";
+import { Users, MapPin, Calendar, Filter, ArrowLeft, ArrowUpDown, ChevronDown, X, Clock, Globe, Star, Zap, Briefcase, Phone, Building2, ExternalLink } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 import UserCard from "@/components/user-card";
@@ -91,6 +91,17 @@ export default function CityPage({ cityName }: CityPageProps) {
   const { data: availableNowIds = [] } = useQuery<number[]>({
     queryKey: ['/api/available-now/active-ids'],
     refetchInterval: 30000,
+  });
+
+  // Fetch city page info (official calendar URL)
+  const { data: cityPageInfo } = useQuery<{ officialExternalCalendarUrl: string | null; officialExternalProvider: string | null }>({
+    queryKey: ['/api/cities', parsedCityName, 'page-info'],
+    queryFn: async () => {
+      const response = await fetch(`${getApiBaseUrl()}/api/cities/${encodeURIComponent(parsedCityName)}/page-info`);
+      if (!response.ok) return { officialExternalCalendarUrl: null, officialExternalProvider: null };
+      return response.json();
+    },
+    enabled: !!parsedCityName,
   });
 
   // Fetch users for this city using metropolitan area consolidation
@@ -509,6 +520,29 @@ export default function CityPage({ cityName }: CityPageProps) {
 
               {/* Events Section */}
               <div className="mb-6 sm:mb-8">
+                {/* Official Events Calendar Button */}
+                {cityPageInfo?.officialExternalCalendarUrl && (
+                  <div className="mb-4 p-3 sm:p-4 rounded-lg bg-gradient-to-r from-orange-50 to-blue-50 dark:from-orange-950/30 dark:to-blue-950/30 border border-orange-200 dark:border-orange-800">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Calendar className="w-5 h-5 text-orange-600 dark:text-orange-400 flex-shrink-0" />
+                        <div className="min-w-0">
+                          <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">Official {parsedCityName} Events</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">RSVP + guest list hosted on {cityPageInfo.officialExternalProvider === 'luma' ? 'Luma' : cityPageInfo.officialExternalProvider === 'partiful' ? 'Partiful' : 'external platform'}</p>
+                        </div>
+                      </div>
+                      <Button
+                        size="sm"
+                        className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white flex-shrink-0"
+                        onClick={() => window.open(cityPageInfo.officialExternalCalendarUrl!, '_blank')}
+                      >
+                        <ExternalLink className="w-4 h-4 mr-1" />
+                        View Calendar
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
                 <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row justify-between items-start sm:items-center mb-6">
                   <div>
                     <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">Events in {decodedCityName}</h2>

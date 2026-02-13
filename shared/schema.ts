@@ -308,6 +308,8 @@ export const cityPages = pgTable("city_pages", {
   isDeletionProtected: boolean("is_deletion_protected").default(false),
   adminApprovalRequired: boolean("admin_approval_required").default(false),
   contributorCount: integer("contributor_count").default(0),
+  officialExternalCalendarUrl: text("official_external_calendar_url"),
+  officialExternalProvider: text("official_external_provider"),
   lastUpdated: timestamp("last_updated").defaultNow(),
   createdAt: timestamp("created_at").defaultNow(),
 }, (table) => {
