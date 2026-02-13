@@ -13,6 +13,7 @@ import { ArrowLeft, Send, Heart, Reply, Copy, MoreVertical, Users, Volume2, Volu
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
+import { isNativeIOSApp } from "@/lib/nativeApp";
 
 
 interface Message {
@@ -740,12 +741,13 @@ export default function WhatsAppChat({ chatId, chatType, title, subtitle, curren
     return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
   };
 
-  const inputBottomPadding = 'max(16px, env(safe-area-inset-bottom, 0px))';
+  const isNative = isNativeIOSApp();
+  const inputBottomPadding = isNative ? '0px' : 'max(16px, env(safe-area-inset-bottom, 0px))';
 
   return (
     <div 
-      className="flex flex-col bg-gray-900 text-white overflow-hidden min-h-0"
-      style={{ 
+      className={`flex flex-col bg-gray-900 text-white overflow-hidden min-h-0 ${isNativeIOSApp() ? 'native-ios-fullpage' : ''}`}
+      style={isNativeIOSApp() ? {} : { 
         height: '100dvh',
         minHeight: '100vh'
       }}

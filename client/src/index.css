@@ -1811,3 +1811,34 @@ button[type="submit"],
   border: none !important;
   border-color: transparent !important;
 }
+
+/* ============================================= */
+/* NATIVE iOS APP - WebView Layout Overrides     */
+/* ============================================= */
+body[data-native-ios="true"] .mobile-top-nav,
+body[data-native-ios="true"] .mobile-bottom-nav,
+body[data-native-ios="true"] .desktop-navbar,
+body.native-ios-app .mobile-top-nav,
+body.native-ios-app .mobile-bottom-nav,
+body.native-ios-app .desktop-navbar {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+}
+
+body[data-native-ios="true"],
+body.native-ios-app {
+  --native-top-inset: env(safe-area-inset-top, 0px);
+  --native-bottom-inset: 88px;
+  padding-bottom: 0 !important;
+}
+
+body[data-native-ios="true"] .native-ios-fullpage,
+body.native-ios-app .native-ios-fullpage {
+  height: calc(100vh - var(--native-bottom-inset, 88px)) !important;
+  height: calc(100dvh - var(--native-bottom-inset, 88px)) !important;
+  max-height: calc(100vh - var(--native-bottom-inset, 88px)) !important;
+  max-height: calc(100dvh - var(--native-bottom-inset, 88px)) !important;
+}

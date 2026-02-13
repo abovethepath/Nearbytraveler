@@ -16,6 +16,7 @@ import { useLocation } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
 // REMOVED: openFloatingChat import - IM functionality removed
 import { UniversalBackButton } from '@/components/UniversalBackButton';
+import { isNativeIOSApp } from '@/lib/nativeApp';
 
 export default function Messages() {
   const user = authStorage.getUser();
@@ -502,7 +503,7 @@ export default function Messages() {
     }, []);
     
     return (
-      <div className="flex items-center justify-center min-h-screen bg-white dark:bg-gray-900">
+      <div className={`flex items-center justify-center bg-white dark:bg-gray-900 ${isNativeIOSApp() ? 'native-ios-fullpage' : 'min-h-screen'}`}>
         <div className="text-gray-900 dark:text-white">Recovering authentication...</div>
       </div>
     );
@@ -520,11 +521,11 @@ export default function Messages() {
   }
 
   return (
-    <div className="h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-row overflow-hidden w-full max-w-full">
+    <div className={`bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-row overflow-hidden w-full max-w-full ${isNativeIOSApp() ? 'native-ios-fullpage' : 'h-screen'}`}>
       {/* Left Sidebar - Conversations (Always visible on desktop, hidden when chat open on mobile) */}
       <div className={`${selectedConversation ? 'hidden lg:flex' : 'flex'} w-full lg:w-80 h-full bg-gray-100 dark:bg-gray-800 flex-col border-r-0 lg:border-r-2 border-gray-300 dark:border-gray-500`}>
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center gap-3 mb-3">
+        <div className={`border-b border-gray-200 dark:border-gray-700 ${isNativeIOSApp() ? 'px-3 py-2' : 'p-4'}`}>
+          <div className={`flex items-center gap-3 ${isNativeIOSApp() ? 'mb-2' : 'mb-3'}`}>
             <UniversalBackButton 
               destination="/discover"
               label=""
@@ -541,8 +542,7 @@ export default function Messages() {
           />
         </div>
 
-        {/* Instructional text */}
-        {conversations.length > 0 && (
+        {conversations.length > 0 && !isNativeIOSApp() && (
           <div className="p-3 bg-gray-200/50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
             <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
               Click on a name to open messages
@@ -566,7 +566,7 @@ export default function Messages() {
                 <div
                   key={conv.userId}
                   data-conversation-id={conv.userId}
-                  className={`p-4 border-b border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-200 ${
+                  className={`${isNativeIOSApp() ? 'px-3 py-2' : 'p-4'} border-b border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-200 ${
                     selectedConversation === conv.userId 
                       ? 'bg-gradient-to-r from-blue-600 to-blue-700 border-l-4 border-l-blue-400 shadow-lg text-white' 
                       : 'hover:bg-gray-200 dark:hover:bg-gray-700 hover:border-l-4 hover:border-l-gray-400 dark:hover:border-l-gray-500'
@@ -643,8 +643,7 @@ export default function Messages() {
           </div>
         ) : selectedConversation && selectedUser ? (
           <>
-            {/* Compact Header - Just show name on top */}
-            <div ref={headerRef} className="px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 shrink-0">
+            <div ref={headerRef} className={`${isNativeIOSApp() ? 'px-3 py-1' : 'px-4 py-2'} border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 shrink-0`}>
               <div className="flex items-center gap-3">
                 {/* Back button for mobile */}
                 <Button
