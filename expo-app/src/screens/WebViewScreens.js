@@ -9,7 +9,7 @@ function getSpeechModule() {
 }
 import { useAuth } from '../services/AuthContext';
 
-const DEV_WEB_URL = 'https://0b28d8d5-a9b1-48e3-808f-418af8e21b7a-00-g5rim9byrn9z.worf.replit.dev';
+const DEV_WEB_URL = null;
 const BASE_URL = (typeof __DEV__ !== 'undefined' && __DEV__ && DEV_WEB_URL) ? DEV_WEB_URL.replace(/\/$/, '') : 'https://nearbytraveler.org';
 const HOST = (BASE_URL || '').replace(/^https?:\/\//, '').split('/')[0] || 'nearbytraveler.org';
 const HEADER_HEIGHT = 56;
